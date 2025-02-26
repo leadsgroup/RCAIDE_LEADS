@@ -141,7 +141,7 @@ def evaluate_energy_storage(state,network,total_mdot,total_mech_power, total_ele
         # Run Turboelectric Generator in Reverse - Interatively guess fuel flow that provides required power from generator  
         # -------------------------------------------------------------------------------------------------------------------        
         power_elec           = bus_conditions.power_draw*(1 - phi) 
-        alpha                = 0.0000005
+        alpha                = 0.00000005
         throttle             = 0.5*state.ones_row(1)  
         stored_results_flag  = False
         stored_propulsor_tag = None  
@@ -172,7 +172,7 @@ def evaluate_energy_storage(state,network,total_mdot,total_mech_power, total_ele
                     # compute total mass flow rate 
                     total_mdot_var  += conditions.energy[fuel_line.tag][turboelectric_generator.tag].fuel_flow_rate 
 
-            diff_target_power = power_elec_guess - power_elec 
+            diff_target_power = power_elec - power_elec_guess  
             stored_results_flag = False 
             throttle  += alpha*(diff_target_power)  
        

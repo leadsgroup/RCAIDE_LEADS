@@ -61,7 +61,7 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
     compute_generator_performance(generator,generator_conditions,conditions)   
     P_elec                                       = generator_conditions.outputs.power
     
-    conditions.energy[bus.tag].power_draw =  - P_elec # MATTEO I MADE THIS NEGATIVE BECAUSE POWER IS ENTERING THE SYSTEM
+    conditions.energy[bus.tag].power_draw -=  P_elec # MATTEO I MADE THIS NEGATIVE BECAUSE POWER IS ENTERING THE SYSTEM
     
     # Pack results      
     stored_results_flag    = True
