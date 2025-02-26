@@ -22,7 +22,7 @@ def compressible_mixed_flat_plate(Re,Ma,Tc,xt):
     xt between 0 and 1
 
     Source:
-    adg.stanford.edu (Stanford AA241 A/B Course Notes)
+    adg.stanford.edu (Stanford AA241 A/B Course Notes) -> Change Referemce
 
     Inputs:
     Re (Reynolds number)                                             [Unitless]
@@ -61,7 +61,7 @@ def compressible_mixed_flat_plate(Re,Ma,Tc,xt):
     else:
         cf_start = 0.0
     
-    cf_inc = cf_lam*xt + cf_turb*(1-xt+xeff) - cf_start*xeff
+    cf_inc = cf_lam*xt + cf_turb*(1-xt+xeff) - cf_start*xeff # pg 275 Aerodynamics of Eningeering 
     
     # compressibility correction
     Tw = Tc * (1. + 0.178*Ma*Ma)

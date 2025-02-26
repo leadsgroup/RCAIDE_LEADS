@@ -70,8 +70,8 @@ def wing_planform(wing):
     chord_root = 2*sref/span/(1+taper)
     chord_tip  = taper * chord_root
     mgc        = (chord_root+chord_tip)/2
-    
-    swet = 2.*span/2.*(chord_root+chord_tip) *  (1.0 + 0.2*t_c_w)
+    S_exposed = span/2.*(chord_root+chord_tip) 
+    swet = 2.* S_exposed *  (1.0 + 0.2*t_c_w)
 
     mac = 2./3.*( chord_root+chord_tip - chord_root*chord_tip/(chord_root+chord_tip) )
     
