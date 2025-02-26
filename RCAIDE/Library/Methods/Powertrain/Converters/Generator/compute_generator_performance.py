@@ -86,7 +86,7 @@ def compute_generator_performance(generator,generator_conditions,conditions):
 
         v     = generator_conditions.voltage
          
-        i=(v-omeg/Kv)/Res 
+        i= (omeg/Kv - v)/Res 
         i[i < 0.0] = 0.0
     
         etam=(1-io/i)*(1-i*Res/v)

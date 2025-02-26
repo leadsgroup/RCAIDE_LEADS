@@ -176,15 +176,16 @@ def evaluate_energy_storage(state,network,total_mdot,total_mech_power, total_ele
             stored_results_flag = False 
             throttle  += alpha*(diff_target_power)  
        
+        bus_conditions.power_draw -=  P_elec 
+        
+        # # -----------------------------------------------------------------------------------------------------    
+        # # Run Motor/Generator 
+        # # -----------------------------------------------------------------------------------------------------
 
-        # -----------------------------------------------------------------------------------------------------    
-        # Run Motor/Generator 
-        # -----------------------------------------------------------------------------------------------------
-
-        power_mech           = fuel_line_conditions[turboelectric_generator.tag].turboshaft.shaft_power*(phi)         
+        # power_mech           = fuel_line_conditions[turboelectric_generator.tag].turboshaft.shaft_power*(phi)         
        
-        # run motor/generator to determine how much current is drawn 
-        # update the bus
+        # # run motor/generator to determine how much current is drawn 
+        # # update the bus
         
         
         ## -----------------------------------------------------------------------------------------------------    
