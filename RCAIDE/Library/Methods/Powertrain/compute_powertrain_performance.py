@@ -232,6 +232,8 @@ def evaluate_energy_storage(state,network,total_mdot,total_mech_power, total_ele
         #for fuel_tank in fuel_line.fuel_tanks:  
             #conditions.energy[fuel_line.tag][fuel_tank.tag].mass_flow_rate  += fuel_tank.fuel_selector_ratio*fuel_line_mdot + fuel_tank.secondary_fuel_flow         
     
+
+    
         # update total mass flow rate 
         total_mdot += total_mdot_var 
         
