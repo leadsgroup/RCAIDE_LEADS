@@ -46,7 +46,7 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
     turboshaft        = turboelectric_generator.turboshaft # check if there are more than one turboshaft
 
     turboelectric_generator_conditions = conditions.energy.fuel_line[turboelectric_generator.tag] 
-    state.conditions.energy.fuel_line[turboelectric_generator.tag][turboshaft.tag].throttle = turboelectric_generator_conditions.throttle
+    turboelectric_generator_conditions[turboshaft.tag].throttle = turboelectric_generator_conditions.throttle
     P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
     #turboshaft.compute_turboshaft_performance()
 
