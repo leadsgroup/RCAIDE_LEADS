@@ -103,7 +103,8 @@ class Turboprop(Propulsor):
         self.design_altitude                          = 0.0
         self.design_propeller_efficiency              = 0.0
         self.design_gearbox_efficiency                = 0.0 
-        self.design_mach_number                       = 0.0
+        self.design_mach_number                       = None
+        self.design_freestream_velocity               = None
         self.compressor_nondimensional_massflow       = 0.0 
         self.reference_temperature                    = 288.15
         self.reference_pressure                       = 1.01325*10**5  

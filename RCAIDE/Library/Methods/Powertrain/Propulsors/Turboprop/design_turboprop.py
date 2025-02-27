@@ -27,10 +27,9 @@ import numpy                                                                as n
 # ----------------------------------------------------------------------------------------------------------------------   
 def design_turboprop(turboprop):  
     #check if mach number and temperature are passed
-    if(turboprop.design_mach_number==None or turboprop.design_altitude==None):
-        
-        #raise an error
-        raise NameError('The sizing conditions require an altitude and a Mach number')
+    if turboprop.design_altitude==None:
+        if turboprop.design_mach_number==None and turboprop.design_freestream_velocity ==None:  
+            raise NameError('The sizing conditions require an altitude and a Mach number or Velocity ')
     
     else:
         #call the atmospheric model to get the conditions at the specified altitude
@@ -43,7 +42,10 @@ def design_turboprop(turboprop):
         rho                                               = atmo_data.density          
         a                                                 = atmo_data.speed_of_sound    
         mu                                                = atmo_data.dynamic_viscosity   
-    
+        
+        if turboprop.design_mach_number==None:
+            turboprop.design_mach_number =   turboprop.design_freestream_velocity / a 
+            
         # setup conditions
         conditions                                        = RCAIDE.Framework.Mission.Common.Results()
     

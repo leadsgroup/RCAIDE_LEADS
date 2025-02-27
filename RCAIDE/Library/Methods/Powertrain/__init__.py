@@ -9,7 +9,6 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .setup_operating_conditions     import setup_operating_conditions
-from .compute_powertrain_performance import  *  
 
 from . import Converters
 from . import Distributors
