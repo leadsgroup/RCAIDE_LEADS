@@ -95,7 +95,7 @@ def compute_ducted_fan_performance(propulsor,state,center_of_gravity= [[0.0, 0.0
                       
     elif ducted_fan.fidelity == 'Rankine_Froude_Momentum_Theory': 
 
-        outputs = RFMT_performance(ducted_fan,ducted_fan_conditions,conditions, center_of_gravity)
+        outputs = RFMT_performance(ducted_fan,ducted_fan_conditions,conditions, center_of_gravity, commanded_TV)
     
     conditions.energy[propulsor.tag][ducted_fan.tag] = outputs   
     
@@ -224,22 +224,36 @@ def BEMT_performance(ducted_fan,ducted_fan_conditions,conditions, center_of_grav
     
     return outputs
 
-def RFMT_performance(ducted_fan,ducted_fan_conditions,conditions, center_of_gravity):
+def RFMT_performance(ducted_fan,ducted_fan_conditions,conditions, center_of_gravity, commanded_TV):
 
     a              = conditions.freestream.speed_of_sound 
     rho            = conditions.freestream.density 
     omega          = ducted_fan_conditions.omega   
     alt            = conditions.freestream.altitude  
-    
+    altitude       = alt/ 1000 
     # Unpack ducted_fan blade parameters and operating conditions  
-    V              = conditions.freestream.velocity  
+    Vv             = conditions.frames.inertial.velocity_vector 
+    ctrl_pts       = len(Vv)
+
+     # Velocity in the rotor frame
+    T_body2inertial         = conditions.frames.body.transform_to_inertial
+    T_inertial2body         = orientation_transpose(T_body2inertial)
+    V_body                  = orientation_product(T_inertial2body,Vv)
+    body2thrust,orientation = ducted_fan.body_to_prop_vel(commanded_TV) 
+    T_body2thrust           = orientation_transpose(np.ones_like(T_body2inertial[:])*body2thrust)
+    V_thrust                = orientation_product(T_body2thrust,V_body)
+
+    # Check and correct for hover
+    V         = V_thrust[:,0,None]
+    V[V==0.0] = 1E-6
+
     n, D, J, Cp, Ct, eta_p  = compute_ducted_fan_efficiency(ducted_fan, V, omega)
-    ctrl_pts       = len(V)
-       
+    
     thrust              = Ct * rho * (n**2)*(D**4) 
     power               = Cp * rho * (n**3)*(D**5)           
-    thrust_vector       = np.zeros((ctrl_pts,3))
-    thrust_vector[:,0]  = thrust[:,0]            
+    thrust_prop_frame       = np.zeros((ctrl_pts,3))
+    thrust_prop_frame[:,0]  = thrust[:,0]       
+    thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)     
     torque              = power/omega
      
     # Compute moment 
