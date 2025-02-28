@@ -32,4 +32,5 @@ class Liquid_Hydrogen(Propellant):
         self.specific_energy            = 141.86e6                         # [J/kg] 
         self.energy_density             = 8491.0e6                         # [J/m^3] 
         self.stoichiometric_fuel_to_air = 0.0291 
-        self.temperatures.autoignition  = 845.15                           # [K]         
+        self.lower_heating_value        = 120E6                            # J/kg   
+        self.temperatures.autoignition  = 845.15                           # [K]       

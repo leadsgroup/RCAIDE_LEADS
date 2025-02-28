@@ -37,10 +37,6 @@ class Jet_A1(Propellant):
         self.energy_density            = 34692.6e6                        # J/m^3
         self.lower_heating_value       = 43.24e6                          # J/kg 
         self.max_mass_fraction         = Data({'Air' : 0.0633, 'O2' : 0.3022})  # kg propellant / kg oxidizer
-        self.temperatures.flash        = 311.15                           # K
-        self.temperatures.autoignition = 483.15                           # K
-        self.temperatures.freeze       = 226.15                           # K
-        self.temperatures.boiling      = 0.0                              # K 
 
    
         self.use_high_fidelity_kinetics_model      =  True 

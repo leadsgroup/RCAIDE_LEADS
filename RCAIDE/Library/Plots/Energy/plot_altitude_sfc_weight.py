@@ -103,7 +103,6 @@ def plot_altitude_sfc_weight(results,
         for network in results.segments[i].analyses.energy.vehicle.networks:   
             for j ,  propulsor in enumerate(network.propulsors):
                 eta = results.segments[i].conditions.energy[propulsor.tag].throttle[:,0]
-                eta = results.segments[i].conditions.energy[propulsor.tag].throttle[:,0]  
                 if j == 0 and i ==0: 
                     axis_1.plot(time, eta, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = propulsor.tag   )
                 else:
