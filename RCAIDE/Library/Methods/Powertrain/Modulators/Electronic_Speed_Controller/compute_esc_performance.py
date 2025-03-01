@@ -16,7 +16,6 @@ def compute_voltage_out_from_throttle(esc,esc_conditions,conditions):
         N/A
 
         Inputs:
-        conditions.energy.throttle     [0-1] 
         esc_conditions.inputs.voltage            [volts]
 
         Outputs:

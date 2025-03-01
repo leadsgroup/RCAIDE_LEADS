@@ -279,7 +279,7 @@ def vehicle_setup(new_regression=True):
     prop_rotor.append_airfoil(airfoil)                
     prop_rotor.airfoil_polar_stations             = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
     current_dir = os.path.abspath(os.path.dirname(__file__))
-    test_dir = os.path.abspath(os.path.join(current_dir, '../Tests/mission_segments'))
+    test_dir = os.path.abspath(os.path.join(current_dir, '..' + separator + 'Tests' + separator + 'mission_segments'))
     
     if new_regression:
         design_prop_rotor(prop_rotor)

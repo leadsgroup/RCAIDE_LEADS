@@ -178,9 +178,6 @@ def wake_convergence(rotor,wake_inputs):
 
     PSI_final,infodict,ier,msg = sp.optimize.fsolve(iteration,PSI,args=(wake_inputs,rotor),xtol=rotor.sol_tolerance,full_output = 1,band=(1,0))
     
-    if ier!=1:
-        print("Rotor BEVW did not converge to a solution (Stall)")
-    
     # Calculate the velocities given PSI
     va, vt = va_vt(PSI_final, wake_inputs, rotor)
 

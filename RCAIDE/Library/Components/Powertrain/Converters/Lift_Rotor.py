@@ -30,10 +30,7 @@ class Lift_Rotor(Rotor):
         Default is [0., π/2, 0.] for Z-direction thrust up in vehicle frame.
         
     use_2d_analysis : bool
-        Flag for using 2D aerodynamic analysis. Default is False.
-        
-    variable_pitch : bool
-        Flag indicating if rotor has variable pitch capability. Default is False.
+        Flag for using 2D aerodynamic analysis. Default is False. 
         
     hover : Data
         Hover performance parameters
@@ -169,8 +166,7 @@ class Lift_Rotor(Rotor):
 
         self.tag                              = 'lift_rotor'
         self.orientation_euler_angles         = [0.,np.pi/2.,0.] # This is Z-direction thrust up in vehicle frame
-        self.use_2d_analysis                  = False
-        self.variable_pitch                   = False 
+        self.use_2d_analysis                  = False 
 
         self.hover                            = Data()    
         self.hover.design_thrust              = None

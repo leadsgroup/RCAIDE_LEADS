@@ -19,28 +19,29 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 #  Operating Test Conditions Set-up
 # ---------------------------------------------------------------------------------------------------------------------- 
-def setup_operating_conditions(compoment, altitude = 0,velocity_vector=np.array([[10, 0, 0]])):
+def setup_operating_conditions(compoment, altitude = 0,velocity_range = np.array([10]), angle_of_attack = 0):
     '''
     Set up operating conditions 
     
-    ''' 
+    '''
+    
+    ctrl_pts  = len(velocity_range)
         
     planet                                            = RCAIDE.Library.Attributes.Planets.Earth()
     working_fluid                                     = RCAIDE.Library.Attributes.Gases.Air()
     atmosphere_sls                                    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmo_data                                         = atmosphere_sls.compute_values(0.0,0.0)
+    atmo_data                                         = atmosphere_sls.compute_values(altitude,0.0)
                                                       
     p                                                 = atmo_data.pressure          
     T                                                 = atmo_data.temperature       
     rho                                               = atmo_data.density          
     a                                                 = atmo_data.speed_of_sound    
     mu                                                = atmo_data.dynamic_viscosity
-     
-    speed                                             =  np.linalg.norm(velocity_vector, axis =1) 
+      
                                                       
     conditions                                        = Results() 
     conditions.freestream.altitude                    = np.atleast_2d(altitude)
-    conditions.freestream.mach_number                 = np.atleast_2d(speed/a)
+    conditions.freestream.mach_number                 = np.atleast_2d(velocity_range/a)
     conditions.freestream.pressure                    = np.atleast_2d(p)
     conditions.freestream.temperature                 = np.atleast_2d(T)
     conditions.freestream.density                     = np.atleast_2d(rho)
@@ -50,13 +51,12 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_vector=np.array(
     conditions.freestream.Cp                          = np.atleast_2d(working_fluid.compute_cp(T,p))
     conditions.freestream.R                           = np.atleast_2d(working_fluid.gas_specific_constant)
     conditions.freestream.speed_of_sound              = np.atleast_2d(a)
-    conditions.freestream.velocity                    = velocity_vector 
-    
-    AoA =  np.arctan(velocity_vector[0, 2] / velocity_vector[0, 0]) 
-    conditions.frames.body.inertial_rotations        =  np.array([[0, AoA, 0]]) 
-    conditions.static_stability.roll_rate            =  np.array([[0]])  
-    conditions.static_stability.pitch_rate           =  np.array([[0]])
-    conditions.static_stability.yaw_rate             =  np.array([[0]]) 
+    conditions._size = ctrl_pts
+    conditions.expand_rows(ctrl_pts)
+     
+    conditions.freestream.velocity                    = np.atleast_2d(velocity_range) 
+    conditions.frames.body.inertial_rotations[:, 1]   = angle_of_attack
+    conditions.frames.inertial.velocity_vector[:, 0]  = np.atleast_2d(velocity_range)
 
     # setup conditions   
     segment                                          = RCAIDE.Framework.Mission.Segments.Segment()  
@@ -73,6 +73,7 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_vector=np.array(
         segment.state.conditions.energy[distributor.tag] = Conditions() 
         segment.state.conditions.noise[distributor.tag]  = Conditions()    
         propulsor.append_propulsor_unknowns_and_residuals(segment)
+        
         
                 
     elif type(compoment) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor: 
@@ -95,6 +96,7 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_vector=np.array(
         segment.state.conditions.energy[distributor.tag] = Conditions() 
         segment.state.conditions.noise[distributor.tag]  = Conditions()    
         propulsor.append_propulsor_unknowns_and_residuals(segment)
+       
         
         
     elif isinstance(compoment,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator):
@@ -128,8 +130,9 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_vector=np.array(
         segment.state.conditions.energy[distributor.tag] = Conditions() 
         segment.state.conditions.noise[distributor.tag]  = Conditions()    
         propulsor.append_propulsor_unknowns_and_residuals(segment)
-         
-    return segment.state , propulsor.tag
+
+    segment.state.conditions.expand_rows(ctrl_pts)              
+    return segment.state , propulsor 
  
     
     

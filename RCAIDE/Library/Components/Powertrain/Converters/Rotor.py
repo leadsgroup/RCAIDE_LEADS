@@ -227,8 +227,7 @@ class Rotor(Component):
         self.tangential_velocities_2d          = None        # user input for additional velocity influences at the rotor
         self.radial_velocities_2d              = None        # user input for additional velocity influences at the rotor 
         self.start_angle                       = 0.0         # angle of first blade from vertical
-        self.start_angle_idx                   = 0           # azimuthal index at which the blade is started 
-        self.variable_pitch                    = False
+        self.start_angle_idx                   = 0           # azimuthal index at which the blade is started  
         self.electric_propulsion_fraction      = 1.0
  
         # blade optimization parameters     

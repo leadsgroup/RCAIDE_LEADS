@@ -626,10 +626,12 @@ def vehicle_setup(new_regression=True) :
                                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
     lift_rotor.append_airfoil(airfoil)                         
     lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
-    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../Tests/analysis_weights'))
+    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..' + separator + 'Tests' + separator + 'analysis_weights'))
     
     if new_regression:
         design_lift_rotor(lift_rotor)
+
+
         save_rotor(lift_rotor, os.path.join(test_dir, 'stopped_rotor_geometry.res'))
     else:
         regression_lift_rotor = deepcopy(lift_rotor)

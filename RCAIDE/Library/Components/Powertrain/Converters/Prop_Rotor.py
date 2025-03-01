@@ -27,10 +27,7 @@ class Prop_Rotor(Rotor):
         Default is [0., 0., 0.] for X-direction thrust in vehicle frame.
         
     use_2d_analysis : bool
-        Flag for using 2D aerodynamic analysis. Default is False.
-        
-    variable_pitch : bool
-        Flag indicating if rotor has variable pitch capability. Default is True.
+        Flag for using 2D aerodynamic analysis. Default is False. 
         
     hover : Data
         Hover mode performance parameters
@@ -147,8 +144,7 @@ class Prop_Rotor(Rotor):
 
         self.tag                                 = 'prop_rotor'
         self.orientation_euler_angles            = [0.,0.,0.] # This is X-direction thrust in vehicle frame
-        self.use_2d_analysis                     = False       
-        self.variable_pitch                      = True 
+        self.use_2d_analysis                     = False    
         
         self.hover                               = Data()
         self.hover.design_thrust                 = None

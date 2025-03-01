@@ -13,6 +13,7 @@ from RCAIDE.Library.Methods.Aerodynamics.Common.Lift    import compute_airfoil_a
 # package imports
 import  numpy as  np 
 from scipy.interpolate import interp1d
+from scipy.optimize import minimize 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  BEMT_Helmholtz_performance
@@ -30,6 +31,8 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
     eta                   = rotor_conditions.throttle 
     omega                 = rotor_conditions.omega
     pitch_c               = rotor_conditions.pitch_command
+    optimize_blade_pitch  = rotor_conditions.optimize_blade_pitch
+    design_flag           = rotor_conditions.design_flag
     B                     = rotor.number_of_blades
     R                     = rotor.tip_radius
     beta_0                = rotor.twist_distribution
@@ -41,32 +44,24 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
     airfoils              = rotor.airfoils 
     Na                    = rotor.number_azimuthal_stations
     nonuniform_freestream = rotor.nonuniform_freestream
-    use_2d_analysis       = rotor.use_2d_analysis 
-
-    # Check for variable pitch
-    if np.any(pitch_c !=0) and not rotor.variable_pitch:
-        print("Warning: pitch commanded for a fixed-pitch rotor. Changing to variable pitch rotor for weights analysis.")
-        rotor.variable_pitch = True
-
+    use_2d_analysis       = rotor.use_2d_analysis
+ 
     # Unpack freestream conditions
     rho     = conditions.freestream.density[:,0,None]
     mu      = conditions.freestream.dynamic_viscosity[:,0,None]
     a       = conditions.freestream.speed_of_sound[:,0,None]
     T       = conditions.freestream.temperature[:,0,None]
     Vv      = conditions.frames.inertial.velocity_vector
+    alt     = conditions.freestream.altitude
     nu      = mu/rho
-    rho_0   = rho
-    T_0     = T
+    rho_0   = rho 
 
     # Number of radial stations and segment control points
     Nr       = len(c)
     ctrl_pts = len(Vv)
     
     # Helpful shorthands
-    pi      = np.pi
-
-    # Calculate total blade pitch
-    total_blade_pitch = beta_0 + pitch_c
+    pi      = np.pi 
 
     # Velocity in the rotor frame
     T_body2inertial         = conditions.frames.body.transform_to_inertial
@@ -78,7 +73,7 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
 
     # Check and correct for hover
     V         = V_thrust[:,0,None]
-    V[V==0.0] = 1E-6
+    V[V==0.0] = 1E-6 
 
     # Non-dimensional radial distribution and differential radius
     chi           = r_1d/R
@@ -105,6 +100,13 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
     psi_2d         = np.tile(np.atleast_2d(psi),(Nr,1))
     psi_2d         = np.repeat(psi_2d[None, :, :], ctrl_pts, axis=0)
 
+    ## Calculate total blade pitch 
+    #if optimize_blade_pitch and design_flag == False:
+        #J       = V/(n*2 *R)  
+        #pitch_c = compute_optimal_pitch(rotor,J,alt)
+        #rotor_conditions.pitch_command = pitch_c
+    total_blade_pitch = beta_0 + pitch_c
+    
     # apply blade sweep to azimuthal position
     if np.any(np.array([sweep])!=0):
         use_2d_analysis     = True
@@ -141,6 +143,8 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
         ua +=  np.zeros_like(ut)
         
 
+    
+    
     # Include external velocities introduced by user
     if nonuniform_freestream:
         use_2d_analysis   = True
@@ -339,12 +343,14 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
     Cp[omega==0.0]             = 0.0
     etap[omega==0.0]           = 0.
     
+
     
     thrust[eta[:,0]  <=0.0]    = 0.0
     power[eta[:,0]  <=0.0]     = 0.0
-    torque[eta[:,0]  <=0.0]    = 0.0 
+    torque[eta[:,0]  <=0.0]    = 0.0  
     power[eta>1.0]             = power[eta>1.0]*eta[eta>1.0]
     thrust[eta[:,0]>1.0,:]     = thrust[eta[:,0]>1.0,:]*eta[eta[:,0]>1.0,:]
+    etap[thrust[:,0]  <=0.0]   = 0.0
 
     disc_loading           = thrust/(np.pi*(R**2))
     power_loading          = thrust/(power)
@@ -368,12 +374,15 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
                 power                             = power,
                 moment                            = moment,
                 azimuthal_distribution            = psi, 
+                optimize_blade_pitch              = optimize_blade_pitch, 
+                design_flag                       = design_flag,             
                 rpm                               = omega /Units.rpm ,   
                 tip_mach                          = omega * R / conditions.freestream.speed_of_sound, 
                 efficiency                        = etap,         
                 number_radial_stations            = Nr,
                 orientation                       = orientation,  
                 number_azimuthal_stations         = Na,
+                advance_ratio                     = V/(n*D), 
                 disc_radial_distribution          = r_dim_2d,
                 speed_of_sound                    = conditions.freestream.speed_of_sound,
                 density                           = conditions.freestream.density,
@@ -423,3 +432,31 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
         )  
 
     return outputs
+
+
+#def compute_optimal_pitch(rotor,J,alt): 
+     
+    ## design properties of the motor 
+    #sur    = rotor.efficiency_surrogate 
+    
+    ## define optimizer bounds 
+    #beta_lower_bound  = -30 *Units.degree  
+    #beta_upper_bound  =  30 *Units.degree
+    #beta   =  np.zeros_like(J)
+    
+    #for i in  range(len(J)):  
+        #bnds       = [(beta_lower_bound, beta_upper_bound)]
+        
+        ## try hard constraints to find optimum motor parameters
+        #sol = minimize(objective, [0], args=(sur, J[i], alt[i]) ,bounds=bnds, method='SLSQP', tol=1e-6,) 
+          
+        #beta[i] =  sol.x 
+    #return beta  
+   
+#def objective(x,sur, J_i, alt_i):
+    #pts  = np.hstack((J_i,alt_i,x)) 
+    #eta =  sur(pts)
+    
+    #res =  1 - eta 
+    #return res 
+       
