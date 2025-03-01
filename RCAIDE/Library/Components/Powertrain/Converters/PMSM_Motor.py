@@ -114,7 +114,7 @@ class PMSM_Motor(Converter):
 
         # Input data from Assumptions
         self.resistance                    = 0.002                       # [Ω]            resistance
-        self.motor_stack_length            = 11.40                       # [m]            (It should be around 0.14 m) motor stack length 
+        self.motor_stack_length            = 0.1140                      # [m]            (It should be around 0.14 m) motor stack length 
         self.number_of_turns               = 80                          # [-]            number of turns  
         self.length_of_path                = 0.4                         # [m]            length of the path  
         self.mu_0                          = 1.256637061e-6              # [N/A**2]       permeability of free space
