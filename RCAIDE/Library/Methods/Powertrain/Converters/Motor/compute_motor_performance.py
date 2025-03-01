@@ -69,16 +69,16 @@ def compute_motor_performance(motor,motor_conditions,conditions):
 
         I              = motor_conditions.current
         V              = motor_conditions.voltage
-        I_turn         = I/motor.number_of_turns                                                         # [A]            current in each turn
-        omega          = motor.speed_constant*(V - I*Res)* (2 * np.pi / 60)                # [RPM -> rad/s] rotor angular velocity
-        A              = np.pi * ((motor.stator_outer_diameter**2 - motor.stator_inner_diameter**2) / 4)                    # [m**2]         cross-sectional area of the reluctance path perpendicular to length 𝑙    
-        MMF_coil       = motor.number_of_turns*I_turn                                                    # [A*turns]      magnetomotive force applied to the reluctance path for a coil (Eq.14)  
-        R              = motor.length_of_path/(A*motor.mu_0*motor.mu_r)                                 # [A*turn/Wb]    reluctance of a given path or given reluctant element (Eq.16) 
-        phi            = MMF_coil/R                                                        # [Wb]           magnetic flux through the reluctance path (Eq.12)
-        B_sign         = phi/A                                                             # [V*s/m**2]     ranges from 0.5 to 1.2, average magnitude of the radial flux density produced by the rotor
-        A_sign         = (motor.winding_factor*I)/(np.pi*motor.stator_inner_diameter)                                  # [-]            stator electrical loading (Eq.2)        
-        TQ             = (np.pi/2)*(B_sign*A_sign)*(motor.stator_inner_diameter**2)*motor.motor_stack_length                 # [Nm]           torque (Eq.1)
-        P              = omega*TQ/1000                                                     # [kW]           power (Eq.1)  
+        I_turn         = I/motor.number_of_turns                                               # [A]            current in each turn
+        omega          = motor.speed_constant*(V - I*Res)* (2 * np.pi / 60)                    # [RPM -> rad/s] rotor angular velocity
+        A              = np.pi * ((motor.stator_outer_diameter**2 - motor.stator_inner_diameter**2) / 4) # [m**2]         cross-sectional area of the reluctance path perpendicular to length 𝑙    
+        MMF_coil       = motor.number_of_turns*I_turn                                          # [A*turns]      magnetomotive force applied to the reluctance path for a coil (Eq.14)  
+        R              = motor.length_of_path/(A*motor.mu_0*motor.mu_r)                        # [A*turn/Wb]    reluctance of a given path or given reluctant element (Eq.16) 
+        phi            = MMF_coil/R                                                            # [Wb]           magnetic flux through the reluctance path (Eq.12)
+        B_sign         = 100*phi/A                                                             # [V*s/m**2]     ranges from 0.5 to 1.2, average magnitude of the radial flux density produced by the rotor
+        A_sign         = (motor.winding_factor*I)/(np.pi*motor.stator_inner_diameter)          # [-]            stator electrical loading (Eq.2)        
+        TQ             = (np.pi/2)*(B_sign*A_sign)*(motor.stator_inner_diameter**2)*motor.motor_stack_length # [Nm]           torque (Eq.1)
+        P              = omega*TQ/1000                                                         # [kW]           power (Eq.1)  
         
         A              = np.pi * ((motor.stator_outer_diameter**2 - motor.stator_inner_diameter**2) / 4)                    # [m**2]         cross-sectional area of the reluctance path perpendicular to length 𝑙    
         R_cond_path    = motor.length_of_conductive_path/(motor.thermal_conductivity*A)                                     # [K/W]          Conductive Path Thermal Resistance (Eq.68)
