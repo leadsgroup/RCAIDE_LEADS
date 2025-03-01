@@ -47,7 +47,7 @@ class Hybrid(Network):
             N/A
         """           
 
-        self.tag                          = 'hybrid'
+        self.tag                          ='hybrid'
         self.reverse_thrust               = False
         self.wing_mounted                 = True   
         self.system_voltage               = None
@@ -82,8 +82,11 @@ class Hybrid(Network):
         cryogen_mdot      = 0. * state.ones_row(1)  
         reverse_thrust    = network.reverse_thrust
 
+        stored_results_flag  = False
+        stored_propulsor_tag = None         
+
         # ----------------------------------------------------------       
-        # 1.1 Fuel Propulsors 
+        # 1.0 Propulsors 
         # ----------------------------------------------------------       
         for fuel_line in fuel_lines:
             for propulsor_group in fuel_line.assigned_propulsors:
@@ -109,12 +112,8 @@ class Hybrid(Network):
                         # compute total mass flow rate 
                         fuel_mdot     += conditions.energy[propulsor.tag].fuel_flow_rate
                         
-        # ----------------------------------------------------------       
-        # 1.2 Electric Propulsors 
-        # ----------------------------------------------------------
-        for bus in busses:
-            T               = 0. * state.ones_row(1) 
-            M               = 0. * state.ones_row(1)  
+       
+        for bus in busses:  
             bus_conditions  = state.conditions.energy[bus.tag]
             avionics        = bus.avionics
             payload         = bus.payload  
@@ -136,10 +135,7 @@ class Hybrid(Network):
                 bus_conditions.power_draw         -= charging_power/bus.efficiency
                 bus_conditions.current_draw       = -bus_conditions.power_draw/bus.voltage
 
-            else:       
-                # compute energy consumption of each electrochemical energy source on bus 
-                stored_results_flag  = False
-                stored_propulsor_tag = None 
+            else:
                 for propulsor_group in bus.assigned_propulsors:
                     for propulsor_tag in propulsor_group:
                         propulsor =  network.propulsors[propulsor_tag]
@@ -164,20 +160,17 @@ class Hybrid(Network):
                 bus_conditions.power_draw        -= charging_power/bus.efficiency
                 bus_conditions.current_draw       = bus_conditions.power_draw/bus_voltage 
                 total_elec_power                 += bus_conditions.power_draw  
-
-            
-        phi   = state.conditions.energy.hybrid_power_split_ratio
-
+             
         # ------------------------------------------------------------------------------------------------------------------- 
-        # 2.0 Fuel Power Sources 
-        # -------------------------------------------------------------------------------------------------------------------           
-        for fuel_line in fuel_lines:
-    
-            # ------------------------------------------------------------------------------------------------------------------- 
-            # 2.1 Turboelectric Generator - Interatively guess fuel flow that provides required power from generator  
-            # -------------------------------------------------------------------------------------------------------------------
-
+        # 2.0 Converters
+        # ------------------------------------------------------------------------------------------------------------------- 
+        phi   = state.conditions.energy.hybrid_power_split_ratio 
+        for fuel_line in fuel_lines:  
             for converter in fuel_line.converters:
+    
+                # ------------------------------------------------------------------------------------------------------------------- 
+                # 2.1 Turboelectric Generator - Interatively guess fuel flow that provides required power from generator  
+                # -------------------------------------------------------------------------------------------------------------------                
                 if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator) and (converter.active and fuel_line.active):
                     
                     power_elec           = total_elec_power*(1 - phi)  
@@ -203,15 +196,13 @@ class Hybrid(Network):
                         stored_results_flag = False 
                         throttle  += alpha*(diff_target_power)  
     
-            # update mass flow rate 
-            fuel_mdot += fuel_mdot_var
+                    # update mass flow rate 
+                    fuel_mdot += fuel_mdot_var
             
     
-            # ------------------------------------------------------------------------------------------------------------------- 
-            # 2.2 Turboelectric Shaft - Interatively guess fuel flow that provides required power  
-            # ------------------------------------------------------------------------------------------------------------------- 
-    
-            for converter in fuel_line.converters:
+                # ------------------------------------------------------------------------------------------------------------------- 
+                # 2.2 Turboelectric Shaft - Interatively guess fuel flow that provides required power  
+                # -------------------------------------------------------------------------------------------------------------------  
                 if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft) and (converter.active and fuel_line.active): 
                     alpha                = 1E-7
                     throttle             = 0.5*state.ones_row(1) 
@@ -236,18 +227,18 @@ class Hybrid(Network):
                         stored_results_flag = False 
                         throttle  += alpha*(diff_target_power)
                  
-            # update mass flow rate 
-            fuel_mdot += fuel_mdot_var            
+                    # update mass flow rate 
+                    fuel_mdot += fuel_mdot_var            
              
-            # ----------------------------------------------------------        
-            # 2.3 Determine cumulative fuel flow from each fuel tank  
-            # ----------------------------------------------------------     
+                 
+                          
+        # ----------------------------------------------------------        
+        # 3.0 Sources
+        # ----------------------------------------------------------
+        for fuel_line in fuel_lines:     
             for fuel_tank in fuel_line.fuel_tanks:  
                 conditions.energy[fuel_line.tag][fuel_tank.tag].mass_flow_rate  += fuel_tank.fuel_selector_ratio*fuel_mdot + fuel_tank.secondary_fuel_flow
-                        
-        # ----------------------------------------------------------        
-        # 3.0 Electro-chemical energy compoments   
-        # ----------------------------------------------------------
+                   
         time               = state.conditions.frames.inertial.time[:,0] 
         delta_t            = np.diff(time)
         total_mdot         += fuel_mdot 
@@ -311,8 +302,7 @@ class Hybrid(Network):
                 fuel_tank_mdot = cryogenic_tank.croygen_selector_ratio*cryogen_mdot + cryogenic_tank.secondary_cryogenic_flow 
                 
                 # Step 5.2: DStore mass flow results 
-                conditions.energy[bus.tag][cryogenic_tank.tag].mass_flow_rate  = fuel_tank_mdot
-                
+                conditions.energy[bus.tag][cryogenic_tank.tag].mass_flow_rate  = fuel_tank_mdot 
                                  
         if reverse_thrust ==  True:
             total_thrust =  total_thrust * -1     
@@ -345,8 +335,7 @@ class Hybrid(Network):
         N/A
         """            
          
-        unknowns(segment)
-        
+        unknowns(segment) 
         if issubclass(type(segment), type(RCAIDE.Framework.Mission.Segments.Ground)):
             pass 
         for network in segment.analyses.energy.vehicle.networks:
@@ -382,8 +371,7 @@ class Hybrid(Network):
    
            Properties Used: 
            N/A
-       """           
- 
+       """         
         for network in segment.analyses.energy.vehicle.networks:
             for fuel_line_i, fuel_line in enumerate(network.fuel_lines):    
                 if fuel_line.active:
