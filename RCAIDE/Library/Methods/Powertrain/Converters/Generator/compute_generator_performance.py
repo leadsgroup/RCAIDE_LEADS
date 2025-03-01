@@ -57,46 +57,48 @@ def compute_generator_performance(generator,generator_conditions,conditions):
     G     = generator.gearbox_ratio    
      
     if type(generator) == RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:  
-        omeg  = generator_conditions.inputs.omega*G
+        omega  = generator_conditions.inputs.omega*G
         power = generator_conditions.inputs.shaft_power 
         fidelity = "Simple_DC_Electric_Machine" 
     elif type(generator) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator:  
-        omeg  = generator_conditions.inputs.omega*G
+        omega  = generator_conditions.inputs.omega*G
         power = generator_conditions.inputs.shaft_power 
         fidelity = "PMSM_Electric_Machine" 
     elif (type(generator) ==  RCAIDE.Library.Components.Powertrain.Converters.DC_Motor):
-        omeg  = generator_conditions.outputs.omega*G
+        omega  = generator_conditions.outputs.omega*G
         power = generator_conditions.outputs.shaft_power
         fidelity = "Simple_DC_Electric_Machine"
     elif (type(generator) ==  RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
-        omeg  = generator_conditions.outputs.omega*G
+        omega  = generator_conditions.outputs.omega*G
         power = generator_conditions.outputs.shaft_power
         fidelity = "PMSM_Electric_Machine"
         
     if fidelity == 'Simple_DC_Electric_Machine':
-        # Unpack  
-        Res   = generator.resistance 
-
-        # Unpack
+        Res   = generator.resistance  
         Kv    = generator.speed_constant
         Res   = generator.resistance
+        G     = generator.gear_ratio
         etaG  = generator.gearbox_efficiency
         exp_i = generator.expected_current
-        io    = generator.no_load_current + exp_i*(1-etaG)
-
+        io    = generator.no_load_current + exp_i*(1-etaG) 
         v     = generator_conditions.voltage
-         
-        i= (omeg/Kv - v)/Res 
-        i[i < 0.0] = 0.0
-    
-        etam=(1-io/i)*(1-i*Res/v)
+        
+        if generator.mode == "forward":   
+            i = (omega/Kv - v)/Res  
+            Q = power / omega
+        elif generator.mode == 'reverse':
+            P_elec = generator_conditions.outputs.power
+            i      = P_elec /v
+            Q      = ((v-omega /Kv)/Res -io)/Kv  
+            omega  = (v - (Res * i)) * Kv / G 
+            generator_conditions.inputs.shaft_power = Q * omega
 
-        Q     = power / omeg 
+        etam=(1-io/i)*(1-i*Res/v)             
 
     elif fidelity == 'PMSM_Electric_Machine':
 
         Kv    = generator.speed_constant                          # [rpm/V]        speed constant
-        omega = omeg*60/(2*np.pi)                      # [rad/s -> rpm] nominal speed
+        omega = omega*60/(2*np.pi)                                # [rad/s -> rpm] nominal speed
         D_in  = generator.inner_diameter                          # [m]            stator inner diameter  
     
         # Input data from Literature

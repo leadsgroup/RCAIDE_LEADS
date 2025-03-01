@@ -79,50 +79,50 @@ def compute_power(turboshaft,turboshaft_conditions,conditions):
     LHV                                        = fuel_type.lower_heating_value                                                                        
     gamma                                      = conditions.freestream.isentropic_expansion_factor                                                      
     a0                                         = conditions.freestream.speed_of_sound                                                                   
-    M0                                         = conditions.freestream.mach_number                                                                                # Source [2]
+    M0                                         = conditions.freestream.mach_number                        
     total_temperature_reference                = turboshaft_conditions.total_temperature_reference                                                          
-    total_pressure_reference                   = turboshaft_conditions.total_pressure_reference                                                             # Source [1]
-    eta_c                                      = turboshaft.conversion_efficiency                                                                       # Source [2]
+    total_pressure_reference                   = turboshaft_conditions.total_pressure_reference                                                            
+    Power                                      = turboshaft_conditions.shaft_power                                                           
+    eta_c                                      = turboshaft.conversion_efficiency
+    mode                                       = turboshaft.mode
                                                                                                                                                         
     #unpacking from turboshaft                                                                                                                          
-    Tref                                       = turboshaft.reference_temperature                                                                       # Source [1]
+    Tref                                       = turboshaft.reference_temperature                                                                   
     Pref                                       = turboshaft.reference_pressure                                                            
-    Cp                                         = working_fluid.compute_cp(total_temperature_reference,total_pressure_reference)                                                                          # Source [1]
+    Cp                                         = working_fluid.compute_cp(total_temperature_reference,total_pressure_reference)                                                             
     Tt4                                        = turboshaft_conditions.combustor_stagnation_temperature                                                    
     pi_c                                       = turboshaft.compressor.pressure_ratio                                                                   
-    m_dot_compressor                           = turboshaft.compressor.mass_flow_rate                                                                   # Source [2]
+    m_dot_compressor                           = turboshaft.compressor.mass_flow_rate                                                                 
                                                                                                                                                         
     tau_lambda                                 = Tt4/total_temperature_reference                                                                        
     tau_r                                      = 1 + ((gamma - 1)/2)*M0**2                                                                              
     tau_c                                      = pi_c**((gamma - 1)/gamma)                                                                              
-    tau_t                                      = (1/(tau_r*tau_c)) + ((gamma - 1)*M0**2)/(2*tau_lambda*eta_c**2)                                                                   # Source [1]
-    tau_tH                                     = 1 - (tau_r/tau_lambda)*(tau_c - 1)                                                                    # Source [2]
-    tau_tL                                     = tau_t/tau_tH                                                                                             # Source [1] Page 335
-    x                                          = tau_t*tau_r*tau_c                                                                                       # Source [1]    
+    tau_t                                      = (1/(tau_r*tau_c)) + ((gamma - 1)*M0**2)/(2*tau_lambda*eta_c**2)                                      
+    tau_tH                                     = 1 - (tau_r/tau_lambda)*(tau_c - 1)                                                                   
+    tau_tL                                     = tau_t/tau_tH                                                                                         
+    x                                          = tau_t*tau_r*tau_c                                                                                    
 
-    #Computing Specifc Thrust
-    Tsp                                        = a0*(((2/(gamma - 1))*(tau_lambda/(tau_r*tau_c))*(tau_r*tau_c*tau_t - 1))**eta_c - M0)                  # Source [2]
-    
-    #computing the core mass flow              
-    m_dot_air                                  = m_dot_compressor*turboshaft_conditions.throttle*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)             # Source [1]
-    
-    #Computing Specifc Power                          # Source [1] 
-    Psp                                        =  Cp*total_temperature_reference*tau_lambda*tau_tH*(1 - tau_tL)*eta_c                                   # Source [2]    
-    
-    #Computing Power 
-    Power                                      = Psp*m_dot_air                                                             # Source [2]
-
+    # Computing Specifc Thrust and Power 
+    Tsp                                        = a0*(((2/(gamma - 1))*(tau_lambda/(tau_r*tau_c))*(tau_r*tau_c*tau_t - 1))**eta_c - M0)                
+    Psp                                        =  Cp*total_temperature_reference*tau_lambda*tau_tH*(1 - tau_tL)*eta_c     
+        
+    if mode == 'forward':              
+        m_dot_air   = m_dot_compressor*turboshaft_conditions.throttle*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)     
+        Power       = Psp*m_dot_air
+    elif mode ==  'reverse':
+        m_dot_air = Power / Psp
+        turboshaft_conditions.throttle =  m_dot_air / (m_dot_compressor*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref) )
+         
     #fuel to air ratio
-    f                                          = (Cp*total_temperature_reference/LHV)*(tau_lambda - tau_r*tau_c)                                                                               # Source [1]
+    f                                          = (Cp*total_temperature_reference/LHV)*(tau_lambda - tau_r*tau_c)                                                                              
     fuel_flow_rate                             = f*m_dot_air
     
     #Computing the PSFC                        
-    PSFC                                       = f/Psp                                                                                                     # Source [1]  
+    PSFC                                       = f/Psp                                                                                                
     
     #Computing the thermal efficiency                       
-    eta_T                                      = 1 - (tau_r*(tau_c - 1))/(tau_lambda*(1 - x/(tau_r*tau_c)))    
-    
-    turboshaft.angular_velocity                = turboshaft.design_angular_velocity*turboshaft_conditions.throttle                                 # Source [1]    
+    eta_T                                      = 1 - (tau_r*(tau_c - 1))/(tau_lambda*(1 - x/(tau_r*tau_c)))   
+    turboshaft.angular_velocity                = turboshaft.design_angular_velocity*turboshaft_conditions.throttle                               
 
     #pack outputs
     turboshaft_conditions.power_specific_fuel_consumption   = PSFC

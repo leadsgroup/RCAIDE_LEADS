@@ -168,70 +168,20 @@ class Hybrid(Network):
         phi   = state.conditions.energy.hybrid_power_split_ratio 
         for fuel_line in fuel_lines:  
             for converter in converters:
-    
-                # ------------------------------------------------------------------------------------------------------------------- 
-                # 2.1 Turboelectric Generator - Interatively guess fuel flow that provides required power from generator  
-                # -------------------------------------------------------------------------------------------------------------------                
-                if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator) and (converter.active and fuel_line.active):
-                    
-                    power_elec           = total_elec_power*(1 - phi)  
-                    alpha                = 1E-7
-                    throttle             = 0.5*state.ones_row(1)  
-                    stored_results_flag  = False
-                    stored_propulsor_tag = None  
-                    diff_target_power    = 100
-                    
-                    while np.any(np.abs(diff_target_power) > 1E-8): 
-                        power_elec_guess  = 0. * state.ones_row(1)  
-                        fuel_mdot_var    = 0. * state.ones_row(1)
-                
-                        state.conditions.energy[converter.tag].throttle = throttle 
-                        P_mech, P_elec, stored_results_flag,stored_propulsor_tag = converter.compute_performance(state,fuel_line,bus) 
-    
-                        power_elec_guess += P_elec 
-    
-                        # compute total mass flow rate 
-                        fuel_mdot_var  += conditions.energy[converter.tag].turboshaft.fuel_flow_rate 
-    
-                        diff_target_power = power_elec - power_elec_guess  
-                        stored_results_flag = False 
-                        throttle  += alpha*(diff_target_power)  
-    
-                    # update mass flow rate 
-                    fuel_mdot += fuel_mdot_var
-            
-    
-                # ------------------------------------------------------------------------------------------------------------------- 
-                # 2.2 Turboelectric Shaft - Interatively guess fuel flow that provides required power  
-                # -------------------------------------------------------------------------------------------------------------------  
-                if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft) and (converter.active and fuel_line.active): 
-                    alpha                = 1E-7
-                    throttle             = 0.5*state.ones_row(1) 
-                    power_mech           = total_mech_power*(1 - phi)  
-                    stored_results_flag  = False
-                    stored_propulsor_tag = None
-                     
-                    # Step 2.1: Compute thrust,moment and power of propulsors 
-                    diff_target_power = 100
-                    while np.any(np.abs(diff_target_power) > 1E-8): 
-                        power_mech_guess   = 0. * state.ones_row(1)   
-                        fuel_mdot_var      = 0. * state.ones_row(1) 
-                        state.conditions.energy[converter.tag].throttle = throttle 
-                        P_mech,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state) 
-                         
-                        power_mech_guess  += P_mech  
-    
-                        # compute total mass flow rate 
-                        fuel_mdot_var  += conditions.energy[converter.tag].turboshaft.fuel_flow_rate 
-        
-                        diff_target_power = power_mech - power_mech_guess 
-                        stored_results_flag = False 
-                        throttle  += alpha*(diff_target_power)
-                 
-                    # update mass flow rate 
-                    fuel_mdot += fuel_mdot_var            
-             
-                 
+                converter.mode = "reverse" 
+                # 2.1 Turboelectric Generator - Interatively guess fuel flow that provides required power from generator                 
+                if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator) and (converter.active and fuel_line.active): 
+                    generator             = converter.generator   
+                    state.conditions.energy[converter.tag][generator.tag].outputs.power  =  total_elec_power*(1 - phi) 
+                    P_mech, P_elec, stored_results_flag,stored_propulsor_tag = converter.compute_performance(state,fuel_line,bus)  
+                    fuel_mdot += conditions.energy[converter.tag].turboshaft.fuel_flow_rate  
+     
+                # 2.2 Turboelectric Shaft - Interatively guess fuel flow that provides required power   
+                if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft) and (converter.active and fuel_line.active):  
+                    power_mech           = total_mech_power*(1 - phi)   
+                    state.conditions.energy[converter.tag].shaft_power = power_mech 
+                    P_mech,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state)   
+                    fuel_mdot  += conditions.energy[converter.tag].turboshaft.fuel_flow_rate   
                           
         # ----------------------------------------------------------        
         # 3.0 Sources

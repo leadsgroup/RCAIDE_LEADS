@@ -41,20 +41,29 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
     N.A.        
     '''
 
-    conditions        = state.conditions
-    generator         = turboelectric_generator.generator
-    turboshaft        = turboelectric_generator.turboshaft # check if there are more than one turboshaft
-
+    conditions                         = state.conditions
+    generator                          = turboelectric_generator.generator
+    turboshaft                         = turboelectric_generator.turboshaft
+    turboshaft.mode                    = turboelectric_generator.mode
     turboelectric_generator_conditions = conditions.energy[turboelectric_generator.tag] 
-    turboelectric_generator_conditions[turboshaft.tag].throttle = turboelectric_generator_conditions.throttle
-    P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
- 
-    generator_conditions                         = turboelectric_generator_conditions[generator.tag]
-    generator_conditions.inputs.shaft_power      = P_mech    
-    generator_conditions.inputs.omega            = turboshaft.angular_velocity    
-    generator_conditions.voltage                 = bus.voltage*np.ones_like(generator_conditions.inputs.shaft_power)   
-    compute_generator_performance(generator,generator_conditions,conditions)   
-    P_elec = generator_conditions.outputs.power
+    generator_conditions               = turboelectric_generator_conditions[generator.tag]
+    turboshaft_conditions              = turboelectric_generator_conditions[turboshaft.tag]
+    generator.mode                     = turboelectric_generator.mode
+    
+    if turboelectric_generator.mode == 'forward': 
+        turboshaft_conditions.throttle = turboelectric_generator_conditions.throttle
+        P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
+        generator_conditions.inputs.shaft_power      = P_mech    
+        generator_conditions.inputs.omega            = turboshaft.angular_velocity    
+        generator_conditions.voltage                 = bus.voltage*np.ones_like(generator_conditions.inputs.shaft_power)   
+        compute_generator_performance(generator,generator_conditions,conditions)   
+        P_elec = generator_conditions.outputs.power  
+    elif turboelectric_generator.mode == 'reverse':
+        generator_conditions.voltage       = bus.voltage*np.ones_like(generator_conditions.outputs.power) 
+        compute_generator_performance(generator,generator_conditions,conditions)           
+        turboshaft_conditions.shaft_power  = generator_conditions.inputs.shaft_power 
+        P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
+        P_elec = generator_conditions.outputs.power
     
     # Pack results      
     stored_results_flag    = True

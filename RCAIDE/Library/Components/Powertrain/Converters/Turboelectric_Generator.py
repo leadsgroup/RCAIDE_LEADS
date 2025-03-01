@@ -41,7 +41,8 @@ class Turboelectric_Generator(Converter):
         self.turboshaft                = Turboshaft()
         self.generator                 = DC_Generator() 
         self.gearbox_ratio             = None  
-        self.active                    = True 
+        self.active                    = True
+        self.mode                      = 'forward'
 
     def append_operating_conditions(self,segment): 
         """

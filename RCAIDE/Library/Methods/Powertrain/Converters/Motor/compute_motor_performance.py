@@ -166,7 +166,7 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         
         # compute torque 
         Q = ((v-omega /KV)/Res -I0)/KV 
-        I    = (v-(omega*G)/KV)/Res 
+        I = (v-(omega*G)/KV)/Res 
          
         motor_conditions.torque     = Q
         motor_conditions.omega      = omega  
