@@ -44,10 +44,8 @@ def compute_turboshaft_performance(turboshaft,state,converter,fuel_line=None,bus
     Properties Used: 
     N.A.        
     ''' 
-    conditions                = state.conditions 
-   # noise_conditions          = conditions.noise[turboshaft.tag]  
-   
-    turboshaft_conditions     = conditions.energy[fuel_line.tag][converter.tag][turboshaft.tag]
+    conditions                = state.conditions  
+    turboshaft_conditions     = conditions.energy[converter.tag][turboshaft.tag]
     ram                       = turboshaft.ram
     inlet_nozzle              = turboshaft.inlet_nozzle
     compressor                = turboshaft.compressor
@@ -55,8 +53,6 @@ def compute_turboshaft_performance(turboshaft,state,converter,fuel_line=None,bus
     high_pressure_turbine     = turboshaft.high_pressure_turbine
     low_pressure_turbine      = turboshaft.low_pressure_turbine 
     core_nozzle               = turboshaft.core_nozzle
-
-    turboshaft_conditions.angular_velocity = turboshaft.design_angular_velocity # MATTEO WHERE DO I PLACE THIS ACCURATELY
 
     # unpack component conditions 
     ram_conditions          = turboshaft_conditions[ram.tag]     
@@ -166,18 +162,7 @@ def compute_turboshaft_performance(turboshaft,state,converter,fuel_line=None,bus
 
 
     # Compute the power
-    compute_power(turboshaft,turboshaft_conditions,conditions) 
-
-    # Store data
-    core_nozzle_res = Data(
-                exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
-                exit_static_pressure                = core_nozzle_conditions.outputs.static_pressure,
-                exit_stagnation_temperature         = core_nozzle_conditions.outputs.stagnation_temperature,
-                exit_stagnation_pressure            = core_nozzle_conditions.outputs.static_pressure,
-                exit_velocity                       = core_nozzle_conditions.outputs.velocity
-            )
-  
-    #noise_conditions.core_nozzle = core_nozzle_res  
+    compute_power(turboshaft,turboshaft_conditions,conditions)  
     
     # Pack results    
     power                  = turboshaft_conditions.shaft_power  
@@ -210,6 +195,5 @@ def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_p
     ''' 
     conditions                         = state.conditions   
     conditions.energy[turboshaft.tag]  = deepcopy(conditions.energy[stored_propulsor_tag])
-    conditions.noise[turboshaft.tag]   = deepcopy(conditions.noise[stored_propulsor_tag]) 
     power                              = conditions.energy[turboshaft.tag].power
     return power

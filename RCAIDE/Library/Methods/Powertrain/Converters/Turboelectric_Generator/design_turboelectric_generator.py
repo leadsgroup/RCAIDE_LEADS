@@ -61,17 +61,12 @@ def design_turboelectric_generator(turboelectric_generator):
     fuel_line                = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state            = Conditions()  
-    segment.state.conditions = conditions
-    segment.state.conditions.energy[fuel_line.tag] = Conditions()
-    segment.state.conditions.energy[fuel_line.tag][turboelectric_generator.tag] = Conditions()
-
+    segment.state.conditions = conditions 
+    segment.state.conditions.energy[turboelectric_generator.tag] = Conditions() 
     
-    turboelectric_generator.append_operating_conditions(segment,fuel_line)  
-
+    turboelectric_generator.append_operating_conditions(segment)   
 
     design_turboshaft(turboelectric_generator,segment,fuel_line)
-     
-
 
     return      
   

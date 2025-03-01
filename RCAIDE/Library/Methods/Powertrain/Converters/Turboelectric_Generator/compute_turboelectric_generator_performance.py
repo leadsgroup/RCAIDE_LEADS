@@ -45,21 +45,16 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
     generator         = turboelectric_generator.generator
     turboshaft        = turboelectric_generator.turboshaft # check if there are more than one turboshaft
 
-    turboelectric_generator_conditions = conditions.energy.fuel_line[turboelectric_generator.tag] 
+    turboelectric_generator_conditions = conditions.energy[turboelectric_generator.tag] 
     turboelectric_generator_conditions[turboshaft.tag].throttle = turboelectric_generator_conditions.throttle
     P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
-    #turboshaft.compute_turboshaft_performance()
-
-    omega        = turboshaft.angular_velocity       # MATTEO check this, it doesnt exist!@@@!!!!
-    
-    generator_conditions    = turboelectric_generator_conditions[generator.tag]
-    generator_conditions.inputs.shaft_power      = P_mech    # MATTEO PLEASE VERIFY? 
-    generator_conditions.inputs.omega            = omega     # MATTEO PLEASE VERIFY?
-
-    generator_conditions.voltage                 = bus.voltage*np.ones_like(generator_conditions.inputs.shaft_power)  
-
+ 
+    generator_conditions                         = turboelectric_generator_conditions[generator.tag]
+    generator_conditions.inputs.shaft_power      = P_mech    
+    generator_conditions.inputs.omega            = turboshaft.angular_velocity    
+    generator_conditions.voltage                 = bus.voltage*np.ones_like(generator_conditions.inputs.shaft_power)   
     compute_generator_performance(generator,generator_conditions,conditions)   
-    P_elec                                       = generator_conditions.outputs.power
+    P_elec = generator_conditions.outputs.power
     
     # Pack results      
     stored_results_flag    = True
@@ -89,8 +84,7 @@ def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,fuel
     N.A.        
     '''
 
-    conditions                 = state.conditions 
-    bus_conditions             = conditions.energy[bus.tag]
+    conditions                 = state.conditions  
     generator                  = turboelectric_generator.generator 
     turboshaft                 = turboelectric_generator.turboshaft  
     generator_0                = fuel_line.turboelectric_generators[stored_converter_tag].generator  
@@ -100,8 +94,7 @@ def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,fuel
     conditions.energy[turboelectric_generator.tag][turboshaft.tag]       = deepcopy(conditions.energy[stored_converter_tag][turboshaft_0.tag]) 
    
     P_elec         = conditions.energy[turboelectric_generator.tag][generator.tag].power 
-    P_mech         = conditions.energy[turboelectric_generator.tag][turboshaft.tag].power   
-     
-    #bus_conditions.power_draw  -= P_elec*bus.power_split_ratio /bus.efficiency   # MATTEO I MADE THIS NEGATIVE BECAUSE POWER IS ENTERING THE SYSTEM      
+    P_mech         = conditions.energy[turboelectric_generator.tag][turboshaft.tag].power
+    
     return P_mech, P_elec
  

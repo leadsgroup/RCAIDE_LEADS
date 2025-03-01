@@ -7,14 +7,12 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_generator_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_generator_conditions(generator,segment,fuel_line,converter):  
+def append_generator_conditions(generator,segment,converter):  
     ones_row    = segment.state.ones_row                 
     
-    converter_results                              = segment.state.conditions.energy[fuel_line.tag][converter.tag] 
-    converter_results[generator.tag]              = Conditions()
-
-    # NEED TO CHANGe FROM PROPULSOR CONDITIONS MATTEO the inpurs need to change they are weird 
-
+    converter_results                              = segment.state.conditions.energy[converter.tag] 
+    converter_results[generator.tag]               = Conditions()
+ 
     ones_row    = segment.state.ones_row 
     converter_results[generator.tag]                         = Conditions()
     converter_results[generator.tag].inputs                  = Conditions()

@@ -29,7 +29,8 @@ class Network(Component):
         self.propulsors                   = Container()  
         self.busses                       = Container()
         self.coolant_lines                = Container()
-        self.fuel_lines                   = Container() 
+        self.fuel_lines                   = Container()
+        self.converters                   = Container()
         self.identical_propulsors         = True
         
 # ----------------------------------------------------------------------

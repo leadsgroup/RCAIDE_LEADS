@@ -46,7 +46,7 @@ def design_turboshaft(converter,segment,fuel_line):
     core_nozzle                                           = turboshaft.core_nozzle  
 
     conditions = segment.state.conditions
-    turboshaft_conditions   = conditions.energy[fuel_line.tag][converter.tag][turboshaft.tag]
+    turboshaft_conditions   = conditions.energy[converter.tag][turboshaft.tag]
     ram_conditions          = turboshaft_conditions[ram.tag]     
     inlet_nozzle_conditions = turboshaft_conditions[inlet_nozzle.tag]
     core_nozzle_conditions  = turboshaft_conditions[core_nozzle.tag] 
@@ -174,7 +174,7 @@ def design_turboshaft(converter,segment,fuel_line):
     atmo_data_sea_level                                             = atmosphere.compute_values(0.0,0.0)   
     V                                                               = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state,_                                               = setup_operating_conditions(converter, altitude = 0,velocity_vector=np.array([[V, 0, 0]]))  
-    operating_state.conditions.energy[fuel_line.tag][converter.tag][turboshaft.tag].throttle[:,0] = 1.0  
+    operating_state.conditions.energy[converter.tag][turboshaft.tag].throttle[:,0] = 1.0  
     sls_P,_,_                                                       = turboshaft.compute_performance(operating_state,converter,fuel_line) 
     turboshaft.sealevel_static_power                                = sls_P[0][0]
      

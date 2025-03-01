@@ -73,6 +73,7 @@ class Hybrid(Network):
         busses            = network.busses 
         fuel_lines        = network.fuel_lines 
         coolant_lines     = network.coolant_lines
+        converters        = network.converters 
         total_thrust      = 0. * state.ones_row(3) 
         total_mech_power  = 0. * state.ones_row(1) 
         total_elec_power  = 0. * state.ones_row(1) 
@@ -166,7 +167,7 @@ class Hybrid(Network):
         # ------------------------------------------------------------------------------------------------------------------- 
         phi   = state.conditions.energy.hybrid_power_split_ratio 
         for fuel_line in fuel_lines:  
-            for converter in fuel_line.converters:
+            for converter in converters:
     
                 # ------------------------------------------------------------------------------------------------------------------- 
                 # 2.1 Turboelectric Generator - Interatively guess fuel flow that provides required power from generator  
@@ -184,13 +185,13 @@ class Hybrid(Network):
                         power_elec_guess  = 0. * state.ones_row(1)  
                         fuel_mdot_var    = 0. * state.ones_row(1)
                 
-                        state.conditions.energy.fuel_line[converter.tag].throttle = throttle 
+                        state.conditions.energy[converter.tag].throttle = throttle 
                         P_mech, P_elec, stored_results_flag,stored_propulsor_tag = converter.compute_performance(state,fuel_line,bus) 
     
                         power_elec_guess += P_elec 
     
                         # compute total mass flow rate 
-                        fuel_mdot_var  += conditions.energy[fuel_line.tag][converter.tag].turboshaft.fuel_flow_rate 
+                        fuel_mdot_var  += conditions.energy[converter.tag].turboshaft.fuel_flow_rate 
     
                         diff_target_power = power_elec - power_elec_guess  
                         stored_results_flag = False 
@@ -215,13 +216,13 @@ class Hybrid(Network):
                     while np.any(np.abs(diff_target_power) > 1E-8): 
                         power_mech_guess   = 0. * state.ones_row(1)   
                         fuel_mdot_var      = 0. * state.ones_row(1) 
-                        state.conditions.energy.fuel_line[converter.tag].throttle = throttle 
+                        state.conditions.energy[converter.tag].throttle = throttle 
                         P_mech,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state) 
                          
                         power_mech_guess  += P_mech  
     
                         # compute total mass flow rate 
-                        fuel_mdot_var  += conditions.energy[fuel_line.tag][converter.tag].turboshaft.fuel_flow_rate 
+                        fuel_mdot_var  += conditions.energy[converter.tag].turboshaft.fuel_flow_rate 
         
                         diff_target_power = power_mech - power_mech_guess 
                         stored_results_flag = False 
@@ -409,8 +410,11 @@ class Hybrid(Network):
         segment.state.conditions.energy.hybrid_power_split_ratio = segment.hybrid_power_split_ratio * segment.state.ones_row(1)
         
         for network in segment.analyses.energy.vehicle.networks:
-            for p_i, propulsor in enumerate(network.propulsors): 
-                propulsor.append_operating_conditions(segment)                       
+            for propulsor in network.propulsors: 
+                propulsor.append_operating_conditions(segment)
+    
+            for converter in network.converters: 
+                converter.append_operating_conditions(segment)                 
 
             # ------------------------------------------------------------------------------------------------------            
             # Create fuel_line results data structure  

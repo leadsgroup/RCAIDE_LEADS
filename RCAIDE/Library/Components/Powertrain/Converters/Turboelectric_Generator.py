@@ -43,23 +43,14 @@ class Turboelectric_Generator(Converter):
         self.gearbox_ratio             = None  
         self.active                    = True 
 
-    def append_operating_conditions(self,segment,fuel_line): 
+    def append_operating_conditions(self,segment): 
         """
         Appends operating conditions to the segment.
         """  
-        append_turboelectric_generator_conditions(self,segment,fuel_line) 
+        append_turboelectric_generator_conditions(self,segment) 
         return
-
-    # def unpack_propulsor_unknowns(self,segment):   This is worng 
-    #     return 
-
-    # def pack_propulsor_residuals(self,segment): 
-    #     return    
-
-    # def append_propulsor_unknowns_and_residuals(self,segment): 
-    #     return
-    
-    def compute_performance(self,state,fuel_line,bus=None):
+ 
+    def compute_performance(self,state,fuel_line = None,bus = None):
         """
         Computes Turboelectric_Generator performance including power.
         """

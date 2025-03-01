@@ -43,13 +43,12 @@ class Turboshaft(Converter):
         self.conversion_efficiency                            = 0.5
         self.compressor_nondimensional_massflow               = 0.0
         self.design_angular_velocity                          = 0.0
-                                                              
 
-    def append_operating_conditions(self,segment,fuel_line,converter): 
+    def append_operating_conditions(self,segment,converter): 
         """
         Appends operating conditions to the segment.
         """  
-        append_turboshaft_conditions(self,segment,fuel_line,converter) 
+        append_turboshaft_conditions(self,segment,converter) 
         return
 
     def unpack_propulsor_unknowns(self,segment):   
@@ -61,11 +60,11 @@ class Turboshaft(Converter):
     def append_propulsor_unknowns_and_residuals(self,segment): 
         return
     
-    def compute_performance(self,state,converter = None,fuel_line = None,bus = None,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,converter = None,fuel_line = None,bus = None):
         """
         Computes turboshaft performance including thrust, moment, and power.
         """
-        power,stored_results_flag,stored_propulsor_tag =  compute_turboshaft_performance(self,state,converter,fuel_line,bus,center_of_gravity)
+        power,stored_results_flag,stored_propulsor_tag =  compute_turboshaft_performance(self,state,converter,fuel_line,bus)
         return  power,stored_results_flag,stored_propulsor_tag
     
     def reuse_stored_data(turboshaft,state,network,fuel_line = None, bus = None, stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
