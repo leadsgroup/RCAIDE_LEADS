@@ -208,6 +208,7 @@ class Fuselage(Component):
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
         self.vsp_data.xsec_num                      = None  # Number if XSecs in fuselage geom. 
         self.segments                               = Container()
+        self.cabins                                 = Container()
 
         self.vsp_data                               = Data()
         self.vsp_data.xsec_id                       = ''       
@@ -231,6 +232,25 @@ class Fuselage(Component):
         self.segments.append(segment)
 
         return
+    
+    def append_cabin(self,cabin):
+        """
+        Adds a new segment to the fuselage's segment container.
+
+        Parameters
+        ----------
+        segment : Data
+            Fuselage segment to be added
+        """
+
+        # Assert database type
+        if not isinstance(cabin,RCAIDE.Library.Components.Fuselages.Cabins.Cabin):
+            raise Exception('input component must be of type Cabin')
+
+        # Store data
+        self.cabins.append(cabin)
+
+        return    
     
     def append_fuel_tank(self,fuel_tank):
         """
