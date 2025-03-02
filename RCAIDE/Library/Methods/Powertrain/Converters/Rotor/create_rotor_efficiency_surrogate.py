@@ -27,7 +27,7 @@ def create_rotor_efficiency_surrogate(rotor, design_flag=True):
         velocity_range = np.linspace(0.1, 30, N) *Units.kts   
         altitude_range = np.linspace(1, 500, N)  *Units.feet
     else: 
-        velocity_range = np.linspace(50, 250, N) *Units.kts   
+        velocity_range = np.linspace(50, 350, N) *Units.kts   
         altitude_range = np.linspace(1, 25000, N) *Units.feet     
      
     reference_omega = 1500*Units.rpm

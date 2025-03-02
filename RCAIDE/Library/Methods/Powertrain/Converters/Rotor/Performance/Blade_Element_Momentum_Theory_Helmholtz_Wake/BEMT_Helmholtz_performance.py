@@ -28,9 +28,9 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
     propulsor_conditions  = conditions.energy[propulsor.tag]
     rotor_conditions      = propulsor_conditions[rotor.tag]
     commanded_TV          = propulsor_conditions.commanded_thrust_vector_angle
+    pitch_c               = rotor_conditions.blade_pitch_command
     eta                   = rotor_conditions.throttle 
-    omega                 = rotor_conditions.omega
-    pitch_c               = rotor_conditions.pitch_command
+    omega                 = rotor_conditions.omega 
     optimize_blade_pitch  = rotor_conditions.optimize_blade_pitch
     design_flag           = rotor_conditions.design_flag
     B                     = rotor.number_of_blades
@@ -100,12 +100,12 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
     psi_2d         = np.tile(np.atleast_2d(psi),(Nr,1))
     psi_2d         = np.repeat(psi_2d[None, :, :], ctrl_pts, axis=0)
 
-    ## Calculate total blade pitch 
+    # Calculate total blade pitch 
     #if optimize_blade_pitch and design_flag == False:
         #J       = V/(n*2 *R)  
         #pitch_c = compute_optimal_pitch(rotor,J,alt)
         #rotor_conditions.pitch_command = pitch_c
-    total_blade_pitch = beta_0 + pitch_c
+    total_blade_pitch = beta_0  +  pitch_c
     
     # apply blade sweep to azimuthal position
     if np.any(np.array([sweep])!=0):
@@ -140,10 +140,7 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
 
         ut +=  (utz + uty)  # tangential velocity in direction of rotor rotation
         ur +=  (urz + ury)  # radial velocity (positive toward tip)
-        ua +=  np.zeros_like(ut)
-        
-
-    
+        ua +=  np.zeros_like(ut) 
     
     # Include external velocities introduced by user
     if nonuniform_freestream:
@@ -342,15 +339,15 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
     Ct[omega==0.0]             = 0.0
     Cp[omega==0.0]             = 0.0
     etap[omega==0.0]           = 0.
-    
-
-    
     thrust[eta[:,0]  <=0.0]    = 0.0
     power[eta[:,0]  <=0.0]     = 0.0
     torque[eta[:,0]  <=0.0]    = 0.0  
     power[eta>1.0]             = power[eta>1.0]*eta[eta>1.0]
     thrust[eta[:,0]>1.0,:]     = thrust[eta[:,0]>1.0,:]*eta[eta[:,0]>1.0,:]
-    etap[thrust[:,0]  <=0.0]   = 0.0
+    
+    #etap[thrust[:,0]  <=0.0]   = 0.0
+    #etap[etap[:,0]  >=1.0]     = 1.0
+    #etap[etap[:,0]  <=0.0]     = 0.0
 
     disc_loading           = thrust/(np.pi*(R**2))
     power_loading          = thrust/(power)
@@ -427,7 +424,7 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
                 blade_H_distribution              = rotor_drag_distribution,
                 rotor_drag                        = rotor_drag,
                 rotor_drag_coefficient            = Crd,
-                pitch_command                     = pitch_c, 
+                blade_pitch_command               = pitch_c, 
                 figure_of_merit                   = FoM, 
         )  
 

@@ -294,7 +294,7 @@ def design_propeller(prop,number_of_stations=20):
         prop.mid_chord_alignment                    = MCA
         prop.thickness_to_chord                     = t_c
         prop.blade_solidity                         = sigma 
-        #prop.efficiency_surrogate                   = create_rotor_efficiency_surrogate(prop, design_flag=True)  
+        prop.efficiency_surrogate                   = create_rotor_efficiency_surrogate(prop, design_flag=True)  
 
     return prop
 
