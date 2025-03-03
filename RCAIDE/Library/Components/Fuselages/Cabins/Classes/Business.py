@@ -30,7 +30,7 @@ class Business(Component):
         self.aile_width                          = 18  *  Units.inches          
         self.galley_lavatory_percent_x_locations = []      
         self.emergency_exit_percent_x_locations  = [] 
-        self.type_A_exit_percent_x_locations     = [0, 1]
+        self.type_A_exit_percent_x_locations     = []
         self.tail_length                         = 0
         self.tail_taper                          = 0
         self.nose_length                         = 0
