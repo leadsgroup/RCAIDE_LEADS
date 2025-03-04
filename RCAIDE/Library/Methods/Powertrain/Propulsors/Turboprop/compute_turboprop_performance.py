@@ -57,8 +57,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     P                        = conditions.freestream.pressure 
     ram                      = turboprop.ram
     inlet_nozzle             = turboprop.inlet_nozzle
-    low_pressure_compressor  = turboprop.low_pressure_compressor
-    high_pressure_compressor = turboprop.high_pressure_compressor
+    compressor               = turboprop.compressor
     combustor                = turboprop.combustor
     high_pressure_turbine    = turboprop.high_pressure_turbine
     low_pressure_turbine     = turboprop.low_pressure_turbine
@@ -67,8 +66,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     ram_conditions           = turboprop_conditions[ram.tag]     
     inlet_nozzle_conditions  = turboprop_conditions[inlet_nozzle.tag]
     core_nozzle_conditions   = turboprop_conditions[core_nozzle.tag] 
-    lpc_conditions           = turboprop_conditions[low_pressure_compressor.tag]  
-    hpc_conditions           = turboprop_conditions[high_pressure_compressor.tag]  
+    compressor_conditions    = turboprop_conditions[compressor.tag]  
     combustor_conditions     = turboprop_conditions[combustor.tag]
     lpt_conditions           = turboprop_conditions[low_pressure_turbine.tag]
     hpt_conditions           = turboprop_conditions[high_pressure_turbine.tag] 
@@ -91,38 +89,25 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     compute_compression_nozzle_performance(inlet_nozzle,inlet_nozzle_conditions,conditions)      
 
     # Step 5: Link low pressure compressor to the inlet nozzle 
-    lpc_conditions.inputs.stagnation_temperature   = inlet_nozzle_conditions.outputs.stagnation_temperature
-    lpc_conditions.inputs.stagnation_pressure      = inlet_nozzle_conditions.outputs.stagnation_pressure
-    lpc_conditions.inputs.static_temperature       = inlet_nozzle_conditions.outputs.static_temperature
-    lpc_conditions.inputs.static_pressure          = inlet_nozzle_conditions.outputs.static_pressure
-    lpc_conditions.inputs.mach_number              = inlet_nozzle_conditions.outputs.mach_number  
-    low_pressure_compressor.working_fluid          = inlet_nozzle.working_fluid
-    lpc_conditions.reference_temperature           = turboprop.reference_temperature
-    lpc_conditions.reference_pressure              = turboprop.reference_pressure   
+    compressor_conditions.inputs.stagnation_temperature   = inlet_nozzle_conditions.outputs.stagnation_temperature
+    compressor_conditions.inputs.stagnation_pressure      = inlet_nozzle_conditions.outputs.stagnation_pressure
+    compressor_conditions.inputs.static_temperature       = inlet_nozzle_conditions.outputs.static_temperature
+    compressor_conditions.inputs.static_pressure          = inlet_nozzle_conditions.outputs.static_pressure
+    compressor_conditions.inputs.mach_number              = inlet_nozzle_conditions.outputs.mach_number  
+    compressor.working_fluid                              = inlet_nozzle.working_fluid
+    compressor_conditions.reference_temperature           = turboprop.reference_temperature
+    compressor_conditions.reference_pressure              = turboprop.reference_pressure   
 
     # Step 6: Compute flow through the low pressure compressor
-    compute_compressor_performance(low_pressure_compressor,lpc_conditions,conditions)
-
-    # Step 5: Link low pressure compressor to the inlet nozzle 
-    hpc_conditions.inputs.stagnation_temperature   = inlet_nozzle_conditions.outputs.stagnation_temperature
-    hpc_conditions.inputs.stagnation_pressure      = inlet_nozzle_conditions.outputs.stagnation_pressure
-    hpc_conditions.inputs.static_temperature       = inlet_nozzle_conditions.outputs.static_temperature
-    hpc_conditions.inputs.static_pressure          = inlet_nozzle_conditions.outputs.static_pressure
-    hpc_conditions.inputs.mach_number              = inlet_nozzle_conditions.outputs.mach_number  
-    high_pressure_compressor.working_fluid         = inlet_nozzle.working_fluid
-    hpc_conditions.reference_temperature           = turboprop.reference_temperature
-    hpc_conditions.reference_pressure              = turboprop.reference_pressure   
-
-    # Step 6: Compute flow through the low pressure compressor
-    compute_compressor_performance(high_pressure_compressor,hpc_conditions,conditions)
+    compute_compressor_performance(compressor,compressor_conditions,conditions)
     
     # Step 7: Link the combustor to the high pressure compressor
-    combustor_conditions.inputs.stagnation_temperature    = hpc_conditions.outputs.stagnation_temperature
-    combustor_conditions.inputs.stagnation_pressure       = hpc_conditions.outputs.stagnation_pressure
-    combustor_conditions.inputs.static_temperature        = hpc_conditions.outputs.static_temperature
-    combustor_conditions.inputs.static_pressure           = hpc_conditions.outputs.static_pressure
-    combustor_conditions.inputs.mach_number               = hpc_conditions.outputs.mach_number  
-    combustor.working_fluid                               = high_pressure_compressor.working_fluid 
+    combustor_conditions.inputs.stagnation_temperature    = compressor_conditions.outputs.stagnation_temperature
+    combustor_conditions.inputs.stagnation_pressure       = compressor_conditions.outputs.stagnation_pressure
+    combustor_conditions.inputs.static_temperature        = compressor_conditions.outputs.static_temperature
+    combustor_conditions.inputs.static_pressure           = compressor_conditions.outputs.static_pressure
+    combustor_conditions.inputs.mach_number               = compressor_conditions.outputs.mach_number  
+    combustor.working_fluid                               = compressor.working_fluid 
     
     # Step 8: Compute flow through the high pressor compressor 
     compute_combustor_performance(combustor,combustor_conditions,conditions)
@@ -134,7 +119,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     hpt_conditions.inputs.static_temperature              = combustor_conditions.outputs.static_temperature
     hpt_conditions.inputs.static_pressure                 = combustor_conditions.outputs.static_pressure
     hpt_conditions.inputs.mach_number                     = combustor_conditions.outputs.mach_number 
-    hpt_conditions.inputs.compressor                      = hpc_conditions.outputs 
+    hpt_conditions.inputs.compressor                      = compressor_conditions.outputs 
     high_pressure_turbine.working_fluid                   = combustor.working_fluid
     hpt_conditions.inputs.bypass_ratio                    = 0.0
     
@@ -147,8 +132,8 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     lpt_conditions.inputs.static_pressure                 = hpt_conditions.outputs.static_pressure 
     lpt_conditions.inputs.mach_number                     = hpt_conditions.outputs.mach_number     
     lpt_conditions.inputs.compressor                      = Data()
-    lpt_conditions.inputs.compressor.work_done            = lpc_conditions.outputs.work_done
-    lpt_conditions.inputs.compressor.external_shaft_work_done = lpc_conditions.outputs.external_shaft_work_done
+    lpt_conditions.inputs.compressor.work_done            = 0.0   
+    lpt_conditions.inputs.compressor.external_shaft_work_done = 0.0
     lpt_conditions.inputs.bypass_ratio                    = 0.0 
     lpt_conditions.inputs.fuel_to_air_ratio               = combustor_conditions.outputs.fuel_to_air_ratio 
     low_pressure_turbine.working_fluid                    = high_pressure_turbine.working_fluid    
@@ -168,8 +153,8 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
 
     # compute the thrust using the thrust component
     
-    turboprop_conditions.total_temperature_reference      = lpc_conditions.inputs.stagnation_temperature
-    turboprop_conditions.total_pressure_reference         = lpc_conditions.inputs.stagnation_pressure 
+    turboprop_conditions.total_temperature_reference      = compressor_conditions.inputs.stagnation_temperature
+    turboprop_conditions.total_pressure_reference         = compressor_conditions.inputs.stagnation_pressure 
 
     # Compute the power
     compute_thrust(turboprop,turboprop_conditions,conditions) 
@@ -192,7 +177,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     h_e_c                                          = core_nozzle_conditions.outputs.static_enthalpy
     h_0                                            = turboprop.working_fluid.compute_cp(T,P) * T 
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
-    h_t3                                           = hpc_conditions.outputs.stagnation_enthalpy 
+    h_t3                                           = compressor_conditions.outputs.stagnation_enthalpy 
     turboprop_conditions.overall_efficiency        = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
     turboprop_conditions.thermal_efficiency        = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
 
@@ -212,7 +197,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     stored_results_flag    = True
     stored_propulsor_tag   = turboprop.tag
      
-    power_elec =  lpc_conditions.outputs.external_electrical_power  
+    power_elec =  compressor_conditions.outputs.external_electrical_power  
     
     return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
 
