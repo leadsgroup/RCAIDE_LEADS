@@ -112,10 +112,10 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
             if fuel_line.active:  
                 for p_i ,  propulsor in enumerate(network.propulsors):
                     if propulsor.active == True: 
-                        if (type(propulsor) == RCAIDE.Library.Components.Propulsors.Turbofan) or \
-                            type(propulsor) == RCAIDE.Library.Components.Propulsors.Turboshaft or \
-                            type(propulsor) == RCAIDE.Library.Components.Propulsors.Turboprop or \
-                            type(propulsor) == RCAIDE.Library.Components.Propulsors.Turbojet:    
+                        if (type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
+                            type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft or \
+                            type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop or \
+                            type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet:    
                         
                             combustor = propulsor.combustor
                         
@@ -282,10 +282,10 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
     for network in vehicle.networks:    
         for propulsor in network.propulsors:
             if propulsor.active == True:
-                if (type(propulsor) == RCAIDE.Library.Components.Propulsors.Turbofan) or \
-                    type(propulsor) == RCAIDE.Library.Components.Propulsors.Turboprop or \
-                    type(propulsor) == RCAIDE.Library.Components.Propulsors.Turboshaft or \
-                    type(propulsor) == RCAIDE.Library.Components.Propulsors.Turbojet:    
+                if (type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
+                    type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop or \
+                    type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft or \
+                    type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet:    
                 
                     combustor = propulsor.combustor
                 

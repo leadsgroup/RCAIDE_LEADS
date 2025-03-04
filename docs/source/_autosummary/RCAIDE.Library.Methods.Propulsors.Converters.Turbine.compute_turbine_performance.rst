@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Turbine.compute_turbine_performance
+RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance
 
 compute\_turbine\_performance
 =============================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Turbine.compute_turbine_performance
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance
 
    
    

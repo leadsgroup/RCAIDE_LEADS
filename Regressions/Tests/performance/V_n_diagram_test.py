@@ -62,16 +62,16 @@ def main():
     
     # regression values    
     actual                          = Data()
-    actual.Vs1_pos                  = 37.985824375676025
-    actual.Vs1_neg                  = 53.72006801000354
-    actual.Va_pos                   = 74.04800364154912
-    actual.Va_neg                   = 104.71969101653109
-    actual.Vc                       = 126.33085913848525
-    actual.Vd                       = 176.86320279387934
-    actual.limit_load_pos           = 5.192951925703255
+    actual.Vs1_pos                  = 37.98585717834934
+    actual.Vs1_neg                  = 53.720114399989036
+    actual.Va_pos                   = 74.04806758573127
+    actual.Va_neg                   = 104.71978144726074
+    actual.Vc                       = 126.33084642567567
+    actual.Vd                       = 176.86318499594594
+    actual.limit_load_pos           = 4.2830764602576545
     actual.limit_load_neg           = -3.8
-    actual.dive_limit_load_pos      = 3.935066347992278
-    actual.dive_limit_load_neg      = -1.935066347992278
+    actual.dive_limit_load_pos      = 3.8
+    actual.dive_limit_load_neg      = -1.2981535221803582
     
     # error calculations
     error                         = Data()

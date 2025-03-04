@@ -59,6 +59,7 @@ def main():
      
     # mission analysis 
     results = missions.base_mission.evaluate()   
+    plot_mission(results)    
 
     # Extract sample values from computation  
     thrust     = results.segments.climb_1.conditions.energy['inner_right_turbojet'].thrust[3][0]
@@ -73,9 +74,9 @@ def main():
             print(val)
     
     # Truth values
-    thrust_truth     = 182566.01800494973
-    throttle_truth   = 1.073367439687721
-    CL_truth         = 0.2737121142244215
+    thrust_truth     = 182249.8877230102
+    throttle_truth   = 0.8356192341618192
+    CL_truth         = 0.20942980536787167
     
     # Store errors 
     error = Data()
@@ -93,7 +94,6 @@ def main():
     for k,v in list(error.items()): 
         assert(np.abs(v)<1e-6)
         
-    plot_mission(results)    
     return 
 
 # ----------------------------------------------------------------------
@@ -120,7 +120,7 @@ def base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
+    weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
     weights.vehicle = vehicle
     analyses.append(weights)
     
@@ -410,7 +410,7 @@ def mission_setup(analyses):
     segment.tag = "descent_1" 
     segment.analyses.extend( analyses.cruise )
     segment.altitude_end      = 50000. * Units.ft
-    segment.mach_number_end   = 1.4
+    segment.mach_number_end   = 1.2
     segment.descent_rate      = 2000. * Units['ft/min']  
     
     # define flight dynamics to model 
@@ -432,7 +432,7 @@ def mission_setup(analyses):
     segment.tag = "descent_2" 
     segment.analyses.extend( analyses.cruise )
     segment.altitude_end      = 41000. * Units.ft
-    segment.air_speed_end     = 383.591
+    segment.air_speed_end     = 800 *  Units.mph
     segment.descent_rate      = 2000. * Units['ft/min']  
     
     # define flight dynamics to model 
@@ -471,10 +471,10 @@ def mission_setup(analyses):
     # ------------------------------------------------------------------    
       
     segment = Segments.Descent.Linear_Mach_Constant_Rate(base_segment)
-    segment.tag = "descent_2" 
+    segment.tag = "descent_3" 
     segment.analyses.extend( analyses.cruise )
     segment.altitude_end      = 10000. * Units.ft
-    segment.mach_number_end   = 250./638. 
+    segment.mach_number_end   = 0.15
     segment.descent_rate      = 2000. * Units['ft/min']  
     
     # define flight dynamics to model 
@@ -492,10 +492,9 @@ def mission_setup(analyses):
     #   First Descent Segment
     # ------------------------------------------------------------------     
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
-    segment.tag = "descent_3" 
+    segment.tag = "descent_4" 
     segment.analyses.extend( analyses.cruise )
     segment.altitude_end = 0. * Units.ft
-    segment.air_speed    = 250. * Units.kts
     segment.descent_rate = 1000. * Units['ft/min']    
     
     # define flight dynamics to model 

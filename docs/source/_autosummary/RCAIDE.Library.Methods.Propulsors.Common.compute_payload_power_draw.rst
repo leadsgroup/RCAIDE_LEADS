@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Common.compute_payload_power_draw
+RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw
 
 compute\_payload\_power\_draw
 =============================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Common.compute_payload_power_draw
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw
 
    
    

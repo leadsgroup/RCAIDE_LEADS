@@ -9,9 +9,8 @@
  
 from RCAIDE                    import Framework
 from RCAIDE.Framework.Core     import Data, DataOrdered
-from RCAIDE.Library            import Components, Attributes 
+from RCAIDE.Library            import Components
 import numpy as np 
-from RCAIDE.Library.Methods.Weights.Correlation_Buildups.Common.compute_operating_empty_weight import  compute_operating_empty_weight
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vehicle
@@ -34,8 +33,8 @@ class Vehicle(Data):
         self.fuselages                                                     = Components.Fuselages.Fuselage.Container()
         self.wings                                                         = Components.Wings.Wing.Container()
         self.nacelles                                                      = Components.Nacelles.Nacelle.Container()
-        self.systems                                                       = Components.Systems.System.Container()
-        self.avionics                                                      = Components.Systems.Avionics.Container()
+        self.systems                                                       = Components.Powertrain.Systems.System.Container()
+        self.avionics                                                      = Components.Powertrain.Systems.Avionics.Container()
         self.booms                                                         = Components.Booms.Boom.Container()
         self.mass_properties                                               = Vehicle_Mass_Container()
         self.payload                                                       = Components.Payloads.Payload.Container()
@@ -115,8 +114,8 @@ class Vehicle(Data):
         self._component_root_map = {
             Components.Fuselages.Fuselage              : self['fuselages']        ,
             Components.Wings.Wing                      : self['wings']            ,
-            Components.Systems.System                  : self['systems']          ,
-            Components.Systems.Avionics                : self['avionics']         ,
+            Components.Powertrain.Systems.System       : self['systems']          ,
+            Components.Powertrain.Systems.Avionics     : self['avionics']         ,
             Components.Payloads.Payload                : self['payload']          , 
             Components.Nacelles.Nacelle                : self['nacelles']         , 
             Components.Booms.Boom                      : self['booms']            ,

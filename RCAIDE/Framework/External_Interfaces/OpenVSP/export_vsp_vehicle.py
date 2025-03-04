@@ -136,7 +136,7 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
     for network in vehicle.networks: 
         for propulsor in network.propulsors: 
             for  tag ,  item in  propulsor.items():
-                if isinstance(item, RCAIDE.Library.Components.Propulsors.Converters.Rotor):
+                if isinstance(item, RCAIDE.Library.Components.Powertrain.Converters.Rotor):
                     vsp_bem_filename = item.tag + '.bem' 
                     write_vsp_rotor_bem(vsp_bem_filename,item) 
    

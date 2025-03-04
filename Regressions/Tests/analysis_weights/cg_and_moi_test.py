@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # cg_and_moi_test.py
 
-from RCAIDE.Framework.Core                                                   import Units,  Data  
-from RCAIDE.Library.Methods.Weights.Moment_of_Inertia.compute_aircraft_moment_of_inertia import compute_aircraft_moment_of_inertia
-from RCAIDE.Library.Methods.Weights.Center_of_Gravity                        import compute_vehicle_center_of_gravity
-from RCAIDE.Library.Methods.Weights.Moment_of_Inertia                        import compute_cuboid_moment_of_inertia
+from RCAIDE.Framework.Core                                     import Units,  Data  
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_aircraft_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cuboid_moment_of_inertia
 
 import numpy as  np
 import RCAIDE
@@ -25,7 +25,7 @@ from Stopped_Rotor_EVTOL    import vehicle_setup as EVTOL_setup
 
 def main(): 
     # make true only when resizing aircraft. should be left false for regression
-    update_regression_values = False    
+    update_regression_values = False  
     Transport_Aircraft_Test()
     General_Aviation_Test()
     EVTOL_Aircraft_Test(update_regression_values)
@@ -40,10 +40,12 @@ def Transport_Aircraft_Test():
     # ------------------------------------------------------------------
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
-    weight_analysis                               = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
+    weight_analysis                               = RCAIDE.Framework.Analyses.Weights.Conventional()
     weight_analysis.vehicle                       = vehicle
     weight_analysis.method                        = 'Raymer'
     weight_analysis.settings.use_max_fuel_weight  = False  
+    weight_analysis.settings.cargo_doors_number   = 2
+    weight_analysis.settings.cargo_doors_clamshell= True
     results                                       = weight_analysis.evaluate() 
     
     # ------------------------------------------------------------------
@@ -65,9 +67,9 @@ def Transport_Aircraft_Test():
     
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI) 
-    accepted  = np.array([[32501492.04259999, 2589698.27591836, 3358696.7542382],
-                          [2589698.2759183585, 41119945.59273668, 1.4551915228366852e-11],
-                          [3358696.7542382046, 1.4551915228366852e-11, 60277432.14411559]]) 
+    accepted  = np.array([[34562843.719482906, 2545643.625699803, 3261423.2196058235],
+                          [2545643.625699803, 44054919.909391284, 1.4551915228366852e-11],
+                          [3261423.2196058235, 1.4551915228366852e-11, 62177985.287106596]]) 
     MOI_error     = MOI - accepted
 
     # Check the errors
@@ -91,8 +93,11 @@ def General_Aviation_Test():
     # ------------------------------------------------------------------
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
-    weight_analysis           = RCAIDE.Framework.Analyses.Weights.Weights_General_Aviation()
+    weight_analysis           = RCAIDE.Framework.Analyses.Weights.Conventional()
+    
     weight_analysis.vehicle   = general_aviation_setup() 
+    weight_analysis.method    = 'FLOPS'
+    weight_analysis.aircraft_type = 'General_Aviation'
     results                   = weight_analysis.evaluate() 
     
     # ------------------------------------------------------------------
@@ -108,9 +113,9 @@ def General_Aviation_Test():
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI)
      
-    accepted  = np.array([[3100.453417318488, 9.410206211118789, -12.357610137252777],
-                          [  9.410206211118789, 4302.514821394567,    0.        ],
-                          [ -12.357610137252777,    0.        , 3745.1500603319455]])
+    accepted  = np.array([[2859.407378847266, 15.598154974666251, 31.585160508219786],
+                          [  15.598154974666251, 3677.383035291914,    0.        ],
+                          [ 31.585160508219786,    0.        , 2647.488624553498]])
     
     MOI_error     = MOI - accepted
 
@@ -136,7 +141,14 @@ def EVTOL_Aircraft_Test(update_regression_values):
     # ------------------------------------------------------------------
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
-    weight_analysis          = RCAIDE.Framework.Analyses.Weights.Weights_EVTOL()
+    weight_analysis          = RCAIDE.Framework.Analyses.Weights.Electric()
+    weight_analysis.method    = 'Physics_Based'
+    weight_analysis.aircraft_type = 'VTOL'
+    weight_analysis.settings.safety_factor = 1.5    # CHECK THIS VALUE
+    weight_analysis.settings.miscelleneous_weight_factor = 1.1 # CHECK THIS VALUE
+    weight_analysis.settings.disk_area_factor = 1.15
+    weight_analysis.settings.max_thrust_to_weight_ratio = 1.1
+    weight_analysis.settings.max_g_load = 3.8
     weight_analysis.vehicle  = vehicle
     results                  = weight_analysis.evaluate() 
     

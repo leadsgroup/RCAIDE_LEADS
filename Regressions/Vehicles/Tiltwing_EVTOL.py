@@ -7,12 +7,12 @@
 #   Imports
 # ---------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Units, Data    
-from RCAIDE.Library.Methods.Weights.Correlation_Buildups.Propulsion            import compute_motor_weight
-from RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor                     import design_motor
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor                        import design_prop_rotor ,design_prop_rotor 
-from RCAIDE.Library.Methods.Weights.Physics_Based_Buildups.Electric            import converge_physics_based_weight_buildup 
-from RCAIDE.Library.Plots                                                      import *     
+from RCAIDE.Framework.Core                                                               import Units, Data    
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common              import compute_motor_weight
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                  import design_DC_motor 
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                  import design_prop_rotor ,design_prop_rotor 
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based  import converge_physics_based_weight_buildup 
+from RCAIDE.Library.Plots                                                                import *     
 
 from RCAIDE.load    import load as load_rotor
 from RCAIDE.save    import save as save_rotor  
@@ -202,7 +202,7 @@ def vehicle_setup(new_regression=True):
     # add to vehicle
     vehicle.append_component(fuselage)    
    
-    sys                            = RCAIDE.Library.Components.Systems.System()
+    sys                            = RCAIDE.Library.Components.Powertrain.Systems.System()
     sys.mass_properties.mass       = 5 # kg   
     vehicle.append_component(sys)    
 
@@ -215,21 +215,20 @@ def vehicle_setup(new_regression=True):
     #==================================================================================================================================== 
     # Lift Bus 
     #====================================================================================================================================          
-    bus                                                    = RCAIDE.Library.Components.Energy.Distributors.Electrical_Bus()
-    bus.tag                                                = 'bus'
-    bus.number_of_battery_modules                          =  10
+    bus                                                    = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    bus.tag                                                = 'bus' 
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus Battery
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    bat                                                    = RCAIDE.Library.Components.Energy.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     bat.tag                                                = 'bus_battery'
     bat.electrical_configuration.series                    = 8 
     bat.electrical_configuration.parallel                  = 60 
     bat.geometrtic_configuration.normal_count              = 20
     bat.geometrtic_configuration.parallel_count            = 24  
     
-    for _ in range(bus.number_of_battery_modules):
+    for _ in range(10):
         bus.battery_modules.append(deepcopy(bat))   
     bus.initialize_bus_properties()
     
@@ -238,12 +237,12 @@ def vehicle_setup(new_regression=True):
     #------------------------------------------------------------------------------------------------------------------------------------    
      
     # Define Lift Propulsor Container 
-    lift_propulsor                                = RCAIDE.Library.Components.Propulsors.Electric_Rotor()
+    lift_propulsor                                = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()
     lift_propulsor.tag                            = 'lift_propulsor'      
     lift_propulsor.wing_mounted                   = True 
               
     # Electronic Speed Controller           
-    prop_rotor_esc                                = RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller()
+    prop_rotor_esc                                = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     prop_rotor_esc.efficiency                     = 0.95    
     prop_rotor_esc.tag                            = 'prop_rotor_esc_1'  
     lift_propulsor.electronic_speed_controller    = prop_rotor_esc  
@@ -252,7 +251,7 @@ def vehicle_setup(new_regression=True):
     g                                             = 9.81                                    # gravitational acceleration   
     Hover_Load                                    = vehicle.mass_properties.takeoff*g *1.1  # hover load   
 
-    prop_rotor                                    = RCAIDE.Library.Components.Propulsors.Converters.Prop_Rotor()   
+    prop_rotor                                    = RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor()   
     prop_rotor.tag                                = 'prop_rotor'   
     prop_rotor.tip_radius                         = 0.8875
     prop_rotor.hub_radius                         = 0.10 * prop_rotor.tip_radius
@@ -299,14 +298,14 @@ def vehicle_setup(new_regression=True):
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Motor  
     #------------------------------------------------------------------------------------------------------------------------------------    
-    prop_rotor_motor                         = RCAIDE.Library.Components.Propulsors.Converters.DC_Motor()
+    prop_rotor_motor                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     prop_rotor_motor.efficiency              = 0.95
     prop_rotor_motor.nominal_voltage         = bus.voltage *0.75
     prop_rotor_motor.no_load_current         = 0.1
     prop_rotor_motor.rotor_radius            = prop_rotor.tip_radius
     prop_rotor_motor.design_torque           = prop_rotor.hover.design_torque
     prop_rotor_motor.angular_velocity        = prop_rotor.hover.design_angular_velocity/prop_rotor_motor.gear_ratio  
-    design_motor(prop_rotor_motor)
+    design_DC_motor(prop_rotor_motor)
     prop_rotor_motor.mass_properties.mass    = compute_motor_weight(prop_rotor_motor)     
     lift_propulsor.motor                     = prop_rotor_motor
      
@@ -346,13 +345,13 @@ def vehicle_setup(new_regression=True):
     # Additional Bus Loads
     #------------------------------------------------------------------------------------------------------------------------------------            
     # Payload   
-    payload                         = RCAIDE.Library.Components.Systems.Avionics()
+    payload                         = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     payload.power_draw              = 10. # Watts 
     payload.mass_properties.mass    = 1.0 * Units.kg
     bus.payload                     = payload 
                              
     # Avionics                            
-    avionics                        = RCAIDE.Library.Components.Systems.Avionics()
+    avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw             = 10. # Watts  
     avionics.mass_properties.mass   = 1.0 * Units.kg
     bus.avionics                    = avionics    

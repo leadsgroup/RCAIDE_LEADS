@@ -240,13 +240,14 @@ def VLM(conditions,settings,geometry):
 
     # Build the RHS vector    
     rhs = compute_RHS_matrix(delta,phi,conditions,settings,geometry,pwm) 
-    RHS     = rhs.RHS*1
+    RHS     = rhs.RHS*1 # this matches numpy=1.26 in terms of dimension
     ONSET   = rhs.ONSET*1
 
     # Build induced velocity matrix, C_mn
     # This is not affected by AoA, so we can use unique mach numbers only
     m_unique, inv = np.unique(mach,return_inverse=True)
     m_unique      = np.atleast_2d(m_unique).T
+    inv           = inv.reshape(-1) # this is done to ensure compatibility across numpy1.0 and numpy2.0
     C_mn_small, s, RFLAG_small, EW_small = compute_wing_induced_velocity(VD,m_unique,compute_EW=True)
     
     C_mn  = C_mn_small[inv,:,:,:]
@@ -256,6 +257,9 @@ def VLM(conditions,settings,geometry):
     # Turn off sonic vortices when Mach>1
     RHS = RHS*RFLAG
     
+    # To ensure compatibility for np.linalg.solve across numpy1.0 and numpy2.0
+    RHS = np.atleast_3d(RHS)
+
     # Build Aerodynamic Influence Coefficient Matrix
     use_VORLAX_induced_velocity = settings.use_VORLAX_matrix_calculation
     if not use_VORLAX_induced_velocity:
@@ -267,6 +271,10 @@ def VLM(conditions,settings,geometry):
 
     # Compute vortex strength
     GAMMA  = np.linalg.solve(A,RHS)
+
+    # To ensure compatibility for np.linalg.solve across numpy1.0 and numpy2.0
+    RHS    = RHS.squeeze(axis=2)
+    GAMMA  = GAMMA.squeeze(axis=2)
 
     # ---------------------------------------------------------------------------------------
     # STEP 11: Compute Pressure Coefficient

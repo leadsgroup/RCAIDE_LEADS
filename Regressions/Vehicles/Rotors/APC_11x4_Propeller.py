@@ -14,7 +14,7 @@ import numpy as np
 # design propeller 
 
 def APC_11x4_Propeller():          
-    prop                            = RCAIDE.Library.Components.Propulsors.Converters.Rotor()
+    prop                            = RCAIDE.Library.Components.Powertrain.Converters.Rotor()
     prop.inputs                     = Data() 
     prop.inputs.pitch_command       = 0 
     prop.inputs.y_axis_rotation     = 0.

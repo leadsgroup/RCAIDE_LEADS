@@ -340,7 +340,7 @@ def read_vsp_nacelle(nacelle_id,vsp_nacelle_type, units_type='SI'):
         nacelle.z_rotation   = vsp.GetParmVal(nacelle_id, 'Z_Rotation', 'XForm') * units_factor
         
         diameter  = vsp.GetParmVal(nacelle_id, "Diameter","Design") * units_factor
-        angle     = vsp.GetParmVal(nacelle_id, "Diameter","Design") * Units.degrees 
+        angle     = vsp.GetParmVal(nacelle_id, "Angle","Design") * Units.degrees 
         ft_flag_idx   = vsp.GetParmVal(nacelle_id,"Mode","Design")	 
         if ft_flag_idx == 0.0:
             ft_flag = True 
@@ -352,16 +352,15 @@ def read_vsp_nacelle(nacelle_id,vsp_nacelle_type, units_type='SI'):
         shape_dict = {0:'point',1:'circle',2:'ellipse',3:'super ellipse',4:'rounded rectangle',5:'general fuse',6:'fuse file',\
                       7:'four series',8:'six series',9:'biconvex',10:'wedge',11:'editcurve',12:'file airfoil'}  
         if shape_dict[shape] == 'four series': 
-            naf        = RCAIDE.Library.Components.Airfoils.Airfoil()
+            naf        = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
             length     = vsp.GetParmVal(nacelle_id, "Chord", "XSecCurve") * units_factor 
             thickness  = int(round(vsp.GetParmVal(nacelle_id, "ThickChord", "XSecCurve")*10,0))
             camber     = int(round(vsp.GetParmVal(nacelle_id, "Camber", "XSecCurve")*100,0))
             camber_loc = int(round( vsp.GetParmVal(nacelle_id, "CamberLoc", "XSecCurve" )*10,0)) 
-            airfoil    = str(camber) +  str(camber_loc) +  str(thickness)
-            height     =  thickness  
+            airfoil    =  '{0:02d}'.format(camber) +  str(camber_loc) +  str(thickness)
+            height     =  (thickness /10 ) *length 
             
-            naf.coordinate_file        = str(airfoil)  
-            naf.NACA_4_series_flag     = True 
+            naf.NACA_4_Series_code     = str(airfoil)   
             naf.thickness_to_chord     = thickness 
             nacelle.append_airfoil(naf)
             
@@ -388,8 +387,8 @@ def read_vsp_nacelle(nacelle_id,vsp_nacelle_type, units_type='SI'):
             nacelle.append_airfoil(naf)
             
         nacelle.length                = length  
-        nacelle.diameter              = diameter + height/2    
-        nacelle.inlet_diameter        = nacelle.diameter - height 
+        nacelle.diameter              = diameter   
+        nacelle.inlet_diameter        = diameter - height 
         nacelle.cowling_airfoil_angle = angle   
         
     return nacelle

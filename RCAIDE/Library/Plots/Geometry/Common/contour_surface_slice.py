@@ -66,8 +66,16 @@ def contour_surface_slice(x, y, z, values, color_scale, showscale = False,
     * Values array corresponds to surface points
     * Color scale is valid for plotly
     """
-    return go.Surface(x=x, y=y, z=z, surfacecolor=values, colorscale=color_scale, 
-                     showscale=showscale, colorbar=dict(title=colorbar_title, 
-                     titleside="right", orientation="v")) 
-
+    return go.Surface(
+        x=x, 
+        y=y, 
+        z=z, 
+        surfacecolor=values, 
+        colorscale=color_scale, 
+        showscale=showscale, 
+        colorbar=dict(
+            title=dict(text=colorbar_title),  # Use a dictionary for title
+            orientation="v"  # Vertical orientation (default)
+        )
+    )
    

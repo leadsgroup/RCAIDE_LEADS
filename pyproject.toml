@@ -23,10 +23,11 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering"
 ]
 dependencies = [
-    "numpy==1.26.4; python_version > '3.8'",
+    "numpy",
     "scipy",
     "matplotlib",
     "scikit-learn",

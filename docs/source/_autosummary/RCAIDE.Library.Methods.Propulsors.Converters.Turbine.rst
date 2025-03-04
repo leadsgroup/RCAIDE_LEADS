@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Turbine
+RCAIDE.Library.Methods.Powertrain.Converters.Turbine
 
 Turbine
 =======
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Turbine
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Turbine
 
    
    

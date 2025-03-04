@@ -2,7 +2,8 @@
 # 
 # Created:  Jul 2023, M. Clarke
 # Modified: Sep 2024, S. Shekar
-
+#           Jan 2025, M. Clarke
+  
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -11,8 +12,8 @@ import RCAIDE
 from RCAIDE.Framework.Mission.Common                      import Residuals
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
 from .Network                                             import Network              
-from RCAIDE.Library.Methods.Propulsors.Common.compute_avionics_power_draw import compute_avionics_power_draw
-from RCAIDE.Library.Methods.Propulsors.Common.compute_payload_power_draw  import compute_payload_power_draw
+from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw import compute_avionics_power_draw
+from RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw  import compute_payload_power_draw
 
 # Python imports
 import  numpy as  np
@@ -21,14 +22,12 @@ import  numpy as  np
 #  Electric
 # ----------------------------------------------------------------------------------------------------------------------  
 class Electric(Network):
-    """ A network comprising battery pack(s) to power rotors using electric motors via a bus.
-        Electronic speed controllers, thermal management system, avionics, and other eletric 
-        power systes paylaods are also modelled. Rotors and motors are arranged into groups,
-        called propulsor groups, to siginify how they are connected in the network.
-        The network also takes into consideration thermal management components that are
-        connected to a coolant line.
-        The network adds additional unknowns and residuals to the mission to determinge 
-        the torque matching between motors and rotors in each propulsor group.
+    """ An electric network comprising one or more electrichemical energy source and/or fuel cells that to power electro-
+        mechanical conversion machines eg. electric motors via a bus. Electronic speed controllers, thermal management
+        system, avionics, and other eletric power systes paylaods are also modeled. Ducted fans, generators, rotors and
+        motors etc. arranged into groups, called propulsor groups, to siginify how they are connected in the network.
+        The network also takes into consideration thermal management components that are connected to a coolant line.
+        Based on the propulsor, additional unknowns and residuals are added to the mission  
 
 
         Assumptions:
@@ -85,19 +84,22 @@ class Electric(Network):
 
         # unpack   
         conditions      = state.conditions 
-        busses          = network.busses
+        busses          = network.busses 
         coolant_lines   = network.coolant_lines
         total_thrust    = 0. * state.ones_row(3) 
         total_power     = 0. * state.ones_row(1) 
         total_moment    = 0. * state.ones_row(3)  
+        total_mdot      = 0. * state.ones_row(1)   
         reverse_thrust  = network.reverse_thrust
-
+       
+        # Step 1: Compute performance of electric propulsor components 
         for bus in busses:
+            cryogen_mdot    = 0. * state.ones_row(1)  
             T               = 0. * state.ones_row(1) 
             total_power     = 0. * state.ones_row(1) 
             M               = 0. * state.ones_row(1)  
-            avionics              = bus.avionics
-            payload               = bus.payload  
+            avionics        = bus.avionics
+            payload         = bus.payload  
 
             # Avionics Power Consumtion
             avionics_conditions = state.conditions.energy[bus.tag][avionics.tag]
@@ -117,13 +119,13 @@ class Electric(Network):
                 bus.charging_current   = bus.nominal_capacity * bus.charging_c_rate 
                 charging_power         = (bus.charging_current*bus_voltage*bus.power_split_ratio)
 
-                # append bus outputs to battery
+                # append bus outputs to bus
                 bus_conditions                    = state.conditions.energy[bus.tag]
                 bus_conditions.power_draw         = ((avionics_power + payload_power + total_esc_power) - charging_power)/bus.efficiency
                 bus_conditions.current_draw       = -bus_conditions.power_draw/bus.voltage
 
             else:       
-                # compute energy consumption of each battery on bus 
+                # compute energy consumption of each electrochemical energy source on bus 
                 stored_results_flag  = False
                 stored_propulsor_tag = None 
                 for propulsor_group in bus.assigned_propulsors:
@@ -151,46 +153,80 @@ class Electric(Network):
                 charging_power  = (state.conditions.energy[bus.tag].regenerative_power*bus_voltage*bus.power_split_ratio) 
                 total_esc_power = total_power*bus.power_split_ratio  
 
-                # append bus outputs to battery 
+                # append bus outputs to electrochemical energy source 
                 bus_conditions                    = state.conditions.energy[bus.tag]
                 bus_conditions.power_draw        += ((avionics_power + payload_power + total_esc_power) - charging_power)/bus.efficiency
                 bus_conditions.current_draw       = bus_conditions.power_draw/bus_voltage
 
-
+        
+        # Step 2.1: Compute performance of electro-chemical energy (battery) compoments   
         time               = state.conditions.frames.inertial.time[:,0] 
         delta_t            = np.diff(time)
-        for t_idx in range(state.numerics.number_of_control_points):    
-            for bus in  busses:
-                stored_results_flag  = False
-                stored_battery_tag   = None                          
+        for bus in  busses:    
+            for t_idx in range(state.numerics.number_of_control_points):            
+                stored_results_flag       = False
+                stored_battery_cell_tag   = None
+                
+                stored_fuel_cell_tag      = None  
+                # Step 2.1.a : Battery Module Performance          
                 for battery_module in  bus.battery_modules:                   
                     if bus.identical_battery_modules == False:
                         # run analysis  
-                        stored_results_flag, stored_battery_tag =  battery_module.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
+                        stored_results_flag, stored_battery_cell_tag =  battery_module.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
                     else:             
                         if stored_results_flag == False: 
                             # run battery analysis 
-                            stored_results_flag, stored_battery_tag  =  battery_module.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
+                            stored_results_flag, stored_battery_cell_tag  =  battery_module.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
                         else:
                             # use previous battery results 
-                            battery_module.reuse_stored_data(state,bus,coolant_lines, t_idx, delta_t,stored_results_flag, stored_battery_tag)
+                            battery_module.reuse_stored_data(state,bus,stored_results_flag, stored_battery_cell_tag)
+                 
+                # Step 2.1.b : Fuel Cell Stack Performance           
+                for fuel_cell_stack in  bus.fuel_cell_stacks:                   
+                    if bus.identical_fuel_cell_stacks == False:
+                        # run analysis  
+                        stored_results_flag, stored_fuel_cell_tag =  fuel_cell_stack.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
+                    else:             
+                        if stored_results_flag == False: 
+                            # run battery analysis 
+                            stored_results_flag, stored_fuel_cell_tag  =  fuel_cell_stack.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
+                        else:
+                            # use previous battery results 
+                            fuel_cell_stack.reuse_stored_data(state,bus,stored_results_flag, stored_fuel_cell_tag)
+                         
+                    # compute cryogen mass flow rate 
+                    fuel_cell_stack_conditions  = bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag]                        
+                    cryogen_mdot[t_idx]        += fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]
+                    
+                    # compute total mass flow rate 
+                    total_mdot[t_idx]     += fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]    
+                   
+                # Step 3: Compute bus properties          
                 bus.compute_distributor_conditions(state,t_idx, delta_t)
                 
-                # Thermal Management Calculations                    
-                for coolant_line in  coolant_lines:
+                # Step 4 : Battery Thermal Management Calculations                    
+                for coolant_line in coolant_lines:
                     if t_idx != state.numerics.number_of_control_points-1: 
                         for heat_exchanger in coolant_line.heat_exchangers: 
                             heat_exchanger.compute_heat_exchanger_performance(state,bus,coolant_line,delta_t[t_idx],t_idx) 
                         for reservoir in coolant_line.reservoirs:   
-                            reservoir.compute_reservior_coolant_temperature(state,coolant_line,delta_t[t_idx],t_idx)
-        
+                            reservoir.compute_reservior_coolant_temperature(state,coolant_line,delta_t[t_idx],t_idx) 
+       
+            # Step 5: Determine mass flow from cryogenic tanks 
+            for cryogenic_tank in bus.cryogenic_tanks:
+                # Step 5.1: Determine the cumulative flow from each cryogen tank
+                fuel_tank_mdot = cryogenic_tank.croygen_selector_ratio*cryogen_mdot + cryogenic_tank.secondary_cryogenic_flow 
+                
+                # Step 5.2: DStore mass flow results 
+                conditions.energy[bus.tag][cryogenic_tank.tag].mass_flow_rate  = fuel_tank_mdot 
+                                 
         if reverse_thrust ==  True:
             total_thrust =  total_thrust * -1     
             total_moment =  total_moment * -1                    
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.power                = total_power 
-        conditions.energy.thrust_moment_vector = total_moment
-        conditions.energy.vehicle_mass_rate    = state.ones_row(1)*0.0  
+        conditions.energy.thrust_moment_vector = total_moment 
+        conditions.energy.vehicle_mass_rate    = total_mdot  
 
         return
 
@@ -313,10 +349,16 @@ class Electric(Network):
                 for battery_module in  bus.battery_modules: 
                     battery_module.append_operating_conditions(segment,bus) 
     
+                for fuel_cell_stack in  bus.fuel_cell_stacks: 
+                    fuel_cell_stack.append_operating_conditions(segment,bus)      
                     
                 for tag, bus_item in  bus.items():  
                     if issubclass(type(bus_item), RCAIDE.Library.Components.Component):
-                        bus_item.append_operating_conditions(segment,bus)                     
+                        bus_item.append_operating_conditions(segment,bus)
+         
+                for cryogenic_tank in  bus.cryogenic_tanks: 
+                    cryogenic_tank.append_operating_conditions(segment,bus)
+                                                    
     
             for coolant_line_i, coolant_line in enumerate(network.coolant_lines):  
                 # ------------------------------------------------------------------------------------------------------            

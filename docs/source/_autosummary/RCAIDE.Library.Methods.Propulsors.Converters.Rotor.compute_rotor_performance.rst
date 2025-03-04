@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.compute_rotor_performance
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance
 
 compute\_rotor\_performance
 ===========================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.compute_rotor_performance
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance
 
    
    

@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Common
+RCAIDE.Library.Methods.Powertrain.Systems
 
 Common
 ======
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Common
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Systems
 
    
    

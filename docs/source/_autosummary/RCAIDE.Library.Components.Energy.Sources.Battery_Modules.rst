@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Energy.Sources.Battery_Modules
+RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules
 
 Battery\_Modules
 ================
 
-.. automodule:: RCAIDE.Library.Components.Energy.Sources.Battery_Modules
+.. automodule:: RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules
 
    
    

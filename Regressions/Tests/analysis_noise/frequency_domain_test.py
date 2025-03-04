@@ -7,7 +7,7 @@ from RCAIDE.Library.Methods.Noise.Frequency_Domain_Buildup.Rotor                
 from RCAIDE.Framework.Mission.Common                                              import Results  
 from RCAIDE.Framework.Mission.Segments.Segment                                    import Segment 
 from RCAIDE.Framework.Mission.Common                                              import Conditions
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor.compute_rotor_performance import compute_rotor_performance 
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import compute_rotor_performance 
 from RCAIDE.Library.Plots import * 
 
 # Python Imports  
@@ -50,7 +50,7 @@ def Harmonic_Noise_Validation(PP):
     F8745_D4_verification_values_60deg = [156.92733365790193,100.86943888034477,109.60611659108622 ]
     F8745_D4_verification_values_90deg = [159.07711862067382,107.37402397630274,117.14527113998096 ]
     fidelities                         = ['point_source', 'line_source', 'plane_source'] 
-    electric_rotor                     = RCAIDE.Library.Components.Propulsors.Electric_Rotor() 
+    electric_rotor                     = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
     rotor                              = F8745_D4_Propeller() 
     electric_rotor.rotor               = rotor
     
@@ -220,7 +220,7 @@ def Broadband_Noise_Validation(PP):
 
     
     
-    electric_rotor                 = RCAIDE.Library.Components.Propulsors.Electric_Rotor() 
+    electric_rotor                 = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
     rotor                          = APC_11x4_Propeller()  
     electric_rotor.rotor           = rotor     
     

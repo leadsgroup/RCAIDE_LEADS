@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports  
-from RCAIDE.Framework.Core import Data  
-from RCAIDE.Library.Components.Thermal_Management.Accessories import Pump  
+# RCAIDE imports
+import RCAIDE
+from RCAIDE.Framework.Core import Data   
 
 # python package imports 
 import numpy as np  
@@ -142,7 +142,7 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
         heat_transfer_efficiency      = (T_o - T_inlet) / (T_cell - T_inlet)
         
         # Calculate the Power consumed
-        Power   = Pump.compute_power_consumed(dp, rho, m_coolant, n_pump) 
+        Power   = RCAIDE.Library.Components.Thermal_Management.Accessories.Pump.compute_power_consumed(dp, rho, m_coolant, n_pump) 
         
         # Update temperature of Battery Pack
         P_net                   = Q_module - Q_convec 
@@ -163,7 +163,7 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
         heat_transfer_efficiency      = (T_o - T_inlet) / (T_cell - T_inlet)
             
         # Calculate the Power consumed
-        Power   = Pump.compute_power_consumed(dp, rho, m_coolant, n_pump) 
+        Power   = RCAIDE.Library.Components.Thermal_Management.Accessories.Pump.compute_power_consumed(dp, rho, m_coolant, n_pump) 
             
         # Update temperature of Battery Pack
         P_net                   = Q_convec + Q_module
@@ -173,7 +173,7 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
         P_net = 0
         Q_convec = 0
         T_o = T_inlet
-        Power   = Pump.compute_power_consumed(dp, rho, m_coolant, n_pump)         
+        Power   = RCAIDE.Library.Components.Thermal_Management.Accessories.Pump.compute_power_consumed(dp, rho, m_coolant, n_pump)         
         
         
     dT_dt                   = P_net/(cell_mass*N_cells_geometric_config*Cp_bat)

@@ -26,7 +26,8 @@ modules = [
     'Tests/analysis_stability/untrimmed_flight_test.py', 
     'Tests/analysis_weights/operating_empty_weight_test.py',
     'Tests/analysis_weights/cg_and_moi_test.py',
-    'Tests/energy_sources/cell.py',
+    'Tests/energy_sources/battery_cell.py',
+    'Tests/energy_sources/fuel_cell.py',
     'Tests/geometry/airfoil_import_test.py', 
     'Tests/geometry/airfoil_interpolation_test.py',    
     'Tests/geometry/wing_volume_test.py',
@@ -34,8 +35,9 @@ modules = [
     'Tests/geometry/fuselage_planform_compute.py',  
     'Tests/future_capability_coverage/coverage_test.py',    
     'Tests/mission_segments/transition_segment_test.py', 
-    'Tests/network_electric/electric_btms_test.py', 
-    'Tests/network_ducted_fan/electric_ducted_fan_network_test.py',
+    'Tests/network_electric/battery_electric_aircraft_test.py',
+    'Tests/network_electric/hydrogen_fuel_cell_aircraft_test.py', 
+    'Tests/network_electric/electric_ducted_fan_aircraft_test.py',
     'Tests/network_turbofan/turbofan_network_test.py',
     'Tests/network_turbojet/turbojet_network_test.py',
     'Tests/network_turboprop/turboprop_network_test.py',
@@ -52,7 +54,9 @@ modules = [
     'Tests/performance/V_n_diagram_test.py', 
     'Tests/propulsion/propeller_performance_test.py',  
     'Tests/propulsion/propeller_non_uniform_inflow.py',  
-    'Tests/propulsion/propeller_wing_interaction_test.py',  
+    'Tests/propulsion/propeller_wing_interaction_test.py', 
+    'Tests/propulsion/motor_test.py',
+    'Tests/propulsion/reformer_test.py',
 ]
 
 def run_module_test(module_path):

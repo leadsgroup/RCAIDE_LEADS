@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Turboshaft_Propulsor.size_core
+RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor.size_core
 
 size\_core
 ==========
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Turboshaft_Propulsor.size_core
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor.size_core
 
    
    

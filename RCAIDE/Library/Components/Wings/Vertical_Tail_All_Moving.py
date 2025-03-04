@@ -8,7 +8,7 @@
 # RCAIDE imports   
 from .Vertical_Tail      import Vertical_Tail
 from .All_Moving_Surface import All_Moving_Surface
-from RCAIDE.Library.Methods.Weights.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Vertical_Tail_All_Moving

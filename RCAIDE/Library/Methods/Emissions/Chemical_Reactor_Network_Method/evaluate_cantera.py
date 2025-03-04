@@ -109,7 +109,7 @@ def evaluate_cantera(combustor,T,P,mdot,FAR):
     See Also
     --------
     RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices
-    RCAIDE.Library.Components.Propulsors.Converters.Combustor
+    RCAIDE.Library.Components.Powertrain.Converters.Combustor
 
     References
     ----------

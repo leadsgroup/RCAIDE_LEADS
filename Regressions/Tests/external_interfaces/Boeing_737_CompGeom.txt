@@ -10,9 +10,9 @@ Theo_Area   Wet_Area   Theo_Vol    Wet_Vol  Name
    77.757     56.301     11.595      8.507  vertical_stabilizer
    36.205     36.099      3.264      3.264  nacelle_1      
    36.205     35.954      3.264      3.264  nacelle_1      
-  404.422    392.483    352.197    346.317  tube_fuselage  
+  404.415    392.476    352.183    346.304  tube_fuselage  
 -------------------------------------------------
-  900.351    805.784    414.225    397.899  Totals         
+  900.344    805.777    414.211    397.886  Totals         
 
 Tag_Theo_Area   Tag_Wet_Area    Tag_Name
       100.960         76.977    main_wing_S_Surf0
@@ -22,7 +22,7 @@ Tag_Theo_Area   Tag_Wet_Area    Tag_Name
        77.757         56.301    vertical_stabilizer_S_Surf0
        36.205         36.099    nacelle_1_S_Surf0
        36.205         35.954    nacelle_1_S_Surf0
-      404.422        392.483    tube_fuselage_S_Surf0
+      404.415        392.476    tube_fuselage_S_Surf0
         7.028          7.028    main_wing_S_Surf0,SS_CONT_0
        19.586         19.586    main_wing_S_Surf0,SS_CONT_1
         3.054          3.054    main_wing_S_Surf0,SS_CONT_2

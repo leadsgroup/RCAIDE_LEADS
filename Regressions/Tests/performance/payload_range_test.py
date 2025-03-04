@@ -32,12 +32,14 @@ def main():
     fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
     assert(abs(fuel_error)<1e-6)
     
-    electric_r_true = 37039.99999999999
-    electric_payload_range_res = electric_aircraft_payload_range()       
-    electric_r         =  electric_payload_range_res.range[-1]
-    print('Electric Range: ' + str(electric_r ))
-    electric_error =  abs(electric_r - electric_r_true) /electric_r_true
-    assert(abs(electric_error)<1e-6)
+    rotor_type  = ['Blade_Element_Momentum_Theory_Helmholtz', 'Actuator_Disk']
+    electric_r_truth = [37039.99999999999, 37039.99999999999]
+    for i in range(len(rotor_type)):
+        electric_payload_range_res = electric_aircraft_payload_range(rotor_type[i])       
+        electric_r         =  electric_payload_range_res.range[-1]
+        print('Electric Range: ' + str(electric_r ))
+        electric_error =  abs(electric_r - electric_r_truth[i]) /electric_r_truth[i]
+        assert(abs(electric_error)<1e-6)
     return 
     
     
@@ -58,7 +60,7 @@ def fuel_aircraft_payload_range():
 
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
+    weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
     weights.vehicle = vehicle 
 
     # ------------------------------------------------------------------
@@ -78,22 +80,21 @@ def fuel_aircraft_payload_range():
                                    
     return payload_range_results 
 
-def electric_aircraft_payload_range():
-    
+def electric_aircraft_payload_range(rotor_type):
     # vehicle data
-    vehicle             = X57_vehicle_setup()
- 
+    vehicle             = X57_vehicle_setup(rotor_type)
+
     assigned_propulsors = [['starboard_propulsor','port_propulsor']]   
     altitude            = 15000   * Units.feet 
     airspeed            = 130 * Units.kts
     max_range_guess     = 20.   * Units.nautical_mile
-      
+
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Weights_EVTOL()
+    weights = RCAIDE.Framework.Analyses.Weights.Electric()
     weights.vehicle = vehicle
-    
+
     # since OEW was not defined, we evalaute it here   
     _ = weights.evaluate()
 
@@ -103,14 +104,14 @@ def electric_aircraft_payload_range():
     aerodynamics.vehicle  = vehicle
     aerodynamics.settings.number_of_spanwise_vortices   = 5
     aerodynamics.settings.number_of_chordwise_vortices  = 2  
-    
+
     payload_range_results =  compute_payload_range_diagram(vehicle,assigned_propulsors,
                                                            weights_analysis=weights,
                                                            aerodynamics_analysis=aerodynamics,
                                                            cruise_airspeed=airspeed,
                                                            cruise_altitude=altitude, 
                                                            max_range_guess = max_range_guess)
-     
+
     return payload_range_results
 
 

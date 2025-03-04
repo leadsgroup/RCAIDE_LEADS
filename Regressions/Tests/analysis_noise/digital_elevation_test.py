@@ -23,17 +23,22 @@ from NASA_X57    import vehicle_setup, configs_setup
 #   Main
 # ---------------------------------------------------------------------- 
 def main(): 
- 
-    plot_elevation_contours(topography_file   ='LA_Metropolitan_Area.txt',use_lat_long_coordinates = True, save_filename = "Elevation_Contours_Lat_Long")
 
-    plot_elevation_contours(topography_file   ='LA_Metropolitan_Area.txt',use_lat_long_coordinates = False, save_filename = "Elevation_Contours_XY")
+    current_dir = os.path.dirname(__file__)
+    data_file = os.path.join(current_dir, 'LA_Metropolitan_Area.txt')
+
+
+    plot_elevation_contours(topography_file   =data_file,use_lat_long_coordinates = True, save_filename = "Elevation_Contours_Lat_Long")
+
+    plot_elevation_contours(topography_file   =data_file,use_lat_long_coordinates = False, save_filename = "Elevation_Contours_XY")
     
-    vehicle  = vehicle_setup()          
+    vehicle  = vehicle_setup('Blade_Element_Momentum_Theory_Helmholtz')          
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
     mission  = mission_setup(analyses)
     missions = missions_setup(mission)  
-    results  = missions.base_mission.evaluate()   
+    results  = missions.base_mission.evaluate()  
+    results.segments[0].analyses.noise.settings.topography_file = data_file
     
     regression_plotting_flag = False 
     flight_times = np.array(['06:00:00','06:05:00','06:10:00','06:15:00',
@@ -83,7 +88,7 @@ def base_analysis(vehicle):
  
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Weights_General_Aviation()
+    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
     weights.vehicle = vehicle
     analyses.append(weights)
 

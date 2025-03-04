@@ -9,8 +9,8 @@
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components import Component 
 from RCAIDE.Library.Components import Wings
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Momentum_Theory_Wake.fidelity_zero_wake_convergence import fidelity_zero_wake_convergence
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Momentum_Theory_Wake.compute_fidelity_zero_induced_velocity import compute_fidelity_zero_induced_velocity 
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Momentum_Theory_Wake.fidelity_zero_wake_convergence import fidelity_zero_wake_convergence
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Momentum_Theory_Wake.compute_fidelity_zero_induced_velocity import compute_fidelity_zero_induced_velocity 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.extract_wing_collocation_points import extract_wing_collocation_points
 
 import numpy as np

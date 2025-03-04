@@ -1,4 +1,4 @@
-# RCAIDE/Library/Missions/Segments/Ground/Battery_Charge_or_Discharge.py
+# RCAIDE/Library/Missions/Segments/Ground/Battery_Charge_Discharge.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 

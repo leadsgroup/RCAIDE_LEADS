@@ -4,8 +4,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core                              import Units 
 from RCAIDE.Framework.Mission.Common                    import Results  
-from RCAIDE.Framework.Mission.Segments.Segment          import Segment  
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor.compute_rotor_performance import compute_rotor_performance 
+from RCAIDE.Framework.Mission.Segments.Segment          import Segment
  
 import numpy as np
 
@@ -19,7 +18,7 @@ def propeller_aerodynamic_analysis(propeller,
                            altitude = 0,
                            delta_isa =0 ): 
     # design aircract 
-    electric_rotor                 = RCAIDE.Library.Components.Propulsors.Electric_Rotor()  
+    electric_rotor                 = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
     electric_rotor.rotor           = propeller 
     
     # operarting states  
@@ -70,7 +69,7 @@ def propeller_aerodynamic_analysis(propeller,
     
     rotor_conditions             =  segment.state.conditions.energy[electric_rotor.tag][propeller.tag]        
     rotor_conditions.omega       = angular_velocity
-    compute_rotor_performance(electric_rotor,segment.state)
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance(electric_rotor,segment.state)
      
     results =  segment.state.conditions.energy[electric_rotor.tag][propeller.tag] 
     return  results

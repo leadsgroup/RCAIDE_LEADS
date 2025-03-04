@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Design.procedure_setup
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup
 
 procedure\_setup
 ================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Design.procedure_setup
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup
 
    
    

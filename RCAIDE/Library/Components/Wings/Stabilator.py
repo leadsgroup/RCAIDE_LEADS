@@ -8,7 +8,7 @@
 # RCAIDE imports   
 from .Horizontal_Tail    import Horizontal_Tail
 from .All_Moving_Surface import All_Moving_Surface
-from RCAIDE.Library.Methods.Weights.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Stabilator

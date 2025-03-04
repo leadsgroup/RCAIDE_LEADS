@@ -1,7 +1,7 @@
-# RCAIDE/Energy/Networks/Fuel.py
+# RCAIDE/Framework/Energy/Networks/Fuel.py
 # 
 # Created:  Oct 2023, M. Clarke
-# Modified: 
+#           Jan 2025, M. Clarke 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Imports
@@ -71,9 +71,11 @@ class Fuel(Network):
         total_mdot     = 0. * state.ones_row(1)   
         
         # Step 2: loop through compoments of network and determine performance
-        for fuel_line in fuel_lines:     
+        for fuel_line in fuel_lines:
+            fuel_line_mdot       = 0. * state.ones_row(1)  
             stored_results_flag  = False
-            stored_propulsor_tag = None 
+            stored_propulsor_tag = None
+            # Step 2.1: Compute thrust,moment and power of propulsors
             for propulsor_group in fuel_line.assigned_propulsors:
                 for propulsor_tag in propulsor_group:
                     propulsor =  network.propulsors[propulsor_tag]
@@ -91,22 +93,17 @@ class Fuel(Network):
                           
                         total_thrust += T   
                         total_moment += M   
-                        total_power  += P  
+                        total_power  += P
+                        
+                        # compute fuel line mass flow rate 
+                        fuel_line_mdot += conditions.energy[propulsor.tag].fuel_flow_rate
+                        
+                        # compute total mass flow rate 
+                        total_mdot     += conditions.energy[propulsor.tag].fuel_flow_rate 
                 
-            # Step 2.2: Link each propulsor the its respective fuel tank(s)
-            for fuel_tank in fuel_line.fuel_tanks:
-                mdot = 0. * state.ones_row(1)   
-                for propulsor in network.propulsors:
-                    for source in (propulsor.active_fuel_tanks):
-                        if fuel_tank.tag == source: 
-                            mdot += conditions.energy[propulsor.tag].fuel_flow_rate 
-                    
-                # Step 2.3 : Determine cumulative fuel flow from fuel tank 
-                fuel_tank_mdot = fuel_tank.fuel_selector_ratio*mdot + fuel_tank.secondary_fuel_flow 
-                
-                # Step 2.4: Store mass flow results 
-                conditions.energy[fuel_line.tag][fuel_tank.tag].mass_flow_rate  = fuel_tank_mdot  
-                total_mdot += fuel_tank_mdot                    
+            # Step 2.2: Determine cumulative fuel flow from each fuel tank  
+            for fuel_tank in fuel_line.fuel_tanks:  
+                conditions.energy[fuel_line.tag][fuel_tank.tag].mass_flow_rate  = fuel_tank.fuel_selector_ratio*fuel_line_mdot + fuel_tank.secondary_fuel_flow         
                             
         # Step 3: Pack results
         if reverse_thrust ==  True:

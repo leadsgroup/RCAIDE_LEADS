@@ -48,6 +48,7 @@ def main():
     elevator_deflection_true   = -0.807352565925395
     elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
     print('Error1: ',elevator_deflection_diff)
+    # There is assertion error somehow, not related to any dimension error pertaining to numpy
     assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
 
     aileron_deflection        = results.segments.climb.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg  
@@ -92,27 +93,26 @@ def base_analysis(vehicle, configs):
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
     weights.vehicle = vehicle
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                             = vehicle
+    aerodynamics.vehicle                                = vehicle
     aerodynamics.settings.number_of_spanwise_vortices   = 30
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
-    aerodynamics.settings.model_fuselage             = True                
-    aerodynamics.settings.model_nacelle              = True
+    aerodynamics.settings.drag_coefficient_increment    = 0.0000
+    aerodynamics.settings.model_fuselage                = True                
+    aerodynamics.settings.model_nacelle                 = True
     analyses.append(aerodynamics) 
       
-    stability                                       = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method() 
-    stability.settings.discretize_control_surfaces  = True
-    stability.settings.model_fuselage               = True                
-    stability.settings.model_nacelle                = True
-        
-    stability.configuration                         = configs
-    stability.vehicle                               = vehicle
+    stability                                           = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method() 
+    stability.settings.discretize_control_surfaces      = True
+    stability.settings.model_fuselage                   = True                
+    stability.settings.model_nacelle                    = True 
+    stability.configuration                             = configs
+    stability.vehicle                                   = vehicle
     analyses.append(stability)
 
     # ------------------------------------------------------------------

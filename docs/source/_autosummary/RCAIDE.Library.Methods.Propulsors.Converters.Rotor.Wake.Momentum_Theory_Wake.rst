@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Momentum_Theory_Wake
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Momentum_Theory_Wake
 
 Momentum\_Theory\_Wake
 ======================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Momentum_Theory_Wake
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Momentum_Theory_Wake
 
    
    

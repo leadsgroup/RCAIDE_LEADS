@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Combustor.append_combustor_conditions
+RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions
 
 append\_combustor\_conditions
 =============================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Combustor.append_combustor_conditions
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions
 
    
    

@@ -7,10 +7,10 @@
 
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core                                         import Units    
-from RCAIDE.Library.Methods.Propulsors.Turboshaft_Propulsor        import design_turboshaft 
-from RCAIDE.Framework.Mission.Common                               import Conditions
-from RCAIDE.Library.Plots                                          import *     
+from RCAIDE.Framework.Core                                             import Units    
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor import design_turboshaft 
+from RCAIDE.Framework.Mission.Common                                   import Conditions
+from RCAIDE.Library.Plots                                              import *     
 
 # python imports 
 import numpy   as np      
@@ -52,7 +52,7 @@ def turboshaft_engine_Boeing_502_14(altitude,mach):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
-    turboshaft                                     = RCAIDE.Library.Components.Propulsors.Turboshaft() 
+    turboshaft                                     = RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft() 
     turboshaft.tag                                 = 'Turboshaft_propulsor'
     turboshaft.origin                              = [[13.72, 4.86,-1.1]] 
     turboshaft.engine_length                       = 0.945     
@@ -64,19 +64,19 @@ def turboshaft_engine_Boeing_502_14(altitude,mach):
     
     # working fluid                                    
     turboshaft.working_fluid                       = RCAIDE.Library.Attributes.Gases.Air() 
-    ram                                            = RCAIDE.Library.Components.Propulsors.Converters.Ram()
+    ram                                            = RCAIDE.Library.Components.Powertrain.Converters.Ram()
     ram.tag                                        = 'ram' 
     turboshaft.ram                                 = ram 
                                                    
     # inlet nozzle                                 
-    inlet_nozzle                                   = RCAIDE.Library.Components.Propulsors.Converters.Compression_Nozzle()
+    inlet_nozzle                                   = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
     inlet_nozzle.tag                               = 'inlet nozzle'
     inlet_nozzle.polytropic_efficiency             = 0.98
     inlet_nozzle.pressure_ratio                    = 0.98 
     turboshaft.inlet_nozzle                        = inlet_nozzle 
                                                    
     # compressor                                   
-    compressor                                     = RCAIDE.Library.Components.Propulsors.Converters.Compressor()    
+    compressor                                     = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     compressor.tag                                 = 'compressor'
     compressor.polytropic_efficiency               = 0.91
     compressor.pressure_ratio                      = 4.35  
@@ -84,21 +84,21 @@ def turboshaft_engine_Boeing_502_14(altitude,mach):
     turboshaft.compressor                          = compressor
 
     # low pressure turbine  
-    low_pressure_turbine                           = RCAIDE.Library.Components.Propulsors.Converters.Turbine()   
+    low_pressure_turbine                           = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     low_pressure_turbine.tag                       ='lpt'
     low_pressure_turbine.mechanical_efficiency     = 0.99
     low_pressure_turbine.polytropic_efficiency     = 0.93 
     turboshaft.low_pressure_turbine                = low_pressure_turbine
    
     # high pressure turbine     
-    high_pressure_turbine                          = RCAIDE.Library.Components.Propulsors.Converters.Turbine()   
+    high_pressure_turbine                          = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     high_pressure_turbine.tag                      ='hpt'
     high_pressure_turbine.mechanical_efficiency    = 0.99
     high_pressure_turbine.polytropic_efficiency    = 0.93 
     turboshaft.high_pressure_turbine               = high_pressure_turbine 
 
     # combustor  
-    combustor                                      = RCAIDE.Library.Components.Propulsors.Converters.Combustor()   
+    combustor                                      = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.99 
     combustor.alphac                               = 1.0     
@@ -108,7 +108,7 @@ def turboshaft_engine_Boeing_502_14(altitude,mach):
     turboshaft.combustor                           = combustor
 
     # core nozzle
-    core_nozzle                                    = RCAIDE.Library.Components.Propulsors.Converters.Expansion_Nozzle()   
+    core_nozzle                                    = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
     core_nozzle.tag                                = 'core nozzle'
     core_nozzle.polytropic_efficiency              = 0.95
     core_nozzle.pressure_ratio                     = 0.99  

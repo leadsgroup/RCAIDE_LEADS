@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Propulsors.Converters.Ram
+RCAIDE.Library.Components.Powertrain.Converters.Ram
 
 Ram
 ===
 
-.. automodule:: RCAIDE.Library.Components.Propulsors.Converters.Ram
+.. automodule:: RCAIDE.Library.Components.Powertrain.Converters.Ram
 
    
    

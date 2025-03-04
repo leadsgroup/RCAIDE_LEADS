@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Compressor
+RCAIDE.Library.Methods.Powertrain.Converters.Compressor
 
 Compressor
 ==========
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Compressor
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Compressor
 
    
    

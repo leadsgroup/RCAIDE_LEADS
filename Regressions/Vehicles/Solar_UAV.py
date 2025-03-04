@@ -6,7 +6,7 @@
 # RCAIDE imports 
 import RCAIDE 
 from RCAIDE.Framework.Core import Units   
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor     import design_propeller
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor     import design_propeller
 from RCAIDE.Library.Methods.Energy.Sources.Batteries.Common import size_module_from_mass
 
 # python imports 
@@ -136,7 +136,7 @@ def vehicle_setup():
     #initialize the electric network
     net            = RCAIDE.Framework.Networks.Solar()  
  
-    logic                 = RCAIDE.Library.Components.Energy.Modulators.Solar_Logic()
+    logic                 = RCAIDE.Library.Components.Powertrain.Modulators.Solar_Logic()
     logic.system_voltage  = 40.0
     logic.MPPT_efficiency = 0.95
     net.solar_logic       = logic 
@@ -144,12 +144,12 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                              = RCAIDE.Library.Components.Energy.Distributors.Electrical_Bus() 
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Solar Panel
     #------------------------------------------------------------------------------------------------------------------------------------  
-    panel                      = RCAIDE.Library.Components.Energy.Sources.Solar_Panels.Solar_Panel()
+    panel                      = RCAIDE.Library.Components.Powertrain.Sources.Solar_Panels.Solar_Panel()
     panel.area                 = vehicle.reference_area * 0.9
     panel.efficiency           = 0.25
     panel.mass_properties.mass = panel.area*(0.60 * Units.kg)
@@ -158,7 +158,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bat                      = RCAIDE.Library.Components.Energy.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    bat                      = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     bat.tag                  = 'li_ion_battery' 
     bat.mass_properties.mass = 90.0 * Units.kg
     bat.cell.specific_energy = 600. * Units.Wh/Units.kg
@@ -171,17 +171,17 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    propulsor                                         = RCAIDE.Library.Components.Propulsors.Electric_Rotor()  
+    propulsor                                         = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
     propulsor.tag                                     = 'propulsor' 
              
     # Electronic Speed Controller                  
-    esc                                               = RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller()
+    esc                                               = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                           = 'esc_1'
     esc.efficiency                                    = 0.95 
     propulsor.electronic_speed_controller             = esc   
      
     # Propeller              
-    propeller                                        = RCAIDE.Library.Components.Propulsors.Converters.Propeller() 
+    propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
     propeller.tag                                    = 'propeller_1' 
     propeller.tip_radius                             =  4.25 * Units.meters 
     propeller.number_of_blades                       = 2
@@ -195,7 +195,7 @@ def vehicle_setup():
     propulsor.rotor                                  = propeller   
               
     # DC_Motor       
-    motor                                            = RCAIDE.Library.Components.Propulsors.Converters.DC_Motor() 
+    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor() 
     motor.resistance                                 = 0.008
     motor.no_load_current                            = 4.5  * Units.ampere
     motor.speed_constant                             = 120. * Units['rpm'] # RPM/volt converted to (rad/s)/volt    
@@ -231,7 +231,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
-    avionics                     = RCAIDE.Library.Components.Systems.Avionics()
+    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 50. # Watts
     bus.avionics                 = avionics   
  

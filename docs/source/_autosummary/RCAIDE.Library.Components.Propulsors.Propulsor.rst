@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Propulsors.Propulsor
+RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor
 
 Propulsor
 =========
 
-.. automodule:: RCAIDE.Library.Components.Propulsors.Propulsor
+.. automodule:: RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor
 
    
    

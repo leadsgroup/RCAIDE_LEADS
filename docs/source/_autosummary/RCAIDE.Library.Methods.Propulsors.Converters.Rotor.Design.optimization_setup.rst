@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Design.optimization_setup
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup
 
 optimization\_setup
 ===================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Design.optimization_setup
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup
 
    
    

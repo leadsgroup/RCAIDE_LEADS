@@ -9,9 +9,9 @@
 
 # RCAIDE imports
 from RCAIDE.Framework.Mission.Segments.Evaluate        import Evaluate    
-from RCAIDE.Framework.Core                                      import Units
-from RCAIDE.Library.Mission.Segments                  import Ground  
-from RCAIDE.Library.Methods.skip                              import skip 
+from RCAIDE.Framework.Core                             import Units
+from RCAIDE.Library.Mission.Segments                   import Ground  
+from RCAIDE.Library.Methods.skip                       import skip 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  SEGMENT

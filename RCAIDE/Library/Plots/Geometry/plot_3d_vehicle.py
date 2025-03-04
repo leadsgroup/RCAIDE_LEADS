@@ -15,6 +15,8 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import plot_3d_r
 # python imports 
 import numpy as np 
 import plotly.graph_objects as go  
+import os
+import sys
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
@@ -111,7 +113,11 @@ def plot_3d_vehicle(vehicle,
     """
 
     print("\nPlotting vehicle") 
-    camera        =  dict(eye=dict(x=camera_eye_x, y=camera_eye_y, z=camera_eye_z), center=dict(x= camera_center_x, y=camera_center_x, z= camera_center_z))   
+    camera = dict(
+        eye=dict(x=camera_eye_x, y=camera_eye_y, z=camera_eye_z), 
+        center=dict(x=camera_center_x, y=camera_center_y, z=camera_center_z)
+    )   
+    
     plot_data     = []
     
     plot_data,x_min,x_max,y_min,y_max,z_min,z_max  = generate_3d_vehicle_geometry_data(plot_data,
@@ -126,24 +132,28 @@ def plot_3d_vehicle(vehicle,
     
 
     fig = go.Figure(data=plot_data)
-    fig.update_scenes(aspectmode   = 'cube',
-                      xaxis_visible=show_axis,
-                      yaxis_visible=show_axis,
-                      zaxis_visible=show_axis
-                      )
-    fig.update_layout( 
-             width     = 1500,
-             height    = 1500, 
-             scene = dict(
-                        xaxis = dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis,
-                                     zerolinecolor="white", range=[x_min,x_max]),
-                        yaxis = dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis, 
-                                     zerolinecolor="white", range=[y_min,y_max]),
-                        zaxis = dict(backgroundcolor="grey",gridcolor="white",showbackground=show_axis,
-                                     zerolinecolor="white", range=[z_min,z_max])),             
-             scene_camera=camera) 
-    fig.update_coloraxes(showscale=False) 
-    fig.update_traces(opacity = alpha)
+    
+    # Use update_layout instead of update_scenes
+    fig.update_layout(
+        width=1500,
+        height=1500,
+        scene=dict(
+            aspectmode='cube',
+            xaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis,
+                       zerolinecolor="white", range=[x_min, x_max], visible=show_axis),
+            yaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis, 
+                       zerolinecolor="white", range=[y_min, y_max], visible=show_axis),
+            zaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis,
+                       zerolinecolor="white", range=[z_min, z_max], visible=show_axis)
+        ),
+        scene_camera=camera
+    )
+    
+    fig.update_coloraxes(showscale=False)   
+    fig.update_traces(opacity=alpha)
+
+    # Use the first path from sys.path
+    save_filename = os.path.join(sys.path[0], save_filename)
     if save_figure:
         fig.write_image(save_filename + ".png")
         

@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Modulators
+RCAIDE.Library.Methods.Powertrain.Modulators
 
 Modulators
 ==========
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Modulators
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Modulators
 
    
    

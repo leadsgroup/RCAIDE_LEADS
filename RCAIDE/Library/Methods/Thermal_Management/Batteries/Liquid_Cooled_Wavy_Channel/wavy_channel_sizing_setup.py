@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE Imports  
-from RCAIDE.Framework.Analyses.Process   import Process 
-from RCAIDE.Library.Components.Thermal_Management.Accessories import Pump 
+# RCAIDE Imports
+import RCAIDE
+from RCAIDE.Framework.Analyses.Process   import Process  
 
 # Python package imports  
 import numpy as np  
@@ -137,7 +137,7 @@ def modify_wavy_channel_HAS(nexus):
     dp     = 2*f*rho*v*v*L_chan/dh	
 
     # Calculate the Power consumed
-    Power   = Pump.compute_power_consumed(dp, rho, m_coolant, n_pump) 
+    Power   = RCAIDE.Library.Components.Thermal_Management.Accessories.Pump.compute_power_consumed(dp, rho, m_coolant, n_pump) 
 
     # Mass calculations - Channel  
     rho_line        = channel_density*(2*a*((2*b)+d)+(2*b*c))

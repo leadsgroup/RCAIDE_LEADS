@@ -39,10 +39,10 @@ class Constant_Speed_Constant_Rate(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         #   User Inputs
         # -------------------------------------------------------------------------------------------------------------- 
-        self.altitude_start     = None # Optional
+        self.altitude_start     = None  
         self.altitude_end       = 10. * Units.km
         self.descent_rate       = 3.  * Units.m / Units.s
-        self.air_speed          = 100 * Units.m / Units.s
+        self.air_speed          = None 
         self.true_course        = 0.0 * Units.degrees      
         
         # -------------------------------------------------------------------------------------------------------------- 

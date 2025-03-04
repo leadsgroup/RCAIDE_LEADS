@@ -1,7 +1,8 @@
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-import RCAIDE
+import importlib
+
 from RCAIDE.Framework.Core     import Data
 from RCAIDE.Framework.Analyses import Analysis  
 
@@ -45,28 +46,12 @@ class Weights(Analysis):
         Properties Used:
         N/A
         """           
-        self.tag      = 'weights' 
-        self.method   = 'RCAIDE'
-
-        self.vehicle  = None
-        
-        self.settings = Data()
-        self.settings.use_max_fuel_weight                =  True
-        self.settings.weight_reduction_factors           = Data()  
-        self.settings.weight_reduction_factors.main_wing = 0.  # Reduction factors are proportional (.1 is a 10% weight reduction)
-        self.settings.weight_reduction_factors.fuselage  = 0.  # Reduction factors are proportional (.1 is a 10% weight reduction)
-        self.settings.weight_reduction_factors.empennage = 0.  # applied to horizontal and vertical stabilizers
-        
-        # FLOPS settings
-        self.settings.FLOPS = Data() 
-        self.settings.FLOPS.aeroelastic_tailoring_factor = 0.   # Aeroelastic tailoring factor [0 no aeroelastic tailoring, 1 maximum aeroelastic tailoring] 
-        self.settings.FLOPS.strut_braced_wing_factor     = 0.   # Wing strut bracing factor [0 for no struts, 1 for struts]
-        self.settings.FLOPS.composite_utilization_factor = 0.5  # Composite utilization factor [0 no composite, 1 full composite]
-        
-        # Raymer settings
-        self.settings.Raymer = Data()
-        self.settings.Raymer.fuselage_mounted_landing_gear_factor = 1. # 1. if false, 1.12 if true
-                       
+        self.tag           = 'weights' 
+        self.method        = None
+        self.vehicle       = None
+        self.aircraft_type = None
+        self.propulsion_architecture = None
+        self.settings      = Data()
         
     def evaluate(self):
         """Evaluate the weight analysis.
@@ -83,9 +68,19 @@ class Weights(Analysis):
         Outputs:
         results 
         """
-        # unpack
+        #unpack
         vehicle = self.vehicle 
-        results = RCAIDE.Library.Methods.Weights.Correlation_Buildups.Common.compute_operating_empty_weight(vehicle, settings=self.settings)
+
+
+        
+        try:
+            compute_module = importlib.import_module(f"RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.{self.propulsion_architecture}.{self.aircraft_type}.{self.method}.compute_operating_empty_weight")
+        except:
+            raise Exception('Aircraft Type or Weight Buildup Method do not exist!')
+        compute_operating_empty_weight = getattr(compute_module, "compute_operating_empty_weight")
+        # Call the function
+        results = compute_operating_empty_weight(vehicle, self.settings)
+
 
         # storing weigth breakdown into vehicle
         vehicle.weight_breakdown = results

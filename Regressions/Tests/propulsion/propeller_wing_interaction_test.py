@@ -35,7 +35,8 @@ def main():
 
 def Propeller_Slipstream(wake_fidelity,identical_props): 
 
-    vehicle  = vehicle_setup()      
+    rotor_type = 'Blade_Element_Momentum_Theory_Helmholtz'
+    vehicle  = vehicle_setup(rotor_type)      
 
     for network in vehicle.networks: 
         network.identical_propulsors  = identical_props
@@ -130,7 +131,7 @@ def base_analysis(vehicle):
  
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Weights_General_Aviation()
+    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
     weights.vehicle = vehicle
     analyses.append(weights)
 

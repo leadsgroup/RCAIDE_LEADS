@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Constant_Speed_ICE_Propulsor
+RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_ICE_Propulsor
 
 Constant\_Speed\_ICE\_Propulsor
 ===============================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Constant_Speed_ICE_Propulsor
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_ICE_Propulsor
 
    
    

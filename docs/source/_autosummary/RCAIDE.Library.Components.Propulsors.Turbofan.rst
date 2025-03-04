@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Propulsors.Turbofan
+RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan
 
 Turbofan
 ========
 
-.. automodule:: RCAIDE.Library.Components.Propulsors.Turbofan
+.. automodule:: RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan
 
    
    

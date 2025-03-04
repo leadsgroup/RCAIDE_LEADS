@@ -11,10 +11,10 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units   
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor             import design_propeller 
-from RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor          import design_motor 
-from RCAIDE.Library.Methods.Weights.Correlation_Buildups.Propulsion import compute_motor_weight
-from RCAIDE.Library.Methods.Geometry.Planform                       import wing_segmented_planform 
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                      import design_propeller 
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                      import design_DC_motor 
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common  import compute_motor_weight
+from RCAIDE.Library.Methods.Geometry.Planform                                import wing_segmented_planform 
 
 # python imports 
 import numpy as np 
@@ -24,7 +24,7 @@ import os
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
-def vehicle_setup():
+def vehicle_setup(rotor_type):
     
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -148,7 +148,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     #   Horizontal Tail
     #------------------------------------------------------------------------------------------------------------------------------------    
-    wing                                  = RCAIDE.Library.Components.Wings.Wing()
+    wing                                  = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag                              = 'horizontal_stabilizer' 
     wing.sweeps.quarter_chord             = 0.0 * Units.deg
     wing.thickness_to_chord               = 0.12
@@ -177,7 +177,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     #   Vertical Stabilizer
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    wing                                  = RCAIDE.Library.Components.Wings.Wing()
+    wing                                  = RCAIDE.Library.Components.Wings.Vertical_Tail()
     wing.tag                              = 'vertical_stabilizer'     
     wing.sweeps.quarter_chord             = 25. * Units.deg
     wing.thickness_to_chord               = 0.12
@@ -337,69 +337,82 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Electric Network
     #------------------------------------------------------------------------------------------------------------------------------------  
-    #initialize the electric network
     net                              = RCAIDE.Framework.Networks.Electric()   
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                              = RCAIDE.Library.Components.Energy.Distributors.Electrical_Bus()
-    bus.number_of_battery_modules    = 8
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
 
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bat                                                    = RCAIDE.Library.Components.Energy.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     bat.tag                                                = 'li_ion_battery'
     bat.electrical_configuration.series                    = 16   
     bat.electrical_configuration.parallel                  = 40
     bat.geometrtic_configuration.normal_count              = 20
     bat.geometrtic_configuration.parallel_count            = 32
      
-    for _ in range(bus.number_of_battery_modules):
+    for _ in range(8):
         bus.battery_modules.append(deepcopy(bat))      
     bus.initialize_bus_properties()      
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    starboard_propulsor                              = RCAIDE.Library.Components.Propulsors.Electric_Rotor()  
+    starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
     starboard_propulsor.tag                          = 'starboard_propulsor' 
   
     # Electronic Speed Controller       
-    esc                                              = RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller()
+    esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95 
     starboard_propulsor.electronic_speed_controller  = esc   
      
-    # Propeller              
-    propeller                                        = RCAIDE.Library.Components.Propulsors.Converters.Propeller() 
-    propeller.tag                                    = 'propeller_1'  
-    propeller.tip_radius                             = 1.72/2   
-    propeller.number_of_blades                       = 3
-    propeller.hub_radius                             = 10.     * Units.inches 
-    propeller.cruise.design_freestream_velocity      = 175.*Units['mph']   
-    propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
-    propeller.cruise.design_Cl                       = 0.7 
-    propeller.cruise.design_altitude                 = 2500. * Units.feet 
-    propeller.cruise.design_thrust                   = 2000   
-    propeller.clockwise_rotation                     = False
-    propeller.variable_pitch                         = True  
-    propeller.origin                                 = [[2.,2.5,0.95]]   
-    airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.tag                                      = 'NACA_4412' 
-    airfoil.coordinate_file                          =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   
-    airfoil.polar_files                              =[ rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
-                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
-                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
-                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
-                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
-    propeller.append_airfoil(airfoil)                       
-    propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
+    # Propeller    
+    propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
+
+    if rotor_type == 'Blade_Element_Momentum_Theory_Helmholtz':      
+        propeller.fidelity = rotor_type 
+        propeller.tag                                    = 'propeller_1'  
+        propeller.tip_radius                             = 1.72/2   
+        propeller.number_of_blades                       = 3
+        propeller.hub_radius                             = 10.     * Units.inches 
+        propeller.cruise.design_freestream_velocity      = 175.*Units['mph']   
+        propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
+        propeller.cruise.design_Cl                       = 0.7 
+        propeller.cruise.design_altitude                 = 2500. * Units.feet 
+        propeller.cruise.design_thrust                   = 2000   
+        propeller.clockwise_rotation                     = False
+        propeller.variable_pitch                         = True  
+        propeller.origin                                 = [[2.,2.5,0.95]]   
+        airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+        airfoil.tag                                      = 'NACA_4412' 
+        airfoil.coordinate_file                          =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   
+        airfoil.polar_files                              =[ rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
+                                                            rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
+                                                            rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
+                                                            rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
+                                                            rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
+        propeller.append_airfoil(airfoil)                       
+        propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
+    
+    elif rotor_type == 'Actuator_Disk':       
+        propeller.fidelity = rotor_type 
+        propeller.tag                                    = 'propeller_1'  
+        propeller.number_of_blades                       = 3
+        propeller.tip_radius                             = 1.72/2 
+        propeller.cruise.design_freestream_velocity      = 175.*Units['mph']   
+        propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
+        propeller.cruise.design_altitude                 = 2500. * Units.feet 
+        propeller.cruise.design_thrust                   = 2000   
+    
     design_propeller(propeller)    
+    
     starboard_propulsor.rotor                        = propeller   
               
     # DC_Motor       
-    motor                                            = RCAIDE.Library.Components.Propulsors.Converters.DC_Motor()
+    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                                 = 0.98
     motor.origin                                     = [[2.,  2.5, 0.95]]
     motor.nominal_voltage                            = bus.voltage*0.5
@@ -407,7 +420,7 @@ def vehicle_setup():
     motor.rotor_radius                               = propeller.tip_radius
     motor.design_torque                              = propeller.cruise.design_torque
     motor.angular_velocity                           = propeller.cruise.design_angular_velocity 
-    design_motor(motor)  
+    design_DC_motor(motor)  
     motor.mass_properties.mass                       = compute_motor_weight(motor) 
     starboard_propulsor.motor                        = motor 
  
@@ -479,7 +492,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    port_propulsor                             = RCAIDE.Library.Components.Propulsors.Electric_Rotor() 
+    port_propulsor                             = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
     port_propulsor.tag                         = "port_propulsor" 
             
     esc_2                                      = deepcopy(esc)
@@ -516,7 +529,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
-    avionics                     = RCAIDE.Library.Components.Systems.Avionics()
+    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 20. # Watts
     bus.avionics                 = avionics   
  

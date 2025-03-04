@@ -4,8 +4,7 @@
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-import  RCAIDE
+# ---------------------------------------------------------------------------------------------------------------------- 
 from    RCAIDE.Framework.Core import Data 
  
 # package imports
@@ -169,31 +168,23 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
         for fuel_line in network.fuel_lines:
             if fuel_line.active: 
                 for fuel_tank in fuel_line.fuel_tanks:
-                    mdot = 0. * state.ones_row(1)   
-                    for propulsor in network.propulsors:
-                        for source in (propulsor.active_fuel_tanks):
-                            if fuel_tank.tag == source:  
-                                propulsor_results =  state.conditions.energy[propulsor.tag]
-                                fuel =  fuel_tank.fuel
-                                if (type(propulsor) ==  RCAIDE.Library.Components.Propulsors.Turbofan) or \
-                                    type(propulsor) ==  RCAIDE.Library.Components.Propulsors.Turboprop or \
-                                    type(propulsor) ==  RCAIDE.Library.Components.Propulsors.Turboshaft or \
-                                    type(propulsor) ==  RCAIDE.Library.Components.Propulsors.Turbojet:    
-                         
-                                    EI_NOx  = fuel.emission_indices.NOx
-                                    EI_CO2  = fuel.emission_indices.CO2 
-                                    EI_H2O  = fuel.emission_indices.H2O
-                                    EI_SO2  = fuel.emission_indices.SO2
-                                    EI_Soot = fuel.emission_indices.Soot  
-                                    
-                                    mdot = propulsor_results.fuel_flow_rate
-                                     
-                                    # Integrate them over the entire segment
-                                    NOx_total  += np.dot(I,mdot*EI_NOx)
-                                    CO2_total  += np.dot(I,mdot*EI_CO2)
-                                    SO2_total  += np.dot(I,mdot*EI_SO2)
-                                    H2O_total  += np.dot(I,mdot*EI_H2O) 
-                                    Soot_total += np.dot(I,mdot*EI_Soot)
+                    mdot = 0. * state.ones_row(1)    
+                    fuel =  fuel_tank.fuel 
+             
+                    EI_NOx  = fuel.emission_indices.NOx
+                    EI_CO2  = fuel.emission_indices.CO2 
+                    EI_H2O  = fuel.emission_indices.H2O
+                    EI_SO2  = fuel.emission_indices.SO2
+                    EI_Soot = fuel.emission_indices.Soot  
+                    
+                    mdot = segment.conditions.energy[fuel_line.tag][fuel_tank.tag].mass_flow_rate
+                     
+                    # Integrate them over the entire segment
+                    NOx_total  += np.dot(I,mdot*EI_NOx)
+                    CO2_total  += np.dot(I,mdot*EI_CO2)
+                    SO2_total  += np.dot(I,mdot*EI_SO2)
+                    H2O_total  += np.dot(I,mdot*EI_H2O) 
+                    Soot_total += np.dot(I,mdot*EI_Soot)
                                      
          
     flight_range    =  state.conditions.frames.inertial.aircraft_range 
@@ -214,6 +205,6 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
     emissions.index.SO2       = EI_SO2   * state.ones_row(1)
     emissions.index.Soot      = EI_Soot  * state.ones_row(1)
     
-    state.conditions.emissions =  emissions
+    state.conditions.emissions = emissions
     return   
 

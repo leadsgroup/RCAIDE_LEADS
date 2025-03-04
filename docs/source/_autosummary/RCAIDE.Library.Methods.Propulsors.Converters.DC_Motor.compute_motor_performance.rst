@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor.compute_motor_performance
+RCAIDE.Library.Methods.Powertrain.Converters.DC_Motor.compute_motor_performance
 
 compute\_motor\_performance
 ===========================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor.compute_motor_performance
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.DC_Motor.compute_motor_performance
 
    
    

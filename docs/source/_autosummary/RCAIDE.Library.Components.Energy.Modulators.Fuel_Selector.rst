@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Energy.Modulators.Fuel_Selector
+RCAIDE.Library.Components.Powertrain.Modulators.Fuel_Selector
 
 Fuel\_Selector
 ==============
 
-.. automodule:: RCAIDE.Library.Components.Energy.Modulators.Fuel_Selector
+.. automodule:: RCAIDE.Library.Components.Powertrain.Modulators.Fuel_Selector
 
    
    

@@ -47,7 +47,7 @@ def forces(segment):
     T_wind2inertial = conditions.frames.wind.transform_to_inertial
 
     # to inertial frame
-    F = orientation_product(T_wind2inertial,wind_force_vector)
+    F = orientation_product(T_wind2inertial,wind_force_vector) 
     T = orientation_product(T_body2inertial,body_thrust_force_vector)
     if type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Climb:
         F =  np.zeros_like(T)

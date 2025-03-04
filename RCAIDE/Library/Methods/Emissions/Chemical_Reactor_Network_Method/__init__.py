@@ -23,7 +23,7 @@ RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.train_CRN_EI_su
 RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.build_CRN_EI_surrogates
 RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices
 RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera
-RCAIDE.Library.Components.Propulsors.Converters.Combustor
+RCAIDE.Library.Components.Powertrain.Converters.Combustor
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

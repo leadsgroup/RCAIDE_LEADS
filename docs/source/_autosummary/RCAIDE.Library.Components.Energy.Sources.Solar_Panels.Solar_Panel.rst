@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Energy.Sources.Solar_Panels.Solar_Panel
+RCAIDE.Library.Components.Powertrain.Sources.Solar_Panels.Solar_Panel
 
 Solar\_Panel
 ============
 
-.. automodule:: RCAIDE.Library.Components.Energy.Sources.Solar_Panels.Solar_Panel
+.. automodule:: RCAIDE.Library.Components.Powertrain.Sources.Solar_Panels.Solar_Panel
 
    
    

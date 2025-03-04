@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Supersonic_Nozzle
+RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle
 
 Supersonic\_Nozzle
 ==================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Supersonic_Nozzle
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle
 
    
    

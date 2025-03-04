@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports     
 from .Fuselage import Fuselage
-from RCAIDE.Library.Methods.Weights.Moment_of_Inertia.compute_fuselage_moment_of_inertia import  compute_fuselage_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_fuselage_moment_of_inertia import  compute_fuselage_moment_of_inertia
  
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Tube_Fuselage

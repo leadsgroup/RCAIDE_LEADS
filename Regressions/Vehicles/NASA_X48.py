@@ -8,11 +8,11 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
-from RCAIDE.Library.Methods.Geometry.Planform                       import segment_properties    
-from RCAIDE.Library.Methods.Propulsors.Converters.Ducted_Fan        import design_ducted_fan
-from RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor          import design_motor  
-from RCAIDE.Library.Methods.Weights.Correlation_Buildups.Propulsion import compute_motor_weight
-from RCAIDE.Library.Plots                                           import *     
+from RCAIDE.Library.Methods.Geometry.Planform                               import segment_properties    
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan                import design_ducted_fan
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                     import design_DC_motor 
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common import compute_motor_weight
+from RCAIDE.Library.Plots                                                   import *     
  
 # python imports 
 import numpy as np  
@@ -22,7 +22,7 @@ import os
 # ----------------------------------------------------------------------
 #   Define the Vehicle
 # ---------------------------------------------------------------------- 
-def vehicle_setup(regression_flag):
+def vehicle_setup(regression_flag, ducted_fan_type):
 
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -75,7 +75,7 @@ def vehicle_setup(regression_flag):
     
     segment = RCAIDE.Library.Components.Wings.Segments.Segment() 
     segment.tag                   = 'section_1'
-    segment.percent_span_location = 1.0
+    segment.percent_span_location = 0.0
     segment.twist                 = 3. * Units.deg
     segment.root_chord_percent    = 1.
     segment.dihedral_outboard     = 0. * Units.degrees
@@ -164,93 +164,97 @@ def vehicle_setup(regression_flag):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                              = RCAIDE.Library.Components.Energy.Distributors.Electrical_Bus()
-    bus.number_of_battery_modules    = 2
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
 
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bat                                                    = RCAIDE.Library.Components.Energy.Sources.Battery_Modules.Lithium_Ion_LFP() 
+    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP() 
     bat.tag                                                = 'li_ion_battery'
-    bat.electrical_configuration.series                    = 50  
-    bat.electrical_configuration.parallel                  = 5 
-    bat.geometrtic_configuration.normal_count              = 25
-    bat.geometrtic_configuration.parallel_count            = 10
+    bat.electrical_configuration.series                    = 40  
+    bat.electrical_configuration.parallel                  = 1 
+    bat.geometrtic_configuration.normal_count              = 40  
+    bat.geometrtic_configuration.parallel_count            = 1
     bus.battery_modules.append(bat)      
     bus.initialize_bus_properties()
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    center_propulsor                              = RCAIDE.Library.Components.Propulsors.Electric_Ducted_Fan()  
+    center_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan()  
     center_propulsor.tag                          = 'center_propulsor' 
   
     # Electronic Speed Controller       
-    esc                                              = RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller()
-    esc.tag                                          = 'esc_1'
-    esc.efficiency                                   = 0.95 
+    esc                                           = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
+    esc.tag                                       = 'esc_1'
+    esc.efficiency                                = 0.95 
     center_propulsor.electronic_speed_controller  = esc   
-          
+        
 
     # Ducted_fan                            
-    ducted_fan                                   = RCAIDE.Library.Components.Propulsors.Converters.Ducted_Fan()
+    ducted_fan                                   = RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan()
     ducted_fan.tag                               = 'ducted_fan'
-    ducted_fan.number_of_rotor_blades            = 12 #22 
+    ducted_fan.number_of_rotor_blades            = 12 
     ducted_fan.number_of_radial_stations         = 20
     ducted_fan.tip_radius                        = 6 * Units.inches  / 2
-    ducted_fan.hub_radius                        = 6* 0.25  * Units.inches /2 
+    ducted_fan.hub_radius                        = 0.25 * ducted_fan.tip_radius 
+    ducted_fan.exit_radius                       = 1.1 * ducted_fan.tip_radius
     ducted_fan.blade_clearance                   = 0.001
-    ducted_fan.length                            = 10. * Units.inches
+    ducted_fan.length                            = 10. * Units.inches 
+    ducted_fan.fan_effectiveness                 = 1.1  
     ducted_fan.rotor_percent_x_location          = 0.4
+    ducted_fan.origin                            = [[2.,  0, 0.95]]
     ducted_fan.stator_percent_x_location         = 0.7
-    ducted_fan.cruise.design_thrust              = 60 *  Units.lbs
-    ducted_fan.cruise.design_altitude            = 1000    
-    ducted_fan.cruise.design_tip_mach            = 0.7
-    ducted_fan.cruise.design_angular_velocity    = (ducted_fan.cruise.design_tip_mach *320) /ducted_fan.tip_radius  # 1352 RPM
-    ducted_fan.cruise.design_freestream_velocity = 120 *  Units.mph
-    ducted_fan.cruise.design_reference_velocity  = 120 *  Units.mph
-    airfoil                                      = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil() 
-    airfoil.NACA_4_Series_code                   = '2208'
-    ducted_fan.append_duct_airfoil(airfoil)  
-    airfoil                                      = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
-    airfoil.NACA_4_Series_code                   = '0008'    
-    ducted_fan.append_hub_airfoil(airfoil) 
-    dfdc_bin_name = '/Users/matthewclarke/Documents/LEADS/CODES/DFDC/bin/dfdc'
-    keep_files    =  True 
-    design_ducted_fan(ducted_fan,dfdc_bin_name,regression_flag,keep_files) 
-    center_propulsor.ducted_fan                  = ducted_fan   
+    ducted_fan.fidelity                          = ducted_fan_type  
+    ducted_fan.cruise.design_thrust              = 75
+    ducted_fan.cruise.design_altitude            = 5000  * Units.ft
+    ducted_fan.cruise.design_angular_velocity    = (0.8* 339.709) /  ducted_fan.tip_radius
+    ducted_fan.cruise.design_freestream_velocity = 90 *  Units.mph
+    ducted_fan.cruise.design_reference_velocity  = 90 *  Units.mph 
+     
+    if ducted_fan_type == 'Blade_Element_Momentum_Theory':
+        airfoil                                      = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil() 
+        airfoil.NACA_4_Series_code                   = '2208'
+        ducted_fan.append_duct_airfoil(airfoil)  
+        airfoil                                      = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+        airfoil.NACA_4_Series_code                   = '0008'    
+        ducted_fan.append_hub_airfoil(airfoil)   
+        dfdc_bin_name                                = '/Users/matthewclarke/Documents/LEADS/CODES/DFDC/bin/dfdc'  
+    else:
+        dfdc_bin_name                                = 'dfdc' 
+     
+    design_ducted_fan(ducted_fan,dfdc_bin_name,regression_flag,keep_files = True) 
+    center_propulsor.ducted_fan                  = ducted_fan    
               
     # DC_Motor       
-    motor                                         = RCAIDE.Library.Components.Propulsors.Converters.DC_Motor()
+    motor                                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                              = 0.98
-    motor.origin                                  = [[2.,  2.5, 0.95]]
-    motor.nominal_voltage                         = bus.voltage
-    motor.no_load_current                         = 0.01
+    motor.origin                                  = [[2.,  0, 0.95]]
+    motor.nominal_voltage                         = bus.voltage 
+    motor.no_load_current                         = 0.001
     motor.rotor_radius                            = ducted_fan.tip_radius
     motor.design_torque                           = ducted_fan.cruise.design_torque
     motor.angular_velocity                        = ducted_fan.cruise.design_angular_velocity 
-    design_motor(motor)   
+    design_DC_motor(motor)   
     motor.mass_properties.mass                    = compute_motor_weight(motor) 
-    center_propulsor.motor                        = motor 
-   
-    # append propulsor to network
+    center_propulsor.motor                        = motor  
     net.propulsors.append(center_propulsor) 
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Right Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    starboard_propulsor                             = RCAIDE.Library.Components.Propulsors.Electric_Ducted_Fan() 
+    starboard_propulsor                             = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan() 
     starboard_propulsor.tag                         = "starboard_propulsor"  
     esc_2                                           = deepcopy(esc)
-    esc_2.origin                                    = [[2., -2.5, 0.95]]      
+    esc_2.origin                                    = [[2., 2.5, 0.95]]      
     starboard_propulsor.electronic_speed_controller = esc_2 
     ducted_fan_2                                    = deepcopy(ducted_fan)
     ducted_fan_2.tag                                = 'ducted_fan_2' 
-    ducted_fan_2.origin                             = [[2.,-2.5,0.95]]
+    ducted_fan_2.origin                             = [[2.,2.5,0.95]]
     ducted_fan_2.clockwise_rotation                 = False        
     starboard_propulsor.ducted_fan                  = ducted_fan_2
     motor_2                                         = deepcopy(motor)
-    motor_2.origin                                  = [[2., -2.5, 0.95]]      
+    motor_2.origin                                  = [[2., 2.5, 0.95]]      
     starboard_propulsor.motor                       = motor_2    
     # append propulsor to network 
     net.propulsors.append(starboard_propulsor)     
@@ -259,7 +263,7 @@ def vehicle_setup(regression_flag):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Left Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    port_propulsor                             = RCAIDE.Library.Components.Propulsors.Electric_Ducted_Fan() 
+    port_propulsor                             = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan() 
     port_propulsor.tag                         = "port_propulsor"  
     esc_3                                      = deepcopy(esc)
     esc_3.origin                               = [[2., -2.5, 0.95]]      
@@ -287,7 +291,7 @@ def vehicle_setup(regression_flag):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
-    avionics                     = RCAIDE.Library.Components.Systems.Avionics()
+    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 20. # Watts
     bus.avionics                 = avionics   
 

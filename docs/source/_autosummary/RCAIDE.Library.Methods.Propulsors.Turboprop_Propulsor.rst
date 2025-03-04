@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Turboprop_Propulsor
+RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor
 
 Turboprop\_Propulsor
 ====================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Turboprop_Propulsor
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor
 
    
    

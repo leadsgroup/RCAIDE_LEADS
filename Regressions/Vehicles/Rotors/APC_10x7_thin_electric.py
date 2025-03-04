@@ -20,7 +20,7 @@ def propeller_geometry():
     # Propeller Geometry:
     # --------------------------------------------------------------------------------------------------
 
-    prop = RCAIDE.Library.Components.Propulsors.Converters.Propeller()
+    prop = RCAIDE.Library.Components.Powertrain.Converters.Propeller()
     
     prop.tag              = 'apc_10x7_propeller'
     prop.tip_radius       = 5 * Units.inches

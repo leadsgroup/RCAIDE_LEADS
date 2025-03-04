@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from RCAIDE.Library.Components import Component  
-from RCAIDE.Library.Methods.Propulsors.Common.append_payload_conditions import append_payload_conditions
+from RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions import append_payload_conditions
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Avionics
@@ -56,7 +56,7 @@ class Payload(Component):
     See Also
     --------
     RCAIDE.Library.Components.Component
-    RCAIDE.Library.Methods.Propulsors.Common.append_payload_conditions
+    RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions
     """          
     def __defaults__(self):
         """This sets the default power draw.

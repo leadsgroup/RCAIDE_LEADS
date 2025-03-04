@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Ducted_Fan
+RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan
 
 Ducted\_Fan
 ===========
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Ducted_Fan
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan
 
    
    

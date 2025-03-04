@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake
 
 Wake
 ====
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake
 
    
    

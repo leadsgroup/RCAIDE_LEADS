@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Turboshaft_Propulsor.compute_power
+RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor.compute_power
 
 compute\_power
 ==============
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Turboshaft_Propulsor.compute_power
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor.compute_power
 
    
    

@@ -9,13 +9,13 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core                                                                import Units   
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor                                   import design_propeller 
-from RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor                                import design_motor 
-from RCAIDE.Library.Methods.Weights.Correlation_Buildups.Propulsion                       import compute_motor_weight
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                   import design_propeller 
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                   import design_DC_motor 
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common               import compute_motor_weight
 from RCAIDE.Library.Methods.Geometry.Planform                                             import wing_segmented_planform
 from RCAIDE.Library.Methods.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger  import design_cross_flow_heat_exchanger
 from RCAIDE.Library.Methods.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel       import design_wavy_channel
- 
+
 # python imports 
 import numpy as np 
 from copy import deepcopy
@@ -429,13 +429,13 @@ def vehicle_setup(cell_chemistry, btms_type):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                              = RCAIDE.Library.Components.Energy.Distributors.Electrical_Bus()
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
     
     if cell_chemistry == 'lithium_ion_nmc':
         #------------------------------------------------------------------------------------------------------------------------------------           
         # Battery
         #------------------------------------------------------------------------------------------------------------------------------------  
-        bat_module                                             = RCAIDE.Library.Components.Energy.Sources.Battery_Modules.Lithium_Ion_NMC()
+        bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
         bat_module.electrical_configuration.series             = 10
         bat_module.electrical_configuration.parallel           = 210
         bat_module.cell.nominal_capacity                       = 3.8 
@@ -453,7 +453,7 @@ def vehicle_setup(cell_chemistry, btms_type):
         #------------------------------------------------------------------------------------------------------------------------------------           
         # Battery
         #------------------------------------------------------------------------------------------------------------------------------------          
-            bat_module                                             = RCAIDE.Library.Components.Energy.Sources.Battery_Modules.Lithium_Ion_LFP()
+            bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP()
             bat_module.electrical_configuration.series             = 10
             bat_module.electrical_configuration.parallel           = 210
             bat_module.cell.nominal_capacity                       = 3.8 
@@ -474,7 +474,7 @@ def vehicle_setup(cell_chemistry, btms_type):
         ##------------------------------------------------------------------------------------------------------------------------------------  
         # Coolant Line
         #------------------------------------------------------------------------------------------------------------------------------------  
-        coolant_line                                           = RCAIDE.Library.Components.Energy.Distributors.Coolant_Line(bus)
+        coolant_line                                           = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line(bus)
         coolant_line.tag                                       = 'liquid_cooled_coolant_line'
         net.coolant_lines.append(coolant_line)
         HAS                                                    = RCAIDE.Library.Components.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel(coolant_line)
@@ -483,7 +483,7 @@ def vehicle_setup(cell_chemistry, btms_type):
         atmo_data                                              = atmosphere.compute_values(altitude = HAS.design_altitude)     
         HAS.coolant_inlet_temperature                          = atmo_data.temperature[0,0]  
         HAS.design_battery_operating_temperature               = 313
-        HAS.design_heat_removed                                = 50000 /bus.number_of_battery_modules
+        HAS.design_heat_removed                                = 50000 /len(bus.battery_modules)
         HAS                                                    = design_wavy_channel(HAS,bat_module) 
         
         for battery_module in bus.battery_modules:
@@ -504,7 +504,7 @@ def vehicle_setup(cell_chemistry, btms_type):
         ##------------------------------------------------------------------------------------------------------------------------------------  
         # Coolant Line
         #------------------------------------------------------------------------------------------------------------------------------------  
-        coolant_line                                 = RCAIDE.Library.Components.Energy.Distributors.Coolant_Line(bus)
+        coolant_line                                 = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line(bus)
         coolant_line.tag                             = 'air_cooled_coolant_line'
         net.coolant_lines.append(coolant_line)
         HAS                                         = RCAIDE.Library.Components.Thermal_Management.Batteries.Air_Cooled() 
@@ -515,18 +515,18 @@ def vehicle_setup(cell_chemistry, btms_type):
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    starboard_propulsor                              = RCAIDE.Library.Components.Propulsors.Electric_Rotor()  
+    starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
     starboard_propulsor.tag                          = 'starboard_propulsor'
     
     # Electronic Speed Controller       
-    esc                                              = RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller()
+    esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95 
     esc.origin                                       = [[3.8,2.8129,1.22 ]]   
     starboard_propulsor.electronic_speed_controller  = esc   
      
     # Propeller              
-    propeller                                        = RCAIDE.Library.Components.Propulsors.Converters.Propeller() 
+    propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
     propeller.tag                                    = 'propeller_1'  
     propeller.tip_radius                             = 2.59
     propeller.number_of_blades                       = 3
@@ -556,7 +556,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     starboard_propulsor.rotor                        = propeller   
               
     # DC_Motor       
-    motor                                            = RCAIDE.Library.Components.Propulsors.Converters.DC_Motor()
+    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                                 = 0.98
     motor.origin                                     = [[4.0,2.8129,1.22 ]]   
     motor.nominal_voltage                            = bus.voltage 
@@ -564,7 +564,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     motor.rotor_radius                               = propeller.tip_radius
     motor.design_torque                              = propeller.cruise.design_torque 
     motor.angular_velocity                           = propeller.cruise.design_angular_velocity # Horse power of gas engine variant  750 * Units['hp']
-    design_motor(motor)  
+    design_DC_motor(motor)  
     motor.mass_properties.mass                       = compute_motor_weight(motor) 
     starboard_propulsor.motor                        = motor 
  
@@ -574,7 +574,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    port_propulsor                             = RCAIDE.Library.Components.Propulsors.Electric_Rotor() 
+    port_propulsor                             = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
     port_propulsor.tag                         = "port_propulsor"
             
     esc_2                                      = deepcopy(esc)
@@ -606,7 +606,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
-    avionics                     = RCAIDE.Library.Components.Systems.Avionics()
+    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 20. # Watts
     bus.avionics                 = avionics
     

@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Energy.Distributors
+RCAIDE.Library.Components.Powertrain.Distributors.
 
 Distributors
 ============
 
-.. automodule:: RCAIDE.Library.Components.Energy.Distributors
+.. automodule:: RCAIDE.Library.Components.Powertrain.Distributors.
 
    
    

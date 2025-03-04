@@ -13,7 +13,7 @@ import RCAIDE
 from RCAIDE.Framework.Core                                  import Units , Data     
 from RCAIDE.Library.Plots     import *     
 
-from   RCAIDE.Library.Methods.Propulsors.Turboprop_Propulsor   import design_turboprop
+from   RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor   import design_turboprop
 from   RCAIDE.Library.Methods.Geometry.Planform                import segment_properties
 
 # python imports 
@@ -424,14 +424,13 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distrubition Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                       = RCAIDE.Library.Components.Energy.Distributors.Fuel_Line()  
+    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
  
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------    
-    starboard_propulsor                              = RCAIDE.Library.Components.Propulsors.Turboprop()    
-    starboard_propulsor.tag                          = 'starboard_propulsor' 
-    starboard_propulsor.active_fuel_tanks            = ['fuel_tank']   
+    starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop()    
+    starboard_propulsor.tag                          = 'starboard_propulsor'  
     starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
     starboard_propulsor.design_altitude              = 25000*Units.ft                                   # [-]         Design Altitude
     starboard_propulsor.design_mach_number           = 0.5                                              # [-]         Design Mach number
@@ -442,25 +441,25 @@ def vehicle_setup():
     starboard_propulsor.design_gearbox_efficiency    = 0.99                                             # [-]         Design Gearbox Efficiency
     
     # Ram inlet 
-    ram                                              = RCAIDE.Library.Components.Propulsors.Converters.Ram()
+    ram                                              = RCAIDE.Library.Components.Powertrain.Converters.Ram()
     ram.tag                                          = 'ram' 
     starboard_propulsor.ram                          = ram 
           
     # inlet nozzle          
-    inlet_nozzle                                     = RCAIDE.Library.Components.Propulsors.Converters.Compression_Nozzle()
+    inlet_nozzle                                     = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
     inlet_nozzle.tag                                 = 'inlet nozzle'                                       
     inlet_nozzle.pressure_ratio                      = 0.98
     inlet_nozzle.compressibility_effects             = False
     starboard_propulsor.inlet_nozzle                 = inlet_nozzle
                                                      
     # compressor                        
-    compressor                                       = RCAIDE.Library.Components.Propulsors.Converters.Compressor()    
+    compressor                                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     compressor.tag                                   = 'lpc'                   
     compressor.pressure_ratio                        = 10                   
     starboard_propulsor.compressor                   = compressor
     
     # combustor      
-    combustor                                        = RCAIDE.Library.Components.Propulsors.Converters.Combustor()   
+    combustor                                        = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
     combustor.tag                                    = 'Comb'
     combustor.efficiency                             = 0.99                   
     combustor.turbine_inlet_temperature              = 1370                    
@@ -469,19 +468,19 @@ def vehicle_setup():
     starboard_propulsor.combustor                    = combustor
         
     # high pressure turbine         
-    high_pressure_turbine                            = RCAIDE.Library.Components.Propulsors.Converters.Turbine()   
+    high_pressure_turbine                            = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     high_pressure_turbine.tag                        ='hpt'
     high_pressure_turbine.mechanical_efficiency      = 0.99                       
     starboard_propulsor.high_pressure_turbine        = high_pressure_turbine 
         
     # low pressure turbine      
-    low_pressure_turbine                             = RCAIDE.Library.Components.Propulsors.Converters.Turbine()   
+    low_pressure_turbine                             = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     low_pressure_turbine.tag                         ='lpt'
     low_pressure_turbine.mechanical_efficiency       = 0.99                      
     starboard_propulsor.low_pressure_turbine         = low_pressure_turbine
     
     # core nozzle    
-    core_nozzle                                      = RCAIDE.Library.Components.Propulsors.Converters.Expansion_Nozzle()   
+    core_nozzle                                      = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
     core_nozzle.tag                                  = 'core nozzle'          
     core_nozzle.pressure_ratio                       = 0.99
     starboard_propulsor.core_nozzle                  = core_nozzle
@@ -572,8 +571,7 @@ def vehicle_setup():
     # Propulsor: Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------      
     # copy turbofan
-    port_propulsor                                  = deepcopy(starboard_propulsor)
-    port_propulsor.active_fuel_tanks                = ['fuel_tank'] 
+    port_propulsor                                  = deepcopy(starboard_propulsor) 
     port_propulsor.tag                              = 'port_propulsor' 
     port_propulsor.origin                           = [[ 9.559106394 ,-4.219315295, 1.616135105]]  # change origin 
     port_propulsor.nacelle.tag                      = 'port_propulsor_nacelle' 
@@ -586,7 +584,7 @@ def vehicle_setup():
     #  Energy Source: Fuel Tank
     #------------------------------------------------------------------------------------------------------------------------- 
     # fuel tank
-    fuel_tank                                        = RCAIDE.Library.Components.Energy.Sources.Fuel_Tanks.Fuel_Tank()
+    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.origin                                 = vehicle.wings.main_wing.origin  
     fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()   
     fuel_tank.fuel.mass_properties.mass              = vehicle.mass_properties.max_takeoff-vehicle.mass_properties.max_fuel

@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
+          python-version: "3.X"
       - name: Install dependencies
         run: |
           pip install sphinx pydata-sphinx-theme
@@ -59,7 +59,7 @@ jobs:
               # Execute notebook and save to temporary location
               jupyter nbconvert --to notebook --execute "$notebook" \
                 --output "$tmp_dir/$notebook_name" \
-                --ExecutePreprocessor.timeout=600 \
+                --ExecutePreprocessor.timeout=1800 \
                 || { echo "Error executing notebook $notebook"; exit 1; }
               
               # If execution succeeded, move the executed notebook back

@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Offtake_Shaft
+RCAIDE.Library.Methods.Powertrain.Converters.Offtake_Shaft
 
 Offtake\_Shaft
 ==============
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Offtake_Shaft
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Offtake_Shaft
 
    
    

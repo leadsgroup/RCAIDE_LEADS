@@ -138,7 +138,7 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
 
     # ------------------------------------------------------------------
     #  Weights
-    weights                                          = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
+    weights                                          = RCAIDE.Framework.Analyses.Weights.Conventional()
     weights.vehicle                                  = vehicle
     analyses.append(weights)
  

@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Common.compute_avionics_power_draw
+RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw
 
 compute\_avionics\_power\_draw
 ==============================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Common.compute_avionics_power_draw
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw
 
    
    

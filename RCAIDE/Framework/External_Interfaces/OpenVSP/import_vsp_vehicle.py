@@ -12,15 +12,19 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports 
 import RCAIDE
-from  RCAIDE.Framework.Core import Units, Data, Container 
+from  RCAIDE.Framework.Core                   import Units, Data 
+from RCAIDE.Library.Components                import Component
+from RCAIDE.Library.Components.Component      import Container 
 from RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_rotor           import read_vsp_rotor
 from RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_fuselage         import read_vsp_fuselage
 from RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_wing             import read_vsp_wing
 from RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_nacelle          import read_vsp_nacelle
 from RCAIDE.Framework.External_Interfaces.OpenVSP.get_vsp_measurements import get_vsp_measurements
 
-
+import numpy as np
 from copy import deepcopy
+import sys
+import os
 
 try:
     import vsp as vsp
@@ -32,9 +36,9 @@ except ImportError:
         pass
     
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  vsp read
+#  vsp read 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def import_vsp_vehicle(tag,network_type=None, propulsor_type = None, units_type='SI',use_scaling=True,calculate_wetted_area=True): 
+def import_vsp_vehicle(tag,main_wing_tag = None, network_type=None, propulsor_type = None, units_type='SI',use_scaling=True,calculate_wetted_area=True): 
     """This reads an OpenVSP vehicle geometry and writes it into a RCAIDE vehicle format.
     Includes wings, fuselages, and rotors.
 
@@ -125,10 +129,21 @@ def import_vsp_vehicle(tag,network_type=None, propulsor_type = None, units_type=
     if isinstance(network_type,RCAIDE.Framework.Networks.Network) != True:
         raise Exception('Vehicle energy network type must be defined. \n Choose from list in RCAIDE.Framework.Networks') 
 
-    if isinstance(propulsor_type,RCAIDE.Library.Components.Propulsors.Propulsor ) != True:
+    if isinstance(propulsor_type,RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor ) != True:
         raise Exception('Vehicle propulsor type must be defined. \n Choose from list in RCAIDE.Library.Compoments.Propulsors')     
 
+    # Get the last path from sys.path
+    system_path = sys.path[0]
+    # Append the system path to the filename
+    tag = os.path.join(system_path, tag)
+
+
     vsp.ClearVSPModel() 
+    
+    # Get the last path from sys.path
+    system_path = sys.path[-1]
+    # Append the system path to the filename
+    tag = os.path.join(system_path, tag)
     vsp.ReadVSPFile(tag)	
 
     vsp_fuselages     = []
@@ -217,7 +232,7 @@ def import_vsp_vehicle(tag,network_type=None, propulsor_type = None, units_type=
     # Read Wings 
     # ------------------------------------------------------------------			
     for wing_id in vsp_wings:
-        wing = read_vsp_wing(wing_id, units_type,use_scaling)
+        wing = read_vsp_wing(wing_id, main_wing_tag, units_type,use_scaling)
         if calculate_wetted_area:
             wing.areas.wetted = measurements[vsp.GetGeomName(wing_id)] * (units_factor**2)  
         vehicle.append_component(wing)		 
@@ -304,14 +319,12 @@ def import_vsp_vehicle(tag,network_type=None, propulsor_type = None, units_type=
         
                 # Nacelle 
                 nacelle_sym = deepcopy(nacelle)
-                nacelle_sym.origin[0][1] = - nacelle_sym.origin[0][1]  
+                nacelle_sym.origin[0][1] *= -1
                 nacelle_sym.areas.wetted = nacelle.areas.wetted
-                propulsor.nacelle = nacelle          
+                propulsor.nacelle = nacelle_sym          
                  
                 # Append to Network             
                 network.propulsors.append(propulsor)
-                
-        
 
     # Condition when only rotors are defined 
     elif (len(vsp_rotors) >  0) and (len(vsp_nacelles) == 0):
@@ -352,5 +365,37 @@ def import_vsp_vehicle(tag,network_type=None, propulsor_type = None, units_type=
         print ('Unequal numbers of rotors and nacelles defined. Skipping propulsor definition.') 
                 
     vehicle.networks.append(network)
+   
+    
+    # get origin of fuselage
+    vsp_origin = 0
+    for fuselage in vehicle.fuselages:
+        vsp_origin = np.minimum(vsp_origin, fuselage.origin[0][0])
+        
+    # shift all compoments to new origin
+    origin_shift =  -vsp_origin
+    
 
+    for network in vehicle.networks:
+        for p_tag, p_item in network.items():
+            update_origin(p_item,origin_shift)
+            
+    for wing in vehicle.wings:
+        update_origin(wing,origin_shift) 
+    
+    for boom in vehicle.booms:
+        update_origin(boom,origin_shift)
+    
+    for fuselage in vehicle.fuselages:
+        update_origin(fuselage,origin_shift)   
+        
     return vehicle
+
+def update_origin(p_item,origin_shift):  
+    if isinstance(p_item,Component): 
+        p_item.origin[0][0] += origin_shift 
+        for p_sub_tag, p_sub_item in p_item.items():
+            update_origin(p_sub_item,origin_shift)    
+    elif isinstance(p_item,Container): 
+        for p_sub_tag, p_sub_item in p_item.items():
+            update_origin(p_sub_item,origin_shift)

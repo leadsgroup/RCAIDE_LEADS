@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Energy.Distributors.Coolant_Line
+RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line
 
 Coolant\_Line
 =============
 
-.. automodule:: RCAIDE.Library.Components.Energy.Distributors.Coolant_Line
+.. automodule:: RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line
 
    
    
