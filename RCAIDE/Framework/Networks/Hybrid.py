@@ -96,14 +96,14 @@ class Hybrid(Network):
                     if propulsor.active and fuel_line.active:   
                         if network.identical_propulsors == False:
                             # run analysis  
-                            T,M,P,P_elec,stored_results_flag,stored_propulsor_tag = propulsor.compute_performance(state,fuel_line, bus, center_of_gravity)
+                            T,M,P,P_elec,stored_results_flag,stored_propulsor_tag = propulsor.compute_performance(state,fuel_line= fuel_line, center_of_gravity= center_of_gravity)
                         else:             
                             if stored_results_flag == False: 
                                 # run propulsor analysis 
-                                T,M,P,P_elec,stored_results_flag,stored_propulsor_tag = propulsor.compute_performance(state,fuel_line,bus,center_of_gravity)
+                                T,M,P,P_elec,stored_results_flag,stored_propulsor_tag = propulsor.compute_performance(state,fuel_line= fuel_line, center_of_gravity= center_of_gravity)
                             else:
                                 # use previous propulsor results 
-                                T,M,P,P_elec = propulsor.reuse_stored_data(state,network,stored_propulsor_tag,center_of_gravity)
+                                T,M,P,P_elec = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag,center_of_gravity= center_of_gravity)
         
                         total_thrust      += T   
                         total_moment      += M   
@@ -165,19 +165,23 @@ class Hybrid(Network):
         # ------------------------------------------------------------------------------------------------------------------- 
         phi   = state.conditions.energy.hybrid_power_split_ratio 
         for fuel_line in fuel_lines:  
-            for converter in converters:
-                converter.mode = "reverse"               
-                if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator) and (converter.active and fuel_line.active): 
-                    generator             = converter.generator   
-                    state.conditions.energy[converter.tag][generator.tag].outputs.power  =  total_elec_power*(1 - phi) 
-                    P_mech, P_elec, stored_results_flag,stored_propulsor_tag = converter.compute_performance(state,fuel_line,bus)  
-                    fuel_mdot += conditions.energy[converter.tag].turboshaft.fuel_flow_rate  
-     
-                if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft) and (converter.active and fuel_line.active):  
-                    power_mech           = total_mech_power*(1 - phi)   
-                    state.conditions.energy[converter.tag].shaft_power = power_mech 
-                    P_mech,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state)   
-                    fuel_mdot  += conditions.energy[converter.tag].turboshaft.fuel_flow_rate   
+            for converter_group in fuel_line.assigned_converters:
+                for converter_tag in converter_group:
+                    converter =  network.converters[converter_tag]
+                    if converter.active and fuel_line.active:   
+           
+                        converter.mode = "reverse"               
+                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator) and (converter.active and fuel_line.active): 
+                            generator             = converter.generator   
+                            state.conditions.energy[converter.tag][generator.tag].outputs.power  =  total_elec_power*(1 - phi) 
+                            P_mech, P_elec, stored_results_flag,stored_propulsor_tag = converter.compute_performance(state,fuel_line,bus)  
+                            fuel_mdot += conditions.energy[converter.tag].turboshaft.fuel_flow_rate  
+             
+                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft) and (converter.active and fuel_line.active):  
+                            power_mech           = total_mech_power*(1 - phi)   
+                            state.conditions.energy[converter.tag].shaft_power = power_mech 
+                            P_mech,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state)   
+                            fuel_mdot  += conditions.energy[converter.tag].turboshaft.fuel_flow_rate   
                           
         # ----------------------------------------------------------        
         # 3.0 Sources

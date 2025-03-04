@@ -118,6 +118,7 @@ class PMSM_Generator(Converter):
         self.winding_factor     = 0.0
         self.mu_0               = 0.0
         self.mu_r               = 0.0
+        self.mode               = "forward"
         self.interpolated_func  = None
         
     def append_operating_conditions(self,segment,energy_conditions): 

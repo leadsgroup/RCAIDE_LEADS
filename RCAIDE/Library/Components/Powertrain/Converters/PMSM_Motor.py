@@ -136,6 +136,7 @@ class PMSM_Motor(Converter):
         self.velocity_of_fluid             = 0.005                       # [m/s]          velocity of the fluid
         self.Taylor_number                 = 20                          # [-]            Taylor number 
         self.axial_gap_to_radius_of_rotor  = 0.01                     # [-]            ratio of the axial gap to the radius of the rotor
+        self.mode               = "forward"
         self.Conduction_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
         self.Convection_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
         

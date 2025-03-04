@@ -147,7 +147,7 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         motor_conditions.Loss_cooling             = Loss_cooling                           
         motor_conditions.torque                   = TQ
         motor_conditions.omega                    = omega 
-        motor_conditions.power                    = P   
+        motor_conditions.outputs.power            = P   
     else:
         eta_G = motor.gearbox_efficiency
         exp_I = motor.expected_current
@@ -171,7 +171,7 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         motor_conditions.torque     = Q
         motor_conditions.omega      = omega  
         motor_conditions.current    = I
-        motor_conditions.power      = omega *Q 
-        motor_conditions.efficiency = (1-I0/I)*(1-I*Res/v) 
+        motor_conditions.outputs.power = omega *Q 
+        motor_conditions.efficiency    = (1-I0/I)*(1-I*Res/v) 
      
     return

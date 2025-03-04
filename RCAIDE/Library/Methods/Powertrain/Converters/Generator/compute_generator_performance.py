@@ -65,12 +65,12 @@ def compute_generator_performance(generator,generator_conditions,conditions):
         power = generator_conditions.inputs.shaft_power 
         fidelity = "PMSM_Electric_Machine" 
     elif (type(generator) ==  RCAIDE.Library.Components.Powertrain.Converters.DC_Motor):
-        omega  = generator_conditions.outputs.omega*G
-        power = generator_conditions.outputs.shaft_power
+        omega  = generator_conditions.omega*G
+        power = generator_conditions.outputs.power
         fidelity = "Simple_DC_Electric_Machine"
     elif (type(generator) ==  RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
-        omega  = generator_conditions.outputs.omega*G
-        power = generator_conditions.outputs.shaft_power
+        omega  = generator_conditions.omega*G
+        power = generator_conditions.outputs.power
         fidelity = "PMSM_Electric_Machine"
         
     if fidelity == 'Simple_DC_Electric_Machine':
@@ -84,7 +84,7 @@ def compute_generator_performance(generator,generator_conditions,conditions):
         v     = generator_conditions.voltage
         
         if generator.mode == "forward":   
-            i = (omega/Kv - v)/Res  
+            i = (v - omega/Kv)/Res  
             Q = power / omega
         elif generator.mode == 'reverse':
             P_elec = generator_conditions.outputs.power

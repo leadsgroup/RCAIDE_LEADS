@@ -56,6 +56,7 @@ def append_motor_conditions(motor,segment,energy_conditions):
     energy_conditions[motor.tag].voltage                 = 0. * ones_row(1)
     energy_conditions[motor.tag].outputs.work_done       = 0. * ones_row(1) 
     energy_conditions[motor.tag].outputs.power           = 0. * ones_row(1) 
+    energy_conditions[motor.tag].omega                   = 0. * ones_row(1) 
     energy_conditions[motor.tag].rotor_power_coefficient = 0. * ones_row(1)
     return 
 

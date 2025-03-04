@@ -113,6 +113,7 @@ class DC_Motor(Converter):
         self.gearbox_efficiency = 1.0
         self.expected_current   = 0.0 
         self.design_torque      = 0.0 
+        self.mode               = "forward"
         self.interpolated_func  = None
         
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 

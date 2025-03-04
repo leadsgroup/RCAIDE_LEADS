@@ -77,8 +77,10 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
     # Compute the work done by the compressor (normalized by mass flow i.e. J/(kg/s)
     work_done = ht_out - ht_in
     
+    phi       =  conditions.energy.hybrid_power_split_ratio 
+
     # Pack results  
-    compressor_conditions.outputs.work_done               = work_done 
+    compressor_conditions.outputs.work_done               = (1-phi)*work_done
     compressor_conditions.outputs.stagnation_temperature  = Tt_out
     compressor_conditions.outputs.stagnation_pressure     = Pt_out
     compressor_conditions.outputs.stagnation_enthalpy     = ht_out
@@ -91,8 +93,6 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
     
     # compute core mass flow rate 
     mdot_core = mdhc * np.sqrt(Tref / Tt_out) * (Pt_out / Pref) 
-    phi       =  conditions.energy.hybrid_power_split_ratio 
-
     if motor != None: 
         compressor_motor_conditions  = compressor_conditions[motor.tag]
         phi_motor                    = deepcopy(phi)
@@ -100,12 +100,12 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
         
         # mechanical power 
         compressor_motor_conditions.outputs.work_done = phi_motor * work_done 
-        compressor_motor_conditions.outputs.power     = compressor_motor_conditions.outputs.work_done * mdot_core  
-        compressor_conditions.outputs.external_shaft_work_done += compressor_motor_conditions.outputs.work_done
+        compressor_motor_conditions.outputs.power     = compressor_motor_conditions.outputs.work_done * mdot_core   
+        compressor_conditions.outputs.external_shaft_work_done = compressor_motor_conditions.outputs.work_done
 
-        # electrical power
-        compute_generator_performance(motor,compressor_motor_conditions,conditions)
-        compressor_conditions.outputs.external_electrical_power  += compressor_motor_conditions.power
+        # # electrical power
+        # compute_generator_performance(motor,compressor_motor_conditions,conditions)
+        # compressor_conditions.outputs.external_electrical_power  += compressor_motor_conditions.outputs.power
         
     elif generator != None: 
         compressor_generator_conditions = compressor_conditions[generator.tag] 
@@ -116,11 +116,11 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
         # mechanical power         
         compressor_generator_conditions.outputs.work_done = phi_generator * work_done
         compressor_generator_conditions.outputs.power     = compressor_generator_conditions.outputs.work_done * mdot_core
-        compressor_conditions.outputs.external_shaft_work_done += compressor_generator_conditions.outputs.work_done
+        compressor_conditions.outputs.external_shaft_work_done = compressor_generator_conditions.outputs.work_done
          
-        # electrical power          
-        compute_generator_performance(generator,compressor_generator_conditions,conditions)
-        compressor_conditions.outputs.external_electrical_power   += compressor_generator_conditions.power
+        # # electrical power          
+        # compute_generator_performance(generator,compressor_generator_conditions,conditions)
+        # compressor_conditions.outputs.external_electrical_power   += compressor_generator_conditions.power
     else:
         compressor_conditions.outputs.external_shaft_work_done = 0.0
         compressor_conditions.outputs.external_electrical_power   = 0.0
