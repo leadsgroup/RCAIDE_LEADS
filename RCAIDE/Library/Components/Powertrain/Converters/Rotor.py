@@ -194,6 +194,8 @@ class Rotor(Component):
         self.Ct_J_coefficients                 = [0, 0.846, 1.537, 1.678, 2.034, 2.658]        
         self.Ct_thrust_coefficients            = [0.180, 0.175, 0.156, 0.144, 0.096, 0]
 
+        self.propulsive_efficiency = 0.86       
+
         # Initialize the default wake set to Fidelity Zero         
         self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'          
         

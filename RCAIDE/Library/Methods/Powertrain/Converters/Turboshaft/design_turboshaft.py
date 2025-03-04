@@ -173,7 +173,7 @@ def design_turboshaft(converter,segment,fuel_line):
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data_sea_level                                             = atmosphere.compute_values(0.0,0.0)   
     V                                                               = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state,_                                               = setup_operating_conditions(converter, altitude = 0,velocity_vector=np.array([[V, 0, 0]]))  
+    operating_state,_                                               = setup_operating_conditions(converter, altitude = 0,velocity_range=np.array([V]))  
     operating_state.conditions.energy[converter.tag][turboshaft.tag].throttle[:,0] = 1.0  
     sls_P,_,_                                                       = turboshaft.compute_performance(operating_state,converter,fuel_line) 
     turboshaft.sealevel_static_power                                = sls_P[0][0]

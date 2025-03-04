@@ -69,6 +69,7 @@ def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,c
     
     # Spin the rotor 
     rotor_conditions.omega           = motor_conditions.omega
+    rotor_conditions.motor_torque    = motor_conditions.torque
     rotor_conditions.throttle        = esc_conditions.throttle 
     compute_rotor_performance(propulsor,state,center_of_gravity)   
     
