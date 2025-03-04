@@ -386,18 +386,16 @@
 <span class="c1"># ----------------------------------------------------------------------</span>
 <span class="c1">#  Imports</span>
 <span class="c1"># ----------------------------------------------------------------------</span>
-
-<span class="c1"># package imports </span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                                       </span><span class="kn">import</span>  <span class="n">Data</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Wings</span><span class="w">                             </span><span class="kn">import</span> <span class="n">All_Moving_Surface</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Fuselages</span><span class="w">                         </span><span class="kn">import</span> <span class="n">Fuselage</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                                                              </span><span class="kn">import</span>  <span class="n">Data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Wings</span><span class="w">                                                    </span><span class="kn">import</span> <span class="n">All_Moving_Surface</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_VD_helpers</span><span class="w">      </span><span class="kn">import</span> <span class="n">postprocess_VD</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.make_VLM_wings</span><span class="w">           </span><span class="kn">import</span> <span class="n">make_VLM_wings</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.deflect_control_surface</span><span class="w">  </span><span class="kn">import</span> <span class="n">deflect_control_surface</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Airfoil</span><span class="w">                                            </span><span class="kn">import</span> <span class="n">import_airfoil_geometry</span>
- 
+  
+<span class="c1"># package imports </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># ----------------------------------------------------------------------</span>
 <span class="c1">#  Generate Vortex Distribution</span>
@@ -1287,7 +1285,7 @@
     <span class="n">fvs</span><span class="o">.</span><span class="n">chord</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_sw</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> 
     <span class="n">fvs</span><span class="o">.</span><span class="n">sweep</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_sw</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fus</span><span class="p">,</span> <span class="n">Fuselage</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fus</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Fuselage</span><span class="p">):</span>
 
         <span class="c1"># Compute the curvature of the nose/tail given fineness ratio. Curvature is derived from general quadratic equation</span>
         <span class="c1"># This method relates the fineness ratio to the quadratic curve formula via a spline fit interpolation</span>

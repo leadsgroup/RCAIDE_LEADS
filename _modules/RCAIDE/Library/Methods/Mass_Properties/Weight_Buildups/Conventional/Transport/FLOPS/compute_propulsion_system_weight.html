@@ -1,0 +1,730 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/compute_propulsion_system_weight';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/compute_propulsion_system_weight.html" />
+    <link rel="index" title="Index" href="../../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/ccompute_propulsion_system_weight.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Sep 2024, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+
+<span class="c1"># RCAIDE</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">RCAIDE</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">    </span><span class="kn">import</span> <span class="n">Units</span> <span class="p">,</span>  <span class="n">Data</span>
+
+<span class="c1"># python imports </span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w">  </span><span class="nn">np</span>
+ 
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Propulsion Systems Weight </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="compute_propulsion_system_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.compute_propulsion_system_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_propulsion_system_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">ref_propulsor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of propulsion system, including:</span>
+<span class="sd">        - dry engine weight</span>
+<span class="sd">        - fuel system weight</span>
+<span class="sd">        - thurst reversers weight</span>
+<span class="sd">        - electrical system weight</span>
+<span class="sd">        - starter engine weight</span>
+<span class="sd">        - nacelle weight</span>
+<span class="sd">        - cargo containers</span>
+
+<span class="sd">        Assumptions:</span>
+<span class="sd">            1) Rated thrust per scaled engine and rated thurst for baseline are the same</span>
+<span class="sd">            2) Engine weight scaling parameter is 1.15</span>
+<span class="sd">            3) Enginge inlet weight scaling exponent is 1</span>
+<span class="sd">            4) Baseline inlet weight is 0 lbs as in example files FLOPS</span>
+<span class="sd">            5) Baseline nozzle weight is 0 lbs as in example files FLOPS</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            vehicle - data dictionary with vehicle properties                   [dimensionless]</span>
+<span class="sd">                -.design_mach_number: design mach number for cruise flight</span>
+<span class="sd">                -.mass_properties.max_zero_fuel: zero fuel weight               [kg]</span>
+<span class="sd">                -.systems.accessories: type of aircraft (short-range, commuter</span>
+<span class="sd">                                                        medium-range, long-range,</span>
+<span class="sd">                                                        sst, cargo)</span>
+<span class="sd">            nacelle - data dictionary with propulsion system properties </span>
+<span class="sd">                -.diameter: diameter of nacelle                                 [meters]</span>
+<span class="sd">                -.length: length of complete engine assembly                    [meters]</span>
+<span class="sd">            ref_propulsor.</span>
+<span class="sd">                -.sealevel_static_thrust: thrust at sea level                   [N]</span>
+
+
+<span class="sd">        Outputs:</span>
+<span class="sd">            output - data dictionary with weights                               [kilograms]</span>
+<span class="sd">                    - output.W_prop: total propulsive system weight</span>
+<span class="sd">                    - output.W_thrust_reverser: thurst reverser weight</span>
+<span class="sd">                    - output.starter: starter engine weight</span>
+<span class="sd">                    - output.W_engine_controls: engine controls weight</span>
+<span class="sd">                    - output.fuel_system: fuel system weight</span>
+<span class="sd">                    - output.nacelle: nacelle weight</span>
+<span class="sd">                    - output.W_engine: dry engine weight</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+     
+    <span class="n">NENG</span> <span class="o">=</span>  <span class="mi">0</span> 
+    <span class="n">number_of_tanks</span> <span class="o">=</span>  <span class="mi">0</span>
+    <span class="n">ref_nacelle</span> <span class="o">=</span>  <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span>  <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbofan</span><span class="p">)</span> <span class="ow">or</span>  <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbojet</span><span class="p">):</span>
+                <span class="n">ref_propulsor</span> <span class="o">=</span> <span class="n">propulsor</span>  
+                <span class="n">NENG</span>  <span class="o">+=</span> <span class="mi">1</span> 
+            <span class="k">if</span> <span class="s1">&#39;nacelle&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span>
+                <span class="n">ref_nacelle</span> <span class="o">=</span>  <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span>   
+        <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">:</span>
+                <span class="n">number_of_tanks</span> <span class="o">+=</span>  <span class="mi">1</span>
+                  
+    <span class="k">if</span> <span class="n">ref_nacelle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">WNAC</span>            <span class="o">=</span> <span class="n">compute_nacelle_weight</span><span class="p">(</span><span class="n">ref_propulsor</span><span class="p">,</span><span class="n">ref_nacelle</span><span class="p">,</span><span class="n">NENG</span> <span class="p">)</span> 
+    <span class="n">WFSYS</span>           <span class="o">=</span> <span class="n">compute_fuel_system_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">NENG</span><span class="p">)</span>
+    <span class="n">WENG</span>            <span class="o">=</span> <span class="n">compute_engine_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">ref_propulsor</span><span class="p">)</span>
+    <span class="n">WEC</span><span class="p">,</span> <span class="n">WSTART</span>     <span class="o">=</span> <span class="n">compute_misc_propulsion_system_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">ref_propulsor</span><span class="p">,</span><span class="n">ref_nacelle</span><span class="p">,</span><span class="n">NENG</span><span class="p">)</span>
+    <span class="n">WTHR</span>            <span class="o">=</span> <span class="n">compute_thrust_reverser_weight</span><span class="p">(</span><span class="n">ref_propulsor</span><span class="p">,</span><span class="n">NENG</span><span class="p">)</span>
+    <span class="n">WPRO</span>            <span class="o">=</span> <span class="n">NENG</span> <span class="o">*</span> <span class="n">WENG</span> <span class="o">+</span> <span class="n">WFSYS</span> <span class="o">+</span> <span class="n">WEC</span> <span class="o">+</span> <span class="n">WSTART</span> <span class="o">+</span> <span class="n">WTHR</span> <span class="o">+</span> <span class="n">WNAC</span>
+
+    <span class="n">output</span>                      <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">W_prop</span>               <span class="o">=</span> <span class="n">WPRO</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">W_thrust_reverser</span>    <span class="o">=</span> <span class="n">WTHR</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">W_starter</span>            <span class="o">=</span> <span class="n">WSTART</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">W_engine_controls</span>    <span class="o">=</span> <span class="n">WEC</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">W_fuel_system</span>        <span class="o">=</span> <span class="n">WFSYS</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">W_nacelle</span>            <span class="o">=</span> <span class="n">WNAC</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">W_engine</span>             <span class="o">=</span> <span class="n">WENG</span> <span class="o">*</span> <span class="n">NENG</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">number_of_engines</span>    <span class="o">=</span> <span class="n">NENG</span> 
+    <span class="n">output</span><span class="o">.</span><span class="n">number_of_fuel_tanks</span> <span class="o">=</span> <span class="n">number_of_tanks</span>  
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+
+<div class="viewcode-block" id="compute_nacelle_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.compute_nacelle_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_nacelle_weight</span><span class="p">(</span><span class="n">ref_propulsor</span><span class="p">,</span><span class="n">ref_nacelle</span><span class="p">,</span><span class="n">NENG</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the nacelle weight based on the FLOPS method</span>
+<span class="sd">    </span>
+<span class="sd">        Assumptions:</span>
+<span class="sd">            1) All nacelles are identical</span>
+<span class="sd">            2) The number of nacelles is the same as the number of engines </span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            ref_propulsor    - data dictionary for the specific network that is being estimated [dimensionless]</span>
+<span class="sd">                -.number_of_engines: number of engines</span>
+<span class="sd">                -.engine_lenght: total length of engine                                  [m]</span>
+<span class="sd">                -.sealevel_static_thrust: sealevel static thrust of engine               [N]</span>
+<span class="sd">            nacelle.             </span>
+<span class="sd">                -.diameter: diameter of nacelle                                          [m]</span>
+<span class="sd">            WENG    - dry engine weight                                                  [kg]</span>
+<span class="sd">             </span>
+<span class="sd">             </span>
+<span class="sd">        Outputs:             </span>
+<span class="sd">            WNAC: nacelle weight                                                         [kg]</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">TNAC</span>   <span class="o">=</span> <span class="n">NENG</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">NENG</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">NENG</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">))</span>
+    <span class="n">DNAC</span>   <span class="o">=</span> <span class="n">ref_nacelle</span><span class="o">.</span><span class="n">diameter</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>
+    <span class="n">XNAC</span>   <span class="o">=</span> <span class="n">ref_nacelle</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>
+    <span class="n">FTHRST</span> <span class="o">=</span> <span class="n">ref_propulsor</span><span class="o">.</span><span class="n">sealevel_static_thrust</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbf</span>
+    <span class="n">WNAC</span>   <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">TNAC</span> <span class="o">*</span> <span class="n">DNAC</span> <span class="o">*</span> <span class="n">XNAC</span> <span class="o">*</span> <span class="n">FTHRST</span> <span class="o">**</span> <span class="mf">0.36</span>
+    <span class="k">return</span> <span class="n">WNAC</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span></div>
+
+
+
+<div class="viewcode-block" id="compute_thrust_reverser_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.compute_thrust_reverser_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_thrust_reverser_weight</span><span class="p">(</span><span class="n">ref_propulsor</span><span class="p">,</span><span class="n">NENG</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the weight of the thrust reversers of the aircraft</span>
+<span class="sd">    </span>
+<span class="sd">        Assumptions:</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            ref_propulsor    - data dictionary for the specific network that is being estimated [dimensionless]</span>
+<span class="sd">                -.number_of_engines: number of engines</span>
+<span class="sd">                -.sealevel_static_thrust: sealevel static thrust of engine  [N]</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">            WTHR: Thrust reversers weight                                   [kg]</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">TNAC</span> <span class="o">=</span> <span class="n">NENG</span> <span class="o">+</span> <span class="mf">1.</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">NENG</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">NENG</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">))</span>
+    <span class="n">THRUST</span> <span class="o">=</span> <span class="n">ref_propulsor</span><span class="o">.</span><span class="n">sealevel_static_thrust</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbf</span>
+    <span class="n">WTHR</span> <span class="o">=</span> <span class="mf">0.034</span> <span class="o">*</span> <span class="n">THRUST</span> <span class="o">*</span> <span class="n">TNAC</span>
+    <span class="k">return</span> <span class="n">WTHR</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span></div>
+
+
+
+<div class="viewcode-block" id="compute_misc_propulsion_system_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.compute_misc_propulsion_system_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_misc_propulsion_system_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">ref_propulsor</span><span class="p">,</span><span class="n">ref_nacelle</span><span class="p">,</span><span class="n">NENG</span> <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the miscellaneous engine weight based on the FLOPS method, electrical control system weight</span>
+<span class="sd">        and starter engine weight</span>
+<span class="sd">        </span>
+<span class="sd">        Assumptions:</span>
+<span class="sd">            1) All nacelles are identical</span>
+<span class="sd">            2) The number of nacelles is the same as the number of engines </span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            vehicle - data dictionary with vehicle properties                            [dimensionless]</span>
+<span class="sd">                 -.design_mach_number: design mach number</span>
+<span class="sd">            ref_propulsor    - data dictionary for the specific network that is being estimated [dimensionless]</span>
+<span class="sd">                -.number_of_engines: number of engines</span>
+<span class="sd">                -.sealevel_static_thrust: sealevel static thrust of engine               [N]</span>
+<span class="sd">            nacelle              </span>
+<span class="sd">                -.diameter: diameter of nacelle                                          [m]</span>
+<span class="sd">              </span>
+<span class="sd">        Outputs:              </span>
+<span class="sd">            WEC: electrical engine control system weight                                 [kg]</span>
+<span class="sd">            WSTART: starter engine weight                                                [kg]</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">THRUST</span>  <span class="o">=</span> <span class="n">ref_propulsor</span><span class="o">.</span><span class="n">sealevel_static_thrust</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbf</span>
+    <span class="n">WEC</span>     <span class="o">=</span> <span class="mf">0.26</span> <span class="o">*</span> <span class="n">NENG</span> <span class="o">*</span> <span class="n">THRUST</span> <span class="o">**</span> <span class="mf">0.5</span>
+    <span class="n">FNAC</span>    <span class="o">=</span> <span class="n">ref_nacelle</span><span class="o">.</span><span class="n">diameter</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>
+    <span class="n">VMAX</span>    <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_mach_number</span>
+    <span class="n">WSTART</span>  <span class="o">=</span> <span class="mf">11.0</span> <span class="o">*</span> <span class="n">NENG</span> <span class="o">*</span> <span class="n">VMAX</span> <span class="o">**</span> <span class="mf">0.32</span> <span class="o">*</span> <span class="n">FNAC</span> <span class="o">**</span> <span class="mf">1.6</span>
+    <span class="k">return</span> <span class="n">WEC</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span><span class="p">,</span> <span class="n">WSTART</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span></div>
+
+
+ 
+<div class="viewcode-block" id="compute_fuel_system_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.compute_fuel_system_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_fuel_system_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">NENG</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the weight of the fuel system based on the FLOPS method</span>
+<span class="sd">        Assumptions:</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            vehicle - data dictionary with vehicle properties                   [dimensionless]</span>
+<span class="sd">                -.design_mach_number: design mach number</span>
+<span class="sd">                -   [kg]</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">            WFSYS: Fuel system weight                                       [kg]</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">VMAX</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_mach_number</span>
+    <span class="n">FMXTOT</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_fuel</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>
+    <span class="n">WFSYS</span> <span class="o">=</span> <span class="mf">1.07</span> <span class="o">*</span> <span class="n">FMXTOT</span> <span class="o">**</span> <span class="mf">0.58</span> <span class="o">*</span> <span class="n">NENG</span> <span class="o">**</span> <span class="mf">0.43</span> <span class="o">*</span> <span class="n">VMAX</span> <span class="o">**</span> <span class="mf">0.34</span>
+    <span class="k">return</span> <span class="n">WFSYS</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span></div>
+
+
+
+<div class="viewcode-block" id="compute_engine_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.compute_engine_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_engine_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">ref_propulsor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the dry engine weight based on the FLOPS method</span>
+<span class="sd">        Assumptions:</span>
+<span class="sd">            Rated thrust per scaled engine and rated thurst for baseline are the same</span>
+<span class="sd">            Engine weight scaling parameter is 1.15</span>
+<span class="sd">            Enginge inlet weight scaling exponent is 1</span>
+<span class="sd">            Baseline inlet weight is 0 lbs as in example files FLOPS</span>
+<span class="sd">            Baseline nozzle weight is 0 lbs as in example files FLOPS</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            vehicle - data dictionary with vehicle properties                   [dimensionless]</span>
+<span class="sd">                -.systems.accessories: type of aircraft (short-range, commuter</span>
+<span class="sd">                                                        medium-range, long-range,</span>
+<span class="sd">                                                        sst, cargo)</span>
+<span class="sd">            ref_propulsor    - data dictionary for the specific network that is being estimated [dimensionless]</span>
+<span class="sd">                -.sealevel_static_thrust: sealevel static thrust of engine  [N]</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">            WENG: dry engine weight                                         [kg]</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">EEXP</span> <span class="o">=</span> <span class="mf">1.15</span>
+    <span class="n">EINL</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">ENOZ</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">THRSO</span> <span class="o">=</span> <span class="n">ref_propulsor</span><span class="o">.</span><span class="n">sealevel_static_thrust</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbf</span>
+    <span class="n">THRUST</span> <span class="o">=</span> <span class="n">THRSO</span>
+    <span class="n">WENGB</span> <span class="o">=</span> <span class="n">THRSO</span> <span class="o">/</span> <span class="mf">5.5</span>
+    <span class="n">WINLB</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>
+    <span class="n">WNOZB</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>
+    <span class="n">WENGP</span> <span class="o">=</span> <span class="n">WENGB</span> <span class="o">*</span> <span class="p">(</span><span class="n">THRUST</span> <span class="o">/</span> <span class="n">THRSO</span><span class="p">)</span> <span class="o">**</span> <span class="n">EEXP</span>
+    <span class="n">WINL</span> <span class="o">=</span> <span class="n">WINLB</span> <span class="o">*</span> <span class="p">(</span><span class="n">THRUST</span> <span class="o">/</span> <span class="n">THRSO</span><span class="p">)</span> <span class="o">**</span> <span class="n">EINL</span>
+    <span class="n">WNOZ</span> <span class="o">=</span> <span class="n">WNOZB</span> <span class="o">*</span> <span class="p">(</span><span class="n">THRUST</span> <span class="o">/</span> <span class="n">THRSO</span><span class="p">)</span> <span class="o">**</span> <span class="n">ENOZ</span>
+    <span class="n">WENG</span> <span class="o">=</span> <span class="n">WENGP</span> <span class="o">+</span> <span class="n">WINL</span> <span class="o">+</span> <span class="n">WNOZ</span>
+    <span class="k">return</span> <span class="n">WENG</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

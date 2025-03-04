@@ -558,7 +558,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                              </span><span class="kn">import</span> <span class="n">Units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                               </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Propulsors.Converters.Rotor</span><span class="w"> </span><span class="kn">import</span> <span class="n">design_propeller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Rotor</span><span class="w"> </span><span class="kn">import</span> <span class="n">design_propeller</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Performance</span><span class="w">                 </span><span class="kn">import</span> <span class="n">propeller_aerodynamic_analysis</span>
 <br/></pre></div>
 </div>
@@ -576,7 +576,7 @@
 <section id="3.-Propeller-Design">
 <h1>3. Propeller Design<a class="headerlink" href="#3.-Propeller-Design" title="Link to this heading">#</a></h1>
 <p>This section defines the propeller that is to be analysed.</p>
-<p>After creating the propeller object (located at RCAIDE.Library.Components.Propulsors.Converters.Propeller()), the geommetry properties including number of blades and radii are set.</p>
+<p>After creating the propeller object (located at RCAIDE.Library.Components.Powertrain.Converters.Propeller()), the geommetry properties including number of blades and radii are set.</p>
 <p>Next, the design conditions for the propeller are set. These include the speed the propeller is designed to operate at, the tip Mach number, the angular velocity, the lift coefficient, the altitude, and the thrust. These parameters will come from prior analysis or design.</p>
 <p>From here, the airfoils that are to be used are defined. In this case, two airfoils are used, one for the leading edge and one for the trailing edge. The airfoils are defined using the RCAIDE.Library.Components.Airfoils.Airfoil() class. The tag, coordinate_file, and polar_files properties are set for each airfoil.</p>
 <p>Finally, before exiting the function, the propeller is designed using the design_propeller function. This function takes the propeller object and completes the design of the propellery designing blade pitchnd more. Refer to the RCAIDE documentation for more information on the design_propeller function.</p>
@@ -586,7 +586,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">design_test_propeller</span><span class="p">():</span>
 
-    <span class="n">prop</span>                                     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Propeller</span><span class="p">()</span>
+    <span class="n">prop</span>                                     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Propeller</span><span class="p">()</span>
     <span class="n">prop</span><span class="o">.</span><span class="n">number_of_blades</span>                    <span class="o">=</span> <span class="mi">3</span>
     <span class="n">prop</span><span class="o">.</span><span class="n">number_of_engines</span>                   <span class="o">=</span> <span class="mi">1</span>
     <span class="n">prop</span><span class="o">.</span><span class="n">tip_radius</span>                          <span class="o">=</span> <span class="mf">1.0668</span>

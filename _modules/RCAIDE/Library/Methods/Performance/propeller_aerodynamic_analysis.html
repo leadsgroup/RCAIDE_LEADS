@@ -383,8 +383,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                              </span><span class="kn">import</span> <span class="n">Units</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common</span><span class="w">                    </span><span class="kn">import</span> <span class="n">Results</span>  
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Segments.Segment</span><span class="w">          </span><span class="kn">import</span> <span class="n">Segment</span>  
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Propulsors.Converters.Rotor.compute_rotor_performance</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_rotor_performance</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Segments.Segment</span><span class="w">          </span><span class="kn">import</span> <span class="n">Segment</span>
  
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -400,7 +399,7 @@
                            <span class="n">altitude</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
                            <span class="n">delta_isa</span> <span class="o">=</span><span class="mi">0</span> <span class="p">):</span> 
     <span class="c1"># design aircract </span>
-    <span class="n">electric_rotor</span>                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>  
+    <span class="n">electric_rotor</span>                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>  
     <span class="n">electric_rotor</span><span class="o">.</span><span class="n">rotor</span>           <span class="o">=</span> <span class="n">propeller</span> 
     
     <span class="c1"># operarting states  </span>
@@ -451,7 +450,7 @@
     
     <span class="n">rotor_conditions</span>             <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">electric_rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">propeller</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>        
     <span class="n">rotor_conditions</span><span class="o">.</span><span class="n">omega</span>       <span class="o">=</span> <span class="n">angular_velocity</span>
-    <span class="n">compute_rotor_performance</span><span class="p">(</span><span class="n">electric_rotor</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+    <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Methods</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Rotor</span><span class="o">.</span><span class="n">compute_rotor_performance</span><span class="p">(</span><span class="n">electric_rotor</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
      
     <span class="n">results</span> <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">electric_rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">propeller</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
     <span class="k">return</span>  <span class="n">results</span></div>

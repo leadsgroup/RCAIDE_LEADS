@@ -1,0 +1,1152 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>compute_fuel_cell_performance &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Motor" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.html" />
+    <link rel="prev" title="append_fuel_cell_conditions" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.append_fuel_cell_conditions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="RCAIDE.Framework.html">Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Analyses.html">Analyses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Aerodynamics.html">Aerodynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Analysis.html">Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Atmospheric.html">Atmospheric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Emissions.html">Emissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Energy.html">Energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Geodesics.html">Geodesics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Planets.html">Planets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Process.html">Process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Propulsion.html">Propulsion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Settings.html">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Stability.html">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html">Vehicle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Weights.html">Weights</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Core.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Container.html">Container</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.ContainerOrdered.html">ContainerOrdered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Data.html">Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.DataOrdered.html">DataOrdered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Diffed_Data.html">Diffed_Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Units.html">Units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.redirect.html">redirect</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.External_Interfaces.html">External_Interfaces</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.External_Interfaces.OpenVSP.html">OpenVSP</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Mission.html">Mission</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Missions.html">Missions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html">Segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Sequential_Segments.html">Sequential_Segments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Optimization.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Optimization.Packages.html">Packages</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="RCAIDE.Library.html">Library</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Attributes.html">Attributes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.html">Atmospheres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Coolants.html">Coolants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Cryogens.html">Cryogens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Gases.html">Gases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.html">Materials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Planets.html">Planets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.html">Propellants</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Components.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Airfoils.html">Airfoils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Booms.html">Booms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Component.html">Component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Configs.html">Configs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Fuselages.html">Fuselages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Landing_Gear.html">Landing_Gear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Mass_Properties.html">Mass_Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Nacelles.html">Nacelles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Network.html">Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Payloads.html">Payloads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.html">Powertrain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Wings.html">Wings</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="RCAIDE.Library.Methods.html">Methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.html">Aerodynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Emissions.html">Emissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Gas_Dynamics.html">Gas_Dynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geodesics.html">Geodesics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.html">Mass_Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Performance.html">Performance</a></li>
+<li class="toctree-l3 current active"><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.html">Powertrain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Stability.html">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.skip.html">skip</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Mission.html">Mission</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Mission.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Mission.Segments.html">Segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Mission.Solver.html">Solver</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Plots.html">Plots</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Aerodynamics.html">Aerodynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Emissions.html">Emissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Energy.html">Energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Mission.html">Mission</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Stability.html">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Topography.html">Topography</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Weights.html">Weights</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="RCAIDE.load.html">load</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RCAIDE.save.html">save</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RCAIDE.Vehicle.html">Vehicle</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.html" class="nav-link">Library</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Methods.html" class="nav-link">Methods</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Methods.Powertrain.html" class="nav-link">Powertrain</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Methods.Powertrain.Converters.html" class="nav-link">Converters</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.html" class="nav-link">Fuel_Cells</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.html" class="nav-link">Proton_Exchange_Membrane</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">compute_fuel_cell_performance</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <p>RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance</p>
+<section id="module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance">
+<span id="compute-fuel-cell-performance"></span><h1>compute_fuel_cell_performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.compute_fuel_cell_performance">
+<span class="sig-name descname"><span class="pre">compute_fuel_cell_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coolant_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#compute_fuel_cell_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.compute_fuel_cell_performance" title="Link to this definition">#</a></dt>
+<dd><p>Computes the performance of a PEM fuel cell</p>
+<blockquote>
+<div><p>Parameters</p>
+</div></blockquote>
+<dl class="simple">
+<dt>state<span class="classifier">MissionState</span></dt><dd><p>The current state of the mission.</p>
+</dd>
+<dt>bus<span class="classifier">ElectricBus</span></dt><dd><p>The electric bus to which the battery_module is connected.</p>
+</dd>
+<dt>coolant_lines<span class="classifier">list</span></dt><dd><p>List of coolant lines for thermal management.</p>
+</dd>
+<dt>t_idx<span class="classifier">int</span></dt><dd><p>Current time index in the simulation.</p>
+</dd>
+<dt>delta_t<span class="classifier">float</span></dt><dd><p>Time step size.</p>
+</dd>
+</dl>
+<section id="returns">
+<h2>Returns:<a class="headerlink" href="#returns" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>stored_results_flag: bool</dt><dd><p>Stored results boolean</p>
+</dd>
+<dt>stored_fuel_cell_stack_tag: string</dt><dd><p>Tag of fuel cell</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_PEM">
+<span class="sig-name descname"><span class="pre">evaluate_PEM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#evaluate_PEM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_PEM" title="Link to this definition">#</a></dt>
+<dd><p>Determines the fuel cell state of the PEM fuel cell</p>
+<section id="parameters">
+<h2>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>i: float</dt><dd><p>The current density to evaluate the cell voltage at (A/cm^2)</p>
+</dd>
+<dt>stack_temperature: Temperature</dt><dd><p>Temperature of the fuel cell</p>
+</dd>
+<dt>P_H2_input: Pressure</dt><dd><p>Pressure of the hydrogen stream</p>
+</dd>
+<dt>FC_air_p: Pressure</dt><dd><p>Pressure of the hydrogen air entering the fuel cell</p>
+</dd>
+<dt>RH: float</dt><dd><p>Relative humidity of the air and hydrogen streams (0-1)</p>
+</dd>
+<dt>air_excess_ratio: float</dt><dd><p>Air excess ratio (above stoichometric)</p>
+</dd>
+<dt>thermo_state_in: ThermoState</dt><dd><p>Conditions of air entering the compressor</p>
+</dd>
+<dt>degradation: float</dt><dd><p>The voltage drop due to degradation (V)
+optional, defaults to 0 V</p>
+</dd>
+</dl>
+</section>
+<section id="id1">
+<h2>Returns:<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>Hydrogen Mass flow (kg/s)</p>
+</dd>
+<dt>float:</dt><dd><p>Net Power (W)</p>
+</dd>
+<dt>float:</dt><dd><p>Gross power (W)</p>
+</dd>
+<dt>float:</dt><dd><p>Gross heat (W)</p>
+</dd>
+<dt>float:</dt><dd><p>Compressor Power (W)</p>
+</dd>
+<dt>float:</dt><dd><p>mdot_air_in (kg/s)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_CEM">
+<span class="sig-name descname"><span class="pre">evaluate_CEM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#evaluate_CEM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_CEM" title="Link to this definition">#</a></dt>
+<dd><p>Evaluates the power required by the CEM (compressor-expander module)</p>
+<section id="id2">
+<h2>Parameters:<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>FC_air_p: float</dt><dd><p>Air pressure after the humidifier entering the fuel cell (bar)</p>
+</dd>
+<dt>thermo_state_in: ThermoState</dt><dd><p>Air thermostate entering the compressor</p>
+</dd>
+<dt>mdot_air_in: float</dt><dd><p>Mass flow of air entering the fuel cell and compressor (kg/s)</p>
+</dd>
+<dt>air_excess_ratio: float</dt><dd><p>Oxygen excess ratio (above stoichometric)</p>
+</dd>
+<dt>p_drop_hum: float</dt><dd><p>The pressure drop (bar) through the humidifier</p>
+</dd>
+<dt>pressure_drop: float</dt><dd><p>The pressure drop (bar) through the fuel cell</p>
+</dd>
+</dl>
+</section>
+<section id="id3">
+<h2>Returns:<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>The power required to run the CEM at the given operating conditions (W)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_voltage">
+<span class="sig-name descname"><span class="pre">calculate_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_voltage" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the output voltage of the fuel cell by subtracting the activation,
+ohmic, and concentration voltage losses from the reversible Nernst voltage, E_cell.</p>
+<section id="id4">
+<h2>Parameters:<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>i: float</dt><dd><p>The current density to evaluate the cell voltage at (A/m^2)</p>
+</dd>
+<dt>stack_temperature: float</dt><dd><p>Temperature of the fuel cell (K)</p>
+</dd>
+<dt>P_H2_input: float</dt><dd><p>Pressure of the hydrogen stream (bar)</p>
+</dd>
+<dt>P_air: float</dt><dd><p>Pressure of the incoming air (bar)</p>
+</dd>
+<dt>RH: float</dt><dd><p>Relative humidity of the air and hydrogen streams (0-1)</p>
+</dd>
+<dt>air_excess_ratio: float</dt><dd><p>Air excess ratio (above stoichometric)</p>
+</dd>
+<dt>pressure_drop: float</dt><dd><p>Pressure drop of the fuel cell at the rated current density (bar)</p>
+</dd>
+<dt>degradation: float</dt><dd><p>The percent of maximumm degradation to evaluate divided by 100
+optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
+</dd>
+</dl>
+</section>
+<section id="id5">
+<h2>Returns:<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>Output voltage of the fuel cell (V)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.set_rated_current_density">
+<span class="sig-name descname"><span class="pre">set_rated_current_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rated_current_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rated_power_density</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#set_rated_current_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.set_rated_current_density" title="Link to this definition">#</a></dt>
+<dd><p>Sets the rated cd and pd of the fuel cell system</p>
+<section id="id6">
+<h2>Parameters:<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>rated_CD: float</dt><dd><p>The current density (A/cm2) to set</p>
+</dd>
+<dt>rated_power_density: float</dt><dd><p>The power density (W/cm2) to set</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_hum">
+<span class="sig-name descname"><span class="pre">calculate_P_drop_hum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_P_drop_hum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_hum" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the pressure drop across the humidifier for the rated current</p>
+<section id="id7">
+<h2>Parameters:<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>i: float</dt><dd><p>Current Density (Acm2) to calculate the pressure drop</p>
+</dd>
+</dl>
+</section>
+<section id="id8">
+<h2>Returns:<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float</dt><dd><p>The Humidifier pressure drop in bar</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_stack">
+<span class="sig-name descname"><span class="pre">calculate_P_drop_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_P_drop_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_stack" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the pressure drop across the stack for the rated current</p>
+<section id="id9">
+<h2>Parameters:<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>i: float</dt><dd><p>Current Density (Acm2) to calculate the pressure drop</p>
+</dd>
+</dl>
+</section>
+<section id="id10">
+<h2>Returns:<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float</dt><dd><p>The stack pressure drop in bar</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_O2">
+<span class="sig-name descname"><span class="pre">calculate_P_O2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_air</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_P_O2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_O2" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the partial pressure of oxygen at the fuel cell cathode</p>
+<section id="id11">
+<h2>Parameters:<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>P_air: float</dt><dd><p>The input air pressure to the fuel cell (bar)</p>
+</dd>
+<dt>stack_temperature: float</dt><dd><p>The fuel cell stack temperature (K)</p>
+</dd>
+<dt>RH: float</dt><dd><p>The relative humidity of the oxygen stream (0-1)</p>
+</dd>
+<dt>air_excess_ratio: float</dt><dd><p>The oxygen excess ratio (above stoichometric)</p>
+</dd>
+<dt>P_drop: float</dt><dd><p>The pressure drop (bar) across the fuel cell cathode</p>
+</dd>
+<dt>i: float</dt><dd><p>The current density (Acm2) to calculate the partial pressure at</p>
+</dd>
+</dl>
+</section>
+<section id="id12">
+<h2>Returns:<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float</dt><dd><p>The oxygen partial pressure (bar)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_H2">
+<span class="sig-name descname"><span class="pre">calculate_P_H2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_H2_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_P_H2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_H2" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the partial pressure of hydroen at the fuel cell anode</p>
+<section id="id13">
+<h2>Parameters:<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>P_H2_input: float</dt><dd><p>The input hydrogen pressure to the fuel cell (bar)</p>
+</dd>
+<dt>stack_temperature: float</dt><dd><p>The fuel cell stack temperature (K)</p>
+</dd>
+<dt>RH: float</dt><dd><p>The relative humidity of the oxygen stream (0-1)</p>
+</dd>
+<dt>i: float</dt><dd><p>The current density (Acm2) to calculate the partial pressure at</p>
+</dd>
+</dl>
+</section>
+<section id="id14">
+<h2>Returns:<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float</dt><dd><p>The hydrogen partial pressure (bar)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_E_cell">
+<span class="sig-name descname"><span class="pre">calculate_E_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_H2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_E_cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_E_cell" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the reversible Nernst Voltage of the cell</p>
+<section id="id15">
+<h2>Parameters:<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>stack_temperature: float</dt><dd><p>The fuel cell stack temperature (K)</p>
+</dd>
+<dt>P_H2: float</dt><dd><p>The hydrogen partial pressure (bar)</p>
+</dd>
+<dt>P_O2: float</dt><dd><p>The oxygen partial pressure (bar)</p>
+</dd>
+</dl>
+</section>
+<section id="id16">
+<h2>Returns:<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float</dt><dd><p>The reversible cell potential (V)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_activation_losses">
+<span class="sig-name descname"><span class="pre">calculate_activation_losses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_activation_losses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_activation_losses" title="Link to this definition">#</a></dt>
+<dd><p>calculation of activation losses for both high temperature and low temperature fuel cells</p>
+<section id="id17">
+<h2>Parameters:<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
+</dd>
+<dt>P_O2: float</dt><dd><p>Oxygen Partial Pressure (bar)</p>
+</dd>
+<dt>i: float</dt><dd><p>Current density to evaluate activation losses (A/cm2)</p>
+</dd>
+</dl>
+</section>
+<section id="id18">
+<h2>Returns:<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>Activation voltage loss (V)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_LT">
+<span class="sig-name descname"><span class="pre">calculate_ohmic_losses_LT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_ohmic_losses_LT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_LT" title="Link to this definition">#</a></dt>
+<dd><p>Calculation of ohmic losses for low temperature fuel cells</p>
+<section id="id19">
+<h2>Parameters:<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
+</dd>
+<dt>i: float</dt><dd><p>Current density to evaluate activation losses (A/cm2)</p>
+</dd>
+</dl>
+</section>
+<section id="id20">
+<h2>Returns:<a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>Ohmic voltage loss (V)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_HT">
+<span class="sig-name descname"><span class="pre">calculate_ohmic_losses_HT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_ohmic_losses_HT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_HT" title="Link to this definition">#</a></dt>
+<dd><p>Calculation of ohmic losses for high temperature fuel cells</p>
+<section id="id21">
+<h2>Parameters:<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
+</dd>
+<dt>i: float</dt><dd><p>Current density to evaluate activation losses (A/cm2)</p>
+</dd>
+</dl>
+</section>
+<section id="id22">
+<h2>Returns:<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>Ohmic voltage loss (V)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_LT">
+<span class="sig-name descname"><span class="pre">calculate_concentration_losses_LT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_concentration_losses_LT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_LT" title="Link to this definition">#</a></dt>
+<dd><p>Calculation of concentration losses for low temperature fuel cells</p>
+<section id="id23">
+<h2>Parameters:<a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
+</dd>
+<dt>P_O2: float</dt><dd><p>Oxygen partial pressure (bar)</p>
+</dd>
+<dt>RH: float</dt><dd><p>Relative humidity of the oxygen stream (0-1)</p>
+</dd>
+<dt>air_excess_ratio: float</dt><dd><p>Oxygen excess ratio (above stoichometric)</p>
+</dd>
+<dt>P_drop: float</dt><dd><p>Pressure drop across the fuel cell stack (bar)</p>
+</dd>
+<dt>i: float</dt><dd><p>Current density to evaluate activation losses (A/cm2)</p>
+</dd>
+</dl>
+</section>
+<section id="id24">
+<h2>Returns:<a class="headerlink" href="#id24" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>Concentration voltage loss (V)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_LT">
+<span class="sig-name descname"><span class="pre">calculate_limiting_current_density_LT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_limiting_current_density_LT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_LT" title="Link to this definition">#</a></dt>
+<dd><p>Calculation of the limiting current density for LT-PEM</p>
+<section id="id25">
+<h2>Parameters:<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
+</dd>
+<dt>P_O2: float</dt><dd><p>Oxygen partial pressure (bar)</p>
+</dd>
+<dt>RH: float</dt><dd><p>Relative humidity of the oxygen stream (0-1)</p>
+</dd>
+<dt>air_excess_ratio: float</dt><dd><p>Oxygen excess ratio (above stoichometric)</p>
+</dd>
+<dt>P_drop: float</dt><dd><p>Pressure drop across the fuel cell stack (bar)</p>
+</dd>
+<dt>i: float</dt><dd><p>Current density to evaluate activation losses (A/cm2)</p>
+</dd>
+</dl>
+</section>
+<section id="id26">
+<h2>Returns:<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>limiting current density (A/cm^2)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_HT">
+<span class="sig-name descname"><span class="pre">calculate_concentration_losses_HT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_concentration_losses_HT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_HT" title="Link to this definition">#</a></dt>
+<dd><p>Calculation of concentration losses for high temperature fuel cells</p>
+<section id="id27">
+<h2>Parameters:<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
+</dd>
+<dt>P_O2: float</dt><dd><p>Oxygen partial pressure (bar)</p>
+</dd>
+<dt>RH: float</dt><dd><p>Relative humidity of the oxygen stream (0-1)</p>
+</dd>
+<dt>air_excess_ratio: float</dt><dd><p>Oxygen excess ratio (above stoichometric)</p>
+</dd>
+<dt>P_drop: float</dt><dd><p>Pressure drop across the fuel cell stack (bar)</p>
+</dd>
+<dt>i: float</dt><dd><p>Current density to evaluate activation losses (A/cm2)</p>
+</dd>
+</dl>
+</section>
+<section id="id28">
+<h2>Returns:<a class="headerlink" href="#id28" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>Concentration voltage loss (V)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_HT">
+<span class="sig-name descname"><span class="pre">calculate_limiting_current_density_HT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_limiting_current_density_HT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_HT" title="Link to this definition">#</a></dt>
+<dd><p>Calculation of the limiting current density for HT-PEM</p>
+<section id="id29">
+<h2>Parameters:<a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
+</dd>
+<dt>P_O2: float</dt><dd><p>Oxygen partial pressure (bar)</p>
+</dd>
+<dt>RH: float</dt><dd><p>Relative humidity of the oxygen stream (0-1)</p>
+</dd>
+<dt>air_excess_ratio: float</dt><dd><p>Oxygen excess ratio (above stoichometric)</p>
+</dd>
+<dt>P_drop: float</dt><dd><p>Pressure drop across the fuel cell stack (bar)</p>
+</dd>
+<dt>i: float</dt><dd><p>Current density to evaluate activation losses (A/cm2)</p>
+</dd>
+</dl>
+</section>
+<section id="id30">
+<h2>Returns:<a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>float:</dt><dd><p>limiting current density (A/cm^2)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_max_gross_power">
+<span class="sig-name descname"><span class="pre">evaluate_max_gross_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#evaluate_max_gross_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_max_gross_power" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_power_func">
+<span class="sig-name descname"><span class="pre">evaluate_power_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#evaluate_power_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_power_func" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.append_fuel_cell_conditions.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">append_fuel_cell_conditions</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Motor</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.compute_fuel_cell_performance"><code class="docutils literal notranslate"><span class="pre">compute_fuel_cell_performance()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_PEM"><code class="docutils literal notranslate"><span class="pre">evaluate_PEM()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_CEM"><code class="docutils literal notranslate"><span class="pre">evaluate_CEM()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_voltage"><code class="docutils literal notranslate"><span class="pre">calculate_voltage()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.set_rated_current_density"><code class="docutils literal notranslate"><span class="pre">set_rated_current_density()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_hum"><code class="docutils literal notranslate"><span class="pre">calculate_P_drop_hum()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_stack"><code class="docutils literal notranslate"><span class="pre">calculate_P_drop_stack()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_O2"><code class="docutils literal notranslate"><span class="pre">calculate_P_O2()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_H2"><code class="docutils literal notranslate"><span class="pre">calculate_P_H2()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_E_cell"><code class="docutils literal notranslate"><span class="pre">calculate_E_cell()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_activation_losses"><code class="docutils literal notranslate"><span class="pre">calculate_activation_losses()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_LT"><code class="docutils literal notranslate"><span class="pre">calculate_ohmic_losses_LT()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_HT"><code class="docutils literal notranslate"><span class="pre">calculate_ohmic_losses_HT()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_LT"><code class="docutils literal notranslate"><span class="pre">calculate_concentration_losses_LT()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_LT"><code class="docutils literal notranslate"><span class="pre">calculate_limiting_current_density_LT()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_HT"><code class="docutils literal notranslate"><span class="pre">calculate_concentration_losses_HT()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_HT"><code class="docutils literal notranslate"><span class="pre">calculate_limiting_current_density_HT()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_max_gross_power"><code class="docutils literal notranslate"><span class="pre">evaluate_max_gross_power()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_power_func"><code class="docutils literal notranslate"><span class="pre">evaluate_power_func()</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

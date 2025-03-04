@@ -1,0 +1,850 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Compoments/Propulsors/Converters/Ducted_Fan.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Mar 2024, M. Clarke </span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="c1"># RCAIDE imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">              </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.Converter</span><span class="w">                         </span><span class="kn">import</span> <span class="n">Converter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.append_ducted_fan_conditions</span><span class="w"> </span><span class="kn">import</span>  <span class="n">append_ducted_fan_conditions</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+ 
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="c1">#  Nacalle</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
+<div class="viewcode-block" id="Ducted_Fan">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Ducted_Fan</span><span class="p">(</span><span class="n">Converter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ducted Fan Component Class</span>
+
+<span class="sd">    This class models a ducted fan propulsion system with both rotor and stator components. </span>
+<span class="sd">    It inherits from the base Converter class and implements ducted-fan specific attributes and methods.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the ducted fan component, defaults to &#39;ducted_fan&#39;</span>
+<span class="sd">    number_of_radial_stations : int</span>
+<span class="sd">        Number of radial stations for blade element analysis, defaults to 20</span>
+<span class="sd">    number_of_rotor_blades : int</span>
+<span class="sd">        Number of rotor blades, defaults to 12</span>
+<span class="sd">    tip_radius : float</span>
+<span class="sd">        Outer radius of the rotor [m], defaults to 1.0</span>
+<span class="sd">    hub_radius : float</span>
+<span class="sd">        Inner radius of the rotor at hub [m], defaults to 0.1</span>
+<span class="sd">    exit_radius : float</span>
+<span class="sd">        Radius at the duct exit [m], defaults to 1.1</span>
+<span class="sd">    blade_clearance : float</span>
+<span class="sd">        Clearance between blade tip and duct wall [m], defaults to 0.01</span>
+<span class="sd">    length : float</span>
+<span class="sd">        Axial length of the ducted fan [m], defaults to 1.0</span>
+<span class="sd">    fan_effectiveness : float</span>
+<span class="sd">        Fan effectiveness factor [-], defaults to 1.1</span>
+<span class="sd">    Cp_polynomial_coefficients : list</span>
+<span class="sd">        Coefficients for power coefficient polynomial [-, -, -]</span>
+<span class="sd">    Ct_polynomial_coefficients : list</span>
+<span class="sd">        Coefficients for thrust coefficient polynomial [-, -, -]</span>
+<span class="sd">    etap_polynomial_coefficients : list</span>
+<span class="sd">        Coefficients for propulsive efficiency polynomial [-, -, -]</span>
+<span class="sd">    fidelity : str</span>
+<span class="sd">        Analysis fidelity level, either &#39;Blade_Element_Momentum_Theory&#39; or &#39;Rankine_Froude_Momentum_Theory&#39;</span>
+<span class="sd">    orientation_euler_angles : list</span>
+<span class="sd">        Default orientation angles of rotor [rad, rad, rad]</span>
+<span class="sd">    rotor : Data</span>
+<span class="sd">        Container for rotor geometry and performance data</span>
+<span class="sd">    stator : Data</span>
+<span class="sd">        Container for stator geometry and performance data</span>
+<span class="sd">    cruise : Data</span>
+<span class="sd">        Container for cruise design conditions</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The ducted fan model includes detailed geometric parameters and performance characteristics</span>
+<span class="sd">    for both the rotor and stator components. The model supports multiple fidelity levels</span>
+<span class="sd">    and includes coordinate transformation capabilities for thrust vectoring analysis.</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Axisymmetric flow</span>
+<span class="sd">        * Steady state operation</span>
+<span class="sd">        * Incompressible flow for low-fidelity analysis</span>
+<span class="sd">        * No radial flow</span>
+<span class="sd">        * Uniform inflow</span>
+<span class="sd">        * No blade-to-blade interaction</span>
+
+<span class="sd">    &quot;&quot;&quot;</span> 
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This sets the default values for the component to function.</span>
+<span class="sd">        </span>
+<span class="sd">        Assumptions:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">        Source:</span>
+<span class="sd">        N/A</span>
+<span class="sd">    </span>
+<span class="sd">        Inputs:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">        Outputs:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">        Properties Used:</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>      
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                   <span class="o">=</span> <span class="s1">&#39;ducted_fan&#39;</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_radial_stations</span>             <span class="o">=</span> <span class="mi">20</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_rotor_blades</span>                <span class="o">=</span> <span class="mi">12</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">tip_radius</span>                            <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hub_radius</span>                            <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit_radius</span>                           <span class="o">=</span> <span class="mf">1.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blade_clearance</span>                       <span class="o">=</span> <span class="mf">0.01</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span>                                <span class="o">=</span> <span class="mi">1</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">fan_effectiveness</span>                     <span class="o">=</span> <span class="mf">1.1</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cp_polynomial_coefficients</span>            <span class="o">=</span> <span class="p">[</span><span class="mf">0.551</span><span class="p">,</span>  <span class="mf">0.0182</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0869</span><span class="p">]</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ct_polynomial_coefficients</span>            <span class="o">=</span> <span class="p">[</span><span class="mf">0.4605</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0529</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1203</span><span class="p">]</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">etap_polynomial_coefficients</span>          <span class="o">=</span> <span class="p">[</span><span class="mf">0.0653</span><span class="p">,</span><span class="mf">4.1603</span> <span class="p">,</span> <span class="o">-</span><span class="mf">7.6128</span><span class="p">]</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">fidelity</span>                              <span class="o">=</span> <span class="s1">&#39;Blade_Element_Momentum_Theory&#39;</span> <span class="c1"># &#39;Rankine_Froude_Momentum_Theory&#39;  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientation_euler_angles</span>              <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]</span>  <span class="c1"># vector of angles defining default orientation of rotor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotor</span>                                 <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stator</span>                                <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotor</span><span class="o">.</span><span class="n">percent_x_location</span>              <span class="o">=</span> <span class="mf">0.4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stator</span><span class="o">.</span><span class="n">percent_x_location</span>             <span class="o">=</span> <span class="mf">0.7</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span>                                <span class="o">=</span> <span class="n">Data</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust</span>                  <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_power</span>                   <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_altitude</span>                <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_efficiency</span>              <span class="o">=</span> <span class="kc">None</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_angular_velocity</span>        <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_freestream_velocity</span>     <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_reference_velocity</span>      <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_freestream_mach</span>         <span class="o">=</span> <span class="kc">None</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">duct_airfoil</span>                          <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hub_airfoil</span>                           <span class="o">=</span> <span class="kc">None</span>
+      
+    
+<div class="viewcode-block" id="Ducted_Fan.append_duct_airfoil">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_duct_airfoil">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_duct_airfoil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">airfoil</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds an airfoil to the ducted fan&#39;s duct section.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        airfoil : Data</span>
+<span class="sd">            Airfoil data container with aerodynamic properties for the duct section.</span>
+<span class="sd">            Must be of type Data().</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method appends airfoil data to the duct_airfoil attribute of the ducted fan.</span>
+<span class="sd">        The airfoil data is used to model the aerodynamic characteristics of the duct</span>
+<span class="sd">        section, which influences the overall performance of the ducted fan system.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        Exception</span>
+<span class="sd">            If input airfoil is not of type Data()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Assert database type</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">airfoil</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;input component must be of type Airfoil&#39;</span><span class="p">)</span> 
+
+        <span class="c1"># Store data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duct_airfoil</span> <span class="o">=</span>  <span class="n">airfoil</span>
+
+        <span class="k">return</span></div>
+
+    
+
+<div class="viewcode-block" id="Ducted_Fan.append_hub_airfoil">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_hub_airfoil">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_hub_airfoil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">airfoil</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds an airfoil to the ducted fan&#39;s hub section.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        airfoil : Data</span>
+<span class="sd">            Airfoil data container with aerodynamic properties for the hub section.</span>
+<span class="sd">            Must be of type Data().</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method appends airfoil data to the hub_airfoil attribute of the ducted fan.</span>
+<span class="sd">        The airfoil data is used to model the aerodynamic characteristics of the hub</span>
+<span class="sd">        section, which affects the flow field and performance of the ducted fan system.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        Exception</span>
+<span class="sd">            If input airfoil is not of type Data()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Assert database type</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">airfoil</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;input component must be of type Airfoil&#39;</span><span class="p">)</span> 
+
+        <span class="c1"># Store data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hub_airfoil</span> <span class="o">=</span>  <span class="n">airfoil</span>
+
+        <span class="k">return</span> </div>
+
+
+<div class="viewcode-block" id="Ducted_Fan.append_operating_conditions">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_operating_conditions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="n">ducted_fan</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor</span><span class="p">):</span> 
+        <span class="n">energy_conditions</span>       <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+        <span class="n">append_ducted_fan_conditions</span><span class="p">(</span><span class="n">ducted_fan</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">)</span>
+        <span class="k">return</span>        </div>
+
+          
+<div class="viewcode-block" id="Ducted_Fan.vec_to_vel">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.vec_to_vel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vec_to_vel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rotates from the ducted fan&#39;s vehicle frame to the ducted fan&#39;s velocity frame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rot_mat : ndarray</span>
+<span class="sd">            3x3 rotation matrix transforming from vehicle frame to velocity frame.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method creates a rotation matrix for transforming coordinates between</span>
+<span class="sd">        two reference frames of the ducted fan. When the ducted fan is axially</span>
+<span class="sd">        aligned with the vehicle body:</span>
+
+<span class="sd">        Velocity frame:</span>
+<span class="sd">        * X-axis points out the nose</span>
+<span class="sd">        * Z-axis points towards the ground</span>
+<span class="sd">        * Y-axis points out the right wing</span>
+
+<span class="sd">        Vehicle frame:</span>
+<span class="sd">        * X-axis points towards the tail</span>
+<span class="sd">        * Z-axis points towards the ceiling</span>
+<span class="sd">        * Y-axis points out the right wing</span>
+
+<span class="sd">        **Theory**</span>
+<span class="sd">        The transformation is accomplished using a rotation of π radians about the Y-axis,</span>
+<span class="sd">        represented as a rotation vector [0, π, 0].</span>
+
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">        * The ducted fan&#39;s default orientation is aligned with the vehicle body</span>
+<span class="sd">        * Right-handed coordinate system is used</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">from_rotvec</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">rot_mat</span></div>
+
+    
+
+<div class="viewcode-block" id="Ducted_Fan.body_to_prop_vel">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.body_to_prop_vel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">body_to_prop_vel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commanded_thrust_vector</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rotates from the system&#39;s body frame to the ducted fan&#39;s velocity frame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        commanded_thrust_vector : ndarray</span>
+<span class="sd">            Vector of commanded thrust angles [rad] for each time step.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rot_mat : ndarray</span>
+<span class="sd">            3x3 rotation matrix transforming from body frame to ducted fan velocity frame.</span>
+<span class="sd">        rots : ndarray</span>
+<span class="sd">            Array of rotation vectors including commanded thrust angles.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method performs a sequence of rotations to transform coordinates from</span>
+<span class="sd">        the vehicle body frame to the ducted fan&#39;s velocity frame. The transformation</span>
+<span class="sd">        sequence is:</span>
+<span class="sd">        1. Body to vehicle frame (π rotation about Y-axis)</span>
+<span class="sd">        2. Vehicle to ducted fan vehicle frame (includes thrust vector rotation)</span>
+<span class="sd">        3. Ducted fan vehicle to ducted fan velocity frame</span>
+
+<span class="sd">        Reference frames:</span>
+<span class="sd">        Velocity frame:</span>
+<span class="sd">        * X-axis points out the nose</span>
+<span class="sd">        * Z-axis points towards the ground</span>
+<span class="sd">        * Y-axis points out the right wing</span>
+
+<span class="sd">        Vehicle frame:</span>
+<span class="sd">        * X-axis points towards the tail</span>
+<span class="sd">        * Z-axis points towards the ceiling</span>
+<span class="sd">        * Y-axis points out the right wing</span>
+
+<span class="sd">        **Theory**</span>
+<span class="sd">        The complete transformation is computed as:</span>
+<span class="sd">        rot_mat = (body_2_vehicle @ vehicle_2_duct_vec) @ duct_vec_2_duct_vel</span>
+
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">        * The ducted fan&#39;s default orientation is defined by orientation_euler_angles</span>
+<span class="sd">        * Right-handed coordinate system is used</span>
+<span class="sd">        * Thrust vector rotation is applied about the Y-axis</span>
+<span class="sd">        * Matrix multiplication order preserves proper transformation sequence</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Go from velocity to vehicle frame</span>
+        <span class="n">body_2_vehicle</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">from_rotvec</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
+
+        <span class="c1"># Go from vehicle frame to ducted fan vehicle frame: rot 1 including the extra body rotation</span>
+        <span class="n">cpts</span>       <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">commanded_thrust_vector</span><span class="p">))</span>
+        <span class="n">rots</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientation_euler_angles</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.</span>
+        <span class="n">rots</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">rots</span><span class="p">[</span><span class="kc">None</span><span class="p">,:],</span> <span class="n">cpts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
+        <span class="n">rots</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">commanded_thrust_vector</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> 
+        
+        <span class="n">vehicle_2_duct_vec</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">from_rotvec</span><span class="p">(</span><span class="n">rots</span><span class="p">)</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
+
+        <span class="c1"># GO from the ducted fan vehicle frame to the ducted fan velocity frame: rot 2</span>
+        <span class="n">duct_vec_2_duct_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vec_to_vel</span><span class="p">()</span>
+
+        <span class="c1"># Do all the matrix multiplies</span>
+        <span class="n">rot1</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">body_2_vehicle</span><span class="p">,</span><span class="n">vehicle_2_duct_vec</span><span class="p">)</span>
+        <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">rot1</span><span class="p">,</span><span class="n">duct_vec_2_duct_vel</span><span class="p">)</span>
+ 
+        <span class="k">return</span> <span class="n">rot_mat</span> <span class="p">,</span> <span class="n">rots</span></div>
+
+
+
+<div class="viewcode-block" id="Ducted_Fan.duct_vel_to_body">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.duct_vel_to_body">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">duct_vel_to_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commanded_thrust_vector</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rotates from the ducted fan&#39;s velocity frame to the system&#39;s body frame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        commanded_thrust_vector : ndarray</span>
+<span class="sd">            Vector of commanded thrust angles [rad] for each time step.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rot_mat : ndarray</span>
+<span class="sd">            3x3 rotation matrix transforming from ducted fan velocity frame to body frame.</span>
+<span class="sd">        rots : ndarray</span>
+<span class="sd">            Array of rotation vectors including commanded thrust angles.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method performs the inverse transformation sequence of body_to_prop_vel.</span>
+<span class="sd">        The transformation sequence is:</span>
+<span class="sd">        1. Ducted fan velocity to ducted fan vehicle frame</span>
+<span class="sd">        2. Ducted fan vehicle to vehicle frame (includes thrust vector rotation)</span>
+<span class="sd">        3. Vehicle to body frame (π rotation about Y-axis)</span>
+
+<span class="sd">        Reference frames:</span>
+<span class="sd">        Velocity frame:</span>
+<span class="sd">        * X-axis points out the nose</span>
+<span class="sd">        * Z-axis points towards the ground</span>
+<span class="sd">        * Y-axis points out the right wing</span>
+
+<span class="sd">        Vehicle frame:</span>
+<span class="sd">        * X-axis points towards the tail</span>
+<span class="sd">        * Z-axis points towards the ceiling</span>
+<span class="sd">        * Y-axis points out the right wing</span>
+
+<span class="sd">        **Theory**</span>
+<span class="sd">        The transformation is computed by inverting the rotation matrix from </span>
+<span class="sd">        body_to_prop_vel using:</span>
+<span class="sd">        rot_mat = (body_2_duct_vel)^(-1)</span>
+
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">        * The ducted fan&#39;s default orientation is defined by orientation_euler_angles</span>
+<span class="sd">        * Right-handed coordinate system is used</span>
+<span class="sd">        * Thrust vector rotation is applied about the Y-axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">body2ductvel</span><span class="p">,</span><span class="n">rots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_to_duct_vel</span><span class="p">(</span><span class="n">commanded_thrust_vector</span><span class="p">)</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">from_matrix</span><span class="p">(</span><span class="n">body2ductvel</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">inv</span><span class="p">()</span>
+        <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">rot_mat</span><span class="p">,</span> <span class="n">rots</span></div>
+
+    
+<div class="viewcode-block" id="Ducted_Fan.vec_to_duct_body">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.vec_to_duct_body">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vec_to_duct_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">commanded_thrust_vector</span><span class="p">):</span>
+        <span class="n">rot_mat</span><span class="p">,</span> <span class="n">rots</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">duct_vel_to_body</span><span class="p">(</span><span class="n">commanded_thrust_vector</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="n">rot_mat</span><span class="p">,</span> <span class="n">rots</span> </div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -405,15 +405,13 @@
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Booms.html">Booms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Component.html">Component</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Configs.html">Configs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Energy.html">Energy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Fuselages.html">Fuselages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Landing_Gear.html">Landing_Gear</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Mass_Properties.html">Mass_Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Nacelles.html">Nacelles</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Network.html">Network</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Payloads.html">Payloads</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Propulsors.html">Propulsors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Systems.html">Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.html">Powertrain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Thermal_Management.html">Thermal_Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Wings.html">Wings</a></li>
 </ul>
@@ -421,17 +419,16 @@
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="RCAIDE.Library.Methods.html">Methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 current active"><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.html">Aerodynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Emissions.html">Emissions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Energy.html">Energy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Gas_Dynamics.html">Gas_Dynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geodesics.html">Geodesics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.html">Mass_Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Noise.html">Noise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Performance.html">Performance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Propulsors.html">Propulsors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.html">Powertrain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Stability.html">Stability</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Thermal_Management.html">Thermal_Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Utilities.html">Utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Weights.html">Weights</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.skip.html">skip</a></li>
 </ul>
 </details></li>
@@ -542,7 +539,7 @@
 <h1>RCAIDE.Library.Methods.Aerodynamics.Common.Lift.BET_calculations.compute_airfoil_aerodynamics<a class="headerlink" href="#rcaide-library-methods-aerodynamics-common-lift-bet-calculations-compute-airfoil-aerodynamics" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Aerodynamics.Common.Lift.BET_calculations.compute_airfoil_aerodynamics">
-<span class="sig-name descname"><span class="pre">compute_airfoil_aerodynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">airfoils</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_pts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Na</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_2d_analysis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Lift/BET_calculations.html#compute_airfoil_aerodynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Aerodynamics.Common.Lift.BET_calculations.compute_airfoil_aerodynamics" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_airfoil_aerodynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">airfoils</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">airfoil_locations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_pts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Na</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_2d_analysis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Lift/BET_calculations.html#compute_airfoil_aerodynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Aerodynamics.Common.Lift.BET_calculations.compute_airfoil_aerodynamics" title="Link to this definition">#</a></dt>
 <dd><dl class="simple">
 <dt>Cl, Cdval = compute_airfoil_aerodynamics( beta,c,r,R,B,</dt><dd><p>Wa,Wt,a,nu,
 airfoils,a_loc

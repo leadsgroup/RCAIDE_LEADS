@@ -547,12 +547,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">                                  </span><span class="kn">import</span> <span class="n">wing_segmented_planform</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Weights.Correlation_Buildups.Propulsion</span><span class="w">            </span><span class="kn">import</span> <span class="n">compute_motor_weight</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor</span><span class="w">                     </span><span class="kn">import</span> <span class="n">design_motor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Propulsors.Converters.Rotor</span><span class="w">                        </span><span class="kn">import</span> <span class="n">design_prop_rotor</span> <span class="p">,</span> <span class="n">design_lift_rotor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Weights.Physics_Based_Buildups.Electric</span><span class="w">            </span><span class="kn">import</span> <span class="n">converge_physics_based_weight_buildup</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Weights.Moment_of_Inertia</span><span class="w">                          </span><span class="kn">import</span> <span class="n">compute_aircraft_moment_of_inertia</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Weights.Center_of_Gravity</span><span class="w">                          </span><span class="kn">import</span> <span class="n">compute_vehicle_center_of_gravity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Motor</span><span class="w">                        </span><span class="kn">import</span> <span class="n">design_DC_motor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Rotor</span><span class="w">                        </span><span class="kn">import</span> <span class="n">design_prop_rotor</span> <span class="p">,</span> <span class="n">design_lift_rotor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based</span><span class="w">      </span><span class="kn">import</span> <span class="n">converge_physics_based_weight_buildup</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common</span><span class="w">      </span><span class="kn">import</span> <span class="n">compute_motor_weight</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia</span><span class="w">                  </span><span class="kn">import</span> <span class="n">compute_aircraft_moment_of_inertia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity</span><span class="w">                  </span><span class="kn">import</span> <span class="n">compute_vehicle_center_of_gravity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                                                      </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE</span><span class="w"> </span><span class="kn">import</span>  <span class="n">load</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE</span><span class="w"> </span><span class="kn">import</span>  <span class="n">save</span>
@@ -562,7 +562,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w">  </span><span class="nn">pickle</span>
-<br/></pre></div>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())))</span>
+</pre></div>
 </div>
 </div>
 </section>
@@ -1038,7 +1040,7 @@
     <span class="c1">#====================================================================================================================================</span>
     <span class="c1"># Tilt Rotor Bus</span>
     <span class="c1">#====================================================================================================================================</span>
-    <span class="n">prop_rotor_bus</span>                           <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span>
+    <span class="n">prop_rotor_bus</span>                           <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span>
     <span class="n">prop_rotor_bus</span><span class="o">.</span><span class="n">tag</span>                       <span class="o">=</span> <span class="s1">&#39;prop_rotor_bus&#39;</span>
     <span class="n">prop_rotor_bus</span><span class="o">.</span><span class="n">origin</span>                    <span class="o">=</span>  <span class="p">[[</span><span class="mf">2.43775609</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span> <span class="mf">1.2</span><span class="p">]]</span>
     <span class="n">prop_rotor_bus</span><span class="o">.</span><span class="n">number_of_battery_modules</span> <span class="o">=</span>  <span class="mi">2</span>
@@ -1046,7 +1048,7 @@
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Bus Battery</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">battery_module</span>                                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Battery_Modules</span><span class="o">.</span><span class="n">Lithium_Ion_NMC</span><span class="p">()</span>
+    <span class="n">battery_module</span>                                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Battery_Modules</span><span class="o">.</span><span class="n">Lithium_Ion_NMC</span><span class="p">()</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">tag</span>                                                <span class="o">=</span> <span class="s1">&#39;bus_battery&#39;</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">electrical_configuration</span><span class="o">.</span><span class="n">series</span>                    <span class="o">=</span> <span class="mi">140</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">electrical_configuration</span><span class="o">.</span><span class="n">parallel</span>                  <span class="o">=</span> <span class="mi">30</span>
@@ -1067,11 +1069,11 @@
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
 
     <span class="c1"># Define Lift Propulsor Container</span>
-    <span class="n">front_propulsor</span>                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
+    <span class="n">front_propulsor</span>                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
     <span class="n">front_propulsor</span><span class="o">.</span><span class="n">tag</span>                            <span class="o">=</span> <span class="s1">&#39;front_propulsor&#39;</span>
 
     <span class="c1"># Electronic Speed Controller</span>
-    <span class="n">prop_rotor_esc</span>                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
+    <span class="n">prop_rotor_esc</span>                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
     <span class="n">prop_rotor_esc</span><span class="o">.</span><span class="n">efficiency</span>                     <span class="o">=</span> <span class="mf">0.95</span>
     <span class="n">prop_rotor_esc</span><span class="o">.</span><span class="n">tag</span>                            <span class="o">=</span> <span class="s1">&#39;prop_rotor_esc_1&#39;</span>
     <span class="n">front_propulsor</span><span class="o">.</span><span class="n">electronic_speed_controller</span>         <span class="o">=</span> <span class="n">prop_rotor_esc</span>
@@ -1080,7 +1082,7 @@
     <span class="n">g</span>                                             <span class="o">=</span> <span class="mf">9.81</span>                                    <span class="c1"># gravitational acceleration</span>
     <span class="n">Hover_Load</span>                                    <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span><span class="o">*</span><span class="n">g</span> <span class="o">*</span><span class="mf">1.1</span>  <span class="c1"># hover load</span>
 
-    <span class="n">prop_rotor</span>                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Prop_Rotor</span><span class="p">()</span>
+    <span class="n">prop_rotor</span>                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Prop_Rotor</span><span class="p">()</span>
     <span class="n">prop_rotor</span><span class="o">.</span><span class="n">tag</span>                                <span class="o">=</span> <span class="s1">&#39;prop_rotor&#39;</span>
     <span class="n">prop_rotor</span><span class="o">.</span><span class="n">tip_radius</span>                         <span class="o">=</span> <span class="mf">1.51</span>
     <span class="n">prop_rotor</span><span class="o">.</span><span class="n">hub_radius</span>                         <span class="o">=</span> <span class="mf">0.15</span> <span class="o">*</span> <span class="n">prop_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
@@ -1110,7 +1112,7 @@
                                                      <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_7500000.txt&#39;</span> <span class="p">]</span>
     <span class="n">prop_rotor</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>
     <span class="n">prop_rotor</span><span class="o">.</span><span class="n">airfoil_polar_stations</span>             <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">prop_rotor</span><span class="o">.</span><span class="n">fidelity</span>                           <span class="o">=</span> <span class="s2">&quot;Momentum_Theory&quot;</span>
+    <span class="n">prop_rotor</span><span class="o">.</span><span class="n">fidelity</span>                           <span class="o">=</span> <span class="s2">&quot;Blade_Element_Momentum_Theory_Helmholtz&quot;</span>
 
     <span class="n">design_prop_rotor</span><span class="p">(</span><span class="n">prop_rotor</span><span class="p">)</span>
 
@@ -1120,7 +1122,7 @@
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Front Rotor Motor</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">prop_rotor_motor</span>                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">()</span>
+    <span class="n">prop_rotor_motor</span>                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">()</span>
     <span class="n">prop_rotor_motor</span><span class="o">.</span><span class="n">efficiency</span>              <span class="o">=</span> <span class="mf">0.95</span>
     <span class="n">prop_rotor_motor</span><span class="o">.</span><span class="n">nominal_voltage</span>         <span class="o">=</span> <span class="n">prop_rotor_bus</span><span class="o">.</span><span class="n">voltage</span> <span class="o">*</span> <span class="mf">0.75</span>
     <span class="n">prop_rotor_motor</span><span class="o">.</span><span class="n">prop_rotor_radius</span>       <span class="o">=</span> <span class="n">prop_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
@@ -1128,7 +1130,7 @@
     <span class="n">prop_rotor_motor</span><span class="o">.</span><span class="n">rotor_radius</span>            <span class="o">=</span> <span class="n">prop_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
     <span class="n">prop_rotor_motor</span><span class="o">.</span><span class="n">design_torque</span>           <span class="o">=</span> <span class="n">prop_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_torque</span>
     <span class="n">prop_rotor_motor</span><span class="o">.</span><span class="n">angular_velocity</span>        <span class="o">=</span> <span class="n">prop_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_angular_velocity</span><span class="o">/</span><span class="n">prop_rotor_motor</span><span class="o">.</span><span class="n">gear_ratio</span>
-    <span class="n">design_motor</span><span class="p">(</span><span class="n">prop_rotor_motor</span><span class="p">)</span>
+    <span class="n">design_DC_motor</span><span class="p">(</span><span class="n">prop_rotor_motor</span><span class="p">)</span>
     <span class="n">prop_rotor_motor</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>    <span class="o">=</span> <span class="mf">0.75</span> <span class="o">*</span>  <span class="n">compute_motor_weight</span><span class="p">(</span><span class="n">prop_rotor_motor</span><span class="p">)</span>
     <span class="n">front_propulsor</span><span class="o">.</span><span class="n">motor</span>                          <span class="o">=</span> <span class="n">prop_rotor_motor</span>
 
@@ -1166,13 +1168,13 @@
     <span class="c1"># Additional Bus Loads</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Payload</span>
-    <span class="n">payload</span>                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">payload</span>                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">power_draw</span>             <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>   <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">prop_rotor_bus</span><span class="o">.</span><span class="n">payload</span>         <span class="o">=</span> <span class="n">payload</span>
 
     <span class="c1"># Avionics</span>
-    <span class="n">avionics</span>                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">avionics</span>                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
     <span class="n">avionics</span><span class="o">.</span><span class="n">power_draw</span>            <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">avionics</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>  <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">prop_rotor_bus</span><span class="o">.</span><span class="n">avionics</span>            <span class="o">=</span> <span class="n">avionics</span>
@@ -1184,13 +1186,13 @@
     <span class="c1">#====================================================================================================================================</span>
     <span class="c1"># Rear Bus</span>
     <span class="c1">#====================================================================================================================================</span>
-    <span class="n">lift_rotor_bus</span>                           <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span>
+    <span class="n">lift_rotor_bus</span>                           <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span>
     <span class="n">lift_rotor_bus</span><span class="o">.</span><span class="n">tag</span>                       <span class="o">=</span> <span class="s1">&#39;lift_rotor_bus&#39;</span>
     <span class="n">lift_rotor_bus</span><span class="o">.</span><span class="n">number_of_battery_modules</span> <span class="o">=</span>  <span class="mi">2</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Bus Battery</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">battery_module</span>                                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Battery_Modules</span><span class="o">.</span><span class="n">Lithium_Ion_NMC</span><span class="p">()</span>
+    <span class="n">battery_module</span>                                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Battery_Modules</span><span class="o">.</span><span class="n">Lithium_Ion_NMC</span><span class="p">()</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">tag</span>                                                <span class="o">=</span> <span class="s1">&#39;lift_bus_battery&#39;</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">electrical_configuration</span><span class="o">.</span><span class="n">series</span>                    <span class="o">=</span> <span class="mi">140</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">electrical_configuration</span><span class="o">.</span><span class="n">parallel</span>                  <span class="o">=</span> <span class="mi">10</span>
@@ -1210,15 +1212,15 @@
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
 
     <span class="c1"># Define Lift Propulsor Container</span>
-    <span class="n">lift_propulsor</span>                                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
+    <span class="n">lift_propulsor</span>                                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
 
     <span class="c1"># Electronic Speed Controller</span>
-    <span class="n">lift_rotor_esc</span>                                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
+    <span class="n">lift_rotor_esc</span>                                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
     <span class="n">lift_rotor_esc</span><span class="o">.</span><span class="n">efficiency</span>                              <span class="o">=</span> <span class="mf">0.95</span>
     <span class="n">lift_propulsor</span><span class="o">.</span><span class="n">electronic_speed_controller</span>             <span class="o">=</span> <span class="n">lift_rotor_esc</span>
 
     <span class="c1"># Lift Rotor Design</span>
-    <span class="n">lift_rotor</span>                                             <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Lift_Rotor</span><span class="p">()</span>
+    <span class="n">lift_rotor</span>                                             <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Lift_Rotor</span><span class="p">()</span>
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span>                                  <span class="o">=</span> <span class="mf">1.51</span>
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">hub_radius</span>                                  <span class="o">=</span> <span class="mf">0.15</span><span class="o">*</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">number_of_blades</span>                            <span class="o">=</span> <span class="mi">3</span>
@@ -1251,7 +1253,7 @@
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Lift Rotor Motor</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">lift_rotor_motor</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">()</span>
+    <span class="n">lift_rotor_motor</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">()</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">efficiency</span>                            <span class="o">=</span> <span class="mf">0.9</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">nominal_voltage</span>                       <span class="o">=</span> <span class="n">lift_rotor_bus</span><span class="o">.</span><span class="n">voltage</span><span class="o">*</span><span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">propeller_radius</span>                      <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
@@ -1259,7 +1261,7 @@
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">rotor_radius</span>                          <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">design_torque</span>                         <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_torque</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">angular_velocity</span>                      <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_angular_velocity</span><span class="o">/</span><span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">gear_ratio</span>
-    <span class="n">design_motor</span><span class="p">(</span><span class="n">lift_rotor_motor</span><span class="p">)</span>
+    <span class="n">design_DC_motor</span><span class="p">(</span><span class="n">lift_rotor_motor</span><span class="p">)</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                  <span class="o">=</span> <span class="mf">0.75</span> <span class="o">*</span>  <span class="n">compute_motor_weight</span><span class="p">(</span><span class="n">lift_rotor_motor</span><span class="p">)</span>
     <span class="n">lift_propulsor</span><span class="o">.</span><span class="n">motor</span>                                   <span class="o">=</span> <span class="n">lift_rotor_motor</span>
 
@@ -1300,13 +1302,13 @@
     <span class="c1"># Additional Bus Loads</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Payload</span>
-    <span class="n">payload</span>                                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">payload</span>                                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">power_draw</span>                                      <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                            <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">lift_rotor_bus</span><span class="o">.</span><span class="n">payload</span>                                        <span class="o">=</span> <span class="n">payload</span>
 
     <span class="c1"># Avionics</span>
-    <span class="n">avionics</span>                                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">avionics</span>                                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
     <span class="n">avionics</span><span class="o">.</span><span class="n">power_draw</span>                                     <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">avionics</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                           <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">lift_rotor_bus</span><span class="o">.</span><span class="n">avionics</span>                                       <span class="o">=</span> <span class="n">avionics</span>
@@ -1564,7 +1566,7 @@
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Weights</span>
-    <span class="n">weights</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Weights_EVTOL</span><span class="p">()</span>
+    <span class="n">weights</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Electric</span><span class="p">()</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
@@ -2121,16 +2123,16 @@
 <span class="c1"># plot the results</span>
 <span class="n">plot_results</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
-<span class="c1">## plot vehicle</span>
-<span class="c1">#plot_3d_vehicle(vehicle,</span>
-                <span class="c1">#min_x_axis_limit            = -5,</span>
-                <span class="c1">#max_x_axis_limit            = 15,</span>
-                <span class="c1">#min_y_axis_limit            = -10,</span>
-                <span class="c1">#max_y_axis_limit            = 10,</span>
-                <span class="c1">#min_z_axis_limit            = -10,</span>
-                <span class="c1">#max_z_axis_limit            = 10,</span>
-                <span class="c1">#show_figure                 = False</span>
-                <span class="c1">#)</span>
+<span class="c1"># plot vehicle</span>
+<span class="n">plot_3d_vehicle</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span>
+                <span class="n">min_x_axis_limit</span>            <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">max_x_axis_limit</span>            <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+                <span class="n">min_y_axis_limit</span>            <span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">max_y_axis_limit</span>            <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="n">min_z_axis_limit</span>            <span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">max_z_axis_limit</span>            <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="n">show_figure</span>                 <span class="o">=</span> <span class="kc">False</span>
+                <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8515,7 +8517,7 @@ Optimization terminated successfully    (Exit mode 0)
             Iterations: 66
             Function evaluations: 1046
             Gradient evaluations: 65
-Lift-rotor Optimization Simulation Time: 1.96 mins
+Lift-rotor Optimization Simulation Time: 1.92 mins
 [0.0755     1.78432923 0.4515064  0.03639433 0.64237763 0.3754778
  0.7509556  0.00874846 0.7        0.54866135 0.49640363 0.338207
  0.52359878]
@@ -14681,7 +14683,7 @@ Optimization terminated successfully    (Exit mode 0)
             Iterations: 69
             Function evaluations: 1101
             Gradient evaluations: 68
-Lift-rotor Optimization Simulation Time: 1.57 mins
+Lift-rotor Optimization Simulation Time: 1.54 mins
 [0.302      0.56033758 0.51918591 0.03240122 0.53638104 0.62106172
  0.78989454 0.09607661 0.5175147  0.46143169 0.52359878]
 Converged MTOW = 2492 kg
@@ -14700,6 +14702,7 @@ empty :
     servos : 8.580000000000002
     wiring : 94.9385366162393
     battery : 839.7312
+    fuel_cell : 0.0
     TMS : 0.0
     total : 1340.5740290923325
   systems :
@@ -14964,6 +14967,408 @@ Rotor BEVW did not converge to a solution (Stall)
 Rotor BEVW did not converge to a solution (Stall)
 Rotor BEVW did not converge to a solution (Stall)
 Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Rotor BEVW did not converge to a solution (Stall)
+Segment did not converge. Segment Tag: Transition_Descend
+Error Message:
+The iteration is not making good progress, as measured by the
+ improvement from the last five Jacobian evaluations.
+Rotor BEVW did not converge to a solution (Stall)
+
+Plotting vehicle
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">

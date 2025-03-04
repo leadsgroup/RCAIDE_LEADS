@@ -380,7 +380,8 @@
 <span></span><span class="c1"># ----------------------------------------------------------------------</span>
 <span class="c1">#  Imports</span>
 <span class="c1"># ----------------------------------------------------------------------</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">     </span><span class="kn">import</span> <span class="n">Data</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses</span><span class="w"> </span><span class="kn">import</span> <span class="n">Analysis</span>  
 
@@ -426,28 +427,12 @@
 <span class="sd">        Properties Used:</span>
 <span class="sd">        N/A</span>
 <span class="sd">        &quot;&quot;&quot;</span>           
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>      <span class="o">=</span> <span class="s1">&#39;weights&#39;</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">method</span>   <span class="o">=</span> <span class="s1">&#39;RCAIDE&#39;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span>  <span class="o">=</span> <span class="kc">None</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">use_max_fuel_weight</span>                <span class="o">=</span>  <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">weight_reduction_factors</span>           <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">weight_reduction_factors</span><span class="o">.</span><span class="n">main_wing</span> <span class="o">=</span> <span class="mf">0.</span>  <span class="c1"># Reduction factors are proportional (.1 is a 10% weight reduction)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">weight_reduction_factors</span><span class="o">.</span><span class="n">fuselage</span>  <span class="o">=</span> <span class="mf">0.</span>  <span class="c1"># Reduction factors are proportional (.1 is a 10% weight reduction)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">weight_reduction_factors</span><span class="o">.</span><span class="n">empennage</span> <span class="o">=</span> <span class="mf">0.</span>  <span class="c1"># applied to horizontal and vertical stabilizers</span>
-        
-        <span class="c1"># FLOPS settings</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">FLOPS</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">FLOPS</span><span class="o">.</span><span class="n">aeroelastic_tailoring_factor</span> <span class="o">=</span> <span class="mf">0.</span>   <span class="c1"># Aeroelastic tailoring factor [0 no aeroelastic tailoring, 1 maximum aeroelastic tailoring] </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">FLOPS</span><span class="o">.</span><span class="n">strut_braced_wing_factor</span>     <span class="o">=</span> <span class="mf">0.</span>   <span class="c1"># Wing strut bracing factor [0 for no struts, 1 for struts]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">FLOPS</span><span class="o">.</span><span class="n">composite_utilization_factor</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># Composite utilization factor [0 no composite, 1 full composite]</span>
-        
-        <span class="c1"># Raymer settings</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">Raymer</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">Raymer</span><span class="o">.</span><span class="n">fuselage_mounted_landing_gear_factor</span> <span class="o">=</span> <span class="mf">1.</span> <span class="c1"># 1. if false, 1.12 if true</span>
-                       
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>           <span class="o">=</span> <span class="s1">&#39;weights&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span>        <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span>       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aircraft_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">propulsion_architecture</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>      <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
         
 <div class="viewcode-block" id="Weights.evaluate">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Framework.Analyses.Weights.Weights.html#RCAIDE.Framework.Analyses.Weights.Weights.Weights.evaluate">[docs]</a>
@@ -466,9 +451,19 @@
 <span class="sd">        Outputs:</span>
 <span class="sd">        results </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># unpack</span>
+        <span class="c1">#unpack</span>
         <span class="n">vehicle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span> 
-        <span class="n">results</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Methods</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Correlation_Buildups</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">compute_operating_empty_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+
+
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">compute_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">propulsion_architecture</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">.compute_operating_empty_weight&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Aircraft Type or Weight Buildup Method do not exist!&#39;</span><span class="p">)</span>
+        <span class="n">compute_operating_empty_weight</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">compute_module</span><span class="p">,</span> <span class="s2">&quot;compute_operating_empty_weight&quot;</span><span class="p">)</span>
+        <span class="c1"># Call the function</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">compute_operating_empty_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+
 
         <span class="c1"># storing weigth breakdown into vehicle</span>
         <span class="n">vehicle</span><span class="o">.</span><span class="n">weight_breakdown</span> <span class="o">=</span> <span class="n">results</span>

@@ -537,7 +537,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># RCAIDE imports</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                                         </span><span class="kn">import</span> <span class="n">Units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Propulsors.Turboprop_Propulsor</span><span class="w">         </span><span class="kn">import</span> <span class="n">design_turboprop</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor</span><span class="w">         </span><span class="kn">import</span> <span class="n">design_turboprop</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Performance.estimate_stall_speed</span><span class="w">       </span><span class="kn">import</span> <span class="n">estimate_stall_speed</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">                      </span><span class="kn">import</span> <span class="n">segment_properties</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                                          </span><span class="kn">import</span> <span class="o">*</span>
@@ -549,7 +549,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<br/></pre></div>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())))</span>
+</pre></div>
 </div>
 </div>
 </section>
@@ -1015,12 +1016,12 @@
     <span class="c1">#-------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Fuel Distrubition Line</span>
     <span class="c1">#-------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">fuel_line</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Fuel_Line</span><span class="p">()</span>
+    <span class="n">fuel_line</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Fuel_Line</span><span class="p">()</span>
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Propulsor</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">starboard_propulsor</span>                              <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turboprop</span><span class="p">()</span>
+    <span class="n">starboard_propulsor</span>                              <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turboprop</span><span class="p">()</span>
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">tag</span>                          <span class="o">=</span> <span class="s1">&#39;starboard_propulsor&#39;</span>
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">active_fuel_tanks</span>            <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;fuel_tank&#39;</span><span class="p">]</span>
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">origin</span>                       <span class="o">=</span> <span class="p">[[</span> <span class="mf">9.559106394</span> <span class="p">,</span><span class="mf">4.219315295</span><span class="p">,</span> <span class="mf">1.616135105</span><span class="p">]]</span>
@@ -1033,25 +1034,25 @@
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">design_gearbox_efficiency</span>    <span class="o">=</span> <span class="mf">0.99</span>                                             <span class="c1"># [-]         Design Gearbox Efficiency</span>
 
     <span class="c1"># Ram inlet</span>
-    <span class="n">ram</span>                                              <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Ram</span><span class="p">()</span>
+    <span class="n">ram</span>                                              <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Ram</span><span class="p">()</span>
     <span class="n">ram</span><span class="o">.</span><span class="n">tag</span>                                          <span class="o">=</span> <span class="s1">&#39;ram&#39;</span>
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">ram</span>                          <span class="o">=</span> <span class="n">ram</span>
 
     <span class="c1"># inlet nozzle</span>
-    <span class="n">inlet_nozzle</span>                                     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Compression_Nozzle</span><span class="p">()</span>
+    <span class="n">inlet_nozzle</span>                                     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Compression_Nozzle</span><span class="p">()</span>
     <span class="n">inlet_nozzle</span><span class="o">.</span><span class="n">tag</span>                                 <span class="o">=</span> <span class="s1">&#39;inlet nozzle&#39;</span>
     <span class="n">inlet_nozzle</span><span class="o">.</span><span class="n">pressure_ratio</span>                      <span class="o">=</span> <span class="mf">0.98</span>
     <span class="n">inlet_nozzle</span><span class="o">.</span><span class="n">compressibility_effects</span>             <span class="o">=</span> <span class="kc">False</span>
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">inlet_nozzle</span>                 <span class="o">=</span> <span class="n">inlet_nozzle</span>
 
     <span class="c1"># compressor</span>
-    <span class="n">compressor</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Compressor</span><span class="p">()</span>
+    <span class="n">compressor</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Compressor</span><span class="p">()</span>
     <span class="n">compressor</span><span class="o">.</span><span class="n">tag</span>                                   <span class="o">=</span> <span class="s1">&#39;lpc&#39;</span>
     <span class="n">compressor</span><span class="o">.</span><span class="n">pressure_ratio</span>                        <span class="o">=</span> <span class="mi">10</span>
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">compressor</span>                   <span class="o">=</span> <span class="n">compressor</span>
 
     <span class="c1"># combustor</span>
-    <span class="n">combustor</span>                                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Combustor</span><span class="p">()</span>
+    <span class="n">combustor</span>                                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Combustor</span><span class="p">()</span>
     <span class="n">combustor</span><span class="o">.</span><span class="n">tag</span>                                    <span class="o">=</span> <span class="s1">&#39;Comb&#39;</span>
     <span class="n">combustor</span><span class="o">.</span><span class="n">efficiency</span>                             <span class="o">=</span> <span class="mf">0.99</span>
     <span class="n">combustor</span><span class="o">.</span><span class="n">turbine_inlet_temperature</span>              <span class="o">=</span> <span class="mi">1370</span>
@@ -1060,19 +1061,19 @@
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">combustor</span>                    <span class="o">=</span> <span class="n">combustor</span>
 
     <span class="c1"># high pressure turbine</span>
-    <span class="n">high_pressure_turbine</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Turbine</span><span class="p">()</span>
+    <span class="n">high_pressure_turbine</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Turbine</span><span class="p">()</span>
     <span class="n">high_pressure_turbine</span><span class="o">.</span><span class="n">tag</span>                        <span class="o">=</span><span class="s1">&#39;hpt&#39;</span>
     <span class="n">high_pressure_turbine</span><span class="o">.</span><span class="n">mechanical_efficiency</span>      <span class="o">=</span> <span class="mf">0.99</span>
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">high_pressure_turbine</span>        <span class="o">=</span> <span class="n">high_pressure_turbine</span>
 
     <span class="c1"># low pressure turbine</span>
-    <span class="n">low_pressure_turbine</span>                             <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Turbine</span><span class="p">()</span>
+    <span class="n">low_pressure_turbine</span>                             <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Turbine</span><span class="p">()</span>
     <span class="n">low_pressure_turbine</span><span class="o">.</span><span class="n">tag</span>                         <span class="o">=</span><span class="s1">&#39;lpt&#39;</span>
     <span class="n">low_pressure_turbine</span><span class="o">.</span><span class="n">mechanical_efficiency</span>       <span class="o">=</span> <span class="mf">0.99</span>
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">low_pressure_turbine</span>         <span class="o">=</span> <span class="n">low_pressure_turbine</span>
 
     <span class="c1"># core nozzle</span>
-    <span class="n">core_nozzle</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Expansion_Nozzle</span><span class="p">()</span>
+    <span class="n">core_nozzle</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Expansion_Nozzle</span><span class="p">()</span>
     <span class="n">core_nozzle</span><span class="o">.</span><span class="n">tag</span>                                  <span class="o">=</span> <span class="s1">&#39;core nozzle&#39;</span>
     <span class="n">core_nozzle</span><span class="o">.</span><span class="n">pressure_ratio</span>                       <span class="o">=</span> <span class="mf">0.99</span>
     <span class="n">starboard_propulsor</span><span class="o">.</span><span class="n">core_nozzle</span>                  <span class="o">=</span> <span class="n">core_nozzle</span>
@@ -1177,7 +1178,7 @@
     <span class="c1">#  Energy Source: Fuel Tank</span>
     <span class="c1">#-------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># fuel tank</span>
-    <span class="n">fuel_tank</span>                                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
+    <span class="n">fuel_tank</span>                                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">origin</span>                                 <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="o">.</span><span class="n">main_wing</span><span class="o">.</span><span class="n">origin</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                                   <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A1</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>              <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span><span class="o">-</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_fuel</span>
@@ -1307,7 +1308,7 @@
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Weights</span>
-    <span class="n">weights</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Weights_Transport</span><span class="p">()</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Conventional</span><span class="p">()</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 

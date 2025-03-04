@@ -737,7 +737,7 @@
     <span class="n">DENOM</span><span class="p">[</span><span class="n">DENOM_COND</span><span class="p">]</span> <span class="o">=</span> <span class="n">SIGN</span><span class="p">[</span><span class="n">DENOM_COND</span><span class="p">]</span><span class="o">*</span><span class="n">TOLSQ</span><span class="p">[</span><span class="n">DENOM_COND</span><span class="p">]</span>
     
     <span class="c1"># Create a boolean for various conditions for F1 that goes to zero</span>
-    <span class="n">bool1</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">)</span>
+    <span class="n">bool1</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>  
     <span class="n">bool1</span><span class="p">[:,</span><span class="n">X1</span><span class="o">&lt;</span><span class="n">TOL</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">bool1</span><span class="p">[</span><span class="n">RAD1</span><span class="o">==</span><span class="mf">0.</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">RAD1</span><span class="p">[:,</span><span class="n">X1</span><span class="o">&lt;</span><span class="n">TOL</span><span class="p">]</span>  <span class="o">=</span> <span class="mf">0.0</span>
@@ -760,7 +760,7 @@
     
     <span class="c1"># Round 2</span>
     <span class="c1"># Create a boolean for various conditions for F2 that goes to zero</span>
-    <span class="n">bool2</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">)</span>
+    <span class="n">bool2</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>  
     <span class="n">bool2</span><span class="p">[:,</span><span class="n">X2</span><span class="o">&lt;</span><span class="n">TOL</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">bool2</span><span class="p">[</span><span class="n">RAD2</span><span class="o">==</span><span class="mf">0.</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">RAD2</span><span class="p">[:,</span><span class="n">X2</span><span class="o">&lt;</span><span class="n">TOL</span><span class="p">]</span>  <span class="o">=</span> <span class="mf">0.0</span>
@@ -814,8 +814,8 @@
     <span class="n">T2A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_mach</span><span class="p">,</span><span class="n">size</span><span class="p">))</span>
     
     <span class="c1"># Setup masks</span>
-    <span class="n">F_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_mach</span><span class="p">,</span><span class="n">size</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">)</span>
-    <span class="n">A_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_mach</span><span class="p">,</span><span class="n">size</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">)</span>
+    <span class="n">F_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_mach</span><span class="p">,</span><span class="n">size</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span> 
+    <span class="n">A_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_mach</span><span class="p">,</span><span class="n">size</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span> 
     <span class="n">F_mask</span><span class="p">[:,</span><span class="n">TE_ind</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">A_mask</span><span class="p">[:,</span><span class="n">LE_ind</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     
@@ -825,7 +825,7 @@
     
     <span class="c1"># Zero out terms on the LE and TE</span>
     <span class="n">T2F</span><span class="p">[:,</span><span class="n">TE_ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
-    <span class="n">T2A</span><span class="p">[:,</span><span class="n">LE_ind</span><span class="p">]</span>        <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">T2A</span><span class="p">[:,</span><span class="n">LE_ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
 
     <span class="n">TRANS</span> <span class="o">=</span> <span class="p">(</span><span class="n">B2</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">T2F</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">B2</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">T2A</span><span class="p">)</span>
     

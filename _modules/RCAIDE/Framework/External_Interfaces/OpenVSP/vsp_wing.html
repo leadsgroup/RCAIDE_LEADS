@@ -397,6 +397,8 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">string</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">vsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">vsp</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -415,7 +417,7 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="read_vsp_wing">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_wing.read_vsp_wing.html#RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_wing.read_vsp_wing">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">read_vsp_wing</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="n">units_type</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">,</span> <span class="n">write_airfoil_file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_vsp_wing</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="n">main_wing_tag</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="n">units_type</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">,</span> <span class="n">write_airfoil_file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This reads an OpenVSP wing vehicle geometry and writes it into a RCAIDE wing format.</span>
 
 <span class="sd">    Assumptions:</span>
@@ -489,8 +491,12 @@
     <span class="c1"># Apply a tag to the wing</span>
     <span class="k">if</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">wing_id</span><span class="p">):</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">wing_id</span><span class="p">)</span>
-        <span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">)</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="n">main_wing_tag</span> <span class="o">==</span> <span class="n">tag</span><span class="p">:</span>
+            <span class="n">wing</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span><span class="p">()</span>
+        <span class="n">save_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tag</span> <span class="p">)</span>
         <span class="n">wing</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="n">wing</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;winggeom&#39;</span>
 
@@ -624,8 +630,8 @@
                 <span class="c1"># (Write the root airfoil with final arg = 0. Write 4th airfoil of 5 segments with final arg = .8)</span>
 
             <span class="k">if</span> <span class="n">write_airfoil_file</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-                <span class="n">vsp</span><span class="o">.</span><span class="n">WriteSeligAirfoil</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_airfoil_XSec_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="n">wing_id</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">jj</span><span class="o">/</span><span class="n">segment_num</span><span class="p">))</span>
-                <span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>    <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_airfoil_XSec_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;.dat&#39;</span>
+                <span class="n">vsp</span><span class="o">.</span><span class="n">WriteSeligAirfoil</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">save_filename</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_airfoil_XSec_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="n">wing_id</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">jj</span><span class="o">/</span><span class="n">segment_num</span><span class="p">))</span>
+                <span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>    <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_filename</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_airfoil_XSec_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;.dat&#39;</span>
                 <span class="n">airfoil</span><span class="o">.</span><span class="n">tag</span>                <span class="o">=</span> <span class="s1">&#39;airfoil&#39;</span>
 
                 <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>

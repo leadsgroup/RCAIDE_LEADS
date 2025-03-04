@@ -1,0 +1,899 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Reformer &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Reformer';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Reformer.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Rotor" href="RCAIDE.Library.Components.Powertrain.Converters.Rotor.html" />
+    <link rel="prev" title="Ram" href="RCAIDE.Library.Components.Powertrain.Converters.Ram.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="RCAIDE.Framework.html">Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Analyses.html">Analyses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Aerodynamics.html">Aerodynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Analysis.html">Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Atmospheric.html">Atmospheric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Emissions.html">Emissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Energy.html">Energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Geodesics.html">Geodesics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Planets.html">Planets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Process.html">Process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Propulsion.html">Propulsion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Settings.html">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Stability.html">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html">Vehicle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Weights.html">Weights</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Core.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Container.html">Container</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.ContainerOrdered.html">ContainerOrdered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Data.html">Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.DataOrdered.html">DataOrdered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Diffed_Data.html">Diffed_Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Units.html">Units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.redirect.html">redirect</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.External_Interfaces.html">External_Interfaces</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.External_Interfaces.OpenVSP.html">OpenVSP</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Mission.html">Mission</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Missions.html">Missions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html">Segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Sequential_Segments.html">Sequential_Segments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Optimization.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Optimization.Packages.html">Packages</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="RCAIDE.Library.html">Library</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Attributes.html">Attributes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.html">Atmospheres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Coolants.html">Coolants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Cryogens.html">Cryogens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Gases.html">Gases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.html">Materials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Planets.html">Planets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.html">Propellants</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="RCAIDE.Library.Components.html">Components</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Airfoils.html">Airfoils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Booms.html">Booms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Component.html">Component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Configs.html">Configs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Fuselages.html">Fuselages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Landing_Gear.html">Landing_Gear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Mass_Properties.html">Mass_Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Nacelles.html">Nacelles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Network.html">Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Payloads.html">Payloads</a></li>
+<li class="toctree-l3 current active"><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.html">Powertrain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Wings.html">Wings</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Methods.html">Methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.html">Aerodynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Emissions.html">Emissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Gas_Dynamics.html">Gas_Dynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geodesics.html">Geodesics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.html">Mass_Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Performance.html">Performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.html">Powertrain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Stability.html">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.skip.html">skip</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Mission.html">Mission</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Mission.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Mission.Segments.html">Segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Mission.Solver.html">Solver</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Plots.html">Plots</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Aerodynamics.html">Aerodynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Emissions.html">Emissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Energy.html">Energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Mission.html">Mission</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Stability.html">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Topography.html">Topography</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Weights.html">Weights</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="RCAIDE.load.html">load</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RCAIDE.save.html">save</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RCAIDE.Vehicle.html">Vehicle</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.html" class="nav-link">Library</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Components.html" class="nav-link">Components</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Components.Powertrain.html" class="nav-link">Powertrain</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Components.Powertrain.Converters.html" class="nav-link">Converters</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Reformer</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <p>RCAIDE.Library.Components.Powertrain.Converters.Reformer</p>
+<section id="module-RCAIDE.Library.Components.Powertrain.Converters.Reformer">
+<span id="reformer"></span><h1>Reformer<a class="headerlink" href="#module-RCAIDE.Library.Components.Powertrain.Converters.Reformer" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Reformer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Reformer.html#Reformer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Converter.html#RCAIDE.Library.Components.Powertrain.Converters.Converter.Converter" title="RCAIDE.Library.Components.Powertrain.Converters.Converter.Converter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Converter</span></code></a></p>
+<p>Reformer Component Class</p>
+<p>This class models a fuel reformer that converts Jet-A fuel into hydrogen-rich reformate gas.
+It inherits from the base Converter class and implements reformer-specific attributes and methods.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the reformer component, defaults to ‘reformer’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.x_H">
+<span class="sig-name descname"><span class="pre">x_H</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.x_H" title="Link to this definition">#</a></dt>
+<dd><p>Mass fraction of hydrogen content in Jet-A [-]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.x_C">
+<span class="sig-name descname"><span class="pre">x_C</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.x_C" title="Link to this definition">#</a></dt>
+<dd><p>Mass fraction of carbon content in Jet-A [-]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.y_H2">
+<span class="sig-name descname"><span class="pre">y_H2</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.y_H2" title="Link to this definition">#</a></dt>
+<dd><p>Mole fraction of hydrogen content in reformate [mol]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.y_CO">
+<span class="sig-name descname"><span class="pre">y_CO</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.y_CO" title="Link to this definition">#</a></dt>
+<dd><p>Mole fraction of carbon monoxide content in reformate [mol]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.rho_F">
+<span class="sig-name descname"><span class="pre">rho_F</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.rho_F" title="Link to this definition">#</a></dt>
+<dd><p>Density of Jet-A [g/cm^3]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.rho_S">
+<span class="sig-name descname"><span class="pre">rho_S</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.rho_S" title="Link to this definition">#</a></dt>
+<dd><p>Density of water [g/cm^3]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.rho_A">
+<span class="sig-name descname"><span class="pre">rho_A</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.rho_A" title="Link to this definition">#</a></dt>
+<dd><p>Density of air [g/cm^3]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_F">
+<span class="sig-name descname"><span class="pre">MW_F</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_F" title="Link to this definition">#</a></dt>
+<dd><p>Average molecular weight of Jet-A [g/g-mol]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_S">
+<span class="sig-name descname"><span class="pre">MW_S</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_S" title="Link to this definition">#</a></dt>
+<dd><p>Average molecular weight of steam [g/g-mol]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_C">
+<span class="sig-name descname"><span class="pre">MW_C</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_C" title="Link to this definition">#</a></dt>
+<dd><p>Average molecular weight of carbon [g/g-mol]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_H2">
+<span class="sig-name descname"><span class="pre">MW_H2</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_H2" title="Link to this definition">#</a></dt>
+<dd><p>Average molecular weight of hydrogen [g/g-mol]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.A_F_st_Jet_A">
+<span class="sig-name descname"><span class="pre">A_F_st_Jet_A</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.A_F_st_Jet_A" title="Link to this definition">#</a></dt>
+<dd><p>Stoichiometric air-to-fuel mass ratio [lb_Air/lb_Jet_A]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.theta">
+<span class="sig-name descname"><span class="pre">theta</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.theta" title="Link to this definition">#</a></dt>
+<dd><p>Contact time [sec^-1]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.LHV_F">
+<span class="sig-name descname"><span class="pre">LHV_F</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.LHV_F" title="Link to this definition">#</a></dt>
+<dd><p>Lower heating value of Jet-A [kJ/g-mol]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.LHV_H2">
+<span class="sig-name descname"><span class="pre">LHV_H2</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.LHV_H2" title="Link to this definition">#</a></dt>
+<dd><p>Lower heating value of Hydrogen [kJ/g-mol]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.LHV_CO">
+<span class="sig-name descname"><span class="pre">LHV_CO</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.LHV_CO" title="Link to this definition">#</a></dt>
+<dd><p>Lower heating value of Carbon Monoxide [kJ/g-mol]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.V_cat">
+<span class="sig-name descname"><span class="pre">V_cat</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.V_cat" title="Link to this definition">#</a></dt>
+<dd><p>Catalyst bed volume [cm^3]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.eta">
+<span class="sig-name descname"><span class="pre">eta</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.eta" title="Link to this definition">#</a></dt>
+<dd><p>Reformer efficiency [-]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The reformer model includes parameters for:
+- Fuel composition and properties
+- Reformate composition
+- Reformer geometry and performance characteristics
+- Thermodynamic properties of reactants/products</p>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="RCAIDE.Library.Components.Powertrain.Converters.Ram.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Ram</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="RCAIDE.Library.Components.Powertrain.Converters.Rotor.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Rotor</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer"><code class="docutils literal notranslate"><span class="pre">Reformer</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.tag"><code class="docutils literal notranslate"><span class="pre">Reformer.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.x_H"><code class="docutils literal notranslate"><span class="pre">Reformer.x_H</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.x_C"><code class="docutils literal notranslate"><span class="pre">Reformer.x_C</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.y_H2"><code class="docutils literal notranslate"><span class="pre">Reformer.y_H2</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.y_CO"><code class="docutils literal notranslate"><span class="pre">Reformer.y_CO</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.rho_F"><code class="docutils literal notranslate"><span class="pre">Reformer.rho_F</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.rho_S"><code class="docutils literal notranslate"><span class="pre">Reformer.rho_S</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.rho_A"><code class="docutils literal notranslate"><span class="pre">Reformer.rho_A</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_F"><code class="docutils literal notranslate"><span class="pre">Reformer.MW_F</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_S"><code class="docutils literal notranslate"><span class="pre">Reformer.MW_S</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_C"><code class="docutils literal notranslate"><span class="pre">Reformer.MW_C</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.MW_H2"><code class="docutils literal notranslate"><span class="pre">Reformer.MW_H2</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.A_F_st_Jet_A"><code class="docutils literal notranslate"><span class="pre">Reformer.A_F_st_Jet_A</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.theta"><code class="docutils literal notranslate"><span class="pre">Reformer.theta</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.LHV_F"><code class="docutils literal notranslate"><span class="pre">Reformer.LHV_F</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.LHV_H2"><code class="docutils literal notranslate"><span class="pre">Reformer.LHV_H2</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.LHV_CO"><code class="docutils literal notranslate"><span class="pre">Reformer.LHV_CO</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.V_cat"><code class="docutils literal notranslate"><span class="pre">Reformer.V_cat</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Reformer.Reformer.eta"><code class="docutils literal notranslate"><span class="pre">Reformer.eta</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Reformer.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

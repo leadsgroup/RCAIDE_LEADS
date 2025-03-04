@@ -1,0 +1,1097 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/compute_wing_weight';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/compute_wing_weight.html" />
+    <link rel="index" title="Index" href="../../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Sep 2024, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+
+<span class="c1"># RCAIDE</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">RCAIDE</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">    </span><span class="kn">import</span> <span class="n">Units</span>
+
+<span class="c1"># python imports </span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w">  </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">copy</span> 
+ 
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># Main Wing Weight </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="compute_wing_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.compute_wing_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_wing_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">wing</span><span class="p">,</span> <span class="n">WPOD</span><span class="p">,</span> <span class="n">complexity</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">num_main_wings</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the wing weight using FLOPS methodology for general aviation aircraft. The wing weight consists of:</span>
+<span class="sd">        - Bending Material Weight</span>
+<span class="sd">        - Shear Material and Control Surface Weight</span>
+<span class="sd">        - Miscellaneous Items Weight</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : RCAIDE.Vehicle()</span>
+<span class="sd">        Vehicle data structure containing:</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Wing surface area [m^2]</span>
+<span class="sd">            - mass_properties.max_takeoff : float</span>
+<span class="sd">                Maximum takeoff weight [kg]</span>
+<span class="sd">            - flight_envelope.ultimate_load : float</span>
+<span class="sd">                Ultimate load factor</span>
+<span class="sd">            - fuselages.width : float</span>
+<span class="sd">                Width of the fuselage [m]</span>
+<span class="sd">            - networks : list</span>
+<span class="sd">                List of propulsion networks</span>
+<span class="sd">    wing : RCAIDE.Component()</span>
+<span class="sd">        Wing data structure containing:</span>
+<span class="sd">            - taper : float</span>
+<span class="sd">                Wing taper ratio</span>
+<span class="sd">            - sweeps.quarter_chord : float</span>
+<span class="sd">                Quarter chord sweep angle [deg]</span>
+<span class="sd">            - thickness_to_chord : float</span>
+<span class="sd">                Thickness to chord ratio</span>
+<span class="sd">            - spans.projected : float</span>
+<span class="sd">                Wing span [m]</span>
+<span class="sd">            - chords.root : float</span>
+<span class="sd">                Root chord [m]</span>
+<span class="sd">            - chords.tip : float</span>
+<span class="sd">                Tip chord [m]</span>
+<span class="sd">            - twists.root : float</span>
+<span class="sd">                Wing twist at root [deg]</span>
+<span class="sd">            - twists.tip : float</span>
+<span class="sd">                Wing twist at tip [deg]</span>
+<span class="sd">            - flap_ratio : float</span>
+<span class="sd">                Flap area to wing area ratio</span>
+<span class="sd">    WPOD : float</span>
+<span class="sd">        Weight of engine pod including nacelle [kg]</span>
+<span class="sd">    complexity : str</span>
+<span class="sd">        Wing weight method, either &quot;simple&quot; or &quot;complex&quot;</span>
+<span class="sd">    settings : Data()</span>
+<span class="sd">        Settings containing:</span>
+<span class="sd">            - FLOPS.aeroelastic_tailoring_factor : float</span>
+<span class="sd">                Aeroelastic tailoring factor [0-1]</span>
+<span class="sd">            - FLOPS.strut_braced_wing_factor : float</span>
+<span class="sd">                Strut braced wing factor [0-1]</span>
+<span class="sd">            - advanced_composites : bool</span>
+<span class="sd">                Flag for composite construction</span>
+<span class="sd">    num_main_wings : int</span>
+<span class="sd">        Number of main wings</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wing_weight : float</span>
+<span class="sd">        Total wing weight [kg]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function implements two FLOPS methods: a simple and a complex approach.</span>
+<span class="sd">    The complex method uses detailed spanwise integration for more accurate results.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Wing is elliptically loaded</span>
+<span class="sd">        * Gloved wing area is 0</span>
+<span class="sd">        * Load between multiple main wings is distributed equally</span>
+<span class="sd">        * Wing sweep is fixed</span>
+<span class="sd">        * For complex method: 500 integration stations used</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+
+<span class="sd">    Simple Method:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_w = W_1 + W_2 + W_3</span>
+
+<span class="sd">    Where:</span>
+<span class="sd">        W_1 (Bending material):</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_1 = \\frac{DG * CAYE * W_{1NIR} + W_2 + W_3}{1 + W_{1NIR}} - W_2 - W_3</span>
+
+<span class="sd">    W_2 (Shear material):</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_2 = A_2 * (1 - 0.17F_{comp}) * S_{flap}^{A_3} * DG^{A_4}</span>
+
+<span class="sd">    W_3 (Miscellaneous):</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_3 = A_5 * (1 - 0.3F_{comp}) * S_w^{A_6}</span>
+
+<span class="sd">    Where:</span>
+<span class="sd">        - W_w is total wing weight [lb]</span>
+<span class="sd">        - DG is design gross weight [lb]</span>
+<span class="sd">        - CAYE is engine weight relief factor</span>
+<span class="sd">        - F_comp is composite utilization factor</span>
+<span class="sd">        - S_flap is flap area [ft^2]</span>
+<span class="sd">        - S_w is wing area [ft^2]</span>
+<span class="sd">        - A_i are empirical constants</span>
+
+<span class="sd">    Complex Method:</span>
+<span class="sd">    Uses numerical integration of spanwise loads with 500 stations. The complex method accounts for:</span>
+<span class="sd">        - Actual wing geometry through detailed station data</span>
+<span class="sd">        - Engine weight relief effects</span>
+<span class="sd">        - Sweep angle variations</span>
+<span class="sd">        - Thickness distribution</span>
+<span class="sd">        - Chord distribution</span>
+<span class="sd">        - Actual load distribution</span>
+<span class="sd">    </span>
+<span class="sd">    The process follows:</span>
+
+<span class="sd">    1. Spanwise Load Distribution:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        P(y) = \\sqrt{1 - (\\frac{y}{b/2})^2}</span>
+
+<span class="sd">    2. Local Loads and Moments:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\Delta P = \\frac{\\Delta y}{6}[c_0(2P_0 + P_1) + c_1(2P_1 + P_0)]</span>
+<span class="sd">        </span>
+<span class="sd">        \\Delta M = \\frac{\\Delta y^2}{12}[c_0(3P_0 + P_1) + c_1(P_1 + P_0)]</span>
+
+<span class="sd">    3. Cumulative Loads:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        L(y) = \\sum_{i=y}^{b/2} \\Delta P_i</span>
+<span class="sd">        </span>
+<span class="sd">        M(y) = \\sum_{i=y}^{b/2} (\\Delta M_i + \\Delta y L_i) \\sec(\\Lambda_i)</span>
+
+<span class="sd">    4. Bending Material Area:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        BMA(y) = \\frac{M(y)}{c(y)t(y)} \\sec(\\Lambda)</span>
+
+<span class="sd">    5. Engine Effects:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        M_e(y) = \\sum_{i=y}^{b/2} \\Delta y_i E(y_i) \\sec(\\Lambda_i)</span>
+<span class="sd">        </span>
+<span class="sd">        BMA_e(y) = \\frac{M_e(y)}{c(y)t(y)} \\sec(\\Lambda)</span>
+
+<span class="sd">    6. Final Wing Weight:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_w = W_1 + W_2 + W_3</span>
+
+<span class="sd">    Where:</span>
+<span class="sd">        - y is spanwise station location</span>
+<span class="sd">        - b is wing span</span>
+<span class="sd">        - c is local chord</span>
+<span class="sd">        - t is local thickness</span>
+<span class="sd">        - P is normalized pressure loading</span>
+<span class="sd">        - Λ is local sweep angle</span>
+<span class="sd">        - E(y) is engine weight relief</span>
+<span class="sd">        - W_1 is bending material weight</span>
+<span class="sd">        - W_2 is shear material weight</span>
+<span class="sd">        - W_3 is miscellaneous items weight</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] NASA. (1979). The Flight Optimization System Weights Estimation Method. </span>
+<span class="sd">        NASA Technical Report.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SW</span>          <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="o">/</span> <span class="p">(</span><span class="n">Units</span><span class="o">.</span><span class="n">ft</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Reference wing area, ft^2</span>
+    <span class="n">GLOV</span>        <span class="o">=</span> <span class="mi">0</span> 
+    <span class="n">SX</span>          <span class="o">=</span> <span class="n">SW</span> <span class="o">-</span> <span class="n">GLOV</span>  <span class="c1"># Wing trapezoidal area</span>
+    <span class="n">SPAN</span>        <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>  <span class="c1"># Wing span, ft</span>
+    <span class="n">SEMISPAN</span>    <span class="o">=</span> <span class="n">SPAN</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">AR</span>          <span class="o">=</span> <span class="n">SPAN</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">SX</span>  <span class="c1"># Aspect ratio</span>
+    <span class="n">TR</span>          <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">taper</span>  <span class="c1"># Taper</span>
+    
+    <span class="n">aeroelastic_tailoring_factor</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">FLOPS</span><span class="o">.</span><span class="n">aeroelastic_tailoring_factor</span>
+    <span class="n">strut_braced_wing_factor</span>     <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">FLOPS</span><span class="o">.</span><span class="n">strut_braced_wing_factor</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">advanced_composites</span><span class="p">:</span> <span class="c1"># This considers full or no composite construction</span>
+        <span class="n">composite_utilization_factor</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">composite_utilization_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+    
+    <span class="k">if</span> <span class="n">AR</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">CAYA</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">CAYA</span> <span class="o">=</span> <span class="n">AR</span> <span class="o">-</span> <span class="mi">5</span>
+    <span class="c1"># Aeroelastic tailoring factor [0 no aeroelastic tailoring, 1 maximum aeroelastic tailoring]</span>
+    <span class="n">FAERT</span>           <span class="o">=</span> <span class="n">aeroelastic_tailoring_factor</span>  
+    <span class="c1"># Wing strut bracing factor [0 for no struts, 1 for struts]</span>
+    <span class="n">FSTRT</span>           <span class="o">=</span> <span class="n">strut_braced_wing_factor</span> 
+    
+    <span class="n">NENG</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">NEW</span>  <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span>  <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbofan</span><span class="p">)</span> <span class="ow">or</span>  <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbojet</span><span class="p">):</span>
+                <span class="n">NENG</span> <span class="o">+=</span> <span class="mi">1</span>  
+                <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">wing_mounted</span><span class="p">:</span> 
+                    <span class="n">NEW</span> <span class="o">+=</span> <span class="mi">1</span>
+                        
+    <span class="n">DG</span>              <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>  <span class="c1"># Design gross weight in lb</span>
+
+    <span class="k">if</span> <span class="n">complexity</span> <span class="o">==</span> <span class="s1">&#39;Simple&#39;</span><span class="p">:</span>
+        <span class="n">EMS</span>  <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">FSTRT</span>  <span class="c1"># Wing strut bracing factor</span>
+        <span class="n">TLAM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span><span class="p">)</span> \
+               <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">TR</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">AR</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">TR</span><span class="p">))</span>  <span class="c1"># Tangent of the 3/4 chord sweep angle</span>
+        <span class="n">SLAM</span> <span class="o">=</span> <span class="n">TLAM</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">TLAM</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># sine of 3/4 chord wing sweep angle</span>
+        <span class="n">C6</span>   <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">FAERT</span> <span class="o">-</span> <span class="mf">0.16</span> <span class="o">*</span> <span class="n">FSTRT</span>
+        <span class="n">C4</span>   <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">FAERT</span>
+        <span class="n">CAYL</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">SLAM</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> \
+               <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">C6</span> <span class="o">*</span> <span class="n">SLAM</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">CAYA</span> <span class="o">*</span> <span class="n">C4</span> <span class="o">*</span> <span class="n">SLAM</span><span class="p">)</span>  <span class="c1"># Wing sweep factor due to aeroelastic tailoring</span>
+        <span class="n">TCA</span>  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+        <span class="n">BT</span>   <span class="o">=</span> <span class="mf">0.215</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.37</span> <span class="o">+</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">TR</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">SPAN</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">SW</span><span class="p">)</span> <span class="o">**</span> <span class="n">EMS</span> <span class="o">/</span> <span class="p">(</span><span class="n">CAYL</span> <span class="o">*</span> <span class="n">TCA</span><span class="p">)</span>  <span class="c1"># Bending factor</span>
+        <span class="n">CAYE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">NEW</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">NSD</span>             <span class="o">=</span> <span class="mi">500</span>
+        <span class="n">N2</span>              <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">NEW</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> 
+        <span class="n">L_fus</span>           <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">L_fus</span> <span class="o">&lt;</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">total</span><span class="p">:</span>
+                <span class="n">ref_fuselage</span> <span class="o">=</span> <span class="n">fuselage</span> 
+        <span class="n">ETA</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">SWP</span>  <span class="o">=</span> <span class="n">generate_wing_stations</span><span class="p">(</span><span class="n">ref_fuselage</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">wing</span><span class="p">))</span>
+        <span class="n">NS</span><span class="p">,</span> <span class="n">Y</span>           <span class="o">=</span> <span class="n">generate_int_stations</span><span class="p">(</span><span class="n">NSD</span><span class="p">,</span> <span class="n">ETA</span><span class="p">)</span>
+        <span class="n">EETA</span>            <span class="o">=</span> <span class="n">get_spanwise_engine</span><span class="p">(</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">,</span><span class="n">SEMISPAN</span><span class="p">)</span>
+        <span class="n">P0</span>              <span class="o">=</span> <span class="n">calculate_load</span><span class="p">(</span><span class="n">ETA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">ASW</span>             <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">EM</span>              <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">EL</span>              <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">C0</span>              <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">S</span>               <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">EEL</span>             <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">EEM</span>             <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">EA0</span>             <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">EW</span>              <span class="o">=</span> <span class="mi">0</span>
+        
+        
+        <span class="c1"># Replaced FOR LOOP</span>
+        <span class="c1"># Reverse Order</span>
+        <span class="n">Y</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+        
+        <span class="c1"># DY distance</span>
+        <span class="n">DY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+        
+        <span class="c1"># Trim the vectors away from the tip and center</span>
+        <span class="n">Y</span>  <span class="o">=</span> <span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">DY</span> <span class="o">=</span> <span class="o">-</span><span class="n">DY</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        
+        <span class="c1"># Get normalized pressure loading across the wing</span>
+        <span class="n">P1</span>     <span class="o">=</span> <span class="n">calculate_load</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+        <span class="n">P0</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">P1</span><span class="p">)</span>
+        <span class="n">P0</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">P1</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c1"># Get local chord length</span>
+        <span class="n">C1</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">ETA</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+        <span class="n">C0</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">C1</span><span class="p">)</span>
+        <span class="n">C0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">C0</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">C1</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c1"># Calculate local pressure load and moments (DELP and DELM)</span>
+        <span class="n">T1</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">ETA</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">SWP1</span> <span class="o">=</span> <span class="n">find_sweep</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span><span class="n">ETA</span><span class="p">,</span><span class="n">SWP</span><span class="p">)</span>
+        <span class="n">DELP</span> <span class="o">=</span> <span class="n">DY</span> <span class="o">/</span> <span class="mi">6</span> <span class="o">*</span> <span class="p">(</span><span class="n">C0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">P0</span> <span class="o">+</span> <span class="n">P1</span><span class="p">)</span> <span class="o">+</span> <span class="n">C1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">P1</span> <span class="o">+</span> <span class="n">P0</span><span class="p">))</span>
+        <span class="n">DELM</span> <span class="o">=</span> <span class="n">DY</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">C0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">3.0</span> <span class="o">*</span> <span class="n">P0</span> <span class="o">+</span> <span class="n">P1</span><span class="p">)</span> <span class="o">+</span> <span class="n">C1</span> <span class="o">*</span> <span class="p">(</span><span class="n">P1</span> <span class="o">+</span> <span class="n">P0</span><span class="p">))</span> <span class="o">/</span> <span class="mf">12.</span>
+        
+        <span class="c1"># Sum loads</span>
+        <span class="n">EL</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">DELP</span><span class="p">)</span> 
+        <span class="n">EL</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">DELP</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="c1"># Sum moments</span>
+        <span class="n">EM</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span><span class="n">DELM</span> <span class="o">+</span> <span class="n">DY</span> <span class="o">*</span> <span class="n">EL</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">SWP1</span><span class="p">))</span>
+        
+        <span class="c1"># Calculate required bending material area</span>
+        <span class="n">BMA1</span>     <span class="o">=</span> <span class="n">EM</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">SWP1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">C1</span> <span class="o">*</span> <span class="n">T1</span><span class="p">)</span>
+        
+        <span class="n">BMA0</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">BMA1</span><span class="p">)</span>
+        <span class="n">BMA0</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">BMA1</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c1"># Compute segment values</span>
+        <span class="n">ASW</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span><span class="n">DY</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="n">DY</span> <span class="o">*</span> <span class="n">SWP1</span><span class="p">)</span>
+        <span class="n">PM</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span><span class="n">BMA0</span> <span class="o">+</span> <span class="n">BMA1</span><span class="p">)</span> <span class="o">*</span> <span class="n">DY</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+        <span class="n">S</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span><span class="n">C0</span> <span class="o">+</span> <span class="n">C1</span><span class="p">)</span> <span class="o">*</span> <span class="n">DY</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+
+
+        <span class="c1"># Adjust for engine loads</span>
+        <span class="k">if</span> <span class="n">N2</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span> <span class="c1"># If there are engines</span>
+            <span class="n">EEL</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+            <span class="n">DELM2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+            
+            <span class="c1"># Do a for loop over engine stations</span>
+            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">EETA</span><span class="p">)):</span>
+                <span class="c1"># Find the station closest to the engine but inboard</span>
+                <span class="n">distances</span>              <span class="o">=</span> <span class="n">EETA</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">-</span><span class="n">Y</span>
+                <span class="n">distances</span><span class="p">[</span><span class="n">distances</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                <span class="n">distance</span>               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+                <span class="n">loc</span>                    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+                <span class="n">DELM2</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span>             <span class="o">=</span> <span class="n">DELM2</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span> <span class="o">+</span> <span class="n">distance</span>
+                <span class="n">EEL</span><span class="p">[</span><span class="n">loc</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>            <span class="o">=</span> <span class="n">EEL</span><span class="p">[</span><span class="n">loc</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="n">DELM2</span> <span class="o">=</span> <span class="n">DELM2</span> <span class="o">+</span> <span class="n">EEL</span><span class="o">*</span><span class="n">DY</span>
+
+            <span class="n">EEM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">DELM2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">SWP1</span><span class="p">))</span>
+            <span class="n">EA1</span> <span class="o">=</span> <span class="n">EEM</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">SWP1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">C1</span> <span class="o">*</span> <span class="n">T1</span><span class="p">)</span>
+            
+            <span class="n">EA0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+            <span class="n">EA0</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">EA1</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            
+            <span class="n">EW</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">EA0</span> <span class="o">+</span> <span class="n">EA1</span><span class="p">)</span> <span class="o">*</span> <span class="n">DY</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            
+        <span class="c1"># Finalize properties</span>
+        <span class="n">EL</span> <span class="o">=</span> <span class="n">EL</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">DELP</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>    
+        <span class="n">EM</span> <span class="o">=</span> <span class="n">EM</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">EL</span>
+        <span class="n">PM</span> <span class="o">=</span> <span class="mf">4.</span> <span class="o">*</span> <span class="n">PM</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">EL</span>
+        <span class="n">EW</span> <span class="o">=</span> <span class="mf">8.</span> <span class="o">*</span> <span class="n">EW</span>
+        <span class="n">SA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ASW</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">AR</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">S</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>       
+                
+        <span class="k">if</span> <span class="n">AR</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">CAYA</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">CAYA</span> <span class="o">=</span> <span class="n">AR</span> <span class="o">-</span> <span class="mi">5</span>
+        <span class="n">DEN</span> <span class="o">=</span> <span class="n">AR</span> <span class="o">**</span> <span class="p">(</span><span class="mf">.25</span> <span class="o">*</span> <span class="n">FSTRT</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="mf">.50</span> <span class="o">*</span> <span class="n">FAERT</span> <span class="o">-</span> <span class="mf">.160</span> <span class="o">*</span> <span class="n">FSTRT</span><span class="p">)</span> <span class="o">*</span> <span class="n">SA</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span>
+                                     <span class="o">+</span> <span class="mf">.03</span> <span class="o">*</span> <span class="n">CAYA</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="mf">.50</span> <span class="o">*</span> <span class="n">FAERT</span><span class="p">)</span> <span class="o">*</span> <span class="n">SA</span><span class="p">)</span>
+        <span class="n">BT</span> <span class="o">=</span> <span class="n">PM</span> <span class="o">/</span> <span class="n">DEN</span>
+        <span class="n">BTE</span> <span class="o">=</span> <span class="n">EW</span>
+        <span class="n">CAYE</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">NEW</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">CAYE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">BTE</span> <span class="o">/</span> <span class="n">BT</span> <span class="o">*</span> <span class="n">WPOD</span> <span class="o">/</span> <span class="n">DG</span>
+
+    <span class="n">A</span>       <span class="o">=</span> <span class="n">wing_weight_constants_FLOPS</span><span class="p">()</span>  <span class="c1"># Wing weight constants</span>
+    <span class="c1"># Composite utilization factor [0 no composite, 1 full composite]</span>
+    <span class="n">FCOMP</span>   <span class="o">=</span> <span class="n">composite_utilization_factor</span>  
+    <span class="n">ULF</span>     <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">ultimate_load</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vehicle</span><span class="o">.</span><span class="n">fuselages</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">CAYF</span>    <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Multiple fuselage factor [1 one fuselage, 0.5 multiple fuselages]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">vehicle</span><span class="o">.</span><span class="n">fuselage</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">CAYF</span>    <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="n">VFACT</span>   <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Variable sweep factor, TODO: add equation to allow variable sweep penalty</span>
+    <span class="n">PCTL</span>    <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">num_main_wings</span>  <span class="c1"># Fraction of load carried by this wing</span>
+    <span class="n">W1NIR</span>   <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">BT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">SPAN</span><span class="p">))</span> <span class="o">*</span> <span class="n">ULF</span> <span class="o">*</span> <span class="n">SPAN</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">FCOMP</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="mi">1</span> <span class="o">-</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">FAERT</span><span class="p">)</span> <span class="o">*</span> <span class="n">CAYF</span> <span class="o">*</span> <span class="n">VFACT</span> <span class="o">*</span> <span class="n">PCTL</span> <span class="o">/</span> <span class="mf">10.0</span> <span class="o">**</span> <span class="mi">6</span>  <span class="c1"># Wing bending material weight lb</span>
+    <span class="n">SFLAP</span>   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">flap_ratio</span> <span class="o">*</span> <span class="n">SX</span>
+
+    <span class="n">W2</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.17</span> <span class="o">*</span> <span class="n">FCOMP</span><span class="p">)</span> <span class="o">*</span> <span class="n">SFLAP</span> <span class="o">**</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">*</span> <span class="n">DG</span> <span class="o">**</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>  <span class="c1"># shear material weight</span>
+    <span class="n">W3</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">FCOMP</span><span class="p">)</span> <span class="o">*</span> <span class="n">SW</span> <span class="o">**</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>  <span class="c1"># miscellaneous items weight</span>
+    <span class="n">W1</span> <span class="o">=</span> <span class="p">(</span><span class="n">DG</span> <span class="o">*</span> <span class="n">CAYE</span> <span class="o">*</span> <span class="n">W1NIR</span> <span class="o">+</span> <span class="n">W2</span> <span class="o">+</span> <span class="n">W3</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">W1NIR</span><span class="p">)</span> <span class="o">-</span> <span class="n">W2</span> <span class="o">-</span> <span class="n">W3</span>  <span class="c1"># bending material weight</span>
+    <span class="n">WWING</span> <span class="o">=</span> <span class="n">W1</span> <span class="o">+</span> <span class="n">W2</span> <span class="o">+</span> <span class="n">W3</span>  <span class="c1"># Total wing weight</span>
+
+    <span class="k">return</span> <span class="n">WWING</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span></div>
+
+
+
+<div class="viewcode-block" id="generate_wing_stations">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.generate_wing_stations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_wing_stations</span><span class="p">(</span><span class="n">fuselage_width</span><span class="p">,</span> <span class="n">wing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Divides half the wing in sections, using the defined sections</span>
+<span class="sd">        and adding a section at the intersection of wing and fuselage</span>
+
+<span class="sd">        Assumptions:</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            fuselage_width: fuselage width                                      [m]</span>
+<span class="sd">            wing: data dictionary with wing properties</span>
+<span class="sd">                    -.taper: taper ration wing</span>
+<span class="sd">                    -.sweeps.quarter_chord: quarter chord sweep angle           [deg]</span>
+<span class="sd">                    -.thickness_to_chord: thickness to chord</span>
+<span class="sd">                    -.spans.projected: wing span                                [m]</span>
+<span class="sd">                    -.chords.root: root chord                                   [m]</span>
+<span class="sd">                    -.tip.root: tip chord                                       [m]</span>
+<span class="sd">                    -.twists.root: twist of wing at root                        [deg]</span>
+<span class="sd">                    -.twists.tip: twist of wing at tip                          [deg]</span>
+<span class="sd">                    -.Segments: trapezoidal segments of the wing</span>
+
+<span class="sd">       Outputs:</span>
+<span class="sd">           ETA: spanwise location of the sections normalized by half span</span>
+<span class="sd">           C: chord lengths at every spanwise location in ETA normalized by half span</span>
+<span class="sd">           T: thickness to chord ratio at every span wise location in ETA</span>
+<span class="sd">           SWP: quarter chord sweep angle at every span wise location in ETA</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SPAN</span>        <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>  <span class="c1"># Wing span, ft</span>
+    <span class="n">SEMISPAN</span>    <span class="o">=</span> <span class="n">SPAN</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">root_chord</span>  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>
+    <span class="n">num_seg</span>     <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">num_seg</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">segment</span>                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">tag</span>                     <span class="o">=</span> <span class="s1">&#39;root&#39;</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">percent_span_location</span>   <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">twist</span>                   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">root</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">root_chord_percent</span>      <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>       <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+
+        <span class="n">segment</span>                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">tag</span>                     <span class="o">=</span> <span class="s1">&#39;tip&#39;</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">percent_span_location</span>   <span class="o">=</span> <span class="mf">1.</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">twist</span>                   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">tip</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">root_chord_percent</span>      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">tip</span> <span class="o">/</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>       <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+        <span class="n">num_seg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        
+    <span class="n">ETA</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_seg</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">C</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_seg</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">T</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_seg</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">SWP</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_seg</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">segment_keys</span>  <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>     
+    <span class="n">ETA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span>
+    <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="o">=</span> <span class="n">root_chord</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">SEMISPAN</span>
+    <span class="n">SWP</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="s1">&#39;thickness_to_chord&#39;</span><span class="p">):</span>
+        <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+    <span class="n">ETA</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">fuselage_width</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">SEMISPAN</span>
+    <span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">determine_fuselage_chord</span><span class="p">(</span><span class="n">fuselage_width</span><span class="p">,</span> <span class="n">wing</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">SEMISPAN</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="s1">&#39;thickness_to_chord&#39;</span><span class="p">):</span>
+        <span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_seg</span><span class="p">):</span>
+        <span class="n">ETA</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span>
+        <span class="n">C</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_chord</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">SEMISPAN</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="s1">&#39;thickness_to_chord&#39;</span><span class="p">):</span>
+            <span class="n">T</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">T</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+        <span class="n">SWP</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">SWP</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">C</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">ETA</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">SWP</span></div>
+
+
+
+<div class="viewcode-block" id="generate_int_stations">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.generate_int_stations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_int_stations</span><span class="p">(</span><span class="n">NSD</span><span class="p">,</span> <span class="n">ETA</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Divides half of the wing in integration stations</span>
+
+<span class="sd">        Assumptions:</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            NSD: number of integration stations requested</span>
+<span class="sd">            ETA: list of spanwise locations of all sections of the wing</span>
+
+<span class="sd">       Outputs:</span>
+<span class="sd">           NS: actual number of integration stations</span>
+<span class="sd">           Y: spanwise locations of the integrations stations normalized by half span</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Y</span>           <span class="o">=</span> <span class="p">[</span><span class="n">ETA</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">desired_int</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ETA</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">NSD</span>
+    <span class="n">NS</span>          <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ETA</span><span class="p">)):</span>
+        <span class="n">NP</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">ETA</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">ETA</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">desired_int</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">NP</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">NP</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">AINT</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETA</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">ETA</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">NP</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NP</span><span class="p">):</span>
+            <span class="n">NS</span> <span class="o">=</span> <span class="n">NS</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">Y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">AINT</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">NS</span><span class="p">,</span> <span class="n">Y</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_load">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.calculate_load">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_load</span><span class="p">(</span><span class="n">ETA</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns load factor assuming elliptical load distribution</span>
+
+<span class="sd">        Assumptions:</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            ETA: list of spanwise locations of all sections of the wing</span>
+
+<span class="sd">       Outputs:</span>
+<span class="sd">           PS: load factor at every location in ETA assuming elliptical load distribution</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">PS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">ETA</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PS</span></div>
+
+
+
+<div class="viewcode-block" id="find_sweep">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.find_sweep">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_sweep</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">lst_y</span><span class="p">,</span> <span class="n">swp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Finds sweep angle for a certain y-location along the wing</span>
+
+<span class="sd">        Assumptions:</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            y: spanwise location</span>
+<span class="sd">            lst_y: list of spanwise stations where sweep is known (eg sections)</span>
+<span class="sd">            swp: list of quarter chord sweep angles at the locations listed in lst_y</span>
+
+<span class="sd">       Outputs:</span>
+<span class="sd">           swps: sweep angle at y</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># All initial sweeps are the root chord sweep</span>
+    <span class="n">swps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="n">swp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst_y</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">e</span>       <span class="o">=</span> <span class="n">lst_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">swps</span><span class="p">[</span><span class="n">y</span><span class="o">&gt;=</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">swp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+
+    <span class="k">return</span> <span class="n">swps</span></div>
+
+
+
+<div class="viewcode-block" id="get_spanwise_engine">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.get_spanwise_engine">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_spanwise_engine</span><span class="p">(</span><span class="n">networks</span><span class="p">,</span> <span class="n">SEMISPAN</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns EETA for the engine locations along the wing</span>
+
+<span class="sd">        Assumptions:</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            networks: data dictionary with all the engine properties</span>
+<span class="sd">                -.wing_mounted: list of boolean if engine is mounted to wing</span>
+<span class="sd">                -.number_of_engines: number of engines</span>
+<span class="sd">                -.origin: origin of the engine</span>
+<span class="sd">            SEMISPAN: half span                                 [m]</span>
+<span class="sd">       Outputs:</span>
+<span class="sd">           EETA: span wise locations of the engines mounted to the wing normalized by the half span</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">EETA</span> <span class="o">=</span>  <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span>  <span class="n">networks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbofan</span><span class="p">)</span> <span class="ow">or</span>  <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbojet</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">wing_mounted</span> <span class="ow">and</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  
+                    <span class="n">EETA</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">propulsor</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">SEMISPAN</span><span class="p">)</span> 
+    <span class="n">EETA</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">EETA</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">EETA</span></div>
+
+
+
+<div class="viewcode-block" id="wing_weight_constants_FLOPS">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.wing_weight_constants_FLOPS">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">wing_weight_constants_FLOPS</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines wing weight constants as defined by FLOPS</span>
+<span class="sd">        Inputs: ac_type - determines type of instruments, electronics, and operating items based on types:</span>
+<span class="sd">                &quot;short-range&quot;, &quot;medium-range&quot;, &quot;long-range&quot;, &quot;business&quot;, &quot;cargo&quot;, &quot;commuter&quot;, &quot;sst&quot;</span>
+<span class="sd">        Outputs: list of coefficients used in weight estimations</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.16</span><span class="p">,</span><span class="mf">1.2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">A</span></div>
+
+
+
+<div class="viewcode-block" id="determine_fuselage_chord">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS.compute_wing_weight.determine_fuselage_chord">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">determine_fuselage_chord</span><span class="p">(</span><span class="n">fuselage_width</span><span class="p">,</span> <span class="n">wing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Determine chord at wing and fuselage intersection</span>
+
+<span class="sd">        Assumptions:</span>
+<span class="sd">            Fuselage side of body is between first and second wing segments.</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            fuselage_width: width of fuselage                                   [m]</span>
+<span class="sd">            wing: data dictionary with wing properties</span>
+<span class="sd">                    -.taper: taper ratio</span>
+<span class="sd">                    -.sweeps.quarter_chord: quarter chord sweep angle           [deg]</span>
+<span class="sd">                    -.thickness_to_chord: thickness to chord</span>
+<span class="sd">                    -.spans.projected: wing span                                [m]</span>
+<span class="sd">                    -.chords.root: root chord                                   [m]</span>
+<span class="sd">                -.fuselages.fuselage.width: fuselage width                      [m]</span>
+<span class="sd">       Outputs:</span>
+<span class="sd">           chord: chord length of wing where wing intersects the fuselage wall [ft]</span>
+
+<span class="sd">        Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">segment_keys</span>    <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>      
+    <span class="n">root_chord</span>      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>
+    <span class="n">SPAN</span>            <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>  <span class="c1"># Wing span, ft</span>
+    <span class="n">SEMISPAN</span>        <span class="o">=</span> <span class="n">SPAN</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">c1</span>              <span class="o">=</span> <span class="n">root_chord</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span>
+    <span class="n">c2</span>              <span class="o">=</span> <span class="n">root_chord</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span>
+    <span class="n">y1</span>              <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span>
+    <span class="n">y2</span>              <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span>
+    <span class="n">b</span>               <span class="o">=</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SEMISPAN</span>
+    <span class="n">taper</span>           <span class="o">=</span> <span class="n">c2</span> <span class="o">/</span> <span class="n">c1</span>
+    <span class="n">y</span>               <span class="o">=</span> <span class="n">fuselage_width</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>
+    <span class="n">chord</span>           <span class="o">=</span> <span class="n">c1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">taper</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">chord</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

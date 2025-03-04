@@ -1,0 +1,772 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based.compute_wing_weight &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Electric/VTOL/Physics_Based/compute_wing_weight';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Electric/VTOL/Physics_Based/compute_wing_weight.html" />
+    <link rel="index" title="Index" href="../../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based.compute_wing_weight</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based.compute_wing_weight</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Weights/Buildups/Common/compute_boom_weight.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Sep 2024, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+
+<span class="c1"># RCAIDE </span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Attributes.Materials</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bidirectional_Carbon_Fiber</span><span class="p">,</span> <span class="n">Carbon_Fiber_Honeycomb</span><span class="p">,</span> <span class="n">Paint</span><span class="p">,</span> <span class="n">Unidirectional_Carbon_Fiber</span><span class="p">,</span> <span class="n">Aluminum_Alloy</span><span class="p">,</span> <span class="n">Epoxy</span> 
+
+<span class="c1"># package imports </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cp</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># Compute wiring weight</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
+<div class="viewcode-block" id="compute_wing_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based.compute_wing_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based.compute_wing_weight.compute_wing_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_wing_weight</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span>
+         <span class="n">config</span><span class="p">,</span>
+         <span class="n">max_thrust</span><span class="p">,</span>
+         <span class="n">num_analysis_points</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+         <span class="n">safety_factor</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+         <span class="n">max_g_load</span> <span class="o">=</span> <span class="mf">3.8</span><span class="p">,</span>
+         <span class="n">moment_to_lift_ratio</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span>
+         <span class="n">lift_to_drag_ratio</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+         <span class="n">forward_web_locations</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">],</span>
+         <span class="n">rear_web_locations</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.65</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">],</span>
+         <span class="n">shear_center_location</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
+         <span class="n">margin_factor</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">):</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the structural mass of a wing for an eVTOL vehicle based on</span>
+<span class="sd">        assumption of NACA airfoil wing, an assumed L/D, cm/cl, and structural</span>
+<span class="sd">        geometry. </span>
+<span class="sd">        </span>
+<span class="sd">        Assumptions:</span>
+<span class="sd">        If no materials are assigned to vehicle model, appropriate assumptions</span>
+<span class="sd">        are made based on RCAIDE&#39;s Solids Attributes library. </span>
+<span class="sd">        </span>
+<span class="sd">        Shear moment is calculated  by adding thrust from each motor to each</span>
+<span class="sd">        analysis point that&#39;s closer to the wing root than the motor. Accomplished</span>
+<span class="sd">        by indexing Vt according to a boolean mask of the design points that area</span>
+<span class="sd">        less than or aligned with the motor location under consideration in an</span>
+<span class="sd">        iterative loop</span>
+<span class="sd">     </span>
+<span class="sd">        Sources:</span>
+<span class="sd">        Project Vahana Conceptual Trade Study</span>
+
+<span class="sd">        Inputs:</span>
+
+<span class="sd">            wing                          RCAIDE Wing Data Structure           [None]</span>
+<span class="sd">                 winglet_fraction         winglet fraction                    [Unitless]</span>
+<span class="sd">                 motor_spanwise_locations spanwise fraction location of motor [Unitless]</span>
+<span class="sd">            config                        RCAIDE Config Data Structure         [None]</span>
+<span class="sd">            maxThrust                     Maximum Thrust                      [N]</span>
+<span class="sd">            numAnalysisPoints             Analysis Points for Sizing          [Unitless]</span>
+<span class="sd">            safety_factor                 Design Safety Factor                [Unitless]</span>
+<span class="sd">            max_g_load                    Maximum Accelerative Load           [Unitless]</span>
+<span class="sd">            moment_to_lift_ratio          Coeff. of Moment to Coeff. of Lift  [Unitless]</span>
+<span class="sd">            lift_to_drag_ratio            Coeff. of Lift to Coeff. of Drag    [Unitless]</span>
+<span class="sd">            forward_web_locations         Location of Forward Spar Webbing    [m]</span>
+<span class="sd">            rear_web_locations            Location of Rear Spar Webbing       [m]</span>
+<span class="sd">            shear_center                  Location of Shear Center            [m]</span>
+<span class="sd">            margin_factor                 Allowable Extra Mass Fraction       [Unitless]</span>
+
+<span class="sd">        Outputs: </span>
+<span class="sd">            weight:                       Wing Mass                           [kg]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#-------------------------------------------------------------------------------</span>
+    <span class="c1"># Unpack Inputs</span>
+    <span class="c1">#-------------------------------------------------------------------------------</span>
+
+    <span class="n">MTOW</span>             <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
+    <span class="n">wingspan</span>         <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
+    <span class="n">chord</span>            <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>
+    <span class="n">thicknessToChord</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+    <span class="n">wingArea</span>         <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">wingletFraction</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">winglet_fraction</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">wingletFraction</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="n">totalWingArea</span>   <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
+        <span class="n">totalWingArea</span> <span class="o">+=</span> <span class="n">w</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
+    <span class="n">liftFraction</span>    <span class="o">=</span> <span class="n">wingArea</span><span class="o">/</span><span class="n">totalWingArea</span>
+
+    <span class="n">motor_locs</span>    <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">wing_mounted</span><span class="p">:</span> 
+                <span class="n">motor</span> <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">motor</span>                   
+                <span class="k">if</span> <span class="n">motor</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span> 
+                    <span class="n">motor_locs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">motor</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> 
+
+    <span class="n">motor_spanwise_locations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">motor_locs</span><span class="p">)</span>
+    <span class="n">N</span>       <span class="o">=</span> <span class="n">num_analysis_points</span>                   <span class="c1"># Number of spanwise points</span>
+    <span class="n">SF</span>      <span class="o">=</span> <span class="n">safety_factor</span>                         <span class="c1"># Safety Factor</span>
+    <span class="n">G_max</span>   <span class="o">=</span> <span class="n">max_g_load</span>                            <span class="c1"># Maximum G&#39;s experienced during climb</span>
+    <span class="n">cmocl</span>   <span class="o">=</span> <span class="n">moment_to_lift_ratio</span>                  <span class="c1"># Ratio of cm to cl</span>
+    <span class="n">LoD</span>     <span class="o">=</span> <span class="n">lift_to_drag_ratio</span>                    <span class="c1"># L/D</span>
+    <span class="n">fwdWeb</span>  <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">forward_web_locations</span><span class="p">)</span>    <span class="c1"># Locations of forward spars</span>
+    <span class="n">aftWeb</span>  <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">rear_web_locations</span><span class="p">)</span>       <span class="c1"># Locations of aft spars</span>
+    <span class="n">xShear</span>  <span class="o">=</span> <span class="n">shear_center_location</span>                 <span class="c1"># Approximate shear center</span>
+    <span class="n">grace</span>   <span class="o">=</span> <span class="n">margin_factor</span>                         <span class="c1"># Grace factor for estimation </span>
+    <span class="n">nRibs</span>   <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">motor_spanwise_locations</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> 
+
+    <span class="c1">#-------------------------------------------------------------------------------</span>
+    <span class="c1"># Unpack Material Properties</span>
+    <span class="c1">#-------------------------------------------------------------------------------</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">torsMat</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">skin_materials</span><span class="o">.</span><span class="n">torsion_carrier</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">torsMat</span> <span class="o">=</span> <span class="n">Bidirectional_Carbon_Fiber</span><span class="p">()</span>
+    <span class="n">torsUSS</span> <span class="o">=</span> <span class="n">torsMat</span><span class="o">.</span><span class="n">ultimate_shear_strength</span>
+    <span class="n">torsDen</span> <span class="o">=</span> <span class="n">torsMat</span><span class="o">.</span><span class="n">density</span>
+    <span class="n">torsMGT</span> <span class="o">=</span> <span class="n">torsMat</span><span class="o">.</span><span class="n">minimum_gage_thickness</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">coreMat</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">skin_materials</span><span class="o">.</span><span class="n">core</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">coreMat</span> <span class="o">=</span> <span class="n">Carbon_Fiber_Honeycomb</span><span class="p">()</span>
+    <span class="n">coreDen</span> <span class="o">=</span> <span class="n">coreMat</span><span class="o">.</span><span class="n">density</span>
+    <span class="n">coreMGT</span> <span class="o">=</span> <span class="n">coreMat</span><span class="o">.</span><span class="n">minimum_gage_thickness</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">bendMat</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">flap_materials</span><span class="o">.</span><span class="n">bending_carrier</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">bendMat</span> <span class="o">=</span> <span class="n">Unidirectional_Carbon_Fiber</span><span class="p">()</span>
+    <span class="n">bendUTS</span> <span class="o">=</span> <span class="n">bendMat</span><span class="o">.</span><span class="n">ultimate_tensile_strength</span>
+    <span class="n">bendDen</span> <span class="o">=</span> <span class="n">bendMat</span><span class="o">.</span><span class="n">density</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">glueMat</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">skin_materials</span><span class="o">.</span><span class="n">adhesive</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">glueMat</span> <span class="o">=</span> <span class="n">Epoxy</span><span class="p">()</span>
+    <span class="n">glueMGT</span> <span class="o">=</span> <span class="n">glueMat</span><span class="o">.</span><span class="n">minimum_gage_thickness</span>
+    <span class="n">glueDen</span> <span class="o">=</span> <span class="n">glueMat</span><span class="o">.</span><span class="n">density</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">coverMat</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">skin_materials</span><span class="o">.</span><span class="n">covering</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">coverMat</span> <span class="o">=</span> <span class="n">Paint</span><span class="p">()</span>
+    <span class="n">coverMGT</span> <span class="o">=</span> <span class="n">coverMat</span><span class="o">.</span><span class="n">minimum_gage_thickness</span>
+    <span class="n">coverDen</span> <span class="o">=</span> <span class="n">coverMat</span><span class="o">.</span><span class="n">density</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ribMat</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">rib_materials</span><span class="o">.</span><span class="n">structural</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">ribMat</span> <span class="o">=</span> <span class="n">Aluminum_Alloy</span><span class="p">()</span>
+    <span class="n">ribWid</span> <span class="o">=</span> <span class="n">ribMat</span><span class="o">.</span><span class="n">minimum_width</span>
+    <span class="n">ribMGT</span> <span class="o">=</span> <span class="n">ribMat</span><span class="o">.</span><span class="n">minimum_gage_thickness</span>
+    <span class="n">ribDen</span> <span class="o">=</span> <span class="n">ribMat</span><span class="o">.</span><span class="n">density</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">shearMat</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spar_materials</span><span class="o">.</span><span class="n">shear_carrier</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">shearMat</span> <span class="o">=</span> <span class="n">Bidirectional_Carbon_Fiber</span><span class="p">()</span>
+    <span class="n">shearMGT</span> <span class="o">=</span> <span class="n">shearMat</span><span class="o">.</span><span class="n">minimum_gage_thickness</span>
+    <span class="n">shearDen</span> <span class="o">=</span> <span class="n">shearMat</span><span class="o">.</span><span class="n">density</span>
+    <span class="n">shearUSS</span> <span class="o">=</span> <span class="n">shearMat</span><span class="o">.</span><span class="n">ultimate_shear_strength</span>
+
+
+    <span class="c1">#-------------------------------------------------------------------------------</span>
+    <span class="c1"># Airfoil</span>
+    <span class="c1">#------------------------------------------------------------------------------- </span>
+    <span class="n">NACA</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">thicknessToChord</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2969</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1260</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3516</span><span class="p">,</span> <span class="mf">0.2843</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1015</span><span class="p">])</span>
+    <span class="n">coord</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">fwdWeb</span><span class="o">+</span><span class="n">aftWeb</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">coordMAT</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">coord</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">coord</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">coord</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="n">coord</span><span class="o">**</span><span class="mi">4</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nacaMAT</span>     <span class="o">=</span> <span class="n">coordMAT</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">NACA</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">coord</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">coord</span><span class="p">,</span> <span class="n">nacaMAT</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">coord</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">coord</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">coord</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">]]))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">coord</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xShear</span>
+
+    <span class="c1">#-------------------------------------------------------------------------------</span>
+    <span class="c1"># Beam Geometry</span>
+    <span class="c1">#------------------------------------------------------------------------------- </span>
+    <span class="n">x</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="n">wingletFraction</span><span class="p">,</span> <span class="n">N</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">x</span>         <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">wingspan</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">x</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">motor_spanwise_locations</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">dx</span>        <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">N</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">fwdWeb</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">locFwd</span> <span class="o">-</span> <span class="n">xShear</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">locFwd</span> <span class="ow">in</span> <span class="n">fwdWeb</span><span class="p">]</span>
+    <span class="n">aftWeb</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">locAft</span> <span class="o">-</span> <span class="n">xShear</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">locAft</span> <span class="ow">in</span> <span class="n">aftWeb</span><span class="p">]</span>
+
+    <span class="c1">#-------------------------------------------------------------------------------</span>
+    <span class="c1"># Loads</span>
+    <span class="c1">#------------------------------------------------------------------------------- </span>
+    <span class="n">L</span>  <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>           <span class="c1"># Assumes Elliptic Lift Distribution</span>
+    <span class="n">L0</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">G_max</span><span class="o">*</span><span class="n">MTOW</span><span class="o">*</span><span class="mf">9.8</span><span class="o">*</span><span class="n">liftFraction</span><span class="o">*</span><span class="n">SF</span>  <span class="c1"># Total Design Lift Force</span>
+    <span class="n">L</span>  <span class="o">=</span> <span class="n">L0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">*</span><span class="n">L</span>     <span class="c1"># Net Lift Distribution </span>
+    <span class="n">T</span>  <span class="o">=</span> <span class="n">L</span> <span class="o">*</span> <span class="n">chord</span> <span class="o">*</span> <span class="n">cmocl</span>                   <span class="c1"># Torsion Distribution</span>
+    <span class="n">D</span>  <span class="o">=</span> <span class="n">L</span><span class="o">/</span><span class="n">LoD</span>                               <span class="c1"># Drag Distribution</span>
+
+    <span class="c1">#-------------------------------------------------------------------------------</span>
+    <span class="c1"># Shear/Moments</span>
+    <span class="c1">#------------------------------------------------------------------------------- </span>
+    <span class="n">Vx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span><span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>   <span class="c1"># Drag Shear</span>
+    <span class="n">Vz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>   <span class="c1"># Lift Shear</span>
+    <span class="n">Vt</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">Vz</span>                                                      <span class="c1"># Initialize Thrust Shear </span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">motor_spanwise_locations</span><span class="p">)):</span>
+        <span class="n">Vt</span><span class="p">[</span><span class="n">x</span><span class="o">&lt;=</span><span class="n">motor_spanwise_locations</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Vt</span><span class="p">[</span><span class="n">x</span><span class="o">&lt;=</span><span class="n">motor_spanwise_locations</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">+</span> <span class="n">max_thrust</span>
+
+    <span class="n">Mx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span><span class="n">Vz</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Bending Moment</span>
+    <span class="n">My</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span> <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Torsion Moment</span>
+    <span class="n">Mz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span><span class="n">Vx</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Drag Moment</span>
+    <span class="n">Mt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">((</span><span class="n">Vt</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Thrust Moment</span>
+    <span class="n">Mz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">Mz</span><span class="p">,</span> <span class="n">Mt</span><span class="p">))</span>                                           <span class="c1"># Worst Case of Drag vs. Thrust Moment</span>
+
+    <span class="c1">#-------------------------------------------------------------------------------</span>
+    <span class="c1"># General Structural Properties</span>
+    <span class="c1">#------------------------------------------------------------------------------- </span>
+    <span class="n">seg</span> <span class="o">=</span> <span class="p">[]</span>                      
+    
+    <span class="c1"># Torsion </span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">coord</span>                        <span class="c1"># Box Initally Matches Airfoil</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">aftWeb</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>  <span class="c1"># Inlcude Only Parts Fwd of Aftmost Spar</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">fwdWeb</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>  <span class="c1"># Include Only Parts Aft of Fwdmost Spar</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">box</span> <span class="o">*</span> <span class="n">chord</span>                  <span class="c1"># Scale by Chord Length</span>
+
+    <span class="c1"># Use Shoelace Formula to calculate box area </span>
+    <span class="n">torsionArea</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)))</span>
+
+    <span class="n">torsionLength</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+
+    <span class="c1"># Bending </span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">coord</span>                                             <span class="c1"># Box Initially Matches Airfoil</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">fwdWeb</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>                       <span class="c1"># Include Only Parts Fwd of Aft Fwd Spar</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">fwdWeb</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>                       <span class="c1"># Include Only Parts Aft of Fwdmost Spar</span>
+    <span class="n">seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])]</span><span class="o">*</span><span class="n">chord</span><span class="p">)</span>   <span class="c1"># Upper Fwd Segment</span>
+    <span class="n">seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])]</span><span class="o">*</span><span class="n">chord</span><span class="p">)</span>   <span class="c1"># Lower Fwd Segment</span>
+
+    <span class="c1"># Drag </span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">coord</span>                                             <span class="c1"># Box Initially Matches Airfoil</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">aftWeb</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>                       <span class="c1"># Include Only Parts Fwd of Aftmost Spar</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">aftWeb</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>                       <span class="c1"># Include Only Parts Aft of Fwd Aft Spar</span>
+    <span class="n">seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])]</span><span class="o">*</span><span class="n">chord</span><span class="p">)</span>   <span class="c1"># Upper Aft Segment</span>
+    <span class="n">seg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])]</span><span class="o">*</span><span class="n">chord</span><span class="p">)</span>   <span class="c1"># Lower Aft Segment</span>
+
+    <span class="c1"># Bending/Drag Inertia </span>
+    <span class="n">flapInertia</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">flapLength</span>  <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dragInertia</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dragLength</span>  <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>    <span class="c1"># Segment lengths</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">::]</span><span class="o">+</span><span class="n">seg</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span>                         <span class="c1"># Segment centroids</span>
+
+        <span class="k">if</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">flapInertia</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">l</span><span class="o">*</span><span class="n">c</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>   <span class="c1"># Bending Inertia per Unit Thickness</span>
+            <span class="n">flapLength</span>  <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dragInertia</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">l</span><span class="o">*</span><span class="n">c</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>   <span class="c1"># Drag Inertia per Unit Thickness</span>
+            <span class="n">dragLength</span>  <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+
+    <span class="c1"># Shear </span>
+    <span class="n">box</span>        <span class="o">=</span> <span class="n">coord</span>                                                                 <span class="c1"># Box Initially Matches Airfoil</span>
+    <span class="n">box</span>        <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">fwdWeb</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>                                              <span class="c1"># Include Only Parts Fwd of Aft Fwd Spar</span>
+    <span class="n">z</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">fwdWeb</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">chord</span>  <span class="c1"># Upper Surf of Box at Fwdmost Spar</span>
+    <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">fwdWeb</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">box</span><span class="p">[</span><span class="n">box</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">chord</span>  <span class="c1"># Lower Surf of Box at Fwdmost Spar</span>
+    <span class="n">h</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>                                                   <span class="c1"># Height of Box at Fwdmost Spar</span>
+
+    <span class="c1"># Skin </span>
+    <span class="n">box</span>        <span class="o">=</span> <span class="n">coord</span> <span class="o">*</span> <span class="n">chord</span>                                                   <span class="c1"># Box Initially is Airfoil Scaled by Chord</span>
+    <span class="n">skinLength</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+    <span class="n">A</span>          <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span>
+                 <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">box</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)))</span>                       <span class="c1"># Box Area via Shoelace Formula</span>
+
+    <span class="c1">#---------------------------------------------------------------------------</span>
+    <span class="c1"># Structural Calculations</span>
+    <span class="c1">#---------------------------------------------------------------------------</span>
+
+    <span class="c1"># Calculate Skin Weight Based on Torsion </span>
+    <span class="n">tTorsion</span> <span class="o">=</span> <span class="n">My</span><span class="o">*</span><span class="n">dx</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">torsUSS</span><span class="o">*</span><span class="n">torsionArea</span><span class="p">)</span>                <span class="c1"># Torsion Skin Thickness</span>
+    <span class="n">tTorsion</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">tTorsion</span><span class="p">,</span><span class="n">torsMGT</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>      <span class="c1"># Gage Constraint</span>
+    <span class="n">mTorsion</span> <span class="o">=</span> <span class="n">tTorsion</span> <span class="o">*</span> <span class="n">torsionLength</span> <span class="o">*</span> <span class="n">torsDen</span>           <span class="c1"># Torsion Mass</span>
+    <span class="n">mCore</span>    <span class="o">=</span> <span class="n">coreMGT</span><span class="o">*</span><span class="n">torsionLength</span><span class="o">*</span><span class="n">coreDen</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>     <span class="c1"># Core Mass</span>
+    <span class="n">mGlue</span>    <span class="o">=</span> <span class="n">glueMGT</span><span class="o">*</span><span class="n">glueDen</span><span class="o">*</span><span class="n">torsionLength</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>     <span class="c1"># Epoxy Mass</span>
+
+    <span class="c1"># Calculate Flap Mass Based on Bending </span>
+    <span class="n">tFlap</span>    <span class="o">=</span> <span class="n">Mx</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">flapInertia</span><span class="o">*</span><span class="n">bendUTS</span><span class="p">)</span>    <span class="c1"># Bending Flap Thickness</span>
+    <span class="n">mFlap</span>    <span class="o">=</span> <span class="n">tFlap</span><span class="o">*</span><span class="n">flapLength</span><span class="o">*</span><span class="n">bendDen</span>                        <span class="c1"># Bending Flap Mass</span>
+    <span class="n">mGlue</span>    <span class="o">+=</span> <span class="n">glueMGT</span><span class="o">*</span><span class="n">glueDen</span><span class="o">*</span><span class="n">flapLength</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>          <span class="c1"># Updated Epoxy Mass</span>
+
+    <span class="c1"># Calculate Drag Flap Mass </span>
+    <span class="n">tDrag</span>    <span class="o">=</span> <span class="n">Mz</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="mi">2</span><span class="p">][:,</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">dragInertia</span><span class="o">*</span><span class="n">bendUTS</span><span class="p">)</span>    <span class="c1"># Drag Flap Thickness</span>
+    <span class="n">mDrag</span>    <span class="o">=</span> <span class="n">tDrag</span><span class="o">*</span><span class="n">dragLength</span><span class="o">*</span><span class="n">bendDen</span>                        <span class="c1"># Drag Flap Mass</span>
+    <span class="n">mGlue</span>    <span class="o">+=</span> <span class="n">glueMGT</span><span class="o">*</span><span class="n">glueDen</span><span class="o">*</span><span class="n">dragLength</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>          <span class="c1"># Updated Epoxy Mass</span>
+
+    <span class="c1"># Calculate Shear Spar Mass </span>
+    <span class="n">tShear</span>   <span class="o">=</span> <span class="mf">1.5</span><span class="o">*</span><span class="n">Vz</span><span class="o">/</span><span class="p">(</span><span class="n">shearUSS</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>                            <span class="c1"># Shear Spar Thickness</span>
+    <span class="n">tShear</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">tShear</span><span class="p">,</span> <span class="n">shearMGT</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>        <span class="c1"># Gage constraint</span>
+    <span class="n">mShear</span>   <span class="o">=</span> <span class="n">tShear</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">shearDen</span>                              <span class="c1"># Shear Spar Mass</span>
+
+    <span class="c1"># Paint </span>
+    <span class="n">mPaint</span>   <span class="o">=</span> <span class="n">skinLength</span><span class="o">*</span><span class="n">coverMGT</span><span class="o">*</span><span class="n">coverDen</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>        <span class="c1"># Paint Mass</span>
+
+    <span class="c1"># Section Mass Total </span>
+    <span class="n">m</span>    <span class="o">=</span> <span class="n">mTorsion</span> <span class="o">+</span> <span class="n">mCore</span> <span class="o">+</span> <span class="n">mFlap</span> <span class="o">+</span> <span class="n">mDrag</span> <span class="o">+</span> <span class="n">mShear</span> <span class="o">+</span> <span class="n">mGlue</span> <span class="o">+</span> <span class="n">mPaint</span>
+
+    <span class="c1"># Rib Mass </span>
+    <span class="n">mRib</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="n">skinLength</span><span class="o">*</span><span class="n">ribWid</span><span class="p">)</span><span class="o">*</span><span class="n">ribMGT</span><span class="o">*</span><span class="n">ribDen</span>
+
+    <span class="c1"># Total Mass </span>
+    <span class="n">mass</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">+</span><span class="n">nRibs</span><span class="o">*</span><span class="n">mRib</span><span class="p">)</span><span class="o">*</span><span class="n">grace</span>
+
+    <span class="k">return</span> <span class="n">mass</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

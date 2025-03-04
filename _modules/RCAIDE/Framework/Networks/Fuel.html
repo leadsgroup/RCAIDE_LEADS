@@ -377,10 +377,10 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Framework.Networks.Fuel</h1><div class="highlight"><pre>
-<span></span><span class="c1"># RCAIDE/Energy/Networks/Fuel.py</span>
+<span></span><span class="c1"># RCAIDE/Framework/Energy/Networks/Fuel.py</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Oct 2023, M. Clarke</span>
-<span class="c1"># Modified: </span>
+<span class="c1">#           Jan 2025, M. Clarke </span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  Imports</span>
@@ -454,9 +454,11 @@
         <span class="n">total_mdot</span>     <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>   
         
         <span class="c1"># Step 2: loop through compoments of network and determine performance</span>
-        <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="n">fuel_lines</span><span class="p">:</span>     
+        <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="n">fuel_lines</span><span class="p">:</span>
+            <span class="n">fuel_line_mdot</span>       <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  
             <span class="n">stored_results_flag</span>  <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="kc">None</span> 
+            <span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># Step 2.1: Compute thrust,moment and power of propulsors</span>
             <span class="k">for</span> <span class="n">propulsor_group</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">propulsor_tag</span> <span class="ow">in</span> <span class="n">propulsor_group</span><span class="p">:</span>
                     <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_tag</span><span class="p">]</span>
@@ -474,22 +476,17 @@
                           
                         <span class="n">total_thrust</span> <span class="o">+=</span> <span class="n">T</span>   
                         <span class="n">total_moment</span> <span class="o">+=</span> <span class="n">M</span>   
-                        <span class="n">total_power</span>  <span class="o">+=</span> <span class="n">P</span>  
+                        <span class="n">total_power</span>  <span class="o">+=</span> <span class="n">P</span>
+                        
+                        <span class="c1"># compute fuel line mass flow rate </span>
+                        <span class="n">fuel_line_mdot</span> <span class="o">+=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_flow_rate</span>
+                        
+                        <span class="c1"># compute total mass flow rate </span>
+                        <span class="n">total_mdot</span>     <span class="o">+=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_flow_rate</span> 
                 
-            <span class="c1"># Step 2.2: Link each propulsor the its respective fuel tank(s)</span>
-            <span class="k">for</span> <span class="n">fuel_tank</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">:</span>
-                <span class="n">mdot</span> <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>   
-                <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">active_fuel_tanks</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">source</span><span class="p">:</span> 
-                            <span class="n">mdot</span> <span class="o">+=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_flow_rate</span> 
-                    
-                <span class="c1"># Step 2.3 : Determine cumulative fuel flow from fuel tank </span>
-                <span class="n">fuel_tank_mdot</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span><span class="o">*</span><span class="n">mdot</span> <span class="o">+</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">secondary_fuel_flow</span> 
-                
-                <span class="c1"># Step 2.4: Store mass flow results </span>
-                <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">mass_flow_rate</span>  <span class="o">=</span> <span class="n">fuel_tank_mdot</span>  
-                <span class="n">total_mdot</span> <span class="o">+=</span> <span class="n">fuel_tank_mdot</span>                    
+            <span class="c1"># Step 2.2: Determine cumulative fuel flow from each fuel tank  </span>
+            <span class="k">for</span> <span class="n">fuel_tank</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">:</span>  
+                <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">mass_flow_rate</span>  <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span><span class="o">*</span><span class="n">fuel_line_mdot</span> <span class="o">+</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">secondary_fuel_flow</span>         
                             
         <span class="c1"># Step 3: Pack results</span>
         <span class="k">if</span> <span class="n">reverse_thrust</span> <span class="o">==</span>  <span class="kc">True</span><span class="p">:</span>

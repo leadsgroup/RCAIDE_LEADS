@@ -1,0 +1,1067 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Ducted_Fan &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Engine" href="RCAIDE.Library.Components.Powertrain.Converters.Engine.html" />
+    <link rel="prev" title="DC_Motor" href="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="RCAIDE.Framework.html">Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Analyses.html">Analyses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Aerodynamics.html">Aerodynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Analysis.html">Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Atmospheric.html">Atmospheric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Emissions.html">Emissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Energy.html">Energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Geodesics.html">Geodesics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Planets.html">Planets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Process.html">Process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Propulsion.html">Propulsion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Settings.html">Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Stability.html">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html">Vehicle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Weights.html">Weights</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Core.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Container.html">Container</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.ContainerOrdered.html">ContainerOrdered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Data.html">Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.DataOrdered.html">DataOrdered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Diffed_Data.html">Diffed_Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Units.html">Units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.Utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Core.redirect.html">redirect</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.External_Interfaces.html">External_Interfaces</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.External_Interfaces.OpenVSP.html">OpenVSP</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Mission.html">Mission</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Missions.html">Missions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html">Segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Mission.Sequential_Segments.html">Sequential_Segments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Optimization.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Optimization.Packages.html">Packages</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="RCAIDE.Library.html">Library</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Attributes.html">Attributes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.html">Atmospheres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Coolants.html">Coolants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Cryogens.html">Cryogens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Gases.html">Gases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.html">Materials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Planets.html">Planets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.html">Propellants</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="RCAIDE.Library.Components.html">Components</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Airfoils.html">Airfoils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Booms.html">Booms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Component.html">Component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Configs.html">Configs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Fuselages.html">Fuselages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Landing_Gear.html">Landing_Gear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Mass_Properties.html">Mass_Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Nacelles.html">Nacelles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Network.html">Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Payloads.html">Payloads</a></li>
+<li class="toctree-l3 current active"><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.html">Powertrain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Wings.html">Wings</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Methods.html">Methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.html">Aerodynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Emissions.html">Emissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Gas_Dynamics.html">Gas_Dynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geodesics.html">Geodesics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.html">Mass_Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Performance.html">Performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.html">Powertrain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Stability.html">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.skip.html">skip</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Mission.html">Mission</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Mission.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Mission.Segments.html">Segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Mission.Solver.html">Solver</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Plots.html">Plots</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Aerodynamics.html">Aerodynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Common.html">Common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Emissions.html">Emissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Energy.html">Energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Mission.html">Mission</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Stability.html">Stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Topography.html">Topography</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Weights.html">Weights</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="RCAIDE.load.html">load</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RCAIDE.save.html">save</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RCAIDE.Vehicle.html">Vehicle</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.html" class="nav-link">Library</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Components.html" class="nav-link">Components</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Components.Powertrain.html" class="nav-link">Powertrain</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="RCAIDE.Library.Components.Powertrain.Converters.html" class="nav-link">Converters</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Ducted_Fan</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <p>RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan</p>
+<section id="module-RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan">
+<span id="ducted-fan"></span><h1>Ducted_Fan<a class="headerlink" href="#module-RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Ducted_Fan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan.html#Ducted_Fan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Converter.html#RCAIDE.Library.Components.Powertrain.Converters.Converter.Converter" title="RCAIDE.Library.Components.Powertrain.Converters.Converter.Converter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Converter</span></code></a></p>
+<p>Ducted Fan Component Class</p>
+<p>This class models a ducted fan propulsion system with both rotor and stator components.
+It inherits from the base Converter class and implements ducted-fan specific attributes and methods.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the ducted fan component, defaults to ‘ducted_fan’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.number_of_radial_stations">
+<span class="sig-name descname"><span class="pre">number_of_radial_stations</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.number_of_radial_stations" title="Link to this definition">#</a></dt>
+<dd><p>Number of radial stations for blade element analysis, defaults to 20</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.number_of_rotor_blades">
+<span class="sig-name descname"><span class="pre">number_of_rotor_blades</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.number_of_rotor_blades" title="Link to this definition">#</a></dt>
+<dd><p>Number of rotor blades, defaults to 12</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.tip_radius">
+<span class="sig-name descname"><span class="pre">tip_radius</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.tip_radius" title="Link to this definition">#</a></dt>
+<dd><p>Outer radius of the rotor [m], defaults to 1.0</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.hub_radius">
+<span class="sig-name descname"><span class="pre">hub_radius</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.hub_radius" title="Link to this definition">#</a></dt>
+<dd><p>Inner radius of the rotor at hub [m], defaults to 0.1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.exit_radius">
+<span class="sig-name descname"><span class="pre">exit_radius</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.exit_radius" title="Link to this definition">#</a></dt>
+<dd><p>Radius at the duct exit [m], defaults to 1.1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.blade_clearance">
+<span class="sig-name descname"><span class="pre">blade_clearance</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.blade_clearance" title="Link to this definition">#</a></dt>
+<dd><p>Clearance between blade tip and duct wall [m], defaults to 0.01</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.length">
+<span class="sig-name descname"><span class="pre">length</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.length" title="Link to this definition">#</a></dt>
+<dd><p>Axial length of the ducted fan [m], defaults to 1.0</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.fan_effectiveness">
+<span class="sig-name descname"><span class="pre">fan_effectiveness</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.fan_effectiveness" title="Link to this definition">#</a></dt>
+<dd><p>Fan effectiveness factor [-], defaults to 1.1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.Cp_polynomial_coefficients">
+<span class="sig-name descname"><span class="pre">Cp_polynomial_coefficients</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.Cp_polynomial_coefficients" title="Link to this definition">#</a></dt>
+<dd><p>Coefficients for power coefficient polynomial [-, -, -]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.Ct_polynomial_coefficients">
+<span class="sig-name descname"><span class="pre">Ct_polynomial_coefficients</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.Ct_polynomial_coefficients" title="Link to this definition">#</a></dt>
+<dd><p>Coefficients for thrust coefficient polynomial [-, -, -]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.etap_polynomial_coefficients">
+<span class="sig-name descname"><span class="pre">etap_polynomial_coefficients</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.etap_polynomial_coefficients" title="Link to this definition">#</a></dt>
+<dd><p>Coefficients for propulsive efficiency polynomial [-, -, -]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.fidelity">
+<span class="sig-name descname"><span class="pre">fidelity</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.fidelity" title="Link to this definition">#</a></dt>
+<dd><p>Analysis fidelity level, either ‘Blade_Element_Momentum_Theory’ or ‘Rankine_Froude_Momentum_Theory’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.orientation_euler_angles">
+<span class="sig-name descname"><span class="pre">orientation_euler_angles</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.orientation_euler_angles" title="Link to this definition">#</a></dt>
+<dd><p>Default orientation angles of rotor [rad, rad, rad]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.rotor">
+<span class="sig-name descname"><span class="pre">rotor</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.rotor" title="Link to this definition">#</a></dt>
+<dd><p>Container for rotor geometry and performance data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.stator">
+<span class="sig-name descname"><span class="pre">stator</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.stator" title="Link to this definition">#</a></dt>
+<dd><p>Container for stator geometry and performance data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.cruise">
+<span class="sig-name descname"><span class="pre">cruise</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.cruise" title="Link to this definition">#</a></dt>
+<dd><p>Container for cruise design conditions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The ducted fan model includes detailed geometric parameters and performance characteristics
+for both the rotor and stator components. The model supports multiple fidelity levels
+and includes coordinate transformation capabilities for thrust vectoring analysis.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Axisymmetric flow</p></li>
+<li><p>Steady state operation</p></li>
+<li><p>Incompressible flow for low-fidelity analysis</p></li>
+<li><p>No radial flow</p></li>
+<li><p>Uniform inflow</p></li>
+<li><p>No blade-to-blade interaction</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_duct_airfoil">
+<span class="sig-name descname"><span class="pre">append_duct_airfoil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airfoil</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan.html#Ducted_Fan.append_duct_airfoil"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_duct_airfoil" title="Link to this definition">#</a></dt>
+<dd><p>Adds an airfoil to the ducted fan’s duct section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>airfoil</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – Airfoil data container with aerodynamic properties for the duct section.
+Must be of type Data().</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method appends airfoil data to the duct_airfoil attribute of the ducted fan.
+The airfoil data is used to model the aerodynamic characteristics of the duct
+section, which influences the overall performance of the ducted fan system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – If input airfoil is not of type Data()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_hub_airfoil">
+<span class="sig-name descname"><span class="pre">append_hub_airfoil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airfoil</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan.html#Ducted_Fan.append_hub_airfoil"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_hub_airfoil" title="Link to this definition">#</a></dt>
+<dd><p>Adds an airfoil to the ducted fan’s hub section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>airfoil</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – Airfoil data container with aerodynamic properties for the hub section.
+Must be of type Data().</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method appends airfoil data to the hub_airfoil attribute of the ducted fan.
+The airfoil data is used to model the aerodynamic characteristics of the hub
+section, which affects the flow field and performance of the ducted fan system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – If input airfoil is not of type Data()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_operating_conditions">
+<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan.html#Ducted_Fan.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_operating_conditions" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.vec_to_vel">
+<span class="sig-name descname"><span class="pre">vec_to_vel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan.html#Ducted_Fan.vec_to_vel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.vec_to_vel" title="Link to this definition">#</a></dt>
+<dd><p>Rotates from the ducted fan’s vehicle frame to the ducted fan’s velocity frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rot_mat</strong> – 3x3 rotation matrix transforming from vehicle frame to velocity frame.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method creates a rotation matrix for transforming coordinates between
+two reference frames of the ducted fan. When the ducted fan is axially
+aligned with the vehicle body:</p>
+<p>Velocity frame:
+* X-axis points out the nose
+* Z-axis points towards the ground
+* Y-axis points out the right wing</p>
+<p>Vehicle frame:
+* X-axis points towards the tail
+* Z-axis points towards the ceiling
+* Y-axis points out the right wing</p>
+<p><strong>Theory</strong>
+The transformation is accomplished using a rotation of π radians about the Y-axis,
+represented as a rotation vector [0, π, 0].</p>
+<p><strong>Major Assumptions</strong>
+* The ducted fan’s default orientation is aligned with the vehicle body
+* Right-handed coordinate system is used</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.body_to_prop_vel">
+<span class="sig-name descname"><span class="pre">body_to_prop_vel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commanded_thrust_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan.html#Ducted_Fan.body_to_prop_vel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.body_to_prop_vel" title="Link to this definition">#</a></dt>
+<dd><p>Rotates from the system’s body frame to the ducted fan’s velocity frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>commanded_thrust_vector</strong> (<em>ndarray</em>) – Vector of commanded thrust angles [rad] for each time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>rot_mat</strong> (<em>ndarray</em>) – 3x3 rotation matrix transforming from body frame to ducted fan velocity frame.</p></li>
+<li><p><strong>rots</strong> (<em>ndarray</em>) – Array of rotation vectors including commanded thrust angles.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method performs a sequence of rotations to transform coordinates from
+the vehicle body frame to the ducted fan’s velocity frame. The transformation
+sequence is:
+1. Body to vehicle frame (π rotation about Y-axis)
+2. Vehicle to ducted fan vehicle frame (includes thrust vector rotation)
+3. Ducted fan vehicle to ducted fan velocity frame</p>
+<p>Reference frames:
+Velocity frame:
+* X-axis points out the nose
+* Z-axis points towards the ground
+* Y-axis points out the right wing</p>
+<p>Vehicle frame:
+* X-axis points towards the tail
+* Z-axis points towards the ceiling
+* Y-axis points out the right wing</p>
+<p><strong>Theory</strong>
+The complete transformation is computed as:
+rot_mat = (body_2_vehicle &#64; vehicle_2_duct_vec) &#64; duct_vec_2_duct_vel</p>
+<p><strong>Major Assumptions</strong>
+* The ducted fan’s default orientation is defined by orientation_euler_angles
+* Right-handed coordinate system is used
+* Thrust vector rotation is applied about the Y-axis
+* Matrix multiplication order preserves proper transformation sequence</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.duct_vel_to_body">
+<span class="sig-name descname"><span class="pre">duct_vel_to_body</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commanded_thrust_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan.html#Ducted_Fan.duct_vel_to_body"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.duct_vel_to_body" title="Link to this definition">#</a></dt>
+<dd><p>Rotates from the ducted fan’s velocity frame to the system’s body frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>commanded_thrust_vector</strong> (<em>ndarray</em>) – Vector of commanded thrust angles [rad] for each time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>rot_mat</strong> (<em>ndarray</em>) – 3x3 rotation matrix transforming from ducted fan velocity frame to body frame.</p></li>
+<li><p><strong>rots</strong> (<em>ndarray</em>) – Array of rotation vectors including commanded thrust angles.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method performs the inverse transformation sequence of body_to_prop_vel.
+The transformation sequence is:
+1. Ducted fan velocity to ducted fan vehicle frame
+2. Ducted fan vehicle to vehicle frame (includes thrust vector rotation)
+3. Vehicle to body frame (π rotation about Y-axis)</p>
+<p>Reference frames:
+Velocity frame:
+* X-axis points out the nose
+* Z-axis points towards the ground
+* Y-axis points out the right wing</p>
+<p>Vehicle frame:
+* X-axis points towards the tail
+* Z-axis points towards the ceiling
+* Y-axis points out the right wing</p>
+<p><strong>Theory</strong>
+The transformation is computed by inverting the rotation matrix from
+body_to_prop_vel using:
+rot_mat = (body_2_duct_vel)^(-1)</p>
+<p><strong>Major Assumptions</strong>
+* The ducted fan’s default orientation is defined by orientation_euler_angles
+* Right-handed coordinate system is used
+* Thrust vector rotation is applied about the Y-axis</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.vec_to_duct_body">
+<span class="sig-name descname"><span class="pre">vec_to_duct_body</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commanded_thrust_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Ducted_Fan.html#Ducted_Fan.vec_to_duct_body"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.vec_to_duct_body" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">DC_Motor</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="RCAIDE.Library.Components.Powertrain.Converters.Engine.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Engine</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.tag"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.number_of_radial_stations"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.number_of_radial_stations</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.number_of_rotor_blades"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.number_of_rotor_blades</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.tip_radius"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.tip_radius</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.hub_radius"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.hub_radius</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.exit_radius"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.exit_radius</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.blade_clearance"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.blade_clearance</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.length"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.length</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.fan_effectiveness"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.fan_effectiveness</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.Cp_polynomial_coefficients"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.Cp_polynomial_coefficients</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.Ct_polynomial_coefficients"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.Ct_polynomial_coefficients</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.etap_polynomial_coefficients"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.etap_polynomial_coefficients</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.fidelity"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.fidelity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.orientation_euler_angles"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.orientation_euler_angles</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.rotor"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.rotor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.stator"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.stator</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.cruise"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.cruise</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_duct_airfoil"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.append_duct_airfoil()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_hub_airfoil"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.append_hub_airfoil()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.append_operating_conditions"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.append_operating_conditions()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.vec_to_vel"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.vec_to_vel()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.body_to_prop_vel"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.body_to_prop_vel()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.duct_vel_to_body"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.duct_vel_to_body()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.Ducted_Fan.vec_to_duct_body"><code class="docutils literal notranslate"><span class="pre">Ducted_Fan.vec_to_duct_body()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

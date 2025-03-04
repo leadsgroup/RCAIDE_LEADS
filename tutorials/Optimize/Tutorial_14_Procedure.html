@@ -404,7 +404,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span><span class="p">,</span> <span class="n">Data</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses.Process</span><span class="w"> </span><span class="kn">import</span> <span class="n">Process</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Propulsors.Turbofan_Propulsor</span><span class="w">   </span><span class="kn">import</span> <span class="n">design_turbofan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor</span><span class="w">   </span><span class="kn">import</span> <span class="n">design_turbofan</span>
 <br/></pre></div>
 </div>
 </div>
@@ -567,7 +567,7 @@ Matplotlib is building the font cache; this may take a moment.
 
     <span class="n">vehicle</span> <span class="o">=</span> <span class="n">nexus</span><span class="o">.</span><span class="n">vehicle_configurations</span><span class="o">.</span><span class="n">base</span>
 
-    <span class="n">weight_analysis</span>                               <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Weights_Transport</span><span class="p">()</span>
+    <span class="n">weight_analysis</span>                               <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Transport</span><span class="p">()</span>
     <span class="n">weight_analysis</span><span class="o">.</span><span class="n">vehicle</span>                       <span class="o">=</span> <span class="n">vehicle</span>
     <span class="n">weight</span>                                        <span class="o">=</span> <span class="n">weight_analysis</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
 

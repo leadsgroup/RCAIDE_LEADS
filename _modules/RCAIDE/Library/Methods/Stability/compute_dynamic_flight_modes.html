@@ -1,0 +1,780 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Stability.compute_dynamic_flight_modes &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Stability/compute_dynamic_flight_modes';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Stability/compute_dynamic_flight_modes.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Stability.compute_dynamic_flight_modes</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Stability.compute_dynamic_flight_modes</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Stability/Dynamic_Stability/compute_dynamic_flight_modes.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Apr 2024, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+
+<span class="c1"># RCAIDE imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Wings.Control_Surfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">Aileron</span> <span class="p">,</span> <span class="n">Elevator</span>  
+
+<span class="c1"># python imports </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  compute_dynamic_flight_modes</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="compute_dynamic_flight_modes">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Stability.compute_dynamic_flight_modes.html#RCAIDE.Library.Methods.Stability.compute_dynamic_flight_modes.compute_dynamic_flight_modes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_dynamic_flight_modes</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">aircraft</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function follows the stability axis EOM derivation in Blakelock</span>
+<span class="sd">    to return the aircraft&#39;s dynamic modes and state space </span>
+<span class="sd">    </span>
+<span class="sd">    Assumptions:</span>
+<span class="sd">       Linerarized Equations are used following the reference below</span>
+
+<span class="sd">    Source:</span>
+<span class="sd">      Automatic Control of Aircraft and Missiles by J. Blakelock Pg 23 and 117</span>
+<span class="sd">      Dynanmics of Flight Stability and Control by Bernard Edkin and Llyod Reid Chapter 5, </span>
+
+<span class="sd">    Inputs:</span>
+<span class="sd">       conditions.aerodynamics  </span>
+<span class="sd">       conditions.static_stability  </span>
+<span class="sd">       conditions.stability.dynamic </span>
+
+<span class="sd">    Outputs: </span>
+<span class="sd">       conditions.dynamic_stability.LatModes</span>
+<span class="sd">       conditions.dynamic_stability.LongModes </span>
+
+<span class="sd">    Properties Used:</span>
+<span class="sd">       N/A</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+
+    <span class="n">conditions</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span> 
+    <span class="n">AoA</span>        <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">angles</span><span class="o">.</span><span class="n">alpha</span>
+    
+    <span class="n">vertical_fligth_flag</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Vertical_Flight</span><span class="o">.</span><span class="n">Climb</span><span class="p">)</span> <span class="ow">or</span> \
+       <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Vertical_Flight</span><span class="o">.</span><span class="n">Hover</span><span class="p">)</span> <span class="ow">or</span> \
+       <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Vertical_Flight</span><span class="o">.</span><span class="n">Descent</span><span class="p">):</span>
+        <span class="n">vertical_fligth_flag</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">aircraft</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span>  <span class="p">(</span><span class="n">vertical_fligth_flag</span> <span class="o">!=</span>  <span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">AoA</span><span class="p">))</span> <span class="o">!=</span>  <span class="kc">True</span><span class="p">):</span>
+        <span class="n">g</span>          <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">gravity</span>  
+        <span class="n">rho</span>        <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">density</span>
+        <span class="n">u0</span>         <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">velocity</span>
+        <span class="n">qDyn0</span>      <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">dynamic_pressure</span>  
+        <span class="n">theta0</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])[:,</span><span class="kc">None</span><span class="p">]</span> 
+        <span class="n">SS</span>         <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">static_stability</span>
+        <span class="n">SSD</span>        <span class="o">=</span> <span class="n">SS</span><span class="o">.</span><span class="n">derivatives</span> 
+        <span class="n">DS</span>         <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">dynamic_stability</span>
+                 
+        <span class="n">num_cases</span>  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">AoA</span><span class="p">)</span>
+         
+        <span class="n">b_ref</span>  <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">b_ref</span>
+        <span class="n">c_ref</span>  <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">c_ref</span>
+        <span class="n">S_ref</span>  <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">S_ref</span>  
+        <span class="n">moments_of_inertia</span> <span class="o">=</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>
+        <span class="n">Ixx</span>    <span class="o">=</span> <span class="n">moments_of_inertia</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Iyy</span>    <span class="o">=</span> <span class="n">moments_of_inertia</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Izz</span>    <span class="o">=</span> <span class="n">moments_of_inertia</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>    
+        <span class="k">if</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">m</span>  <span class="o">=</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
+        <span class="k">elif</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Specify Vehicle Mass&quot;</span><span class="p">)</span> 
+        
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">spiral_criteria</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="n">conditions</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">spiral_criteria</span> <span class="o">=</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CL_beta</span><span class="o">*</span><span class="n">SSD</span><span class="o">.</span><span class="n">CN_r</span> <span class="o">/</span> <span class="p">(</span><span class="n">SSD</span><span class="o">.</span><span class="n">CL_r</span><span class="o">*</span><span class="n">SSD</span><span class="o">.</span><span class="n">CN_beta</span><span class="p">)</span> 
+          
+        <span class="c1">## Build longitudinal EOM A Matrix (stability axis)</span>
+        <span class="n">ALon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">BLon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> 
+        <span class="n">CLon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+        
+
+        <span class="c1"># Elevator effectiveness</span>
+        <span class="n">ht_tag</span>         <span class="o">=</span>  <span class="kc">None</span>
+        <span class="n">main_wing_tag</span>  <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Horizontal_Tail</span><span class="p">):</span>
+                <span class="n">ht_tag</span>  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">tag</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span><span class="p">):</span>
+                <span class="n">main_wing_tag</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">tag</span>
+                
+        <span class="k">if</span> <span class="n">main_wing_tag</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span>  <span class="n">ht_tag</span> <span class="o">!=</span><span class="kc">None</span><span class="p">:</span> 
+            <span class="n">main_wing</span>       <span class="o">=</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="n">main_wing_tag</span><span class="p">]</span>     
+            <span class="n">horizontal_tail</span> <span class="o">=</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="n">ht_tag</span><span class="p">]</span> 
+            
+            <span class="c1"># unpack unit conversions </span>
+            <span class="n">V_t_prime</span>       <span class="o">=</span>  <span class="n">u0</span>
+            <span class="n">a_t</span>             <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="c1"># dCL_t_dalphat </span>
+            <span class="n">l_t</span>             <span class="o">=</span> <span class="p">(</span><span class="n">horizontal_tail</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span><span class="n">horizontal_tail</span><span class="o">.</span><span class="n">aerodynamic_center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># disstance from CG to tail AC</span>
+            <span class="n">S_t</span>             <span class="o">=</span> <span class="n">horizontal_tail</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="c1"># tail area</span>
+            <span class="n">S</span>               <span class="o">=</span> <span class="n">main_wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="c1"># wing area</span>
+            <span class="n">l_bar_t</span>         <span class="o">=</span> <span class="p">(</span><span class="n">horizontal_tail</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>  <span class="n">horizontal_tail</span><span class="o">.</span><span class="n">aerodynamic_center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span><span class="p">(</span><span class="n">main_wing</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>  <span class="n">main_wing</span><span class="o">.</span><span class="n">aerodynamic_center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># distance from AC of main wing to tail AC</span>
+            <span class="n">V_H</span>             <span class="o">=</span> <span class="p">(</span> <span class="n">l_bar_t</span> <span class="o">*</span><span class="n">S_t</span> <span class="p">)</span> <span class="o">/</span><span class="p">(</span><span class="n">c_ref</span> <span class="o">*</span><span class="n">S</span><span class="p">)</span>  <span class="c1"># tail volume</span>
+            <span class="n">dEpsilon_dalpha</span> <span class="o">=</span>  <span class="mf">0.3</span>
+            
+            <span class="n">SSD</span><span class="o">.</span><span class="n">CZ_alpha_dot</span> <span class="o">=</span>  <span class="n">a_t</span> <span class="o">*</span> <span class="n">dEpsilon_dalpha</span> <span class="o">*</span>  <span class="p">(</span><span class="n">l_t</span> <span class="o">/</span><span class="n">u0</span><span class="p">)</span> <span class="o">*</span>  <span class="p">(</span><span class="n">S_t</span> <span class="o">/</span> <span class="n">S</span><span class="p">)</span> 
+            <span class="n">SSD</span><span class="o">.</span><span class="n">CM_alpha_dot</span> <span class="o">=</span>  <span class="o">-</span><span class="n">a_t</span> <span class="o">*</span> <span class="n">V_H</span> <span class="o">*</span> <span class="n">dEpsilon_dalpha</span><span class="o">*</span>  <span class="p">(</span><span class="n">l_t</span> <span class="o">/</span><span class="n">u0</span><span class="p">)</span>        
+                        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cases</span><span class="p">):</span> 
+            <span class="n">CLon</span><span class="p">[</span><span class="n">i</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>        
+        <span class="n">Cw</span>         <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">g</span> <span class="o">/</span> <span class="p">(</span><span class="n">qDyn0</span> <span class="o">*</span> <span class="n">S_ref</span><span class="p">)</span>  
+        <span class="n">Xu</span>         <span class="o">=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">Cw</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CX_u</span>  
+        <span class="n">Xw</span>         <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CX_alpha</span>     
+        <span class="n">Zu</span>         <span class="o">=</span> <span class="o">-</span><span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">Cw</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CZ_u</span> 
+        <span class="n">Zw</span>         <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CZ_alpha</span>   
+        <span class="n">Zq</span>         <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">c_ref</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span>  <span class="n">SSD</span><span class="o">.</span><span class="n">CZ_q</span>    
+        <span class="n">Mu</span>         <span class="o">=</span>  <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">c_ref</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CM_u</span>     
+        <span class="n">Mw</span>         <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">c_ref</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CM_alpha</span>  
+        <span class="n">Mq</span>         <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">c_ref</span> <span class="o">*</span> <span class="n">c_ref</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CM_q</span>     
+        <span class="n">ZwDot</span>      <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">c_ref</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CZ_alpha_dot</span>  
+        <span class="n">MwDot</span>      <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">c_ref</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CM_alpha_dot</span>  
+        
+        
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xu</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xw</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">g</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta0</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Zu</span> <span class="o">/</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">ZwDot</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Zw</span> <span class="o">/</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">ZwDot</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">Zq</span> <span class="o">+</span> <span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">u0</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">ZwDot</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">Mu</span> <span class="o">+</span> <span class="n">MwDot</span> <span class="o">*</span> <span class="n">Zu</span> <span class="o">/</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">ZwDot</span><span class="p">))</span> <span class="o">/</span> <span class="n">Iyy</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">Mw</span> <span class="o">+</span> <span class="n">MwDot</span> <span class="o">*</span> <span class="n">Zw</span> <span class="o">/</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">ZwDot</span><span class="p">))</span> <span class="o">/</span> <span class="n">Iyy</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">Mq</span> <span class="o">+</span> <span class="n">MwDot</span> <span class="o">*</span> <span class="p">(</span><span class="n">Zq</span> <span class="o">+</span> <span class="n">m</span> <span class="o">*</span> <span class="n">u0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">ZwDot</span><span class="p">))</span> <span class="o">/</span> <span class="n">Iyy</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">MwDot</span> <span class="o">*</span> <span class="n">m</span> <span class="o">*</span> <span class="n">g</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Iyy</span> <span class="o">*</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">ZwDot</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">ALon</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> 
+
+        <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span> 
+            <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span> <span class="p">:</span>
+                <span class="k">for</span> <span class="n">ctrl_surf</span> <span class="ow">in</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">:</span> 
+                    <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ctrl_surf</span><span class="p">)</span> <span class="o">==</span>  <span class="n">Elevator</span><span class="p">):</span>
+                        <span class="n">ele</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">control_surfaces</span><span class="o">.</span><span class="n">elevator</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">coefficients</span> 
+                        <span class="n">Xe</span>  <span class="o">=</span> <span class="mi">0</span> <span class="c1"># Neglect</span>
+                        <span class="n">Ze</span>  <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">ele</span><span class="o">.</span><span class="n">lift</span>
+                        <span class="n">Me</span>  <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">c_ref</span> <span class="o">*</span> <span class="n">ele</span><span class="o">.</span><span class="n">M</span>
+                        
+                        <span class="n">BLon</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">Xe</span> <span class="o">/</span> <span class="n">m</span>
+                        <span class="n">BLon</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ze</span> <span class="o">/</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">ZwDot</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">BLon</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Me</span> <span class="o">/</span> <span class="n">Iyy</span> <span class="o">+</span> <span class="n">MwDot</span> <span class="o">/</span> <span class="n">Iyy</span> <span class="o">*</span> <span class="n">Ze</span> <span class="o">/</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">ZwDot</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">BLon</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>        
+         
+        <span class="c1"># Look at eigenvalues and eigenvectors</span>
+        <span class="n">LonModes</span>                  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">complex</span><span class="p">)</span>
+        <span class="n">phugoidFreqHz</span>             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">phugoidDamping</span>            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">phugoidTimeDoubleHalf</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">shortPeriodFreqHz</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">shortPeriodDamping</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">shortPeriodTimeDoubleHalf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ALon</span><span class="p">)):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i_long</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cases</span><span class="p">):</span>
+                <span class="n">D</span>  <span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">ALon</span><span class="p">[</span><span class="n">i_long</span><span class="p">,:,:])</span> <span class="c1"># State order: u, w, q, theta</span>
+                <span class="n">LonModes</span><span class="p">[</span><span class="n">i_long</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">D</span>
+                
+                <span class="c1"># Find phugoid</span>
+                <span class="n">phugoidInd</span>                    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>  
+                <span class="n">phugoidFreqHz</span><span class="p">[</span><span class="n">i_long</span><span class="p">]</span>         <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">phugoidInd</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                <span class="n">phugoidDamping</span><span class="p">[</span><span class="n">i_long</span><span class="p">]</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span> <span class="n">D</span><span class="p">[</span><span class="n">phugoidInd</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="o">/</span> <span class="n">D</span><span class="p">[</span><span class="n">phugoidInd</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">))</span>  
+                <span class="n">phugoidTimeDoubleHalf</span><span class="p">[</span><span class="n">i_long</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">phugoidFreqHz</span><span class="p">[</span><span class="n">i_long</span><span class="p">]</span> <span class="o">*</span> <span class="n">phugoidDamping</span><span class="p">[</span><span class="n">i_long</span><span class="p">])</span>
+                
+                <span class="c1"># Find short period</span>
+                <span class="n">shortPeriodInd</span>                    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>  
+                <span class="n">shortPeriodFreqHz</span><span class="p">[</span><span class="n">i_long</span><span class="p">]</span>         <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">shortPeriodInd</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                <span class="n">shortPeriodDamping</span><span class="p">[</span><span class="n">i_long</span><span class="p">]</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">shortPeriodInd</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="o">/</span><span class="n">D</span><span class="p">[</span><span class="n">shortPeriodInd</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">))</span>  
+                <span class="n">shortPeriodTimeDoubleHalf</span><span class="p">[</span><span class="n">i_long</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">shortPeriodFreqHz</span><span class="p">[</span><span class="n">i_long</span><span class="p">]</span> <span class="o">*</span> <span class="n">shortPeriodDamping</span><span class="p">[</span><span class="n">i_long</span><span class="p">])</span> 
+        
+        <span class="c1">## Build lateral EOM A Matrix (stability axis)</span>
+        <span class="n">ALat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">BLat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">CLat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">c_i1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cases</span><span class="p">):</span> 
+            <span class="n">CLat</span><span class="p">[</span><span class="n">c_i1</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> 
+        <span class="n">DLat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1"># Need to compute Ixx, Izz, and Ixz as a function of alpha</span>
+        <span class="n">Ixp</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">Izp</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">Ixzp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="k">for</span> <span class="n">c_i2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cases</span><span class="p">):</span> 
+            <span class="n">R</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">AoA</span><span class="p">[</span><span class="n">c_i2</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="p">,</span>  <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">AoA</span><span class="p">[</span><span class="n">c_i2</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="p">],</span> <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span> <span class="n">AoA</span><span class="p">[</span><span class="n">c_i2</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">AoA</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])]])</span>
+            <span class="n">modI</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">moments_of_inertia</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">moments_of_inertia</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]],[</span><span class="n">moments_of_inertia</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">moments_of_inertia</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]]]</span> <span class="p">)</span> 
+            <span class="n">INew</span>    <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">modI</span>  <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+            <span class="n">IxxStab</span> <span class="o">=</span>  <span class="n">INew</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">IxzStab</span> <span class="o">=</span> <span class="o">-</span><span class="n">INew</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">IzzStab</span> <span class="o">=</span>  <span class="n">INew</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">Ixp</span><span class="p">[</span><span class="n">c_i2</span><span class="p">]</span>  <span class="o">=</span> <span class="p">(</span><span class="n">IxxStab</span> <span class="o">*</span> <span class="n">IzzStab</span> <span class="o">-</span> <span class="n">IxzStab</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">IzzStab</span>
+            <span class="n">Izp</span><span class="p">[</span><span class="n">c_i2</span><span class="p">]</span>  <span class="o">=</span> <span class="p">(</span><span class="n">IxxStab</span> <span class="o">*</span> <span class="n">IzzStab</span> <span class="o">-</span> <span class="n">IxzStab</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">IxxStab</span>
+            <span class="n">Ixzp</span><span class="p">[</span><span class="n">c_i2</span><span class="p">]</span> <span class="o">=</span> <span class="n">IxzStab</span> <span class="o">/</span> <span class="p">(</span><span class="n">IxxStab</span> <span class="o">*</span> <span class="n">IzzStab</span> <span class="o">-</span> <span class="n">IxzStab</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+            
+        <span class="n">Yv</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CY_beta</span> 
+        <span class="n">Yr</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">b_ref</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CY_r</span>
+        <span class="n">Lv</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">b_ref</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CL_beta</span>
+        <span class="n">Lp</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">b_ref</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CL_p</span>
+        <span class="n">Lr</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">b_ref</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CL_r</span>
+        <span class="n">Nv</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">b_ref</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CN_beta</span>
+        <span class="n">Np</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">b_ref</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CN_p</span>
+        <span class="n">Nr</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">b_ref</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">SSD</span><span class="o">.</span><span class="n">CN_r</span>
+        
+        <span class="c1"># Aileron effectiveness </span>
+        <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span> <span class="p">:</span>
+                <span class="k">for</span> <span class="n">ctrl_surf</span> <span class="ow">in</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ctrl_surf</span><span class="p">)</span> <span class="o">==</span>  <span class="n">Aileron</span><span class="p">):</span> 
+                        <span class="n">ail</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">control_surfaces</span><span class="o">.</span><span class="n">aileron</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">coefficients</span>                  
+                        <span class="n">Ya</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">ail</span><span class="o">.</span><span class="n">Y</span> 
+                        <span class="n">La</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">b_ref</span> <span class="o">*</span> <span class="n">ail</span><span class="o">.</span><span class="n">L</span> 
+                        <span class="n">Na</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">S_ref</span> <span class="o">*</span> <span class="n">b_ref</span> <span class="o">*</span> <span class="n">ail</span><span class="o">.</span><span class="n">N</span> 
+                        
+                        <span class="n">BLat</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ya</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">BLat</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">La</span> <span class="o">/</span> <span class="n">Ixp</span> <span class="o">+</span> <span class="n">Ixzp</span> <span class="o">*</span> <span class="n">Na</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">BLat</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ixzp</span> <span class="o">*</span> <span class="n">La</span> <span class="o">+</span> <span class="n">Na</span> <span class="o">/</span> <span class="n">Izp</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">BLat</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+     
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Yv</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Yr</span><span class="o">/</span><span class="n">m</span> <span class="o">-</span> <span class="n">u0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">g</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta0</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lv</span> <span class="o">/</span> <span class="n">Ixp</span> <span class="o">+</span> <span class="n">Ixzp</span> <span class="o">*</span> <span class="n">Nv</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lp</span> <span class="o">/</span> <span class="n">Ixp</span> <span class="o">+</span> <span class="n">Ixzp</span> <span class="o">*</span> <span class="n">Np</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lr</span> <span class="o">/</span> <span class="n">Ixp</span> <span class="o">+</span> <span class="n">Ixzp</span> <span class="o">*</span> <span class="n">Nr</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ixzp</span> <span class="o">*</span> <span class="n">Lv</span> <span class="o">+</span> <span class="n">Nv</span> <span class="o">/</span> <span class="n">Izp</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ixzp</span> <span class="o">*</span> <span class="n">Lp</span> <span class="o">+</span> <span class="n">Np</span> <span class="o">/</span> <span class="n">Izp</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ixzp</span> <span class="o">*</span> <span class="n">Lr</span> <span class="o">+</span> <span class="n">Nr</span> <span class="o">/</span> <span class="n">Izp</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">theta0</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">ALat</span><span class="p">[:,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                                    
+        <span class="n">LatModes</span>                    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+        <span class="n">dutchRollFreqHz</span>             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">dutchRollDamping</span>            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">dutchRollTimeDoubleHalf</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">rollSubsistenceFreqHz</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">rollSubsistenceTimeConstant</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">rollSubsistenceDamping</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">spiralFreqHz</span>                <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">spiralTimeDoubleHalf</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">spiralDamping</span>               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">dutchRoll_mode_real</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_cases</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="k">for</span> <span class="n">i_lat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cases</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span> 
+                <span class="n">D</span>  <span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">ALat</span><span class="p">[</span><span class="n">i_lat</span><span class="p">,:,:])</span> <span class="c1"># State order: u, w, q, theta</span>
+                <span class="n">LatModes</span><span class="p">[</span><span class="n">i_lat</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">D</span>  
+                
+                <span class="n">real_parts</span> <span class="o">=</span> <span class="n">LatModes</span><span class="p">[</span><span class="n">i_lat</span><span class="p">,:]</span><span class="o">.</span><span class="n">real</span>
+                <span class="n">unique_elements</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">real_parts</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">counts</span><span class="o">==</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    
+                <span class="n">dutchRollFreqHz</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span>         <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                <span class="n">dutchRollDamping</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span> <span class="n">D</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="o">/</span> <span class="n">D</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">))</span>  
+                <span class="n">dutchRollTimeDoubleHalf</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">dutchRollFreqHz</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span> <span class="o">*</span> <span class="n">dutchRollDamping</span><span class="p">[</span><span class="n">i_lat</span><span class="p">])</span>
+                <span class="n">dutchRoll_mode_real</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span>     <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                
+                <span class="n">dutch_roll_idx</span>                 <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">unique_elements</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">D</span><span class="o">.</span><span class="n">real</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                
+                <span class="n">remaining_modes</span>                    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">dutch_roll_idx</span><span class="p">)</span>
+                <span class="n">rollInd</span>                            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">remaining_modes</span><span class="p">)</span> 
+                <span class="n">rollSubsistenceFreqHz</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span>       <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">remaining_modes</span><span class="p">[</span><span class="n">rollInd</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+                <span class="n">rollSubsistenceDamping</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span>      <span class="o">=</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">remaining_modes</span><span class="p">[</span><span class="n">rollInd</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+                <span class="n">rollSubsistenceTimeConstant</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">rollSubsistenceFreqHz</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span> <span class="o">*</span> <span class="n">rollSubsistenceDamping</span><span class="p">[</span><span class="n">i_lat</span><span class="p">])</span>
+                
+                <span class="c1"># Find spiral mode </span>
+                <span class="n">sprial_mode</span>                 <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">remaining_modes</span><span class="p">,</span><span class="n">rollInd</span><span class="p">)</span>             
+                <span class="n">spiralFreqHz</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span>         <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sprial_mode</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+                <span class="n">spiralDamping</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span>        <span class="o">=</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">sprial_mode</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+                <span class="n">spiralTimeDoubleHalf</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">spiralFreqHz</span><span class="p">[</span><span class="n">i_lat</span><span class="p">]</span> <span class="o">*</span> <span class="n">spiralDamping</span><span class="p">[</span><span class="n">i_lat</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span> 
+        
+        <span class="c1"># Inertial coupling susceptibility</span>
+        <span class="c1"># See Etkin &amp; Reid pg. 118 </span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">pMax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="n">Mw</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">/</span> <span class="p">(</span><span class="n">Izz</span> <span class="o">-</span> <span class="n">Ixx</span><span class="p">))),</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="n">Nv</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">/</span> <span class="p">(</span><span class="n">Iyy</span> <span class="o">-</span> <span class="n">Ixx</span><span class="p">))))</span> 
+        
+        <span class="c1"># -----------------------------------------------------------------------------------------------------------------------  </span>
+        <span class="c1"># Store Results</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------------------------  </span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LongModes</span><span class="o">.</span><span class="n">LongModes</span>                    <span class="o">=</span> <span class="n">LonModes</span>
+        <span class="c1">#DS.LongModes.LongSys                      = LonSys    </span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LongModes</span><span class="o">.</span><span class="n">phugoidFreqHz</span>                <span class="o">=</span> <span class="n">phugoidFreqHz</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LongModes</span><span class="o">.</span><span class="n">phugoidDamping</span>               <span class="o">=</span> <span class="n">phugoidDamping</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LongModes</span><span class="o">.</span><span class="n">phugoidTimeDoubleHalf</span>        <span class="o">=</span> <span class="n">phugoidTimeDoubleHalf</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LongModes</span><span class="o">.</span><span class="n">shortPeriodFreqHz</span>            <span class="o">=</span> <span class="n">shortPeriodFreqHz</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LongModes</span><span class="o">.</span><span class="n">shortPeriodDamping</span>           <span class="o">=</span> <span class="n">shortPeriodDamping</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LongModes</span><span class="o">.</span><span class="n">shortPeriodTimeDoubleHalf</span>    <span class="o">=</span> <span class="n">shortPeriodTimeDoubleHalf</span>
+                                                                        
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">LatModes</span>                      <span class="o">=</span> <span class="n">LatModes</span>  
+        <span class="c1">#DS.LatModes.Latsys                        = LatSys   </span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">dutchRollFreqHz</span>               <span class="o">=</span> <span class="n">dutchRollFreqHz</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">dutchRollDamping</span>              <span class="o">=</span> <span class="n">dutchRollDamping</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">dutchRollTimeDoubleHalf</span>       <span class="o">=</span> <span class="n">dutchRollTimeDoubleHalf</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">dutchRoll_mode_real</span>           <span class="o">=</span> <span class="n">dutchRoll_mode_real</span> 
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">rollSubsistenceFreqHz</span>         <span class="o">=</span> <span class="n">rollSubsistenceFreqHz</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">rollSubsistenceTimeConstant</span>   <span class="o">=</span> <span class="n">rollSubsistenceTimeConstant</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">rollSubsistenceDamping</span>        <span class="o">=</span> <span class="n">rollSubsistenceDamping</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">spiralFreqHz</span>                  <span class="o">=</span> <span class="n">spiralFreqHz</span>
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">spiralTimeDoubleHalf</span>          <span class="o">=</span> <span class="n">spiralTimeDoubleHalf</span> 
+        <span class="n">DS</span><span class="o">.</span><span class="n">LatModes</span><span class="o">.</span><span class="n">spiralDamping</span>                 <span class="o">=</span> <span class="n">spiralDamping</span>
+    
+    <span class="k">return</span> </div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -385,9 +385,9 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1"># RCAIDE imports  </span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>  
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Thermal_Management.Accessories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pump</span>  
+<span class="c1"># RCAIDE imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>   
 
 <span class="c1"># python package imports </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  
@@ -523,7 +523,7 @@
         <span class="n">heat_transfer_efficiency</span>      <span class="o">=</span> <span class="p">(</span><span class="n">T_o</span> <span class="o">-</span> <span class="n">T_inlet</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">T_cell</span> <span class="o">-</span> <span class="n">T_inlet</span><span class="p">)</span>
         
         <span class="c1"># Calculate the Power consumed</span>
-        <span class="n">Power</span>   <span class="o">=</span> <span class="n">Pump</span><span class="o">.</span><span class="n">compute_power_consumed</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">m_coolant</span><span class="p">,</span> <span class="n">n_pump</span><span class="p">)</span> 
+        <span class="n">Power</span>   <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Thermal_Management</span><span class="o">.</span><span class="n">Accessories</span><span class="o">.</span><span class="n">Pump</span><span class="o">.</span><span class="n">compute_power_consumed</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">m_coolant</span><span class="p">,</span> <span class="n">n_pump</span><span class="p">)</span> 
         
         <span class="c1"># Update temperature of Battery Pack</span>
         <span class="n">P_net</span>                   <span class="o">=</span> <span class="n">Q_module</span> <span class="o">-</span> <span class="n">Q_convec</span> 
@@ -544,7 +544,7 @@
         <span class="n">heat_transfer_efficiency</span>      <span class="o">=</span> <span class="p">(</span><span class="n">T_o</span> <span class="o">-</span> <span class="n">T_inlet</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">T_cell</span> <span class="o">-</span> <span class="n">T_inlet</span><span class="p">)</span>
             
         <span class="c1"># Calculate the Power consumed</span>
-        <span class="n">Power</span>   <span class="o">=</span> <span class="n">Pump</span><span class="o">.</span><span class="n">compute_power_consumed</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">m_coolant</span><span class="p">,</span> <span class="n">n_pump</span><span class="p">)</span> 
+        <span class="n">Power</span>   <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Thermal_Management</span><span class="o">.</span><span class="n">Accessories</span><span class="o">.</span><span class="n">Pump</span><span class="o">.</span><span class="n">compute_power_consumed</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">m_coolant</span><span class="p">,</span> <span class="n">n_pump</span><span class="p">)</span> 
             
         <span class="c1"># Update temperature of Battery Pack</span>
         <span class="n">P_net</span>                   <span class="o">=</span> <span class="n">Q_convec</span> <span class="o">+</span> <span class="n">Q_module</span>
@@ -554,7 +554,7 @@
         <span class="n">P_net</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">Q_convec</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">T_o</span> <span class="o">=</span> <span class="n">T_inlet</span>
-        <span class="n">Power</span>   <span class="o">=</span> <span class="n">Pump</span><span class="o">.</span><span class="n">compute_power_consumed</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">m_coolant</span><span class="p">,</span> <span class="n">n_pump</span><span class="p">)</span>         
+        <span class="n">Power</span>   <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Thermal_Management</span><span class="o">.</span><span class="n">Accessories</span><span class="o">.</span><span class="n">Pump</span><span class="o">.</span><span class="n">compute_power_consumed</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">m_coolant</span><span class="p">,</span> <span class="n">n_pump</span><span class="p">)</span>         
         
         
     <span class="n">dT_dt</span>                   <span class="o">=</span> <span class="n">P_net</span><span class="o">/</span><span class="p">(</span><span class="n">cell_mass</span><span class="o">*</span><span class="n">N_cells_geometric_config</span><span class="o">*</span><span class="n">Cp_bat</span><span class="p">)</span>

@@ -405,15 +405,13 @@
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Booms.html">Booms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Component.html">Component</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Configs.html">Configs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Energy.html">Energy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Fuselages.html">Fuselages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Landing_Gear.html">Landing_Gear</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Mass_Properties.html">Mass_Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Nacelles.html">Nacelles</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Network.html">Network</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Payloads.html">Payloads</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Propulsors.html">Propulsors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Systems.html">Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.html">Powertrain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Thermal_Management.html">Thermal_Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Wings.html">Wings</a></li>
 </ul>
@@ -421,17 +419,16 @@
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="RCAIDE.Library.Methods.html">Methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 current active"><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.html">Aerodynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Emissions.html">Emissions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Energy.html">Energy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Gas_Dynamics.html">Gas_Dynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geodesics.html">Geodesics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.html">Mass_Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Noise.html">Noise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Performance.html">Performance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Propulsors.html">Propulsors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.html">Powertrain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Stability.html">Stability</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Thermal_Management.html">Thermal_Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Utilities.html">Utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Weights.html">Weights</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.skip.html">skip</a></li>
 </ul>
 </details></li>
@@ -541,14 +538,20 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_no_surrogate">
 <span class="sig-name descname"><span class="pre">evaluate_no_surrogate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_vehicle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/evaluate_VLM.html#evaluate_no_surrogate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_no_surrogate" title="Link to this definition">#</a></dt>
 <dd><p>Evaluates forces and moments directly using VLM.</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>CY_alpha multiplied by 0, based on theory
-CL_beta multiplied by -1, verified against literature and AVL
-p derivatives multiplied by -10, verified against literature and AVL
-r derivatives multiplied by -10, verified against literature and AVL
-Rudder derivatives multiplied by -1, verified against literature
-Aileron derivatives multiplied by -1, verified against literature
-Aileron deflection is inverted to match convention</p>
+<dl>
+<dt>Assumptions:</dt><dd><p>The following stability derivatives are multiplied by correction
+factors to match with literature/flight tests:</p>
+<blockquote>
+<div><p>CY_beta multiplied by 2
+CL_beta multiplied by -1
+CL_p multiplied by -2
+CM_q multiplied by 10
+CN_p multiplied by -3
+CN_r multiplied by 3
+CL_delta_a multiplied by -1
+CN_delta_a multiplied by -10
+CLift_delta_e multiplied by 0.5</p>
+</div></blockquote>
 </dd>
 <dt>Source:</dt><dd><p>None</p>
 </dd>

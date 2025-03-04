@@ -398,6 +398,8 @@
         <span class="c1"># This allows RCAIDE to build without OpenVSP</span>
         <span class="k">pass</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  Get VSP Measurements</span>
@@ -444,6 +446,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;VSP import failed&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
+    <span class="c1"># Get the last path from sys.path</span>
+    <span class="n">system_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># Append the system path to the filename</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
     <span class="n">vsp</span><span class="o">.</span><span class="n">SetComputationFileName</span><span class="p">(</span><span class="n">file_type</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
     <span class="n">vsp</span><span class="o">.</span><span class="n">ComputeCompGeom</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">SET_ALL</span><span class="p">,</span> <span class="n">half_mesh</span><span class="p">,</span> <span class="n">file_type</span><span class="p">)</span>
     

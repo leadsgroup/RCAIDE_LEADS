@@ -621,13 +621,14 @@
 
     <span class="c1"># Build the RHS vector    </span>
     <span class="n">rhs</span> <span class="o">=</span> <span class="n">compute_RHS_matrix</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span><span class="n">phi</span><span class="p">,</span><span class="n">conditions</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">geometry</span><span class="p">,</span><span class="n">pwm</span><span class="p">)</span> 
-    <span class="n">RHS</span>     <span class="o">=</span> <span class="n">rhs</span><span class="o">.</span><span class="n">RHS</span><span class="o">*</span><span class="mi">1</span>
+    <span class="n">RHS</span>     <span class="o">=</span> <span class="n">rhs</span><span class="o">.</span><span class="n">RHS</span><span class="o">*</span><span class="mi">1</span> <span class="c1"># this matches numpy=1.26 in terms of dimension</span>
     <span class="n">ONSET</span>   <span class="o">=</span> <span class="n">rhs</span><span class="o">.</span><span class="n">ONSET</span><span class="o">*</span><span class="mi">1</span>
 
     <span class="c1"># Build induced velocity matrix, C_mn</span>
     <span class="c1"># This is not affected by AoA, so we can use unique mach numbers only</span>
     <span class="n">m_unique</span><span class="p">,</span> <span class="n">inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">mach</span><span class="p">,</span><span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">m_unique</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">m_unique</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">inv</span>           <span class="o">=</span> <span class="n">inv</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># this is done to ensure compatibility across numpy1.0 and numpy2.0</span>
     <span class="n">C_mn_small</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">RFLAG_small</span><span class="p">,</span> <span class="n">EW_small</span> <span class="o">=</span> <span class="n">compute_wing_induced_velocity</span><span class="p">(</span><span class="n">VD</span><span class="p">,</span><span class="n">m_unique</span><span class="p">,</span><span class="n">compute_EW</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
     <span class="n">C_mn</span>  <span class="o">=</span> <span class="n">C_mn_small</span><span class="p">[</span><span class="n">inv</span><span class="p">,:,:,:]</span>
@@ -637,6 +638,9 @@
     <span class="c1"># Turn off sonic vortices when Mach&gt;1</span>
     <span class="n">RHS</span> <span class="o">=</span> <span class="n">RHS</span><span class="o">*</span><span class="n">RFLAG</span>
     
+    <span class="c1"># To ensure compatibility for np.linalg.solve across numpy1.0 and numpy2.0</span>
+    <span class="n">RHS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">RHS</span><span class="p">)</span>
+
     <span class="c1"># Build Aerodynamic Influence Coefficient Matrix</span>
     <span class="n">use_VORLAX_induced_velocity</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">use_VORLAX_matrix_calculation</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_VORLAX_induced_velocity</span><span class="p">:</span>
@@ -648,6 +652,10 @@
 
     <span class="c1"># Compute vortex strength</span>
     <span class="n">GAMMA</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">RHS</span><span class="p">)</span>
+
+    <span class="c1"># To ensure compatibility for np.linalg.solve across numpy1.0 and numpy2.0</span>
+    <span class="n">RHS</span>    <span class="o">=</span> <span class="n">RHS</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">GAMMA</span>  <span class="o">=</span> <span class="n">GAMMA</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="c1"># ---------------------------------------------------------------------------------------</span>
     <span class="c1"># STEP 11: Compute Pressure Coefficient</span>

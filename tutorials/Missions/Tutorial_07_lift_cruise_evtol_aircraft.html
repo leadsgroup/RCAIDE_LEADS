@@ -540,13 +540,13 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">                                  </span><span class="kn">import</span> <span class="n">wing_segmented_planform</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Weights.Correlation_Buildups.Propulsion</span><span class="w">            </span><span class="kn">import</span> <span class="n">compute_motor_weight</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor</span><span class="w">                     </span><span class="kn">import</span> <span class="n">design_motor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common</span><span class="w">    </span><span class="kn">import</span> <span class="n">compute_motor_weight</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Motor</span><span class="w">                        </span><span class="kn">import</span> <span class="n">design_DC_motor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Performance</span><span class="w">                                        </span><span class="kn">import</span> <span class="n">estimate_stall_speed</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Propulsors.Converters.Rotor</span><span class="w">                        </span><span class="kn">import</span> <span class="n">design_propeller</span> <span class="p">,</span><span class="n">design_lift_rotor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Weights.Physics_Based_Buildups.Electric</span><span class="w">            </span><span class="kn">import</span> <span class="n">converge_physics_based_weight_buildup</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Weights.Moment_of_Inertia</span><span class="w">                          </span><span class="kn">import</span> <span class="n">compute_aircraft_moment_of_inertia</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Weights.Center_of_Gravity</span><span class="w">                          </span><span class="kn">import</span> <span class="n">compute_vehicle_center_of_gravity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Rotor</span><span class="w">                        </span><span class="kn">import</span> <span class="n">design_propeller</span> <span class="p">,</span><span class="n">design_lift_rotor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based</span><span class="w">      </span><span class="kn">import</span> <span class="n">converge_physics_based_weight_buildup</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia</span><span class="w">                  </span><span class="kn">import</span> <span class="n">compute_aircraft_moment_of_inertia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity</span><span class="w">                  </span><span class="kn">import</span> <span class="n">compute_vehicle_center_of_gravity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                                                      </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE</span><span class="w"> </span><span class="kn">import</span>  <span class="n">load</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE</span><span class="w"> </span><span class="kn">import</span>  <span class="n">save</span>
@@ -556,6 +556,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w">  </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())))</span>
 </pre></div>
 </div>
 </div>
@@ -1007,7 +1009,7 @@
     <span class="n">boom</span><span class="o">.</span><span class="n">tag</span>          <span class="o">=</span> <span class="s1">&#39;boom_2l&#39;</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">boom</span><span class="p">)</span>
 
-    <span class="n">sys</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">System</span><span class="p">()</span>
+    <span class="n">sys</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">System</span><span class="p">()</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>       <span class="o">=</span> <span class="mi">5</span> <span class="c1"># kg</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
@@ -1019,14 +1021,14 @@
     <span class="c1">#====================================================================================================================================</span>
     <span class="c1"># Forward Bus</span>
     <span class="c1">#====================================================================================================================================</span>
-    <span class="n">cruise_bus</span>                           <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span>
+    <span class="n">cruise_bus</span>                           <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span>
     <span class="n">cruise_bus</span><span class="o">.</span><span class="n">tag</span>                       <span class="o">=</span> <span class="s1">&#39;cruise_bus&#39;</span>
     <span class="n">cruise_bus</span><span class="o">.</span><span class="n">number_of_battery_modules</span> <span class="o">=</span>  <span class="mi">1</span>
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Bus Battery</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">battery_module</span>                                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Battery_Modules</span><span class="o">.</span><span class="n">Lithium_Ion_NMC</span><span class="p">()</span>
+    <span class="n">battery_module</span>                                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Battery_Modules</span><span class="o">.</span><span class="n">Lithium_Ion_NMC</span><span class="p">()</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">tag</span>                                                <span class="o">=</span> <span class="s1">&#39;cruise_bus_battery&#39;</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">electrical_configuration</span><span class="o">.</span><span class="n">series</span>                     <span class="o">=</span> <span class="mi">140</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">electrical_configuration</span><span class="o">.</span><span class="n">parallel</span>                   <span class="o">=</span> <span class="mi">60</span>
@@ -1040,12 +1042,12 @@
     <span class="c1"># Forward Bus Propulsors</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Define Forward Propulsor Container</span>
-    <span class="n">cruise_propulsor_1</span>                                     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
+    <span class="n">cruise_propulsor_1</span>                                     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
     <span class="n">cruise_propulsor_1</span><span class="o">.</span><span class="n">tag</span>                                 <span class="o">=</span> <span class="s1">&#39;cruise_propulsor_1&#39;</span>
     <span class="n">cruise_propulsor_1</span><span class="o">.</span><span class="n">wing_mounted</span>                        <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1"># Electronic Speed Controller</span>
-    <span class="n">propeller_esc</span>                                          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
+    <span class="n">propeller_esc</span>                                          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
     <span class="n">propeller_esc</span><span class="o">.</span><span class="n">efficiency</span>                               <span class="o">=</span> <span class="mf">0.95</span>
     <span class="n">propeller_esc</span><span class="o">.</span><span class="n">origin</span>                                   <span class="o">=</span> <span class="p">[[</span><span class="mf">6.583</span><span class="p">,</span> <span class="mf">1.300</span><span class="p">,</span>  <span class="mf">1.092</span> <span class="p">]]</span>
     <span class="n">propeller_esc</span><span class="o">.</span><span class="n">tag</span>                                      <span class="o">=</span> <span class="s1">&#39;propeller_esc_1&#39;</span>
@@ -1056,7 +1058,7 @@
     <span class="n">speed_of_sound</span>                                         <span class="o">=</span> <span class="mi">340</span>                                    <span class="c1"># speed of sound</span>
     <span class="n">Hover_Load</span>                                             <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span><span class="o">*</span><span class="n">g</span> <span class="o">*</span><span class="mf">1.1</span> <span class="c1"># hover load</span>
 
-    <span class="n">propeller</span>                                              <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Propeller</span><span class="p">()</span>
+    <span class="n">propeller</span>                                              <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Propeller</span><span class="p">()</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">number_of_blades</span>                             <span class="o">=</span> <span class="mi">3</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">tag</span>                                          <span class="o">=</span> <span class="s1">&#39;propeller_1&#39;</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">origin</span>                                       <span class="o">=</span> <span class="p">[[</span><span class="mf">6.583</span><span class="p">,</span> <span class="mf">1.300</span><span class="p">,</span>  <span class="mf">1.092</span> <span class="p">]]</span>
@@ -1070,6 +1072,7 @@
     <span class="n">propeller</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust</span>                         <span class="o">=</span> <span class="mi">3150</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">rotation</span>                                     <span class="o">=</span> <span class="mi">1</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">variable_pitch</span>                               <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">propeller</span><span class="o">.</span><span class="n">fidelity</span>                                     <span class="o">=</span> <span class="s1">&#39;Blade_Element_Momentum_Theory_Helmholtz&#39;</span>
     <span class="n">airfoil</span>                                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
     <span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>                                <span class="o">=</span> <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412.txt&#39;</span>
     <span class="n">airfoil</span><span class="o">.</span><span class="n">polar_files</span>                                    <span class="o">=</span> <span class="p">[</span><span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_50000.txt&#39;</span> <span class="p">,</span>
@@ -1082,11 +1085,11 @@
                                                              <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_7500000.txt&#39;</span> <span class="p">]</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">airfoil_polar_stations</span>                       <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">propeller</span>                                              <span class="o">=</span> <span class="n">design_propeller</span><span class="p">(</span><span class="n">propeller</span><span class="p">)</span>
+    <span class="n">design_propeller</span><span class="p">(</span><span class="n">propeller</span><span class="p">)</span>
     <span class="n">cruise_propulsor_1</span><span class="o">.</span><span class="n">rotor</span>                               <span class="o">=</span> <span class="n">propeller</span>
 
     <span class="c1"># Propeller Motor</span>
-    <span class="n">propeller_motor</span>                                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">()</span>
+    <span class="n">propeller_motor</span>                                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">()</span>
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">efficiency</span>                             <span class="o">=</span> <span class="mf">0.95</span>
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">tag</span>                                    <span class="o">=</span> <span class="s1">&#39;propeller_motor_1&#39;</span>
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">origin</span>                                 <span class="o">=</span> <span class="p">[[</span><span class="mf">6.583</span><span class="p">,</span> <span class="mf">1.300</span><span class="p">,</span>  <span class="mf">1.092</span> <span class="p">]]</span>
@@ -1096,7 +1099,7 @@
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">rotor_radius</span>                           <span class="o">=</span> <span class="n">propeller</span><span class="o">.</span><span class="n">tip_radius</span>
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">design_torque</span>                          <span class="o">=</span> <span class="n">propeller</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_torque</span>
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">angular_velocity</span>                       <span class="o">=</span> <span class="n">propeller</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_angular_velocity</span><span class="o">/</span><span class="n">propeller_motor</span><span class="o">.</span><span class="n">gear_ratio</span>
-    <span class="n">design_motor</span><span class="p">(</span><span class="n">propeller_motor</span><span class="p">)</span>
+    <span class="n">design_DC_motor</span><span class="p">(</span><span class="n">propeller_motor</span><span class="p">)</span>
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                   <span class="o">=</span> <span class="n">compute_motor_weight</span><span class="p">(</span><span class="n">propeller_motor</span><span class="p">)</span>
     <span class="n">cruise_propulsor_1</span><span class="o">.</span><span class="n">motor</span>                               <span class="o">=</span> <span class="n">propeller_motor</span>
 
@@ -1190,13 +1193,13 @@
     <span class="c1"># Additional Bus Loads</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Payload</span>
-    <span class="n">payload</span>                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">payload</span>                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">power_draw</span>             <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>   <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">cruise_bus</span><span class="o">.</span><span class="n">payload</span>             <span class="o">=</span> <span class="n">payload</span>
 
     <span class="c1"># Avionics</span>
-    <span class="n">avionics</span>                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">avionics</span>                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
     <span class="n">avionics</span><span class="o">.</span><span class="n">power_draw</span>            <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">avionics</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>  <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">cruise_bus</span><span class="o">.</span><span class="n">avionics</span>            <span class="o">=</span> <span class="n">avionics</span>
@@ -1208,14 +1211,14 @@
     <span class="c1">#====================================================================================================================================</span>
     <span class="c1"># Lift Bus</span>
     <span class="c1">#====================================================================================================================================</span>
-    <span class="n">lift_bus</span>                                               <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span>
+    <span class="n">lift_bus</span>                                               <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span>
     <span class="n">lift_bus</span><span class="o">.</span><span class="n">tag</span>                                           <span class="o">=</span> <span class="s1">&#39;lift_bus&#39;</span>
     <span class="n">lift_bus</span><span class="o">.</span><span class="n">number_of_battery_modules</span> <span class="o">=</span>  <span class="mi">1</span>
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Bus Battery</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">battery_module</span>                                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Battery_Modules</span><span class="o">.</span><span class="n">Lithium_Ion_NMC</span><span class="p">()</span>
+    <span class="n">battery_module</span>                                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Battery_Modules</span><span class="o">.</span><span class="n">Lithium_Ion_NMC</span><span class="p">()</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">tag</span>                                                <span class="o">=</span> <span class="s1">&#39;lift_bus_battery&#39;</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">electrical_configuration</span><span class="o">.</span><span class="n">series</span>                    <span class="o">=</span> <span class="mi">140</span>
     <span class="n">battery_module</span><span class="o">.</span><span class="n">origin</span>                                             <span class="o">=</span> <span class="p">[[</span><span class="mf">4.2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
@@ -1231,17 +1234,17 @@
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
 
     <span class="c1"># Define Lift Propulsor Container</span>
-    <span class="n">lift_propulsor_1</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
+    <span class="n">lift_propulsor_1</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
     <span class="n">lift_propulsor_1</span><span class="o">.</span><span class="n">wing_mounted</span>                          <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># Electronic Speed Controller</span>
-    <span class="n">lift_rotor_esc</span>                                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
+    <span class="n">lift_rotor_esc</span>                                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
     <span class="n">lift_rotor_esc</span><span class="o">.</span><span class="n">efficiency</span>                              <span class="o">=</span> <span class="mf">0.95</span>
     <span class="n">lift_rotor_esc</span><span class="o">.</span><span class="n">origin</span>                                  <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mf">0.073</span> <span class="p">,</span>  <span class="mf">1.950</span> <span class="p">,</span> <span class="mf">1.2</span><span class="p">]]</span>
     <span class="n">lift_propulsor_1</span><span class="o">.</span><span class="n">electronic_speed_controller</span>           <span class="o">=</span> <span class="n">lift_rotor_esc</span>
 
     <span class="c1"># Lift Rotor Design</span>
-    <span class="n">lift_rotor</span>                                             <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Lift_Rotor</span><span class="p">()</span>
+    <span class="n">lift_rotor</span>                                             <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Lift_Rotor</span><span class="p">()</span>
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">origin</span>                                      <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mf">0.073</span> <span class="p">,</span>  <span class="mf">1.950</span> <span class="p">,</span> <span class="mf">1.2</span><span class="p">]]</span>
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">active</span>                                      <span class="o">=</span> <span class="kc">True</span>
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span>                                  <span class="o">=</span> <span class="mf">2.8</span><span class="o">/</span><span class="mi">2</span>
@@ -1272,7 +1275,7 @@
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Lift Rotor Motor</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">lift_rotor_motor</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">()</span>
+    <span class="n">lift_rotor_motor</span>                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">()</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">efficiency</span>                            <span class="o">=</span> <span class="mf">0.9</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">nominal_voltage</span>                       <span class="o">=</span> <span class="n">lift_bus</span><span class="o">.</span><span class="n">voltage</span><span class="o">*</span><span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">propeller_radius</span>                      <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
@@ -1280,7 +1283,7 @@
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">rotor_radius</span>                          <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">design_torque</span>                         <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_torque</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">angular_velocity</span>                      <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_angular_velocity</span><span class="o">/</span><span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">gear_ratio</span>
-    <span class="n">design_motor</span><span class="p">(</span><span class="n">lift_rotor_motor</span><span class="p">)</span>
+    <span class="n">design_DC_motor</span><span class="p">(</span><span class="n">lift_rotor_motor</span><span class="p">)</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                  <span class="o">=</span> <span class="n">compute_motor_weight</span><span class="p">(</span><span class="n">lift_rotor_motor</span><span class="p">)</span>
     <span class="n">lift_propulsor_1</span><span class="o">.</span><span class="n">motor</span>                                 <span class="o">=</span> <span class="n">lift_rotor_motor</span>
 
@@ -1326,13 +1329,13 @@
     <span class="c1"># Additional Bus Loads</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Payload</span>
-    <span class="n">payload</span>                                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">payload</span>                                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">power_draw</span>                                      <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                            <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">lift_bus</span><span class="o">.</span><span class="n">payload</span>                                        <span class="o">=</span> <span class="n">payload</span>
 
     <span class="c1"># Avionics</span>
-    <span class="n">avionics</span>                                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">avionics</span>                                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
     <span class="n">avionics</span><span class="o">.</span><span class="n">power_draw</span>                                     <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">avionics</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                           <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">lift_bus</span><span class="o">.</span><span class="n">avionics</span>                                       <span class="o">=</span> <span class="n">avionics</span>
@@ -1488,7 +1491,7 @@
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Weights</span>
-    <span class="n">weights</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Weights_EVTOL</span><span class="p">()</span>
+    <span class="n">weights</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Electric</span><span class="p">()</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
@@ -1988,16 +1991,16 @@
 <span class="c1"># plot the results</span>
 <span class="n">plot_results</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
-<span class="c1">## plot vehicle</span>
-<span class="c1">#plot_3d_vehicle(vehicle,</span>
-                <span class="c1">#min_x_axis_limit            = -5,</span>
-                <span class="c1">#max_x_axis_limit            = 15,</span>
-                <span class="c1">#min_y_axis_limit            = -10,</span>
-                <span class="c1">#max_y_axis_limit            = 10,</span>
-                <span class="c1">#min_z_axis_limit            = -10,</span>
-                <span class="c1">#max_z_axis_limit            = 10,</span>
-                <span class="c1">#show_figure                 = False</span>
-                <span class="c1">#)</span>
+<span class="c1"># plot vehicle</span>
+<span class="n">plot_3d_vehicle</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span>
+                <span class="n">min_x_axis_limit</span>            <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">max_x_axis_limit</span>            <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+                <span class="n">min_y_axis_limit</span>            <span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">max_y_axis_limit</span>            <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="n">min_z_axis_limit</span>            <span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">max_z_axis_limit</span>            <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="n">show_figure</span>                 <span class="o">=</span> <span class="kc">False</span>
+                <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4162,7 +4165,7 @@ Optimization terminated successfully    (Exit mode 0)
             Iterations: 33
             Function evaluations: 429
             Gradient evaluations: 33
-Lift-rotor Optimization Simulation Time: 0.57 mins
+Lift-rotor Optimization Simulation Time: 0.55 mins
 [0.19300499 0.70006552 0.45929789 0.07342984 0.35464652 1.95091654
  1.5        0.10357011 0.7        0.46823409 0.33320732]
 Converged MTOW = 2309 kg
@@ -4181,6 +4184,7 @@ empty :
     servos : 17.160000000000004
     wiring : 56.83101666868017
     battery : 839.7312
+    fuel_cell : 0.0
     TMS : 0.0
     total : 1351.590375777751
   systems :
@@ -4198,6 +4202,8 @@ zero_fuel_weight : 2308.3374203600238
 fuel : 0
 total : 2308.3374203600238
 
+
+Plotting vehicle
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">

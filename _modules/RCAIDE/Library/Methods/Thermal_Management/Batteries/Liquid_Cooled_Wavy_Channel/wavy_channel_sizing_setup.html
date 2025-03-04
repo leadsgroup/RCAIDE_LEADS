@@ -385,9 +385,9 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1"># RCAIDE Imports  </span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses.Process</span><span class="w">   </span><span class="kn">import</span> <span class="n">Process</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Thermal_Management.Accessories</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pump</span> 
+<span class="c1"># RCAIDE Imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses.Process</span><span class="w">   </span><span class="kn">import</span> <span class="n">Process</span>  
 
 <span class="c1"># Python package imports  </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  
@@ -521,7 +521,7 @@
     <span class="n">dp</span>     <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">L_chan</span><span class="o">/</span><span class="n">dh</span>	
 
     <span class="c1"># Calculate the Power consumed</span>
-    <span class="n">Power</span>   <span class="o">=</span> <span class="n">Pump</span><span class="o">.</span><span class="n">compute_power_consumed</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">m_coolant</span><span class="p">,</span> <span class="n">n_pump</span><span class="p">)</span> 
+    <span class="n">Power</span>   <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Thermal_Management</span><span class="o">.</span><span class="n">Accessories</span><span class="o">.</span><span class="n">Pump</span><span class="o">.</span><span class="n">compute_power_consumed</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">m_coolant</span><span class="p">,</span> <span class="n">n_pump</span><span class="p">)</span> 
 
     <span class="c1"># Mass calculations - Channel  </span>
     <span class="n">rho_line</span>        <span class="o">=</span> <span class="n">channel_density</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="o">*</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="o">+</span><span class="n">d</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="p">))</span>

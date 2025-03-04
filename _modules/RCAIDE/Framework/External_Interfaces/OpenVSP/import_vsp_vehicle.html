@@ -391,15 +391,19 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <span class="c1"># RCAIDE imports </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
-<span class="kn">from</span><span class="w">  </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span><span class="p">,</span> <span class="n">Data</span><span class="p">,</span> <span class="n">Container</span> 
+<span class="kn">from</span><span class="w">  </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                   </span><span class="kn">import</span> <span class="n">Units</span><span class="p">,</span> <span class="n">Data</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components</span><span class="w">                </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Component</span><span class="w">      </span><span class="kn">import</span> <span class="n">Container</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_rotor</span><span class="w">           </span><span class="kn">import</span> <span class="n">read_vsp_rotor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_fuselage</span><span class="w">         </span><span class="kn">import</span> <span class="n">read_vsp_fuselage</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_wing</span><span class="w">             </span><span class="kn">import</span> <span class="n">read_vsp_wing</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_nacelle</span><span class="w">          </span><span class="kn">import</span> <span class="n">read_vsp_nacelle</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.get_vsp_measurements</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_vsp_measurements</span>
 
-
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">vsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">vsp</span>
@@ -411,11 +415,11 @@
         <span class="k">pass</span>
     
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<span class="c1">#  vsp read</span>
+<span class="c1">#  vsp read </span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="import_vsp_vehicle">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Framework.External_Interfaces.OpenVSP.import_vsp_vehicle.html#RCAIDE.Framework.External_Interfaces.OpenVSP.import_vsp_vehicle.import_vsp_vehicle">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">import_vsp_vehicle</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="n">network_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">propulsor_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">units_type</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">,</span><span class="n">use_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">calculate_wetted_area</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">import_vsp_vehicle</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="n">main_wing_tag</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">network_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">propulsor_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">units_type</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">,</span><span class="n">use_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">calculate_wetted_area</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This reads an OpenVSP vehicle geometry and writes it into a RCAIDE vehicle format.</span>
 <span class="sd">    Includes wings, fuselages, and rotors.</span>
 
@@ -506,10 +510,21 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">network_type</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Networks</span><span class="o">.</span><span class="n">Network</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Vehicle energy network type must be defined. </span><span class="se">\n</span><span class="s1"> Choose from list in RCAIDE.Framework.Networks&#39;</span><span class="p">)</span> 
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Propulsor</span> <span class="p">)</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Propulsor</span> <span class="p">)</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Vehicle propulsor type must be defined. </span><span class="se">\n</span><span class="s1"> Choose from list in RCAIDE.Library.Compoments.Propulsors&#39;</span><span class="p">)</span>     
 
+    <span class="c1"># Get the last path from sys.path</span>
+    <span class="n">system_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># Append the system path to the filename</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+
+
     <span class="n">vsp</span><span class="o">.</span><span class="n">ClearVSPModel</span><span class="p">()</span> 
+    
+    <span class="c1"># Get the last path from sys.path</span>
+    <span class="n">system_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># Append the system path to the filename</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
     <span class="n">vsp</span><span class="o">.</span><span class="n">ReadVSPFile</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>	
 
     <span class="n">vsp_fuselages</span>     <span class="o">=</span> <span class="p">[]</span>
@@ -598,7 +613,7 @@
     <span class="c1"># Read Wings </span>
     <span class="c1"># ------------------------------------------------------------------			</span>
     <span class="k">for</span> <span class="n">wing_id</span> <span class="ow">in</span> <span class="n">vsp_wings</span><span class="p">:</span>
-        <span class="n">wing</span> <span class="o">=</span> <span class="n">read_vsp_wing</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="n">units_type</span><span class="p">,</span><span class="n">use_scaling</span><span class="p">)</span>
+        <span class="n">wing</span> <span class="o">=</span> <span class="n">read_vsp_wing</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="n">main_wing_tag</span><span class="p">,</span> <span class="n">units_type</span><span class="p">,</span><span class="n">use_scaling</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">calculate_wetted_area</span><span class="p">:</span>
             <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">wing_id</span><span class="p">)]</span> <span class="o">*</span> <span class="p">(</span><span class="n">units_factor</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  
         <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>		 
@@ -685,14 +700,12 @@
         
                 <span class="c1"># Nacelle </span>
                 <span class="n">nacelle_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nacelle</span><span class="p">)</span>
-                <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>  
+                <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
                 <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
-                <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle</span>          
+                <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle_sym</span>          
                  
                 <span class="c1"># Append to Network             </span>
                 <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
-                
-        
 
     <span class="c1"># Condition when only rotors are defined </span>
     <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">)</span> <span class="o">&gt;</span>  <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_nacelles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
@@ -733,8 +746,43 @@
         <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Unequal numbers of rotors and nacelles defined. Skipping propulsor definition.&#39;</span><span class="p">)</span> 
                 
     <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+   
+    
+    <span class="c1"># get origin of fuselage</span>
+    <span class="n">vsp_origin</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
+        <span class="n">vsp_origin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">vsp_origin</span><span class="p">,</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        
+    <span class="c1"># shift all compoments to new origin</span>
+    <span class="n">origin_shift</span> <span class="o">=</span>  <span class="o">-</span><span class="n">vsp_origin</span>
+    
 
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p_tag</span><span class="p">,</span> <span class="n">p_item</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">update_origin</span><span class="p">(</span><span class="n">p_item</span><span class="p">,</span><span class="n">origin_shift</span><span class="p">)</span>
+            
+    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
+        <span class="n">update_origin</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">origin_shift</span><span class="p">)</span> 
+    
+    <span class="k">for</span> <span class="n">boom</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">booms</span><span class="p">:</span>
+        <span class="n">update_origin</span><span class="p">(</span><span class="n">boom</span><span class="p">,</span><span class="n">origin_shift</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
+        <span class="n">update_origin</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span><span class="n">origin_shift</span><span class="p">)</span>   
+        
     <span class="k">return</span> <span class="n">vehicle</span></div>
+
+
+<div class="viewcode-block" id="update_origin">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Framework.External_Interfaces.OpenVSP.import_vsp_vehicle.html#RCAIDE.Framework.External_Interfaces.OpenVSP.import_vsp_vehicle.update_origin">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_origin</span><span class="p">(</span><span class="n">p_item</span><span class="p">,</span><span class="n">origin_shift</span><span class="p">):</span>  
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p_item</span><span class="p">,</span><span class="n">Component</span><span class="p">):</span> 
+        <span class="n">p_item</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">origin_shift</span> 
+        <span class="k">for</span> <span class="n">p_sub_tag</span><span class="p">,</span> <span class="n">p_sub_item</span> <span class="ow">in</span> <span class="n">p_item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">update_origin</span><span class="p">(</span><span class="n">p_sub_item</span><span class="p">,</span><span class="n">origin_shift</span><span class="p">)</span>    
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p_item</span><span class="p">,</span><span class="n">Container</span><span class="p">):</span> 
+        <span class="k">for</span> <span class="n">p_sub_tag</span><span class="p">,</span> <span class="n">p_sub_item</span> <span class="ow">in</span> <span class="n">p_item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">update_origin</span><span class="p">(</span><span class="n">p_sub_item</span><span class="p">,</span><span class="n">origin_shift</span><span class="p">)</span></div>
 
 </pre></div>
 

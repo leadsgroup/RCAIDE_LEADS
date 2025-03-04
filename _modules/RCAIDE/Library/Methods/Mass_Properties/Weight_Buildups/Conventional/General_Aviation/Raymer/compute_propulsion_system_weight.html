@@ -1,0 +1,669 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/Raymer/compute_propulsion_system_weight';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/Raymer/compute_propulsion_system_weight.html" />
+    <link rel="index" title="Index" href="../../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Weights/Correlation_Buildups/Propulsion/compute_jet_engine_weight.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Sep 2024, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+
+<span class="c1"># RCAIDE </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span>  <span class="n">Units</span><span class="p">,</span> <span class="n">Data</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+ 
+
+<div class="viewcode-block" id="compute_propulsion_system_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.compute_propulsion_system_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_propulsion_system_weight</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
+    <span class="n">W_energy_network_total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">number_of_jet_engines</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">number_of_piston_engines</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span> <span class="c1"># Check this </span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbofan</span><span class="p">):</span>
+                <span class="n">number_of_jet_engines</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">W_engine_jet</span>            <span class="o">=</span> <span class="n">compute_jet_engine_weight</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
+                <span class="n">W_propulsion</span>            <span class="o">=</span> <span class="n">integrated_propulsion_jet</span><span class="p">(</span><span class="n">W_engine_jet</span><span class="p">)</span> 
+                <span class="n">propulsor</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">W_propulsion</span>
+                <span class="n">W_energy_network_total</span>  <span class="o">+=</span> <span class="n">W_propulsion</span>                
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">ICE_Propeller</span><span class="p">):</span>    
+                <span class="n">number_of_piston_engines</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">W_engine_piston</span>          <span class="o">=</span> <span class="n">compute_piston_engine_weight</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
+                <span class="n">W_propulsion</span>             <span class="o">=</span> <span class="n">integrated_propulsion_piston</span><span class="p">(</span><span class="n">W_engine_piston</span><span class="p">)</span> 
+                <span class="n">propulsor</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">W_propulsion</span>
+                <span class="n">W_energy_network_total</span>  <span class="o">+=</span> <span class="n">W_propulsion</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span>  <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turboprop</span><span class="p">:</span>      
+                <span class="n">number_of_piston_engines</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">W_turboprop</span>          <span class="o">=</span> <span class="n">compute_turboprop_engine_weight</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
+                <span class="n">W_propulsion</span>             <span class="o">=</span> <span class="n">integrated_propulsion_piston</span><span class="p">(</span><span class="n">W_turboprop</span><span class="p">)</span> 
+                <span class="n">propulsor</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">W_propulsion</span>
+                <span class="n">W_energy_network_total</span>  <span class="o">+=</span> <span class="n">W_propulsion</span>     
+    
+    <span class="n">output</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">W_prop</span> <span class="o">=</span> <span class="n">W_propulsion</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">number_of_engines</span> <span class="o">=</span> <span class="n">number_of_jet_engines</span> <span class="o">+</span> <span class="n">number_of_piston_engines</span>
+    <span class="k">return</span> <span class="n">output</span>   </div>
+
+                
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Jet Engine Weight </span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<div class="viewcode-block" id="compute_jet_engine_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.compute_jet_engine_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_jet_engine_weight</span><span class="p">(</span><span class="n">propulsor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of the dry engine  </span>
+<span class="sd">    </span>
+<span class="sd">    Assumptions:</span>
+<span class="sd">            calculated engine weight from a correlation of engines</span>
+<span class="sd">    </span>
+<span class="sd">    Source: </span>
+<span class="sd">            N/A</span>
+<span class="sd">            </span>
+<span class="sd">    Inputs:</span>
+<span class="sd">            thrust_sls - sea level static thrust of a single engine [Newtons]</span>
+<span class="sd">    </span>
+<span class="sd">    Outputs:</span>
+<span class="sd">            weight - weight of the dry engine                       [kilograms]</span>
+<span class="sd">        </span>
+<span class="sd">    Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>     
+    <span class="c1"># setup</span>
+    <span class="n">thrust_sls</span>    <span class="o">=</span>  <span class="n">propulsor</span><span class="o">.</span><span class="n">sealevel_static_thrust</span> 
+    <span class="n">thrust_sls_en</span> <span class="o">=</span> <span class="n">thrust_sls</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">force_pound</span> <span class="c1"># Convert N to lbs force  </span>
+    <span class="n">BPR</span> <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">bypass_ratio</span>
+
+    <span class="n">WENG</span>   <span class="o">=</span> <span class="mf">0.084</span> <span class="o">*</span>  <span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">sealevel_static_thrust</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">lbf</span><span class="p">)</span><span class="o">**</span><span class="mf">1.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.045</span><span class="o">*</span><span class="n">BPR</span><span class="p">)</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span> <span class="c1"># Raymer 3rd Edition eq. 10.4 </span>
+    
+    <span class="k">return</span> <span class="n">WENG</span></div>
+
+ 
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Motor Weight </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="compute_motor_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.compute_motor_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_motor_weight</span><span class="p">(</span><span class="n">motor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of motor using NASA correlations </span>
+<span class="sd">             </span>
+<span class="sd">    </span>
+<span class="sd">    Inputs:</span>
+<span class="sd">            torque- maximum torque the motor can deliver safely      [N-m]</span>
+<span class="sd">            kwt2</span>
+<span class="sd">            xwt</span>
+<span class="sd">            </span>
+<span class="sd">    Outputs:</span>
+<span class="sd">            mass- mass of the motor                                [kilograms]</span>
+<span class="sd">        </span>
+<span class="sd">    Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">torque</span> <span class="o">=</span>  <span class="n">motor</span><span class="o">.</span><span class="n">design_torque</span>
+    <span class="n">mass</span>  <span class="o">=</span> <span class="o">-</span><span class="mf">2E-7</span> <span class="o">*</span> <span class="p">(</span><span class="n">torque</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span>  <span class="mf">0.0117</span> <span class="o">*</span> <span class="n">torque</span> <span class="o">+</span>  <span class="mf">34.124</span>
+     
+    <span class="k">return</span> <span class="n">mass</span> </div>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Piston Engine Weight </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="compute_piston_engine_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.compute_piston_engine_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_piston_engine_weight</span><span class="p">(</span><span class="n">propulsor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of an piston engine  </span>
+<span class="sd">        weight correlation; weight=kwt2*(max_power**xwt)</span>
+<span class="sd">        Inputs:</span>
+<span class="sd">                max_power- maximum power the motor can deliver safely [Watts]</span>
+<span class="sd">                kwt2</span>
+<span class="sd">                xwt</span>
+<span class="sd">                </span>
+<span class="sd">        Outputs:</span>
+<span class="sd">                weight- weight of the motor [kilograms]</span>
+<span class="sd">        </span>
+<span class="sd">        Source: Raymer, Aircraft Design, a Conceptual Approach         </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">bhp</span>    <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">sea_level_power</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">horsepower</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="mf">5.22</span><span class="o">*</span><span class="p">((</span><span class="n">bhp</span><span class="p">)</span><span class="o">**</span><span class="mf">0.780</span><span class="p">)</span>  <span class="c1"># weight in lbs.</span>
+    <span class="n">mass</span>   <span class="o">=</span> <span class="n">weight</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>
+    <span class="k">return</span> <span class="n">mass</span></div>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Turboprop Engine Weight </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="compute_turboprop_engine_weight">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.compute_turboprop_engine_weight">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_turboprop_engine_weight</span><span class="p">(</span><span class="n">propulsor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of an turboprop engine  </span>
+<span class="sd">        weight correlation; weight=kwt2*(max_power**xwt)</span>
+<span class="sd">        Inputs:</span>
+<span class="sd">                max_power- maximum power the motor can deliver safely [Watts]</span>
+<span class="sd">                kwt2</span>
+<span class="sd">                xwt</span>
+<span class="sd">                </span>
+<span class="sd">        Outputs:</span>
+<span class="sd">                weight- weight of the motor [kilograms]</span>
+<span class="sd">        </span>
+<span class="sd">        Source: Raymer, Aircraft Design, a Conceptual Approach         </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">bhp</span>    <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">design_power</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">horsepower</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="mf">1.67</span><span class="o">*</span><span class="p">((</span><span class="n">bhp</span><span class="p">)</span><span class="o">**</span><span class="mf">0.803</span><span class="p">)</span>  <span class="c1"># weight in lbs.</span>
+    <span class="n">mass</span>   <span class="o">=</span> <span class="n">weight</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>
+    <span class="k">return</span> <span class="n">mass</span></div>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Integrated Propulsion Weight </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="integrated_propulsion_jet">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.integrated_propulsion_jet">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">integrated_propulsion_jet</span><span class="p">(</span><span class="n">jet_engine_weight</span><span class="p">,</span> <span class="n">engine_W_factor</span> <span class="o">=</span> <span class="mf">1.6</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of the entire propulsion system </span>
+<span class="sd">    </span>
+<span class="sd">    Assumptions:</span>
+<span class="sd">            The propulsion system is a fixed 60% greater than the dry engine alone. </span>
+<span class="sd">            The propulsion system includes the engines, engine exhaust, reverser, starting,</span>
+<span class="sd">            controls, lubricating, and fuel systems. The nacelle and pylon weight are also</span>
+<span class="sd">            part of this calculation.           </span>
+<span class="sd">            </span>
+<span class="sd">    Source: </span>
+<span class="sd">            N/A</span>
+<span class="sd">            </span>
+<span class="sd">    Inputs:</span>
+<span class="sd">            compute_jet_engine_weight - dry weight of the engine                                             [kilograms]</span>
+<span class="sd">            num_eng - total number of engines on the aircraft                                 [dimensionless]</span>
+<span class="sd">            engine_W_factor - weight increase factor for entire integrated propulsion system [dimensionless]</span>
+<span class="sd">    </span>
+<span class="sd">    Outputs:</span>
+<span class="sd">            weight - weight of the full propulsion system                                     [kilograms]</span>
+<span class="sd">        </span>
+<span class="sd">    Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">jet_engine_weight</span> <span class="o">*</span> <span class="n">engine_W_factor</span>
+    
+    <span class="k">return</span> <span class="n">weight</span></div>
+
+    
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Integrated Propulsion Weight </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="integrated_propulsion_piston">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.Raymer.compute_propulsion_system_weight.integrated_propulsion_piston">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">integrated_propulsion_piston</span><span class="p">(</span><span class="n">engine_weight</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Calculate the weight of the entire propulsion system        </span>
+
+<span class="sd">        Source:</span>
+<span class="sd">                Source: Raymer, Aircraft Design, a Conceptual Approach        </span>
+<span class="sd">                </span>
+<span class="sd">        Inputs:</span>
+<span class="sd">                piston_engine_weight - dry weight of a single engine                                     [kilograms]</span>
+<span class="sd">                num_eng - total number of engines on the aircraft                                 [dimensionless]</span>
+<span class="sd">                engine_W_factor - weight increase factor for entire integrated propulsion system [dimensionless]</span>
+<span class="sd">        </span>
+<span class="sd">        Outputs:</span>
+<span class="sd">                weight - weight of the full propulsion system [kilograms]</span>
+<span class="sd">    &quot;&quot;&quot;</span>     
+    <span class="n">engine_dry</span> <span class="o">=</span> <span class="n">engine_weight</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>
+    <span class="n">weight</span>     <span class="o">=</span> <span class="mf">2.575</span> <span class="o">*</span> <span class="p">(</span><span class="n">engine_dry</span><span class="o">**</span><span class="mf">0.922</span><span class="p">)</span>
+    <span class="n">mass</span>       <span class="o">=</span> <span class="n">weight</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">lbs</span> <span class="c1">#convert to kg</span>
+
+    <span class="k">return</span> <span class="n">mass</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

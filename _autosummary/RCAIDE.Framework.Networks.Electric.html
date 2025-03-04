@@ -405,15 +405,13 @@
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Booms.html">Booms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Component.html">Component</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Configs.html">Configs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Energy.html">Energy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Fuselages.html">Fuselages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Landing_Gear.html">Landing_Gear</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Mass_Properties.html">Mass_Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Nacelles.html">Nacelles</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Network.html">Network</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Payloads.html">Payloads</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Propulsors.html">Propulsors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Systems.html">Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.html">Powertrain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Thermal_Management.html">Thermal_Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Wings.html">Wings</a></li>
 </ul>
@@ -421,17 +419,16 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Methods.html">Methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.html">Aerodynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Emissions.html">Emissions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Energy.html">Energy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Gas_Dynamics.html">Gas_Dynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geodesics.html">Geodesics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.html">Mass_Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Noise.html">Noise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Performance.html">Performance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Propulsors.html">Propulsors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.html">Powertrain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Stability.html">Stability</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Thermal_Management.html">Thermal_Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Utilities.html">Utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Weights.html">Weights</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.skip.html">skip</a></li>
 </ul>
 </details></li>
@@ -533,14 +530,12 @@
 <dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Electric.Electric">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Electric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Electric.html#Electric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Electric.Electric" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Networks.Network.html#RCAIDE.Framework.Networks.Network.Network" title="RCAIDE.Framework.Networks.Network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a></p>
-<p>A network comprising battery pack(s) to power rotors using electric motors via a bus.
-Electronic speed controllers, thermal management system, avionics, and other eletric
-power systes paylaods are also modelled. Rotors and motors are arranged into groups,
-called propulsor groups, to siginify how they are connected in the network.
-The network also takes into consideration thermal management components that are
-connected to a coolant line.
-The network adds additional unknowns and residuals to the mission to determinge
-the torque matching between motors and rotors in each propulsor group.</p>
+<p>An electric network comprising one or more electrichemical energy source and/or fuel cells that to power electro-
+mechanical conversion machines eg. electric motors via a bus. Electronic speed controllers, thermal management
+system, avionics, and other eletric power systes paylaods are also modeled. Ducted fans, generators, rotors and
+motors etc. arranged into groups, called propulsor groups, to siginify how they are connected in the network.
+The network also takes into consideration thermal management components that are connected to a coolant line.
+Based on the propulsor, additional unknowns and residuals are added to the mission</p>
 <p>Assumptions:
 The y axis rotation is used for rotating the rotor about the Y-axis for tilt rotors and tiltwings</p>
 <p>Source:
