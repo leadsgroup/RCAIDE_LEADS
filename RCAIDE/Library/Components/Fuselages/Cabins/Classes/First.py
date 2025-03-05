@@ -23,16 +23,12 @@ class First(Component):
         self.number_of_seats_abrest              = 0
         self.number_of_rows                      = 0 
         self.seat_width                          = 25 *  Units.inches
-        self.seat_arm_rest_width                 = 3 *  Units.inches
-        self.seat_length                         = 30 *  Units.inches
+        self.seat_arm_rest_width                 = 2 *  Units.inches
+        self.seat_length                         = 40 *  Units.inches
         self.seat_pitch                          = 50 *  Units.inches
         self.aile_width                          = 18  *  Units.inches          
         self.galley_lavatory_percent_x_locations = []      
         self.emergency_exit_percent_x_locations  = []
-        self.type_A_exit_percent_x_locations     = []
-        self.tail_length                         = 0
-        self.tail_taper                          = 0
-        self.nose_length                         = 0
-        self.nose_taper                          = 0
+        self.type_A_exit_percent_x_locations     = [] 
                
      
