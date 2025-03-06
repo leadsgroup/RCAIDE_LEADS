@@ -32,8 +32,7 @@ def thrust(segment):
     # pack conditions
     conditions = segment.state.conditions
     conditions.frames.body.thrust_force_vector       = conditions.energy.thrust_force_vector
-    conditions.frames.body.thrust_moment_vector      = conditions.energy.thrust_moment_vector
-    conditions.weights.vehicle_mass_rate             = conditions.energy.vehicle_mass_rate 
+    conditions.frames.body.thrust_moment_vector      = conditions.energy.thrust_moment_vector 
 
     if "vehicle_additional_fuel_rate" in conditions.energy: 
         conditions.weights.has_additional_fuel             = True
