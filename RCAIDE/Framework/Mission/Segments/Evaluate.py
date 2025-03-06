@@ -83,8 +83,8 @@ class Evaluate(Segment):
         # --------------------------------------------------------------         
         #   Converge 
         # -------------------------------------------------------------- 
-        converge = self.process.converge 
-        converge.converge_root             = Solver.converge_root        
+        mission_solver = self.process.mission_solver 
+        mission_solver.solver              = Solver.converge_root        
 
         # --------------------------------------------------------------          
         #   Iterate  

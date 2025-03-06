@@ -9,7 +9,6 @@
 # Package imports 
 import scipy.optimize
 import numpy as np
-import  sys
 
 # ----------------------------------------------------------------------------------------------------------------------
 # converge root
