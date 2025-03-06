@@ -84,8 +84,7 @@ class Electric(Network):
         """          
 
         # unpack   
-        conditions      = state.conditions 
-        I               = state.numerics.time.integrate
+        conditions      = state.conditions
         busses          = network.busses 
         coolant_lines   = network.coolant_lines
         total_thrust    = 0. * state.ones_row(3) 
@@ -228,12 +227,7 @@ class Electric(Network):
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.power                = total_power 
         conditions.energy.thrust_moment_vector = total_moment 
-        conditions.weights.vehicle_mass_rate   = total_mdot  
-        conditions.energy.fuel_consumption     = np.dot(I,total_mdot)
-        conditions.energy.cumulative_fuel_consumption =  conditions.energy.fuel_consumption
-        if state.initials:  
-            conditions.energy.cumulative_fuel_consumption += state.initials.conditions.energy.cumulative_fuel_consumption[-1]  
-
+        conditions.weights.vehicle_mass_rate   = total_mdot 
         return
 
 

@@ -64,7 +64,6 @@ class Fuel(Network):
 
         # Step 1: Unpack
         conditions     = state.conditions  
-        I              = state.numerics.time.integrate
         fuel_lines     = network.fuel_lines 
         reverse_thrust = network.reverse_thrust
         total_thrust   = 0. * state.ones_row(3) 
@@ -115,12 +114,7 @@ class Fuel(Network):
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.thrust_moment_vector = total_moment
         conditions.energy.power                = total_power 
-        conditions.weights.vehicle_mass_rate   = total_mdot    
-        conditions.energy.fuel_consumption     = np.dot(I,total_mdot)
-        conditions.energy.cumulative_fuel_consumption =  conditions.energy.fuel_consumption
-        if state.initials:  
-            conditions.energy.cumulative_fuel_consumption += state.initials.conditions.energy.cumulative_fuel_consumption[-1]  
-        
+        conditions.weights.vehicle_mass_rate   = total_mdot  
         return
     
     def unpack_unknowns(self,segment):
