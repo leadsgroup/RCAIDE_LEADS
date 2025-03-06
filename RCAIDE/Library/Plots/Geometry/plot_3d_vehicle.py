@@ -1,4 +1,3 @@
-## @ingroup Library-Plots-Geometry
 # RCAIDE/Library/Plots/Geometry/plot_3d_vehicle.py
 # 
 # 
@@ -21,7 +20,6 @@ import sys
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------  
-## @ingroup Library-Plots-Geometry
 def plot_3d_vehicle(vehicle,
                     show_axis                   = False,
                     save_figure                 = False,
@@ -162,7 +160,6 @@ def plot_3d_vehicle(vehicle,
     
     return     
 
-## @ingroup Library-Plots-Geometry
 def generate_3d_vehicle_geometry_data(plot_data,
                                       vehicle, 
                                       alpha                       = 1.0,  
@@ -266,7 +263,6 @@ def generate_3d_vehicle_geometry_data(plot_data,
  
     return plot_data,min_x_axis_limit,max_x_axis_limit,min_y_axis_limit,max_y_axis_limit,min_z_axis_limit,max_z_axis_limit
 
-## @ingroup Library-Plots-Geometry
 def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,color_map):
     """
     Generates plot data for vehicle energy network components.
