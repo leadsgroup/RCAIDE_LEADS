@@ -26,7 +26,8 @@ def compute_layout_of_passenger_accommodations(fuselage):
             seat_data ,cabin_class_origin  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset)
             side_cabin_offset =  cabin.width / 2
             LOPA = np.vstack((LOPA,seat_data))
-            
+    
+    fuselage.number_of_passengers 
     fuselage.layout_of_passenger_accommodations =  LOPA
     return  
  
