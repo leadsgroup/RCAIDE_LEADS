@@ -37,11 +37,17 @@ def initialize_conditions(segment):
     N/A
     """      
     
+
     # unpack
-    alt        = segment.altitude
-    air_speed  = segment.air_speed  
-    z_accel    = segment.z_accel
-    conditions = segment.state.conditions 
+    alt                   = segment.altitude
+    air_speed             = segment.air_speed  
+    sideslip              = segment.sideslip_angle
+    linear_acceleration_x = segment.linear_acceleration_x
+    linear_acceleration_y = segment.linear_acceleration_y
+    linear_acceleration_z = segment.linear_acceleration_z 
+    roll_rate             = segment.roll_rate
+    pitch_rate            = segment.pitch_rate
+    yaw_rate              = segment.yaw_rate
     
     # check for initial altitude
     if alt is None:
@@ -49,65 +55,15 @@ def initialize_conditions(segment):
         alt = -1.0 *segment.state.initials.conditions.frames.inertial.position_vector[-1,2]
     
     # pack
-    conditions.freestream.altitude[:,0]             = alt
-    conditions.frames.inertial.position_vector[:,2] = -alt # z points down
-    conditions.frames.inertial.velocity_vector[:,0] = air_speed
-    conditions.frames.inertial.acceleration_vector  = np.array([[0.0,0.0,z_accel]])
+    air_speed_x                                                   = np.cos(sideslip)*air_speed 
+    air_speed_y                                                   = np.sin(sideslip)*air_speed 
+    segment.state.conditions.freestream.altitude[:,0]             = alt
+    segment.state.conditions.frames.inertial.position_vector[:,2] = -alt # z points down
+    segment.state.conditions.frames.inertial.velocity_vector[:,0] = air_speed_x
+    segment.state.conditions.frames.inertial.velocity_vector[:,1] = air_speed_y
+    segment.state.conditions.frames.inertial.acceleration_vector  = np.array([[linear_acceleration_x,linear_acceleration_y,linear_acceleration_z]])  
+    segment.state.conditions.static_stability.roll_rate[:,0]      = roll_rate         
+    segment.state.conditions.static_stability.pitch_rate[:,0]     = pitch_rate
+    segment.state.conditions.static_stability.yaw_rate[:,0]       = yaw_rate
     
-     
-def unpack_unknowns(segment):
-    """ Unpacks the throttle setting and body angle from the solver to the mission
-    
-        Assumptions:
-        N/A
-        
-        Inputs:
-            state.unknowns:
-                throttle    [Unitless]
-                body_angle  [Radians]
-            
-        Outputs:
-            state.conditions:
-                propulsion.throttle            [Unitless]
-                frames.body.inertial_rotations [Radians]
-
-        Properties Used:
-        N/A
-                                
-    """    
-    
-    # unpack unknowns
-    body_angle = segment.state.unknowns.body_angle
-
-    # apply unknowns
-    segment.state.conditions.frames.body.inertial_rotations[:,1] = body_angle[:,0]   
-        
-     
-def residual_total_force(segment):
-    """Takes the summation of forces and makes a residual from the accelerations.
-
-    Assumptions:
-    No higher order terms.
-
-    Source:
-    N/A
-
-    Inputs:
-    segment.state.conditions.frames.inertial.total_force_vector   [Newtons]
-    segment.state.conditions.frames.inertial.acceleration_vector  [meter/second^2]
-    segment.state.conditions.weights.total_mass                   [kilogram]
-
-    Outputs:
-    segment.state.residuals.force                                 [Unitless]
-
-    Properties Used:
-    N/A
-    """        
-    
-    FT = segment.state.conditions.frames.inertial.total_force_vector
-    a  = segment.state.conditions.frames.inertial.acceleration_vector
-    m  = segment.state.conditions.weights.total_mass    
-    
-    segment.state.residuals.force = FT[:,2]/m[:,0] - a[:,2]
-
-    return    
+    return 
