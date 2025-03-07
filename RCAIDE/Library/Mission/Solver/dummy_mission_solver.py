@@ -40,29 +40,7 @@ def dummy_solver(segment):
     """       
 
     unknowns = segment.state.unknowns.pack_array()
-
-    #try:
-        #root_finder = segment.settings.root_finder
-    #except AttributeError:
-        #root_finder = scipy.optimize.fsolve 
-
-    #unknowns,infodict,ier,msg = dummy_mission_solver( iterate,
-                                             #unknowns,
-                                         #args = segment,
-                                         #xtol = segment.state.numerics.tolerance_solution,
-                                         #maxfev = segment.state.numerics.max_evaluations,
-                                         #epsfcn = segment.state.numerics.step_size,
-                                         #full_output = 1)
-
-    #if ier!=1:
-        #print("Segment did not converge. Segment Tag: " + segment.tag)
-        #print("Error Message:\n" + msg)
-        #segment.state.numerics.converged = False
-        #segment.converged = False
-    #else:
-        #segment.state.numerics.converged = True
-        #segment.converged = True
-            
+ 
     
     problem  = add_mission_variables(segment) 
     outputs  = scipy_setup.SciPy_Solve(problem)
