@@ -67,6 +67,11 @@ class Evaluate(Segment):
         self.trim_lift_coefficient                = None
         self.state.conditions.update(Results())
         
+
+        #self.state.inputs_last                = None
+        #self.state.objective_value            = 0.0
+        #self.state.constraint_values          = 0.0        
+        
         # ---------------------------------------------------------------
         # Define Flight Controls and Residuals 
         # ---------------------------------------------------------------     
@@ -83,8 +88,8 @@ class Evaluate(Segment):
         # --------------------------------------------------------------         
         #   Converge 
         # -------------------------------------------------------------- 
-        mission_solver = self.process.mission_solver 
-        mission_solver.solver              = Solver.converge_root        
+        converge = self.process.converge 
+        converge.solver              = Solver.converge_root        
 
         # --------------------------------------------------------------          
         #   Iterate  
@@ -120,6 +125,12 @@ class Evaluate(Segment):
 
         # Solve Residuals
         iterate.residuals = Process()
+        
+
+        #iterate.outputs = Process()   
+        #iterate.outputs.objective          = Methods.Climb.Optimized.objective
+        #iterate.outputs.constraints        = Methods.Climb.Optimized.constraints
+        #iterate.outputs.cache_inputs       = Methods.Climb.Optimized.cache_inputs        
 
         # --------------------------------------------------------------  
         #  Post Process   

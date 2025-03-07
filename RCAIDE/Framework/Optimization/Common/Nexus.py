@@ -193,7 +193,7 @@ class Nexus(Data):
         iqconstraints = np.delete(constraints,indices,axis=0)
     
         if len(iqconstraints) == 0:
-            scaled_constraints = []
+            constraint_evaluations = []
         else:
 
             # get constaint values 
