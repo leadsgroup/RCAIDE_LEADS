@@ -89,7 +89,7 @@ class Evaluate(Segment):
         #   Converge 
         # -------------------------------------------------------------- 
         converge = self.process.converge 
-        converge.solver              = Solver.converge_root        
+        converge.solver              = Solver.converge     
 
         # --------------------------------------------------------------          
         #   Iterate  

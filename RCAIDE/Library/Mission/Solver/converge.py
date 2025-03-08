@@ -6,19 +6,25 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# Package imports
 import RCAIDE
 from RCAIDE.Framework.Core import  Units, Data
 from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
 from RCAIDE.Framework.Optimization.Common             import Nexus
-from RCAIDE.Framework.Analyses.Process                     import Process     
-import  scipy 
+from RCAIDE.Framework.Analyses.Process                     import Process
+
+import scipy 
+import scipy.optimize
 import numpy as np 
+import sys 
+import subprocess
+import os 
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # converge root
 # ---------------------------------------------------------------------------------------------------------------------- 
-def dummy_solver(segment):
-    """Interfaces the mission to a numerical solver. The solver may be changed by using root_finder.
+def converge(segment):
+    """Interfaces the mission a root finder algorithm.
 
     Assumptions:
     N/A
@@ -38,63 +44,70 @@ def dummy_solver(segment):
     Properties Used:
     N/A
     """       
-
-    unknowns = segment.state.unknowns.pack_array()
- 
     
-    problem  = add_mission_variables(segment) 
-    outputs  = scipy_setup.SciPy_Solve(problem)
+    if segment.state.numerics.solver  == "Optimize":
+        unknowns = segment.state.unknowns.pack_array()
     
-    unknowns = outputs[0]
-  
-    if outputs[3] != 1:
-        print("Segment did not converge. Segment Tag: " + segment.tag)
-        print("Error Message:\n" + outputs[4])
-        segment.state.numerics.converged = False
-        segment.converged = False
-    else:
-        segment.state.numerics.converged = True
-        segment.converged = True
-                            
+    
+        problem  = add_mission_variables(segment)
+    
+    
+        print_output = False
+    
+        # Initialize suppression of console window output
+        if print_output == False:
+            devnull = open(os.devnull,'w')
+            sys.stdout = devnull
+    
+        outputs  = scipy_setup.SciPy_Solve(problem)
+    
+        # Terminate suppression of console window output  
+        if print_output == False:
+            sys.stdout = sys.__stdout__ 
+    
+        unknowns = outputs[0]
+    
+        if outputs[3] != 0:
+            print("Segment did not converge. Segment Tag: " + segment.tag)
+            print("Error Message:\n" + outputs[4])
+            segment.state.numerics.converged = False
+            segment.converged = False
+        else:
+            segment.state.numerics.converged = True
+            segment.converged = True        
+    
+        
+    if segment.state.numerics.solver  == "Root_Finder": 
+        unknowns = segment.state.unknowns.pack_array()
+        
+        try:
+            root_finder = segment.settings.root_finder
+        except AttributeError:
+            root_finder = scipy.optimize.fsolve 
+         
+        unknowns,infodict,ier,msg = root_finder(iterate_root_finder,
+                                             unknowns,
+                                             args = segment,
+                                             xtol = segment.state.numerics.tolerance_solution,
+                                             maxfev = segment.state.numerics.max_evaluations,
+                                             epsfcn = segment.state.numerics.step_size,
+                                             full_output = 1)
+        
+        if ier!=1:
+            print("Segment did not converge. Segment Tag: " + segment.tag)
+            print("Error Message:\n" + msg)
+            segment.state.numerics.converged = False
+            segment.converged = False
+        else:
+            segment.state.numerics.converged = True
+            segment.converged = True
+                                
     return
-
-def dummy_mission_solver(iterate, unknowns, args=(), xtol = 0., full_output=1):
-    """Rather than run a mission solver this solves a mission at a particular instance.
-
-    Assumptions:
-    N/A
-
-    Source:
-    N/A
-
-    Inputs:
-    iterate      [suave function]
-    unknowns     [inputs to the function]
-    args         [[segment,state]]
-    xtol         [irrelevant]
-    full_output  [irrelevant]
-
-    Outputs:
-    unknowns     [inputs to the function]
-    infodict     [None]
-    ier          [1]
-    msg          [string]
-
-    Properties Used:
-    N/A
-    """       
     
-    
-    iterate(unknowns,args)
-    
-    infodict = None
-    ier      = 1
-    msg      = 'Used dummy mission solver'
-    
-    return unknowns, infodict, ier, msg
-
- 
-def iterate(unknowns, segment):
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Helper Functions
+# ---------------------------------------------------------------------------------------------------------------------- 
+def iterate_root_finder(unknowns, segment):
     
     """Runs one iteration of of all analyses for the mission.
 
@@ -124,6 +137,7 @@ def iterate(unknowns, segment):
     residuals = segment.state.residuals.pack_array()
         
     return residuals
+
 
 
 def add_mission_variables(segment):
@@ -265,12 +279,12 @@ def add_mission_variables(segment):
 def iterate_segment(): 
     procedure                           = Process()  
     procedure.segment                   = Process()
-    procedure.segment.design_mission    = iterate     
+    procedure.segment.design_mission    = iterate_optimizer     
     procedure.post_process              = segment_post_process   
         
     return procedure
     
-def iterate(nexus):
+def iterate_optimizer(nexus):
     segment = nexus.segment
      
     unknowns = segment.state.unknowns.pack_array()
@@ -284,6 +298,7 @@ def iterate(nexus):
     residuals = segment.state.residuals.pack_array()    
     nexus.residuals =  residuals
     return nexus
+
 
   
 def segment_post_process(nexus):

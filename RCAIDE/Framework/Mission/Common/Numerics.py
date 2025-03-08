@@ -47,6 +47,8 @@ class Numerics(Conditions):
         self.number_of_control_points         = 16
         self.discretization_method            = chebyshev_data 
         self.solver_jacobian                  = "none"
+        self.solver                           = "Optimize" # Either [Optimize,Root_Finder]
+        self.solver_method                    = "SLSQP"
         self.tolerance_solution               = 1e-8
         self.converged                        = None
         self.max_evaluations                  = 0.
