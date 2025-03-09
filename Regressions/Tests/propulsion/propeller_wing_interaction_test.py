@@ -35,7 +35,7 @@ def main():
 
 def Propeller_Slipstream(wake_fidelity,identical_props): 
 
-    rotor_type = 'Blade_Element_Momentum_Theory_Helmholtz'
+    rotor_type = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     vehicle  = vehicle_setup(rotor_type)      
 
     for network in vehicle.networks: 

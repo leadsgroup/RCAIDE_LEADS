@@ -32,7 +32,7 @@ def main():
 
     plot_elevation_contours(topography_file   =data_file,use_lat_long_coordinates = False, save_filename = "Elevation_Contours_XY")
     
-    vehicle  = vehicle_setup('Blade_Element_Momentum_Theory_Helmholtz')          
+    vehicle  = vehicle_setup('Blade_Element_Momentum_Theory_Helmholtz_Wake')          
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
     mission  = mission_setup(analyses)
