@@ -32,9 +32,8 @@ def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
     omega                 = rotor_conditions.omega
     torque                = rotor_conditions.motor_torque 
     B                     = rotor.number_of_blades   
-    R                     = rotor.tip_radius
-
-    eta   = rotor.propulsive_efficiency    
+    R                     = rotor.tip_radius 
+    eta_p                 = rotor.propulsive_efficiency    
     
     # Unpack ducted_fan blade parameters and operating conditions  
     Vv      = conditions.frames.inertial.velocity_vector 
@@ -49,27 +48,19 @@ def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
 
     # Check and correct for hover
     V         = V_thrust[:,0,None]
-    V[V==0.0] = 1E-6 
-    eta_p = eta * np.ones_like(V)
-    # Do very little calculations
+    V[V==0.0] = 1E-6
+    
+    eta    = eta_p * np.ones_like(V) 
     power  = torque*omega
     n      = omega/(2.*np.pi) 
     D      = 2*R 
-    thrust = eta_p*power/V 
+    thrust = eta*power/V 
     Cp     = power/(rho*(n*n*n)*(D*D*D*D*D)) 
     Cq     = torque/(rho*(n*n)*(D*D*D*D*D))
     Ct     = thrust/(rho*(n*n)*(D*D*D*D))
-    Cp     = power/(rho*(n*n*n)*(D*D*D*D*D))
-     
+    Cp     = power/(rho*(n*n*n)*(D*D*D*D*D)) 
     
-    #n,D,J,eta_p,Cp,Ct     = compute_rotor_efficiency(rotor, V, omega)
-    
-    ctrl_pts              = len(V)
-
-    #thrust                = Ct*(rho * (n**2)*(D**4))                 
-    #power                 = Cp*(rho * (n**3)*(D**5) ) 
-    #torque                = power/omega
-    #Cq                    = torque/(rho*(n*n)*(D*D*D*D*D))
+    ctrl_pts              = len(V) 
     thrust_vector         = np.zeros((ctrl_pts,3))
     thrust_vector[:,0]    = thrust[:,0]         
     disc_loading          = thrust/(np.pi*(R**2))
@@ -95,7 +86,7 @@ def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
             speed_of_sound                    = conditions.freestream.speed_of_sound,
             density                           = conditions.freestream.density,
             tip_mach                          = omega * R / conditions.freestream.speed_of_sound, 
-            efficiency                        = eta_p, 
+            efficiency                        = eta, 
             moment                            = moment, 
             torque                            = torque,       
             orientation                       = orientation, 
@@ -109,47 +100,3 @@ def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
             figure_of_merit                   = FoM,) 
 
     return outputs
-
-# ---------------------------------------------------------------------------------------------------------------------- 
-#  compute_rotor_efficiency
-# ---------------------------------------------------------------------------------------------------------------------- 
-def compute_rotor_efficiency(propeller, V, omega):
-    """
-    Calculate propeller efficiency based on propeller type and velocity.
-    
-    Parameters
-    ----------
-    propeller_type : str
-        Type of propeller ('constant_speed' or 'fixed_pitch')
-    u0 : float
-        Current velocity
-        
-    Returns
-    -------
-    float
-        Calculated propeller efficiency
-    """
-
-    n = omega/(2*np.pi)
-    D = 2*propeller.tip_radius
-    J = V/(n*D)
-
-    eta_J_vector = propeller.etap_J_coefficients
-    eta_vector = propeller.etap_eff_coefficients
-
-    eta_fz = interp1d(eta_J_vector, eta_vector, kind='cubic', fill_value=0.0, bounds_error=False)
-    eta_p = eta_fz(J)
-
-    Cp_J_vector = propeller.Cp_J_coefficients
-    Cp_vector = propeller.Cp_power_coefficients
-
-    Cp_fz = interp1d(Cp_J_vector, Cp_vector, kind='cubic', fill_value=0.0, bounds_error=False)
-    Cp = Cp_fz(J)
-
-    Ct_J_vector = propeller.Ct_J_coefficients
-    Ct_vector = propeller.Ct_thrust_coefficients
-
-    Ct_fz = interp1d(Ct_J_vector, Ct_vector, kind='cubic', fill_value=0.0, bounds_error=False)
-    Ct = Ct_fz(J)
-
-    return n, D, J, eta_p, Cp, Ct

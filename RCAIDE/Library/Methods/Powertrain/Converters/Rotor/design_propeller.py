@@ -9,7 +9,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core   import interp2d
 from RCAIDE.Library.Methods.Geometry.Airfoil    import compute_airfoil_properties, compute_naca_4series, import_airfoil_geometry
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance import compute_rotor_efficiency
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.create_rotor_efficiency_surrogate import create_rotor_efficiency_surrogate
 
 # package imports 
@@ -43,29 +42,8 @@ def design_propeller(prop,number_of_stations=20):
           Assumptions/ Source:
           Based on Design of Optimum Propellers by Adkins and Liebeck
           
-    """
-
-    if prop.fidelity == 'Actuator_Disk_Theory':
-        
-        omega                                 = prop.cruise.design_angular_velocity
-        thrust                                = prop.cruise.design_thrust
-        V                                     = prop.cruise.design_freestream_velocity 
-        atmo                                  = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-        rho                                   = atmo.compute_values(prop.cruise.design_altitude,0.).density
-                           
-        n, D,J,eta_p,Cp,Ct                    = compute_rotor_efficiency(prop, V, omega)
-        
-        power                                 = thrust*V/eta_p
-        Q                                     = power/omega        
-                
-        prop.cruise.design_power              = power
-        prop.cruise.design_efficiency         = eta_p 
-        prop.cruise.design_thrust             = thrust
-        prop.cruise.design_torque             = Q
-        prop.cruise.design_thrust_coefficient = Ct  
-        prop.cruise.design_power_coefficient  = Cp 
-
-    elif prop.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
+    """ 
+    if prop.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
         # Unpack
         N            = number_of_stations       # this number determines the discretization of the propeller into stations
         B            = prop.number_of_blades
