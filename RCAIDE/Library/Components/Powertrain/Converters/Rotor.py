@@ -92,7 +92,7 @@ class Rotor(Component):
     orientation_euler_angles : list
         Angles defining rotor orientation [rad]. Default is [0.,0.,0.].
         
-    pitch_command : float
+    blade_pitch_command : float
         Commanded blade pitch angle [rad]. Default is 0.0.
         
     ducted : bool
@@ -204,7 +204,7 @@ class Rotor(Component):
         self.clockwise_rotation                = True
         self.phase_offset_angle                = 0.0
         self.orientation_euler_angles          = [0.,0.,0.]  # vector of angles defining default orientation of rotor
-        self.pitch_command                     = 0.0
+        self.blade_pitch_command               = 0.0
         self.ducted                            = False
         self.sol_tolerance                     = 1e-8 
         self.use_2d_analysis                   = False       # True if rotor is at an angle relative to freestream or nonuniform freestream

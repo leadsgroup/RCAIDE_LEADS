@@ -98,10 +98,6 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
     psi_2d         = np.repeat(psi_2d[None, :, :], ctrl_pts, axis=0)
 
     # Calculate total blade pitch 
-    #if optimize_blade_pitch and design_flag == False:
-        #J       = V/(n*2 *R)  
-        #pitch_c = compute_optimal_pitch(rotor,J,alt)
-        #rotor_conditions.pitch_command = pitch_c
     total_blade_pitch = beta_0  +  pitch_c
     
     # apply blade sweep to azimuthal position

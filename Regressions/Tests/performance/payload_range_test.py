@@ -40,8 +40,7 @@ def main():
         print('Electric Range: ' + str(electric_r ))
         electric_error =  abs(electric_r - electric_r_truth[i]) /electric_r_truth[i]
         assert(abs(electric_error)<1e-6)
-    return 
-    
+    return
     
 def fuel_aircraft_payload_range():
     

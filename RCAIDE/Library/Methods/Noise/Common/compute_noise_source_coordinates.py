@@ -54,7 +54,7 @@ def compute_rotor_point_source_coordinates(propulsor,rotor,conditions,mls,settin
     r           = rotor.radius_distribution  
     beta        = rotor.flap_angle
     theta       = rotor.twist_distribution   
-    theta_0     = rotor_conditions.pitch_command 
+    theta_0     = rotor_conditions.blade_pitch_command 
     MCA         = rotor.mid_chord_alignment
  
     # dimension of matrices [control point, microphone , rotor, number of blades, number of sections , x,y,z coords]    

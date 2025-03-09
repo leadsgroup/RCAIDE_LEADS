@@ -25,7 +25,7 @@ from Stopped_Rotor_EVTOL    import vehicle_setup as EVTOL_setup
 
 def main(): 
     # make true only when resizing aircraft. should be left false for regression
-    update_regression_values = False  
+    update_regression_values = True  
     Transport_Aircraft_Test()
     General_Aviation_Test()
     EVTOL_Aircraft_Test(update_regression_values)
