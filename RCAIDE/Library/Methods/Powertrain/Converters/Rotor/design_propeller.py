@@ -67,7 +67,7 @@ def design_propeller(prop,number_of_stations=20):
         prop.cruise.design_thrust_coefficient = Ct  
         prop.cruise.design_power_coefficient  = Cp 
 
-    elif prop.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz':
+    elif prop.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
         # Unpack
         N            = number_of_stations       # this number determines the discretization of the propeller into stations
         B            = prop.number_of_blades

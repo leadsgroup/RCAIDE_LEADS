@@ -32,7 +32,7 @@ def main():
     fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
     assert(abs(fuel_error)<1e-6)
     
-    rotor_type  = ['Blade_Element_Momentum_Theory_Helmholtz', 'Actuator_Disk']
+    rotor_type  = ['Blade_Element_Momentum_Theory_Helmholtz_Wake', 'Actuator_Disk']
     electric_r_truth = [37039.99999999999, 37039.99999999999]
     for i in range(len(rotor_type)):
         electric_payload_range_res = electric_aircraft_payload_range(rotor_type[i])       

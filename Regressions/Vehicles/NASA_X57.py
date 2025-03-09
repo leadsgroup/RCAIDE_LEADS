@@ -372,7 +372,7 @@ def vehicle_setup(rotor_type):
     # Propeller    
     propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
 
-    if rotor_type == 'Blade_Element_Momentum_Theory_Helmholtz':      
+    if rotor_type == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':      
         propeller.fidelity = rotor_type 
         propeller.tag                                    = 'propeller_1'  
         propeller.tip_radius                             = 1.72/2   

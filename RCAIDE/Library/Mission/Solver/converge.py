@@ -45,12 +45,11 @@ def converge(segment):
     """       
     
     if segment.state.numerics.solver.type  == "optimize": 
-        problem  = add_mission_variables(segment)
-        print_output =  segment.state.numerics.solver.print_output 
-     
-        if print_output == False:
-            devnull = open(os.devnull,'w')
-            sys.stdout = devnull
+        problem  = add_mission_variables(segment) 
+       
+        # Commense suppression of console window output  
+        devnull = open(os.devnull,'w')
+        sys.stdout = devnull
          
         outputs  = scipy_setup.SciPy_Solve(problem,
                                            solver     = segment.state.numerics.solver.method,
@@ -58,9 +57,8 @@ def converge(segment):
                                            iter       = segment.state.numerics.solver.max_evaluations,
                                            tolerance  = segment.state.numerics.solver.tolerance_solution)
     
-        # Terminate suppression of console window output  
-        if print_output == False:
-            sys.stdout = sys.__stdout__  
+        # Terminate suppression of console window output   
+        sys.stdout = sys.__stdout__  
          
         if outputs[3] != 0:
             mission_converge = False        

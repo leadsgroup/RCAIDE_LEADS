@@ -194,7 +194,7 @@ class Rotor(Component):
         self.Cp_power_coefficients             = [0.389, 0.369, 0.319, 0.178, 0]
         self.Ct_J_coefficients                 = [0, 0.846, 1.537, 1.678, 2.034, 2.658]        
         self.Ct_thrust_coefficients            = [0.180, 0.175, 0.156, 0.144, 0.096, 0]
-        self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz'  
+        self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'  
         
         # design flight conditions 
         self.cruise                            = Data() 

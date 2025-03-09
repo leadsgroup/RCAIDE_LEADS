@@ -92,7 +92,7 @@ def compute_rotor_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]
     elif 'propeller' in  propulsor:
         rotor =  propulsor.propeller
 
-    if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz': 
+    if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
 
         outputs = BEMT_Helmholts_performance(rotor, conditions, propulsor, center_of_gravity)
                       

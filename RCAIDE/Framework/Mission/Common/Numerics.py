@@ -49,8 +49,7 @@ class Numerics(Conditions):
         self.solver                           =  Data()
         self.solver.type                      = "optimize" # options: "optimize", "root_finder"
         self.solver.method                    = "SLSQP"    
-        self.solver.objective                 = "energy"   #options: # None, energy , power
-        self.solver.print_output              = False  
+        self.solver.objective                 = "energy"   #options: # None, energy , power 
         self.solver.tolerance_solution        = 1E-6
         self.solver.converged                 = None
         self.solver.max_evaluations           = 200
