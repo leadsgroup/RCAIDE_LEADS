@@ -188,12 +188,7 @@ class Rotor(Component):
         self.vtk_airfoil_points                = 40        
         self.airfoils                          = Airfoil_Container() 
         self.airfoil_polar_stations            = []  
-        self.etap_J_coefficients               = [0, 0.109, 0.314, 0.486, 0.756, 0.983, 1.259, 1.622, 1.969, 2.258, 2.380, 2.511, 2.578, 2.620]
-        self.etap_eff_coefficients             = [0, 0.231, 0.553, 0.720, 0.826, 0.853, 0.863, 0.855, 0.836, 0.782, 0.719, 0.544, 0.323, 0]
-        self.Cp_J_coefficients                 = [0, 0.772, 1.589, 2.266, 2.734]        
-        self.Cp_power_coefficients             = [0.389, 0.369, 0.319, 0.178, 0]
-        self.Ct_J_coefficients                 = [0, 0.846, 1.537, 1.678, 2.034, 2.658]        
-        self.Ct_thrust_coefficients            = [0.180, 0.175, 0.156, 0.144, 0.096, 0]
+        self.propulsive_efficiency             = 0.86   
         self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz'  
         
         # design flight conditions 
