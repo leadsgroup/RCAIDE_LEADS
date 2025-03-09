@@ -39,7 +39,7 @@ def weights(segment):
     conditions   = segment.state.conditions
     I            = segment.state.numerics.time.integrate  
     m0           = conditions.weights.total_mass[0,0]
-    mdot_fuel    = conditions.weights.vehicle_mass_rate
+    mdot         = conditions.weights.vehicle_mass_rate
     g            = conditions.freestream.gravity   
     
     networks = segment.analyses.energy.vehicle.networks
@@ -51,7 +51,7 @@ def weights(segment):
                     fuel_line_results[fuel_tank.tag].mass[:,0]  =  fuel_line_results[fuel_tank.tag].mass[0,0]  + np.dot(I, -fuel_line_results[fuel_tank.tag].mass_flow_rate[:,0])   
             
     # calculate
-    m = m0 + np.dot(I, -mdot_fuel )
+    m = m0 + np.dot(I, -mdot)
 
     # weight
     W = m*g

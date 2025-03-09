@@ -14,6 +14,7 @@ from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
 from .Network                                             import Network              
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw import compute_avionics_power_draw
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw  import compute_payload_power_draw
+import numpy as np
 
 # Python imports
 import  numpy as  np
@@ -83,7 +84,7 @@ class Electric(Network):
         """          
 
         # unpack   
-        conditions      = state.conditions 
+        conditions      = state.conditions
         busses          = network.busses 
         coolant_lines   = network.coolant_lines
         total_thrust    = 0. * state.ones_row(3) 
@@ -226,8 +227,7 @@ class Electric(Network):
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.power                = total_power 
         conditions.energy.thrust_moment_vector = total_moment 
-        conditions.energy.vehicle_mass_rate    = total_mdot  
-
+        conditions.weights.vehicle_mass_rate   = total_mdot 
         return
 
 

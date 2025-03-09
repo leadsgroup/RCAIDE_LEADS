@@ -80,7 +80,8 @@ def main():
     curved_cruise_CL   = results.segments.curved_cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
     descent_throttle_2 = results.segments.descent_2.conditions.energy['port_propulsor'].throttle[3][0]
     single_pt_CL_1     = results.segments.single_point_1.conditions.aerodynamics.coefficients.lift.total[0][0]
-    single_pt_CL_2     = results.segments.single_point_2.conditions.aerodynamics.coefficients.lift.total[0][0]     
+    single_pt_CL_2     = results.segments.single_point_2.conditions.aerodynamics.coefficients.lift.total[0][0]  
+    single_pt_CL_3     = results.segments.single_point_3.conditions.aerodynamics.coefficients.lift.total[0][0]     
     cruise_4_CL        = results.segments.cruise_4.conditions.aerodynamics.coefficients.lift.total[2][0]  
     cruise_5_CL        = results.segments.cruise_5.conditions.aerodynamics.coefficients.lift.total[2][0] 
     cruise_6_CL        = results.segments.cruise_6.conditions.aerodynamics.coefficients.lift.total[2][0]    
@@ -95,7 +96,7 @@ def main():
         data = [takeoff_thrust, climb_throttle_1,   climb_throttle_2,   climb_throttle_3,   climb_throttle_4,   climb_throttle_5,  
                 climb_throttle_6,   climb_throttle_7,   climb_throttle_8,   climb_throttle_9,   climb_10_CL,  
                 cruise_CL_1,  cruise_CL_2,  cruise_CL_3,   descent_throttle_1,  curved_cruise_CL, descent_throttle_2,
-                single_pt_CL_1,     single_pt_CL_2,     cruise_4_CL,   cruise_5_CL, cruise_6_CL,cruise_7_CL,cruise_8_CL, 
+                single_pt_CL_1,     single_pt_CL_2,  single_pt_CL_3,   cruise_4_CL,   cruise_5_CL, cruise_6_CL,cruise_7_CL,cruise_8_CL, 
                 descent_throttle_3,  landing_thrust]
         for val in data:
             print(val)
@@ -120,6 +121,7 @@ def main():
     descent_throttle_2_truth = 0.5
     single_pt_CL_1_truth     = 0.0005711272577742668
     single_pt_CL_2_truth     = 0.0006616284937706831
+    single_pt_CL_3_truth     = 0.0005711272589290616
     cruise_4_CL_truth        = 0.4798716853018943
     cruise_5_CL_truth        = 0.4798655832747957
     cruise_6_CL_truth        = 0.3238648058769196
@@ -149,6 +151,7 @@ def main():
     error.descent_throttle_2 = np.max(np.abs(descent_throttle_2   - descent_throttle_2_truth))
     error.single_pt_CL_1     = np.max(np.abs(single_pt_CL_1       - single_pt_CL_1_truth ))     
     error.single_pt_CL_2     = np.max(np.abs(single_pt_CL_2       - single_pt_CL_2_truth ))  
+    error.single_pt_CL_3     = np.max(np.abs(single_pt_CL_3       - single_pt_CL_3_truth ))  
     error.cruise_4_CL        = np.max(np.abs(cruise_4_CL         - cruise_4_CL_truth))      
     error.cruise_5_CL        = np.max(np.abs(cruise_5_CL         - cruise_5_CL_truth))   
     error.cruise_6_CL        = np.max(np.abs(cruise_6_CL         - cruise_6_CL_truth ))      
@@ -645,6 +648,27 @@ def mission_setup(analyses):
     segment.assigned_control_variables.body_angle.active             = True                
     
     mission.append_segment(segment)    
+    
+
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
+    #  Single Point Segment 1: constant Speed, constant altitude
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
+    segment = Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion(base_segment)
+    segment.tag = "single_point_3" 
+    segment.analyses.extend(analyses.base) 
+    segment.altitude                                                 =  2500. * Units.feet
+    segment.air_speed                                                =  200. * Units['m/s']  
+               
+    # define flight dynamics to model            
+    segment.flight_dynamics.force_x                                  = True  
+    segment.flight_dynamics.force_z                                  = True     
+    
+    # define flight controls 
+    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
+    segment.assigned_control_variables.body_angle.active             = True                
+     
+    mission.append_segment(segment)
     
     # ------------------------------------------------------------------------------------------------------------------------------------ 
     #   Loiter Segment: Constant Dynamic Pressure Constant Altitude Loiter
