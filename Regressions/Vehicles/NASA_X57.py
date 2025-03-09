@@ -397,7 +397,7 @@ def vehicle_setup(rotor_type):
         propeller.append_airfoil(airfoil)                       
         propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
     
-    elif rotor_type == 'Actuator_Disk':       
+    elif rotor_type == 'Actuator_Disk_Theory':       
         propeller.fidelity = rotor_type 
         propeller.tag                                    = 'propeller_1'  
         propeller.number_of_blades                       = 3

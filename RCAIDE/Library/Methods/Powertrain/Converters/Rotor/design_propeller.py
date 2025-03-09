@@ -44,7 +44,7 @@ def design_propeller(prop,number_of_stations=20):
           
     """
 
-    if prop.fidelity == 'Actuator_Disk':
+    if prop.fidelity == 'Actuator_Disk_Theory':
         
         omega     = prop.cruise.design_angular_velocity
         thrust    = prop.cruise.design_thrust

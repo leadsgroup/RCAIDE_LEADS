@@ -96,7 +96,7 @@ def compute_rotor_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]
 
         outputs = BEMT_Helmholts_performance(rotor, conditions, propulsor, center_of_gravity)
                       
-    elif rotor.fidelity == 'Actuator_Disk': 
+    elif rotor.fidelity == 'Actuator_Disk_Theory': 
 
         outputs = Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity)
     
