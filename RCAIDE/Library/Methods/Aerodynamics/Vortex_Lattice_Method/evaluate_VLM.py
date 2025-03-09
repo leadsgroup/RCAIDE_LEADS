@@ -24,7 +24,6 @@ def evaluate_surrogate(state,settings,vehicle):
     """Evaluates surrogates forces and moments using built surrogates 
     
     Assumptions:
-        Aileron deflection is inverted to match convention 
         
     Source:
         None
@@ -406,9 +405,9 @@ def evaluate_surrogate(state,settings,vehicle):
         pts_delta_r    = np.hstack((delta_r,Mach))
         
         results_delta_r =  compute_coefficients(sub_sur.Clift_delta_r,sub_sur.Cdrag_delta_r,sub_sur.CX_delta_r,sub_sur.CY_delta_r,sub_sur.CZ_delta_r,sub_sur.CL_delta_r,sub_sur.CM_delta_r, sub_sur.CN_delta_r,
-         trans_sur.Clift_delta_r,trans_sur.Cdrag_delta_r,trans_sur.CX_delta_r,trans_sur.CY_delta_r,trans_sur.CZ_delta_r,trans_sur.CL_delta_r,trans_sur.CM_delta_r, trans_sur.CN_delta_r,
-         sup_sur.Clift_delta_r,sup_sur.Cdrag_delta_r,sup_sur.CX_delta_r,sup_sur.CY_delta_r,sup_sur.CZ_delta_r,sup_sur.CL_delta_r,sup_sur.CM_delta_r, sup_sur.CN_delta_r,
-        h_sub,h_sup,Mach, pts_delta_r)
+                                                trans_sur.Clift_delta_r,trans_sur.Cdrag_delta_r,trans_sur.CX_delta_r,trans_sur.CY_delta_r,trans_sur.CZ_delta_r,trans_sur.CL_delta_r,trans_sur.CM_delta_r, trans_sur.CN_delta_r,
+                                                sup_sur.Clift_delta_r,sup_sur.Cdrag_delta_r,sup_sur.CX_delta_r,sup_sur.CY_delta_r,sup_sur.CZ_delta_r,sup_sur.CL_delta_r,sup_sur.CM_delta_r, sup_sur.CN_delta_r,
+                                                h_sub,h_sup,Mach, pts_delta_r)
          
         Clift_delta_r   = results_delta_r.Clift   
         Cdrag_delta_r   = results_delta_r.Cdrag   
@@ -489,7 +488,6 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.flap.static_stability.coefficients.N             = CN_delta_f           
         
     if aerodynamics.slat_flag: 
-    
         pts_delta_s    = np.hstack((delta_s,Mach)) 
         
         results_delta_s =  compute_coefficients(sub_sur.Clift_delta_s,sub_sur.Cdrag_delta_s,sub_sur.CX_delta_s,sub_sur.CY_delta_s,sub_sur.CZ_delta_s,sub_sur.CL_delta_s,sub_sur.CM_delta_s, sub_sur.CN_delta_s,
@@ -540,6 +538,7 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.CL_alpha    = compute_stability_derivative(sub_sur.dCL_dalpha    ,trans_sur.dCL_dalpha    ,sup_sur.dCL_dalpha    ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CM_alpha    = compute_stability_derivative(sub_sur.dCM_dalpha    ,trans_sur.dCM_dalpha    ,sup_sur.dCM_dalpha    ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_alpha    = compute_stability_derivative(sub_sur.dCN_dalpha    ,trans_sur.dCN_dalpha    ,sup_sur.dCN_dalpha    ,h_sub,h_sup,Mach)
+
     conditions.static_stability.derivatives.Clift_beta  = compute_stability_derivative(sub_sur.dClift_dbeta  ,trans_sur.dClift_dbeta  ,sup_sur.dClift_dbeta  ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CX_beta     = compute_stability_derivative(sub_sur.dCX_dbeta     ,trans_sur.dCX_dbeta     ,sup_sur.dCX_dbeta     ,h_sub,h_sup,Mach)  
     conditions.static_stability.derivatives.CY_beta     = compute_stability_derivative(sub_sur.dCY_dbeta     ,trans_sur.dCY_dbeta     ,sup_sur.dCY_dbeta     ,h_sub,h_sup,Mach)
@@ -547,6 +546,7 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.CL_beta     = compute_stability_derivative(sub_sur.dCL_dbeta     ,trans_sur.dCL_dbeta     ,sup_sur.dCL_dbeta     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CM_beta     = compute_stability_derivative(sub_sur.dCM_dbeta     ,trans_sur.dCM_dbeta     ,sup_sur.dCM_dbeta     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_beta     = compute_stability_derivative(sub_sur.dCN_dbeta     ,trans_sur.dCN_dbeta     ,sup_sur.dCN_dbeta     ,h_sub,h_sup,Mach)
+
     conditions.static_stability.derivatives.Clift_p     = compute_stability_derivative(sub_sur.dClift_dp     ,trans_sur.dClift_dp     ,sup_sur.dClift_dp     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.Clift_q     = compute_stability_derivative(sub_sur.dClift_dq     ,trans_sur.dClift_dq     ,sup_sur.dClift_dq     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.Clift_r     = compute_stability_derivative(sub_sur.dClift_dr     ,trans_sur.dClift_dr     ,sup_sur.dClift_dr     ,h_sub,h_sup,Mach)
@@ -585,7 +585,52 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.CM_r        = compute_stability_derivative(sub_sur.dCM_dr        ,trans_sur.dCM_dr        ,sup_sur.dCM_dr        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_p        = compute_stability_derivative(sub_sur.dCN_dp        ,trans_sur.dCN_dp        ,sup_sur.dCN_dp        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_q        = compute_stability_derivative(sub_sur.dCN_dq        ,trans_sur.dCN_dq        ,sup_sur.dCN_dq        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CN_r        = compute_stability_derivative(sub_sur.dCN_dr        ,trans_sur.dCN_dr        ,sup_sur.dCN_dr        ,h_sub,h_sup,Mach) 
+    conditions.static_stability.derivatives.CN_r        = compute_stability_derivative(sub_sur.dCN_dr        ,trans_sur.dCN_dr        ,sup_sur.dCN_dr        ,h_sub,h_sup,Mach)
+
+    if aerodynamics.elevator_flag: 
+        conditions.static_stability.derivatives.Clift_delta_e  = compute_stability_derivative(sub_sur.dClift_ddelta_e  ,trans_sur.dClift_ddelta_e  ,sup_sur.dClift_ddelta_e  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_e     = compute_stability_derivative(sub_sur.dCX_ddelta_e     ,trans_sur.dCX_ddelta_e     ,sup_sur.dCX_ddelta_e     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_e     = compute_stability_derivative(sub_sur.dCY_ddelta_e     ,trans_sur.dCY_ddelta_e     ,sup_sur.dCY_ddelta_e     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_e     = compute_stability_derivative(sub_sur.dCZ_ddelta_e     ,trans_sur.dCZ_ddelta_e     ,sup_sur.dCZ_ddelta_e     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_e     = compute_stability_derivative(sub_sur.dCL_ddelta_e     ,trans_sur.dCL_ddelta_e     ,sup_sur.dCL_ddelta_e     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_e     = compute_stability_derivative(sub_sur.dCM_ddelta_e     ,trans_sur.dCM_ddelta_e     ,sup_sur.dCM_ddelta_e     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_e     = compute_stability_derivative(sub_sur.dCN_ddelta_e     ,trans_sur.dCN_ddelta_e     ,sup_sur.dCN_ddelta_e     ,h_sub,h_sup,Mach) 
+
+    if aerodynamics.aileron_flag: 
+        conditions.static_stability.derivatives.Clift_delta_a  = compute_stability_derivative(sub_sur.dClift_ddelta_a  ,trans_sur.dClift_ddelta_a  ,sup_sur.dClift_ddelta_a  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_a     = compute_stability_derivative(sub_sur.dCX_ddelta_a     ,trans_sur.dCX_ddelta_a     ,sup_sur.dCX_ddelta_a     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_a     = compute_stability_derivative(sub_sur.dCY_ddelta_a     ,trans_sur.dCY_ddelta_a     ,sup_sur.dCY_ddelta_a     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_a     = compute_stability_derivative(sub_sur.dCZ_ddelta_a     ,trans_sur.dCZ_ddelta_a     ,sup_sur.dCZ_ddelta_a     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_a     = compute_stability_derivative(sub_sur.dCL_ddelta_a     ,trans_sur.dCL_ddelta_a     ,sup_sur.dCL_ddelta_a     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_a     = compute_stability_derivative(sub_sur.dCM_ddelta_a     ,trans_sur.dCM_ddelta_a     ,sup_sur.dCM_ddelta_a     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_a     = compute_stability_derivative(sub_sur.dCN_ddelta_a     ,trans_sur.dCN_ddelta_a     ,sup_sur.dCN_ddelta_a     ,h_sub,h_sup,Mach) 
+
+    if aerodynamics.rudder_flag: 
+        conditions.static_stability.derivatives.Clift_delta_r  = compute_stability_derivative(sub_sur.dClift_ddelta_r  ,trans_sur.dClift_ddelta_r  ,sup_sur.dClift_ddelta_r  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_r     = compute_stability_derivative(sub_sur.dCX_ddelta_r     ,trans_sur.dCX_ddelta_r     ,sup_sur.dCX_ddelta_r     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_r     = compute_stability_derivative(sub_sur.dCY_ddelta_r     ,trans_sur.dCY_ddelta_r     ,sup_sur.dCY_ddelta_r     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_r     = compute_stability_derivative(sub_sur.dCZ_ddelta_r     ,trans_sur.dCZ_ddelta_r     ,sup_sur.dCZ_ddelta_r     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_r     = compute_stability_derivative(sub_sur.dCL_ddelta_r     ,trans_sur.dCL_ddelta_r     ,sup_sur.dCL_ddelta_r     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_r     = compute_stability_derivative(sub_sur.dCM_ddelta_r     ,trans_sur.dCM_ddelta_r     ,sup_sur.dCM_ddelta_r     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_r     = compute_stability_derivative(sub_sur.dCN_ddelta_r     ,trans_sur.dCN_ddelta_r     ,sup_sur.dCN_ddelta_r     ,h_sub,h_sup,Mach) 
+
+    if aerodynamics.flap_flag: 
+        conditions.static_stability.derivatives.Clift_delta_f  = compute_stability_derivative(sub_sur.dClift_ddelta_f  ,trans_sur.dClift_ddelta_f  ,sup_sur.dClift_ddelta_f  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_f     = compute_stability_derivative(sub_sur.dCX_ddelta_f     ,trans_sur.dCX_ddelta_f     ,sup_sur.dCX_ddelta_f     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_f     = compute_stability_derivative(sub_sur.dCY_ddelta_f     ,trans_sur.dCY_ddelta_f     ,sup_sur.dCY_ddelta_f     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_f     = compute_stability_derivative(sub_sur.dCZ_ddelta_f     ,trans_sur.dCZ_ddelta_f     ,sup_sur.dCZ_ddelta_f     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_f     = compute_stability_derivative(sub_sur.dCL_ddelta_f     ,trans_sur.dCL_ddelta_f     ,sup_sur.dCL_ddelta_f     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_f     = compute_stability_derivative(sub_sur.dCM_ddelta_f     ,trans_sur.dCM_ddelta_f     ,sup_sur.dCM_ddelta_f     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_f     = compute_stability_derivative(sub_sur.dCN_ddelta_f     ,trans_sur.dCN_ddelta_f     ,sup_sur.dCN_ddelta_f     ,h_sub,h_sup,Mach) 
+
+    if aerodynamics.slat_flag: 
+        conditions.static_stability.derivatives.Clift_delta_s  = compute_stability_derivative(sub_sur.dClift_ddelta_s  ,trans_sur.dClift_ddelta_s  ,sup_sur.dClift_ddelta_s  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_s     = compute_stability_derivative(sub_sur.dCX_ddelta_s     ,trans_sur.dCX_ddelta_s     ,sup_sur.dCX_ddelta_s     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_s     = compute_stability_derivative(sub_sur.dCY_ddelta_s     ,trans_sur.dCY_ddelta_s     ,sup_sur.dCY_ddelta_s     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_s     = compute_stability_derivative(sub_sur.dCZ_ddelta_s     ,trans_sur.dCZ_ddelta_s     ,sup_sur.dCZ_ddelta_s     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_s     = compute_stability_derivative(sub_sur.dCL_ddelta_s     ,trans_sur.dCL_ddelta_s     ,sup_sur.dCL_ddelta_s     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_s     = compute_stability_derivative(sub_sur.dCM_ddelta_s     ,trans_sur.dCM_ddelta_s     ,sup_sur.dCM_ddelta_s     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_s     = compute_stability_derivative(sub_sur.dCN_ddelta_s     ,trans_sur.dCN_ddelta_s     ,sup_sur.dCN_ddelta_s     ,h_sub,h_sup,Mach) 
 
     for wing in vehicle.wings:   
         inviscid_wing_lifts = compute_coefficient(sub_sur.Clift_wing_alpha[wing.tag],trans_sur.Clift_wing_alpha[wing.tag],sup_sur.Cdrag_wing_alpha[wing.tag] ,h_sub,h_sup,Mach,pts_alpha)
