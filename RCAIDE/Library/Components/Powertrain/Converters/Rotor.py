@@ -189,7 +189,7 @@ class Rotor(Component):
         self.airfoils                          = Airfoil_Container() 
         self.airfoil_polar_stations            = []  
         self.propulsive_efficiency             = 0.86   
-        self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz'  
+        self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'  
         
         # design flight conditions 
         self.cruise                            = Data() 
