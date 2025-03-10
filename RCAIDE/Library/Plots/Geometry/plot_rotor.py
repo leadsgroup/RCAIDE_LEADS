@@ -1,4 +1,3 @@
-## @ingroup Library-Plots-Geometry
 # RCAIDE/Library/Plots/Geometry/plot_rotor.py
 # 
 # 

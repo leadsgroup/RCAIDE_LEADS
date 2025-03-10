@@ -7,11 +7,11 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports  
-from RCAIDE.Library.Methods                           import skip   
+# RCAIDE imports   
 from RCAIDE.Framework.Core                            import Units 
 from RCAIDE.Framework.Mission.Segments.Evaluate       import Evaluate
 from RCAIDE.Library.Mission                           import Common,Segments
+from RCAIDE.Library.Methods.skip                      import skip 
  
 # Package imports 
 import numpy as np
@@ -47,34 +47,40 @@ class Set_Speed_Set_Altitude_No_Propulsion(Evaluate):
     
             Properties Used:
             None
-        """           
+        """          
         
         # --------------------------------------------------------------------------------------------------------------
         #   User Inputs
         # --------------------------------------------------------------------------------------------------------------
         self.altitude                                = None
         self.air_speed                               = 10. * Units['km/hr']
-        self.distance                                = 1.  * Units.km
+        self.distance                                = 10. * Units.km
+        self.linear_acceleration_x                   = 0.
+        self.linear_acceleration_y                   = 0.  
         self.linear_acceleration_z                   = 0. # note that down is positive
-        self.roll_rate                               = 0
-        self.pitch_rate                              = 0
-        self.yaw_rate                                = 0
-        self.state.numerics.number_of_control_points = 1
-
+        self.roll_rate                               = 0.
+        self.pitch_rate                              = 0.  
+        self.yaw_rate                                = 0.  
+        self.state.numerics.number_of_control_points = 1   
+         
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
-        # --------------------------------------------------------------------------------------------------------------             
-        initialize                         = self.process.initialize 
-        initialize.expand_state            = skip
-        initialize.differentials           = skip
-        initialize.conditions              = Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion.initialize_conditions 
-        iterate                            = self.process.iterate
-        iterate.conditions.differentials   = skip 
-        iterate.conditions.weights         = Common.Update.weights
-        iterate.conditions.planet_position = skip 
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
-        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces
-        iterate.unknowns.orientation       = Common.Unpack_Unknowns.orientation
+        # --------------------------------------------------------------------------------------------------------------     
+        initialize                               = self.process.initialize 
+        initialize.expand_state                  = skip
+        initialize.differentials                 = skip
+        initialize.conditions                    = Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion.initialize_conditions 
+        iterate                                  = self.process.iterate 
+        iterate.initials.energy                  = skip
+        iterate.unknowns.controls                = Common.Unpack_Unknowns.control_surfaces
+        iterate.unknowns.mission                 = Common.Unpack_Unknowns.orientation  
+        iterate.conditions.planet_position       = skip    
+        iterate.conditions.acceleration          = skip
+        iterate.conditions.angular_acceleration  = skip 
+        iterate.conditions.weights               = skip
+        iterate.residuals.flight_dynamics        = Common.Residuals.flight_dynamics
+        post_process                             = self.process.post_process 
+        post_process.inertial_position           = skip     
         
         return
 

@@ -207,9 +207,17 @@ def vehicle_setup():
 
     fuselage                       = RCAIDE.Library.Components.Fuselages.Tube_Fuselage() 
     fuselage.origin                = [[0,0,0]]
-    fuselage.number_coach_seats    = vehicle.passengers
-    fuselage.seats_abreast         = 4
-    fuselage.seat_pitch            = 30. * Units.inches
+
+
+    cabin         = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 4
+    economy_class.number_of_rows                      = 23
+    economy_class.galley_lavatory_percent_x_locations = [0, 1]      
+    economy_class.emergency_exit_percent_x_locations  = [0.5, 0.5]      
+    economy_class.type_A_exit_percent_x_locations     = [0, 1]     
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin) 
 
     fuselage.fineness.nose         = 1.28
     fuselage.fineness.tail         = 3.48
@@ -217,9 +225,7 @@ def vehicle_setup():
     fuselage.lengths.nose          = 6.0
     fuselage.lengths.tail          = 9.0
     fuselage.lengths.cabin         = 21.24
-    fuselage.lengths.total         = 36.24
-    fuselage.lengths.fore_space    = 0.
-    fuselage.lengths.aft_space     = 0.
+    fuselage.lengths.total         = 36.24 
 
     fuselage.width                 = 3.01 * Units.meters
 

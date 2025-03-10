@@ -15,7 +15,6 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------   
-## @ingroup Library-Plots-Performance-Aerodynamics
 def plot_drag_components(results,
                          save_figure=False,
                          show_legend= True,

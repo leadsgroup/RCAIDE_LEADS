@@ -252,10 +252,10 @@ Y
 {0}'''       
     pitch_rate_coeff   = case.conditions.static_stability.coefficients.pitch  
     if pitch_rate_coeff != 0.0:
-        pitch_command = base_pitch_command.format(pitch_rate_coeff)
+        blade_pitch_command = base_pitch_command.format(pitch_rate_coeff)
     else:
-        pitch_command = ''
-    return pitch_command
+        blade_pitch_command = ''
+    return blade_pitch_command
 
 def make_beta_text_command(case):
     """ Writes the roll rate command currently for a specified flight  condition

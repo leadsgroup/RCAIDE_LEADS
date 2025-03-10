@@ -93,7 +93,7 @@ def propeller_geometry():
         ]
     )
 
-    prop.pitch_command               = 0.0* Units.deg
+    prop.blade_pitch_command         = 0.0* Units.deg
     prop.twist_distribution          = beta * Units.deg
     prop.chord_distribution          = c_R * prop.tip_radius
     prop.radius_distribution         = r_R * prop.tip_radius

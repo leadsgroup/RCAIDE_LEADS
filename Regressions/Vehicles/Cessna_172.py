@@ -168,8 +168,19 @@ def vehicle_setup():
     # ########################################################## Fuselage ############################################################### 
     #------------------------------------------------------------------------------------------------------------------------------------
     
-    fuselage                                    = RCAIDE.Library.Components.Fuselages.Tube_Fuselage() 
-    fuselage.number_coach_seats                 = 4.        
+    fuselage                                          = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
+    
+    # define cabin
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 2
+    economy_class.number_of_rows                      = 2
+    economy_class.galley_lavatory_percent_x_locations = []  
+    economy_class.emergency_exit_percent_x_locations  = []      
+    economy_class.type_A_exit_percent_x_locations     = [] 
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin)
+    
     fuselage.differential_pressure              = 8*Units.psi                    # Maximum differential pressure
     fuselage.width                              = 42.         * Units.inches     # Width of the fuselage
     fuselage.heights.maximum                    = 62. * Units.inches    # Height of the fuselage
@@ -178,8 +189,7 @@ def vehicle_setup():
     fuselage.lengths.cabin                      = 105. * Units.inches 
     fuselage.mass_properties.volume             = .4*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.) #try this as approximation
     fuselage.mass_properties.internal_volume    = .3*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.)
-    fuselage.areas.wetted                       = 30000. * Units.inches**2.
-    fuselage.seats_abreast                      = 2.
+    fuselage.areas.wetted                       = 30000. * Units.inches**2. 
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.
     fuselage.lengths.nose                       = 60.  * Units.inches

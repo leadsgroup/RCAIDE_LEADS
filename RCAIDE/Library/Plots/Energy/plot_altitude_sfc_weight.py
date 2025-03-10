@@ -20,7 +20,7 @@ import numpy as np
 def plot_altitude_sfc_weight(results,
                              save_figure = False,
                              show_legend = True,
-                             save_filename = "Altitude_SFC_Weight" ,
+                             save_filename = "Weight_Fuel_Consumption" ,
                              file_type = ".png",
                              width = 11, height = 7):
     """
@@ -58,8 +58,8 @@ def plot_altitude_sfc_weight(results,
     Notes
     -----
     The function creates a 2x2 subplot containing:
-        1. Throttle settings vs time
         2. Vehicle weight vs time
+        1. Fuel consumption vs time
         3. Specific fuel consumption vs time
         4. Fuel consumption rate vs time
     
@@ -92,29 +92,26 @@ def plot_altitude_sfc_weight(results,
     axis_4 = plt.subplot(2,2,4)
     
     for i in range(len(results.segments)): 
-        time     = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        Weight   = results.segments[i].conditions.weights.total_mass[:, 0] * 9.81   
-        mdot     = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]
-        thrust   = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
-        sfc      = (mdot / Units.lb) / (thrust / Units.lbf) * Units.hr        
+        time      = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
+        Weight    = results.segments[i].conditions.weights.total_mass[:, 0] * 9.81   
+        mdot      = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]
+        thrust    = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
+        thrust    = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
+        fuel_mass = results.segments[i].conditions.energy.cumulative_fuel_consumption[:, 0]
+        sfc       = (mdot / Units.lb) / (thrust / Units.lbf) * Units.hr
         
-        axis_1.set_ylabel(r'Throttle')
-        set_axes(axis_1)               
-        for network in results.segments[i].analyses.energy.vehicle.networks:   
-            for j ,  propulsor in enumerate(network.propulsors):
-                eta = results.segments[i].conditions.energy[propulsor.tag].throttle[:,0]
-                eta = results.segments[i].conditions.energy[propulsor.tag].throttle[:,0]  
-                if j == 0 and i ==0: 
-                    axis_1.plot(time, eta, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = propulsor.tag   )
-                else:
-                    axis_1.plot(time, eta, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)  
+
+        segment_tag  =  results.segments[i].tag
+        segment_name = segment_tag.replace('_', ' ')       
+        axis_1.plot(time, Weight/1000 , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name )  
+        axis_1.set_ylabel(r'Weight (kN)')  
+        set_axes(axis_1) 
+
+        axis_2.plot(time, fuel_mass, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
+        axis_2.set_xlabel('Time (mins)')
+        axis_2.set_ylabel(r'Fuel Consumption (kg)')
+        set_axes(axis_2)
         
-        if i == 0:
-            axis_2.plot(time, Weight/1000 , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = propulsor.tag  ) 
-        else:
-            axis_2.plot(time, Weight/1000 , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width) 
-        axis_2.set_ylabel(r'Weight (kN)')  
-        set_axes(axis_2) 
 
         axis_3.plot(time, sfc, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_3.set_xlabel('Time (mins)')
@@ -135,7 +132,7 @@ def plot_altitude_sfc_weight(results,
     fig.subplots_adjust(top=0.8)
     
     # set title of plot 
-    title_text    = 'Throttle, Fuel Consumption and Weight'      
+    title_text    = 'Weight and Fuel Consumption'      
     fig.suptitle(title_text)
     
     if save_figure:

@@ -243,16 +243,25 @@ def vehicle_setup():
     #  Fuselage
     # ------------------------------------------------------------------ 
     fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
-    fuselage.tag = 'fuselage' 
-    fuselage.seats_abreast                      = 4 
-    fuselage.seat_pitch                         = 18  
+    fuselage.tag = 'fuselage'
+
+    # define cabin
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 4
+    economy_class.number_of_rows                      = 18
+    economy_class.galley_lavatory_percent_x_locations = [0, 1]      
+    economy_class.emergency_exit_percent_x_locations  = [0.5, 0.5]      
+    economy_class.type_A_exit_percent_x_locations     = [0, 1]     
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin)
+    
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2. 
     fuselage.lengths.total                      = 27.12   
     fuselage.lengths.nose                       = 3.375147531 
     fuselage.lengths.tail                       = 9.2 
-    fuselage.effective_diameter                 = 2.985093814  
-    fuselage.lengths.cabin                      = fuselage.lengths.total- (fuselage.lengths.nose + fuselage.lengths.tail  )
+    fuselage.effective_diameter                 = 2.985093814   
     fuselage.width                              = 2.985093814  
     fuselage.heights.maximum                    = 2.755708426  
     fuselage.areas.side_projected               = fuselage.heights.maximum * fuselage.lengths.total * Units['meters**2'] 

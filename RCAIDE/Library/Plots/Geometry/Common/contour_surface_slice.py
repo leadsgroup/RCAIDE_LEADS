@@ -1,4 +1,3 @@
-## @ingroup Library-Plots-Geometry-Common
 # RCAIDE/Library/Plots/Geometry/Common/contour_surface_slices.py
 # 
 # 

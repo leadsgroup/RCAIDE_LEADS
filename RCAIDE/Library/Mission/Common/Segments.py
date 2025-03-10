@@ -17,7 +17,8 @@ def pre_process(mission):
 def sequential_segments(mission):  
     
     last_tag = None
-    for tag,segment in mission.segments.items(): 
+    for tag,segment in mission.segments.items():
+        segment.mission_tag = mission.tag
         if last_tag:
             segment.state.initials = mission.segments[last_tag].state
         last_tag = tag        

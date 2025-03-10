@@ -324,17 +324,36 @@ def vehicle_setup():
 
     # ################################################# Fuselage ################################################################ 
     
-    fuselage                                    = RCAIDE.Library.Components.Fuselages.Tube_Fuselage() 
-    fuselage.number_coach_seats                 = vehicle.passengers 
-    fuselage.seats_abreast                      = 6
-    fuselage.seat_pitch                         = 1     * Units.meter 
+    fuselage                                           = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()  
+    
+    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
+    first_class.number_of_seats_abrest                 = 4
+    first_class.number_of_rows                         = 3
+    first_class.galley_lavatory_percent_x_locations    = [0]       
+    first_class.type_A_exit_percent_x_locations        = [0.01]
+    cabin.append_cabin_class(first_class) 
+
+    business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
+    business_class.number_of_seats_abrest              = 6
+    business_class.number_of_rows                      = 3  
+    cabin.append_cabin_class(business_class) 
+    
+    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 6
+    economy_class.number_of_rows                      = 17
+    economy_class.galley_lavatory_percent_x_locations = [1]      
+    economy_class.emergency_exit_percent_x_locations  = [0.1,0.15] 
+    economy_class.type_A_exit_percent_x_locations     = [0.99]
+    cabin.append_cabin_class(economy_class)
+    
+    fuselage.append_cabin(cabin)       
+    
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2. 
     fuselage.lengths.nose                       = 6.4   * Units.meter
     fuselage.lengths.tail                       = 8.0   * Units.meter
-    fuselage.lengths.total                      = 38.02 * Units.meter  
-    fuselage.lengths.fore_space                 = 6.    * Units.meter
-    fuselage.lengths.aft_space                  = 5.    * Units.meter
+    fuselage.lengths.total                      = 38.02 * Units.meter   
     fuselage.width                              = 3.74  * Units.meter
     fuselage.heights.maximum                    = 3.74  * Units.meter
     fuselage.effective_diameter                 = 3.74     * Units.meter

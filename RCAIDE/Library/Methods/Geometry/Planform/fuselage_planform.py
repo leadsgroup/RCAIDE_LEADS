@@ -3,14 +3,14 @@
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-
 import numpy as np
+from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
 
 # ----------------------------------------------------------------------
 #  Methods
 # ----------------------------------------------------------------------
 
-def fuselage_planform(fuselage):
+def fuselage_planform(fuselage, circular_cross_section = True):
     """Calculates fuselage geometry values
 
     Assumptions:
@@ -21,13 +21,9 @@ def fuselage_planform(fuselage):
 
     Inputs:
     fuselage.
-      num_coach_seats       [-]
-      seat_pitch            [m]
-      seats_abreast         [-]
+      num_coach_seats       [-] 
       fineness.nose         [-]
-      fineness.tail         [-]
-      lengths.fore_space    [m]
-      lengths.aft_space     [m]
+      fineness.tail         [-] 
       width                 [m]
       heights.maximum       [m]
 
@@ -43,48 +39,30 @@ def fuselage_planform(fuselage):
 
     Properties Used:
     N/A
-    """        
-    
-    # unpack
-    number_seats    = fuselage.number_coach_seats
-    seat_pitch      = fuselage.seat_pitch
-    seats_abreast   = fuselage.seats_abreast
+    """
+    # size cabins 
+    compute_layout_of_passenger_accommodations(fuselage)
+     
     nose_fineness   = fuselage.fineness.nose
     tail_fineness   = fuselage.fineness.tail
-    forward_extra   = fuselage.lengths.fore_space
-    aft_extra       = fuselage.lengths.aft_space
-    fuselage_width  = fuselage.width
-    fuselage_height = fuselage.heights.maximum
-    length          = fuselage.lengths.total
     
-    if length ==0.:    
-        # process
-        nose_length     = nose_fineness * fuselage_width
-        tail_length     = tail_fineness * fuselage_width
-        cabin_length    = number_seats * seat_pitch / seats_abreast + \
-                       forward_extra + aft_extra
-        fuselage_length = cabin_length + nose_length + tail_length
-    else:
-        fuselage_length = fuselage.lengths.total
-        nose_length     = nose_fineness * fuselage_width
-        tail_length     = tail_fineness * fuselage_width      
-        cabin_length    = fuselage_length - nose_length - tail_length
+    cabin_length    = 0
+    fuselage_width  = 0
+    for cabin in fuselage.cabins: 
+        cabin_length += cabin.length
+        fuselage_width =  np.maximum(fuselage_width, cabin.width)
         
-        if fuselage_length <= 0:
-            fuselage_length = 1.
-        if nose_length <= 0.:
-            nose_length = 1.
-        if tail_length <= 0:
-            tail_length = 1.
-        if cabin_length <= 1.:
-            cabin_length = 1.
-        
-        # Now we can calculate the number of passengers
-        number_seats    = np.round(cabin_length * seats_abreast / seat_pitch)
-        if number_seats <=0: number_seats=0
-    
-    wetted_area = 0.0
-    
+    nose_length     = nose_fineness * fuselage_width
+    tail_length     = tail_fineness * fuselage_width 
+    fuselage_length = cabin_length + nose_length + tail_length 
+    fuselage.lengths.total = fuselage_length    
+
+    if circular_cross_section:
+        fuselage_height = fuselage_width
+    else: 
+        fuselage_height = fuselage.heights.maximum
+            
+    wetted_area = 0.0 
     # model constant fuselage cross section as an ellipse
     # approximate circumference http://en.wikipedia.org/wiki/Ellipse#Circumference
     a = fuselage_width/2.
@@ -108,7 +86,5 @@ def fuselage_planform(fuselage):
     fuselage.lengths.total         = fuselage_length
     fuselage.areas.wetted          = wetted_area
     fuselage.areas.front_projected = cross_section_area
-    fuselage.effective_diameter    = Deff
-    fuselage.number_coach_seats    = number_seats
-    
+    fuselage.effective_diameter    = Deff 
     return fuselage

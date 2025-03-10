@@ -80,9 +80,7 @@ class Set_Speed_Set_Altitude(Evaluate):
         iterate.conditions.weights               = skip
         iterate.residuals.flight_dynamics        = Common.Residuals.flight_dynamics
         post_process                             = self.process.post_process 
-        post_process.inertial_position           = skip   
-        
-                
+        post_process.inertial_position           = skip    
                 
         return
 

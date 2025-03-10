@@ -72,7 +72,7 @@ def SciPy_Solve(problem,solver='SLSQP', sense_step = 1.4901161193847656e-08, ite
     # Finalize problem statement and run
     if solver=='SLSQP':
         outputs = sp.optimize.fmin_slsqp(wrapper,x,f_eqcons=problem.equality_constraint,f_ieqcons=problem.inequality_constraint,bounds=bnds,\
-                                         iter=iter, epsilon = sense_step, acc  = tolerance)
+                                         iter=iter, epsilon = sense_step, acc  = tolerance, full_output=True,  iprint=0)
     elif solver == 'differential_evolution':
         # Define constraints as a tuple of nonlinear constraints 
         scaled_constraints = []

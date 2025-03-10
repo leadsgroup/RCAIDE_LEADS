@@ -19,7 +19,6 @@ import numpy as np
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------     
 
-## @ingroup Library-Plots-Performance-Aerodynamics
 def plot_airfoil_boundary_layer_properties(ap,
                                            save_figure = False,
                                            show_legend = False,

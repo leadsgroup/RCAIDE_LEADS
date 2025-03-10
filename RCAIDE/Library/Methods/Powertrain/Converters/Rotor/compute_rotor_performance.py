@@ -92,17 +92,15 @@ def compute_rotor_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]
     elif 'propeller' in  propulsor:
         rotor =  propulsor.propeller
 
-    if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz': 
+    if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
 
         outputs = BEMT_Helmholts_performance(rotor, conditions, propulsor, center_of_gravity)
                       
-    elif rotor.fidelity == 'Actuator_Disk': 
+    elif rotor.fidelity == 'Actuator_Disk_Theory': 
 
         outputs = Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity)
     
-    conditions.energy[propulsor.tag][rotor.tag] = outputs    
-     
-    
+    conditions.energy[propulsor.tag][rotor.tag] = outputs     
     
     return  
 
@@ -113,7 +111,7 @@ def BEMT_Helmholts_performance(rotor, conditions, propulsor, center_of_gravity):
     commanded_TV          = propulsor_conditions.commanded_thrust_vector_angle
     eta                   = rotor_conditions.throttle 
     omega                 = rotor_conditions.omega
-    pitch_c               = rotor_conditions.pitch_command
+    pitch_c               = rotor_conditions.blade_pitch_command
     B                     = rotor.number_of_blades
     R                     = rotor.tip_radius
     beta_0                = rotor.twist_distribution
@@ -501,38 +499,67 @@ def BEMT_Helmholts_performance(rotor, conditions, propulsor, center_of_gravity):
                 blade_H_distribution              = rotor_drag_distribution,
                 rotor_drag                        = rotor_drag,
                 rotor_drag_coefficient            = Crd,
-                pitch_command                     = pitch_c, 
+                blade_pitch_command               = pitch_c, 
                 figure_of_merit                   = FoM, 
         )  
 
     return outputs
 
 
-def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
 
+# ---------------------------------------------------------------------------------------------------------------------- 
+# Actuator_Disk_performance
+# ----------------------------------------------------------------------------------------------------------------------  
+def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
+    '''
+    
+    MATTEO
+    
+    '''
+
+    rho                   = conditions.freestream.density   
     propulsor_conditions  = conditions.energy[propulsor.tag]
-    rotor_conditions      = propulsor_conditions[rotor.tag]
-    commanded_TV          = propulsor_conditions.commanded_thrust_vector_angle
-    eta                   = rotor_conditions.throttle 
+    commanded_TV          = propulsor_conditions.commanded_thrust_vector_angle 
+    rotor_conditions      = propulsor_conditions[rotor.tag]  
+    pitch_c               = rotor_conditions.blade_pitch_command
     omega                 = rotor_conditions.omega
-    a                     = conditions.freestream.speed_of_sound 
-    rho                   = conditions.freestream.density 
-    alt                   = conditions.freestream.altitude  
+    torque                = rotor_conditions.motor_torque 
+    B                     = rotor.number_of_blades   
+    R                     = rotor.tip_radius 
+    eta_p                 = rotor.propulsive_efficiency    
     
     # Unpack ducted_fan blade parameters and operating conditions  
-    V                     = conditions.freestream.velocity  
-    n, D, J, eta_p, Cp, Ct        = compute_propeller_efficiency(rotor, V, omega)
-    ctrl_pts              = len(V)
+    Vv      = conditions.frames.inertial.velocity_vector 
 
-    thrust                = Ct*(rho * (n**2)*(D**4))                 
-    power                 = Cp*(rho * (n**3)*(D**5) ) 
-    torque                = power/omega
-    # power                 = torque*omega
-    # thrust                = eta_p*power/V   
-    # Cp                    = power/(rho * (n**3)*(D**5) ) 
-    # Ct                    = thrust/(rho * (n**2)*(D**4)) 
+    # Velocity in the rotor frame
+    T_body2inertial         = conditions.frames.body.transform_to_inertial
+    T_inertial2body         = orientation_transpose(T_body2inertial)
+    V_body                  = orientation_product(T_inertial2body,Vv)
+    body2thrust,orientation = rotor.body_to_prop_vel(commanded_TV) 
+    T_body2thrust           = orientation_transpose(np.ones_like(T_body2inertial[:])*body2thrust)
+    V_thrust                = orientation_product(T_body2thrust,V_body)
+
+    # Check and correct for hover
+    V         = V_thrust[:,0,None]
+    V[V==0.0] = 1E-6
+    
+    eta    = eta_p * np.ones_like(V) 
+    power  = torque*omega
+    n      = omega/(2.*np.pi) 
+    D      = 2*R 
+    thrust = eta*power/V 
+    Cp     = power/(rho*(n*n*n)*(D*D*D*D*D)) 
+    Cq     = torque/(rho*(n*n)*(D*D*D*D*D))
+    Ct     = thrust/(rho*(n*n)*(D*D*D*D))
+    Cp     = power/(rho*(n*n*n)*(D*D*D*D*D)) 
+    
+    ctrl_pts              = len(V) 
     thrust_vector         = np.zeros((ctrl_pts,3))
-    thrust_vector[:,0]    = thrust[:,0]           
+    thrust_vector[:,0]    = thrust[:,0]         
+    disc_loading          = thrust/(np.pi*(R**2))
+    power_loading         = thrust/(power)    
+    A                     = np.pi*(R**2 - rotor.hub_radius**2)
+    FoM                   = thrust*np.sqrt(thrust/(2*rho*A))/power  
      
     # Compute moment 
     moment_vector         = np.zeros((ctrl_pts,3))
@@ -544,51 +571,25 @@ def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
     outputs                                   = Data( 
             thrust                            = thrust_vector,  
             power                             = power,
+            rpm                               = omega/Units.rpm,
+            omega                             = omega,
             power_coefficient                 = Cp, 
             thrust_coefficient                = Ct,
-            efficiency                        = eta_p, 
+            torque_coefficient                = Cq,  
+            speed_of_sound                    = conditions.freestream.speed_of_sound,
+            density                           = conditions.freestream.density,
+            tip_mach                          = omega * R / conditions.freestream.speed_of_sound, 
+            efficiency                        = eta, 
             moment                            = moment, 
-            torque                            = torque)
+            torque                            = torque,       
+            orientation                       = orientation, 
+            advance_ratio                     = V/(n*D),    
+            velocity                          = Vv, 
+            disc_loading                      = disc_loading, 
+            power_loading                     = power_loading,  
+            thrust_per_blade                  = thrust/B, 
+            torque_per_blade                  = torque/B,
+            blade_pitch_command               = pitch_c, 
+            figure_of_merit                   = FoM,) 
 
     return outputs
-
-def compute_propeller_efficiency(propeller, V, omega):
-    """
-    Calculate propeller efficiency based on propeller type and velocity.
-    
-    Parameters
-    ----------
-    propeller_type : str
-        Type of propeller ('constant_speed' or 'fixed_pitch')
-    u0 : float
-        Current velocity
-        
-    Returns
-    -------
-    float
-        Calculated propeller efficiency
-    """
-
-    n = omega/(2*np.pi)
-    D = 2*propeller.tip_radius
-    J = V/(n*D)
-
-    eta_J_vector = propeller.etap_J_coefficients
-    eta_vector = propeller.etap_eff_coefficients
-
-    eta_fz = interp1d(eta_J_vector, eta_vector, kind='cubic', fill_value=0.0, bounds_error=False)
-    eta_p = eta_fz(J)
-
-    Cp_J_vector = propeller.Cp_J_coefficients
-    Cp_vector = propeller.Cp_power_coefficients
-
-    Cp_fz = interp1d(Cp_J_vector, Cp_vector, kind='cubic', fill_value=0.0, bounds_error=False)
-    Cp = Cp_fz(J)
-
-    Ct_J_vector = propeller.Ct_J_coefficients
-    Ct_vector = propeller.Ct_thrust_coefficients
-
-    Ct_fz = interp1d(Ct_J_vector, Ct_vector, kind='cubic', fill_value=0.0, bounds_error=False)
-    Ct = Ct_fz(J)
-
-    return n, D, J, eta_p, Cp, Ct

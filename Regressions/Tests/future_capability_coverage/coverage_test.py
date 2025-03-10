@@ -54,6 +54,7 @@ def main():
     propellant  = RCAIDE.Library.Attributes.Propellants.Methane() 
     propellant  = RCAIDE.Library.Attributes.Propellants.Propane()
     propellant  = RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen()
+    propellant  = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     propellant  = RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture()
     propellant  = RCAIDE.Library.Attributes.Propellants.Alkane_Mixture()
     propellant  = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()

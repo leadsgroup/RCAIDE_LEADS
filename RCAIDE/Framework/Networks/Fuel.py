@@ -10,7 +10,8 @@
 import  RCAIDE 
 from RCAIDE.Framework.Mission.Common                      import Residuals 
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
-from .Network                                             import Network   
+from .Network                                             import Network
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Fuel
@@ -113,8 +114,7 @@ class Fuel(Network):
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.thrust_moment_vector = total_moment
         conditions.energy.power                = total_power 
-        conditions.energy.vehicle_mass_rate    = total_mdot    
-        
+        conditions.weights.vehicle_mass_rate   = total_mdot  
         return
     
     def unpack_unknowns(self,segment):

@@ -51,10 +51,10 @@ def compute_cs_ice_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0
     engine_conditions.rpm   = conditions.energy[propulsor.tag].rpm 
 
     # Run the propeller to get the power
-    propeller_conditions                = ice_cs_conditions[propeller.tag]
-    propeller_conditions.omega          = engine_conditions.rpm * Units.rpm
-    propeller_conditions.pitch_command  = ice_cs_conditions.throttle - 0.5
-    propeller_conditions.throttle       = ice_cs_conditions.throttle
+    propeller_conditions                      = ice_cs_conditions[propeller.tag]
+    propeller_conditions.omega                = engine_conditions.rpm * Units.rpm
+    propeller_conditions.blade_pitch_command  = ice_cs_conditions.throttle - 0.5
+    propeller_conditions.throttle             = ice_cs_conditions.throttle
     compute_rotor_performance(propulsor,state,center_of_gravity)
 
     # Run the engine to calculate the throttle setting and the fuel burn

@@ -1,4 +1,3 @@
-## @ingroup Library-Plots-Geometry
 # RCAIDE/Library/Plots/Energy/plot_battery_ragone_diagram.py
 # 
 # 
@@ -17,7 +16,6 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------   
-## @ingroup Library-Plots-Energy
 def plot_battery_ragone_diagram(battery,
                           save_figure   = False, 
                           save_filename = "Ragone_Plot",
