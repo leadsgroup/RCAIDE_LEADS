@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core                import Data 
+from RCAIDE.Framework.Core                import Data,Units 
 from RCAIDE.Library.Components.Component  import Container
 from RCAIDE.Library.Components            import Component
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_fuselage_moment_of_inertia import  compute_fuselage_moment_of_inertia
@@ -165,9 +165,6 @@ class Fuselage(Component):
         self.origin                                 = [[0.0,0.0,0.0]]
         self.aerodynamic_center                     = [0.0,0.0,0.0] 
         self.differential_pressure                  = 0.0    
-        self.seats_abreast                          = 0.0
-        self.seat_pitch                             = 0.0
-        self.number_coach_seats                     = 0.0
 
         self.areas                                  = Data()
         self.areas.front_projected                  = 0.0
@@ -201,6 +198,12 @@ class Fuselage(Component):
         self.fineness.tail                          = 0.0  
         self.nose_curvature                         = 1.5
         self.tail_curvature                         = 1.5   
+
+        # Cabin Sections
+        self.cabin                                  = Data()
+        self.cabin.first                            = self._create_cabin_section(seat_width=25, seat_arm_rest_width=3, seat_length=30, seat_pitch=50)
+        self.cabin.business                         = self._create_cabin_section(seat_width=20, seat_arm_rest_width=2.5, seat_length=25, seat_pitch=40)
+        self.cabin.economy                          = self._create_cabin_section()
     
         self.fuel_tanks                             = Container()
  
@@ -272,3 +275,26 @@ class Fuselage(Component):
         """
         I = compute_fuselage_moment_of_inertia(self,center_of_gravity) 
         return I    
+    
+    def _create_cabin_section( self, 
+        seat_width=18, 
+        seat_arm_rest_width=2, 
+        seat_length=18, 
+        seat_pitch=32):
+ 
+       return Data(
+            number_of_seats_abrest=0,
+            number_of_rows=0,
+            seat_width=seat_width * Units.inches,
+            seat_arm_rest_width=seat_arm_rest_width * Units.inches,
+            seat_length=seat_length * Units.inches,
+            seat_pitch=seat_pitch * Units.inches,
+            aile_width=18 * Units.inches,
+            galley_lavatory_percent_x_locations=[],
+            emergency_exit_percent_x_locations=[],
+            type_A_exit_percent_x_locations=[],
+            tail_length=0,
+            tail_taper=0,
+            nose_length=0,
+            nose_taper=0
+        )

@@ -239,6 +239,9 @@ def import_vsp_vehicle(tag,main_wing_tag = None, network_type=None, propulsor_ty
         wing = read_vsp_wing(wing_id, main_wing_tag, units_type,use_scaling,blended_wing_body = blended_wing_body,transition_segment =transition_segment)
         if calculate_wetted_area:
             wing.areas.wetted = measurements[vsp.GetGeomName(wing_id)] * (units_factor**2)  
+        # if blended_wing_body and bwb_fuselage is not None:
+        #     fuselage = bwb_fuselage
+        #     vehicle.fuselages[fuselage.tag] = fuselage
         vehicle.append_component(wing)		 
     
     # ------------------------------------------------------------------			    

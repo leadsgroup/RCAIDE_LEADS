@@ -15,6 +15,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units , Data 
 from RCAIDE.Library.Components.Airfoils.Airfoil import Airfoil
 from RCAIDE.Library.Methods.Geometry.Planform import wing_planform, wing_segmented_planform
+from RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage import Blended_Wing_Body_Fuselage
 
 import numpy as np
 import string
@@ -185,7 +186,7 @@ def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil
             segment = RCAIDE.Library.Components.Wings.Segments.Segment()
             segment.tag                   = 'Section_' + str(i)
             if blended_wing_body and i <= transition_segment :
-                segment = RCAIDE.Library.Components.Wings.Segments.Segment()
+                segment = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Segment()
                 segment.tag                   = 'Fuselage_Section_' + str(i)          
             thick_cord                    = vsp.GetParmVal(wing_id, 'ThickChord', 'XSecCurve_' + str(jj))
             segment.thickness_to_chord    = thick_cord	# Thick_cord stored for use in airfoil, below.
@@ -266,6 +267,8 @@ def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil
                 segment.append_airfoil(airfoil)
 
             wing.segments.append(segment)
+        
+
 
         # Wing dihedral
         proj_span_sum_alt = 0.
@@ -415,6 +418,14 @@ def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil
         CS.span                = (CS.span_fraction_end - CS.span_fraction_start)*wing.spans.projected
         wing.append_control_surface(CS)
 
+    # bwb_fuselage = None
+    # if blended_wing_body and isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing):
+     
+    #     bwb_fuselage = Blended_Wing_Body_Fuselage()
+    #     bwb_fuselage.segments = {key: seg for key, seg in wing.segments.items() if key.startswith("fuselage_section")}
+       
+    #     wing.segments = {key: seg for key, seg in wing.segments.items() if not key.startswith("fuselage_section")}
+    
     return wing
 
 
