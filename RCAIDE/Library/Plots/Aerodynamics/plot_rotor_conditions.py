@@ -1,4 +1,3 @@
-## @ingroup Library-Plots-Performance-Aerodynamics
 # RCAIDE/Library/Plots/Performance/Aerodynamics/plot_rotor_conditions.py
 # 
 # 
@@ -17,7 +16,6 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------      
-## @ingroup Library-Plots-Performance-Aerodynamics
 def plot_rotor_conditions(results,
                         save_figure = False,
                         show_legend=True,

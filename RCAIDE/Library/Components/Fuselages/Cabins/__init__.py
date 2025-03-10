@@ -1,13 +1,10 @@
-# RCAIDE/Methods/Geometry/__init__.py
-# 
-
-""" RCAIDE Package Setup
-"""
+# RCAIDE/Library/Components/Fuselages/Cabins/__init__.py
+ 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from . import Airfoil
-from . import Planform
-from . import LOPA
+from .Cabin          import Cabin
+from .Side_Cabin     import Side_Cabin
+from .               import Classes 

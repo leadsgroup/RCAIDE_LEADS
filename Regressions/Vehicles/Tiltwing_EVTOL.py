@@ -113,8 +113,18 @@ def vehicle_setup(new_regression=True):
     
     fuselage                                    = RCAIDE.Library.Components.Fuselages.Fuselage()
     fuselage.tag                                = 'fuselage' 
-    fuselage.seats_abreast                      = 0.  
-    fuselage.seat_pitch                         = 1.  
+
+    # define cabin
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 2
+    economy_class.number_of_rows                      = 3
+    economy_class.galley_lavatory_percent_x_locations = []  
+    economy_class.emergency_exit_percent_x_locations  = []      
+    economy_class.type_A_exit_percent_x_locations     = [] 
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin)
+       
     fuselage.fineness.nose                      = 1.5 
     fuselage.fineness.tail                      = 4.0 
     fuselage.lengths.nose                       = 1.7   

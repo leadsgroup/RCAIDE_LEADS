@@ -203,16 +203,25 @@ def vehicle_setup(rotor_type):
 
  
     # ##########################################################   Fuselage  ############################################################    
-    fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage() 
-    fuselage.seats_abreast                      = 2.
+    fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
+
+    # define cabin
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 2
+    economy_class.number_of_rows                      = 3
+    economy_class.galley_lavatory_percent_x_locations = []  
+    economy_class.emergency_exit_percent_x_locations  = []      
+    economy_class.type_A_exit_percent_x_locations     = [] 
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin)
+     
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.
     fuselage.lengths.nose                       = 60.  * Units.inches
     fuselage.lengths.tail                       = 161. * Units.inches
     fuselage.lengths.cabin                      = 105. * Units.inches
-    fuselage.lengths.total                      = 332.2* Units.inches
-    fuselage.lengths.fore_space                 = 0.
-    fuselage.lengths.aft_space                  = 0.
+    fuselage.lengths.total                      = 332.2* Units.inches 
     fuselage.width                              = 42. * Units.inches
     fuselage.heights.maximum                    = 62. * Units.inches
     fuselage.heights.at_quarter_length          = 62. * Units.inches
