@@ -74,7 +74,6 @@ def vehicle_setup():
 
     # basic parameters
     vehicle.reference_area         = 565.33
-    vehicle.passengers             = 0 # 83
     vehicle.systems.control        = "fully powered"
     vehicle.systems.accessories    = "long range"
 
@@ -328,17 +327,12 @@ def vehicle_setup():
     #  Fuselage
     # ------------------------------------------------------------------
 
-    fuselage                                    = RCAIDE.Library.Components.Fuselages.Tube_Fuselage() 
-    fuselage.number_coach_seats                 = vehicle.passengers 
-    fuselage.seats_abreast                      = 6
-    fuselage.seat_pitch                         = 1     * Units.meter 
+    fuselage                                    = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()  
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.0
     fuselage.lengths.nose                       = 7.4   * Units.meter
     fuselage.lengths.tail                       = 27.00   * Units.meter
-    fuselage.lengths.total                      = 70.0 * Units.meter  
-    fuselage.lengths.fore_space                 = 6.5    * Units.meter
-    fuselage.lengths.aft_space                  = 21.5    * Units.meter
+    fuselage.lengths.total                      = 70.0 * Units.meter   
     fuselage.width                              = 7.4  * Units.meter
     fuselage.heights.maximum                    = 8.1  * Units.meter
     fuselage.effective_diameter                 = 7.75  * Units.meter

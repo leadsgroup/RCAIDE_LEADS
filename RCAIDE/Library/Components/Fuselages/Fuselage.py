@@ -36,15 +36,6 @@ class Fuselage(Component):
     differential_pressure : float
         Cabin pressurization differential, defaults to 0.0
         
-    seats_abreast : float
-        Number of passenger seats arranged side-by-side, defaults to 0.0
-        
-    seat_pitch : float
-        Longitudinal distance between seat rows in meters, defaults to 0.0
-        
-    number_coach_seats : float
-        Total number of economy class seats, defaults to 0.0
-        
     areas : Data
         Collection of fuselage area measurements
         
@@ -164,10 +155,9 @@ class Fuselage(Component):
         self.tag                                    = 'fuselage'
         self.origin                                 = [[0.0,0.0,0.0]]
         self.aerodynamic_center                     = [0.0,0.0,0.0] 
-        self.differential_pressure                  = 0.0    
-        self.seats_abreast                          = 0.0
-        self.seat_pitch                             = 0.0
-        self.number_coach_seats                     = 0.0
+        self.differential_pressure                  = 0.0
+        self.number_of_passengers                   = 0.0  
+        self.layout_of_passenger_accommodations     = None
 
         self.areas                                  = Data()
         self.areas.front_projected                  = 0.0
@@ -187,10 +177,7 @@ class Fuselage(Component):
         self.lengths                                = Data()     
         self.lengths.nose                           = 0.0
         self.lengths.tail                           = 0.0
-        self.lengths.total                          = 0.0 
-        self.lengths.cabin                          = 0.0 
-        self.lengths.fore_space                     = 0.0
-        self.lengths.aft_space                      = 0.0 
+        self.lengths.total                          = 0.0
         
         self.x_rotation                             = 0.0
         self.y_rotation                             = 0.0
@@ -208,6 +195,7 @@ class Fuselage(Component):
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
         self.vsp_data.xsec_num                      = None  # Number if XSecs in fuselage geom. 
         self.segments                               = Container()
+        self.cabins                                 = Container()
 
         self.vsp_data                               = Data()
         self.vsp_data.xsec_id                       = ''       
@@ -231,6 +219,25 @@ class Fuselage(Component):
         self.segments.append(segment)
 
         return
+    
+    def append_cabin(self,cabin):
+        """
+        Adds a new segment to the fuselage's segment container.
+
+        Parameters
+        ----------
+        segment : Data
+            Fuselage segment to be added
+        """
+
+        # Assert database type
+        if not isinstance(cabin,RCAIDE.Library.Components.Fuselages.Cabins.Cabin):
+            raise Exception('input component must be of type Cabin')
+
+        # Store data
+        self.cabins.append(cabin)
+
+        return    
     
     def append_fuel_tank(self,fuel_tank):
         """
