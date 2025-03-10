@@ -83,18 +83,15 @@ def compute_operating_items_weight(vehicle):
     WUF             = 11.5 * NENG * THRUST ** 0.2 + 0.07 * SW + 1.6 * number_of_tanks * FMXTOT ** 0.28  # unusable fuel weight
     WOIL            = 0.082 * NENG * THRUST ** 0.65  # engine oil weight
     
-    for fuselage in  vehicle.fuselages:
-        NPT =  0
-        NPF =  0
-        NPB =  0
-        for cabin in fuselage.cabins:
-            for cabin_class in cabin.classes:
-                if type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy:
-                    NPT =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
-                elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business:
-                    NPB =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
-                elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
-                    NPF =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows 
+    for fuselage in  vehicle.fuselages: 
+        if hasattr(fuselage, 'number_coach_seats'):
+            NPT = fuselage.number_coach_seats  # number of economy passengers
+            NPF = (vehicle.passengers - NPT) / 4.  # number of first clss passengers
+            NPB = vehicle.passengers - NPF - NPT  # number of bussines passengers
+        else:
+            NPF = vehicle.passengers / 20.
+            NPB = vehicle.passengers / 10.
+            NPT = vehicle.passengers - NPF - NPB
     vehicle.NPF = NPF
     vehicle.NPB = NPB
     vehicle.NPT = NPT

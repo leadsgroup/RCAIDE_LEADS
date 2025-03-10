@@ -427,7 +427,7 @@ def configs_setup(vehicle):
     for network in  config.networks:  
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
-            propulsor.rotor.pitch_command   = propulsor.rotor.hover.design_pitch_command * 0.5 
+            propulsor.rotor.blade_pitch_command   = propulsor.rotor.hover.design_pitch_command * 0.5 
     configs.append(config) 
 
     # ------------------------------------------------------------------
@@ -443,7 +443,7 @@ def configs_setup(vehicle):
     for network in  config.networks:  
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
-            propulsor.rotor.pitch_command     = propulsor.rotor.cruise.design_pitch_command  
+            propulsor.rotor.blade_pitch_command     = propulsor.rotor.cruise.design_pitch_command  
     configs.append(config) 
 
     # ------------------------------------------------------------------
@@ -459,7 +459,7 @@ def configs_setup(vehicle):
     for network in  config.networks:  
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
-            propulsor.rotor.pitch_command   = propulsor.rotor.cruise.design_pitch_command  
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_pitch_command  
     configs.append(config)     
     
     # ------------------------------------------------------------------
@@ -475,7 +475,7 @@ def configs_setup(vehicle):
     for network in  config.networks:  
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
-            propulsor.rotor.pitch_command   = propulsor.rotor.cruise.design_pitch_command * 0.5
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_pitch_command * 0.5
     configs.append(config)  
 
     # ------------------------------------------------------------------
