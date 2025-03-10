@@ -62,12 +62,13 @@ def compute_electric_rotor_performance(propulsor,state,voltage,center_of_gravity
     compute_voltage_out_from_throttle(esc,esc_conditions,conditions)
 
     # Assign conditions to the rotor
-    motor_conditions.voltage                   = esc_conditions.outputs.voltage 
+    motor_conditions.voltage  = esc_conditions.outputs.voltage 
     compute_motor_performance(motor,motor_conditions,conditions) 
     
     # Spin the rotor 
     rotor_conditions.omega           = motor_conditions.omega
-    rotor_conditions.throttle        = esc_conditions.throttle 
+    rotor_conditions.throttle        = esc_conditions.throttle
+    rotor_conditions.motor_torque    = motor_conditions.torque
     compute_rotor_performance(propulsor,state,center_of_gravity)   
     
     # Detemine esc current 
