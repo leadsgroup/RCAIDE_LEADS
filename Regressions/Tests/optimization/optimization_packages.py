@@ -40,9 +40,9 @@ def main():
     sys.stdout = sys.__stdout__  
     print(outputs)
     
-    obj = scipy_setup.SciPy_Problem(problem,outputs)[0]
-    x1 = outputs[0]
-    x2 = outputs[1] 
+    obj = scipy_setup.SciPy_Problem(problem,outputs[0])[0]
+    x1 = outputs[0][0]
+    x2 = outputs[0][1] 
 
     #   Check Results 
     assert( np.isclose(obj,  1, atol=1e-6) )

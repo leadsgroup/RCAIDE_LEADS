@@ -14,6 +14,8 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_par
 
 # Python package imports   
 import time 
+import os
+import sys
 
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Lift-rotor
@@ -56,7 +58,17 @@ def design_lift_rotor(rotor,number_of_stations = 20,solver_name= 'SLSQP',iterati
     # start optimization 
     ti                   = time.time()   
     optimization_problem = optimization_setup(rotor,number_of_stations,print_iterations)
-    output               = scipy_setup.SciPy_Solve(optimization_problem,solver=solver_name, iter = iterations , sense_step = solver_sense_step,tolerance = solver_tolerance)    
+
+    # Commense suppression of console window output  
+    devnull = open(os.devnull,'w')
+    sys.stdout = devnull 
+    output               = scipy_setup.SciPy_Solve(optimization_problem,
+                                                   solver=solver_name,
+                                                   iter = iterations ,
+                                                   sense_step = solver_sense_step,
+                                                   tolerance = solver_tolerance)
+    # Terminate suppression of console window output   
+    sys.stdout = sys.__stdout__ 
     tf                   = time.time()
     elapsed_time         = round((tf-ti)/60,2)
     print('Lift-rotor Optimization Simulation Time: ' + str(elapsed_time) + ' mins')   

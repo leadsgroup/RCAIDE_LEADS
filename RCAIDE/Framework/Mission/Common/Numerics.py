@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-
+from RCAIDE.Framework.Core import Data
 from .Conditions import Conditions 
 from RCAIDE.Library.Methods.Utilities.Chebyshev  import chebyshev_data 
 import numpy as np
@@ -45,12 +45,15 @@ class Numerics(Conditions):
         """           
         self.tag                              = 'numerics' 
         self.number_of_control_points         = 16
-        self.discretization_method            = chebyshev_data 
-        self.solver_jacobian                  = "none"
-        self.tolerance_solution               = 1e-8
-        self.converged                        = None
-        self.max_evaluations                  = 0.
-        self.step_size                        = None
+        self.discretization_method            = chebyshev_data
+        self.solver                           =  Data()
+        self.solver.type                      = "optimize" # options: "optimize", "root_finder"
+        self.solver.method                    = "SLSQP"    
+        self.solver.objective                 = "energy"   #options: # None, energy , power 
+        self.solver.tolerance_solution        = 1E-6
+        self.solver.converged                 = None
+        self.solver.max_evaluations           = 200
+        self.solver.step_size                 = 1E-8
         
         self.dimensionless                    = Conditions()
         self.dimensionless.control_points     = np.empty([0,0])
