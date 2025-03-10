@@ -26,12 +26,13 @@ class Cabin(Component):
         self.type_A_door_length                 = 36 *  Units.inches
         self.galley_lavatory_length             = 32 *  Units.inches  
         self.emergency_exit_seat_pitch          = 36 *  Units.inches
+        self.length                             = 0
         self.wide_body                          = False 
         self.tail                               = Data()
         self.tail.fineness_ratio                = 0 
         self.nose                               = Data() 
         self.nose.fineness_ratio                = 0
-        self.classes                            = Container()               
+        self.classes                            = Container()
         
     def append_cabin_class(self,cabin_class): 
 

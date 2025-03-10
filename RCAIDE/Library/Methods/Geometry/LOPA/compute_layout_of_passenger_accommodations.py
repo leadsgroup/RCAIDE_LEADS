@@ -5,18 +5,22 @@
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------     
-
+# ----------------------------------------------------------------------------------------------------------------------
+# RCAIDE imports 
 import RCAIDE 
 from .LOPA_functions import *
 
+# python functions 
 import  numpy as  np 
 from copy import  deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_layout_of_passenger_accommodations
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_layout_of_passenger_accommodations(fuselage):  
+def compute_layout_of_passenger_accommodations(fuselage):
+    '''
+    Creates the layout of passenger accommodations for a vehicle
+    '''  
     #  [ x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, seat, emergency-row flag, galley/lav flag, type-A exit flag]    
     LOPA = np.empty(( 0, 14)) 
     side_cabin_offset = 0
@@ -25,10 +29,10 @@ def compute_layout_of_passenger_accommodations(fuselage):
         for cabin_class in cabin.classes: 
             seat_data ,cabin_class_origin  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset)
             side_cabin_offset =  cabin.width / 2
-            LOPA = np.vstack((LOPA,seat_data))
+            LOPA = np.vstack((LOPA,seat_data))  
     
-    fuselage.number_of_passengers 
-    fuselage.layout_of_passenger_accommodations =  LOPA
+    fuselage.number_of_passengers               = np.sum(LOPA[:,10])
+    fuselage.layout_of_passenger_accommodations = LOPA
     return  
  
 def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_cabin_offset):  
@@ -49,8 +53,7 @@ def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_c
     n_rows     = cabin_class.number_of_rows * np.ones_like(Z_coords) 
     n_seats_y  = cabin_class.number_of_seats_abrest  * np.ones_like(Z_coords) 
     object_vec = np.repeat(object_type, len(s_y_coord), axis=0)
-    
-    
+     
     # cabin class flags 
     F_c  =  np.zeros_like(Z_coords)
     B_c  =  np.zeros_like(Z_coords)

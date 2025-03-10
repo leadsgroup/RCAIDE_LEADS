@@ -196,8 +196,7 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin):
                 s_x_coord[loc+1:] += (ex_p - s_p)  
             else:
                 object_type[loc,1] = 1   
-                s_x_coord[loc:] += (ex_p - s_p) 
-                                
+                s_x_coord[loc:] += (ex_p - s_p)  
              
     if object_type[0, 0] == 1:
         offset = s_p / 2
@@ -212,8 +211,9 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin):
     if object_type[-1, 2] == 1:
         offset_end=   gl_l / 2  
     if object_type[-1, 3] == 1: 
-        offset_end = A_l / 2   
-    
+        offset_end = A_l / 2
+        
+    cabin.length += s_x_coord[-1] + offset_end
     s_x_coord += cabin_class_origin[0]
     cabin_class_origin[0] = s_x_coord[-1] + offset_end
     return s_x_coord , object_type, cabin_class_origin

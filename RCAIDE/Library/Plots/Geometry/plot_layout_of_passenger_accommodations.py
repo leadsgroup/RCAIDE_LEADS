@@ -4,33 +4,40 @@
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
+# ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
+
 import plotly.graph_objects as go
 import  numpy as  np 
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_Layout_of_Passenger_Accommodations
 # ---------------------------------------------------------------------------------------------------------------------- 
-def plot_layout_of_passenger_accommodations(LOPA):  
+def plot_layout_of_passenger_accommodations(fuselage):
+    '''
+    Plot aircraft layout of passenger accommodations
+    '''  
+    if  type(fuselage.layout_of_passenger_accommodations) != np.ndarray: 
+        compute_layout_of_passenger_accommodations(fuselage)   
+    plot_LOPA(fuselage.layout_of_passenger_accommodations)
+    return 
+        
+def plot_LOPA(LOPA):
     fig = go.Figure() 
     # Set axes properties
     fig.update_xaxes(range=[min(LOPA[:,2]) - 1 , max(LOPA[:,2]) + 1], showgrid=False)
     fig.update_yaxes(range=[ min(LOPA[:,3]) - 1, max(LOPA[:,3])  + 1], showgrid=False)  
     fig.update_yaxes(
         scaleanchor = "x",
-        scaleratio = 1,
-      )     
-    
+        scaleratio = 1,)    
         
-    # Step 1: plot cabin bounds 
-    
+    # Step 1: plot cabin bounds  
     # get points at x min 
     x_min_locs   =  np.where( LOPA[:,2] == min(LOPA[:,2]))[0]
     x_min        =  LOPA[x_min_locs[0],2] -  LOPA[x_min_locs[0],5]/2
     x_min_y_max  =  max(LOPA[x_min_locs,3] + LOPA[x_min_locs,6]/2 )
     x_min_y_min  =  min(LOPA[x_min_locs,3] - LOPA[x_min_locs,6]/2 ) 
     x_border_pts = [x_min, x_min] 
-    y_border_pts = [x_min_y_min, x_min_y_max]
-    
+    y_border_pts = [x_min_y_min, x_min_y_max] 
 
     # get points at y max 
     y_max_locs   =  np.where( LOPA[:,3] == max(LOPA[:,3]))[0]
@@ -40,8 +47,7 @@ def plot_layout_of_passenger_accommodations(LOPA):
     x_border_pts.append(y_max_x_min)
     x_border_pts.append(y_max_x_max)
     y_border_pts.append(y_max)
-    y_border_pts.append(y_max)
-    
+    y_border_pts.append(y_max) 
 
     # get points at x max 
     x_max_locs   =  np.where( LOPA[:,2] == max(LOPA[:,2]))[0]
