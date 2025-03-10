@@ -8,11 +8,15 @@
 from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
 
 import plotly.graph_objects as go
-import  numpy as  np 
+import numpy as  np
+import os
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_Layout_of_Passenger_Accommodations
 # ---------------------------------------------------------------------------------------------------------------------- 
-def plot_layout_of_passenger_accommodations(fuselage):
+def plot_layout_of_passenger_accommodations(fuselage, 
+                                            save_figure    = False,
+                                            save_filename  = "Vehicle_Geometry", 
+                                            show_figure    = True):
     '''
     Plot aircraft layout of passenger accommodations
     '''  
@@ -21,7 +25,7 @@ def plot_layout_of_passenger_accommodations(fuselage):
     plot_LOPA(fuselage.layout_of_passenger_accommodations)
     return 
         
-def plot_LOPA(LOPA):
+def plot_LOPA(LOPA,save_figure,save_filename,show_figure):
     fig = go.Figure() 
     # Set axes properties
     fig.update_xaxes(range=[min(LOPA[:,2]) - 1 , max(LOPA[:,2]) + 1], showgrid=False)
@@ -213,6 +217,13 @@ def plot_LOPA(LOPA):
                 ),
                 fillcolor=lavatory_color[0],
             )
-    fig.show()
-    
+
+    # Use the first path from sys.path
+    save_filename = os.path.join(sys.path[0], save_filename)
+    if save_figure:
+        fig.write_image(save_filename + ".png")
+        
+    if show_figure:
+        fig.write_html( save_filename + '.html', auto_open=True) 
+     
     return 

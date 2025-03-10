@@ -52,7 +52,7 @@ modules = [
     'Tests/performance/take_off_weight_from_tofl_test.py',
     'Tests/performance/aircraft_aerodynamic_analysis_test.py', 
     'Tests/performance/V_n_diagram_test.py', 
-    'Tests/propulsion/propeller_performance_test.py',  
+    'Tests/propulsion/rotor_performance_test.py',  
     'Tests/propulsion/propeller_non_uniform_inflow.py',  
     'Tests/propulsion/propeller_wing_interaction_test.py', 
     'Tests/propulsion/motor_test.py',
