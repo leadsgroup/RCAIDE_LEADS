@@ -16,7 +16,7 @@ import numpy as np
 def APC_11x4_Propeller():          
     prop                            = RCAIDE.Library.Components.Powertrain.Converters.Rotor()
     prop.inputs                     = Data() 
-    prop.inputs.pitch_command       = 0 
+    prop.inputs.blade_pitch_command = 0 
     prop.inputs.y_axis_rotation     = 0.
     prop.tag                        = 'APC_11x4_Propeller'
     prop.tip_radius                 = (11/2)*Units.inches
