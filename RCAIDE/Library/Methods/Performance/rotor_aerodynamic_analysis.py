@@ -13,7 +13,7 @@ import numpy as np
 def rotor_aerodynamic_analysis(rotor,
                            velocity_range,
                            angular_velocity = 2500*Units.rpm,
-                           pitch_command = 0, 
+                           blade_pitch_command = 0, 
                            angle_of_attack = 0, 
                            altitude = 0,
                            design_flag=False):
@@ -23,7 +23,7 @@ def rotor_aerodynamic_analysis(rotor,
     rotor_conditions                             = state.conditions.energy[propulsor.tag][rotor.tag]
     rotor_conditions.design_flag                 = design_flag
     rotor_conditions.omega[:,0]                  = angular_velocity
-    rotor_conditions.blade_pitch_command[:,0]    = pitch_command 
+    rotor_conditions.blade_pitch_command[:,0]    = blade_pitch_command 
     rotor_conditions.optimize_blade_pitch        = False
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance(propulsor,state)
      

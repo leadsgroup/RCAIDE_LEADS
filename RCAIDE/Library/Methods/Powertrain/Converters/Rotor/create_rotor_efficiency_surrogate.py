@@ -37,7 +37,7 @@ def create_rotor_efficiency_surrogate(rotor, design_flag=True):
        
     for i in range(len(altitude_range)): 
         for j in range(len(beta_range)): 
-            results    = RCAIDE.Library.Methods.Performance.rotor_aerodynamic_analysis(rotor, velocity_range ,  angular_velocity = reference_omega, pitch_command = beta_range[j], angle_of_attack = 0, altitude = altitude_range[i] , design_flag=design_flag) 
+            results    = RCAIDE.Library.Methods.Performance.rotor_aerodynamic_analysis(rotor, velocity_range ,  angular_velocity = reference_omega, blade_pitch_command = beta_range[j], angle_of_attack = 0, altitude = altitude_range[i] , design_flag=design_flag) 
             efficiency[:,i,j]  = results.efficiency[:, 0]   
     surrogate   = RegularGridInterpolator((advance_ratio,altitude_range,beta_range),efficiency  ,method = 'linear',   bounds_error=False, fill_value=None)           
     return surrogate
