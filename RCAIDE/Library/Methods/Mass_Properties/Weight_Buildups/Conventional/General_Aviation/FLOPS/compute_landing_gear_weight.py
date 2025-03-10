@@ -95,7 +95,7 @@ def compute_landing_gear_weight(vehicle):
                 if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine): 
                     FNAC    = propulsor.propeller.tip_radius * 2 / Units.ft      
                 DIH     = main_wing.dihedral
-                YEE     = np.max(np.abs(np.array(network.origin)[:, 1])) / Units.inches
+                YEE     = np.max(np.abs(np.array(propulsor.origin)[:, 1])) / Units.inches
                 WF      = main_fuselage.width / Units.ft
                 XMLG    = 12 * FNAC + (0.26 - np.tan(DIH)) * (YEE - 6 * WF)  # length of extended main landing gear
             else:

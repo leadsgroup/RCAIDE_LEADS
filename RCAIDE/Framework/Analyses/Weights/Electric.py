@@ -53,7 +53,7 @@ class Electric(Weights):
         self.method                                        = 'Physics_Based'
         self.aircraft_type                                 = 'General_Aviation'
         self.propulsion_architecture                       = 'Electric'
-
+                  
         self.settings.use_max_fuel_weight                  = True 
         self.settings.advanced_composites                  = False
         self.settings.fuselage_mounted_landing_gear_factor = 1.12 # assumes fuselage mounted landing gear. Change to 1 if False

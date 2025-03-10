@@ -32,16 +32,15 @@ def main():
     fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
     assert(abs(fuel_error)<1e-6)
     
-    rotor_model_fidelity  = ['Blade_Element_Momentum_Theory_Helmholtz_Wake', 'Actuator_Disk_Theory']
+    rotor_type  = ['Blade_Element_Momentum_Theory_Helmholtz_Wake', 'Actuator_Disk_Theory']
     electric_r_truth = [37039.99999999999, 37039.99999999999]
-    for i in range(len(rotor_model_fidelity)):
-        electric_payload_range_res = electric_aircraft_payload_range(rotor_model_fidelity[i])       
+    for i in range(len(rotor_type)):
+        electric_payload_range_res = electric_aircraft_payload_range(rotor_type[i])       
         electric_r         =  electric_payload_range_res.range[-1]
         print('Electric Range: ' + str(electric_r ))
         electric_error =  abs(electric_r - electric_r_truth[i]) /electric_r_truth[i]
         assert(abs(electric_error)<1e-6)
-    return 
-    
+    return
     
 def fuel_aircraft_payload_range():
     
@@ -80,9 +79,9 @@ def fuel_aircraft_payload_range():
                                    
     return payload_range_results 
 
-def electric_aircraft_payload_range(rotor_model_fidelity):
+def electric_aircraft_payload_range(rotor_type):
     # vehicle data
-    vehicle             = X57_vehicle_setup(rotor_model_fidelity)
+    vehicle             = X57_vehicle_setup(rotor_type)
 
     assigned_propulsors = [['starboard_propulsor','port_propulsor']]   
     altitude            = 15000   * Units.feet 

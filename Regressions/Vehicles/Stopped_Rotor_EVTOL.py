@@ -428,7 +428,8 @@ def vehicle_setup(new_regression=True) :
     propeller.cruise.design_altitude                       = 1500 * Units.feet
     propeller.cruise.design_thrust                         = 3129.031253067049 
     propeller.rotation                                     = 1
-    propeller.variable_pitch                               = True   
+    propeller.variable_pitch                               = True  
+    propeller.fidelity                                     = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     airfoil                                                = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                                = rel_path + 'Airfoils' + separator + 'NACA_4412.txt'
     airfoil.polar_files                                    = [rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt' ,
@@ -626,12 +627,10 @@ def vehicle_setup(new_regression=True) :
                                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
     lift_rotor.append_airfoil(airfoil)                         
     lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
-    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..' + separator + 'Tests' + separator + 'analysis_weights'))
+    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../Tests/analysis_weights'))
     
     if new_regression:
         design_lift_rotor(lift_rotor)
-
-
         save_rotor(lift_rotor, os.path.join(test_dir, 'stopped_rotor_geometry.res'))
     else:
         regression_lift_rotor = deepcopy(lift_rotor)
@@ -639,7 +638,8 @@ def vehicle_setup(new_regression=True) :
         loaded_lift_rotor = load_rotor(os.path.join(test_dir, 'stopped_rotor_geometry.res'))
         
         for key,item in lift_rotor.items():
-            lift_rotor[key] = loaded_lift_rotor[key]        
+            lift_rotor[key] = loaded_lift_rotor[key] 
+        lift_rotor.Wake   = RCAIDE.Framework.Analyses.Propulsion.Momentum_Theory_Wake()         
             
     lift_propulsor_1.rotor =  lift_rotor          
     

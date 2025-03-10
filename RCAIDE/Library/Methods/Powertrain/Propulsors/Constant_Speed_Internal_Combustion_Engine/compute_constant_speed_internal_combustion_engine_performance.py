@@ -16,9 +16,9 @@ from copy import deepcopy
 import numpy as np  
 
 # ----------------------------------------------------------------------------------------------------------------------
-# compute_constant_speed_internal_combustion_engine_performance
+# internal_combustion_engine_constant_speed_propulsor
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_constant_speed_internal_combustion_engine_performance(propulsor,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]):  
+def compute_constant_speed_internal_combustion_engine_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
     ''' Computes the perfomrance of one propulsor
     
     Assumptions: 
@@ -53,8 +53,7 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor,stat
     # Run the propeller to get the power
     propeller_conditions                      = ice_cs_conditions[propeller.tag]
     propeller_conditions.omega                = engine_conditions.rpm * Units.rpm
-    propeller_conditions.optimize_blade_pitch = False
-    propeller_conditions.pitch_command        = ice_cs_conditions.throttle - 0.5
+    propeller_conditions.blade_pitch_command  = ice_cs_conditions.throttle - 0.5
     propeller_conditions.throttle             = ice_cs_conditions.throttle
     compute_rotor_performance(propulsor,state,center_of_gravity)
 
@@ -71,17 +70,13 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor,stat
     conditions.energy[propulsor.tag].thrust      = conditions.energy[propulsor.tag][propeller.tag].thrust 
     conditions.energy[propulsor.tag].moment      = conditions.energy[propulsor.tag][propeller.tag].moment
     conditions.energy[propulsor.tag].power       = conditions.energy[propulsor.tag][propeller.tag].power 
-    thrust_vector  = conditions.energy[propulsor.tag].thrust 
-    moment  = conditions.energy[propulsor.tag].moment 
-    power  = conditions.energy[propulsor.tag].power 
+    T  = conditions.energy[propulsor.tag].thrust 
+    M  = conditions.energy[propulsor.tag].moment 
+    P  = conditions.energy[propulsor.tag].power 
     
-
-    # ADD CODE FOR SHAFT OFFTAKE AND MOTORS
-    power_elec =  0*state.ones_row(3)
+    return T,M,P,stored_results_flag,stored_propulsor_tag 
     
-    return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
-    
-def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
+def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors
     
     Assumptions: 
@@ -113,21 +108,19 @@ def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,
     conditions.energy[propulsor.tag][engine.tag]        = deepcopy(conditions.energy[stored_propulsor_tag][engine_0.tag])
     conditions.energy[propulsor.tag][propeller.tag]     = deepcopy(conditions.energy[stored_propulsor_tag][propeller_0.tag])    
   
-    thrust_vector           = conditions.energy[propulsor.tag][propeller.tag].thrust 
+    thrust                  = conditions.energy[propulsor.tag][propeller.tag].thrust 
     power                   = conditions.energy[propulsor.tag][propeller.tag].power 
     
     moment_vector           = 0*state.ones_row(3) 
     moment_vector[:,0]      = propeller.origin[0][0]  -  center_of_gravity[0][0] 
     moment_vector[:,1]      = propeller.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]      = propeller.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, thrust_vector)
+    moment                  =  np.cross(moment_vector, thrust)
     
     conditions.energy[propulsor.tag][propeller.tag].moment = moment  
-    conditions.energy[propulsor.tag].thrust            = thrust_vector   
+    conditions.energy[propulsor.tag].thrust            = thrust   
     conditions.energy[propulsor.tag].moment            = moment  
     conditions.energy[propulsor.tag].power             = power
-
-    power_elec =  0*state.ones_row(3)
-    
-    return thrust_vector,moment,power, power_elec
+ 
+    return thrust,moment,power
  
