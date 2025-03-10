@@ -1,3 +1,4 @@
+
 # VLM.py
 # 
 # Created:  Oct 2020, E. Botero
@@ -14,8 +15,7 @@ from RCAIDE.Framework.Core import Data
 from .compute_wing_induced_velocity      import compute_wing_induced_velocity
 from .generate_vortex_distribution       import generate_vortex_distribution 
 from .compute_RHS_matrix                 import compute_RHS_matrix 
-from scipy.integrate import trapz
-import matplotlib.pyplot as plt
+
 # ----------------------------------------------------------------------
 #  Vortex Lattice
 # ----------------------------------------------------------------------
@@ -112,10 +112,10 @@ def VLM(conditions,settings,geometry):
         CL_mom                                 [Unitless], Rolling moment coeff (scaled by b_ref)
         CNTOT                                  [Unitless], Yawing  moment coeff (unscaled)
         CN                                 [Unitless], Yawing  moment coeff (scaled by b_ref)
-        Clift_wing                                [Unitless], CL  of each wing
-        Cdrag_i_wing                               [Unitless], CDi of each wing
-        Clift_y                                   [Unitless], CL  of each strip
-        Cdrag_i_y                                  [Unitless], CDi of each strip
+        CL_wing                                [Unitless], CL  of each wing
+        CDi_wing                               [Unitless], CDi of each wing
+        cl_y                                   [Unitless], CL  of each strip
+        cdi_y                                  [Unitless], CDi of each strip
         alpha_i                                [radians] , Induced angle of each strip in each wing (array of numpy arrays)
         CP                                     [Unitless], Pressure coefficient of each panel
         gamma                                  [Unitless], Vortex strengths of each panel
@@ -204,12 +204,14 @@ def VLM(conditions,settings,geometry):
     
     YAH = VD.YAH*1.  
     YBH = VD.YBH*1.
+    
     XA1 = VD.XA1*1.
     XB1 = VD.XB1*1.
     YA1 = VD.YA1
     YB1 = VD.YB1    
     ZA1 = VD.ZA1
-    ZB1 = VD.ZB1 
+    ZB1 = VD.ZB1  
+    
     XCH = VD.XCH
     
     XA_TE =  VD.XA_TE
@@ -409,7 +411,7 @@ def VLM(conditions,settings,geometry):
     # ONLY PERFORMED FOR COSINE CHORDWISE SPACING (LAX = 0).    
     # ** TO DO ** Add cosine spacing (earlier in VLM) to properly capture the magnitude of these earlier.
     # Right now, this computation still happens with linear spacing, though its effects are underestimated.
-    CLE = compute_rotation_effects(VD, settings, EW_small, GAMMA, len_mach, X, CHORD, XLE, XBAR, 
+    CLE = compute_rotation_effects(VD, settings, EW, GAMMA, len_mach, X, CHORD, XLE, XBAR, 
                                    rhs, COSINP, SINALF,COSCOS, PITCH, ROLL, YAW, STB, RNMAX)    
     
     # Leading edge suction multiplier. See documentation. This is a negative integer if used
@@ -468,36 +470,30 @@ def VLM(conditions,settings,geometry):
     BMX    = BFZ * Y - BFY * (Z - ZBAR)
     BMX    = BMX + SICPLE
     BMY    = BMLE * COD + BFX * (Z - ZBAR) - BFZ * (X - XBAR)
-    BMZ    = BMLE * SID - BFX * Y + BFY * (X - XBAR)  
+    BMZ    = BMLE * SID - BFX * Y + BFY * (X - XBAR)
+    CDC    = BFZ * SINALF +  (BFX *COPSI + BFY *SINPSI) * COSALF
+    CDC    = CDC * CHORD_strip 
 
     ES     = 2*s[0,LE_ind]
     STRIP  = ES *CHORD_strip
-    LIFT   = (BFZ * COSALF - (BFX *COPSI + BFY *SINPSI) *SINALF)*STRIP 
-    #DRAG   = (BFZ * SINALF + (BFX *COPSI + BFY *SINPSI) * COSALF)*STRIP
+    LIFT   = (BFZ *COSALF - (BFX *COPSI + BFY *SINPSI) *SINALF)*STRIP   
+    DRAG   = CDC*ES 
     MOMENT = STRIP * (BMY *COPSI - BMX *SINPSI)  
     FY     = (BFY *COPSI - BFX *SINPSI) *STRIP
     RM     = STRIP *(BMX *COSALF *COPSI + BMY *COSALF *SINPSI + BMZ *SINALF)
     YM     = STRIP *(BMZ *COSALF - (BMX *COPSI + BMY *SINPSI) *SINALF)
 
     # Now calculate the coefficients for each wing
-    Clift_y             = LIFT/CHORD_strip/ES
-
-    results   = compute_induced_drag(Clift_y, Y, CHORD_strip, Sref, SURF)
-    Cdrag_i_y = results.Cdi_distribution
-    Cdrag_i_wing = results.CD_i_wing
-    CDi = results.induced_drag_coefficient
-    #Cdrag_i_y           = DRAG/CHORD_strip/ES
-    Clift_wing          = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
-    #Cdrag_i_wing        = results.CDi
-    #Cdrag_i_wing        = np.add.reduceat(DRAG,span_breaks,axis=1)/SURF
-    alpha_i             = (Cdrag_i_y/Clift_y)*-1
+    cl_y     = LIFT/CHORD_strip/ES
+    cdi_y    = DRAG/CHORD_strip/ES
+    CL_wing  = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
+    CDi_wing = np.add.reduceat(DRAG,span_breaks,axis=1)/SURF
+    alpha_i  = np.hsplit(np.arctan(cdi_y/cl_y),span_breaks[1:])
     
     # Now calculate total coefficients
     CL       = np.atleast_2d(np.sum(LIFT,axis=1)/SREF).T          # CLTOT in VORLAX
-    # plt.plot(Y, Clift_y[0,:],'ko')
-    # plt.show()
-    #CDi      = np.atleast_2d(np.sum(DRAG,axis=1)/SREF).T        # CDTOT in VORLAX
-    CX       = (TANALF * CL - CDi)/(COSALF - SINALF*TANALF)
+    CDi      = np.atleast_2d(np.sum(DRAG,axis=1)/SREF).T          # CDTOT in VORLAX
+    CX       =  ( TANALF * CL - CDi)/(COSALF - SINALF*TANALF)
     CZ       = (CDi+ CX*COSALF)/SINALF 
     CM       = np.atleast_2d(np.sum(MOMENT,axis=1)/SREF).T/c_bar  # CMTOT in VORLAX 1. check deflection is accounted for correctly. 2. check this is right
     CY       = np.atleast_2d(np.sum(FY,axis=1)/SREF).T   # total y force coeff
@@ -505,69 +501,45 @@ def VLM(conditions,settings,geometry):
     CL_mom   = CRTOT/b_ref*(-1)                         # rolling moment coeff
     CNTOT    = np.atleast_2d(np.sum(YM,axis=1)/SREF).T   # yawing  moment coeff (unscaled)
     CN       = CNTOT/b_ref*(-1)                         # yawing  moment coeff
-  
-    spanwise_stations =  np.zeros_like(Y)
-    spanwise_chords   =  np.zeros_like(Y)
-    spanwise_Clift    =  np.zeros_like(Cdrag_i_y)
-    spanwise_Cdrag_i  =  np.zeros_like(Cdrag_i_y)
-    spanwise_alpha_i  =  np.zeros_like(Cdrag_i_y)
-    for i in range(len(n_sw)):
-        if i % 2 == 0:
-            spanwise_stations[span_breaks[i]:span_breaks[i] + n_sw[i]]   = Y[span_breaks[i]:span_breaks[i] + n_sw[i]][::-1]
-            spanwise_chords[span_breaks[i]:span_breaks[i] + n_sw[i]]     = CHORD_strip[span_breaks[i]:span_breaks[i] + n_sw[i]]
-            spanwise_Clift[:, span_breaks[i]:span_breaks[i] + n_sw[i]]   = np.flip(Clift_y[:,span_breaks[i]:span_breaks[i] + n_sw[i]], axis = 1)
-            spanwise_Cdrag_i[:,span_breaks[i]:span_breaks[i] + n_sw[i]]  = np.flip(Cdrag_i_y[:,span_breaks[i]:span_breaks[i] + n_sw[i]][::-1], axis = 1)
-            spanwise_alpha_i[:,span_breaks[i]:span_breaks[i] + n_sw[i]]  = np.flip(alpha_i[:,span_breaks[i]:span_breaks[i] + n_sw[i]][::-1], axis = 1)
-        else:
-            spanwise_stations[span_breaks[i]:span_breaks[i] + n_sw[i]]   = Y[span_breaks[i]:span_breaks[i] + n_sw[i]]
-            spanwise_chords[span_breaks[i]:span_breaks[i] + n_sw[i]]     = CHORD_strip[span_breaks[i]:span_breaks[i] + n_sw[i]]
-            spanwise_Clift[:,span_breaks[i]:span_breaks[i] + n_sw[i]]    = Clift_y[:,span_breaks[i]:span_breaks[i] + n_sw[i]] 
-            spanwise_Cdrag_i[:,span_breaks[i]:span_breaks[i] + n_sw[i]]  = Cdrag_i_y[:,span_breaks[i]:span_breaks[i] + n_sw[i]]
-            spanwise_alpha_i[:,span_breaks[i]:span_breaks[i] + n_sw[i]]  = alpha_i[:,span_breaks[i]:span_breaks[i] + n_sw[i]]
-    
-    # TO REMOVE !! 
-    d_eta      =  abs(np.diff(spanwise_stations, prepend = 0))
-    alpha_i_2  =  np.zeros_like(spanwise_Clift)
-    for i in  range(len(spanwise_stations)):
-        for j in range(len(spanwise_stations)):
-            if i == j:
-                pass
-            else:
-                alpha_i_2[:,i] -= (1/(8 *np.pi)) * spanwise_Clift[:,j] *spanwise_chords[j] *d_eta[j] /((spanwise_stations[i] - spanwise_stations[j] )**2  )
-                        
+
     # ---------------------------------------------------------------------------------------
     # STEP 13: Pack outputs
     # ------------------ --------------------------------------------------------------------     
     precision      = settings.floating_point_precision
-     
-    results = Data() 
-    results.S_ref             = Sref
-    results.b_ref             = b_ref
-    results.c_ref             = c_bar  
-    results.X_ref             = x_m
-    results.Y_ref             = 0
-    results.Z_ref             = z_m 
-    results.Clift             =  CL
-    results.Cdrag_i           =  CDi 
-    results.CX                =  CX
-    results.CY                =  CY 
-    results.CZ                = -CZ 
-    results.CL                =  CL_mom 
-    results.CM                =  CM  
-    results.CN                =  CN 
-    results.Clift_wing        = Clift_wing   
-    results.Cdrag_i_wing      = Cdrag_i_wing 
-    results.Clift_sectional   = spanwise_Clift    
-    results.Cdrag_i_sectional = spanwise_Cdrag_i
-    results.chord_sections    = spanwise_chords
-    results.spanwise_stations = spanwise_stations
-    results.alpha_i           = spanwise_alpha_i
-    results.CP                = np.array(CP    , dtype=precision)
-    results.gamma             = np.array(GAMMA , dtype=precision)
-    results.VD                = VD
-    results.V_distribution    = rhs.V_distribution
-    results.V_x               = rhs.Vx_ind_total
-    results.V_z               = rhs.Vz_ind_total
+    
+    #VORLAX _TOT outputs
+    results = Data()
+    # force coefficients
+    results.S_ref      = Sref
+    results.b_ref      = b_ref
+    results.c_ref      = c_bar  
+    results.X_ref      = x_m
+    results.Y_ref      = 0
+    results.Z_ref      = z_m
+    
+    results.CL         =  CL
+    results.CDi        =  CDi
+    
+    results.CX         =  CX
+    results.CY         =  CY 
+    results.CZ         = -CZ
+    
+    results.CL_mom     =  CL_mom 
+    results.CM         =  CM  
+    results.CN         =  CN
+    
+    #other RCAIDE outputs
+    results.CL_wing        = CL_wing   
+    results.CDi_wing       = CDi_wing 
+    results.cl_y           = cl_y   
+    results.cdi_y          = cdi_y       
+    results.alpha_i        = alpha_i  
+    results.CP             = np.array(CP    , dtype=precision)
+    results.gamma          = np.array(GAMMA , dtype=precision)
+    results.VD             = VD
+    results.V_distribution = rhs.V_distribution
+    results.V_x            = rhs.Vx_ind_total
+    results.V_z            = rhs.Vz_ind_total
     
     return results
 
@@ -641,100 +613,3 @@ def strip_cumsum(arr, chord_breaks, strip_lengths):
     offsets[:,0]  = 0
     offsets = np.repeat(offsets, strip_lengths, axis=1)
     return cumsum - offsets
-
-
-
-
-def compute_induced_drag(cl_dist, y_dist, chord_dist, s_ref,SURF, v_inf=1):
-    """
-    Calculate induced drag from a lift distribution using a vortex lattice approach.
-    
-    Parameters
-    ----------
-    cl_dist : ndarray
-        Distribution of lift coefficients along the span
-    y_dist : ndarray
-        Spanwise positions of control points
-    chord_dist : ndarray
-        Chord distribution along the span
-    s_ref : float
-        Reference wing area
-    v_inf : float
-        Freestream velocity
-        
-    Returns
-    -------
-    results : Data
-        Data structure containing:
-            - induced_drag_coefficient : float
-                Total induced drag coefficient
-            - Cdi_distribution : ndarray
-                Distribution of induced drag coefficient along the span
-            - induced_AoA_distribution : ndarray
-                Distribution of induced angle of attack along the span
-                
-    Notes
-    -----
-    **Major Assumptions**
-        * Control points are located on the circulation distribution
-        * Vortex filaments are aligned with the freestream
-    """
-    # Compute Gamma distribution
-    # Rearrange the arrays
-    midpoint = len(y_dist) // 2
-    
-    # Rearrange y_dist: move midpoint to end elements to the beginning
-
-    
-    y_dist = np.concatenate((y_dist[midpoint:][::-1], y_dist[:midpoint]))
-    
-    # Rearrange cl_dist and chord_dist to match
-    cl_dist = np.concatenate((cl_dist[0, midpoint:][::-1], cl_dist[0, :midpoint]))
-    chord_dist = np.concatenate((chord_dist[midpoint:][::-1], chord_dist[:midpoint]))
-    #plt.plot(y_dist,cl_dist,'ko-')
-    #plt.show()
-    circulation_dist = 0.5 * chord_dist * v_inf * cl_dist # Convert from local lift coefficient to circulation
-
-    # Compute vortex distribution
-    
-    vortex_strength_dist = np.zeros_like(circulation_dist)
-    temp = np.diff(circulation_dist[0:-1]) * 0.5 + np.diff(circulation_dist[1:]) * 0.5
-    vortex_strength_dist[1:-1] = temp
-    vortex_strength_dist[0] = circulation_dist[0] + 0.5 * (circulation_dist[1] - circulation_dist[0])
-    vortex_strength_dist[-1] = -circulation_dist[-1] + 0.5 * (circulation_dist[-1] - circulation_dist[-2])
-
-    # Compute induced flow - vectorized approach
-    # Create a matrix of y differences
-    y_diff = y_dist[:, np.newaxis] - y_dist[np.newaxis, :]
-    
-    # Create a mask for the diagonal (where i == j)
-    mask = ~np.eye(len(y_dist), dtype=bool)
-    
-    # Compute the influence matrix (avoiding division by zero with the mask)
-    influence = np.zeros_like(y_diff)
-    influence[mask] = 1.0 / (4.0 * np.pi * y_diff[mask])
-    
-    # Compute induced velocities by matrix multiplication
-    induced_velocity_dist = np.dot(influence, vortex_strength_dist)
-
-    # Compute induced drag
-    alpha_induced_dist = np.arctan(induced_velocity_dist / v_inf)
-    cd_induced_dist = alpha_induced_dist * cl_dist
-
-    # Compute induced drag coefficient
-    CDi = trapz(cd_induced_dist * chord_dist / s_ref, y_dist)
-    CD_i_wing = np.array((trapz(cd_induced_dist[0:midpoint] * chord_dist[0:midpoint] / SURF[0], y_dist[0:midpoint]),
-                          trapz(cd_induced_dist[midpoint:] * chord_dist[midpoint:] / SURF[1], y_dist[midpoint:])))
-    
-    cd_induced_dist = np.concatenate((cd_induced_dist[midpoint:], cd_induced_dist[:midpoint][::-1]))
-    #cl_dist = np.concatenate((cl_dist[0, midpoint:][::-1], cl_dist[0, :midpoint]))
-    y_dist = np.concatenate((y_dist[midpoint:], y_dist[:midpoint][::-1]))
-    
-    #plt.plot(y_dist, cd_induced_dist, 'ko-')
-    #plt.show()
-    # Pack and return results
-    results = Data()
-    results.induced_drag_coefficient = CDi
-    results.Cdi_distribution = np.array([cd_induced_dist])
-    results.CD_i_wing = np.array([CD_i_wing])
-    return results
