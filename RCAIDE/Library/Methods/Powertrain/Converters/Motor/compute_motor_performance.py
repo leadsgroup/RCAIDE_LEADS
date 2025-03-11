@@ -152,7 +152,7 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         eta_G = motor.gearbox_efficiency
         exp_I = motor.expected_current
         I0    = motor.no_load_current + exp_I*(1-eta_G)
-        G     = motor.gear_ratio
+        G     = motor.gearbox_ratio
         KV    = motor.speed_constant/G
         R     = motor.rotor_radius
         v     = motor_conditions.voltage 

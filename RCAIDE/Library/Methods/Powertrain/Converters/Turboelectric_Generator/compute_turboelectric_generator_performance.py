@@ -50,20 +50,40 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
     turboshaft_conditions              = turboelectric_generator_conditions[turboshaft.tag]
     generator.mode                     = turboelectric_generator.mode
     
-    if turboelectric_generator.mode == 'forward': 
+    if turboelectric_generator.mode == 'forward':
+        # here we run the turboshaft first, then run the generator
         turboshaft_conditions.throttle = turboelectric_generator_conditions.throttle
-        P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
+        
+        # run the generator 
+        P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line)
+        
+        # connect properties of the turboshaft to generator 
         generator_conditions.inputs.shaft_power      = P_mech    
-        generator_conditions.inputs.omega            = turboshaft.angular_velocity    
-        generator_conditions.voltage                 = bus.voltage*np.ones_like(generator_conditions.inputs.shaft_power)   
+        generator_conditions.inputs.omega            = turboshaft.angular_velocity
+        
+        # assign voltage across bus 
+        generator_conditions.voltage                 = bus.voltage*np.ones_like(generator_conditions.inputs.shaft_power)
+        
+         # run the generator 
         compute_generator_performance(generator,generator_conditions,conditions)   
-        P_elec = generator_conditions.outputs.power  
+         
     elif turboelectric_generator.mode == 'reverse':
-        generator_conditions.voltage       = bus.voltage*np.ones_like(generator_conditions.outputs.power) 
-        compute_generator_performance(generator,generator_conditions,conditions)           
-        turboshaft_conditions.shaft_power  = generator_conditions.inputs.shaft_power 
+        # here , we know the electric power produced by the generator and we want to determine how much fuel was used to produce said power
+        
+        # assign voltage across bus 
+        generator_conditions.voltage       = bus.voltage*np.ones_like(generator_conditions.outputs.power)
+        
+        # run the generator 
+        compute_generator_performance(generator,generator_conditions,conditions)
+        
+        # connect properties of the generator to the turboshaft 
+        turboshaft_conditions.shaft_power  = generator_conditions.inputs.shaft_power
+        
+        # run the turboshaft 
         P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
-        P_elec = generator_conditions.outputs.power
+    
+    
+    P_elec = generator_conditions.outputs.power
     
     # Pack results      
     stored_results_flag    = True

@@ -10,7 +10,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
 from RCAIDE.Library.Methods.Geometry.Planform                               import segment_properties    
 from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan                import design_ducted_fan
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor                     import design_DC_motor 
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                     import design_optimal_motor 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common import compute_motor_weight
 from RCAIDE.Library.Plots                                                   import *     
  
@@ -235,7 +235,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     motor.rotor_radius                            = ducted_fan.tip_radius
     motor.design_torque                           = ducted_fan.cruise.design_torque
     motor.angular_velocity                        = ducted_fan.cruise.design_angular_velocity 
-    design_DC_motor(motor)   
+    design_optimal_motor(motor)   
     motor.mass_properties.mass                    = compute_motor_weight(motor) 
     center_propulsor.motor                        = motor  
     net.propulsors.append(center_propulsor) 

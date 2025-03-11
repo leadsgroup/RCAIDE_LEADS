@@ -32,21 +32,52 @@ def design_turboshaft(converter,segment,fuel_line):
         turboshaft = converter.turboshaft
     else:
         turboshaft = converter
-    #check if mach number and temperature are passed
-    if(turboshaft.design_mach_number==None or turboshaft.design_altitude==None):
-        #raise an error
-        raise ValueError('The sizing conditions require an altitude and a Mach number')
+    # check if mach number and temperature are passed
+    if(turboshaft.design_mach_number==None) and (turboshaft.design_altitude==None): 
+        raise NameError('The sizing conditions require an altitude and a Mach number') 
+    else:
+        #call the atmospheric model to get the conditions at the specified altitude
+        atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+        atmo_data  = atmosphere.compute_values(turboshaft.design_altitude,turboshaft.design_isa_deviation)
+        planet     = RCAIDE.Library.Attributes.Planets.Earth()
+        
+        p   = atmo_data.pressure          
+        T   = atmo_data.temperature       
+        rho = atmo_data.density          
+        a   = atmo_data.speed_of_sound    
+        mu  = atmo_data.dynamic_viscosity           
+        U   = a*turboshaft.design_mach_number
+        
+        # setup conditions
+        conditions = RCAIDE.Framework.Mission.Common.Results()
+    
+        # freestream conditions    
+        conditions.freestream.altitude                    = np.atleast_1d(turboshaft.design_altitude)
+        conditions.freestream.mach_number                 = np.atleast_1d(turboshaft.design_mach_number)
+        conditions.freestream.pressure                    = np.atleast_1d(p)
+        conditions.freestream.temperature                 = np.atleast_1d(T)
+        conditions.freestream.density                     = np.atleast_1d(rho)
+        conditions.freestream.dynamic_viscosity           = np.atleast_1d(mu)
+        conditions.freestream.gravity                     = np.atleast_1d(planet.compute_gravity(turboshaft.design_altitude))
+        conditions.freestream.isentropic_expansion_factor = np.atleast_1d(turboshaft.working_fluid.compute_gamma(T,p))
+        conditions.freestream.Cp                          = np.atleast_1d(turboshaft.working_fluid.compute_cp(T,p))
+        conditions.freestream.R                           = np.atleast_1d(turboshaft.working_fluid.gas_specific_constant)
+        conditions.freestream.speed_of_sound              = np.atleast_1d(a)
+        conditions.freestream.velocity                    = np.atleast_1d(U) 
+     
+    segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
+    segment.state.conditions = conditions 
+    turboshaft.append_operating_conditions(segment,conditions.energy) 
             
-    ram                                                   = turboshaft.ram
-    inlet_nozzle                                          = turboshaft.inlet_nozzle
-    compressor                                            = turboshaft.compressor
-    combustor                                             = turboshaft.combustor
-    high_pressure_turbine                                 = turboshaft.high_pressure_turbine
-    low_pressure_turbine                                  = turboshaft.low_pressure_turbine
-    core_nozzle                                           = turboshaft.core_nozzle  
-
-    conditions = segment.state.conditions
-    turboshaft_conditions   = conditions.energy[converter.tag][turboshaft.tag]
+    ram                     = turboshaft.ram
+    inlet_nozzle            = turboshaft.inlet_nozzle
+    compressor              = turboshaft.compressor
+    combustor               = turboshaft.combustor
+    high_pressure_turbine   = turboshaft.high_pressure_turbine
+    low_pressure_turbine    = turboshaft.low_pressure_turbine
+    core_nozzle             = turboshaft.core_nozzle
+    
+    turboshaft_conditions   = conditions.energy[turboshaft.tag]
     ram_conditions          = turboshaft_conditions[ram.tag]     
     inlet_nozzle_conditions = turboshaft_conditions[inlet_nozzle.tag]
     core_nozzle_conditions  = turboshaft_conditions[core_nozzle.tag] 

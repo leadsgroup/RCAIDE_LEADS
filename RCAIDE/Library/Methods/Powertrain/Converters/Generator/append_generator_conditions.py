@@ -7,21 +7,16 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_generator_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_generator_conditions(generator,segment,converter):  
-    ones_row    = segment.state.ones_row                 
-    
-    converter_results                              = segment.state.conditions.energy[converter.tag] 
-    converter_results[generator.tag]               = Conditions()
- 
-    ones_row    = segment.state.ones_row 
-    converter_results[generator.tag]                         = Conditions()
-    converter_results[generator.tag].inputs                  = Conditions()
-    converter_results[generator.tag].outputs                 = Conditions()
-    converter_results[generator.tag].torque                  = 0. * ones_row(1) 
-    converter_results[generator.tag].current                 = 0. * ones_row(1) 
-    converter_results[generator.tag].voltage                 = 0. * ones_row(1) 
-    converter_results[generator.tag].inputs.shaft_power      = 0. * ones_row(1)
-    converter_results[generator.tag].inputs.omega           = 0. * ones_row(1)
+def append_generator_conditions(generator,segment,conditions):  
+    ones_row    = segment.state.ones_row                  
+    conditions[generator.tag]                         = Conditions()
+    conditions[generator.tag].inputs                  = Conditions()
+    conditions[generator.tag].outputs                 = Conditions()
+    conditions[generator.tag].torque                  = 0. * ones_row(1) 
+    conditions[generator.tag].current                 = 0. * ones_row(1) 
+    conditions[generator.tag].voltage                 = 0. * ones_row(1) 
+    conditions[generator.tag].inputs.shaft_power      = 0. * ones_row(1)
+    conditions[generator.tag].inputs.omega           = 0. * ones_row(1)
     
     return 
 

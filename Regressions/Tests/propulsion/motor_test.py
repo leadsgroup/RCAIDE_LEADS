@@ -10,7 +10,7 @@ import RCAIDE
 from RCAIDE.Framework.Core                              import Units, Data
 from RCAIDE.Library.Plots                               import *      
 from RCAIDE.Library.Methods.Powertrain.Converters       import Motor
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_DC_motor import design_DC_motor
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor import design_optimal_motor
 from RCAIDE.Library.Methods.Powertrain                  import setup_operating_conditions 
 
 import os 
@@ -32,10 +32,10 @@ def main():
         motor = design_test_motor( motor_type[i])
         
         # set up default operating conditions 
-        operating_state,propulsor_tag  = setup_operating_conditions(motor) 
+        operating_state,propulsor  = setup_operating_conditions(motor) 
         
         # Assign conditions to the motor
-        motor_conditions = operating_state.conditions.energy[propulsor_tag][motor.tag]
+        motor_conditions = operating_state.conditions.energy[propulsor.tag][motor.tag]
         motor_conditions.voltage[:, 0]   = 120
 
         if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):
@@ -106,7 +106,7 @@ def design_test_motor(motor_type):
         motor.rotor_radius         = prop.tip_radius
         motor.design_torque        = prop.cruise.design_torque 
         motor.angular_velocity     = prop.cruise.design_angular_velocity # Horse power of gas engine variant  750 * Units['hp']
-        design_DC_motor(motor) 
+        design_optimal_motor(motor) 
     elif motor_type == 'PMSM_Motor':
         motor = RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor()
         motor.speed_constant            = 3                        # [rpm/V]        speed constant

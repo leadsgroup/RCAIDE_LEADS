@@ -20,11 +20,17 @@ def append_turboelectric_generator_conditions(turboelectric_generator,segment):
     segment.state.conditions.energy[turboelectric_generator.tag].outputs                                    = Conditions() 
   
     turboelectric_generator_conditions      = segment.state.conditions.energy[turboelectric_generator.tag]
-    for tag, item in  turboelectric_generator.items(): 
-        if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,turboelectric_generator)  
-            for _, sub_item in  item.items(): 
-                if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
-                    item_conditions = turboelectric_generator_conditions[item.tag] 
-                    sub_item.append_operating_conditions(segment,item_conditions) 
+    
+    turboshaft = turboelectric_generator.turboshaft
+    generator = turboelectric_generator.generator
+    turboshaft.append_operating_conditions(segment,turboelectric_generator_conditions)
+    generator.append_operating_conditions(segment,turboelectric_generator_conditions)
+    
+    #for tag, item in  turboelectric_generator.items(): 
+        #if issubclass(type(item), RCAIDE.Library.Components.Component):
+            #item.append_operating_conditions(segment,turboelectric_generator)  
+            #for _, sub_item in  item.items(): 
+                #if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
+                    #item_conditions = turboelectric_generator_conditions[item.tag] 
+                    #sub_item.append_operating_conditions(segment,item_conditions) 
     return 

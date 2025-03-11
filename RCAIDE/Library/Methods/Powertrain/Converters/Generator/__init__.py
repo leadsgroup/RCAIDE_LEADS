@@ -13,4 +13,5 @@ This module contains methods for generator performance analysis and condition ha
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .compute_generator_performance             import compute_generator_performance 
-from .append_generator_conditions               import append_generator_conditions 
+from .append_generator_conditions               import append_generator_conditions
+from .design_optimal_generator                  import design_optimal_generator

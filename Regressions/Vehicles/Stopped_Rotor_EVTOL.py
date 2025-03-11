@@ -11,7 +11,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units 
 from RCAIDE.Library.Methods.Geometry.Planform                                  import segment_properties,wing_segmented_planform 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common    import compute_motor_weight
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor                      import design_DC_motor 
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                      import design_optimal_motor 
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                        import design_propeller ,design_lift_rotor 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based            import converge_physics_based_weight_buildup 
 from RCAIDE.Library.Plots                                                      import *       
@@ -456,7 +456,7 @@ def vehicle_setup(new_regression=True) :
     propeller_motor.rotor_radius                           = propeller.tip_radius
     propeller_motor.design_torque                          = propeller.cruise.design_torque
     propeller_motor.angular_velocity                       = propeller.cruise.design_angular_velocity/propeller_motor.gear_ratio  
-    design_DC_motor(propeller_motor)  
+    design_optimal_motor(propeller_motor)  
     propeller_motor.mass_properties.mass                   = compute_motor_weight(propeller_motor)  
     cruise_propulsor_1.motor                               = propeller_motor 
       
@@ -655,7 +655,7 @@ def vehicle_setup(new_regression=True) :
     lift_rotor_motor.rotor_radius                          = lift_rotor.tip_radius
     lift_rotor_motor.design_torque                         = lift_rotor.hover.design_torque
     lift_rotor_motor.angular_velocity                      = lift_rotor.hover.design_angular_velocity/lift_rotor_motor.gear_ratio  
-    design_DC_motor(lift_rotor_motor)
+    design_optimal_motor(lift_rotor_motor)
     lift_rotor_motor.mass_properties.mass                  = compute_motor_weight(lift_rotor_motor)     
     lift_propulsor_1.motor                                 = lift_rotor_motor
     

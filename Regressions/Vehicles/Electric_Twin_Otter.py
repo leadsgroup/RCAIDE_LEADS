@@ -10,7 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core                                                                import Units   
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                   import design_propeller 
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                   import design_DC_motor 
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                   import design_optimal_motor 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common               import compute_motor_weight
 from RCAIDE.Library.Methods.Geometry.Planform                                             import wing_segmented_planform
 from RCAIDE.Library.Methods.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger  import design_cross_flow_heat_exchanger
@@ -575,7 +575,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     motor.rotor_radius                               = propeller.tip_radius
     motor.design_torque                              = propeller.cruise.design_torque 
     motor.angular_velocity                           = propeller.cruise.design_angular_velocity # Horse power of gas engine variant  750 * Units['hp']
-    design_DC_motor(motor)  
+    design_optimal_motor(motor)  
     motor.mass_properties.mass                       = compute_motor_weight(motor) 
     starboard_propulsor.motor                        = motor 
  

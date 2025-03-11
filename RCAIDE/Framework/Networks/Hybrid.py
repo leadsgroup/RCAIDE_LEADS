@@ -167,7 +167,7 @@ class Hybrid(Network):
         for fuel_line in fuel_lines:  
             for converter_group in fuel_line.assigned_converters:
                 for converter_tag in converter_group:
-                    converter =  network.converters[converter_tag]
+                    converter =  converters[converter_tag]
                     if converter.active and fuel_line.active:   
            
                         converter.mode = "reverse"               
@@ -261,7 +261,7 @@ class Hybrid(Network):
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.power                = total_mech_power 
         conditions.energy.thrust_moment_vector = total_moment 
-        conditions.energy.vehicle_mass_rate    = total_mdot  
+        conditions.weights.vehicle_mass_rate    = total_mdot  
 
         return
     

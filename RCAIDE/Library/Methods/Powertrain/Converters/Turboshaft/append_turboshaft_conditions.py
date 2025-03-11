@@ -12,25 +12,23 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_turboshaft_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turboshaft_conditions(turboshaft,segment,converter):
+def append_turboshaft_conditions(turboshaft,segment,energy_conditions):
     '''
     MATTEO
     
     '''
-    ones_row    = segment.state.ones_row                 
+    ones_row    = segment.state.ones_row
     
-    converter_results                              = segment.state.conditions.energy[converter.tag] 
-    converter_results[turboshaft.tag]              = Conditions()
-
-    converter_results[turboshaft.tag].throttle                      = 0. * ones_row(1)     
-    converter_results[turboshaft.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
-    converter_results[turboshaft.tag].shaft_power                   = 0. * ones_row(1)
-    converter_results[turboshaft.tag].fuel_flow_rate                = 0. * ones_row(1)
-    converter_results[turboshaft.tag].angular_velocity              = turboshaft.design_angular_velocity * ones_row(1) 
-    converter_results[turboshaft.tag].inputs                        = Conditions()
-    converter_results[turboshaft.tag].outputs                       = Conditions()
+    energy_conditions[turboshaft.tag]                               = Conditions() 
+    energy_conditions[turboshaft.tag].throttle                      = 0. * ones_row(1)     
+    energy_conditions[turboshaft.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
+    energy_conditions[turboshaft.tag].shaft_power                   = 0. * ones_row(1)
+    energy_conditions[turboshaft.tag].fuel_flow_rate                = 0. * ones_row(1)
+    energy_conditions[turboshaft.tag].angular_velocity              = turboshaft.design_angular_velocity * ones_row(1) 
+    energy_conditions[turboshaft.tag].inputs                        = Conditions()
+    energy_conditions[turboshaft.tag].outputs                       = Conditions()
  
-    turboshaft_conditions      = converter_results[turboshaft.tag]
+    turboshaft_conditions      = energy_conditions[turboshaft.tag]
     for tag, item in  turboshaft.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
             item.append_operating_conditions(segment,turboshaft_conditions) 

@@ -96,8 +96,6 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_range = np.array
         segment.state.conditions.energy[distributor.tag] = Conditions() 
         segment.state.conditions.noise[distributor.tag]  = Conditions()    
         propulsor.append_propulsor_unknowns_and_residuals(segment)
-       
-        
         
     elif isinstance(compoment,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator):
         compoment.append_operating_conditions(segment)

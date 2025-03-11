@@ -9,7 +9,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core                                                               import Units, Data    
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common              import compute_motor_weight
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                  import design_DC_motor 
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                  import design_optimal_motor 
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                  import design_prop_rotor ,design_prop_rotor 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based  import converge_physics_based_weight_buildup 
 from RCAIDE.Library.Plots                                                                import *     
@@ -314,7 +314,7 @@ def vehicle_setup(new_regression=True):
     prop_rotor_motor.rotor_radius            = prop_rotor.tip_radius
     prop_rotor_motor.design_torque           = prop_rotor.hover.design_torque
     prop_rotor_motor.angular_velocity        = prop_rotor.hover.design_angular_velocity/prop_rotor_motor.gear_ratio  
-    design_DC_motor(prop_rotor_motor)
+    design_optimal_motor(prop_rotor_motor)
     prop_rotor_motor.mass_properties.mass    = compute_motor_weight(prop_rotor_motor)     
     lift_propulsor.motor                     = prop_rotor_motor
      

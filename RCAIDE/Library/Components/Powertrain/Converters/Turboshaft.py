@@ -45,11 +45,11 @@ class Turboshaft(Converter):
         self.design_angular_velocity                          = 0.0
         self.mode                                             = 'forward'
 
-    def append_operating_conditions(self,segment,converter): 
+    def append_operating_conditions(self,segment,conditions): 
         """
         Appends operating conditions to the segment.
         """  
-        append_turboshaft_conditions(self,segment,converter) 
+        append_turboshaft_conditions(self,segment,conditions) 
         return
 
     def unpack_propulsor_unknowns(self,segment):   

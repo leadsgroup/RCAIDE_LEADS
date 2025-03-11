@@ -40,7 +40,7 @@ class DC_Motor(Converter):
     efficiency : float
         Overall motor efficiency. Default is 1.0.
         
-    gear_ratio : float
+    gearbox_ratio : float
         Ratio of output shaft speed to motor speed. Default is 1.0.
         
     gearbox_efficiency : float
@@ -102,19 +102,20 @@ class DC_Motor(Converter):
         Properties Used:
         None
         """           
-        self.tag                = 'motor' 
-        self.resistance         = 0.0
-        self.no_load_current    = 0.0
-        self.speed_constant     = 0.0
-        self.rotor_radius       = 0.0
-        self.rotor_Cp           = 0.0
-        self.efficiency         = 1.0
-        self.gear_ratio         = 1.0
-        self.gearbox_efficiency = 1.0
-        self.expected_current   = 0.0 
-        self.design_torque      = 0.0 
-        self.mode               = "forward"
-        self.interpolated_func  = None
+        self.tag                     = 'motor' 
+        self.resistance              = 0.0
+        self.no_load_current         = 0.0
+        self.speed_constant          = 0.0
+        self.rotor_radius            = 0.0
+        self.rotor_Cp                = 0.0
+        self.efficiency              = 1.0
+        self.gearbox_ratio           = 1.0
+        self.gearbox_efficiency      = 1.0
+        self.design_angular_velocity = 0.0
+        self.expected_current        = 0.0 
+        self.design_torque           = 0.0 
+        self.mode                    = "forward"
+        self.interpolated_func       = None
         
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
         append_motor_conditions(self,segment,energy_conditions)

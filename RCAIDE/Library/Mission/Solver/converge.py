@@ -1,4 +1,4 @@
-# RCAIDE/Library/Missions/Segments/converge_root.py
+# RCAIDE/Library/Missions/Segments/converge.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke  
