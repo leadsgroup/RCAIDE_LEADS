@@ -6,7 +6,7 @@
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  append_motor_conditions
+#  append_ducted_fan_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_ducted_fan_conditions(ducted_fan,segment,energy_conditions,noise_conditions=None): 
 

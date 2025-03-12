@@ -7,7 +7,6 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 ## RCAIDE imports
-import RCAIDE
 from RCAIDE.Framework.Core                  import Data 
 from .Converter                             import Converter
 from RCAIDE.Library.Components.Powertrain.Converters.Turboshaft import Turboshaft 
@@ -39,8 +38,9 @@ class Turboelectric_Generator(Converter):
         # setting the default values
         self.tag                       = 'turboelectric_generator'
         self.turboshaft                = Turboshaft()
-        self.generator                 = DC_Generator() 
-        self.gearbox_ratio             = None  
+        self.generator                 = DC_Generator()
+        self.gearbox                   = Data()
+        self.gearbox.gear_ratio        = None  
         self.active                    = True
         self.mode                      = 'forward'
 

@@ -33,7 +33,7 @@ def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
     torque                = rotor_conditions.motor_torque 
     B                     = rotor.number_of_blades   
     R                     = rotor.tip_radius 
-    eta_p                 = rotor.propulsive_efficiency    
+    eta_p                 = rotor.proppeller_efficiency    
     
     # Unpack ducted_fan blade parameters and operating conditions  
     Vv      = conditions.frames.inertial.velocity_vector 

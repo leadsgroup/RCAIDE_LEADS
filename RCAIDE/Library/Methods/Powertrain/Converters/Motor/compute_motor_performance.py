@@ -145,14 +145,14 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         motor_conditions.Q_conv_airgap            = Q_conv_airgap                          
         motor_conditions.Q_conv_endspace          = Q_conv_endspace                        
         motor_conditions.Loss_cooling             = Loss_cooling                           
-        motor_conditions.torque                   = TQ
-        motor_conditions.omega                    = omega 
+        motor_conditions.outputs.torque           = TQ
+        motor_conditions.outputs.omega            = omega 
         motor_conditions.outputs.power            = P   
     else:
-        eta_G = motor.gearbox_efficiency
+        eta_G = motor.gearbox.efficiency
         exp_I = motor.expected_current
         I0    = motor.no_load_current + exp_I*(1-eta_G)
-        G     = motor.gearbox_ratio
+        G     = motor.gearbox.gear_ratio
         KV    = motor.speed_constant/G
         R     = motor.rotor_radius
         v     = motor_conditions.voltage 
@@ -168,10 +168,10 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         Q = ((v-omega /KV)/Res -I0)/KV 
         I = (v-(omega*G)/KV)/Res 
          
-        motor_conditions.torque     = Q
-        motor_conditions.omega      = omega  
-        motor_conditions.current    = I
-        motor_conditions.outputs.power = omega *Q 
-        motor_conditions.efficiency    = (1-I0/I)*(1-I*Res/v) 
+        motor_conditions.outputs.torque = Q
+        motor_conditions.outputs.omega  = omega  
+        motor_conditions.current        = I
+        motor_conditions.outputs.power  = omega *Q 
+        motor_conditions.efficiency     = (1-I0/I)*(1-I*Res/v) 
      
     return

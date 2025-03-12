@@ -66,8 +66,8 @@ def compute_electric_ducted_fan_performance(propulsor,state,fuel_line=None,bus=N
     compute_motor_performance(motor,motor_conditions,conditions) 
     
     # Spin the ducted_fan  
-    ducted_fan_conditions.omega              = motor_conditions.omega 
-    ducted_fan_conditions.tip_mach           = (motor_conditions.omega * ducted_fan.tip_radius) / conditions.freestream.speed_of_sound
+    ducted_fan_conditions.omega              = motor_conditions.outputs.omega 
+    ducted_fan_conditions.tip_mach           = (motor_conditions.outputs.omega * ducted_fan.tip_radius) / conditions.freestream.speed_of_sound
     ducted_fan_conditions.throttle           = esc_conditions.throttle 
     compute_ducted_fan_performance(propulsor,state,center_of_gravity)   
     

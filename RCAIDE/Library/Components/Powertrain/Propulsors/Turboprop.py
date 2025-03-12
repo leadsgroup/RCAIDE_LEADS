@@ -7,7 +7,8 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports   
-from .                          import Propulsor
+from .                     import Propulsor
+from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop          .append_turboprop_conditions     import append_turboprop_conditions 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop          .compute_turboprop_performance   import compute_turboprop_performance, reuse_stored_turboprop_data
  
@@ -53,7 +54,7 @@ class Turboprop(Propulsor):
     design_propeller_efficiency : float
         Design point propeller efficiency. Default is 0.0.
         
-    design_gearbox_efficiency : float
+    gearbox.efficiency : float
         Design point gearbox efficiency. Default is 0.0.
         
     design_mach_number : float
@@ -102,9 +103,10 @@ class Turboprop(Propulsor):
         self.design_isa_deviation                     = 0.0
         self.design_altitude                          = 0.0
         self.design_propeller_efficiency              = 0.0
-        self.design_gearbox_efficiency                = 0.0 
+        self.gearbox                                  = Data()
+        self.gearbox.efficiency                       = 0.0 
         self.design_angular_velocity                  = 0.0
-        self.design_mach_number                       = None
+        self.design_mach_number                       = None 
         self.design_freestream_velocity               = None
         self.compressor_nondimensional_massflow       = 0.0 
         self.reference_temperature                    = 288.15

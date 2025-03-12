@@ -187,7 +187,7 @@ class Rotor(Component):
         self.vtk_airfoil_points                = 40        
         self.airfoils                          = Airfoil_Container() 
         self.airfoil_polar_stations            = []    
-        self.propulsive_efficiency             = 0.86       
+        self.proppeller_efficiency             = 0.86       
 
         # Initialize the default wake set to Fidelity Zero         
         self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'          

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/append_motor_conditions.py
+# RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/append_esc_conditions.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke  
@@ -6,7 +6,7 @@
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  append_motor_conditions
+#  append_esc_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_esc_conditions(esc,segment,energy_conditions): 
     ones_row    = segment.state.ones_row 

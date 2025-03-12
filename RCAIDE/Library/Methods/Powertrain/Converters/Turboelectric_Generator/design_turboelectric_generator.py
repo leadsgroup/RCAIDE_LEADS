@@ -8,10 +8,10 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 
 # RCAIDE Imports     
-import RCAIDE
-from RCAIDE.Framework.Core                                           import Data
+import RCAIDE 
 from RCAIDE.Framework.Mission.Common                                 import Conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft         import design_turboshaft
+from RCAIDE.Library.Methods.Powertrain.Converters.Generator          import design_optimal_generator 
 
 # Python package imports   
 import numpy   as np
@@ -66,7 +66,9 @@ def design_turboelectric_generator(turboelectric_generator):
     
     turboelectric_generator.append_operating_conditions(segment)   
 
-    design_turboshaft(turboelectric_generator,segment,fuel_line)
+    design_turboshaft(turboelectric_generator,segment,fuel_line) 
+
+    design_optimal_generator(turboelectric_generator.generator)    
 
     return      
   

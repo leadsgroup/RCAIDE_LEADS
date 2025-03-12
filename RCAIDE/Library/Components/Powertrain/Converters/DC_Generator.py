@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from .Converter  import Converter
+from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.append_generator_conditions import  append_generator_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -40,10 +41,10 @@ class DC_Generator(Converter):
     efficiency : float
         Overall generator efficiency. Default is 1.0.
         
-    gearbox_ratio : float
+    gearbox.gear_ratio : float
         Ratio of output shaft speed to generator speed. Default is 1.0.
         
-    gearbox_efficiency : float
+    gearbox.efficiency : float
         Efficiency of the gearbox. Default is 1.0.
         
     expected_current : float
@@ -108,8 +109,9 @@ class DC_Generator(Converter):
         self.no_load_current          = 0.0
         self.speed_constant           = 0.0 
         self.efficiency               = 1.0
-        self.gearbox_ratio            = 1.0
-        self.gearbox_efficiency       = 1.0
+        self.gearbox                  = Data()
+        self.gearbox.gear_ratio       = 1.0
+        self.gearbox.efficiency       = 1.0
         self.expected_current         = 0.0 
         self.design_torque            = 0.0 
         self.design_angular_velocity  = 0.0 

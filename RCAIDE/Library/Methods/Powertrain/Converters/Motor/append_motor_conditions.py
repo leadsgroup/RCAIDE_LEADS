@@ -50,13 +50,13 @@ def append_motor_conditions(motor,segment,energy_conditions):
     energy_conditions[motor.tag]                         = Conditions()
     energy_conditions[motor.tag].inputs                  = Conditions()
     energy_conditions[motor.tag].outputs                 = Conditions()
-    energy_conditions[motor.tag].torque                  = 0. * ones_row(1) 
     energy_conditions[motor.tag].efficiency              = 0. * ones_row(1) 
     energy_conditions[motor.tag].current                 = 0. * ones_row(1) 
     energy_conditions[motor.tag].voltage                 = 0. * ones_row(1)
     energy_conditions[motor.tag].outputs.work_done       = 0. * ones_row(1) 
-    energy_conditions[motor.tag].outputs.power           = 0. * ones_row(1) 
-    energy_conditions[motor.tag].omega                   = 0. * ones_row(1) 
+    energy_conditions[motor.tag].outputs.power           = 0. * ones_row(1)
+    energy_conditions[motor.tag].outputs.torque          = 0. * ones_row(1)  
+    energy_conditions[motor.tag].outputs.omega           = 0. * ones_row(1) 
     energy_conditions[motor.tag].rotor_power_coefficient = 0. * ones_row(1)
     return 
 

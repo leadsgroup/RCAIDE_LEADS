@@ -101,9 +101,9 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
   
 
     if compressor.motor != None:
-        compressor_motor_conditions = conditions.energy[turboprop.tag][compressor.tag][compressor.motor.tag]
-        compressor_motor_conditions.omega = turboprop.design_angular_velocity*turboprop_conditions.throttle 
-        compressor_motor_conditions.voltage           = bus.voltage * state.ones_row(1)
+        compressor_motor_conditions         = conditions.energy[turboprop.tag][compressor.tag][compressor.motor.tag]
+        compressor_motor_conditions.outputs.omega   = turboprop.design_angular_velocity*turboprop_conditions.throttle 
+        compressor_motor_conditions.voltage = bus.voltage * state.ones_row(1)
     # Step 6: Compute flow through the low pressure compressor
     compute_compressor_performance(compressor,compressor_conditions,conditions)
     

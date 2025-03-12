@@ -59,8 +59,8 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
             power  = electric_machine_conditions.inputs.shaft_power 
             Res    = electric_machine.resistance  
             Kv     = electric_machine.speed_constant
-            G      = electric_machine.gearbox_ratio
-            etaG   = electric_machine.gearbox_efficiency
+            G      = electric_machine.gearbox.gear_ratio
+            etaG   = electric_machine.gearbox.efficiency
             exp_i  = electric_machine.expected_current
             io     = electric_machine.no_load_current + exp_i*(1-etaG) 
             v      = electric_machine_conditions.voltage 
@@ -72,8 +72,8 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
         elif electric_machine.mode == 'reverse':  
             Res    = electric_machine.resistance  
             Kv     = electric_machine.speed_constant
-            G      = electric_machine.gearbox_ratio
-            etaG   = electric_machine.gearbox_efficiency
+            G      = electric_machine.gearbox.gear_ratio
+            etaG   = electric_machine.gearbox.efficiency
             exp_i  = electric_machine.expected_current
             io     = electric_machine.no_load_current + exp_i*(1-etaG) 
             v      = electric_machine_conditions.voltage             
@@ -84,7 +84,7 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
             etam   = (1-io/i)*(1-i*Res/v) 
         
     elif type(electric_machine) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator: 
-        G      = electric_machine.gearbox_ratio 
+        G      = electric_machine.gearbox.gear_ratio 
         omega  = electric_machine_conditions.omega / G
         power  = electric_machine_conditions.inputs.shaft_power 
 
@@ -109,12 +109,12 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
            
     elif (type(electric_machine) ==  RCAIDE.Library.Components.Powertrain.Converters.DC_Motor):
         if electric_machine.mode == "forward": 
-            G      = electric_machine.gearbox_ratio 
+            G      = electric_machine.gearbox.gear_ratio 
             omega  = electric_machine_conditions.omega / G
             power  = electric_machine_conditions.outputs.power  
             Res    = electric_machine.resistance  
             Kv     = electric_machine.speed_constant 
-            etaG   = electric_machine.gearbox_efficiency
+            etaG   = electric_machine.gearbox.efficiency
             exp_i  = electric_machine.expected_current
             io     = electric_machine.no_load_current + exp_i*(1-etaG) 
             v      = electric_machine_conditions.voltage             
@@ -123,12 +123,12 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
             etam   = (1-io/i)*(1-i*Res/v)
             
         elif electric_machine.mode == 'reverse':
-            G      = electric_machine.gearbox_ratio 
+            G      = electric_machine.gearbox.gear_ratio 
             omega  = electric_machine_conditions.omega / G 
             Res    = electric_machine.resistance  
             Kv     = electric_machine.speed_constant
-            G      = electric_machine.gearbox_ratio
-            etaG   = electric_machine.gearbox_efficiency
+            G      = electric_machine.gearbox.gear_ratio
+            etaG   = electric_machine.gearbox.efficiency
             exp_i  = electric_machine.expected_current
             io     = electric_machine.no_load_current + exp_i*(1-etaG) 
             v      = electric_machine_conditions.voltage 
@@ -139,7 +139,7 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
             etam   = (1-io/i)*(1-i*Res/v)
         
     elif (type(electric_machine) ==  RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
-        G      = electric_machine.gearbox_ratio 
+        G      = electric_machine.gearbox.gear_ratio 
         omega  = electric_machine_conditions.omega / G
         power  = electric_machine_conditions.outputs.power  
         Kv     = electric_machine.speed_constant 

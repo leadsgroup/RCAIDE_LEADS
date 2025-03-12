@@ -44,7 +44,7 @@ def design_optimal_generator(generator):
     # design properties of the generator 
     io     = generator.no_load_current
     v      = generator.nominal_voltage  
-    G      = generator.gearbox_ratio      
+    G      = generator.gearbox.gear_ratio      
     omega  = generator.design_angular_velocity /G     
     etam   = generator.efficiency 
     P      = generator.design_power

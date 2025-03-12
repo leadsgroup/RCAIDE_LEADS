@@ -6,7 +6,7 @@
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  append_motor_conditions
+#  append_avionics_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_avionics_conditions(avionics,segment,bus):  
     ones_row    = segment.state.ones_row

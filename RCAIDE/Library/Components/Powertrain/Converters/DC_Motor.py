@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from .Converter  import Converter
+from RCAIDE.Framework.Core                  import Data 
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions import  append_motor_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -40,10 +41,10 @@ class DC_Motor(Converter):
     efficiency : float
         Overall motor efficiency. Default is 1.0.
         
-    gearbox_ratio : float
+    gearbox.gear_ratio : float
         Ratio of output shaft speed to motor speed. Default is 1.0.
         
-    gearbox_efficiency : float
+    gearbox.efficiency : float
         Efficiency of the gearbox. Default is 1.0.
         
     expected_current : float
@@ -109,8 +110,9 @@ class DC_Motor(Converter):
         self.rotor_radius            = 0.0
         self.rotor_Cp                = 0.0
         self.efficiency              = 1.0
-        self.gearbox_ratio           = 1.0
-        self.gearbox_efficiency      = 1.0
+        self.gearbox                 = Data()
+        self.gearbox.gear_ratio      = 1.0
+        self.gearbox.efficiency      = 1.0
         self.design_angular_velocity = 0.0
         self.expected_current        = 0.0 
         self.design_torque           = 0.0 

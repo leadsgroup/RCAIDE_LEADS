@@ -176,10 +176,13 @@ def add_mission_variables(segment):
     unknown_keys.remove('tag') 
     if ground_seg_flag: 
         n_points     = segment.state.numerics.number_of_control_points
-        len_inputs = n_points 
+        if len(unknown_keys) == 2: 
+            len_inputs   = n_points
+        else:
+            len_inputs   = n_points +  (len(unknown_keys) - 2) * n_points
     elif constant_throttle_seg:
         n_points     = segment.state.numerics.number_of_control_points  
-        len_inputs = n_points*(len(unknown_keys)-1) + 1
+        len_inputs   = n_points*(len(unknown_keys)-1) + 1
     elif single_pt_seg:
         n_points   = 1
         len_inputs = len(unknown_keys)
@@ -231,19 +234,40 @@ def add_mission_variables(segment):
     # Step 4. Aliases 
     # Step 4.1: Setup the aliases for the inputs
     basic_string_con = Data()
-    input_string = []
+    input_string = []     
 
-    if ground_seg_flag:       
-        output_numbers = np.linspace(0,n_points-2,n_points-1,dtype=np.int16)
-        basic_string_con[unknown_keys[1]] = np.tile('segment.state.unknowns.'+unknown_keys[1]+'[', n_points-1)
-        input_string.append(np.core.defchararray.add(basic_string_con[unknown_keys[1]],np.array(output_numbers).astype(str)))
-        input_string        = np.array(input_string[0])
-        input_string        = np.core.defchararray.add(input_string, np.tile(']',len_inputs-1))
-        input_aliases       = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
-        input_aliases[:,0]  = input_names
-        input_aliases[0,1]  = 'segment.state.unknowns.'+unknown_keys[0] 
-        input_aliases[1:,1] = input_string
-        
+    if ground_seg_flag: 
+        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2))         
+        count = 0
+        for unkn in unknown_keys: 
+            basic_string_con = Data()
+            input_string = []            
+            if unkn == 'elapsed_time':
+                output_numbers = np.array([0])
+                basic_string_con[unkn] = np.tile('segment.state.unknowns.'+unkn , 1)
+                input_string.append(np.core.defchararray.add(basic_string_con[unkn],np.array(output_numbers).astype(str))) 
+                input_string       = np.core.defchararray.add(input_string, np.tile(']',1)) 
+                input_aliases[count:count+1,1] = 'segment.state.unknowns.'+unkn
+                count += 1
+                
+            elif unkn == 'ground_velocity': 
+                output_numbers = np.linspace(0,n_points-2,n_points-1,dtype=np.int16)                    
+                basic_string_con[unkn] = np.tile('segment.state.unknowns.'+unkn+'[', n_points-1)
+                input_string.append(np.core.defchararray.add(basic_string_con[unkn],np.array(output_numbers).astype(str)))
+                input_string       = np.core.defchararray.add(input_string, np.tile(']',n_points-1))  
+                input_aliases[count:count+n_points-1,1] = input_string
+                count += n_points-1 
+            
+            else: 
+                output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16)                     
+                basic_string_con[unkn] = np.tile('segment.state.unknowns.'+unkn+'[', n_points)
+                input_string.append(np.core.defchararray.add(basic_string_con[unkn],np.array(output_numbers).astype(str))) 
+                input_string       = np.core.defchararray.add(input_string, np.tile(']',n_points))     
+                input_aliases[count:count+n_points,1] = input_string
+                count += n_points 
+             
+        input_aliases[:,0] = input_names
+                
     elif constant_throttle_seg: 
         output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16)        
         for unkn in unknown_keys[:-1]:

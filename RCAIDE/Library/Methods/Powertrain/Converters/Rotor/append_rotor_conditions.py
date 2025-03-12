@@ -6,7 +6,7 @@
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  append_motor_conditions
+#  append_rotor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_rotor_conditions(rotor,segment,energy_conditions,noise_conditions): 
     ones_row    = segment.state.ones_row 

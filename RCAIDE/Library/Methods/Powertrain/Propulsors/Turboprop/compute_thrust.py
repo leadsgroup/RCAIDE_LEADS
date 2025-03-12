@@ -46,7 +46,7 @@ def compute_thrust(turboprop,turboprop_conditions,conditions):
     core_nozzle                                    = turboprop.core_nozzle  
     Tt4                                            = turboprop.combustor.turbine_inlet_temperature                                                               
     propeller_efficiency                           = turboprop.design_propeller_efficiency                                                                      
-    gearbox_efficiency                             = turboprop.design_gearbox_efficiency                                                                        
+    gearbox_efficiency                             = turboprop.gearbox.efficiency                                                                        
     low_pressure_turbine_mechanical_efficiency     = turboprop.low_pressure_turbine.mechanical_efficiency                                                       
     lower_heating_value                            = turboprop.combustor.fuel_data.lower_heating_value
 

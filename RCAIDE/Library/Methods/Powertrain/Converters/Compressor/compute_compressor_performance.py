@@ -99,31 +99,22 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
         phi_motor[phi_motor<0]       =  0
         
         # mechanical power 
-        compressor_motor_conditions.outputs.work_done = phi_motor * work_done 
-        compressor_motor_conditions.outputs.power     = compressor_motor_conditions.outputs.work_done * mdot_core   
-        compressor_conditions.outputs.external_shaft_work_done = compressor_motor_conditions.outputs.work_done
-
-        # # electrical power
-        # compute_generator_performance(motor,compressor_motor_conditions,conditions)
-        # compressor_conditions.outputs.external_electrical_power  += compressor_motor_conditions.outputs.power
+        compressor_motor_conditions.outputs.work_done          = phi_motor * work_done 
+        compressor_motor_conditions.outputs.power              = compressor_motor_conditions.outputs.work_done * mdot_core   
+        compressor_conditions.outputs.external_shaft_work_done = compressor_motor_conditions.outputs.work_done 
         
     elif generator != None: 
         compressor_generator_conditions = compressor_conditions[generator.tag] 
         phi_generator                   = deepcopy(phi)
-        phi_generator[phi_generator>0]  = 0
-        
+        phi_generator[phi_generator>0]  = 0 
 
         # mechanical power         
-        compressor_generator_conditions.outputs.work_done = phi_generator * work_done
-        compressor_generator_conditions.outputs.power     = compressor_generator_conditions.outputs.work_done * mdot_core
-        compressor_conditions.outputs.external_shaft_work_done = compressor_generator_conditions.outputs.work_done
-         
-        # # electrical power          
-        # compute_generator_performance(generator,compressor_generator_conditions,conditions)
-        # compressor_conditions.outputs.external_electrical_power   += compressor_generator_conditions.power
+        compressor_generator_conditions.outputs.work_done       = phi_generator * work_done
+        compressor_generator_conditions.outputs.power           = compressor_generator_conditions.outputs.work_done * mdot_core
+        compressor_conditions.outputs.external_shaft_work_done  = compressor_generator_conditions.outputs.work_done 
     else:
-        compressor_conditions.outputs.external_shaft_work_done = 0.0
-        compressor_conditions.outputs.external_electrical_power   = 0.0
+        compressor_conditions.outputs.external_shaft_work_done  = 0.0
+        compressor_conditions.outputs.external_electrical_power = 0.0
         
     return 
 
