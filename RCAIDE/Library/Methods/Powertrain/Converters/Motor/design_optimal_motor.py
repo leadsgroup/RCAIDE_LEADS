@@ -48,7 +48,7 @@ def design_optimal_motor(motor):
     G      = motor.gearbox.gear_ratio      
     omega  = motor.design_angular_velocity * G     
     etam   = motor.efficiency 
-    Q      = motor.design_torque 
+    Q      = motor.design_torque
     
     # define optimizer bounds 
     KV_lower_bound  = 0.01
@@ -72,8 +72,8 @@ def design_optimal_motor(motor):
             assert('\n Slack contraints failed')  
     
     motor.speed_constant   = sol.x[0]
-    motor.resistance       = sol.x[1]    
-    
+    motor.resistance       = sol.x[1] 
+    motor.design_current   = (v-(omega*G)/motor.speed_constant)/motor.resistance  
     return motor  
   
 # objective function
