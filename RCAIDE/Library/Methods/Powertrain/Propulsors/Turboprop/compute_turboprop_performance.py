@@ -97,13 +97,8 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     compressor.working_fluid                              = inlet_nozzle.working_fluid
     compressor.nondimensional_massflow                    = turboprop.compressor_nondimensional_massflow
     compressor_conditions.reference_temperature           = turboprop.reference_temperature
-    compressor_conditions.reference_pressure              = turboprop.reference_pressure   
-  
-
-    if compressor.motor != None:
-        compressor_motor_conditions         = conditions.energy[turboprop.tag][compressor.tag][compressor.motor.tag]
-        compressor_motor_conditions.outputs.omega   = turboprop.design_angular_velocity*turboprop_conditions.throttle 
-        compressor_motor_conditions.voltage = bus.voltage * state.ones_row(1)
+    compressor_conditions.reference_pressure              = turboprop.reference_pressure
+    
     # Step 6: Compute flow through the low pressure compressor
     compute_compressor_performance(compressor,compressor_conditions,conditions)
     
@@ -185,9 +180,21 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
     h_t3                                           = compressor_conditions.outputs.stagnation_enthalpy 
     turboprop_conditions.overall_efficiency        = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
-    turboprop_conditions.thermal_efficiency        = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
+    turboprop_conditions.thermal_efficiency        = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)   
+    compressor_conditions.omega                    = compressor.design_angular_velocity * turboprop_conditions.throttle 
 
-
+    if compressor.motor != None and  len(state.numerics.time.differentiate) > 0:
+        D     = state.numerics.time.differentiate   
+        compressor_motor_conditions                 = conditions.energy[turboprop.tag][compressor.tag][compressor.motor.tag] 
+        compressor_motor_conditions.outputs.power   = np.dot(D,compressor_motor_conditions.outputs.work_done) 
+        compressor_motor_conditions.outputs.omega   = compressor_conditions.omega
+    
+    if compressor.generator != None and len(state.numerics.time.differentiate) > 0:
+        D     = state.numerics.time.differentiate   
+        compressor_generator_conditions                 = conditions.energy[turboprop.tag][compressor.tag][compressor.generator.tag] 
+        compressor_generator_conditions.inputs.power   = np.dot(D,compressor_generator_conditions.inputs.work_done)         
+        compressor_generator_conditions.inputs.omega   = compressor_conditions.omega
+        
     # Store data
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,

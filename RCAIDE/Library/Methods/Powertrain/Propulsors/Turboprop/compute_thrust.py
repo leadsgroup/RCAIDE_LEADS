@@ -48,9 +48,7 @@ def compute_thrust(turboprop,turboprop_conditions,conditions):
     propeller_efficiency                           = turboprop.design_propeller_efficiency                                                                      
     gearbox_efficiency                             = turboprop.gearbox.efficiency                                                                        
     low_pressure_turbine_mechanical_efficiency     = turboprop.low_pressure_turbine.mechanical_efficiency                                                       
-    lower_heating_value                            = turboprop.combustor.fuel_data.lower_heating_value
-
-
+    lower_heating_value                            = turboprop.combustor.fuel_data.lower_heating_value 
 
     # unpack component conditions
     turboprop_conditions                           = conditions.energy[turboprop.tag] 
@@ -58,8 +56,7 @@ def compute_thrust(turboprop,turboprop_conditions,conditions):
     compressor_conditions                          = turboprop_conditions[compressor.tag]  
     combustor_conditions                           = turboprop_conditions[combustor.tag]
     lpt_conditions                                 = turboprop_conditions[low_pressure_turbine.tag]
-    hpt_conditions                                 = turboprop_conditions[high_pressure_turbine.tag]
-    
+    hpt_conditions                                 = turboprop_conditions[high_pressure_turbine.tag] 
                                                                                                                                                                           
     # unpack from turboprop                                                                                                                                     
     fuel_to_air_ratio                              = combustor_conditions.outputs.fuel_to_air_ratio  
@@ -78,24 +75,24 @@ def compute_thrust(turboprop,turboprop_conditions,conditions):
     compressor_work_output_coefficient             = (compressor_gamma - 1)*M0*((1 + fuel_to_air_ratio)*(core_exit_velocity/a0) - M0 + (1 + fuel_to_air_ratio)*(turbine_gas_constant/compressor_gas_constant)*((core_exit_temperature/T0)/((core_exit_velocity/a0)))*((1 - (P0/core_exit_pressure))/compressor_gamma))    
     total_work_output_coefficient                  = propeller_work_output_coefficient + compressor_work_output_coefficient                                                                                              
     
-    #Computing Specifc Thrust
+    # Computing Specifc Thrust
     Fsp                                            = (total_work_output_coefficient*compressor_cp*T0)/(V0)     # [(N*s)/kg] 
     
-    #Computing the TSFC
+    # Computing the TSFC
     TSFC                                           = (fuel_to_air_ratio/(Fsp)) * Units.hour    # [kg/(N*hr)] 
     
     W_dot_mdot0                                    = total_work_output_coefficient*compressor_cp*T0     # [(W*s)/kg] 
     
-    #Computing the Power Specific Fuel Consumption
+    # Computing the Power Specific Fuel Consumption
     PSFC                                           = (fuel_to_air_ratio/(total_work_output_coefficient*compressor_cp*T0)) * Units.hour      # [kg/(W*hr)]
     
-    #Computing the Thermal Efficiency
+    # Computing the Thermal Efficiency
     eta_T                                          = total_work_output_coefficient/((fuel_to_air_ratio*lower_heating_value)/(compressor_cp*T0))   # [-]
  
-    #Computing the Propulsive Efficiency
+    # Computing the Propulsive Efficiency
     eta_P                                          = total_work_output_coefficient/((propeller_work_output_coefficient/propeller_efficiency) + ((compressor_gamma - 1)/2)*((1 + fuel_to_air_ratio)*((core_exit_velocity/a0))**2 - M0**2))                         
     
-    #computing the core mass flow
+    # Computing the core mass flow
     Tref                                           = turboprop.reference_temperature
     Pref                                           = turboprop.reference_pressure
     mdhc                                           = turboprop.compressor_nondimensional_massflow    
@@ -103,16 +100,16 @@ def compute_thrust(turboprop,turboprop_conditions,conditions):
     total_pressure_reference                       = turboprop_conditions.total_pressure_reference     
     mdot_core                                      = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
 
-    #computing the dimensional thrust
+    # computing the dimensional thrust
     FD2                                            = Fsp*mdot_core*turboprop_conditions.throttle
 
-    #fuel flow rate
+    # fuel flow rate
     a                                              = np.array([0.]) 
     fuel_flow_rate                                 = np.fmax(FD2*TSFC/g,a)*1./Units.hour    
 
-    #computing the power 
-    power                                          = FD2*V0
-
+    # computing the power 
+    power                                          = FD2*V0 
+    
     # pack outputs 
     turboprop_conditions.thrust                            = FD2 
     turboprop_conditions.thrust_specific_fuel_consumption  = TSFC

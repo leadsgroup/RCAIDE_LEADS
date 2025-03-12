@@ -228,7 +228,22 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     h_t3                                           = hpc_conditions.outputs.stagnation_enthalpy 
     turbojet_conditions.overall_efficiency         = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
     turbojet_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
-   
+ 
+    lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+
+    if low_pressure_compressor.motor != None:
+        D     = state.numerics.time.differentiate   
+        lpc_motor_conditions                     = low_pressure_compressor[low_pressure_compressor.motor.tag]
+        lpc_motor_conditions.outputs.power       = np.dot(D,lpc_motor_conditions.outputs.work_done)         
+        lpc_motor_conditions.outputs.omega       = lpc_conditions.omega
+         
+    if low_pressure_compressor.generator != None:
+        D     = state.numerics.time.differentiate   
+        lpc_generator_conditions                 = low_pressure_compressor[low_pressure_compressor.generator.tag] 
+        lpc_generator_conditions.inputs.power   = np.dot(D,lpc_generator_conditions.inputs.work_done)         
+        lpc_generator_conditions.inputs.omega   = lpc_generator_conditions.omega 
+        
     # store data
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
@@ -244,8 +259,6 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbojet.tag
     
-
-    # ADD CODE FOR SHAFT OFFTAKE AND MOTORS
     power_elec =  0*state.ones_row(3)
     
     return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 

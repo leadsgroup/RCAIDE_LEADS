@@ -103,8 +103,7 @@ class DC_Generator(Converter):
         Properties Used:
         None
         """           
-        self.tag                      = 'DC_generator'
-        self.active                   = True 
+        self.tag                      = 'DC_generator' 
         self.resistance               = 0.0
         self.no_load_current          = 0.0
         self.speed_constant           = 0.0 

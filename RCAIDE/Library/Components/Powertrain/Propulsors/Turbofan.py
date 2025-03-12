@@ -168,7 +168,7 @@ class Turbofan(Propulsor):
         self.reference_temperature                    = 288.15
         self.reference_pressure                       = 1.01325*10**5 
         self.design_thrust                            = 0.0
-        self.design_mass_flow_rate                    = 0.0
+        self.design_mass_flow_rate                    = 0.0 
         self.OpenVSP_flow_through                     = False
     
     def append_operating_conditions(self,segment):

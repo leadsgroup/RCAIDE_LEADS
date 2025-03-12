@@ -56,7 +56,7 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
     Pt_in       = compressor_conditions.inputs.stagnation_pressure 
     T0          = compressor_conditions.inputs.static_temperature
     P0          = compressor_conditions.inputs.static_pressure  
-    M0          = compressor_conditions.inputs.mach_number
+    M0          = compressor_conditions.inputs.mach_number 
     
     # Unpack ram inputs
     working_fluid           = compressor.working_fluid
@@ -89,10 +89,8 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
     compressor_conditions.outputs.mach_number             = M_out
     compressor_conditions.outputs.gas_constant            = R
     compressor_conditions.outputs.gamma                   = gamma 
-    compressor_conditions.outputs.cp                      = Cp 
-    
-    # compute core mass flow rate 
-    mdot_core = mdhc * np.sqrt(Tref / Tt_out) * (Pt_out / Pref) 
+    compressor_conditions.outputs.cp                      = Cp  
+        
     if motor != None: 
         compressor_motor_conditions  = compressor_conditions[motor.tag]
         phi_motor                    = deepcopy(phi)
@@ -100,8 +98,7 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
         
         # mechanical power 
         compressor_motor_conditions.outputs.work_done          = phi_motor * work_done 
-        compressor_motor_conditions.outputs.power              = compressor_motor_conditions.outputs.work_done * mdot_core   
-        compressor_conditions.outputs.external_shaft_work_done = compressor_motor_conditions.outputs.work_done 
+        compressor_conditions.outputs.external_shaft_work_done = phi_motor * work_done  
         
     elif generator != None: 
         compressor_generator_conditions = compressor_conditions[generator.tag] 
@@ -109,12 +106,8 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
         phi_generator[phi_generator>0]  = 0 
 
         # mechanical power         
-        compressor_generator_conditions.outputs.work_done       = phi_generator * work_done
-        compressor_generator_conditions.outputs.power           = compressor_generator_conditions.outputs.work_done * mdot_core
-        compressor_conditions.outputs.external_shaft_work_done  = compressor_generator_conditions.outputs.work_done 
-    else:
-        compressor_conditions.outputs.external_shaft_work_done  = 0.0
-        compressor_conditions.outputs.external_electrical_power = 0.0
+        compressor_generator_conditions.inputs.work_done        = phi_generator * work_done
+        compressor_conditions.outputs.external_shaft_work_done  = phi_generator * work_done 
         
     return 
 

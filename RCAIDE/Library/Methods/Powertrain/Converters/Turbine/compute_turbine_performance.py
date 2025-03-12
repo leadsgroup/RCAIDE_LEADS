@@ -31,7 +31,7 @@ def compute_turbine_performance(turbine,turbine_conditions,conditions):
           .inputs.fuel_to_air_ratio               (numpy.ndarray): fuel-to-air ratio                   [unitless]
           .inputs.compressor.work_done            (numpy.ndarray): compressor work                     [J/(kg/s)]
           .inputs.fan.work_done                   (numpy.ndarray): fan work done                       [J/(kg/s)]
-          .inputs.shaft_power_off_take.work_done  (numpy.ndarray): shaft power off take                [J/(kg/s)] 
+          .inputs.power_off_take.work_done  (numpy.ndarray): shaft power off take                [J/(kg/s)] 
           .mechanical_efficiency                          (float): mechanical efficiency               [unitless]
           .polytropic_efficiency                          (float): polytropic efficiency               [unitless]
 
@@ -59,10 +59,10 @@ def compute_turbine_performance(turbine,turbine_conditions,conditions):
     compressor_work       = turbine_conditions.inputs.compressor.work_done
     fan_work              = turbine_conditions.inputs.fan.work_done
     f                     = turbine_conditions.inputs.fuel_to_air_ratio  
-    external_shaft_power  = turbine_conditions.inputs.compressor.external_shaft_work_done  
+    external_power        = turbine_conditions.inputs.compressor.external_shaft_work_done  
   
     # Using the work done by the compressors/fan and the fuel to air ratio to compute the energy drop across the turbine
-    deltah_ht = -1/(1+f) * (compressor_work + external_shaft_power + alpha * fan_work) * 1/eta_mech
+    deltah_ht = -1/(1+f) * (compressor_work + external_power + alpha * fan_work) * 1/eta_mech
     
     # Compute the output stagnation quantities from the inputs and the energy drop computed above
     Tt_out    = Tt_in+deltah_ht/Cp

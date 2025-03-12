@@ -46,10 +46,10 @@ class Numerics(Conditions):
         self.tag                              = 'numerics' 
         self.number_of_control_points         = 16
         self.discretization_method            = chebyshev_data
-        self.solver                           =  Data()
+        self.solver                           = Data()
         self.solver.type                      = "optimize" # options: "optimize", "root_finder"
         self.solver.method                    = "SLSQP"    
-        self.solver.objective                 = "energy"   #options: # None, energy , power 
+        self.solver.objective                 = "energy"   # options: # None, energy , power 
         self.solver.tolerance_solution        = 1E-6
         self.solver.converged                 = None
         self.solver.max_evaluations           = 200

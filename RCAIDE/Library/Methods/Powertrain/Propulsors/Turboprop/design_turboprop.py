@@ -9,15 +9,17 @@
 
 # RCAIDE Imports     
 import RCAIDE
-from RCAIDE.Framework.Core                                            import Data 
-from RCAIDE.Library.Methods.Powertrain.Converters.Ram                 import compute_ram_performance
-from RCAIDE.Library.Methods.Powertrain.Converters.Combustor           import compute_combustor_performance
-from RCAIDE.Library.Methods.Powertrain.Converters.Compressor          import compute_compressor_performance
-from RCAIDE.Library.Methods.Powertrain.Converters.Turbine             import compute_turbine_performance
-from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle    import compute_expansion_nozzle_performance 
-from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle  import compute_compression_nozzle_performance
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop           import size_core 
-from RCAIDE.Library.Methods.Powertrain                                import setup_operating_conditions 
+from RCAIDE.Framework.Core                                                    import Data 
+from RCAIDE.Library.Methods.Powertrain.Converters.Ram                         import compute_ram_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Combustor                   import compute_combustor_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Compressor                  import compute_compressor_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Turbine                     import compute_turbine_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle            import compute_expansion_nozzle_performance 
+from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle          import compute_compression_nozzle_performance
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop                   import size_core 
+from RCAIDE.Library.Methods.Powertrain                                        import setup_operating_conditions 
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                       import design_optimal_motor 
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common   import compute_motor_weight
 
 # Python package imports   
 import numpy                                                                as np
@@ -182,15 +184,26 @@ def design_turboprop(turboprop):
     turboprop.sealevel_static_thrust              = sls_T[0][0]
     turboprop.sealevel_static_power               = sls_P[0][0]
     
-
     turboprop.design_thrust_specific_fuel_consumption = turboprop_conditions.thrust_specific_fuel_consumption  
     turboprop.design_non_dimensional_thrust           = turboprop_conditions.non_dimensional_thrust            
     turboprop.design_core_mass_flow_rate              = turboprop_conditions.core_mass_flow_rate               
-    turboprop.design_fuel_flow_rate                   = turboprop_conditions.fuel_flow_rate                     
-    turboprop.design_power                            = turboprop_conditions.power                             
+    turboprop.design_fuel_flow_rate                   = turboprop_conditions.fuel_flow_rate                           
     turboprop.design_specific_power                   = turboprop_conditions.specific_power                    
     turboprop.design_power_specific_fuel_consumption  = turboprop_conditions.power_specific_fuel_consumption   
     turboprop.design_thermal_efficiency               = turboprop_conditions.thermal_efficiency                
-    turboprop.design_propulsive_efficiency            = turboprop_conditions.propulsive_efficiency             
+    turboprop.design_propulsive_efficiency            = turboprop_conditions.propulsive_efficiency
+    
+    if compressor.motor != None: 
+        V                     = turboprop.design_freestream_velocity
+        operating_state,_     = setup_operating_conditions(turboprop, altitude = turboprop.design_altitude,velocity_range=np.array([V]))  
+        operating_state.conditions.energy[turboprop.tag].throttle[:,0] = 1.0  
+        T,_,P,_,_,_           = turboprop.compute_performance(operating_state)
+        
+        motor                         = compressor.motor 
+        motor.design_torque           = P[0][0] /compressor.design_angular_velocity   
+        motor.design_angular_velocity = compressor.design_angular_velocity
+        motor.mass_properties.mass    = compute_motor_weight(motor) 
+        design_optimal_motor(motor)
+    
     return      
   

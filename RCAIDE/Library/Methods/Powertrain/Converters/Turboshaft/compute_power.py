@@ -14,7 +14,6 @@ import numpy                               as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_power
 # ----------------------------------------------------------------------------------------------------------------------
-
 def compute_power(turboshaft,turboshaft_conditions,conditions):
     """Computes power and other properties as below.
 
@@ -82,7 +81,7 @@ def compute_power(turboshaft,turboshaft_conditions,conditions):
     M0                                         = conditions.freestream.mach_number                        
     total_temperature_reference                = turboshaft_conditions.total_temperature_reference                                                          
     total_pressure_reference                   = turboshaft_conditions.total_pressure_reference                                                            
-    Power                                      = turboshaft_conditions.shaft_power                                                           
+    Power                                      = turboshaft_conditions.power                                                           
     eta_c                                      = turboshaft.conversion_efficiency
     mode                                       = turboshaft.mode
                                                                                                                                                         
@@ -121,16 +120,14 @@ def compute_power(turboshaft,turboshaft_conditions,conditions):
     PSFC                                       = f/Psp                                                                                                
     
     #Computing the thermal efficiency                       
-    eta_T                                      = 1 - (tau_r*(tau_c - 1))/(tau_lambda*(1 - x/(tau_r*tau_c)))   
-    turboshaft.angular_velocity                = turboshaft.design_angular_velocity*turboshaft_conditions.throttle                               
+    eta_T                                      = 1 - (tau_r*(tau_c - 1))/(tau_lambda*(1 - x/(tau_r*tau_c)))                               
 
     #pack outputs
     turboshaft_conditions.power_specific_fuel_consumption   = PSFC
     turboshaft_conditions.fuel_flow_rate                    = fuel_flow_rate                                                                              
-    turboshaft_conditions.shaft_power                       = Power
+    turboshaft_conditions.power                             = Power
     turboshaft_conditions.non_dimensional_power             = Psp
     turboshaft_conditions.non_dimensional_thrust            = Tsp
-    turboshaft_conditions.thermal_efficiency                = eta_T
-    turboshaft_conditions.angular_velocity                  = turboshaft.angular_velocity
+    turboshaft_conditions.thermal_efficiency                = eta_T        
 
     return 

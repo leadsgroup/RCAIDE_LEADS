@@ -244,6 +244,22 @@ def compute_turbofan_performance(turbofan,state,fuel_line=None,bus=None,center_o
     h_t3                                           = hpc_conditions.outputs.stagnation_enthalpy 
     turbofan_conditions.overall_efficiency         = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
     turbofan_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_air_fan*(h_e_f - h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
+   
+    fan_conditions.omega        = fan.design_angular_velocity * turbofan_conditions.throttle
+    lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
+    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
+
+    if low_pressure_compressor.motor != None:
+        D     = state.numerics.time.differentiate   
+        lpc_motor_conditions                 = low_pressure_compressor[low_pressure_compressor.motor.tag]
+        lpc_motor_conditions.outputs.power   = np.dot(D,lpc_motor_conditions.outputs.work_done) 
+        lpc_motor_conditions.outputs.omega   = lpc_conditions.omega
+         
+    if low_pressure_compressor.generator != None:
+        D     = state.numerics.time.differentiate   
+        lpc_generator_conditions                 = low_pressure_compressor[low_pressure_compressor.generator.tag] 
+        lpc_generator_conditions.inputs.power   = np.dot(D,lpc_generator_conditions.inputs.work_done)         
+        lpc_generator_conditions.inputs.omega   = lpc_generator_conditions.omega 
   
     # store data
     core_nozzle_res = Data(

@@ -22,9 +22,8 @@ def append_turboshaft_conditions(turboshaft,segment,energy_conditions):
     energy_conditions[turboshaft.tag]                               = Conditions() 
     energy_conditions[turboshaft.tag].throttle                      = 0. * ones_row(1)     
     energy_conditions[turboshaft.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
-    energy_conditions[turboshaft.tag].shaft_power                   = 0. * ones_row(1)
+    energy_conditions[turboshaft.tag].power                         = 0. * ones_row(1)
     energy_conditions[turboshaft.tag].fuel_flow_rate                = 0. * ones_row(1)
-    energy_conditions[turboshaft.tag].angular_velocity              = turboshaft.design_angular_velocity * ones_row(1) 
     energy_conditions[turboshaft.tag].inputs                        = Conditions()
     energy_conditions[turboshaft.tag].outputs                       = Conditions()
  

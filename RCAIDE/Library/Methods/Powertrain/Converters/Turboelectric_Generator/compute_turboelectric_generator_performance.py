@@ -45,9 +45,11 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
     generator                          = turboelectric_generator.generator
     turboshaft                         = turboelectric_generator.turboshaft
     turboshaft.mode                    = turboelectric_generator.mode
+    compressor                         = turboshaft.compressor
     turboelectric_generator_conditions = conditions.energy[turboelectric_generator.tag] 
     generator_conditions               = turboelectric_generator_conditions[generator.tag]
     turboshaft_conditions              = turboelectric_generator_conditions[turboshaft.tag]
+    compressor_conditions              = turboelectric_generator_conditions[turboshaft.tag][compressor.tag]
     generator.mode                     = turboelectric_generator.mode
     
     if turboelectric_generator.mode == 'forward':
@@ -58,11 +60,11 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
         P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line)
         
         # connect properties of the turboshaft to generator 
-        generator_conditions.inputs.shaft_power      = P_mech    
-        generator_conditions.inputs.omega            = turboshaft.angular_velocity
+        generator_conditions.inputs.power      = P_mech     
+        generator_conditions.inputs.omega      = compressor_conditions.omega         
         
         # assign voltage across bus 
-        generator_conditions.voltage                 = bus.voltage*np.ones_like(generator_conditions.inputs.shaft_power)
+        generator_conditions.voltage                 = bus.voltage*np.ones_like(generator_conditions.inputs.power)
         
          # run the generator 
         compute_generator_performance(generator,generator_conditions,conditions)   
@@ -77,7 +79,7 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
         compute_generator_performance(generator,generator_conditions,conditions)
         
         # connect properties of the generator to the turboshaft 
-        turboshaft_conditions.shaft_power  = generator_conditions.inputs.shaft_power
+        turboshaft_conditions.power  = generator_conditions.inputs.power
         
         # run the turboshaft 
         P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 

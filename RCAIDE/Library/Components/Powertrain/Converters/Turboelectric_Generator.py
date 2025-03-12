@@ -44,11 +44,11 @@ class Turboelectric_Generator(Converter):
         self.active                    = True
         self.mode                      = 'forward'
 
-    def append_operating_conditions(self,segment): 
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
         """
         Appends operating conditions to the segment.
         """  
-        append_turboelectric_generator_conditions(self,segment) 
+        append_turboelectric_generator_conditions(self,segment,energy_conditions) 
         return
  
     def compute_performance(self,state,fuel_line = None,bus = None):

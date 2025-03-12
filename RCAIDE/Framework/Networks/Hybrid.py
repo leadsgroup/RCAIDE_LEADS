@@ -13,6 +13,8 @@ from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
 from .Network                                             import Network
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw import compute_avionics_power_draw
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw  import compute_payload_power_draw
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance  import *
+from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import *
 
 import numpy as np
 
@@ -168,21 +170,39 @@ class Hybrid(Network):
             for converter_group in fuel_line.assigned_converters:
                 for converter_tag in converter_group:
                     converter =  converters[converter_tag]
-                    if converter.active and fuel_line.active:   
-           
+                    if converter.active and fuel_line.active:    
                         converter.mode = "reverse"               
-                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator) and (converter.active and fuel_line.active): 
+                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator): 
                             generator             = converter.generator   
                             state.conditions.energy[converter.tag][generator.tag].outputs.power  =  total_elec_power*(1 - phi) 
                             P_mech, P_elec, stored_results_flag,stored_propulsor_tag = converter.compute_performance(state,fuel_line,bus)  
                             fuel_mdot += conditions.energy[converter.tag].turboshaft.fuel_flow_rate  
              
-                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft) and (converter.active and fuel_line.active):  
+                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft):  
                             power_mech           = total_mech_power*(1 - phi)   
-                            state.conditions.energy[converter.tag].shaft_power = power_mech 
+                            state.conditions.energy[converter.tag].power = power_mech 
                             P_mech,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state)   
                             fuel_mdot  += conditions.energy[converter.tag].turboshaft.fuel_flow_rate   
                           
+                    
+        for bus in busses: 
+            bus_conditions  = state.conditions.energy[bus.tag]            
+            for converter_group in bus.assigned_converters:
+                for converter_tag in converter_group:
+                    converter =  converters[converter_tag]
+                    if converter.active and bus.active:    
+                        converter.mode = "reverse"
+                        electric_machine_conditions = conditions.energy[converter.tag]
+                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.DC_Motor) or isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):  
+                            compute_motor_performance(converter,electric_machine_conditions,conditions)
+                            bus_conditions.power_draw   += electric_machine_conditions.inputs.power/bus.efficiency
+                            bus_conditions.current_draw  = bus_conditions.power_draw/bus.voltage                            
+                            
+                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.DC_Generator) or isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator):                              
+                            compute_generator_performance(converter,electric_machine_conditions,conditions) 
+                            bus_conditions.power_draw   += electric_machine_conditions.outputs.power/bus.efficiency
+                            bus_conditions.current_draw  = bus_conditions.power_draw/bus.voltage                            
+                        
         # ----------------------------------------------------------        
         # 3.0 Sources
         # ----------------------------------------------------------
@@ -364,7 +384,7 @@ class Hybrid(Network):
                 propulsor.append_operating_conditions(segment)
     
             for converter in network.converters: 
-                converter.append_operating_conditions(segment)                 
+                converter.append_operating_conditions(segment,segment.state.conditions.energy)                 
 
             # ------------------------------------------------------------------------------------------------------            
             # Create fuel_line results data structure  
@@ -381,10 +401,7 @@ class Hybrid(Network):
                         
                 # Assign sub component results data structures 
                 for fuel_tank in  fuel_line.fuel_tanks: 
-                    fuel_tank.append_operating_conditions(segment,fuel_line)  
-    
-                for converter in  fuel_line.converters:
-                    converter.append_operating_conditions(segment,fuel_line)
+                    fuel_tank.append_operating_conditions(segment,fuel_line) 
     
             # ------------------------------------------------------------------------------------------------------            
             # Create bus results data structure  

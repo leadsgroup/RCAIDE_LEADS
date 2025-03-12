@@ -67,10 +67,8 @@ def compute_thrust(turbojet,turbojet_conditions,conditions):
       reference_pressure                 [Pa]
       compressor_nondimensional_massflow [-]
       SFC_adjustment                     [-]
-    """           
-    #unpack the values
-
-    #unpacking from conditions
+    """            
+    # Unpacking from conditions
     gamma                       = conditions.freestream.isentropic_expansion_factor 
     u0                          = conditions.freestream.velocity
     a0                          = conditions.freestream.speed_of_sound
@@ -78,7 +76,7 @@ def compute_thrust(turbojet,turbojet_conditions,conditions):
     p0                          = conditions.freestream.pressure  
     g                           = conditions.freestream.gravity        
 
-    #unpacking from inputs
+    # Unpacking from inputs
     Tref                        = turbojet.reference_temperature
     Pref                        = turbojet.reference_pressure
     mdhc                        = turbojet.compressor_nondimensional_massflow
@@ -91,31 +89,31 @@ def compute_thrust(turbojet,turbojet_conditions,conditions):
     P_core_nozzle               = turbojet_conditions.core_nozzle_static_pressure     
     flow_through_core           = turbojet_conditions.flow_through_core  
  
-    #computing the non dimensional thrust
+    # Computing the non dimensional thrust
     core_thrust_nondimensional  = flow_through_core*(gamma*M0*M0*(V_core_nozzle/u0-1.) + core_area_ratio*( P_core_nozzle/p0-1.)) 
 
     Thrust_nd                   = core_thrust_nondimensional  
 
-    #Computing Specifc Thrust
+    # Computing Specifc Thrust
     Fsp              = 1./(gamma*M0)*Thrust_nd
 
-    #Computing the specific impulse
+    # Computing the specific impulse
     Isp              = Fsp*a0/(f*g)
 
-    #Computing the TSFC
+    # Computing the TSFC
     TSFC             = f*g/(Fsp*a0)*(1.-SFC_adjustment) * Units.hour # 1/s is converted to 1/hr here
 
-    #computing the core mass flow
+    # Computing the core mass flow
     mdot_core        = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
 
-    #computing the dimensional thrust
+    # Computing the dimensional thrust
     FD2              = Fsp*a0*mdot_core* turbojet_conditions.throttle
 
-    #fuel flow rate
+    # Fuel flow rate
     a = np.array([0.])        
     fuel_flow_rate   = np.fmax(FD2*TSFC/g,a)*1./Units.hour
 
-    #computing the power 
+    # Computing the power 
     power            = FD2*u0
 
     # pack outputs 
@@ -124,7 +122,7 @@ def compute_thrust(turbojet,turbojet_conditions,conditions):
     turbojet_conditions.non_dimensional_thrust            = Fsp 
     turbojet_conditions.core_mass_flow_rate               = mdot_core
     turbojet_conditions.fuel_flow_rate                    = fuel_flow_rate    
-    turbojet_conditions.power                             = power  
+    turbojet_conditions.power                             = power   
     turbojet_conditions.specific_impulse                  = Isp
 
     return 

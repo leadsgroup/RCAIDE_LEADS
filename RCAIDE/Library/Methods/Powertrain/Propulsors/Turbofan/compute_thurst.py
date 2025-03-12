@@ -123,7 +123,7 @@ def compute_thrust(turbofan,turbofan_conditions,conditions):
     turbofan_conditions.core_thrust                       = FD2_c 
     turbofan_conditions.thrust_specific_fuel_consumption  = TSFC
     turbofan_conditions.non_dimensional_thrust            = Fsp  
-    turbofan_conditions.power                             = power  
+    turbofan_conditions.power                             = power   
     turbofan_conditions.specific_impulse                  = Isp
     turbofan_conditions.core_mass_flow_rate               = mdot_core
     turbofan_conditions.fuel_flow_rate                    = fuel_flow_rate   

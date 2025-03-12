@@ -175,6 +175,67 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         motor_conditions.outputs.omega  = omega  
         motor_conditions.current        = I
         motor_conditions.outputs.power  = omega*Q 
-        motor_conditions.efficiency     = (1-I0/I)*(1-I*Res/v) 
+        motor_conditions.efficiency     = (1-I0/I)*(1-I*Res/v)
+        
+        
+        
+        
+        
+        
+        
+        
+    # TO FIX 
+           
+    #elif (type(motor) ==  RCAIDE.Library.Components.Powertrain.Converters.DC_Motor):
+        #if motor.mode == "forward": 
+            #G      = motor.gearbox.gear_ratio 
+            #omega  = motor_conditions.outputs.omega  
+            #power  = motor_conditions.outputs.power  
+            #Res    = motor.resistance  
+            #Kv     = motor.speed_constant 
+            #etaG   = motor.gearbox.efficiency
+            #exp_i  = motor.expected_current
+            #io     = motor.no_load_current + exp_i*(1-etaG) 
+            #v      = motor_conditions.voltage             
+            #i      = (v - (omega * G)/Kv)/Res  
+            #Q      = (power / omega) 
+            #etam   = (1-io/i)*(1-i*Res/v)
+            
+        #elif motor.mode == 'reverse':
+            #G      = motor.gearbox.gear_ratio 
+            #omega  = motor_conditions.outputs.omega 
+            #Res    = motor.resistance  
+            #Kv     = motor.speed_constant
+            #G      = motor.gearbox.gear_ratio
+            #etaG   = motor.gearbox.efficiency
+            #exp_i  = motor.expected_current
+            #io     = motor.no_load_current + exp_i*(1-etaG) 
+            #v      = motor_conditions.voltage 
+            #P_elec = motor_conditions.outputs.power
+            #i      = P_elec /v
+            #Q      = (((v- omega /Kv)/Res -io)/Kv)  
+            #omega  = ((v - (Res * i)) * Kv)  
+            #etam   = (1-io/i)*(1-i*Res/v)
+        #motor_conditions.outputs.efficiency = etam 
+        #motor_conditions.outputs.torque     = Q
+        
+    #elif (type(motor) ==  RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
+        #G      = motor.gearbox.gear_ratio 
+        #omega  = motor_conditions.outputs.omega 
+        #power  = motor_conditions.outputs.power  
+        #Kv     = motor.speed_constant 
+        #D_in   = motor.inner_diameter  
+        #kw     = motor.winding_factor  
+        #Res    = motor.resistance                      
+        #L      = motor.stack_length                    
+        #l      = motor.length_of_path                  
+        #mu_0   = motor.mu_0                            
+        #mu_r   = motor.mu_r   
+        #Q      = (power/omega)                                      
+        #i      = np.sqrt((2*(Q/G)*l)/(D_in*mu_0*mu_r*L*kw))           
+        #v      = (omega * G)/((2 * np.pi / 60)*Kv) + i*Res   
+        #etam   = (1-io/i)*(1-i*Res/v)    
+        #motor_conditions.outputs.efficiency = etam 
+        #motor_conditions.outputs.torque     = Q        
      
     return

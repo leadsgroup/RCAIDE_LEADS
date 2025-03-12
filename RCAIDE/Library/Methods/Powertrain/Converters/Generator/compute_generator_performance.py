@@ -14,27 +14,27 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_omega_and_Q_from_Cp_and_V
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_generator_performance(electric_machine,electric_machine_conditions,conditions):
+def compute_generator_performance(generator,generator_conditions,conditions):
     """
-    Computes electric_machine performance characteristics including electrical, mechanical and thermal parameters.
+    Computes generator performance characteristics including electrical, mechanical and thermal parameters.
 
     Parameters
     ----------
-    electric_machine : Converter
+    generator : Converter
         Generator component for which performance is being computed
-    electric_machine_conditions : Conditions
-        Container for electric_machine operating conditions
+    generator_conditions : Conditions
+        Container for generator operating conditions
     conditions : Conditions 
         Mission segment conditions containing freestream properties
 
     Returns
     -------
     None
-        Updates electric_machine_conditions in-place with computed performance parameters
+        Updates generator_conditions in-place with computed performance parameters
 
     Notes
     -----
-    This function handles both PMSM and DC electric_machine types with different computation approaches:
+    This function handles both PMSM and DC generator types with different computation approaches:
      
     - Uses speed-torque relationships
     - Accounts for gearbox effects
@@ -54,107 +54,63 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
     RCAIDE.Library.Components.Powertrain.Converters.PMSM_generator
     """
  
-    if type(electric_machine) == RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:   
-        if electric_machine.mode == "forward": 
-            power  = electric_machine_conditions.inputs.shaft_power 
-            Res    = electric_machine.resistance  
-            Kv     = electric_machine.speed_constant
-            G      = electric_machine.gearbox.gear_ratio
-            etaG   = electric_machine.gearbox.efficiency
-            exp_i  = electric_machine.expected_current
-            io     = electric_machine.no_load_current + exp_i*(1-etaG) 
-            v      = electric_machine_conditions.voltage 
-            omega  = electric_machine_conditions.outputs.omega           
+    if type(generator) == RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:   
+        if generator.mode == "forward":  # THIS IS TOO VAGUE. NEED TO FIND BETTER WAY 
+            power  = generator_conditions.inputs.power 
+            Res    = generator.resistance  
+            Kv     = generator.speed_constant
+            G      = generator.gearbox.gear_ratio
+            etaG   = generator.gearbox.efficiency
+            exp_i  = generator.expected_current
+            io     = generator.no_load_current + exp_i*(1-etaG) 
+            v      = generator_conditions.voltage 
+            omega  = generator_conditions.outputs.omega           
             i      = (v - (omega/G) /Kv)/Res  
             Q      = power / omega  
             etam   = (1-io/i)*(1-i*Res/v)
             
-        elif electric_machine.mode == 'reverse':  
-            Res    = electric_machine.resistance  
-            Kv     = electric_machine.speed_constant
-            G      = electric_machine.gearbox.gear_ratio
-            etaG   = electric_machine.gearbox.efficiency
-            exp_i  = electric_machine.expected_current
-            io     = electric_machine.no_load_current + exp_i*(1-etaG) 
-            v      = electric_machine_conditions.voltage             
-            P_elec = electric_machine_conditions.outputs.power
+        elif generator.mode == 'reverse':  # THIS IS TOO VAGUE. NEED TO FIND BETTER WAY 
+            Res    = generator.resistance  
+            Kv     = generator.speed_constant
+            G      = generator.gearbox.gear_ratio
+            etaG   = generator.gearbox.efficiency
+            exp_i  = generator.expected_current
+            io     = generator.no_load_current + exp_i*(1-etaG) 
+            v      = generator_conditions.voltage             
+            P_elec = generator_conditions.outputs.power
             i      = P_elec /v
             omega  = ((v - (Res * i)) * Kv)   
             Q      = (((v-omega /Kv)/Res -io)/Kv)
             omega  = omega / G
             Q      = Q * G
-            etam   = (1-io/i)*(1-i*Res/v) 
+            etam   = (1-io/i)*(1-i*Res/v)
         
-    elif type(electric_machine) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator: 
-        G      = electric_machine.gearbox.gear_ratio 
-        omega  = electric_machine_conditions.outputs.omega  
-        power  = electric_machine_conditions.inputs.shaft_power  
-        Kv     = electric_machine.speed_constant                  
-        D_in   = electric_machine.inner_diameter         
-        kw     = electric_machine.winding_factor     
-        Res    = electric_machine.resistance                      
-        L      = electric_machine.stack_length                    
-        l      = electric_machine.length_of_path                  
-        mu_0   = electric_machine.mu_0                            
-        mu_r   = electric_machine.mu_r   
+        generator_conditions.outputs.current    = i 
+        generator_conditions.outputs.power      = i *v   
+        generator_conditions.inputs.power       = Q * omega  
+        generator_conditions.outputs.efficiency = etam          
+        
+    elif type(generator) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator: 
+        G      = generator.gearbox.gear_ratio 
+        omega  = generator_conditions.outputs.omega  
+        power  = generator_conditions.inputs.power  
+        Kv     = generator.speed_constant                  
+        D_in   = generator.inner_diameter         
+        kw     = generator.winding_factor     
+        Res    = generator.resistance                      
+        L      = generator.stack_length                    
+        l      = generator.length_of_path                  
+        mu_0   = generator.mu_0                            
+        mu_r   = generator.mu_r   
         Q      = power/omega                               
         i      = np.sqrt((2*(Q/G)*l)/(D_in*mu_0*mu_r*L*kw))           
         v      = (omega * G)/((2 * np.pi / 60)*Kv) + i*Res        
-        etam   = (1-io/i)*(1-i*Res/v)                              
+        etam   = (1-io/i)*(1-i*Res/v) 
+    
+        generator_conditions.outputs.current    = i 
+        generator_conditions.outputs.power      = i *v   
+        generator_conditions.inputs.power       = Q * omega 
+        generator_conditions.outputs.efficiency = etam       
    
-           
-    elif (type(electric_machine) ==  RCAIDE.Library.Components.Powertrain.Converters.DC_Motor):
-        if electric_machine.mode == "forward": 
-            G      = electric_machine.gearbox.gear_ratio 
-            omega  = electric_machine_conditions.outputs.omega  
-            power  = electric_machine_conditions.outputs.power  
-            Res    = electric_machine.resistance  
-            Kv     = electric_machine.speed_constant 
-            etaG   = electric_machine.gearbox.efficiency
-            exp_i  = electric_machine.expected_current
-            io     = electric_machine.no_load_current + exp_i*(1-etaG) 
-            v      = electric_machine_conditions.voltage             
-            i      = (v - (omega * G)/Kv)/Res  
-            Q      = (power / omega) 
-            etam   = (1-io/i)*(1-i*Res/v)
-            
-        elif electric_machine.mode == 'reverse':
-            G      = electric_machine.gearbox.gear_ratio 
-            omega  = electric_machine_conditions.outputs.omega 
-            Res    = electric_machine.resistance  
-            Kv     = electric_machine.speed_constant
-            G      = electric_machine.gearbox.gear_ratio
-            etaG   = electric_machine.gearbox.efficiency
-            exp_i  = electric_machine.expected_current
-            io     = electric_machine.no_load_current + exp_i*(1-etaG) 
-            v      = electric_machine_conditions.voltage 
-            P_elec = electric_machine_conditions.outputs.power
-            i      = P_elec /v
-            Q      = (((v- omega /Kv)/Res -io)/Kv)  
-            omega  = ((v - (Res * i)) * Kv)  
-            etam   = (1-io/i)*(1-i*Res/v)
-        
-    elif (type(electric_machine) ==  RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
-        G      = electric_machine.gearbox.gear_ratio 
-        omega  = electric_machine_conditions.outputs.omega 
-        power  = electric_machine_conditions.outputs.power  
-        Kv     = electric_machine.speed_constant 
-        D_in   = electric_machine.inner_diameter  
-        kw     = electric_machine.winding_factor  
-        Res    = electric_machine.resistance                      
-        L      = electric_machine.stack_length                    
-        l      = electric_machine.length_of_path                  
-        mu_0   = electric_machine.mu_0                            
-        mu_r   = electric_machine.mu_r   
-        Q      = (power/omega)                                      
-        i      = np.sqrt((2*(Q/G)*l)/(D_in*mu_0*mu_r*L*kw))           
-        v      = (omega * G)/((2 * np.pi / 60)*Kv) + i*Res   
-        etam   = (1-io/i)*(1-i*Res/v)                              
-   
-    electric_machine_conditions.outputs.torque     = Q   
-    electric_machine_conditions.outputs.current    = i 
-    electric_machine_conditions.outputs.power      = i *v 
-    electric_machine_conditions.outputs.efficiency = etam 
-    electric_machine_conditions.inputs.shaft_power = Q * omega 
  
     return
