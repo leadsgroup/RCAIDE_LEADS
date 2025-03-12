@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 import  RCAIDE
+from RCAIDE.Framework.Core import  Units
 
 # package imports 
 import numpy as np
@@ -63,14 +64,15 @@ def compute_motor_performance(motor,motor_conditions,conditions):
     """           
     # Unpack 
     rho   = conditions.freestream.density[:,0,None]
-    Res   = motor.resistance
 
     if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
-
+    
+        Res            = motor.resistance
+        G              = motor.gearbox.gear_ratio
         I              = motor_conditions.current
         V              = motor_conditions.voltage
-        I_turn         = I/motor.number_of_turns                                               # [A]            current in each turn
-        omega          = motor.speed_constant*(V - I*Res)* (2 * np.pi / 60)                    # [RPM -> rad/s] rotor angular velocity
+        I_turn         = I/motor.number_of_turns                                                    # [A]            current in each turn
+        omega          = (motor.speed_constant*(V - I*Res)*Units.rpm) /G                            # [RPM -> rad/s] rotor angular velocity
         A              = np.pi * ((motor.stator_outer_diameter**2 - motor.stator_inner_diameter**2) / 4) # [m**2]         cross-sectional area of the reluctance path perpendicular to length 𝑙    
         MMF_coil       = motor.number_of_turns*I_turn                                          # [A*turns]      magnetomotive force applied to the reluctance path for a coil (Eq.14)  
         R              = motor.length_of_path/(A*motor.mu_0*motor.mu_r)                        # [A*turn/Wb]    reluctance of a given path or given reluctant element (Eq.16) 
@@ -149,6 +151,7 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         motor_conditions.outputs.omega            = omega 
         motor_conditions.outputs.power            = P   
     else:
+        Res   = motor.resistance
         eta_G = motor.gearbox.efficiency
         exp_I = motor.expected_current
         I0    = motor.no_load_current + exp_I*(1-eta_G)
@@ -165,13 +168,13 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         omega [np.isnan(omega )] = 0.0
         
         # compute torque 
-        Q = ((v-omega /KV)/Res -I0)/KV 
+        Q = (((v-omega /KV)/Res -I0)/KV)/G 
         I = (v-(omega*G)/KV)/Res 
          
         motor_conditions.outputs.torque = Q
         motor_conditions.outputs.omega  = omega  
         motor_conditions.current        = I
-        motor_conditions.outputs.power  = omega *Q 
+        motor_conditions.outputs.power  = omega*Q 
         motor_conditions.efficiency     = (1-I0/I)*(1-I*Res/v) 
      
     return

@@ -64,9 +64,9 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
             exp_i  = electric_machine.expected_current
             io     = electric_machine.no_load_current + exp_i*(1-etaG) 
             v      = electric_machine_conditions.voltage 
-            omega  = electric_machine_conditions.omega /G            
-            i      = (v - omega /Kv)/Res  
-            Q      = (power / omega)  
+            omega  = electric_machine_conditions.outputs.omega           
+            i      = (v - (omega/G) /Kv)/Res  
+            Q      = power / omega  
             etam   = (1-io/i)*(1-i*Res/v)
             
         elif electric_machine.mode == 'reverse':  
@@ -79,38 +79,34 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
             v      = electric_machine_conditions.voltage             
             P_elec = electric_machine_conditions.outputs.power
             i      = P_elec /v
-            omega  = ((v - (Res * i)) * Kv)  / G
-            Q      = (((v-omega /Kv)/Res -io)/Kv)    
+            omega  = ((v - (Res * i)) * Kv)   
+            Q      = (((v-omega /Kv)/Res -io)/Kv)
+            omega  = omega / G
+            Q      = Q * G
             etam   = (1-io/i)*(1-i*Res/v) 
         
     elif type(electric_machine) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator: 
         G      = electric_machine.gearbox.gear_ratio 
-        omega  = electric_machine_conditions.omega / G
-        power  = electric_machine_conditions.inputs.shaft_power 
-
-        Kv        = electric_machine.speed_constant                  
-        D_in      = electric_machine.inner_diameter                  
-    
-        # Input data from Literature
-        kw        = electric_machine.winding_factor                  
-        
-        # Input data from Assumptions
-        Res       = electric_machine.resistance                      
-        L         = electric_machine.stack_length                    
-        l         = electric_machine.length_of_path                  
-        mu_0      = electric_machine.mu_0                            
-        mu_r      = electric_machine.mu_r                            
-        
-        Q         = (power/omega)                               
-        i         = np.sqrt((2*Q*l)/(D_in*mu_0*mu_r*L*kw))           
-        v         = omega/((2 * np.pi / 60)*Kv) + i*Res        
-        etam      = (1-io/i)*(1-i*Res/v)                              
+        omega  = electric_machine_conditions.outputs.omega  
+        power  = electric_machine_conditions.inputs.shaft_power  
+        Kv     = electric_machine.speed_constant                  
+        D_in   = electric_machine.inner_diameter         
+        kw     = electric_machine.winding_factor     
+        Res    = electric_machine.resistance                      
+        L      = electric_machine.stack_length                    
+        l      = electric_machine.length_of_path                  
+        mu_0   = electric_machine.mu_0                            
+        mu_r   = electric_machine.mu_r   
+        Q      = power/omega                               
+        i      = np.sqrt((2*(Q/G)*l)/(D_in*mu_0*mu_r*L*kw))           
+        v      = (omega * G)/((2 * np.pi / 60)*Kv) + i*Res        
+        etam   = (1-io/i)*(1-i*Res/v)                              
    
            
     elif (type(electric_machine) ==  RCAIDE.Library.Components.Powertrain.Converters.DC_Motor):
         if electric_machine.mode == "forward": 
             G      = electric_machine.gearbox.gear_ratio 
-            omega  = electric_machine_conditions.omega / G
+            omega  = electric_machine_conditions.outputs.omega  
             power  = electric_machine_conditions.outputs.power  
             Res    = electric_machine.resistance  
             Kv     = electric_machine.speed_constant 
@@ -118,13 +114,13 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
             exp_i  = electric_machine.expected_current
             io     = electric_machine.no_load_current + exp_i*(1-etaG) 
             v      = electric_machine_conditions.voltage             
-            i      = (v - omega/Kv)/Res  
+            i      = (v - (omega * G)/Kv)/Res  
             Q      = (power / omega) 
             etam   = (1-io/i)*(1-i*Res/v)
             
         elif electric_machine.mode == 'reverse':
             G      = electric_machine.gearbox.gear_ratio 
-            omega  = electric_machine_conditions.omega / G 
+            omega  = electric_machine_conditions.outputs.omega 
             Res    = electric_machine.resistance  
             Kv     = electric_machine.speed_constant
             G      = electric_machine.gearbox.gear_ratio
@@ -134,32 +130,26 @@ def compute_generator_performance(electric_machine,electric_machine_conditions,c
             v      = electric_machine_conditions.voltage 
             P_elec = electric_machine_conditions.outputs.power
             i      = P_elec /v
-            Q      = (((v-omega /Kv)/Res -io)/Kv)  
+            Q      = (((v- omega /Kv)/Res -io)/Kv)  
             omega  = ((v - (Res * i)) * Kv)  
             etam   = (1-io/i)*(1-i*Res/v)
         
     elif (type(electric_machine) ==  RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
         G      = electric_machine.gearbox.gear_ratio 
-        omega  = electric_machine_conditions.omega / G
+        omega  = electric_machine_conditions.outputs.omega 
         power  = electric_machine_conditions.outputs.power  
         Kv     = electric_machine.speed_constant 
-        D_in   = electric_machine.inner_diameter                  
-    
-        # Input data from Literature
-        kw    = electric_machine.winding_factor                  
-        
-        # Input data from Assumptions
-        Res   = electric_machine.resistance                      
-        L     = electric_machine.stack_length                    
-        l     = electric_machine.length_of_path                  
-        mu_0  = electric_machine.mu_0                            
-        mu_r  = electric_machine.mu_r                            
-    
-        Q     = (power/omega)                                      
-        i     = np.sqrt((2*Q*l)/(D_in*mu_0*mu_r*L*kw))           
-        v     = omega/((2 * np.pi / 60)*Kv) + i*Res              
-
-        etam  = (1-io/i)*(1-i*Res/v)                              
+        D_in   = electric_machine.inner_diameter  
+        kw     = electric_machine.winding_factor  
+        Res    = electric_machine.resistance                      
+        L      = electric_machine.stack_length                    
+        l      = electric_machine.length_of_path                  
+        mu_0   = electric_machine.mu_0                            
+        mu_r   = electric_machine.mu_r   
+        Q      = (power/omega)                                      
+        i      = np.sqrt((2*(Q/G)*l)/(D_in*mu_0*mu_r*L*kw))           
+        v      = (omega * G)/((2 * np.pi / 60)*Kv) + i*Res   
+        etam   = (1-io/i)*(1-i*Res/v)                              
    
     electric_machine_conditions.outputs.torque     = Q   
     electric_machine_conditions.outputs.current    = i 
