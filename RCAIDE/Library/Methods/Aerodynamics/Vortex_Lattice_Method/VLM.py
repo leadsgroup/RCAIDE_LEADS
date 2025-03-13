@@ -681,24 +681,7 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
     shed_vortex_segments = np.diff(circulation_segments, axis=1)
     #plt.plot(centerpoints_y[0], shed_vortex_segments[0],'ko-')
     #plt.show()
-    #centerpoints_list = [seg for seg in centerpoints]      
-    #shed_vortex_list    = [seg for seg in np.moveaxis(shed_vortex, 1, 0)]  
-
-    """
-    #delete after this
-    vortex_strength_dist = np.zeros_like(circulation_dist)
-    temp = np.diff(circulation_dist[0,0:-1]) * 0.5 + np.diff(circulation_dist[0,1:]) * 0.5
-    vortex_strength_dist[0,1:-1] = temp
-    vortex_strength_dist[0,0] = circulation_dist[0,0] + 0.5 * (circulation_dist[0,1] - circulation_dist[0,0])
-    vortex_strength_dist[0,-1] = -circulation_dist[0,-1] + 0.5 * (circulation_dist[0,-1] - circulation_dist[0,-2])
     
-    """
-    vortex_strength_dist = circulation_dist
-    # Compute induced flow - vectorized approach
-    # Create a matrix of y differences
-    """y_diff = y_dist[:, np.newaxis] - y_dist[np.newaxis, :]
-    z_diff = z_dist[:, np.newaxis] - z_dist[np.newaxis, :]""" # This is not used anymore since we need to calcualte 2D distance, not just 1D
-
     # Trefftz Plane Y-Z location:
     TP_y = centerpoints_y
     TP_z = np.cos(alpha_cases) * centerpoints_z - np.sin(alpha_cases) * centerpoints_x # REDEFINE THIS. I think this is alright now? 
@@ -714,8 +697,9 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
     plt.show()
     circulation_segments_interp = np.zeros_like(centerpoints_y)
     for i in range(len(y_segments)):
-        circulation_segments_interp[i] = np.interp(centerpoints_y[i], y_segments[i], circulation_segments[i])
-    D_induced = 0.5 * rho * np.sum(V_induced * circulation_segments_interp) 
+        circulation_segments_interp[i] = np.interp(centerpoints_y[i], y_segments[i], circulation_segments[i]) # Sai, this is throwing an error. it's not properly interpolating
+    D_induced = 0.5 * rho * trapz(V_induced * circulation_segments_interp, centerpoints_y) 
+    #D_induced = 0.5 * rho * np.sum(V_induced * circulation_segments_interp) 
     CDi = D_induced / (0.5 * rho * v_inf**2 * np.sum(SURF)) # per wing
 
     #CDi_wing = D_induced.reshape(len(n_sw), -1) / (0.5 * rho * v_inf**2 * SURF) # per wing
