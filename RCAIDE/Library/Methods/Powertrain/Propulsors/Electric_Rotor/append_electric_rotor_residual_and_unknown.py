@@ -27,10 +27,7 @@ def append_electric_rotor_residual_and_unknown(propulsor,segment):
         else:
             cp_init  = 0.5  
         if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
-            if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):
-                segment.state.unknowns[ propulsor.tag + '_current']               = 50 * ones_row(1)  
-            else:
-                segment.state.unknowns[ propulsor.tag + '_rotor_cp']              = cp_init * ones_row(1)  
+            segment.state.unknowns[ propulsor.tag + '_motor_current']   = motor.design_current * ones_row(1) 
             segment.state.residuals.network[propulsor.tag +'_rotor_motor_torque'] = 0. * ones_row(1)
         else: 
             segment.state.conditions.energy[propulsor.tag][motor.tag].rotor_power_coefficient = cp_init * ones_row(1)

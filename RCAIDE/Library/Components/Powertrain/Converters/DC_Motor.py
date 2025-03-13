@@ -42,14 +42,8 @@ class DC_Motor(Converter):
         Overall motor efficiency. Default is 1.0.
         
     gearbox.gear_ratio : float
-        Ratio of output shaft speed to motor speed. Default is 1.0.
-        
-    gearbox.efficiency : float
-        Efficiency of the gearbox. Default is 1.0.
-        
-    expected_current : float
-        Expected operating current [A]. Default is 0.0.
-        
+        Ratio of output shaft speed to motor speed. Default is 1.0. 
+          
     power_split_ratio : float
         Ratio of power distribution when motor drives multiple loads. Default is 0.0.
         
@@ -111,11 +105,10 @@ class DC_Motor(Converter):
         self.rotor_Cp                = 0.0
         self.efficiency              = 1.0
         self.gearbox                 = Data()
-        self.gearbox.gear_ratio      = 1.0
-        self.gearbox.efficiency      = 1.0
-        self.design_angular_velocity = 0.0
-        self.expected_current        = 0.0 
+        self.gearbox.gear_ratio      = 1.0 
+        self.design_angular_velocity = 0.0 
         self.design_torque           = 0.0 
+        self.design_current          = 0.0 
         self.mode                    = "forward"
         self.interpolated_func       = None
         

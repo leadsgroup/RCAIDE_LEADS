@@ -91,7 +91,7 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_range = np.array
         propulsor         = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()
         distributor       = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
         propulsor.rotor   = compoment
-        
+        propulsor.motor   = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
         propulsor.append_operating_conditions(segment)   
         segment.state.conditions.energy[distributor.tag] = Conditions() 
         segment.state.conditions.noise[distributor.tag]  = Conditions()    

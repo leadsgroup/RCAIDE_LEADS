@@ -3,13 +3,6 @@
 # 
 # Created:  Jun 2024, M. Clarke   
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports
-
-import RCAIDE
-
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  unpack electric rotor network unknowns 
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -19,9 +12,5 @@ def unpack_electric_rotor_unknowns(propulsor,segment):
     motor   = propulsor.motor  
     rotor   = propulsor.rotor
     if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
-        results[motor.tag].inputs.current = segment.state.unknowns[propulsor.tag + '_current'] 
-        #if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):
-            #results[motor.tag].inputs.current = segment.state.unknowns[propulsor.tag + '_current'] 
-        #elif (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.DC_Motor):
-            #results[motor.tag].rotor_power_coefficient = segment.state.unknowns[propulsor.tag + '_rotor_cp'] 
+        results[motor.tag].inputs.current = segment.state.unknowns[propulsor.tag + '_motor_current'] 
     return 

@@ -155,51 +155,21 @@ def compute_motor_performance(motor,motor_conditions,conditions):
         G      = motor.gearbox.gear_ratio  
         Res    = motor.resistance  
         Kv     = motor.speed_constant
-        G      = motor.gearbox.gear_ratio
-        etaG   = motor.gearbox.efficiency
-        exp_i  = motor.expected_current
-        io     = motor.no_load_current + exp_i*(1-etaG) 
-        v      = motor_conditions.voltage 
-        #P_elec = motor_conditions.outputs.power
-        i      = motor_conditions.inputs.current # P_elec /v   # motor_conditions.inputs.current
-        Q      = (((v- (omega * G) /Kv)/Res -io)/Kv)  
-        omega  = ((v - (Res * i)) * Kv) * G
-        etam   = (1-io/i)*(1-i*Res/v)  
+        G      = motor.gearbox.gear_ratio 
+        io     = motor.no_load_current  
+        v      = motor_conditions.voltage  
+        i      = motor_conditions.inputs.current 
+        omega  = ((v - (Res * i)) * Kv)  
+        Q      = (((v- (omega) /Kv)/Res -io)/Kv)  
+        etam   = (1-io/i)*(1-i*Res/v)
+        omega  = omega * G
+        Q      = Q / G
 
         motor_conditions.outputs.torque = Q
         motor_conditions.outputs.omega  = omega 
         motor_conditions.outputs.power  = omega*Q 
         motor_conditions.efficiency     = etam 
-         
-        
-        # OLD 
-        #Res   = motor.resistance
-        #eta_G = motor.gearbox.efficiency
-        #exp_I = motor.expected_current
-        #I0    = motor.no_load_current + exp_I*(1-eta_G)
-        #G     = motor.gearbox.gear_ratio
-        #KV    = motor.speed_constant/G
-        #R     = motor.rotor_radius
-        #v     = motor_conditions.voltage 
-        #Cp    = motor_conditions.rotor_power_coefficient 
-    
-        ## compute angular velocity, omega 
-        #omega   =   ((np.pi**(3./2.))*((- 16.*Cp*I0*rho*(KV*KV*KV)*(R*R*R*R*R)*(Res*Res) +
-                    #16.*Cp*rho*v*(KV*KV*KV)*(R*R*R*R*R)*Res + (np.pi*np.pi*np.pi))**(0.5) - 
-                    #np.pi**(3./2.)))/(8.*Cp*(KV*KV)*(R*R*R*R*R)*Res*rho)
-        #omega [np.isnan(omega )] = 0.0
-        
-        ## compute torque 
-        #Q = (((v-omega /KV)/Res -I0)/KV)/G 
-        #I = (v-(omega*G)/KV)/Res 
-         
-        #motor_conditions.outputs.torque = Q
-        #motor_conditions.outputs.omega  = omega  
-        #motor_conditions.inputs.current = I
-        #motor_conditions.outputs.power  = omega*Q 
-        #motor_conditions.efficiency     = (1-I0/I)*(1-I*Res/v)
-        
-         
+          
         
     # TO FIX 
            
@@ -210,10 +180,8 @@ def compute_motor_performance(motor,motor_conditions,conditions):
             #power  = motor_conditions.outputs.power  
             #Q      = power / omega 
             #Res    = motor.resistance  
-            #Kv     = motor.speed_constant 
-            #etaG   = motor.gearbox.efficiency
-            #exp_i  = motor.expected_current
-            #io     = motor.no_load_current + exp_i*(1-etaG) 
+            #Kv     = motor.speed_constant  
+            #io     = motor.no_load_current  
             #v      = motor_conditions.voltage             
             #i      = (v - (omega * G)/Kv)/Res
             #P      = i * v 
@@ -224,10 +192,8 @@ def compute_motor_performance(motor,motor_conditions,conditions):
             #omega  = motor_conditions.outputs.omega 
             #Res    = motor.resistance  
             #Kv     = motor.speed_constant
-            #G      = motor.gearbox.gear_ratio
-            #etaG   = motor.gearbox.efficiency
-            #exp_i  = motor.expected_current
-            #io     = motor.no_load_current + exp_i*(1-etaG) 
+            #G      = motor.gearbox.gear_ratio 
+            #io     = motor.no_load_current  
             #v      = motor_conditions.voltage 
             #P_elec = motor_conditions.outputs.power
             #i      = P_elec /v   # motor_conditions.inputs.current

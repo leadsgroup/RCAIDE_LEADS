@@ -44,12 +44,6 @@ class PMSM_Generator(Converter):
     gearbox.gear_ratio : float
         Ratio of output shaft speed to generator speed. Default is 1.0.
         
-    gearbox.efficiency : float
-        Efficiency of the gearbox. Default is 1.0.
-        
-    expected_current : float
-        Expected operating current [A]. Default is 0.0.
-        
     power_split_ratio : float
         Ratio of power distribution when generator drives multiple loads. Default is 0.0.
         
@@ -110,9 +104,7 @@ class PMSM_Generator(Converter):
         self.speed_constant     = 0.0 
         self.efficiency         = 1.0
         self.gearbox            = Data()
-        self.gearbox.gear_ratio = 1.0
-        self.gearbox.efficiency = 1.0
-        self.expected_current   = 0.0 
+        self.gearbox.gear_ratio = 1.0 
         self.design_torque      = 0.0 
         self.inner_diameter     = 0.0
         self.length_of_path     = 0.0

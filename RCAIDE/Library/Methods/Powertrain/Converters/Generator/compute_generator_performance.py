@@ -59,10 +59,8 @@ def compute_generator_performance(generator,generator_conditions,conditions):
             power  = generator_conditions.inputs.power 
             Res    = generator.resistance  
             Kv     = generator.speed_constant
-            G      = generator.gearbox.gear_ratio
-            etaG   = generator.gearbox.efficiency
-            exp_i  = generator.expected_current
-            io     = generator.no_load_current + exp_i*(1-etaG) 
+            G      = generator.gearbox.gear_ratio 
+            io     = generator.no_load_current  
             v      = generator_conditions.voltage 
             omega  = generator_conditions.outputs.omega           
             i      = (v - (omega/G) /Kv)/Res  
@@ -72,10 +70,8 @@ def compute_generator_performance(generator,generator_conditions,conditions):
         elif generator.mode == 'reverse':  # THIS IS TOO VAGUE. NEED TO FIND BETTER WAY 
             Res    = generator.resistance  
             Kv     = generator.speed_constant
-            G      = generator.gearbox.gear_ratio
-            etaG   = generator.gearbox.efficiency
-            exp_i  = generator.expected_current
-            io     = generator.no_load_current + exp_i*(1-etaG) 
+            G      = generator.gearbox.gear_ratio 
+            io     = generator.no_load_current  
             v      = generator_conditions.voltage             
             P_elec = generator_conditions.outputs.power
             i      = P_elec /v

@@ -202,8 +202,7 @@ def vehicle_setup():
     motor.rotor_radius                               = propeller.tip_radius
     motor.rotor_Cp                                   = propeller.cruise.design_power_coefficient
     motor.gear_ratio                                 = 12. # Gear ratio
-    motor.gearbox_efficiency                         = .98 # Gear box efficiency
-    motor.expected_current                           = 160. # Expected current
+    motor.gearbox_efficiency                         = .98 # Gear box efficiency 
     motor.mass_properties.mass                       = 2.0  * Units.kg  
     propulsor.motor                                  = motor  
 
