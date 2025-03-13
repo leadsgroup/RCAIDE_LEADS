@@ -623,7 +623,7 @@ def strip_cumsum(arr, chord_breaks, strip_lengths):
     offsets = np.repeat(offsets, strip_lengths, axis=1)
     return cumsum - offsets
 
-def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dist,SURF, n_sw, v_inf=343*0.3):
+def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dist,SURF, n_sw, v_inf=343*0.2):
     """
     Calculate induced drag from a lift distribution using a vortex lattice approach.
     
@@ -657,8 +657,6 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
         * Control points are located on the circulation distribution
         * Vortex filaments are aligned with the freestream
     """
-    # Compute Gamma distribution
-    # Rearrange the arrays
    
     # # Rearrange cl_dist and chord_dist to match
     rho = 1.2205 # Entirely wrong, but we'll come back to this... 
@@ -675,12 +673,8 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
     centerpoints_x = (x_segments[:, :-1] + x_segments[:, 1:]) / 2
     
     circulation_segments = circulation_dist.reshape(circulation_dist.shape[0], len(n_sw), -1)[0]
-    #plt.plot(y_segments[0], circulation_segments[0],'ko-') # Clean up
-    #plt.show()
 
     shed_vortex_segments = np.diff(circulation_segments, axis=1)
-    #plt.plot(centerpoints_y[0], shed_vortex_segments[0],'ko-')
-    #plt.show()
     
     # Trefftz Plane Y-Z location:
     TP_y = centerpoints_y
@@ -690,54 +684,40 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
     for i in range(len(centerpoints_y)): # Loop through each test case
         for j in range(len(centerpoints_y[1])): # Loop through each control point
             r = np.sqrt(np.square(centerpoints_y[i,j] - TP_y) + np.square(centerpoints_z[i,j] - TP_z)) # Distance from segment to control point
-            V_induced[i,j] = np.sum(shed_vortex_segments[i,j] / (2*np.pi*r)) # Downwash
+            V_induced[i,j] = np.sum(shed_vortex_segments / (2*np.pi*r)) # Downwash
     
-    # Calculate Induced Drag
-    plt.plot(centerpoints_y[0], V_induced[0],'ko-')
+    x = np.linspace(0,20,1000)
+    y_ellipse = np.sqrt(1 - (x/10)**2)*1*circulation_segments[0][0]
+    x_ellipse = x
+
+    plt.plot(y_segments[0], circulation_segments[0],'ko-')
+    plt.plot(x_ellipse,y_ellipse)
     plt.show()
+
+    # Calculate Induced Drag
     circulation_segments_interp = np.zeros_like(centerpoints_y)
     for i in range(len(y_segments)):
-        circulation_segments_interp[i] = np.interp(centerpoints_y[i], y_segments[i], circulation_segments[i]) # Sai, this is throwing an error. it's not properly interpolating
-    D_induced = 0.5 * rho * trapz(V_induced * circulation_segments_interp, centerpoints_y) 
+        if y_segments[i][-1] > y_segments[i][0]:
+            circulation_segments_interp[i] = np.interp(centerpoints_y[i], y_segments[i], circulation_segments[i]) # Sai, this is throwing an error. it's not properly interpolating
+        else:
+            circulation_segments_interp[i] = np.interp(centerpoints_y[i], np.flip(y_segments[i]), np.flip(circulation_segments[i])) # Sai, this is throwing an error. it's not properly interpolating
+   
+    D_induced = np.zeros(len(centerpoints_y))
+    for i in range(len(y_segments)):
+        if y_segments[i][-1] > y_segments[i][0]:
+            D_induced[i] = -0.5 * rho * trapz(V_induced[i] * circulation_segments_interp[i], centerpoints_y[i]) 
+        else:
+            D_induced[i] = -0.5 * rho * trapz(np.flip(V_induced[i]) * np.flip(circulation_segments_interp[i]), np.flip(centerpoints_y[i])) 
     #D_induced = 0.5 * rho * np.sum(V_induced * circulation_segments_interp) 
-    CDi = D_induced / (0.5 * rho * v_inf**2 * np.sum(SURF)) # per wing
-
-    #CDi_wing = D_induced.reshape(len(n_sw), -1) / (0.5 * rho * v_inf**2 * SURF) # per wing
-
-
-    """
-
-
-    # Create a mask for the diagonal (where i == j)
-    mask = ~np.eye(len(y_dist), dtype=bool)
-    
-    # Compute the influence matrix (avoiding division by zero with the mask)
-    influence = np.zeros_like(y_diff)
-    influence[mask] = 1.0 / (4.0 * np.pi * y_diff[mask])
-    
-    # Compute induced velocities by matrix multiplication
-    induced_velocity_dist = np.dot(influence, vortex_strength_dist)
-    """
-    """
-    # Compute induced drag
-    alpha_induced_dist = np.arctan(V_induced / v_inf)
-    cd_induced_dist = alpha_induced_dist * cl_dist
-
-    # Compute induced drag coefficient
-    CDi = trapz(cd_induced_dist * chord_dist / s_ref, y_dist)
-    # CD_i_wing = np.array((trapz(cd_induced_dist[0:midpoint] * chord_dist[0:midpoint] / SURF[0], y_dist[0:midpoint]),
-    #                       trapz(cd_induced_dist[midpoint:] * chord_dist[midpoint:] / SURF[1], y_dist[midpoint:])))
-    
-    # cd_induced_dist = np.concatenate((cd_induced_dist[midpoint:], cd_induced_dist[:midpoint][::-1]))
-    # #cl_dist = np.concatenate((cl_dist[0, midpoint:][::-1], cl_dist[0, :midpoint]))
-    # y_dist = np.concatenate((y_dist[midpoint:], y_dist[:midpoint][::-1]))
-    
-    #plt.plot(y_dist, cd_induced_dist, 'ko-')
+    #plt.plot(centerpoints_y[0], D_induced[0],'ko-')
     #plt.show()
-    # Pack and return results
-    """
+    
+    CDi_wing = D_induced / (0.5 * rho * v_inf**2 * SURF) # per wing
+
+    CDi = np.sum(D_induced) / (0.5 * rho * v_inf**2 * np.sum(SURF)) # per wing
+
     results = Data()
     results.induced_drag_coefficient = CDi
     results.Cdi_distribution = np.array([0])#cd_induced_dist])
-    results.CD_i_wing =0# np.array([CD_i_wing])
+    results.CD_i_wing = CDi_wing
     return results
