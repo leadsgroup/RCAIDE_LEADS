@@ -237,11 +237,13 @@ def design_turbofan(turbofan):
     # Step 22: Size the core of the turbofan  
     size_core(turbofan,turbofan_conditions,conditions) 
     mass_flow                     = turbofan.mass_flow_rate_design
-    turbofan.design_core_massflow = mass_flow   
+    turbofan.design_core_massflow = mass_flow
+    
+    #turbofan.TSFC   =  0.5
     
     # Step 23: Static Sea Level Thrust  
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
-    V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
+    V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.1 
     operating_state,_     = setup_operating_conditions(turbofan, altitude = 0,velocity_vector=np.array([[V, 0, 0]]))  
     operating_state.conditions.energy[turbofan.tag].throttle[:,0] = 1.0  
     sls_T,_,sls_P,_,_                             = turbofan.compute_performance(operating_state) 
