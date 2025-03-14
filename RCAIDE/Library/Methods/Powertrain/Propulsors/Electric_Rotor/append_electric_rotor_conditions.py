@@ -14,23 +14,25 @@ from RCAIDE.Framework.Mission.Common                      import Conditions
 #  append electric rotor network conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_electric_rotor_conditions(propulsor,segment): 
-    ones_row    = segment.state.ones_row
-                
-    segment.state.conditions.energy[propulsor.tag]                               = Conditions()  
-    segment.state.conditions.energy[propulsor.tag].throttle                      = 0. * ones_row(1)      
-    segment.state.conditions.energy[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
-    segment.state.conditions.energy[propulsor.tag].thrust                        = 0. * ones_row(3) 
-    segment.state.conditions.energy[propulsor.tag].power                         = 0. * ones_row(1) 
-    segment.state.conditions.energy[propulsor.tag].moment                        = 0. * ones_row(3)  
-    segment.state.conditions.noise[propulsor.tag]                                = Conditions()
+    # unpack 
+    ones_row          = segment.state.ones_row
+    energy_conditions = segment.state.conditions.energy
+    noise_conditions  = segment.state.conditions.noise
     
-    energy_conditions      = segment.state.conditions.energy[propulsor.tag]
-    noise_conditions       = segment.state.conditions.noise[propulsor.tag]
+    # add propulsor conditions              
+    energy_conditions.propulsors[propulsor.tag]                               = Conditions()  
+    energy_conditions.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)      
+    energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
+    energy_conditions.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
+    energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].moment                        = 0. * ones_row(3)  
+    noise_conditions.propulsors[propulsor.tag]                                = Conditions()
+   
+    # parse propulsor for comoonent and append 
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
             item.append_operating_conditions(segment,energy_conditions,noise_conditions) 
             for sub_tag, sub_item in  item.items(): 
-                if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
-                    item_conditions = energy_conditions[item.tag] 
-                    sub_item.append_operating_conditions(segment,item_conditions)        
+                if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
+                    sub_item.append_operating_conditions(segment,energy_conditions)        
     return

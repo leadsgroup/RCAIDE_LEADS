@@ -50,8 +50,8 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     N.A.        
     ''' 
     conditions               = state.conditions 
-    noise_conditions         = conditions.noise[turboprop.tag]  
-    turboprop_conditions     = conditions.energy[turboprop.tag]
+    noise_conditions         = conditions.noise.propulsors[turboprop.tag]  
+    turboprop_conditions     = conditions.energy.propulsors[turboprop.tag]
     U0                       = conditions.freestream.velocity
     T                        = conditions.freestream.temperature
     P                        = conditions.freestream.pressure 
@@ -61,15 +61,14 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     combustor                = turboprop.combustor
     high_pressure_turbine    = turboprop.high_pressure_turbine
     low_pressure_turbine     = turboprop.low_pressure_turbine
-    core_nozzle              = turboprop.core_nozzle
-    turboprop_conditions     = conditions.energy[turboprop.tag]
-    ram_conditions           = turboprop_conditions[ram.tag]     
-    inlet_nozzle_conditions  = turboprop_conditions[inlet_nozzle.tag]
-    core_nozzle_conditions   = turboprop_conditions[core_nozzle.tag] 
-    compressor_conditions    = turboprop_conditions[compressor.tag]  
-    combustor_conditions     = turboprop_conditions[combustor.tag]
-    lpt_conditions           = turboprop_conditions[low_pressure_turbine.tag]
-    hpt_conditions           = turboprop_conditions[high_pressure_turbine.tag] 
+    core_nozzle              = turboprop.core_nozzle 
+    ram_conditions           = conditions.energy.converters[ram.tag]     
+    inlet_nozzle_conditions  = conditions.energy.converters[inlet_nozzle.tag]
+    core_nozzle_conditions   = conditions.energy.converters[core_nozzle.tag] 
+    compressor_conditions    = conditions.energy.converters[compressor.tag]  
+    combustor_conditions     = conditions.energy.converters[combustor.tag]
+    lpt_conditions           = conditions.energy.converters[low_pressure_turbine.tag]
+    hpt_conditions           = conditions.energy.converters[high_pressure_turbine.tag] 
      
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                                     = turboprop.working_fluid
@@ -185,13 +184,13 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
 
     if compressor.motor != None and  len(state.numerics.time.differentiate) > 0:
         D     = state.numerics.time.differentiate   
-        compressor_motor_conditions                 = conditions.energy[turboprop.tag][compressor.tag][compressor.motor.tag] 
+        compressor_motor_conditions                 = conditions.energy.converters[compressor.motor.tag] 
         compressor_motor_conditions.outputs.power   = np.dot(D,compressor_motor_conditions.outputs.work_done) 
         compressor_motor_conditions.outputs.omega   = compressor_conditions.omega
     
     if compressor.generator != None and len(state.numerics.time.differentiate) > 0:
         D     = state.numerics.time.differentiate   
-        compressor_generator_conditions                 = conditions.energy[turboprop.tag][compressor.tag][compressor.generator.tag] 
+        compressor_generator_conditions                 = conditions.energy.converters[compressor.generator.tag] 
         compressor_generator_conditions.inputs.power   = np.dot(D,compressor_generator_conditions.inputs.work_done)         
         compressor_generator_conditions.inputs.omega   = compressor_conditions.omega
         
@@ -235,24 +234,52 @@ def reuse_stored_turboprop_data(turboprop,state,network,fuel_line,bus,stored_pro
     Properties Used: 
     N.A.        
     ''' 
-    conditions                        = state.conditions  
-    conditions.energy[turboprop.tag]  = deepcopy(conditions.energy[stored_propulsor_tag])
-    conditions.noise[turboprop.tag]   = deepcopy(conditions.noise[stored_propulsor_tag])
-    compressor                        = turboprop.compressor  
-    compressor_conditions             = conditions.energy[turboprop.tag][compressor.tag]
-    
+    # unpack
+    conditions                  = state.conditions 
+    ram                         = turboprop.ram
+    inlet_nozzle                = turboprop.inlet_nozzle 
+    low_pressure_compressor     = turboprop.low_pressure_compressor
+    high_pressure_compressor    = turboprop.high_pressure_compressor
+    combustor                   = turboprop.combustor
+    high_pressure_turbine       = turboprop.high_pressure_turbine
+    low_pressure_turbine        = turboprop.low_pressure_turbine
+    core_nozzle                 = turboprop.core_nozzle
+    fan_nozzle                  = turboprop.fan_nozzle  
+    ram_0                       = network.propulsors[stored_propulsor_tag].ram
+    inlet_nozzle_0              = network.propulsors[stored_propulsor_tag].inlet_nozzle 
+    low_pressure_compressor_0   = network.propulsors[stored_propulsor_tag].low_pressure_compressor
+    high_pressure_compressor_0  = network.propulsors[stored_propulsor_tag].high_pressure_compressor
+    combustor_0                 = network.propulsors[stored_propulsor_tag].combustor
+    high_pressure_turbine_0     = network.propulsors[stored_propulsor_tag].high_pressure_turbine
+    low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
+    core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
+    fan_nozzle_0                = network.propulsors[stored_propulsor_tag].fan_nozzle 
+
+    # deep copy results 
+    conditions.energy.propulsors[turboprop.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
+    conditions.noise.propulsors[turboprop.tag]                  = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
+    conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
+    conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
+    conditions.energy.converters[low_pressure_compressor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.tag] )
+    conditions.energy.converters[high_pressure_compressor.tag] = deepcopy(conditions.energy.converters[high_pressure_compressor_0.tag])
+    conditions.energy.converters[combustor.tag]                = deepcopy(conditions.energy.converters[combustor_0.tag]               )
+    conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
+    conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
+    conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
+    conditions.energy.converters[fan_nozzle.tag]               = deepcopy(conditions.energy.converters[fan_nozzle_0.tag]              )
+
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
     thrust_vector      = 0*state.ones_row(3)
-    thrust_vector[:,0] = conditions.energy[turboprop.tag].thrust[:,0] 
+    thrust_vector[:,0] = conditions.energy.propulsors[turboprop.tag].thrust[:,0] 
     moment_vector[:,0] = turboprop.origin[0][0] -   center_of_gravity[0][0] 
     moment_vector[:,1] = turboprop.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2] = turboprop.origin[0][2]  -  center_of_gravity[0][2]
-    moment             = np.cross(moment_vector, thrust_vector)         
-  
-    power                                   = conditions.energy[turboprop.tag].power 
-    conditions.energy[turboprop.tag].moment =  moment
-       
-    power_elec =  compressor_conditions.outputs.external_electrical_power 
-        
+    moment             = np.cross(moment_vector,thrust_vector)    
+
+    power                                              = conditions.energy.propulsors[turboprop.tag].power 
+    conditions.energy.propulsors[turboprop.tag].moment = moment
+
+    power_elec =  conditions.energy.converters[low_pressure_compressor.tag].outputs.external_electrical_power + conditions.energy.converters[high_pressure_compressor.tag].outputs.external_electrical_power 
+
     return thrust_vector,moment,power, power_elec

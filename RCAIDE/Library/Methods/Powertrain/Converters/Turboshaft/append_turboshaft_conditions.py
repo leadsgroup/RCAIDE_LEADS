@@ -19,20 +19,18 @@ def append_turboshaft_conditions(turboshaft,segment,energy_conditions):
     '''
     ones_row    = segment.state.ones_row
     
-    energy_conditions[turboshaft.tag]                               = Conditions() 
-    energy_conditions[turboshaft.tag].throttle                      = 0. * ones_row(1)     
-    energy_conditions[turboshaft.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
-    energy_conditions[turboshaft.tag].power                         = 0. * ones_row(1)
-    energy_conditions[turboshaft.tag].fuel_flow_rate                = 0. * ones_row(1)
-    energy_conditions[turboshaft.tag].inputs                        = Conditions()
-    energy_conditions[turboshaft.tag].outputs                       = Conditions()
+    energy_conditions.converters[turboshaft.tag]                               = Conditions() 
+    energy_conditions.converters[turboshaft.tag].throttle                      = 0. * ones_row(1)     
+    energy_conditions.converters[turboshaft.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
+    energy_conditions.converters[turboshaft.tag].power                         = 0. * ones_row(1)
+    energy_conditions.converters[turboshaft.tag].fuel_flow_rate                = 0. * ones_row(1)
+    energy_conditions.converters[turboshaft.tag].inputs                        = Conditions()
+    energy_conditions.converters[turboshaft.tag].outputs                       = Conditions()
  
-    turboshaft_conditions      = energy_conditions[turboshaft.tag]
     for tag, item in  turboshaft.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,turboshaft_conditions) 
+            item.append_operating_conditions(segment,energy_conditions) 
             for sub_tag, sub_item in  item.items(): 
                 if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
-                    item_conditions = turboshaft_conditions[item.tag] 
-                    sub_item.append_operating_conditions(segment,item_conditions) 
+                    sub_item.append_operating_conditions(segment,energy_conditions) 
     return 

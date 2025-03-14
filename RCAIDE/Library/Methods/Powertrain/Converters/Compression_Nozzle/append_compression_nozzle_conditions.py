@@ -12,7 +12,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # append_compression_nozzle_conditions 
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_compression_nozzle_conditions(compression_nozzle,segment,energy_conditions): 
-    energy_conditions[compression_nozzle.tag]                     = Conditions()
-    energy_conditions[compression_nozzle.tag].inputs              = Conditions()
-    energy_conditions[compression_nozzle.tag].outputs             = Conditions()
+    energy_conditions.converters[compression_nozzle.tag]                     = Conditions()
+    energy_conditions.converters[compression_nozzle.tag].inputs              = Conditions()
+    energy_conditions.converters[compression_nozzle.tag].outputs             = Conditions()
     return 

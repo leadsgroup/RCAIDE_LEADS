@@ -43,7 +43,7 @@ class Turboshaft(Converter):
         self.conversion_efficiency                            = 0.5
         self.compressor_nondimensional_massflow               = 0.0
         self.design_angular_velocity                          = 0.0
-        self.mode                                             = 'forward'
+        self.inverse_calculation                              = False
 
     def append_operating_conditions(self,segment,conditions): 
         """

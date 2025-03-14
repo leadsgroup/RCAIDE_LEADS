@@ -10,30 +10,33 @@ import RCAIDE
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  append_turbofan_conditions
+#  append_propulsor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turbofan_conditions(turbofan,segment):  
-    ones_row    = segment.state.ones_row                  
-    segment.state.conditions.energy[turbofan.tag]                               = Conditions()  
-    segment.state.conditions.energy[turbofan.tag].throttle                      = 0. * ones_row(1)      
-    segment.state.conditions.energy[turbofan.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
-    segment.state.conditions.energy[turbofan.tag].thrust                        = 0. * ones_row(3) 
-    segment.state.conditions.energy[turbofan.tag].power                         = 0. * ones_row(1) 
-    segment.state.conditions.energy[turbofan.tag].moment                        = 0. * ones_row(3) 
-    segment.state.conditions.energy[turbofan.tag].fuel_flow_rate                = 0. * ones_row(1)
-    segment.state.conditions.energy[turbofan.tag].inputs                        = Conditions()
-    segment.state.conditions.energy[turbofan.tag].outputs                       = Conditions() 
-    segment.state.conditions.noise[turbofan.tag]                                = Conditions()  
-    segment.state.conditions.noise[turbofan.tag].core_nozzle                    = Conditions() 
-    segment.state.conditions.noise[turbofan.tag].fan_nozzle                     = Conditions() 
-    segment.state.conditions.noise[turbofan.tag].fan                            = Conditions()
-
-    turbofan_conditions      = segment.state.conditions.energy[turbofan.tag]
-    for tag, item in  turbofan.items(): 
+def append_turbofan_conditions(propulsor,segment):   
+    # unpack 
+    ones_row          = segment.state.ones_row
+    energy_conditions = segment.state.conditions.energy
+    noise_conditions  = segment.state.conditions.noise
+    
+    # add propulsor conditions          
+    energy_conditions.propulsors[propulsor.tag]                               = Conditions()  
+    energy_conditions.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)      
+    energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
+    energy_conditions.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
+    energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].moment                        = 0. * ones_row(3) 
+    energy_conditions.propulsors[propulsor.tag].fuel_flow_rate                = 0. * ones_row(1)
+    energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
+    energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
+    noise_conditions.propulsors[propulsor.tag]                                = Conditions()  
+    noise_conditions.propulsors[propulsor.tag].core_nozzle                    = Conditions() 
+    noise_conditions.propulsors[propulsor.tag].fan_nozzle                     = Conditions() 
+    noise_conditions.propulsors[propulsor.tag].fan                            = Conditions()
+ 
+    for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,turbofan_conditions) 
+            item.append_operating_conditions(segment,energy_conditions) 
             for sub_tag, sub_item in  item.items(): 
-                if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
-                    item_conditions = turbofan_conditions[item.tag] 
-                    sub_item.append_operating_conditions(segment,item_conditions)    
+                if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
+                    sub_item.append_operating_conditions(segment,energy_conditions)    
     return 

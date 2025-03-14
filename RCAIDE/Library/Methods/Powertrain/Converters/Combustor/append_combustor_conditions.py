@@ -13,8 +13,8 @@ def append_combustor_conditions(combustor,segment,energy_conditions):
     Appends initial conditions to combustor component
     '''
     ones_row    = segment.state.ones_row 
-    energy_conditions[combustor.tag]                           = Conditions() 
-    energy_conditions[combustor.tag].inputs                    = Conditions() 
-    energy_conditions[combustor.tag].inputs.nondim_mass_ratio  = ones_row(1)
-    energy_conditions[combustor.tag].outputs                   = Conditions()
+    energy_conditions.converters[combustor.tag]                           = Conditions() 
+    energy_conditions.converters[combustor.tag].inputs                    = Conditions() 
+    energy_conditions.converters[combustor.tag].inputs.nondim_mass_ratio  = ones_row(1)
+    energy_conditions.converters[combustor.tag].outputs                   = Conditions()
     return 

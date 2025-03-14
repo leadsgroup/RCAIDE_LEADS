@@ -47,16 +47,16 @@ def append_motor_conditions(motor,segment,energy_conditions):
 
 
     ones_row    = segment.state.ones_row 
-    energy_conditions[motor.tag]                         = Conditions()
-    energy_conditions[motor.tag].inputs                  = Conditions()
-    energy_conditions[motor.tag].outputs                 = Conditions()
-    energy_conditions[motor.tag].efficiency              = 0. * ones_row(1) 
-    energy_conditions[motor.tag].current                 = 0. * ones_row(1) 
-    energy_conditions[motor.tag].voltage                 = 0. * ones_row(1)
-    energy_conditions[motor.tag].outputs.work_done       = 0. * ones_row(1) 
-    energy_conditions[motor.tag].outputs.power           = 0. * ones_row(1)
-    energy_conditions[motor.tag].outputs.torque          = 0. * ones_row(1)  
-    energy_conditions[motor.tag].outputs.omega           = 0. * ones_row(1) 
-    energy_conditions[motor.tag].rotor_power_coefficient = 0. * ones_row(1)
+    energy_conditions.converters[motor.tag]                         = Conditions()
+    energy_conditions.converters[motor.tag].inputs                  = Conditions()
+    energy_conditions.converters[motor.tag].outputs                 = Conditions()
+    energy_conditions.converters[motor.tag].efficiency              = 0. * ones_row(1) 
+    energy_conditions.converters[motor.tag].current                 = 0. * ones_row(1) 
+    energy_conditions.converters[motor.tag].voltage                 = 0. * ones_row(1)
+    energy_conditions.converters[motor.tag].outputs.work_done       = 0. * ones_row(1) 
+    energy_conditions.converters[motor.tag].outputs.power           = 0. * ones_row(1)
+    energy_conditions.converters[motor.tag].outputs.torque          = 0. * ones_row(1)  
+    energy_conditions.converters[motor.tag].outputs.omega           = 0. * ones_row(1) 
+    energy_conditions.converters[motor.tag].rotor_power_coefficient = 0. * ones_row(1)
     return 
 

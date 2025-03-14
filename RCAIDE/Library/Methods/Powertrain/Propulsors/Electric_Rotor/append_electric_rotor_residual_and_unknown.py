@@ -16,19 +16,9 @@ def append_electric_rotor_residual_and_unknown(propulsor,segment):
     ''' 
     appends the torque matching residual and unknown
     '''
-    ones_row    = segment.state.ones_row
-    rotor       = propulsor.rotor  
+    ones_row    = segment.state.ones_row 
     motor       = propulsor.motor
-    if rotor != None: 
-        if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Propeller:
-            cp_init  = float(rotor.cruise.design_power_coefficient)
-        elif (type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor) or (type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor):
-            cp_init  = float(rotor.hover.design_power_coefficient)
-        else:
-            cp_init  = 0.5  
-        if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
-            segment.state.unknowns[ propulsor.tag + '_motor_current']   = motor.design_current * ones_row(1) 
-            segment.state.residuals.network[propulsor.tag +'_rotor_motor_torque'] = 0. * ones_row(1)
-        else: 
-            segment.state.conditions.energy[propulsor.tag][motor.tag].rotor_power_coefficient = cp_init * ones_row(1)
+    if motor != None:  
+        segment.state.unknowns[propulsor.tag + '_motor_current']   = motor.design_current * ones_row(1) 
+        segment.state.residuals.network[propulsor.tag +'_rotor_motor_torque'] = 0. * ones_row(1) 
     return 

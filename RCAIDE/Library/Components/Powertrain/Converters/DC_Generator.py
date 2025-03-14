@@ -113,7 +113,7 @@ class DC_Generator(Converter):
         self.winding_factor           = 0.0
         self.mu_0                     = 0.0
         self.mu_r                     = 0.0
-        self.mode                     = "forward"
+        self.inverse_calculation      = False
         self.interpolated_func        = None
         
     def append_operating_conditions(self,segment,conditions): 

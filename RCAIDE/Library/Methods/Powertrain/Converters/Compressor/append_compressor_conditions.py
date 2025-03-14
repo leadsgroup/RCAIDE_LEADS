@@ -10,9 +10,9 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_compressor_conditions(compressor,segment,energy_conditions): 
     ones_row    = segment.state.ones_row 
-    energy_conditions[compressor.tag]                                   = Conditions()
-    energy_conditions[compressor.tag].inputs                            = Conditions()
-    energy_conditions[compressor.tag].outputs                           = Conditions()
-    energy_conditions[compressor.tag].outputs.external_shaft_work_done  = 0*ones_row(1)
-    energy_conditions[compressor.tag].outputs.external_electrical_power = 0*ones_row(1)
+    energy_conditions.converters[compressor.tag]                                   = Conditions()
+    energy_conditions.converters[compressor.tag].inputs                            = Conditions()
+    energy_conditions.converters[compressor.tag].outputs                           = Conditions()
+    energy_conditions.converters[compressor.tag].outputs.external_shaft_work_done  = 0*ones_row(1)
+    energy_conditions.converters[compressor.tag].outputs.external_electrical_power = 0*ones_row(1)
     return 

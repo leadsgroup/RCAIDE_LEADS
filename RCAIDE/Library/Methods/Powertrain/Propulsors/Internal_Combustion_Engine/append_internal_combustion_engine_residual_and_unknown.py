@@ -17,7 +17,7 @@ def append_internal_combustion_engine_residual_and_unknown(propulsor,segment):
     '''
     
     ones_row    = segment.state.ones_row                   
-    propeller  = propulsor.propeller 
+    propeller   = propulsor.propeller 
     segment.state.unknowns[propulsor.tag  + '_propeller_rpm'] = ones_row(1) * float(propeller.cruise.design_angular_velocity) /Units.rpm   
     segment.state.residuals.network[ propulsor.tag + '_rotor_engine_torque'] = 0. * ones_row(1)
     

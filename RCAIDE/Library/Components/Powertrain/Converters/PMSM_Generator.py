@@ -97,23 +97,23 @@ class PMSM_Generator(Converter):
         Properties Used:
         None
         """           
-        self.tag                = 'PMSM_generator'
-        self.active             = True 
-        self.resistance         = 0.0
-        self.no_load_current    = 0.0
-        self.speed_constant     = 0.0 
-        self.efficiency         = 1.0
-        self.gearbox            = Data()
-        self.gearbox.gear_ratio = 1.0 
-        self.design_torque      = 0.0 
-        self.inner_diameter     = 0.0
-        self.length_of_path     = 0.0
-        self.stack_length       = 0.0
-        self.winding_factor     = 0.0
-        self.mu_0               = 0.0
-        self.mu_r               = 0.0
-        self.mode               = "forward"
-        self.interpolated_func  = None
+        self.tag                 = 'PMSM_generator'
+        self.active              = True 
+        self.resistance          = 0.0
+        self.no_load_current     = 0.0
+        self.speed_constant      = 0.0 
+        self.efficiency          = 1.0
+        self.gearbox             = Data()
+        self.gearbox.gear_ratio  = 1.0 
+        self.design_torque       = 0.0 
+        self.inner_diameter      = 0.0
+        self.length_of_path      = 0.0
+        self.stack_length        = 0.0
+        self.winding_factor      = 0.0
+        self.mu_0                = 0.0
+        self.mu_r                = 0.0
+        self.inverse_calculation = False
+        self.interpolated_func   = None
         
     def append_operating_conditions(self,segment,energy_conditions): 
         append_generator_conditions(self,segment,energy_conditions)

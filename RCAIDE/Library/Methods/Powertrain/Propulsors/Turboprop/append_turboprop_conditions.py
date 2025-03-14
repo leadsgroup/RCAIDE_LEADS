@@ -12,24 +12,27 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_turboprop_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turboprop_conditions(turboprop,segment):  
-    ones_row    = segment.state.ones_row                  
-    segment.state.conditions.energy[turboprop.tag]                               = Conditions()  
-    segment.state.conditions.energy[turboprop.tag].throttle                      = 0. * ones_row(1)     
-    segment.state.conditions.energy[turboprop.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
-    segment.state.conditions.energy[turboprop.tag].power                         = 0. * ones_row(1) 
-    segment.state.conditions.energy[turboprop.tag].fuel_flow_rate                = 0. * ones_row(1)
-    segment.state.conditions.energy[turboprop.tag].inputs                        = Conditions()
-    segment.state.conditions.energy[turboprop.tag].outputs                       = Conditions() 
-    segment.state.conditions.noise[turboprop.tag]                                = Conditions()  
-    segment.state.conditions.noise[turboprop.tag].core_nozzle                    = Conditions()
+def append_turboprop_conditions(propulsor,segment):  
+    # unpack 
+    ones_row          = segment.state.ones_row
+    energy_conditions = segment.state.conditions.energy
+    noise_conditions  = segment.state.conditions.noise
     
-    turboprop_conditions      = segment.state.conditions.energy[turboprop.tag]
-    for tag, item in  turboprop.items(): 
+    # add propulsor conditions    
+    energy_conditions.propulsors[propulsor.tag]                               = Conditions()  
+    energy_conditions.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)     
+    energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
+    energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].fuel_flow_rate                = 0. * ones_row(1)
+    energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
+    energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
+    noise_conditions.propulsors[propulsor.tag]                                = Conditions()  
+    noise_conditions.propulsors[propulsor.tag].core_nozzle                    = Conditions()
+     
+    for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,turboprop_conditions) 
+            item.append_operating_conditions(segment,noise_conditions) 
             for sub_tag, sub_item in  item.items(): 
-                if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
-                    item_conditions = turboprop_conditions[item.tag] 
-                    sub_item.append_operating_conditions(segment,item_conditions)      
+                if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
+                    sub_item.append_operating_conditions(segment,noise_conditions)      
     return 

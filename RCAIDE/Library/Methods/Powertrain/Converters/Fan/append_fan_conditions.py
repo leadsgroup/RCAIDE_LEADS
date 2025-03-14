@@ -10,9 +10,9 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_fan_conditions(fan,segment,energy_conditions): 
     ones_row    = segment.state.ones_row                  
-    energy_conditions[fan.tag]                              = Conditions() 
-    energy_conditions[fan.tag].inputs                       = Conditions() 
-    energy_conditions[fan.tag].outputs                      = Conditions()
-    energy_conditions[fan.tag].rpm                          = 0. * ones_row(1) 
+    energy_conditions.converters[fan.tag]                              = Conditions() 
+    energy_conditions.converters[fan.tag].inputs                       = Conditions() 
+    energy_conditions.converters[fan.tag].outputs                      = Conditions()
+    energy_conditions.converters[fan.tag].rpm                          = 0. * ones_row(1) 
     
     return 

@@ -13,26 +13,28 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_internal_combustion_engine_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_internal_combustion_engine_conditions(internal_combustion_engine,segment):  
-    ones_row    = segment.state.ones_row                  
-    segment.state.conditions.energy[internal_combustion_engine.tag]                               = Conditions()  
-    segment.state.conditions.energy[internal_combustion_engine.tag].throttle                      = 0. * ones_row(1)      
-    segment.state.conditions.energy[internal_combustion_engine.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
-    segment.state.conditions.energy[internal_combustion_engine.tag].thrust                        = 0. * ones_row(3) 
-    segment.state.conditions.energy[internal_combustion_engine.tag].power                         = 0. * ones_row(1) 
-    segment.state.conditions.energy[internal_combustion_engine.tag].moment                        = 0. * ones_row(3) 
-    segment.state.conditions.energy[internal_combustion_engine.tag].fuel_flow_rate                = 0. * ones_row(1)
-    segment.state.conditions.energy[internal_combustion_engine.tag].inputs                        = Conditions()
-    segment.state.conditions.energy[internal_combustion_engine.tag].outputs                       = Conditions() 
-    segment.state.conditions.noise[internal_combustion_engine.tag]                                = Conditions()  
-
-    ICE_energy_conditions      = segment.state.conditions.energy[internal_combustion_engine.tag]
-    ICE_noise_conditions       = segment.state.conditions.noise[internal_combustion_engine.tag]
-    for tag, item in  internal_combustion_engine.items(): 
+def append_internal_combustion_engine_conditions(propulsor,segment):  
+    # unpack 
+    ones_row          = segment.state.ones_row
+    energy_conditions = segment.state.conditions.energy
+    noise_conditions  = segment.state.conditions.noise
+    
+    # add propulsor conditions 
+    energy_conditions.propulsors[propulsor.tag]                               = Conditions()  
+    energy_conditions.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)      
+    energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
+    energy_conditions.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
+    energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].moment                        = 0. * ones_row(3) 
+    energy_conditions.propulsors[propulsor.tag].fuel_flow_rate                = 0. * ones_row(1)
+    energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
+    energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
+    segment.state.conditions.noise[propulsor.tag]                             = Conditions()  
+ 
+    for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,ICE_energy_conditions,noise_conditions=ICE_noise_conditions) 
+            item.append_operating_conditions(segment,energy_conditions,noise_conditions=noise_conditions) 
             for sub_tag, sub_item in  item.items(): 
-                if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
-                    item_conditions = ICE_energy_conditions[item.tag] 
-                    sub_item.append_operating_conditions(segment,item_conditions)                     
+                if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
+                    sub_item.append_operating_conditions(segment,energy_conditions)                     
     return 

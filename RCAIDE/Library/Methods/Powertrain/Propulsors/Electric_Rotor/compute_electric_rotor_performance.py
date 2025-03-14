@@ -74,7 +74,7 @@ def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,c
     compute_rotor_performance(propulsor,state,center_of_gravity)   
     
     # Detemine esc current 
-    esc_conditions.outputs.current = motor_conditions.current
+    esc_conditions.outputs.current = motor_conditions.inputs.current
     compute_current_in_from_throttle(esc,esc_conditions,conditions)
     
     stored_results_flag     = True

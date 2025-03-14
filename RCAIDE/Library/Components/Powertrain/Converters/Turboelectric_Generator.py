@@ -42,7 +42,7 @@ class Turboelectric_Generator(Converter):
         self.gearbox                   = Data()
         self.gearbox.gear_ratio        = None  
         self.active                    = True
-        self.mode                      = 'forward'
+        self.inverse_calculation       = False
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
         """

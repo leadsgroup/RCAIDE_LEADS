@@ -9,7 +9,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 #  append_engine_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_engine_conditions(engine,segment,energy_conditions,noise_conditions=None): 
-    energy_conditions[engine.tag]                      = Conditions() 
-    energy_conditions[engine.tag].inputs               = Conditions()
-    energy_conditions[engine.tag].outputs              = Conditions()      
+    energy_conditions.converters[engine.tag]                      = Conditions() 
+    energy_conditions.converters[engine.tag].inputs               = Conditions()
+    energy_conditions.converters[engine.tag].outputs              = Conditions()      
     return 

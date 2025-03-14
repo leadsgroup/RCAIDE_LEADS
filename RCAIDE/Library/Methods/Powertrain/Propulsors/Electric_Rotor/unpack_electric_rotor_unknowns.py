@@ -8,9 +8,9 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def unpack_electric_rotor_unknowns(propulsor,segment): 
-    results = segment.state.conditions.energy[propulsor.tag]
+    motor_conditions = segment.state.conditions.energy.converters[motor.tag]
     motor   = propulsor.motor  
     rotor   = propulsor.rotor
     if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
-        results[motor.tag].inputs.current = segment.state.unknowns[propulsor.tag + '_motor_current'] 
+        motor_conditions.inputs.current = segment.state.unknowns[propulsor.tag + '_motor_current'] 
     return 

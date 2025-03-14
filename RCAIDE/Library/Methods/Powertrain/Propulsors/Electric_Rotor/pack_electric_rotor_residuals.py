@@ -11,8 +11,8 @@ def pack_electric_rotor_residuals(propulsor,segment):
     propulsor_results   = segment.state.conditions.energy
     motor               = propulsor.motor
     rotor               = propulsor.rotor 
-    q_motor             = propulsor_results[propulsor.tag][motor.tag].outputs.torque
-    q_prop              = propulsor_results[propulsor.tag][rotor.tag].torque
+    q_motor             = propulsor_results.converters[motor.tag].outputs.torque
+    q_prop              = propulsor_results.converters[rotor.tag].torque
     
     if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
         segment.state.residuals.network[ propulsor.tag + '_rotor_motor_torque'] = q_motor - q_prop 

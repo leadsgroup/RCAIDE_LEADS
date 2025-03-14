@@ -9,5 +9,5 @@
 
 def unpack_internal_combustion_engine_unknowns(propulsor,segment):  
     engine            = propulsor.engine 
-    segment.state.conditions.energy[propulsor.tag][engine.tag].rpm = segment.state.unknowns[propulsor.tag + '_propeller_rpm'] 
+    segment.state.conditions.energy.converters[engine.tag].rpm = segment.state.unknowns[propulsor.tag + '_propeller_rpm'] 
     return 

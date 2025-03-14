@@ -170,8 +170,8 @@ class Hybrid(Network):
             for converter_group in fuel_line.assigned_converters:
                 for converter_tag in converter_group:
                     converter =  converters[converter_tag]
-                    if converter.active and fuel_line.active:    
-                        converter.mode = "reverse"               
+                    if converter.active and fuel_line.active: 
+                        converter.inverse_calculation = True           
                         if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator): 
                             generator             = converter.generator   
                             state.conditions.energy[converter.tag][generator.tag].outputs.power  =  total_elec_power*(1 - phi) 
@@ -190,8 +190,8 @@ class Hybrid(Network):
             for converter_group in bus.assigned_converters:
                 for converter_tag in converter_group:
                     converter =  converters[converter_tag]
-                    if converter.active and bus.active:    
-                        converter.mode = "reverse"
+                    if converter.active and bus.active: 
+                        converter.inverse_calculation = True 
                         electric_machine_conditions = conditions.energy[converter.tag]
                         if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.DC_Motor) or isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):  
                             compute_motor_performance(converter,electric_machine_conditions,conditions)

@@ -10,9 +10,9 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_esc_conditions(esc,segment,energy_conditions): 
     ones_row    = segment.state.ones_row 
-    energy_conditions[esc.tag]            = Conditions()
-    energy_conditions[esc.tag].inputs     = Conditions()
-    energy_conditions[esc.tag].outputs    = Conditions()
-    energy_conditions[esc.tag].throttle   = 0. * ones_row(1)  
+    energy_conditions.modulators[esc.tag]            = Conditions()
+    energy_conditions.modulators[esc.tag].inputs     = Conditions()
+    energy_conditions.modulators[esc.tag].outputs    = Conditions()
+    energy_conditions.modulators[esc.tag].throttle   = 0. * ones_row(1)  
     
     return 
