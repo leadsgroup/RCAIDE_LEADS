@@ -238,35 +238,29 @@ def reuse_stored_turboprop_data(turboprop,state,network,fuel_line,bus,stored_pro
     conditions                  = state.conditions 
     ram                         = turboprop.ram
     inlet_nozzle                = turboprop.inlet_nozzle 
-    low_pressure_compressor     = turboprop.low_pressure_compressor
-    high_pressure_compressor    = turboprop.high_pressure_compressor
+    compressor                  = turboprop.compressor 
     combustor                   = turboprop.combustor
     high_pressure_turbine       = turboprop.high_pressure_turbine
     low_pressure_turbine        = turboprop.low_pressure_turbine
     core_nozzle                 = turboprop.core_nozzle
-    fan_nozzle                  = turboprop.fan_nozzle  
     ram_0                       = network.propulsors[stored_propulsor_tag].ram
     inlet_nozzle_0              = network.propulsors[stored_propulsor_tag].inlet_nozzle 
-    low_pressure_compressor_0   = network.propulsors[stored_propulsor_tag].low_pressure_compressor
-    high_pressure_compressor_0  = network.propulsors[stored_propulsor_tag].high_pressure_compressor
+    compressor_0                = network.propulsors[stored_propulsor_tag].compressor 
     combustor_0                 = network.propulsors[stored_propulsor_tag].combustor
     high_pressure_turbine_0     = network.propulsors[stored_propulsor_tag].high_pressure_turbine
     low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
-    fan_nozzle_0                = network.propulsors[stored_propulsor_tag].fan_nozzle 
 
     # deep copy results 
-    conditions.energy.propulsors[turboprop.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.noise.propulsors[turboprop.tag]                  = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
+    conditions.energy.propulsors[turboprop.tag]                = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
+    conditions.noise.propulsors[turboprop.tag]                 = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
-    conditions.energy.converters[low_pressure_compressor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.tag] )
-    conditions.energy.converters[high_pressure_compressor.tag] = deepcopy(conditions.energy.converters[high_pressure_compressor_0.tag])
+    conditions.energy.converters[compressor.tag]  = deepcopy(conditions.energy.converters[compressor_0.tag] ) 
     conditions.energy.converters[combustor.tag]                = deepcopy(conditions.energy.converters[combustor_0.tag]               )
     conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
     conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
     conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
-    conditions.energy.converters[fan_nozzle.tag]               = deepcopy(conditions.energy.converters[fan_nozzle_0.tag]              )
 
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
@@ -280,6 +274,7 @@ def reuse_stored_turboprop_data(turboprop,state,network,fuel_line,bus,stored_pro
     power                                              = conditions.energy.propulsors[turboprop.tag].power 
     conditions.energy.propulsors[turboprop.tag].moment = moment
 
-    power_elec =  conditions.energy.converters[low_pressure_compressor.tag].outputs.external_electrical_power + conditions.energy.converters[high_pressure_compressor.tag].outputs.external_electrical_power 
+    # compute total electrical power generation or comsumtion
+    power_elec =  conditions.energy.converters[compressor.tag].outputs.external_electrical_power 
 
     return thrust_vector,moment,power, power_elec

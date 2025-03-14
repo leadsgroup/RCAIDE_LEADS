@@ -75,15 +75,15 @@ def design_turbojet(turbojet):
     core_nozzle               = turbojet.core_nozzle
 
     # unpack component conditions
-    turbojet_conditions     = conditions.energy[turbojet.tag]
-    ram_conditions          = turbojet_conditions[ram.tag]     
-    inlet_nozzle_conditions = turbojet_conditions[inlet_nozzle.tag]
-    core_nozzle_conditions  = turbojet_conditions[core_nozzle.tag] 
-    lpc_conditions          = turbojet_conditions[low_pressure_compressor.tag]
-    hpc_conditions          = turbojet_conditions[high_pressure_compressor.tag]
-    lpt_conditions          = turbojet_conditions[low_pressure_turbine.tag]
-    hpt_conditions          = turbojet_conditions[high_pressure_turbine.tag]
-    combustor_conditions    = turbojet_conditions[combustor.tag] 
+    turbojet_conditions     = conditions.energy.propulsors[turbojet.tag]
+    ram_conditions          = conditions.energy.converters[ram.tag]     
+    inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
+    core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag] 
+    lpc_conditions          = conditions.energy.converters[low_pressure_compressor.tag]
+    hpc_conditions          = conditions.energy.converters[high_pressure_compressor.tag]
+    lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
+    hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
+    combustor_conditions    = conditions.energy.converters[combustor.tag] 
      
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                             = turbojet.working_fluid
@@ -196,7 +196,7 @@ def design_turbojet(turbojet):
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state,_     = setup_operating_conditions(turbojet, altitude = 0,velocity_range=np.array([V]))  
-    operating_state.conditions.energy[turbojet.tag].throttle[:,0] = 1.0  
+    operating_state.conditions.energy.propulsors[turbojet.tag].throttle[:,0] = 1.0  
     sls_T,_,sls_P,_,_,_                          = turbojet.compute_performance(operating_state) 
     turbojet.sealevel_static_thrust              = sls_T[0][0]
     turbojet.sealevel_static_power               = sls_P[0][0]

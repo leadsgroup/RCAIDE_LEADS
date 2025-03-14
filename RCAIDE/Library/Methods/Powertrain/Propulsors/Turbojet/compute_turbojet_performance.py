@@ -296,7 +296,6 @@ def reuse_stored_turbojet_data(turbojet,state,network,fuel_line,bus,stored_propu
     high_pressure_turbine       = turbojet.high_pressure_turbine
     low_pressure_turbine        = turbojet.low_pressure_turbine
     core_nozzle                 = turbojet.core_nozzle
-    fan_nozzle                  = turbojet.fan_nozzle  
     ram_0                       = network.propulsors[stored_propulsor_tag].ram
     inlet_nozzle_0              = network.propulsors[stored_propulsor_tag].inlet_nozzle 
     low_pressure_compressor_0   = network.propulsors[stored_propulsor_tag].low_pressure_compressor
@@ -305,7 +304,6 @@ def reuse_stored_turbojet_data(turbojet,state,network,fuel_line,bus,stored_propu
     high_pressure_turbine_0     = network.propulsors[stored_propulsor_tag].high_pressure_turbine
     low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
-    fan_nozzle_0                = network.propulsors[stored_propulsor_tag].fan_nozzle 
 
     # deep copy results 
     conditions.energy.propulsors[turbojet.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
@@ -318,7 +316,6 @@ def reuse_stored_turbojet_data(turbojet,state,network,fuel_line,bus,stored_propu
     conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
     conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
     conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
-    conditions.energy.converters[fan_nozzle.tag]               = deepcopy(conditions.energy.converters[fan_nozzle_0.tag]              )
 
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
@@ -331,7 +328,8 @@ def reuse_stored_turbojet_data(turbojet,state,network,fuel_line,bus,stored_propu
   
     power                                             = conditions.energy.propulsors[turbojet.tag].power 
     conditions.energy.propulsors[turbojet.tag].moment = moment
-     
+
+    # compute total electrical power generation or comsumtion     
     power_elec =  conditions.energy.converters[low_pressure_compressor.tag].outputs.external_electrical_power + conditions.energy.converters[high_pressure_compressor.tag].outputs.external_electrical_power 
     
     return thrust_vector,moment,power, power_elec

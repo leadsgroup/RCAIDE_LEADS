@@ -77,14 +77,14 @@ def design_turboshaft(converter,segment,fuel_line):
     low_pressure_turbine    = turboshaft.low_pressure_turbine
     core_nozzle             = turboshaft.core_nozzle
     
-    turboshaft_conditions   = conditions.energy[turboshaft.tag]
-    ram_conditions          = turboshaft_conditions[ram.tag]     
-    inlet_nozzle_conditions = turboshaft_conditions[inlet_nozzle.tag]
-    core_nozzle_conditions  = turboshaft_conditions[core_nozzle.tag] 
-    compressor_conditions   = turboshaft_conditions[compressor.tag]  
-    combustor_conditions    = turboshaft_conditions[combustor.tag]
-    lpt_conditions          = turboshaft_conditions[low_pressure_turbine.tag]
-    hpt_conditions          = turboshaft_conditions[high_pressure_turbine.tag] 
+    turboshaft_conditions   = conditions.energy.converters[turboshaft.tag]
+    ram_conditions          = conditions.energy.converters[ram.tag]     
+    inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
+    core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag] 
+    compressor_conditions   = conditions.energy.converters[compressor.tag]  
+    combustor_conditions    = conditions.energy.converters[combustor.tag]
+    lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
+    hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag] 
      
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                             = turboshaft.working_fluid
@@ -205,7 +205,7 @@ def design_turboshaft(converter,segment,fuel_line):
     atmo_data_sea_level                                             = atmosphere.compute_values(0.0,0.0)   
     V                                                               = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state,_                                               = setup_operating_conditions(converter, altitude = 0,velocity_range=np.array([V]))  
-    operating_state.conditions.energy[converter.tag][turboshaft.tag].throttle[:,0] = 1.0  
+    operating_state.conditions.energy.converters[turboshaft.tag].throttle[:,0] = 1.0  
     sls_P,_,_                                                       = turboshaft.compute_performance(operating_state,converter,fuel_line) 
     turboshaft.sealevel_static_power                                = sls_P[0][0]
      

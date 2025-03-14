@@ -69,7 +69,14 @@ def compute_electric_ducted_fan_performance(propulsor,state,fuel_line=None,bus=N
     ducted_fan_conditions.omega              = motor_conditions.outputs.omega 
     ducted_fan_conditions.tip_mach           = (motor_conditions.outputs.omega * ducted_fan.tip_radius) / conditions.freestream.speed_of_sound
     ducted_fan_conditions.throttle           = esc_conditions.throttle 
-    compute_ducted_fan_performance(propulsor,state,center_of_gravity)   
+    compute_ducted_fan_performance(propulsor,state)
+
+    # Compute moment 
+    moment_vector      = 0*state.ones_row(3)
+    moment_vector[:,0] = ducted_fan.origin[0][0]  -  center_of_gravity[0][0] 
+    moment_vector[:,1] = ducted_fan.origin[0][1]  -  center_of_gravity[0][1] 
+    moment_vector[:,2] = ducted_fan.origin[0][2]  -  center_of_gravity[0][2]
+    moment             =  np.cross(moment_vector, ducted_fan_conditions.thrust) 
     
     # Detemine esc current 
     esc_conditions.outputs.current = motor_conditions.inputs.current
@@ -79,9 +86,9 @@ def compute_electric_ducted_fan_performance(propulsor,state,fuel_line=None,bus=N
     stored_propulsor_tag           = propulsor.tag 
     
     # compute total forces and moments from propulsor (future work would be to add moments from motors)
-    EDF_conditions.thrust      = conditions.energy[propulsor.tag][ducted_fan.tag].thrust  
-    EDF_conditions.moment      = conditions.energy[propulsor.tag][ducted_fan.tag].moment 
-    EDF_conditions.power       = conditions.energy[propulsor.tag][ducted_fan.tag].power 
+    EDF_conditions.thrust      = ducted_fan_conditions.thrust  
+    EDF_conditions.moment      = moment
+    EDF_conditions.power       = ducted_fan_conditions.power 
     bus_conditions.power_draw  +=  esc_conditions.inputs.power*bus.power_split_ratio /bus.efficiency 
     
     return EDF_conditions.thrust,EDF_conditions.moment,EDF_conditions.power,esc_conditions.inputs.power,stored_results_flag,stored_propulsor_tag 

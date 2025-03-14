@@ -17,17 +17,16 @@ from scipy.interpolate import interp1d
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Actuator_Disk_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
+def Actuator_Disk_performance(rotor,rotor_conditions,conditions):
     '''
     
     MATTEO
     
     '''
 
-    rho                   = conditions.freestream.density   
-    propulsor_conditions  = conditions.energy[propulsor.tag]
-    commanded_TV          = propulsor_conditions.commanded_thrust_vector_angle 
-    rotor_conditions      = propulsor_conditions[rotor.tag]  
+    rho                   = conditions.freestream.density    
+    rotor_conditions      = conditions.energy.converters[rotor.tag]
+    commanded_TV          = rotor_conditions.commanded_thrust_vector_angle   
     pitch_c               = rotor_conditions.blade_pitch_command
     omega                 = rotor_conditions.omega
     torque                = rotor_conditions.motor_torque 
@@ -36,7 +35,7 @@ def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
     eta_p                 = rotor.proppeller_efficiency    
     
     # Unpack ducted_fan blade parameters and operating conditions  
-    Vv      = conditions.frames.inertial.velocity_vector 
+    Vv                    = conditions.frames.inertial.velocity_vector 
 
     # Velocity in the rotor frame
     T_body2inertial         = conditions.frames.body.transform_to_inertial
@@ -67,14 +66,7 @@ def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
     power_loading         = thrust/(power)    
     A                     = np.pi*(R**2 - rotor.hub_radius**2)
     FoM                   = thrust*np.sqrt(thrust/(2*rho*A))/power  
-     
-    # Compute moment 
-    moment_vector         = np.zeros((ctrl_pts,3))
-    moment_vector[:,0]    = rotor.origin[0][0]  -  center_of_gravity[0][0] 
-    moment_vector[:,1]    = rotor.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2]    = rotor.origin[0][2]  -  center_of_gravity[0][2]
-    moment                = np.cross(moment_vector, thrust_vector)
-       
+      
     outputs                                   = Data( 
             thrust                            = thrust_vector,  
             power                             = power,
@@ -86,8 +78,7 @@ def Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity):
             speed_of_sound                    = conditions.freestream.speed_of_sound,
             density                           = conditions.freestream.density,
             tip_mach                          = omega * R / conditions.freestream.speed_of_sound, 
-            efficiency                        = eta, 
-            moment                            = moment, 
+            efficiency                        = eta,  
             torque                            = torque,       
             orientation                       = orientation, 
             advance_ratio                     = V/(n*D),    

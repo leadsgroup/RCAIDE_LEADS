@@ -17,7 +17,7 @@ from scipy.interpolate import interp1d
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_rotor_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):
+def compute_rotor_performance(rotor,rotor_conditions,conditions):
     """Analyzes a general rotor given geometry and operating conditions.
 
     Assumptions:
@@ -85,21 +85,16 @@ def compute_rotor_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]
       orientation_euler_angles           [rad, rad, rad]
     """
 
-    # Unpack rotor blade parameters and operating conditions 
-    conditions            = state.conditions 
-    if 'rotor' in  propulsor:
-        rotor =  propulsor.rotor
-    elif 'propeller' in  propulsor:
-        rotor =  propulsor.propeller
+    # Unpack rotor blade parameters and operating conditions   
 
     if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
 
-        outputs = BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity)
+        outputs = BEMT_Helmholtz_performance(rotor,rotor_conditions,conditions)
                       
     elif rotor.fidelity == 'Actuator_Disk_Theory': 
 
-        outputs = Actuator_Disk_performance(rotor, conditions, propulsor, center_of_gravity)
+        outputs = Actuator_Disk_performance(rotor,rotor_conditions,conditions)
     
-    conditions.energy[propulsor.tag][rotor.tag] = outputs    
+    conditions.energy.converters[rotor.tag] = outputs    
       
     return

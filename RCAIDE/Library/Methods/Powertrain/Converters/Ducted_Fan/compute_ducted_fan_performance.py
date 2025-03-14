@@ -17,7 +17,7 @@ import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_ducted_fan_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):
+def compute_ducted_fan_performance(propulsor,state):
     """
     Computes ducted fan performance characteristics using either Blade Element Momentum Theory (BEMT) 
     or Rankine-Froude Momentum Theory.
@@ -91,11 +91,11 @@ def compute_ducted_fan_performance(propulsor,state,center_of_gravity= [[0.0, 0.0
     
     if ducted_fan.fidelity == 'Blade_Element_Momentum_Theory': 
 
-        outputs = BEMT_performance(ducted_fan,ducted_fan_conditions,conditions, center_of_gravity, commanded_TV)
+        outputs = BEMT_performance(ducted_fan,ducted_fan_conditions,conditions, commanded_TV)
                       
     elif ducted_fan.fidelity == 'Rankine_Froude_Momentum_Theory': 
 
-        outputs = RFMT_performance(ducted_fan,ducted_fan_conditions,conditions, center_of_gravity, commanded_TV)
+        outputs = RFMT_performance(ducted_fan,ducted_fan_conditions,conditions, commanded_TV)
     
     conditions.energy[propulsor.tag][ducted_fan.tag] = outputs   
     
@@ -142,7 +142,7 @@ def compute_ducted_fan_efficiency(ducted_fan, V, omega):
 
     return n, D, J, Cp, Ct, eta_p
 
-def BEMT_performance(ducted_fan,ducted_fan_conditions,conditions, center_of_gravity, commanded_TV):
+def BEMT_performance(ducted_fan,ducted_fan_conditions,conditions, commanded_TV):
 
     a              = conditions.freestream.speed_of_sound 
     rho            = conditions.freestream.density 
@@ -193,19 +193,10 @@ def BEMT_performance(ducted_fan,ducted_fan_conditions,conditions, center_of_grav
     thrust_prop_frame[:,0] = thrust[:,0]
     thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)
     
-    # Compute moment 
-    moment_vector           = np.zeros((ctrl_pts,3))
-    moment_vector[:,0]      = ducted_fan.origin[0][0]  -  center_of_gravity[0][0] 
-    moment_vector[:,1]      = ducted_fan.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2]      = ducted_fan.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, thrust_vector)
-    
-
     outputs                                   = Data(
             torque                            = torque,
             thrust                            = thrust_vector,  
-            power                             = power,
-            moment                            = moment, 
+            power                             = power, 
             rpm                               = omega /Units.rpm ,   
             tip_mach                          = tip_mach, 
             efficiency                        = efficiency,         

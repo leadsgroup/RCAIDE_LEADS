@@ -78,14 +78,14 @@ def design_turboprop(turboprop):
     core_nozzle                                           = turboprop.core_nozzle  
 
     # unpack component conditions
-    turboprop_conditions                                  = conditions.energy[turboprop.tag]
-    ram_conditions                                        = turboprop_conditions[ram.tag]     
-    inlet_nozzle_conditions                               = turboprop_conditions[inlet_nozzle.tag]
-    core_nozzle_conditions                                = turboprop_conditions[core_nozzle.tag] 
-    compressor_conditions                                 = turboprop_conditions[compressor.tag]  
-    combustor_conditions                                  = turboprop_conditions[combustor.tag]
-    lpt_conditions                                        = turboprop_conditions[low_pressure_turbine.tag]
-    hpt_conditions                                        = turboprop_conditions[high_pressure_turbine.tag] 
+    turboprop_conditions                                  = conditions.energy.propulsors[turboprop.tag]
+    ram_conditions                                        = conditions.energy.converters[ram.tag]     
+    inlet_nozzle_conditions                               = conditions.energy.converters[inlet_nozzle.tag]
+    core_nozzle_conditions                                = conditions.energy.converters[core_nozzle.tag] 
+    compressor_conditions                                 = conditions.energy.converters[compressor.tag]  
+    combustor_conditions                                  = conditions.energy.converters[combustor.tag]
+    lpt_conditions                                        = conditions.energy.converters[low_pressure_turbine.tag]
+    hpt_conditions                                        = conditions.energy.converters[high_pressure_turbine.tag] 
      
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                                     = turboprop.working_fluid
@@ -179,7 +179,7 @@ def design_turboprop(turboprop):
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state,_     = setup_operating_conditions(turboprop, altitude = 0,velocity_range=np.array([V]))  
-    operating_state.conditions.energy[turboprop.tag].throttle[:,0] = 1.0  
+    operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0  
     sls_T,_,sls_P,_,_,_                           = turboprop.compute_performance(operating_state) 
     turboprop.sealevel_static_thrust              = sls_T[0][0]
     turboprop.sealevel_static_power               = sls_P[0][0]
@@ -196,7 +196,7 @@ def design_turboprop(turboprop):
     if compressor.motor != None: 
         V                     = turboprop.design_freestream_velocity
         operating_state,_     = setup_operating_conditions(turboprop, altitude = turboprop.design_altitude,velocity_range=np.array([V]))  
-        operating_state.conditions.energy[turboprop.tag].throttle[:,0] = 1.0  
+        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0  
         T,_,P,_,_,_           = turboprop.compute_performance(operating_state)
         
         motor                         = compressor.motor 

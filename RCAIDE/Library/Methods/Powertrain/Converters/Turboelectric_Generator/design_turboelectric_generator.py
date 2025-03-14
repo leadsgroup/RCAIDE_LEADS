@@ -26,8 +26,6 @@ def design_turboelectric_generator(turboelectric_generator):
 
     """
 
-    # This should be here for the sake of consitency of how we solve the mission Fuel Line ->
-
     #check if mach number and temperature are passed
     #call the atmospheric model to get the conditions at the specified altitude
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
@@ -62,7 +60,7 @@ def design_turboelectric_generator(turboelectric_generator):
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state            = Conditions()  
     segment.state.conditions = conditions 
-    segment.state.conditions.energy[turboelectric_generator.tag] = Conditions() 
+    segment.state.conditions.energy.converters[turboelectric_generator.tag] = Conditions() 
     
     turboelectric_generator.append_operating_conditions(segment)   
 

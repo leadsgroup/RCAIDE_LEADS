@@ -45,7 +45,6 @@ def compute_turboshaft_performance(turboshaft,state,converter,fuel_line=None,bus
     N.A.        
     ''' 
     conditions                = state.conditions  
-    turboshaft_conditions     = conditions.energy[converter.tag][turboshaft.tag]
     ram                       = turboshaft.ram
     inlet_nozzle              = turboshaft.inlet_nozzle
     compressor                = turboshaft.compressor
@@ -55,13 +54,14 @@ def compute_turboshaft_performance(turboshaft,state,converter,fuel_line=None,bus
     core_nozzle               = turboshaft.core_nozzle
 
     # unpack component conditions 
-    ram_conditions          = turboshaft_conditions[ram.tag]     
-    inlet_nozzle_conditions = turboshaft_conditions[inlet_nozzle.tag]
-    core_nozzle_conditions  = turboshaft_conditions[core_nozzle.tag] 
-    compressor_conditions   = turboshaft_conditions[compressor.tag] 
-    lpt_conditions          = turboshaft_conditions[low_pressure_turbine.tag]
-    hpt_conditions          = turboshaft_conditions[high_pressure_turbine.tag]
-    combustor_conditions    = turboshaft_conditions[combustor.tag] 
+    turboshaft_conditions   = conditions.energy.converters[turboshaft.tag]
+    ram_conditions          = conditions.energy.converters[ram.tag]     
+    inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
+    core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag] 
+    compressor_conditions   = conditions.energy.converters[compressor.tag] 
+    lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
+    hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
+    combustor_conditions    = conditions.energy.converters[combustor.tag] 
 
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                             = turboshaft.working_fluid
@@ -172,7 +172,7 @@ def compute_turboshaft_performance(turboshaft,state,converter,fuel_line=None,bus
 
     return power,stored_results_flag,stored_propulsor_tag
 
-def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
+def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_converter_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turboshaft for identical propulsors
     
     Assumptions: 
@@ -193,7 +193,34 @@ def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_p
     Properties Used: 
     N.A.        
     ''' 
-    conditions                         = state.conditions   
-    conditions.energy[turboshaft.tag]  = deepcopy(conditions.energy[stored_propulsor_tag])
-    power                              = conditions.energy[turboshaft.tag].power
-    return power
+    conditions                  = state.conditions  
+    turboshaft                  = turboshaft.turboshaft
+    ram                         = turboshaft.ram
+    inlet_nozzle                = turboshaft.inlet_nozzle 
+    compressor                  = turboshaft.compressor
+    high_pressure_compressor    = turboshaft.high_pressure_compressor
+    combustor                   = turboshaft.combustor 
+    low_pressure_turbine        = turboshaft.low_pressure_turbine
+    core_nozzle                 = turboshaft.core_nozzle 
+    turboshaft_0                = network.propulsors[stored_converter_tag].turboshaft
+    ram_0                       = network.propulsors[stored_converter_tag].ram
+    inlet_nozzle_0              = network.propulsors[stored_converter_tag].inlet_nozzle 
+    compressor_0                = network.propulsors[stored_converter_tag].compressor
+    high_pressure_compressor_0  = network.propulsors[stored_converter_tag].high_pressure_compressor
+    combustor_0                 = network.propulsors[stored_converter_tag].combustor
+    low_pressure_turbine_0      = network.propulsors[stored_converter_tag].low_pressure_turbine
+    core_nozzle_0               = network.propulsors[stored_converter_tag].core_nozzle
+
+    # deep copy results  
+    conditions.energy.converters[turboshaft.tag]                = deepcopy(conditions.energy.converters[turboshaft_0.tag]             ) 
+    conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
+    conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
+    conditions.energy.converters[compressor.tag]               = deepcopy(conditions.energy.converters[compressor_0.tag] )
+    conditions.energy.converters[high_pressure_compressor.tag] = deepcopy(conditions.energy.converters[high_pressure_compressor_0.tag])
+    conditions.energy.converters[combustor.tag]                = deepcopy(conditions.energy.converters[combustor_0.tag]               )
+    conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    ) 
+    conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             ) 
+  
+    P_mech = conditions.energy.converters[turboshaft.tag].power
+    
+    return P_mech  

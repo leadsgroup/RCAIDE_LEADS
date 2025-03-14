@@ -8,6 +8,10 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def unpack_electric_rotor_unknowns(propulsor,segment): 
+    '''
+    Unpack residuals for electric rotor and assigns them to the specfic
+    compoment each interation of the mission solver   
+    '''
     motor_conditions = segment.state.conditions.energy.converters[motor.tag]
     motor   = propulsor.motor  
     rotor   = propulsor.rotor

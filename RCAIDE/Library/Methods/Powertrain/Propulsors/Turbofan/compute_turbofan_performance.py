@@ -283,7 +283,8 @@ def compute_turbofan_performance(turbofan,state,fuel_line=None,bus=None,center_o
     noise_conditions.fan                    = None
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbofan.tag 
-  
+    
+    # compute total electrical power generation or comsumtion
     power_elec =  lpc_conditions.outputs.external_electrical_power + hpc_conditions.outputs.external_electrical_power 
     
     return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 

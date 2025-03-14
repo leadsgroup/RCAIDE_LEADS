@@ -92,17 +92,17 @@ def design_turbofan(turbofan):
     bypass_ratio              = turbofan.bypass_ratio  
 
     # unpack component conditions
-    turbofan_conditions     = conditions.energy[turbofan.tag]
-    ram_conditions          = turbofan_conditions[ram.tag]    
-    inlet_nozzle_conditions = turbofan_conditions[inlet_nozzle.tag]
-    fan_conditions          = turbofan_conditions[fan.tag]    
-    lpc_conditions          = turbofan_conditions[low_pressure_compressor.tag]
-    hpc_conditions          = turbofan_conditions[high_pressure_compressor.tag]
-    combustor_conditions    = turbofan_conditions[combustor.tag] 
-    lpt_conditions          = turbofan_conditions[low_pressure_turbine.tag]
-    hpt_conditions          = turbofan_conditions[high_pressure_turbine.tag]
-    core_nozzle_conditions  = turbofan_conditions[core_nozzle.tag]
-    fan_nozzle_conditions   = turbofan_conditions[fan_nozzle.tag]    
+    turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]
+    ram_conditions          = conditions.energy.converters[ram.tag]    
+    inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
+    fan_conditions          = conditions.energy.converters[fan.tag]    
+    lpc_conditions          = conditions.energy.converters[low_pressure_compressor.tag]
+    hpc_conditions          = conditions.energy.converters[high_pressure_compressor.tag]
+    combustor_conditions    = conditions.energy.converters[combustor.tag] 
+    lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
+    hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
+    core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
+    fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
      
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                             = turbofan.working_fluid
@@ -242,7 +242,7 @@ def design_turbofan(turbofan):
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state,_     = setup_operating_conditions(turbofan, altitude = 0,velocity_range=np.array([V]))  
-    operating_state.conditions.energy[turbofan.tag].throttle[:,0] = 1.0  
+    operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0  
     sls_T,_,sls_P,_,_,_                          = turbofan.compute_performance(operating_state) 
     turbofan.sealevel_static_thrust              = sls_T[0][0]
     turbofan.sealevel_static_power               = sls_P[0][0]

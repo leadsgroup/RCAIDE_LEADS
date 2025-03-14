@@ -105,10 +105,10 @@ def compute_power(turboshaft,turboshaft_conditions,conditions):
     Tsp                                        = a0*(((2/(gamma - 1))*(tau_lambda/(tau_r*tau_c))*(tau_r*tau_c*tau_t - 1))**eta_c - M0)                
     Psp                                        =  Cp*total_temperature_reference*tau_lambda*tau_tH*(1 - tau_tL)*eta_c     
         
-    if mode == 'forward':              
+    if turboshaft.inverse_calculation == False: 
         m_dot_air   = m_dot_compressor*turboshaft_conditions.throttle*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)     
         Power       = Psp*m_dot_air
-    elif mode ==  'reverse':
+    else:
         m_dot_air = Power / Psp
         turboshaft_conditions.throttle =  m_dot_air / (m_dot_compressor*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref) )
          

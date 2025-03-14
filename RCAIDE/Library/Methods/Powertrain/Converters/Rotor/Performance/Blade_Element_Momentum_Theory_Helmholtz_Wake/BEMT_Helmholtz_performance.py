@@ -18,16 +18,14 @@ from scipy.optimize import minimize
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  BEMT_Helmholtz_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
+def BEMT_Helmholtz_performance(rotor, conditions, propulsor):
     '''
     
     MATTEO CITE QPROP
     
-    '''
-
-    propulsor_conditions  = conditions.energy[propulsor.tag]
-    rotor_conditions      = propulsor_conditions[rotor.tag]
-    commanded_TV          = propulsor_conditions.commanded_thrust_vector_angle
+    ''' 
+    rotor_conditions      = conditions.energy.converters[rotor.tag]
+    commanded_TV          = rotor_conditions.commanded_thrust_vector_angle
     pitch_c               = rotor_conditions.blade_pitch_command
     eta                   = rotor_conditions.throttle 
     omega                 = rotor_conditions.omega 
@@ -350,20 +348,11 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor, center_of_gravity):
     thrust_prop_frame      = np.zeros((ctrl_pts,3))
     thrust_prop_frame[:,0] = thrust[:,0]
     thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)
- 
-    # Compute moment 
-    moment_vector           = np.zeros((ctrl_pts,3))
-    moment_vector[:,0]      = rotor.origin[0][0]  -  center_of_gravity[0][0] 
-    moment_vector[:,1]      = rotor.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2]      = rotor.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, thrust_vector)
-      
      
     outputs                                       = Data( 
                 torque                            = torque,
                 thrust                            = thrust_vector,  
-                power                             = power,
-                moment                            = moment,
+                power                             = power, 
                 azimuthal_distribution            = psi, 
                 optimize_blade_pitch              = optimize_blade_pitch, 
                 design_flag                       = design_flag,             
