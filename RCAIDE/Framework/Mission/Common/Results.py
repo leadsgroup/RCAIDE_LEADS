@@ -431,6 +431,7 @@ class Results(Conditions):
         self.noise                                            = Conditions() 
         self.noise.converters                                 = Conditions() 
         self.noise.propulsors                                 = Conditions() 
+        self.noise.modulators                                 = Conditions() 
 
         # ----------------------------------------------------------------------------------------------------------------------         
         # Energy
@@ -438,6 +439,7 @@ class Results(Conditions):
         self.energy                                           = Conditions()  
         self.energy.converters                                = Conditions()
         self.energy.propulsors                                = Conditions()
+        self.energy.modulators                                = Conditions()
         self.energy.thrust_force_vector                       = ones_3col * 0
         self.energy.thrust_moment_vector                      = ones_3col * 0
         self.energy.power                                     = ones_1col * 0 
@@ -450,6 +452,6 @@ class Results(Conditions):
         # ----------------------------------------------------------------------------------------------------------------------     
         self.weights                                          = Conditions() 
         self.weights.total_mass                               = ones_1col * 0
-        self.weights.total_moment_of_inertia                  = ones_3col * 0 # 3 total I(I_xx, I_yy, I_zz)? or 9(including I_xz etc)?
+        self.weights.total_moment_of_inertia                  = ones_3col * 0  
         self.weights.weight_breakdown                         = Conditions()
         self.weights.vehicle_mass_rate                        = ones_1col * 0

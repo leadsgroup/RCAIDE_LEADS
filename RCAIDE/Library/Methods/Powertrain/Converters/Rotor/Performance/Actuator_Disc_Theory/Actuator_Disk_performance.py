@@ -11,13 +11,12 @@ from RCAIDE.Framework.Core  import Data , Units
 from RCAIDE.Framework.Core                              import Data , Units, orientation_product, orientation_transpose  
 
 # package imports
-import  numpy as  np  
-from scipy.interpolate import interp1d
+import  numpy as  np   
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Actuator_Disk_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def Actuator_Disk_performance(rotor,rotor_conditions,conditions):
+def Actuator_Disk_performance(rotor,conditions):
     '''
     
     MATTEO
@@ -67,7 +66,7 @@ def Actuator_Disk_performance(rotor,rotor_conditions,conditions):
     A                     = np.pi*(R**2 - rotor.hub_radius**2)
     FoM                   = thrust*np.sqrt(thrust/(2*rho*A))/power  
       
-    outputs                                   = Data( 
+    rotor_conditions                          = Data( 
             thrust                            = thrust_vector,  
             power                             = power,
             rpm                               = omega/Units.rpm,
@@ -90,4 +89,4 @@ def Actuator_Disk_performance(rotor,rotor_conditions,conditions):
             blade_pitch_command               = pitch_c, 
             figure_of_merit                   = FoM,) 
 
-    return outputs
+    return  

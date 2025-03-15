@@ -79,7 +79,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     ram.working_fluid = turbojet.working_fluid
 
     # Flow through the ram , this computes the necessary flow quantities and stores it into conditions
-    compute_ram_performance(ram,ram_conditions,conditions)
+    compute_ram_performance(ram,conditions)
 
     # Link inlet nozzle to ram 
     inlet_nozzle_conditions.inputs.stagnation_temperature             = ram_conditions.outputs.stagnation_temperature 
@@ -90,7 +90,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     inlet_nozzle.working_fluid                                        = ram.working_fluid
 
     # Flow through the inlet nozzle
-    compute_compression_nozzle_performance(inlet_nozzle,inlet_nozzle_conditions,conditions)
+    compute_compression_nozzle_performance(inlet_nozzle,conditions)
 
     # Link low pressure compressor to the inlet nozzle
     lpc_conditions.inputs.stagnation_temperature  = inlet_nozzle_conditions.outputs.stagnation_temperature
@@ -101,7 +101,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     low_pressure_compressor.working_fluid         = inlet_nozzle.working_fluid
 
     # Flow through the low pressure compressor
-    compute_compressor_performance(low_pressure_compressor,lpc_conditions,conditions)
+    compute_compressor_performance(low_pressure_compressor,conditions)
 
     # Link the high pressure compressor to the low pressure compressor
     hpc_conditions.inputs.stagnation_temperature = lpc_conditions.outputs.stagnation_temperature
@@ -112,7 +112,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     high_pressure_compressor.working_fluid       = low_pressure_compressor.working_fluid    
 
     # Flow through the high pressure compressor
-    compute_compressor_performance(high_pressure_compressor,hpc_conditions,conditions)
+    compute_compressor_performance(high_pressure_compressor,conditions)
 
     # Link the combustor to the high pressure compressor 
     combustor_conditions.inputs.stagnation_temperature   = hpc_conditions.outputs.stagnation_temperature
@@ -123,7 +123,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     combustor.working_fluid                              = high_pressure_compressor.working_fluid  
 
     # Flow through the high pressor compressor 
-    compute_combustor_performance(combustor,combustor_conditions,conditions)
+    compute_combustor_performance(combustor,conditions)
 
     # Link the high pressure turbine to the combustor
     hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
@@ -137,7 +137,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     high_pressure_turbine.working_fluid             = combustor.working_fluid 
 
     # Flow through the high pressure turbine
-    compute_turbine_performance(high_pressure_turbine,hpt_conditions,conditions)
+    compute_turbine_performance(high_pressure_turbine,conditions)
 
     # Link the low pressure turbine to the high pressure turbine
     lpt_conditions.inputs.stagnation_temperature     = hpt_conditions.outputs.stagnation_temperature
@@ -151,7 +151,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     low_pressure_turbine.working_fluid               = high_pressure_turbine.working_fluid    
 
     # Flow through the low pressure turbine
-    compute_turbine_performance(low_pressure_turbine,lpt_conditions,conditions)
+    compute_turbine_performance(low_pressure_turbine,conditions)
  
 
     if turbojet.afterburner_active == True:
@@ -185,7 +185,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
         core_nozzle.working_fluid                            = low_pressure_compressor.working_fluid 
  
     # Flow through the core nozzle
-    compute_supersonic_nozzle_performance(core_nozzle,core_nozzle_conditions,conditions) 
+    compute_supersonic_nozzle_performance(core_nozzle,conditions) 
  
     # Link the thrust component to the core nozzle 
     turbojet_conditions.core_nozzle_area_ratio                          = core_nozzle_conditions.outputs.area_ratio 

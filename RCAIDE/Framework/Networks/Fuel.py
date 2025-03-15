@@ -45,7 +45,8 @@ class Fuel(Network):
 
         self.tag                          = 'fuel'
         self.reverse_thrust               = False
-        self.wing_mounted                 = True   
+        self.wing_mounted                 = True
+        
     # linking the different network components
     def evaluate(network,state,center_of_gravity):
         """ Calculate thrust given the current state of the vehicle

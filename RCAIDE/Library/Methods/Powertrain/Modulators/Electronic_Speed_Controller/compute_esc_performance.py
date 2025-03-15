@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_electric_rotor_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_voltage_out_from_throttle(esc,esc_conditions,conditions):
+def compute_voltage_out_from_throttle(esc,conditions):
     """ The voltage out of the electronic speed controller
     
         Assumptions:
@@ -25,8 +25,9 @@ def compute_voltage_out_from_throttle(esc,esc_conditions,conditions):
         Properties Used:
         None
        
-    """ 
-    eta        = esc_conditions.throttle * 1.0
+    """
+    esc_conditions =  conditions.energy.modulators[esc.tag]
+    eta            = esc_conditions.throttle * 1.0
     
     # Negative throttle is bad
     eta[eta<=0.0] = 0.0

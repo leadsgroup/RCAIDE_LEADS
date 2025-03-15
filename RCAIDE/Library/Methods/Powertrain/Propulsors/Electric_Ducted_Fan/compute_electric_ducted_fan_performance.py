@@ -59,11 +59,11 @@ def compute_electric_ducted_fan_performance(propulsor,state,fuel_line=None,bus=N
     
     esc_conditions.inputs.voltage   = bus.voltage * state.ones_row(1)    
     esc_conditions.throttle         = eta 
-    compute_voltage_out_from_throttle(esc,esc_conditions,conditions)
+    compute_voltage_out_from_throttle(esc,conditions)
 
     # Assign conditions to the ducted_fan
     motor_conditions.voltage              = esc_conditions.outputs.voltage
-    compute_motor_performance(motor,motor_conditions,conditions) 
+    compute_motor_performance(motor,conditions) 
     
     # Spin the ducted_fan  
     ducted_fan_conditions.omega              = motor_conditions.outputs.omega 
@@ -80,7 +80,7 @@ def compute_electric_ducted_fan_performance(propulsor,state,fuel_line=None,bus=N
     
     # Detemine esc current 
     esc_conditions.outputs.current = motor_conditions.inputs.current
-    compute_current_in_from_throttle(esc,esc_conditions,conditions)   
+    compute_current_in_from_throttle(esc,conditions)   
     
     stored_results_flag            = True
     stored_propulsor_tag           = propulsor.tag 

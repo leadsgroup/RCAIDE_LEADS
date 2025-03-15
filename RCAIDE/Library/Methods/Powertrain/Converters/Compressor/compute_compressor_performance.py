@@ -5,17 +5,14 @@
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Imports 
-# ----------------------------------------------------------------------------------------------------------------------
-
-from RCAIDE.Library.Methods.Powertrain.Converters.Generator          import compute_generator_performance
-
+# ---------------------------------------------------------------------------------------------------------------------- 
 import numpy as np
 from copy import  deepcopy
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_compressor_performance(compressor,compressor_conditions,conditions):
+def compute_compressor_performance(compressor,conditions):
     """ Computes the performance of a compressor bases on its polytropic efficiency.
         The following properties are computed: 
        compressor.outputs.
@@ -45,18 +42,16 @@ def compute_compressor_performance(compressor,compressor_conditions,conditions):
     """          
     
     # Unpack component inputs
-    PR          = compressor.pressure_ratio
-    etapold     = compressor.polytropic_efficiency 
-    motor       = compressor.motor
-    generator   = compressor.generator 
-    mdhc        = compressor.nondimensional_massflow 
-    Tref        = compressor.reference_temperature   
-    Pref        = compressor.reference_pressure 
-    Tt_in       = compressor_conditions.inputs.stagnation_temperature
-    Pt_in       = compressor_conditions.inputs.stagnation_pressure 
-    T0          = compressor_conditions.inputs.static_temperature
-    P0          = compressor_conditions.inputs.static_pressure  
-    M0          = compressor_conditions.inputs.mach_number 
+    PR                    = compressor.pressure_ratio
+    etapold               = compressor.polytropic_efficiency 
+    motor                 = compressor.motor
+    generator             = compressor.generator
+    compressor_conditions = conditions.energy.converters[compressor.tag]
+    Tt_in                 = compressor_conditions.inputs.stagnation_temperature
+    Pt_in                 = compressor_conditions.inputs.stagnation_pressure 
+    T0                    = compressor_conditions.inputs.static_temperature
+    P0                    = compressor_conditions.inputs.static_pressure  
+    M0                    = compressor_conditions.inputs.mach_number 
     
     # Unpack ram inputs
     working_fluid           = compressor.working_fluid

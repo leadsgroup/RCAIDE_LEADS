@@ -90,7 +90,7 @@ def design_turboshaft(converter,segment,fuel_line):
     ram.working_fluid                             = turboshaft.working_fluid
 
     # Step 2: Compute flow through the ram , this computes the necessary flow quantities and stores it into conditions
-    compute_ram_performance(ram,ram_conditions,conditions)
+    compute_ram_performance(ram,conditions)
 
     # Step 3: link inlet nozzle to ram 
     inlet_nozzle_conditions.inputs.stagnation_temperature             = ram_conditions.outputs.stagnation_temperature
@@ -101,7 +101,7 @@ def design_turboshaft(converter,segment,fuel_line):
     inlet_nozzle.working_fluid                                        = ram.working_fluid
 
     # Step 4: Compute flow through the inlet nozzle
-    compute_compression_nozzle_performance(inlet_nozzle,inlet_nozzle_conditions,conditions)      
+    compute_compression_nozzle_performance(inlet_nozzle,conditions)      
 
     # Step 5: Link low pressure compressor to the inlet nozzle 
     compressor_conditions.inputs.stagnation_temperature  = inlet_nozzle_conditions.outputs.stagnation_temperature
@@ -114,7 +114,7 @@ def design_turboshaft(converter,segment,fuel_line):
     compressor.reference_pressure                        = turboshaft.reference_pressure
 
     # Step 6: Compute flow through the low pressure compressor
-    compute_compressor_performance(compressor,compressor_conditions,conditions)
+    compute_compressor_performance(compressor,conditions)
     
     # Step 11: Link the combustor to the high pressure compressor
     combustor_conditions.inputs.stagnation_temperature                = compressor_conditions.outputs.stagnation_temperature
@@ -127,7 +127,7 @@ def design_turboshaft(converter,segment,fuel_line):
     compressor.reference_pressure                                     = turboshaft.reference_pressure  
     
     # Step 12: Compute flow through the high pressor compressor 
-    compute_combustor_performance(combustor,combustor_conditions,conditions)
+    compute_combustor_performance(combustor,conditions)
 
     #link the high pressure turbione to the combustor 
     hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
@@ -142,7 +142,7 @@ def design_turboshaft(converter,segment,fuel_line):
     hpt_conditions.inputs.fan.work_done             = 0.0
     high_pressure_turbine.working_fluid             = combustor.working_fluid
     
-    compute_turbine_performance(high_pressure_turbine,hpt_conditions,conditions)
+    compute_turbine_performance(high_pressure_turbine,conditions)
             
     #link the low pressure turbine to the high pressure turbine 
     lpt_conditions.inputs.stagnation_temperature              = hpt_conditions.outputs.stagnation_temperature
@@ -159,7 +159,7 @@ def design_turboshaft(converter,segment,fuel_line):
     lpt_conditions.inputs.fan                                 = Data()
     lpt_conditions.inputs.fan.work_done                       = 0.0
      
-    compute_turbine_performance(low_pressure_turbine,lpt_conditions,conditions)
+    compute_turbine_performance(low_pressure_turbine,conditions)
     
     #link the core nozzle to the low pressure turbine
     core_nozzle_conditions.inputs.stagnation_temperature     = lpt_conditions.outputs.stagnation_temperature
@@ -170,7 +170,7 @@ def design_turboshaft(converter,segment,fuel_line):
     core_nozzle.working_fluid                                = low_pressure_turbine.working_fluid  
     
     #flow through the core nozzle
-    compute_expansion_nozzle_performance(core_nozzle,core_nozzle_conditions,conditions)
+    compute_expansion_nozzle_performance(core_nozzle,conditions)
 
     # compute the thrust using the thrust component
     #link the thrust component to the core nozzle
@@ -198,7 +198,7 @@ def design_turboshaft(converter,segment,fuel_line):
     turboshaft_conditions.flow_through_fan                    = 0.0 #scaled constant to turn on fan power computation      
     
     # Step 25: Size the core of the turboshaft  
-    size_core(turboshaft,turboshaft_conditions,conditions)
+    size_core(turboshaft,conditions)
     
     # Step 26: Static Sea Level Thrust  
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()

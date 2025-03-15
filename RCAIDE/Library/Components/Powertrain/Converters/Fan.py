@@ -8,6 +8,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports   
 from .Converter  import Converter
+from RCAIDE.Framework.Core import Data,Units
 from RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions import append_fan_conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -84,8 +85,8 @@ class Fan(Converter):
         self.tag                            = 'Fan'
         self.polytropic_efficiency          = 1.0
         self.mechanical_efficiency          = 1.0
-        self.pressure_ratio                 = 1.0
-        self.angular_velocity               = 0
+        self.pressure_ratio                 = 1.0 
+        self.design_angular_velocity        = 3000 *  Units.rpm
 
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  

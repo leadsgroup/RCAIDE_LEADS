@@ -16,7 +16,7 @@ import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  RFMT_performance
 # ----------------------------------------------------------------------------------------------------------------------
-def RFMT_performance(ducted_fan,ducted_fan_conditions,conditions):
+def RFMT_performance(ducted_fan,conditions):
     """
     Computes ducted fan performance characteristics using Rankine-Froude Momentum Theory.
 
@@ -66,11 +66,12 @@ def RFMT_performance(ducted_fan,ducted_fan_conditions,conditions):
     """ 
     
  
-    rho            = conditions.freestream.density 
-    commanded_TV   = ducted_fan_conditions.commanded_thrust_vector_angle
-    omega          = ducted_fan_conditions.omega    
-    Vv             = conditions.frames.inertial.velocity_vector 
-    ctrl_pts       = len(Vv)
+    rho                   = conditions.freestream.density
+    ducted_fan_conditions = conditions.energy.converters[ducted_fan.tag]
+    commanded_TV          = ducted_fan_conditions.commanded_thrust_vector_angle
+    omega                 = ducted_fan_conditions.omega    
+    Vv                    = conditions.frames.inertial.velocity_vector 
+    ctrl_pts              = len(Vv)
 
      # Velocity in the rotor frame
     T_body2inertial         = conditions.frames.body.transform_to_inertial
@@ -86,14 +87,14 @@ def RFMT_performance(ducted_fan,ducted_fan_conditions,conditions):
 
     n, D, J, Cp, Ct, eta_p  = compute_ducted_fan_efficiency(ducted_fan, V, omega)
     
-    thrust              = Ct * rho * (n**2)*(D**4) 
-    power               = Cp * rho * (n**3)*(D**5)           
+    thrust                  = Ct * rho * (n**2)*(D**4) 
+    power                   = Cp * rho * (n**3)*(D**5)           
     thrust_prop_frame       = np.zeros((ctrl_pts,3))
     thrust_prop_frame[:,0]  = thrust[:,0]       
-    thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)     
-    torque              = power/omega
+    thrust_vector           = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)     
+    torque                  = power/omega
       
-    outputs                                   = Data( 
+    ducted_fan_conditions                     = Data( 
             thrust                            = thrust_vector,  
             power                             = power,
             power_coefficient                 = Cp, 
@@ -101,7 +102,7 @@ def RFMT_performance(ducted_fan,ducted_fan_conditions,conditions):
             efficiency                        = eta_p,  
             torque                            = torque)
     
-    return outputs
+    return  
 
 def compute_ducted_fan_efficiency(ducted_fan, V, omega):
     """

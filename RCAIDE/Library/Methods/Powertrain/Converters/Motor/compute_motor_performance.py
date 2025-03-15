@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_omega_and_Q_from_Cp_and_V
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_motor_performance(motor,motor_conditions,conditions):
+def compute_motor_performance(motor,conditions):
     """
     Computes motor performance characteristics including electrical, mechanical and thermal parameters.
 
@@ -69,7 +69,9 @@ def compute_motor_performance(motor,motor_conditions,conditions):
     RCAIDE.Library.Components.Powertrain.Converters.DC_Motor
     RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor
     """           
-    # Unpack  
+    # Unpack
+    motor_conditions = conditions.energy.converters[motor.tag]
+    
     if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
         if motor.inverse_calculation == False:
             Res            = motor.resistance

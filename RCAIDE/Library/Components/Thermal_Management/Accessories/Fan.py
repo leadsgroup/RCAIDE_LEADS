@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-from RCAIDE.Framework.Core import Data,Units
+from RCAIDE.Framework.Core import Data
 
 # ----------------------------------------------------------------------
 #  Fan
@@ -53,7 +53,6 @@ class Fan(Data):
         """
         self.tag                      = 'Fan'
         self.efficiency               = 1.0
-        self.design_angular_velocity  = 3000 *  Units.rpm
         return
    
     def compute_power_consumed(pressure_differential, density, mass_flow_rate, efficiency):

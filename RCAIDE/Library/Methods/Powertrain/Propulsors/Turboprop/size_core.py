@@ -14,7 +14,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  size_core
 # ---------------------------------------------------------------------------------------------------------------------- 
-def size_core(turboprop,turboprop_conditions,conditions):
+def size_core(turboprop,conditions):
     """Sizes the core flow for the design condition.
 
     Assumptions:
@@ -41,15 +41,15 @@ def size_core(turboprop,turboprop_conditions,conditions):
       reference_pressure                      [Pa]
       total_design                            [W] - Design power
     """             
-
-    Tt_ref         = turboprop_conditions.total_temperature_reference  
-    Pt_ref         = turboprop_conditions.total_pressure_reference  
-    Tref           = turboprop.reference_temperature
-    Pref           = turboprop.reference_pressure
+    turboprop_conditions = conditions.energy.propulsors[turboprop.tag]
+    Tt_ref               = turboprop_conditions.total_temperature_reference  
+    Pt_ref               = turboprop_conditions.total_pressure_reference  
+    Tref                 = turboprop.reference_temperature
+    Pref                 = turboprop.reference_pressure
     
     # Compute nondimensional thrust
     turboprop_conditions.throttle = 1.0
-    compute_thrust(turboprop,turboprop_conditions,conditions) 
+    compute_thrust(turboprop,conditions) 
 
     # Store results on turboprop data structure 
     TSFC        = turboprop_conditions.thrust_specific_fuel_consumption

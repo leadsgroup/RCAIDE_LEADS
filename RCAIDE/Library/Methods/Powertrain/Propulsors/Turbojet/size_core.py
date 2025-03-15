@@ -14,7 +14,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  size_core
 # ---------------------------------------------------------------------------------------------------------------------- 
-def size_core(turbojet,turbojet_conditions,conditions):
+def size_core(turbojet,conditions):
     """Sizes the core flow for the design condition.
 
     Assumptions:
@@ -46,14 +46,14 @@ def size_core(turbojet,turbojet_conditions,conditions):
 
     #unpack from turbojet 
     Tref                        = turbojet.reference_temperature
-    Pref                        = turbojet.reference_pressure 
-
+    Pref                        = turbojet.reference_pressure  
+    turbojet_conditions         = conditions.energy.propulsors[turbojet.tag]
     total_temperature_reference = turbojet_conditions.total_temperature_reference  
     total_pressure_reference    = turbojet_conditions.total_pressure_reference 
 
     #compute nondimensional thrust
     turbojet_conditions.throttle = 1.0
-    compute_thrust(turbojet,turbojet_conditions,conditions)
+    compute_thrust(turbojet,conditions)
 
     #unpack results 
     Fsp                         = turbojet_conditions.non_dimensional_thrust

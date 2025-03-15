@@ -14,7 +14,7 @@ import numpy                               as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_power
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_power(turboshaft,turboshaft_conditions,conditions):
+def compute_power(turboshaft,conditions):
     """Computes power and other properties as below.
 
     Assumptions:
@@ -78,12 +78,12 @@ def compute_power(turboshaft,turboshaft_conditions,conditions):
     LHV                                        = fuel_type.lower_heating_value                                                                        
     gamma                                      = conditions.freestream.isentropic_expansion_factor                                                      
     a0                                         = conditions.freestream.speed_of_sound                                                                   
-    M0                                         = conditions.freestream.mach_number                        
+    M0                                         = conditions.freestream.mach_number
+    turboshaft_conditions                      = conditions.energy.converters[turboshaft.tag]  
     total_temperature_reference                = turboshaft_conditions.total_temperature_reference                                                          
     total_pressure_reference                   = turboshaft_conditions.total_pressure_reference                                                            
     Power                                      = turboshaft_conditions.power                                                           
-    eta_c                                      = turboshaft.conversion_efficiency
-    mode                                       = turboshaft.mode
+    eta_c                                      = turboshaft.conversion_efficiency 
                                                                                                                                                         
     #unpacking from turboshaft                                                                                                                          
     Tref                                       = turboshaft.reference_temperature                                                                   

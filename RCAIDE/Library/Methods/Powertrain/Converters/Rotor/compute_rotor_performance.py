@@ -13,7 +13,7 @@ import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Elem
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_rotor_performance(rotor,rotor_conditions,conditions):
+def compute_rotor_performance(rotor,conditions):
     """Analyzes a general rotor given geometry and operating conditions.
 
     Assumptions:
@@ -83,12 +83,10 @@ def compute_rotor_performance(rotor,rotor_conditions,conditions):
     
     if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
 
-        outputs = BEMT_Helmholtz_performance(rotor,rotor_conditions,conditions)
+        BEMT_Helmholtz_performance(rotor,conditions)
                       
     elif rotor.fidelity == 'Actuator_Disk_Theory': 
 
-        outputs = Actuator_Disk_performance(rotor,rotor_conditions,conditions)
-    
-    conditions.energy.converters[rotor.tag] = outputs    
-      
+        Actuator_Disk_performance(rotor,conditions)
+     
     return

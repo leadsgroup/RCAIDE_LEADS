@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_turbine_performance
 # ----------------------------------------------------------------------------------------------------------------------     
-def compute_turbine_performance(turbine,turbine_conditions,conditions):
+def compute_turbine_performance(turbine,conditions):
     """This computes the output values from the input values according to
     equations from the source. The following properties are computed: 
     turbine.outputs.
@@ -40,7 +40,8 @@ def compute_turbine_performance(turbine,turbine_conditions,conditions):
     """              
                              
     # Unpack ram inputs       
-    working_fluid   = turbine.working_fluid
+    working_fluid      = turbine.working_fluid
+    turbine_conditions = conditions.energy.converters[turbine.tag]
 
     # Compute the working fluid properties
     T0              = turbine_conditions.inputs.static_temperature

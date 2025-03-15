@@ -15,7 +15,7 @@ import numpy                                                       as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  size_core
 # ----------------------------------------------------------------------------------------------------------------------
-def size_core(turboshaft,turboshaft_conditions,conditions):
+def size_core(turboshaft,conditions):
     """Sizes the core flow for the design condition.
 
     Assumptions:
@@ -45,13 +45,14 @@ def size_core(turboshaft,turboshaft_conditions,conditions):
     """             
     
     #unpack from turboshaft
+    turboshaft_conditions                          = conditions.energy.converters[turboshaft.tag] 
     Tref                                           = turboshaft.reference_temperature
     Pref                                           = turboshaft.reference_pressure 
     total_temperature_reference                    = turboshaft_conditions.total_temperature_reference  
     total_pressure_reference                       = turboshaft_conditions.total_pressure_reference 
 
     #compute nondimensional power
-    compute_power(turboshaft,turboshaft_conditions,conditions)
+    compute_power(turboshaft,conditions)
 
     #unpack results 
     Psp                                            = turboshaft_conditions.non_dimensional_power

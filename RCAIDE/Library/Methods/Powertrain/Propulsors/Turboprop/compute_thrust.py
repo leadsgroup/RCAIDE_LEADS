@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_thrust
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_thrust(turboprop,turboprop_conditions,conditions):
+def compute_thrust(turboprop,conditions):
     
     """Computes thrust and other properties as below.
 

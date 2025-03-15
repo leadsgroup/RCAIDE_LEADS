@@ -16,7 +16,7 @@ import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ---------------------------------------------------------------------------------------------------------------------- 
-def BEMT_performance(ducted_fan,ducted_fan_conditions,conditions):
+def BEMT_performance(ducted_fan,conditions):
 
     """
     Computes ducted fan performance characteristics Blade Element Momentum Theory (BEMT)  
@@ -67,11 +67,12 @@ def BEMT_performance(ducted_fan,ducted_fan_conditions,conditions):
     """
   
 
-    a              = conditions.freestream.speed_of_sound 
-    rho            = conditions.freestream.density 
-    commanded_TV   = ducted_fan_conditions.commanded_thrust_vector_angle
-    omega          = ducted_fan_conditions.omega   
-    alt            = conditions.freestream.altitude 
+    a                     = conditions.freestream.speed_of_sound 
+    rho                   = conditions.freestream.density 
+    ducted_fan_conditions = conditions.energy.converters[ducted_fan.tag]
+    commanded_TV          = ducted_fan_conditions.commanded_thrust_vector_angle
+    omega                 = ducted_fan_conditions.omega   
+    alt                   = conditions.freestream.altitude 
      
     altitude       = alt/ 1000  
     n              = omega/(2.*np.pi)   # Rotations per second
@@ -117,7 +118,7 @@ def BEMT_performance(ducted_fan,ducted_fan_conditions,conditions):
     thrust_prop_frame[:,0] = thrust[:,0]
     thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)
     
-    outputs                                   = Data(
+    ducted_fan_conditions                     = Data(
             torque                            = torque,
             thrust                            = thrust_vector,  
             power                             = power, 
@@ -137,4 +138,4 @@ def BEMT_performance(ducted_fan,ducted_fan_conditions,conditions):
             torque_coefficient                = Cq,
             power_coefficient                 = Cp)
     
-    return outputs
+    return 

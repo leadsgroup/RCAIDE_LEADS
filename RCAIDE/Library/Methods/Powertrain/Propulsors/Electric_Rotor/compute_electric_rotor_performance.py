@@ -49,11 +49,11 @@ def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,c
     '''
      
     conditions                 = state.conditions    
-    bus_conditions             = conditions.energy[bus.tag]
-    electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag] 
     motor                      = propulsor.motor 
     rotor                      = propulsor.rotor 
     esc                        = propulsor.electronic_speed_controller  
+    bus_conditions             = conditions.energy[bus.tag]
+    electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag] 
     esc_conditions             = conditions.energy.modulators[esc.tag]
     motor_conditions           = conditions.energy.converters[motor.tag]
     rotor_conditions           = conditions.energy.converters[rotor.tag]
@@ -61,17 +61,17 @@ def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,c
     
     esc_conditions.inputs.voltage   = bus.voltage * state.ones_row(1)    
     esc_conditions.throttle         = eta 
-    compute_voltage_out_from_throttle(esc,esc_conditions,conditions)
+    compute_voltage_out_from_throttle(esc,conditions)
 
     # Assign conditions to the rotor
     motor_conditions.voltage        = esc_conditions.outputs.voltage 
-    compute_motor_performance(motor,motor_conditions,conditions) 
+    compute_motor_performance(motor,conditions) 
     
     # Spin the rotor 
     rotor_conditions.omega           = motor_conditions.outputs.omega
     rotor_conditions.motor_torque    = motor_conditions.outputs.torque
     rotor_conditions.throttle        = esc_conditions.throttle      
-    compute_rotor_performance(rotor,rotor_conditions,conditions)
+    compute_rotor_performance(rotor,conditions)
  
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)
@@ -82,7 +82,7 @@ def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,c
     
     # Detemine esc current 
     esc_conditions.outputs.current = motor_conditions.inputs.current
-    compute_current_in_from_throttle(esc,esc_conditions,conditions)
+    compute_current_in_from_throttle(esc,conditions)
     
     stored_results_flag     = True
     stored_propulsor_tag    = propulsor.tag 

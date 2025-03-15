@@ -15,7 +15,7 @@ import RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Ranki
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_ducted_fan_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_ducted_fan_performance(ducted_fan,ducted_fan_conditions,conditions):
+def compute_ducted_fan_performance(ducted_fan,conditions):
     """
     Computes ducted fan performance characteristics using either Blade Element Momentum Theory (BEMT) 
     or Rankine-Froude Momentum Theory.
@@ -39,12 +39,10 @@ def compute_ducted_fan_performance(ducted_fan,ducted_fan_conditions,conditions):
     
     if ducted_fan.fidelity == 'Blade_Element_Momentum_Theory': 
 
-        outputs = BEMT_performance(ducted_fan,ducted_fan_conditions,conditions)
+        BEMT_performance(ducted_fan,conditions)
                       
     elif ducted_fan.fidelity == 'Rankine_Froude_Momentum_Theory': 
 
-        outputs = RFMT_performance(ducted_fan,ducted_fan_conditions,conditions)
-    
-    conditions.energy.converters[ducted_fan.tag] = outputs   
+        RFMT_performance(ducted_fan,conditions) 
     
     return  

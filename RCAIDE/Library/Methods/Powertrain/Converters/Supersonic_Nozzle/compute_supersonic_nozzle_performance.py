@@ -14,7 +14,7 @@ from RCAIDE.Library.Methods.Gas_Dynamics.fm_id import fm_id
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_supersonic_nozzle_performance(supersonic_nozzle,s_nozzle_conditions,conditions): 
+def compute_supersonic_nozzle_performance(supersonic_nozzle,conditions): 
     """This computes the output values from the input values according to
     equations from the source.
     
@@ -59,13 +59,14 @@ def compute_supersonic_nozzle_performance(supersonic_nozzle,s_nozzle_conditions,
     #unpack the values
     
     #unpack from conditions
-    gamma    = conditions.freestream.isentropic_expansion_factor
-    Cp       = conditions.freestream.specific_heat_at_constant_pressure
-    Po       = conditions.freestream.pressure
-    Pto      = conditions.freestream.stagnation_pressure
-    Tto      = conditions.freestream.stagnation_temperature
-    R        = conditions.freestream.gas_specific_constant
-    Mo       = conditions.freestream.mach_number
+    gamma               = conditions.freestream.isentropic_expansion_factor
+    Cp                  = conditions.freestream.specific_heat_at_constant_pressure
+    Po                  = conditions.freestream.pressure
+    Pto                 = conditions.freestream.stagnation_pressure
+    Tto                 = conditions.freestream.stagnation_temperature
+    R                   = conditions.freestream.gas_specific_constant
+    Mo                  = conditions.freestream.mach_number
+    s_nozzle_conditions = conditions.energy.converters[supersonic_nozzle.tag]
     
     #unpack from inputs
     Tt_in    = s_nozzle_conditions.inputs.stagnation_temperature

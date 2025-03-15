@@ -89,7 +89,7 @@ def design_turbojet(turbojet):
     ram.working_fluid                             = turbojet.working_fluid
 
     # Step 2: Compute flow through the ram , this computes the necessary flow quantities and stores it into conditions
-    compute_ram_performance(ram,ram_conditions,conditions)
+    compute_ram_performance(ram,conditions)
 
     # Step 3: link inlet nozzle to ram 
     inlet_nozzle_conditions.inputs.stagnation_temperature             = ram_conditions.outputs.stagnation_temperature
@@ -100,7 +100,7 @@ def design_turbojet(turbojet):
     inlet_nozzle.working_fluid                                        = ram.working_fluid
 
     # Step 4: Compute flow through the inlet nozzle
-    compute_compression_nozzle_performance(inlet_nozzle,inlet_nozzle_conditions,conditions)      
+    compute_compression_nozzle_performance(inlet_nozzle,conditions)      
 
     # Step 5: Link low pressure compressor to the inlet nozzle
     lpc_conditions.inputs.stagnation_temperature  = inlet_nozzle_conditions.outputs.stagnation_temperature
@@ -113,7 +113,7 @@ def design_turbojet(turbojet):
     low_pressure_compressor.reference_pressure    = turbojet.reference_pressure
 
     # Step 6: Compute flow through the low pressure compressor
-    compute_compressor_performance(low_pressure_compressor,lpc_conditions,conditions)
+    compute_compressor_performance(low_pressure_compressor,conditions)
 
     # Step 7: Link the high pressure compressor to the low pressure compressor
     hpc_conditions.inputs.stagnation_temperature   = lpc_conditions.outputs.stagnation_temperature
@@ -126,7 +126,7 @@ def design_turbojet(turbojet):
     high_pressure_compressor.reference_pressure    = turbojet.reference_pressure   
 
     # Step 8: Compute flow through the high pressure compressor
-    compute_compressor_performance(high_pressure_compressor,hpc_conditions,conditions)
+    compute_compressor_performance(high_pressure_compressor,conditions)
    
     # Step 9: Link the combustor to the high pressure compressor
     combustor_conditions.inputs.stagnation_temperature                = hpc_conditions.outputs.stagnation_temperature
@@ -137,7 +137,7 @@ def design_turbojet(turbojet):
     combustor.working_fluid                                           = high_pressure_compressor.working_fluid  
     
     # Step 10: Compute flow through the high pressor compressor 
-    compute_combustor_performance(combustor,combustor_conditions,conditions)
+    compute_combustor_performance(combustor,conditions)
 
     hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
     hpt_conditions.inputs.stagnation_pressure       = combustor_conditions.outputs.stagnation_pressure
@@ -150,7 +150,7 @@ def design_turbojet(turbojet):
     high_pressure_turbine.working_fluid             = combustor.working_fluid 
 
     # Step 11: Compute flow through the high pressure turbine
-    compute_turbine_performance(high_pressure_turbine,hpt_conditions,conditions)
+    compute_turbine_performance(high_pressure_turbine,conditions)
             
     # Step 12: Link the low pressure turbine to the high pressure turbine
     lpt_conditions.inputs.stagnation_temperature     = hpt_conditions.outputs.stagnation_temperature
@@ -164,7 +164,7 @@ def design_turbojet(turbojet):
     lpt_conditions.inputs.bypass_ratio               = 0.0 
 
     # Step 16: Compute flow through the low pressure turbine
-    compute_turbine_performance(low_pressure_turbine,lpt_conditions,conditions)
+    compute_turbine_performance(low_pressure_turbine,conditions)
 
     # Step 17: Link the core nozzle to the low pressure turbine
     core_nozzle_conditions.inputs.stagnation_temperature     = lpt_conditions.outputs.stagnation_temperature
@@ -175,7 +175,7 @@ def design_turbojet(turbojet):
     core_nozzle.working_fluid                                = low_pressure_turbine.working_fluid 
 
     # Step 18: Compute flow through the core nozzle
-    compute_supersonic_nozzle_performance(core_nozzle,core_nozzle_conditions,conditions)
+    compute_supersonic_nozzle_performance(core_nozzle,conditions)
  
     # Step 19: link the thrust component to the core nozzle
     turbojet_conditions.core_nozzle_area_ratio                   = core_nozzle_conditions.outputs.area_ratio 
@@ -190,7 +190,7 @@ def design_turbojet(turbojet):
     turbojet_conditions.flow_through_fan                         = 0.0 #scaled constant to turn on fan thrust computation      
     
     # Step 20: Size the core of the turbojet  
-    size_core(turbojet,turbojet_conditions,conditions)
+    size_core(turbojet,conditions)
     
     # Step 21: Static Sea Level Thrust 
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   

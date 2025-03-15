@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_thrust
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_thrust(turbofan,turbofan_conditions,conditions):
+def compute_thrust(turbofan,conditions):
     """Computes thrust and other properties of the turbofan listed below: 
     turbofan.  
       .outputs.thrust                                    (numpy.ndarray): thrust                               [N] 
@@ -72,7 +72,8 @@ def compute_thrust(turbofan,turbofan_conditions,conditions):
     Tref                        = turbofan.reference_temperature
     Pref                        = turbofan.reference_pressure
     mdhc                        = turbofan.compressor_nondimensional_massflow
-    SFC_adjustment              = turbofan.SFC_adjustment 
+    SFC_adjustment              = turbofan.SFC_adjustment
+    turbofan_conditions         = conditions.energy.propulsors[turbofan.tag]
     f                           = turbofan_conditions.fuel_to_air_ratio
     total_temperature_reference = turbofan_conditions.total_temperature_reference
     total_pressure_reference    = turbofan_conditions.total_pressure_reference 

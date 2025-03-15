@@ -12,13 +12,10 @@ from RCAIDE.Library.Methods.Aerodynamics.Common.Lift    import compute_airfoil_a
 
 # package imports
 import  numpy as  np 
-from scipy.interpolate import interp1d
-from scipy.optimize import minimize 
-
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  BEMT_Helmholtz_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def BEMT_Helmholtz_performance(rotor, conditions, propulsor):
+def BEMT_Helmholtz_performance(rotor,conditions):
     '''
     
     MATTEO CITE QPROP
@@ -335,11 +332,7 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor):
     power[eta[:,0]  <=0.0]     = 0.0
     torque[eta[:,0]  <=0.0]    = 0.0  
     power[eta>1.0]             = power[eta>1.0]*eta[eta>1.0]
-    thrust[eta[:,0]>1.0,:]     = thrust[eta[:,0]>1.0,:]*eta[eta[:,0]>1.0,:]
-    
-    #etap[thrust[:,0]  <=0.0]   = 0.0
-    #etap[etap[:,0]  >=1.0]     = 1.0
-    #etap[etap[:,0]  <=0.0]     = 0.0
+    thrust[eta[:,0]>1.0,:]     = thrust[eta[:,0]>1.0,:]*eta[eta[:,0]>1.0,:] 
 
     disc_loading           = thrust/(np.pi*(R**2))
     power_loading          = thrust/(power)
@@ -349,7 +342,7 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor):
     thrust_prop_frame[:,0] = thrust[:,0]
     thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)
      
-    outputs                                       = Data( 
+    rotor_conditions                              = Data( 
                 torque                            = torque,
                 thrust                            = thrust_vector,  
                 power                             = power, 
@@ -411,32 +404,4 @@ def BEMT_Helmholtz_performance(rotor, conditions, propulsor):
                 figure_of_merit                   = FoM, 
         )  
 
-    return outputs
-
-
-#def compute_optimal_pitch(rotor,J,alt): 
-     
-    ## design properties of the motor 
-    #sur    = rotor.efficiency_surrogate 
-    
-    ## define optimizer bounds 
-    #beta_lower_bound  = -30 *Units.degree  
-    #beta_upper_bound  =  30 *Units.degree
-    #beta   =  np.zeros_like(J)
-    
-    #for i in  range(len(J)):  
-        #bnds       = [(beta_lower_bound, beta_upper_bound)]
-        
-        ## try hard constraints to find optimum motor parameters
-        #sol = minimize(objective, [0], args=(sur, J[i], alt[i]) ,bounds=bnds, method='SLSQP', tol=1e-6,) 
-          
-        #beta[i] =  sol.x 
-    #return beta  
-   
-#def objective(x,sur, J_i, alt_i):
-    #pts  = np.hstack((J_i,alt_i,x)) 
-    #eta =  sur(pts)
-    
-    #res =  1 - eta 
-    #return res 
-       
+    return 

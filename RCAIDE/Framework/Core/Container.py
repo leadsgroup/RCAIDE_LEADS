@@ -98,7 +98,7 @@ class Container(Data):
         
         old_tags = []
         old_tags = get_tags(self,old_tags) 
-        check_tags(val,old_tags)  
+        check_tags(val,old_tags)     
         Data.append(self,val) 
          
         return
@@ -130,6 +130,7 @@ class Container(Data):
             raise Exception('unrecognized data type') 
 
 def get_tags(item,tag_list):
+        
     if isinstance(item, RCAIDE.Library.Components.Component) or isinstance(item, dict):
         for s_tag, s_item in item.items():
             if 'tag' == s_tag:
@@ -158,8 +159,9 @@ def check_tags(item,tag_list):
         for s_tag, s_item in item.items():
             if 'tag' == s_tag:
                 if s_item in tag_list:
-                    unmodified_tag = str.lower(s_item.translate(t_table))  
-                    n_comps        = tag_list.count(unmodified_tag)
+                    unmodified_tag = str.lower(s_item.translate(t_table))
+                    string_of_keys = "".join(tag_list)
+                    n_comps        = string_of_keys.count(unmodified_tag)
                     item.tag       = unmodified_tag + str(n_comps+1)
                 else:
                     item.tag = str.lower(s_item.translate(t_table))
@@ -169,8 +171,9 @@ def check_tags(item,tag_list):
                     if 'tag' == ss_tag: 
                         if ss_item in tag_list:
                             unmodified_tag = str.lower(ss_item.translate(t_table))  
-                            n_comps        = tag_list.count(unmodified_tag)
-                            s_item.tag       = unmodified_tag + str(n_comps+1)
+                            string_of_keys = "".join(tag_list)
+                            n_comps        = string_of_keys.count(unmodified_tag)
+                            s_item.tag     = unmodified_tag + str(n_comps+1)
                         else:
                             s_item.tag = str.lower(ss_item.translate(t_table))
                         tag_list.append(s_item.tag) 
@@ -179,8 +182,9 @@ def check_tags(item,tag_list):
                             if 'tag' == sss_tag: 
                                 if sss_item in tag_list:
                                     unmodified_tag = str.lower(sss_item.translate(t_table))  
-                                    n_comps        = tag_list.count(unmodified_tag)
-                                    ss_item.tag       = unmodified_tag + str(n_comps+1)
+                                    string_of_keys = "".join(tag_list)
+                                    n_comps        = string_of_keys.count(unmodified_tag)
+                                    ss_item.tag    = unmodified_tag + str(n_comps+1)
                                 else:
                                     ss_item.tag = str.lower(sss_item.translate(t_table))  
                                 tag_list.append(ss_item.tag) 
@@ -189,7 +193,8 @@ def check_tags(item,tag_list):
                                     if 'tag' == ssss_tag: 
                                         if ssss_item in tag_list:
                                             unmodified_tag = str.lower(ssss_item.translate(t_table))  
-                                            n_comps        = tag_list.count(unmodified_tag)
+                                            string_of_keys = "".join(tag_list)
+                                            n_comps        = string_of_keys.count(unmodified_tag)
                                             sss_item.tag   = unmodified_tag + str(n_comps+1)
                                         else:
                                             sss_item.tag = str.lower(ssss_item.translate(t_table))  
