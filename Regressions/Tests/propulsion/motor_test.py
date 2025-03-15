@@ -22,21 +22,22 @@ sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], '
 from Test_Propeller    import Test_Propeller   
  
 def main(): 
-    motor_type  = ['DC_Motor', 'PMSM_Motor']
-    omega_truth = [36.455819245889195,37.653244590335106]
-    torque_truth = [145.0992694988849,145.7740091588354]
-    current_truth = [73.5454727365098,73.0]
+    motor_type    = ['DC_Motor', 'PMSM_Motor']
+    omega_truth   = [62.70499271908929,37.653244590335106]
+    torque_truth  = [136.5275405055453,145.7740091588354]
+    current_truth = [73.0,73.0]
     voltage_truth = [120,120.0]
 
     for i in range(len(motor_type)):
         motor = design_test_motor( motor_type[i])
         
         # set up default operating conditions 
-        operating_state,propulsor  = setup_operating_conditions(motor) 
+        operating_state = setup_operating_conditions(motor) 
         
         # Assign conditions to the motor
-        motor_conditions = operating_state.conditions.energy[propulsor.tag][motor.tag]
-        motor_conditions.voltage[:, 0]   = 120
+        motor_conditions = operating_state.conditions.energy.converters[motor.tag]
+        motor_conditions.inputs.voltage[:, 0] = 120
+        motor_conditions.inputs.current[:, 0] =  73.
 
         if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):
 
@@ -47,8 +48,7 @@ def main():
             Q_conv_endspace_truth           = [0.048254460826049554]
             Loss_cooling_truth              = [4.000000000000001e-08]
 
-            motor_conditions.current[:, 0] =  73.
-            Motor.compute_motor_performance(motor,motor_conditions,operating_state.conditions)
+            Motor.compute_motor_performance(motor,operating_state.conditions)
 
             Q_cond_path              = motor_conditions.Q_cond_path                            
             Q_conv_path              = motor_conditions.Q_conv_path                            
@@ -58,14 +58,13 @@ def main():
             Loss_cooling             = motor_conditions.Loss_cooling            
     
         else:
-            motor_conditions.rotor_power_coefficient[:, 0] =  0.5
-            Motor.compute_motor_performance(motor,motor_conditions,operating_state.conditions)
+            Motor.compute_motor_performance(motor,operating_state.conditions)
 
         # run analysis 
-        omega   = motor_conditions.omega
-        torque  = motor_conditions.torque
-        current = motor_conditions.current
-        voltage = motor_conditions.voltage
+        omega   = motor_conditions.outputs.omega
+        torque  = motor_conditions.outputs.torque
+        current = motor_conditions.inputs.current
+        voltage = motor_conditions.inputs.voltage
  
         # Truth values 
         error = Data()
@@ -97,13 +96,9 @@ def design_test_motor(motor_type):
     
         prop = Test_Propeller()
         motor.mass_properties.mass    = 9. * Units.kg 
-        motor.efficiency              = 0.935
-        motor.gear_ratio              = 1. 
-        motor.gearbox_efficiency      = 1. # Gear box efficiency     
-        motor.no_load_current         = 2.0 
-        motor.propeller_radius        = prop.tip_radius
+        motor.efficiency              = 0.98    
+        motor.no_load_current         = 1.0 
         motor.nominal_voltage         = 400
-        motor.rotor_radius            = prop.tip_radius
         motor.design_torque           = prop.cruise.design_torque 
         motor.design_angular_velocity = prop.cruise.design_angular_velocity # Horse power of gas engine variant  750 * Units['hp']
         design_optimal_motor(motor) 

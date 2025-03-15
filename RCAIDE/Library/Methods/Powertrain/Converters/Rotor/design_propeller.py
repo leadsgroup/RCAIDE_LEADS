@@ -9,7 +9,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core   import interp2d
 from RCAIDE.Library.Methods.Geometry.Airfoil    import compute_airfoil_properties, compute_naca_4series, import_airfoil_geometry
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.create_rotor_efficiency_surrogate import create_rotor_efficiency_surrogate
 
 # package imports 
 import numpy as np
@@ -271,8 +270,7 @@ def design_propeller(prop,number_of_stations=20):
         prop.cruise.design_thrust_coefficient       = Ct
         prop.mid_chord_alignment                    = MCA
         prop.thickness_to_chord                     = t_c
-        prop.blade_solidity                         = sigma 
-        prop.efficiency_surrogate                   = create_rotor_efficiency_surrogate(prop, design_flag=True)  
+        prop.blade_solidity                         = sigma  
 
     return prop
 

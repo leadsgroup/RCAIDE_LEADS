@@ -61,7 +61,7 @@ def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,c
     compute_voltage_out_from_throttle(esc,conditions)
 
     # Assign conditions to the rotor
-    conditions.energy.converters[motor.tag].voltage        = conditions.energy.modulators[esc.tag].outputs.voltage 
+    conditions.energy.converters[motor.tag].inputs.voltage = conditions.energy.modulators[esc.tag].outputs.voltage 
     compute_motor_performance(motor,conditions) 
     
     # Spin the rotor 

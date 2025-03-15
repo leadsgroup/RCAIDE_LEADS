@@ -117,7 +117,7 @@ def turboshaft_engine_Boeing_502_14(altitude,mach):
     design_turboshaft(turboshaft) 
 
     # set up default operating conditions 
-    operating_state,propulsor_tag  = setup_operating_conditions(turboshaft) 
+    operating_state  = setup_operating_conditions(turboshaft) 
     
     # Assign conditions to the turboshaft
     turboshaft_conditions = operating_state.conditions.energy[turboshaft.tag]    

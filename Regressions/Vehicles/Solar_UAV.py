@@ -198,9 +198,7 @@ def vehicle_setup():
     motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor() 
     motor.resistance                                 = 0.008
     motor.no_load_current                            = 4.5  * Units.ampere
-    motor.speed_constant                             = 120. * Units['rpm'] # RPM/volt converted to (rad/s)/volt    
-    motor.rotor_radius                               = propeller.tip_radius
-    motor.rotor_Cp                                   = propeller.cruise.design_power_coefficient
+    motor.speed_constant                             = 120. * Units['rpm'] # RPM/volt converted to (rad/s)/volt  
     motor.gear_ratio                                 = 12. # Gear ratio
     motor.gearbox_efficiency                         = .98 # Gear box efficiency 
     motor.mass_properties.mass                       = 2.0  * Units.kg  

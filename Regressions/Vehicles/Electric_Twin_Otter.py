@@ -572,7 +572,6 @@ def vehicle_setup(cell_chemistry, btms_type):
     motor.origin                                     = [[4.0,2.8129,1.22 ]]   
     motor.nominal_voltage                            = bus.voltage 
     motor.no_load_current                            = 1
-    motor.rotor_radius                               = propeller.tip_radius
     motor.design_torque                              = propeller.cruise.design_torque 
     motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity # Horse power of gas engine variant  750 * Units['hp']
     design_optimal_motor(motor)  

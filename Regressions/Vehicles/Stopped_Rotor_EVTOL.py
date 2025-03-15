@@ -453,9 +453,8 @@ def vehicle_setup(new_regression=True) :
     propeller_motor.propeller_radius                       = propeller.tip_radius 
     propeller_motor.no_load_current                        = 0.001
     propeller_motor.wing_tag                               = 'horizontal_tail'
-    propeller_motor.rotor_radius                           = propeller.tip_radius
     propeller_motor.design_torque                          = propeller.cruise.design_torque
-    propeller_motor.design_angular_velocity                       = propeller.cruise.design_angular_velocity 
+    propeller_motor.design_angular_velocity                = propeller.cruise.design_angular_velocity 
     design_optimal_motor(propeller_motor)  
     propeller_motor.mass_properties.mass                   = compute_motor_weight(propeller_motor)  
     cruise_propulsor_1.motor                               = propeller_motor 
@@ -651,9 +650,8 @@ def vehicle_setup(new_regression=True) :
     lift_rotor_motor.tag                                   = 'lift_rotor_motor_1' 
     lift_rotor_motor.no_load_current                       = 0.01  
     lift_rotor_motor.wing_tag                              = 'main_wing'
-    lift_rotor_motor.rotor_radius                          = lift_rotor.tip_radius
     lift_rotor_motor.design_torque                         = lift_rotor.hover.design_torque
-    lift_rotor_motor.design_angular_velocity                      = lift_rotor.hover.design_angular_velocity
+    lift_rotor_motor.design_angular_velocity               = lift_rotor.hover.design_angular_velocity
     design_optimal_motor(lift_rotor_motor)
     lift_rotor_motor.mass_properties.mass                  = compute_motor_weight(lift_rotor_motor)     
     lift_propulsor_1.motor                                 = lift_rotor_motor

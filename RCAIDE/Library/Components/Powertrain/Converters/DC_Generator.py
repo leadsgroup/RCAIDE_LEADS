@@ -32,12 +32,6 @@ class DC_Generator(Converter):
     speed_constant : float
         generator speed constant (Kv). Default is 0.0.
         
-    rotor_radius : float
-        Radius of the generator's rotor [m]. Default is 0.0.
-        
-    rotor_Cp : float
-        Specific heat capacity of the rotor [J/kg/K]. Default is 0.0.
-        
     efficiency : float
         Overall generator efficiency. Default is 1.0.
         

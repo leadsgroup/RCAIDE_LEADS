@@ -77,7 +77,7 @@ def compute_motor_performance(motor,conditions):
             Res            = motor.resistance
             G              = motor.gearbox.gear_ratio
             I              = motor_conditions.inputs.current
-            V              = motor_conditions.voltage
+            V              = motor_conditions.inputs.voltage
             I_turn         = I/motor.number_of_turns                                                             # [A]            current in each turn
             omega          = (motor.speed_constant*(V - I*Res)*Units.rpm) /G                                     # [RPM -> rad/s] rotor angular velocity
             A              = np.pi * ((motor.stator_outer_diameter**2 - motor.stator_inner_diameter**2) / 4)     # [m**2]         cross-sectional area of the reluctance path perpendicular to length 𝑙    
@@ -190,7 +190,7 @@ def compute_motor_performance(motor,conditions):
             Kv             = motor.speed_constant
             G              = motor.gearbox.gear_ratio 
             io             = motor.no_load_current  
-            v              = motor_conditions.voltage  
+            v              = motor_conditions.inputs.voltage  
             i              = motor_conditions.inputs.current 
             omega          = ((v - (Res * i)) * Kv)  
             Q              = (((v- (omega) /Kv)/Res -io)/Kv)  

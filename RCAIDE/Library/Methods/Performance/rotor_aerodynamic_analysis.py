@@ -3,9 +3,7 @@
 #-------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core                              import Units
-from RCAIDE.Library.Methods.Powertrain                  import setup_operating_conditions 
- 
-import numpy as np
+from RCAIDE.Library.Methods.Powertrain                  import setup_operating_conditions  
 
 # ------------------------------------------------------------------------------
 #   Rotor Analysis
@@ -18,14 +16,14 @@ def rotor_aerodynamic_analysis(rotor,
                            altitude = 0,
                            design_flag=False):
        
-    state , propulsor = setup_operating_conditions(rotor, altitude = altitude,velocity_range=velocity_range, angle_of_attack=angle_of_attack)
+    operating_state = setup_operating_conditions(rotor, altitude = altitude,velocity_range=velocity_range, angle_of_attack=angle_of_attack)
          
-    rotor_conditions                             = state.conditions.energy.converters[rotor.tag]
+    rotor_conditions                             = operating_state.conditions.energy.converters[rotor.tag]
     rotor_conditions.design_flag                 = design_flag
     rotor_conditions.omega[:,0]                  = angular_velocity
     rotor_conditions.blade_pitch_command[:,0]    = blade_pitch_command 
     rotor_conditions.optimize_blade_pitch        = False
-    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance(rotor,state.conditions)
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance(rotor,operating_state.conditions)
      
-    results = state.conditions.energy.converters[rotor.tag] 
+    results = operating_state.conditions.energy.converters[rotor.tag] 
     return  results

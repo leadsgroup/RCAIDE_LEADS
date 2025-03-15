@@ -200,8 +200,8 @@ class Fuel(Network):
         segment.state.residuals.network = Residuals()
         
         for network in segment.analyses.energy.vehicle.networks:
-            for p_i, propulsor in enumerate(network.propulsors):  
-                propulsor.append_operating_conditions(segment)     
+            for p_i, propulsor in enumerate(network.propulsors): 
+                propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)     
     
             for fuel_line_i, fuel_line in enumerate(network.fuel_lines):   
                 # ------------------------------------------------------------------------------------------------------            

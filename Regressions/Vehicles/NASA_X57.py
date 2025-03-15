@@ -417,9 +417,8 @@ def vehicle_setup(rotor_type):
         motor.origin                                     = [[2.,  2.5, 0.95]]
         motor.nominal_voltage                            = bus.voltage 
         motor.no_load_current                            = 1
-        motor.rotor_radius                               = propeller.tip_radius
         motor.design_torque                              = propeller.cruise.design_torque
-        motor.design_angular_velocity                           = propeller.cruise.design_angular_velocity 
+        motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity 
         design_optimal_motor(motor)  
         motor.mass_properties.mass                       = compute_motor_weight(motor) 
         starboard_propulsor.motor                        = motor 

@@ -295,7 +295,6 @@ class Electric(Network):
             Inputs:
             segment
             estimated_battery_voltages                                    [v]
-            estimated_rotor_power_coefficients                            [float]s
             estimated_battery_cell_temperature                            [Kelvin]
             estimated_battery_state_of_charges                            [unitless]
             estimated_battery_cell_currents                               [Amperes]

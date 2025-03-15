@@ -32,12 +32,6 @@ class DC_Motor(Converter):
     speed_constant : float
         Motor speed constant (Kv). Default is 0.0.
         
-    rotor_radius : float
-        Radius of the motor's rotor [m]. Default is 0.0.
-        
-    rotor_Cp : float
-        Specific heat capacity of the rotor [J/kg/K]. Default is 0.0.
-        
     efficiency : float
         Overall motor efficiency. Default is 1.0.
         
@@ -101,8 +95,6 @@ class DC_Motor(Converter):
         self.resistance              = 0.0
         self.no_load_current         = 0.0
         self.speed_constant          = 0.0
-        self.rotor_radius            = 0.0
-        self.rotor_Cp                = 0.0
         self.efficiency              = 1.0
         self.gearbox                 = Data()
         self.gearbox.gear_ratio      = 1.0 

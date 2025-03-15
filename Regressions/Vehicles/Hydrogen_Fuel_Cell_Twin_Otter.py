@@ -510,7 +510,6 @@ def vehicle_setup(fuel_cell_model):
     motor.origin                                     = [[4.0,2.8129,1.22 ]]   
     motor.nominal_voltage                            = bus.voltage 
     motor.no_load_current                            = 1
-    motor.rotor_radius                               = propeller.tip_radius
     motor.design_torque                              = propeller.cruise.design_torque 
     motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity
     design_optimal_motor(motor)  

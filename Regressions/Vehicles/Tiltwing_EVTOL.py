@@ -311,7 +311,6 @@ def vehicle_setup(new_regression=True):
     prop_rotor_motor.efficiency              = 0.95
     prop_rotor_motor.nominal_voltage         = bus.voltage *0.75
     prop_rotor_motor.no_load_current         = 0.1
-    prop_rotor_motor.rotor_radius            = prop_rotor.tip_radius
     prop_rotor_motor.design_torque           = prop_rotor.hover.design_torque
     prop_rotor_motor.design_angular_velocity = prop_rotor.hover.design_angular_velocity/prop_rotor_motor.gear_ratio  
     design_optimal_motor(prop_rotor_motor)

@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
+from RCAIDE.Framework.Core import Data
 from .Converter  import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions import  append_motor_conditions
 
@@ -108,6 +109,8 @@ class PMSM_Motor(Converter):
         self.speed_constant                = 6.56                        # [rpm/V]        speed constant
         self.stator_inner_diameter         = 0.16                        # [m]            stator inner diameter
         self.stator_outer_diameter         = 0.348                       # [m]            stator outer diameter
+        self.gearbox                       = Data()
+        self.gearbox.gear_ratio            = 1.0 
       
         # Input data from Literature      
         self.winding_factor                = 0.95                        # [-]            winding factor
