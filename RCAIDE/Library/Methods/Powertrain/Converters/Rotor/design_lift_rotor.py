@@ -16,6 +16,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_par
 import time 
 import os
 import sys
+from copy import  deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Lift-rotor
@@ -51,13 +52,13 @@ def design_lift_rotor(rotor,number_of_stations = 20,solver_name= 'SLSQP',iterati
           Source:
              None 
     """    
-    # Unpack rotor geometry  
-    rotor_tag     = rotor.tag
-    rotor.tag     = 'rotor'
+    # Unpack rotor geometry   
+    unoptimized_rotor         = deepcopy(rotor)
+    unoptimized_rotor.tag     = 'unoptimized_rotor'
     
     # start optimization 
     ti                   = time.time()   
-    optimization_problem = optimization_setup(rotor,number_of_stations,print_iterations)
+    optimization_problem = optimization_setup(unoptimized_rotor,number_of_stations,print_iterations)
 
     # Commense suppression of console window output  
     devnull = open(os.devnull,'w')
@@ -69,6 +70,10 @@ def design_lift_rotor(rotor,number_of_stations = 20,solver_name= 'SLSQP',iterati
                                                    tolerance = solver_tolerance)
     # Terminate suppression of console window output   
     sys.stdout = sys.__stdout__ 
+     
+    if output[3] != 0:
+        print("Lift-rotor desing optimization failed: ",output[4]) 
+        
     tf                   = time.time()
     elapsed_time         = round((tf-ti)/60,2)
     print('Lift-rotor Optimization Simulation Time: ' + str(elapsed_time) + ' mins')   
@@ -77,7 +82,7 @@ def design_lift_rotor(rotor,number_of_stations = 20,solver_name= 'SLSQP',iterati
     print (output)  
     
     # set remaining rotor variables using optimized parameters 
-    rotor     = set_optimized_parameters(rotor,optimization_problem)
-    rotor.tag = rotor_tag
+    optimized_rotor     = set_optimized_parameters(rotor,optimization_problem)
+    optimized_rotor.tag = rotor.tag
     
-    return rotor 
+    return optimized_rotor 

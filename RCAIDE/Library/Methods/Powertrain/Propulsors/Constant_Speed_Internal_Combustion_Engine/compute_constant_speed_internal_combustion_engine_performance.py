@@ -46,38 +46,36 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor,stat
     conditions              = state.conditions  
     ice_cs_conditions       = conditions.energy.propulsors[propulsor.tag] 
     engine                  = propulsor.engine 
-    propeller               = propulsor.propeller
-    engine_conditions       = conditions.energy.converters[engine.tag]
-    propeller_conditions    = conditions.energy.converters[propeller.tag]
-    engine_conditions.rpm   = ice_cs_conditions.rpm 
+    propeller               = propulsor.propeller 
 
     # Run the propeller to get the power
-    propeller_conditions.omega                = engine_conditions.rpm * Units.rpm
-    propeller_conditions.blade_pitch_command  = ice_cs_conditions.throttle - 0.5
-    propeller_conditions.throttle             = ice_cs_conditions.throttle
-    compute_rotor_performance(propeller,propeller_conditions,conditions)
+    conditions.energy.converters[engine.tag].rpm                     = ice_cs_conditions.rpm 
+    conditions.energy.converters[propeller.tag].omega                = conditions.energy.converters[engine.tag].rpm * Units.rpm
+    conditions.energy.converters[propeller.tag].blade_pitch_command  = ice_cs_conditions.throttle - 0.5
+    conditions.energy.converters[propeller.tag].throttle             = ice_cs_conditions.throttle
+    compute_rotor_performance(propeller,conditions)
 
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)
     moment_vector[:,0]      = propeller.origin[0][0]  -  center_of_gravity[0][0] 
     moment_vector[:,1]      = propeller.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]      = propeller.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, propeller_conditions.thrust)       
+    moment                  =  np.cross(moment_vector, conditions.energy.converters[propeller.tag].thrust)       
         
 
     # Run the engine to calculate the throttle setting and the fuel burn
-    engine_conditions.power        = propeller_conditions.power 
-    compute_throttle_from_power(engine,engine_conditions,conditions) 
+    conditions.energy.converters[engine.tag].power        = conditions.energy.converters[propeller.tag].power 
+    compute_throttle_from_power(engine,conditions) 
     
     # Create the outputs
-    ice_cs_conditions.fuel_flow_rate         = engine_conditions.fuel_flow_rate  
+    ice_cs_conditions.fuel_flow_rate         = conditions.energy.converters[engine.tag].fuel_flow_rate  
     stored_results_flag                      = True
     stored_propulsor_tag                     = propulsor.tag  
 
     # compute total forces and moments from propulsor (future work would be to add moments from motors)
-    ice_cs_conditions.thrust      = propeller_conditions.thrust 
+    ice_cs_conditions.thrust      = conditions.energy.converters[propeller.tag].thrust 
     ice_cs_conditions.moment      = moment
-    ice_cs_conditions.power       = propeller_conditions.power  
+    ice_cs_conditions.power       = conditions.energy.converters[propeller.tag].power  
 
     # currently, no hybridization
     power_elec =  0*state.ones_row(3)

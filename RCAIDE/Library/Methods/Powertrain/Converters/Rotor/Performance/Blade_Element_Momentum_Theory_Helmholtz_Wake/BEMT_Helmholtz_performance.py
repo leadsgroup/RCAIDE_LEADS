@@ -20,14 +20,13 @@ def BEMT_Helmholtz_performance(rotor,conditions):
     
     MATTEO CITE QPROP
     
-    ''' 
-    rotor_conditions      = conditions.energy.converters[rotor.tag]
-    commanded_TV          = rotor_conditions.commanded_thrust_vector_angle
-    pitch_c               = rotor_conditions.blade_pitch_command
-    eta                   = rotor_conditions.throttle 
-    omega                 = rotor_conditions.omega 
-    optimize_blade_pitch  = rotor_conditions.optimize_blade_pitch
-    design_flag           = rotor_conditions.design_flag
+    '''  
+    commanded_TV          = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
+    pitch_c               = conditions.energy.converters[rotor.tag].blade_pitch_command
+    eta                   = conditions.energy.converters[rotor.tag].throttle 
+    omega                 = conditions.energy.converters[rotor.tag].omega 
+    optimize_blade_pitch  = conditions.energy.converters[rotor.tag].optimize_blade_pitch
+    design_flag           = conditions.energy.converters[rotor.tag].design_flag
     B                     = rotor.number_of_blades
     R                     = rotor.tip_radius
     beta_0                = rotor.twist_distribution
@@ -200,9 +199,8 @@ def BEMT_Helmholtz_performance(rotor,conditions):
     wake_inputs.radius_distribution   = r
     wake_inputs.speed_of_sounds       = a
     wake_inputs.dynamic_viscosities   = nu
-    
-    if rotor.fidelity == "Blade_Element_Momentum_Theory_Helmholtz_Wake": 
-        va, vt = RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.evaluate_wake(rotor,wake_inputs,conditions)
+     
+    va, vt = RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.evaluate_wake(rotor,wake_inputs,conditions)
     
     # compute new blade velocities
     Wa   = va + Ua
@@ -342,7 +340,7 @@ def BEMT_Helmholtz_performance(rotor,conditions):
     thrust_prop_frame[:,0] = thrust[:,0]
     thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)
      
-    rotor_conditions                              = Data( 
+    conditions.energy.converters[rotor.tag]  = Data( 
                 torque                            = torque,
                 thrust                            = thrust_vector,  
                 power                             = power, 

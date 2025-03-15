@@ -196,7 +196,7 @@ def run_rotor_hover(nexus):
     rotor_conditions.optimize_blade_pitch = False
     rotor_conditions.blade_pitch_command[:,0]   = rotor.hover.design_pitch_command
     
-    compute_rotor_performance(electric_rotor,segment.state)   
+    compute_rotor_performance(rotor,conditions)   
      
     # Pack the results
     nexus.results.hover.thrust                       = -segment.state.conditions.energy.converters[rotor.tag].thrust[0,2]  
@@ -274,7 +274,7 @@ def run_rotor_OEI(nexus):
     rotor_conditions.optimize_blade_pitch       = False
     rotor_conditions.blade_pitch_command[:,0]   = rotor.oei.design_pitch_command
     
-    compute_rotor_performance(electric_rotor,segment.state)   
+    compute_rotor_performance(rotor,conditions)    
             
     # Pack the results
     nexus.results.oei.thrust       = -segment.state.conditions.energy.converters[rotor.tag].thrust[0,2]  
@@ -324,7 +324,7 @@ def run_rotor_cruise(nexus):
         rotor_conditions.optimize_blade_pitch       = False
         rotor_conditions.blade_pitch_command[:,0]   = rotor.cruise.design_pitch_command
         
-        compute_rotor_performance(electric_rotor,segment.state)   
+        compute_rotor_performance(rotor,conditions)   
         
         # Pack the results
         nexus.results.cruise.thrust                      = -segment.state.conditions.energy.converters[rotor.tag].thrust[0,2] 

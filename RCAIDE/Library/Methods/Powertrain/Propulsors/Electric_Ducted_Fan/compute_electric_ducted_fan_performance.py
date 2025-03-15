@@ -52,23 +52,21 @@ def compute_electric_ducted_fan_performance(propulsor,state,fuel_line=None,bus=N
     eta                        = EDF_conditions.throttle
     motor                      = propulsor.motor 
     ducted_fan                 = propulsor.ducted_fan 
-    esc                        = propulsor.electronic_speed_controller  
-    esc_conditions             = conditions.energy.converters[esc.tag]
-    motor_conditions           = conditions.energy.converters[motor.tag]
-    ducted_fan_conditions      = conditions.energy.converters[ducted_fan.tag]
+    esc                        = propulsor.electronic_speed_controller
     
-    esc_conditions.inputs.voltage   = bus.voltage * state.ones_row(1)    
-    esc_conditions.throttle         = eta 
+    conditions.energy.modulators[esc.tag].inputs.voltage   = bus.voltage * state.ones_row(1)    
+    conditions.energy.modulators[esc.tag].throttle         = eta 
     compute_voltage_out_from_throttle(esc,conditions)
 
     # Assign conditions to the ducted_fan
-    motor_conditions.voltage              = esc_conditions.outputs.voltage
+    conditions.energy.converters[motor.tag].voltage              = conditions.energy.modulators[esc.tag].outputs.voltage
     compute_motor_performance(motor,conditions) 
     
     # Spin the ducted_fan  
-    ducted_fan_conditions.omega              = motor_conditions.outputs.omega 
-    ducted_fan_conditions.tip_mach           = (motor_conditions.outputs.omega * ducted_fan.tip_radius) / conditions.freestream.speed_of_sound
-    ducted_fan_conditions.throttle           = esc_conditions.throttle 
+    conditions.energy.converters[ducted_fan.tag].omega              = conditions.energy.converters[motor.tag].outputs.omega 
+    conditions.energy.converters[ducted_fan.tag].tip_mach           = (conditions.energy.converters[motor.tag].outputs.omega * ducted_fan.tip_radius) / conditions.freestream.speed_of_sound
+    conditions.energy.converters[ducted_fan.tag].throttle           = conditions.energy.modulators[esc.tag].throttle 
+    conditions.energy.converters[ducted_fan.tag].commanded_thrust_vector_angle =  conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
     compute_ducted_fan_performance(propulsor,state)
 
     # Compute moment 
@@ -76,22 +74,22 @@ def compute_electric_ducted_fan_performance(propulsor,state,fuel_line=None,bus=N
     moment_vector[:,0] = ducted_fan.origin[0][0]  -  center_of_gravity[0][0] 
     moment_vector[:,1] = ducted_fan.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2] = ducted_fan.origin[0][2]  -  center_of_gravity[0][2]
-    moment             =  np.cross(moment_vector, ducted_fan_conditions.thrust) 
+    moment             =  np.cross(moment_vector, conditions.energy.converters[ducted_fan.tag].thrust) 
     
     # Detemine esc current 
-    esc_conditions.outputs.current = motor_conditions.inputs.current
+    conditions.energy.modulators[esc.tag].outputs.current = conditions.energy.converters[motor.tag].inputs.current
     compute_current_in_from_throttle(esc,conditions)   
     
     stored_results_flag            = True
     stored_propulsor_tag           = propulsor.tag 
     
     # compute total forces and moments from propulsor (future work would be to add moments from motors)
-    EDF_conditions.thrust      = ducted_fan_conditions.thrust  
+    EDF_conditions.thrust      = conditions.energy.converters[ducted_fan.tag].thrust  
     EDF_conditions.moment      = moment
-    EDF_conditions.power       = ducted_fan_conditions.power 
-    bus_conditions.power_draw  +=  esc_conditions.inputs.power*bus.power_split_ratio /bus.efficiency 
+    EDF_conditions.power       = conditions.energy.converters[ducted_fan.tag].power 
+    bus_conditions.power_draw  +=  conditions.energy.modulators[esc.tag].inputs.power*bus.power_split_ratio /bus.efficiency 
     
-    return EDF_conditions.thrust,EDF_conditions.moment,EDF_conditions.power,esc_conditions.inputs.power,stored_results_flag,stored_propulsor_tag 
+    return EDF_conditions.thrust,EDF_conditions.moment,EDF_conditions.power,conditions.energy.modulators[esc.tag].inputs.power,stored_results_flag,stored_propulsor_tag 
                 
 def reuse_stored_electric_ducted_fan_data(propulsor,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors
@@ -132,12 +130,12 @@ def reuse_stored_electric_ducted_fan_data(propulsor,state,network,fuel_line,bus,
     # deep copy results 
     conditions.energy.converters[motor.tag]        = deepcopy(conditions.energy.converters[motor_0.tag])
     conditions.energy.converters[ducted_fan.tag]   = deepcopy(conditions.energy.converters[ducted_fan_0.tag])
-    conditions.energy.converters[esc.tag]          = deepcopy(conditions.energy.converters[esc_0.tag])
+    conditions.energy.modulators[esc.tag]          = deepcopy(conditions.energy.converters[esc_0.tag])
   
     # compute moment 
     thrust_vector           = conditions.energy.converters[ducted_fan.tag].thrust  
     P_mech                  = conditions.energy.converters[ducted_fan.tag].power 
-    P_elec                  = conditions.energy.converters[esc.tag].inputs.power   
+    P_elec                  = conditions.energy.modulators[esc.tag].inputs.power   
     moment_vector           = 0*state.ones_row(3) 
     moment_vector[:,0]      = ducted_fan.origin[0][0]  -  center_of_gravity[0][0] 
     moment_vector[:,1]      = ducted_fan.origin[0][1]  -  center_of_gravity[0][1] 

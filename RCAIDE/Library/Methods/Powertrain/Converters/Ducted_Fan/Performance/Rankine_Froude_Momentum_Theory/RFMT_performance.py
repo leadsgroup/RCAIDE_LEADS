@@ -66,10 +66,9 @@ def RFMT_performance(ducted_fan,conditions):
     """ 
     
  
-    rho                   = conditions.freestream.density
-    ducted_fan_conditions = conditions.energy.converters[ducted_fan.tag]
-    commanded_TV          = ducted_fan_conditions.commanded_thrust_vector_angle
-    omega                 = ducted_fan_conditions.omega    
+    rho                   = conditions.freestream.density 
+    commanded_TV          = conditions.energy.converters[ducted_fan.tag].commanded_thrust_vector_angle
+    omega                 = conditions.energy.converters[ducted_fan.tag].omega    
     Vv                    = conditions.frames.inertial.velocity_vector 
     ctrl_pts              = len(Vv)
 
@@ -94,7 +93,7 @@ def RFMT_performance(ducted_fan,conditions):
     thrust_vector           = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)     
     torque                  = power/omega
       
-    ducted_fan_conditions                     = Data( 
+    conditions.energy.converters[ducted_fan.tag] = Data( 
             thrust                            = thrust_vector,  
             power                             = power,
             power_coefficient                 = Cp, 

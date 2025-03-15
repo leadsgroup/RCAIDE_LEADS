@@ -25,7 +25,7 @@ def rotor_aerodynamic_analysis(rotor,
     rotor_conditions.omega[:,0]                  = angular_velocity
     rotor_conditions.blade_pitch_command[:,0]    = blade_pitch_command 
     rotor_conditions.optimize_blade_pitch        = False
-    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance(rotor,rotor_conditions,state.conditions)
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance(rotor,state.conditions)
      
     results = state.conditions.energy.converters[rotor.tag] 
     return  results

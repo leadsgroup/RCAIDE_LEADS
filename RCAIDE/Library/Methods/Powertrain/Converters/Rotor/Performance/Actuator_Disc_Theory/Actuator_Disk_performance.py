@@ -23,12 +23,11 @@ def Actuator_Disk_performance(rotor,conditions):
     
     '''
 
-    rho                   = conditions.freestream.density    
-    rotor_conditions      = conditions.energy.converters[rotor.tag]
-    commanded_TV          = rotor_conditions.commanded_thrust_vector_angle   
-    pitch_c               = rotor_conditions.blade_pitch_command
-    omega                 = rotor_conditions.omega
-    torque                = rotor_conditions.motor_torque 
+    rho                   = conditions.freestream.density     
+    commanded_TV          = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle   
+    pitch_c               = conditions.energy.converters[rotor.tag].blade_pitch_command
+    omega                 = conditions.energy.converters[rotor.tag].omega
+    torque                = conditions.energy.converters[rotor.tag].motor_torque 
     B                     = rotor.number_of_blades   
     R                     = rotor.tip_radius 
     eta_p                 = rotor.proppeller_efficiency    
@@ -66,7 +65,7 @@ def Actuator_Disk_performance(rotor,conditions):
     A                     = np.pi*(R**2 - rotor.hub_radius**2)
     FoM                   = thrust*np.sqrt(thrust/(2*rho*A))/power  
       
-    rotor_conditions                          = Data( 
+    conditions.energy.converters[rotor.tag]   = Data( 
             thrust                            = thrust_vector,  
             power                             = power,
             rpm                               = omega/Units.rpm,

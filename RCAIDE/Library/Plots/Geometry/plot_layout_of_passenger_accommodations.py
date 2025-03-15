@@ -5,11 +5,14 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+# RCAIDE imports 
 from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
 
+# python imports 
 import plotly.graph_objects as go
 import numpy as  np
 import os
+import sys
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_Layout_of_Passenger_Accommodations
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -21,11 +24,10 @@ def plot_layout_of_passenger_accommodations(fuselage,
     Plot aircraft layout of passenger accommodations
     '''  
     if  type(fuselage.layout_of_passenger_accommodations) != np.ndarray: 
-        compute_layout_of_passenger_accommodations(fuselage)   
-    plot_LOPA(fuselage.layout_of_passenger_accommodations)
-    return 
+        compute_layout_of_passenger_accommodations(fuselage)
         
-def plot_LOPA(LOPA,save_figure,save_filename,show_figure):
+    LOPA = fuselage.layout_of_passenger_accommodations
+    
     fig = go.Figure() 
     # Set axes properties
     fig.update_xaxes(range=[min(LOPA[:,2]) - 1 , max(LOPA[:,2]) + 1], showgrid=False)

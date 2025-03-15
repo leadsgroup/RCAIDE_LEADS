@@ -70,7 +70,11 @@ def design_prop_rotor(rotor,number_of_stations = 20,solver_name= 'SLSQP',iterati
                                                    sense_step = solver_sense_step,
                                                    tolerance = solver_tolerance) 
     # Terminate suppression of console window output   
-    sys.stdout = sys.__stdout__   
+    sys.stdout = sys.__stdout__
+
+    if output[3] != 0:
+        print("Prop-rotor desing optimization failed: ",output[4])
+        
     tf                   = time.time()
     elapsed_time         = round((tf-ti)/60,2)
     print('Lift-rotor Optimization Simulation Time: ' + str(elapsed_time) + ' mins')   

@@ -455,7 +455,7 @@ def vehicle_setup(new_regression=True) :
     propeller_motor.wing_tag                               = 'horizontal_tail'
     propeller_motor.rotor_radius                           = propeller.tip_radius
     propeller_motor.design_torque                          = propeller.cruise.design_torque
-    propeller_motor.angular_velocity                       = propeller.cruise.design_angular_velocity/propeller_motor.gear_ratio  
+    propeller_motor.angular_velocity                       = propeller.cruise.design_angular_velocity/propeller_motor.gearbox.gear_ratio  
     design_optimal_motor(propeller_motor)  
     propeller_motor.mass_properties.mass                   = compute_motor_weight(propeller_motor)  
     cruise_propulsor_1.motor                               = propeller_motor 
@@ -636,8 +636,7 @@ def vehicle_setup(new_regression=True) :
         loaded_lift_rotor = load_rotor(os.path.join(test_dir, 'stopped_rotor_geometry.res'))
         
         for key,item in lift_rotor.items():
-            lift_rotor[key] = loaded_lift_rotor[key] 
-        lift_rotor.Wake   = RCAIDE.Framework.Analyses.Propulsion.Momentum_Theory_Wake()         
+            lift_rotor[key] = loaded_lift_rotor[key]       
             
     lift_propulsor_1.rotor =  lift_rotor          
     
@@ -654,7 +653,7 @@ def vehicle_setup(new_regression=True) :
     lift_rotor_motor.wing_tag                              = 'main_wing'
     lift_rotor_motor.rotor_radius                          = lift_rotor.tip_radius
     lift_rotor_motor.design_torque                         = lift_rotor.hover.design_torque
-    lift_rotor_motor.angular_velocity                      = lift_rotor.hover.design_angular_velocity/lift_rotor_motor.gear_ratio  
+    lift_rotor_motor.angular_velocity                      = lift_rotor.hover.design_angular_velocity/lift_rotor_motor.gearbox.gear_ratio  
     design_optimal_motor(lift_rotor_motor)
     lift_rotor_motor.mass_properties.mass                  = compute_motor_weight(lift_rotor_motor)     
     lift_propulsor_1.motor                                 = lift_rotor_motor
