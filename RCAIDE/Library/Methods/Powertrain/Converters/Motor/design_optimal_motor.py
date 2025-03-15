@@ -73,7 +73,7 @@ def design_optimal_motor(motor):
     
     motor.speed_constant   = sol.x[0]
     motor.resistance       = sol.x[1] 
-    motor.design_current   = (v-(omega*G)/motor.speed_constant)/motor.resistance  
+    motor.design_current   = (v-(omega)/motor.speed_constant)/motor.resistance  
     return motor  
   
 # objective function
