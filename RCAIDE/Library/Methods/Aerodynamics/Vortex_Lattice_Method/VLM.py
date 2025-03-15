@@ -660,54 +660,49 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
    
     # # Rearrange cl_dist and chord_dist to match
     rho = 1.2205 # Entirely wrong, but we'll come back to this... 
-    circulation_dist = 0.5 * chord_dist * v_inf * cl_dist # Convert from local lift coefficient to circulation
-
-    L = -rho*v_inf*np.trapz(circulation_dist, y_dist)
-
-    x_segments = x_dist.reshape(len(n_sw), -1)  # shape: (5, 40)
-    y_segments = y_dist.reshape(len(n_sw), -1)  # shape: (5, 40)
-    z_segments = z_dist.reshape(len(n_sw), -1)  # shape: (5, 40)
+    circulation_dist = 0.5 * chord_dist * v_inf * cl_dist # Convert from local lift coefficient to circulation # Good
+    L = -2*rho*v_inf*np.trapz(circulation_dist[0,0:50], y_dist[0:50]) # Good
+    CL = L/(0.5*v_inf**2*rho*sum(SURF)) # Relatively good. Check further
     
-    centerpoints_y = (y_segments[:, :-1] + y_segments[:, 1:]) / 2
-    centerpoints_z = (z_segments[:, :-1] + z_segments[:, 1:]) / 2
-    centerpoints_x = (x_segments[:, :-1] + x_segments[:, 1:]) / 2
-    
-    circulation_segments = circulation_dist.reshape(circulation_dist.shape[0], len(n_sw), -1)[0]
+    y_control_points = y_dist.reshape(len(n_sw), -1)
+    z_control_points = z_dist.reshape(len(n_sw), -1)
+    x_control_points = x_dist.reshape(len(n_sw), -1)
 
-    shed_vortex_segments = np.diff(circulation_segments, axis=1)
+    centerpoints_y = (y_control_points[:, :-1] + y_control_points[:, 1:]) / 2 # Good
+    centerpoints_z = (z_control_points[:, :-1] + z_control_points[:, 1:]) / 2 # Good
+    centerpoints_x = (x_control_points[:, :-1] + x_control_points[:, 1:]) / 2 # Good
+    
+    circulation_segments = circulation_dist.reshape(circulation_dist.shape[0], len(n_sw), -1)[0] # Good
+
+    shed_vortex_segments = [np.flip(np.diff(np.flip(circulation_segments[0]))), np.diff(circulation_segments[1])] # Good
     
     # Trefftz Plane Y-Z location:
-    TP_y = centerpoints_y
-    TP_z = np.cos(alpha_cases) * centerpoints_z - np.sin(alpha_cases) * centerpoints_x # REDEFINE THIS. I think this is alright now? 
+    TP_y = centerpoints_y # Is this correct? Which are the control points which are locations where vortices are shed?
+    TP_z = centerpoints_z #np.cos(alpha_cases) * centerpoints_z - np.sin(alpha_cases) * centerpoints_x # REDEFINE THIS. I think this is alright now? 
 
-    V_induced = np.zeros_like(centerpoints_y)
-    for i in range(len(centerpoints_y)): # Loop through each test case
-        for j in range(len(centerpoints_y[1])): # Loop through each control point
-            r = np.sqrt(np.square(centerpoints_y[i,j] - TP_y) + np.square(centerpoints_z[i,j] - TP_z)) # Distance from segment to control point
-            V_induced[i,j] = np.sum(shed_vortex_segments / (2*np.pi*r)) # Downwash
+    V_induced = np.zeros_like(y_control_points)
+    for i in range(len(y_control_points)): # Loop through each test case
+        for j in range(len(y_control_points[1])): # Loop through each control point
+            # currently R does not account for the direction that the vortice is in and thus the direction!!! Also, need to 
+            r = np.sqrt(np.square(y_control_points[i,j] - TP_y) + np.square(z_control_points[i,j] - TP_z)) # Distance from segment to control point
+            component = -1*np.sign(y_control_points[i,j] - TP_y) # The component of the induced velocity perpendicular to the wake trace as well as direction correction. Check coordinate convention. 
+            V_induced[i,j] = np.sum(component*shed_vortex_segments / (2*np.pi*r)) # Downwash. Note that we only care about the perpendicular component. Need to account for that!
     
     x = np.linspace(0,20,1000)
     y_ellipse = np.sqrt(1 - (x/10)**2)*1*circulation_segments[0][0]
     x_ellipse = x
 
-    plt.plot(y_segments[0], circulation_segments[0],'ko-')
-    plt.plot(x_ellipse,y_ellipse)
-    plt.show()
+    #plt.plot(y_cp[0], V_induced[0],'ko-')
+    #plt.plot(x_ellipse,y_ellipse)
+    #plt.show()
 
     # Calculate Induced Drag
-    circulation_segments_interp = np.zeros_like(centerpoints_y)
-    for i in range(len(y_segments)):
-        if y_segments[i][-1] > y_segments[i][0]:
-            circulation_segments_interp[i] = np.interp(centerpoints_y[i], y_segments[i], circulation_segments[i]) # Sai, this is throwing an error. it's not properly interpolating
-        else:
-            circulation_segments_interp[i] = np.interp(centerpoints_y[i], np.flip(y_segments[i]), np.flip(circulation_segments[i])) # Sai, this is throwing an error. it's not properly interpolating
-   
     D_induced = np.zeros(len(centerpoints_y))
-    for i in range(len(y_segments)):
-        if y_segments[i][-1] > y_segments[i][0]:
-            D_induced[i] = -0.5 * rho * trapz(V_induced[i] * circulation_segments_interp[i], centerpoints_y[i]) 
+    for i in range(len(y_control_points)):
+        if y_control_points[i][-1] > y_control_points[i][0]:
+            D_induced[i] = -0.5 * rho * trapz(V_induced[i] * circulation_segments[i], y_control_points[i]) 
         else:
-            D_induced[i] = -0.5 * rho * trapz(np.flip(V_induced[i]) * np.flip(circulation_segments_interp[i]), np.flip(centerpoints_y[i])) 
+            D_induced[i] = -0.5 * rho * trapz(np.flip(V_induced[i]) * np.flip(circulation_segments[i]), np.flip(y_control_points[i])) 
     #D_induced = 0.5 * rho * np.sum(V_induced * circulation_segments_interp) 
     #plt.plot(centerpoints_y[0], D_induced[0],'ko-')
     #plt.show()
