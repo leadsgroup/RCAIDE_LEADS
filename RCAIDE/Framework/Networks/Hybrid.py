@@ -113,7 +113,7 @@ class Hybrid(Network):
                         total_elec_power  += P_elec 
         
                         # compute total mass flow rate 
-                        fuel_mdot     += conditions.energy[propulsor.tag].fuel_flow_rate
+                        fuel_mdot     += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
                         
        
         for bus in busses:  

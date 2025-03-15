@@ -11,15 +11,15 @@
 import  RCAIDE
 from RCAIDE.Framework.Core import Data ,redirect  
 from RCAIDE.Framework.Analyses.Propulsion.Ducted_Fan_Design_Code import Ducted_Fan_Design_Code
-from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance import compute_ducted_fan_efficiency
- 
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Rankine_Froude_Momentum_Theory.RFMT_performance                  import compute_ducted_fan_efficiency
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.write_geometry                     import  write_geometry
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.write_input_deck                   import  write_input_deck
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.run_dfdc_analysis                  import  run_dfdc_analysis
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.translate_conditions_to_dfdc_cases import  translate_conditions_to_dfdc_cases
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.read_results                       import  read_results 
+
 # python imports   
 from shutil import rmtree
-from .write_geometry                     import  write_geometry
-from .write_input_deck                   import  write_input_deck
-from .run_dfdc_analysis                  import  run_dfdc_analysis
-from .translate_conditions_to_dfdc_cases import  translate_conditions_to_dfdc_cases
-from .read_results                       import  read_results 
 from scipy import interpolate 
 import os
 import numpy as  np

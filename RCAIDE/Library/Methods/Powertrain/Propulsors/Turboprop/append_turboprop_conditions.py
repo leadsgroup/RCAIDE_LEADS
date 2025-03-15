@@ -31,8 +31,8 @@ def append_turboprop_conditions(propulsor,segment):
      
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,noise_conditions) 
+            item.append_operating_conditions(segment,energy_conditions) 
             for sub_tag, sub_item in  item.items(): 
                 if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
-                    sub_item.append_operating_conditions(segment,noise_conditions)      
+                    sub_item.append_operating_conditions(segment,energy_conditions)      
     return 

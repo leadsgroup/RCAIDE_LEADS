@@ -38,7 +38,7 @@ def compute_rotor_point_source_coordinates(propulsor,rotor,conditions,mls,settin
         N/A       
     """  
     # unpack 
-    rotor_conditions        =  conditions.energy[propulsor.tag][rotor.tag]
+    rotor_conditions        =  conditions.energy.converters[rotor.tag]
     commanded_thrust_vector =  conditions.energy[propulsor.tag].commanded_thrust_vector_angle
 
     # aquire dimension of matrix

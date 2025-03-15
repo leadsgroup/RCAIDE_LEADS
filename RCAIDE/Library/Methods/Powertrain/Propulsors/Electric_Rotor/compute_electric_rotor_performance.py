@@ -50,7 +50,7 @@ def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,c
      
     conditions                 = state.conditions    
     bus_conditions             = conditions.energy[bus.tag]
-    electric_rotor_conditions  = conditions.energy[propulsor.tag] 
+    electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag] 
     motor                      = propulsor.motor 
     rotor                      = propulsor.rotor 
     esc                        = propulsor.electronic_speed_controller  

@@ -38,5 +38,5 @@ def append_constant_speed_internal_combustion_engine_conditions(propulsor,segmen
             item.append_operating_conditions(segment,energy_conditions,noise_conditions=noise_conditions) 
             for sub_tag, sub_item in  item.items(): 
                 if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
-                    sub_item.append_operating_conditions(segment,noise_conditions)    
+                    sub_item.append_operating_conditions(segment,energy_conditions)    
     return 

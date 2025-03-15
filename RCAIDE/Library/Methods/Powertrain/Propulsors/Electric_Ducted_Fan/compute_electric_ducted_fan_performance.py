@@ -48,14 +48,14 @@ def compute_electric_ducted_fan_performance(propulsor,state,fuel_line=None,bus=N
     ''' 
     conditions                 = state.conditions    
     bus_conditions             = conditions.energy[bus.tag]
-    EDF_conditions             = conditions.energy[propulsor.tag] 
+    EDF_conditions             = conditions.energy.propulsors[propulsor.tag] 
+    eta                        = EDF_conditions.throttle
     motor                      = propulsor.motor 
     ducted_fan                 = propulsor.ducted_fan 
     esc                        = propulsor.electronic_speed_controller  
     esc_conditions             = conditions.energy.converters[esc.tag]
     motor_conditions           = conditions.energy.converters[motor.tag]
     ducted_fan_conditions      = conditions.energy.converters[ducted_fan.tag]
-    eta                        = conditions.energy[propulsor.tag].throttle
     
     esc_conditions.inputs.voltage   = bus.voltage * state.ones_row(1)    
     esc_conditions.throttle         = eta 

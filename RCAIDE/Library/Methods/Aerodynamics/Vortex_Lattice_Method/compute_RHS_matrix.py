@@ -88,7 +88,7 @@ def compute_RHS_matrix(delta,phi,conditions,settings,geometry,propeller_wake_mod
                     rotor =  propulsor.rotor
                 elif 'propeller' in  propulsor :
                     rotor =  propulsor.propeller
-                rotor_conditions =  conditions.energy[propulsor.tag][rotor.tag]
+                rotor_conditions =  conditions.energy.propulsors[propulsor.tag][rotor.tag]
                 
             
                 if rotor.fidelity == "Blade_Element_Momentum_Theory_Helmholtz_Wake":                 

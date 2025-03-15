@@ -3,13 +3,14 @@
 # Created:  Jan 2025, M. Clarke
 
 """
-Ducted Fan Methods Package 
+Ducted Fan Methods Package
+
+This module contains methods for analyzing and designing ducted fan propulsion systems. 
 """
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from .compute_ducted_fan_performance     import compute_ducted_fan_performance 
-from .append_ducted_fan_conditions       import append_ducted_fan_conditions 
-from .design_ducted_fan                  import design_ducted_fan
-from .                                   import Performance
+
+from .RFMT_performance import RFMT_performance
+from .RFMT_performance import  compute_ducted_fan_efficiency

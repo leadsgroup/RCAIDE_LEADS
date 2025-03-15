@@ -51,12 +51,12 @@ def compute_thrust(turboprop,turboprop_conditions,conditions):
     lower_heating_value                            = turboprop.combustor.fuel_data.lower_heating_value 
 
     # unpack component conditions
-    turboprop_conditions                           = conditions.energy[turboprop.tag] 
-    core_nozzle_conditions                         = turboprop_conditions[core_nozzle.tag] 
-    compressor_conditions                          = turboprop_conditions[compressor.tag]  
-    combustor_conditions                           = turboprop_conditions[combustor.tag]
-    lpt_conditions                                 = turboprop_conditions[low_pressure_turbine.tag]
-    hpt_conditions                                 = turboprop_conditions[high_pressure_turbine.tag] 
+    turboprop_conditions                           = conditions.energy.propulsors[turboprop.tag] 
+    core_nozzle_conditions                         = conditions.energy.converters[core_nozzle.tag] 
+    compressor_conditions                          = conditions.energy.converters[compressor.tag]  
+    combustor_conditions                           = conditions.energy.converters[combustor.tag]
+    lpt_conditions                                 = conditions.energy.converters[low_pressure_turbine.tag]
+    hpt_conditions                                 = conditions.energy.converters[high_pressure_turbine.tag] 
                                                                                                                                                                           
     # unpack from turboprop                                                                                                                                     
     fuel_to_air_ratio                              = combustor_conditions.outputs.fuel_to_air_ratio  

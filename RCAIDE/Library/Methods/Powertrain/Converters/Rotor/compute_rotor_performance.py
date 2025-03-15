@@ -9,11 +9,7 @@
  # RCAIDE imports
 import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance as Actuator_Disk_performance
 import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance as BEMT_Helmholtz_performance
-
-# package imports
-import  numpy as  np 
-from scipy.interpolate import interp1d
-
+ 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -84,9 +80,7 @@ def compute_rotor_performance(rotor,rotor_conditions,conditions):
       chord_distribution                 [m]
       orientation_euler_angles           [rad, rad, rad]
     """
-
-    # Unpack rotor blade parameters and operating conditions   
-
+    
     if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
 
         outputs = BEMT_Helmholtz_performance(rotor,rotor_conditions,conditions)
