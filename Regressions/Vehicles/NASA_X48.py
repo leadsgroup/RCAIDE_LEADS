@@ -234,7 +234,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     motor.no_load_current                         = 0.001
     motor.rotor_radius                            = ducted_fan.tip_radius
     motor.design_torque                           = ducted_fan.cruise.design_torque
-    motor.angular_velocity                        = ducted_fan.cruise.design_angular_velocity 
+    motor.design_angular_velocity                 = ducted_fan.cruise.design_angular_velocity 
     design_optimal_motor(motor)   
     motor.mass_properties.mass                    = compute_motor_weight(motor) 
     center_propulsor.motor                        = motor  

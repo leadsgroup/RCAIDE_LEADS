@@ -96,16 +96,16 @@ def design_test_motor(motor_type):
         motor = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     
         prop = Test_Propeller()
-        motor.mass_properties.mass = 9. * Units.kg 
-        motor.efficiency           = 0.935
-        motor.gear_ratio           = 1. 
-        motor.gearbox_efficiency   = 1. # Gear box efficiency     
-        motor.no_load_current      = 2.0 
-        motor.propeller_radius     = prop.tip_radius
-        motor.nominal_voltage      = 400
-        motor.rotor_radius         = prop.tip_radius
-        motor.design_torque        = prop.cruise.design_torque 
-        motor.angular_velocity     = prop.cruise.design_angular_velocity # Horse power of gas engine variant  750 * Units['hp']
+        motor.mass_properties.mass    = 9. * Units.kg 
+        motor.efficiency              = 0.935
+        motor.gear_ratio              = 1. 
+        motor.gearbox_efficiency      = 1. # Gear box efficiency     
+        motor.no_load_current         = 2.0 
+        motor.propeller_radius        = prop.tip_radius
+        motor.nominal_voltage         = 400
+        motor.rotor_radius            = prop.tip_radius
+        motor.design_torque           = prop.cruise.design_torque 
+        motor.design_angular_velocity = prop.cruise.design_angular_velocity # Horse power of gas engine variant  750 * Units['hp']
         design_optimal_motor(motor) 
     elif motor_type == 'PMSM_Motor':
         motor = RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor()

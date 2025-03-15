@@ -419,7 +419,7 @@ def vehicle_setup(rotor_type):
         motor.no_load_current                            = 1
         motor.rotor_radius                               = propeller.tip_radius
         motor.design_torque                              = propeller.cruise.design_torque
-        motor.angular_velocity                           = propeller.cruise.design_angular_velocity 
+        motor.design_angular_velocity                           = propeller.cruise.design_angular_velocity 
         design_optimal_motor(motor)  
         motor.mass_properties.mass                       = compute_motor_weight(motor) 
         starboard_propulsor.motor                        = motor 
@@ -445,7 +445,7 @@ def vehicle_setup(rotor_type):
         motor.no_load_current                            = 1
         motor.rotor_radius                               = propeller.tip_radius
         motor.design_torque                              = 629.5930446195773
-        motor.angular_velocity                           = propeller.cruise.design_angular_velocity 
+        motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity 
         design_optimal_motor(motor)  
         motor.mass_properties.mass                       = compute_motor_weight(motor) 
         starboard_propulsor.motor                        = motor   

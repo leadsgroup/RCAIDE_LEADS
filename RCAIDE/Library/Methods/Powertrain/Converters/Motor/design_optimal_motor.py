@@ -46,7 +46,7 @@ def design_optimal_motor(motor):
     io     = motor.no_load_current
     v      = motor.nominal_voltage
     G      = motor.gearbox.gear_ratio      
-    omega  = motor.design_angular_velocity * G     
+    omega  = motor.design_angular_velocity 
     etam   = motor.efficiency 
     Q      = motor.design_torque
     
