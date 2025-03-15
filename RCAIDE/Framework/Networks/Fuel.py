@@ -11,7 +11,6 @@ import  RCAIDE
 from RCAIDE.Framework.Mission.Common                      import Residuals 
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
 from .Network                                             import Network
-import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Fuel

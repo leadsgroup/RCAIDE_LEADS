@@ -256,7 +256,7 @@ def reuse_stored_turboprop_data(turboprop,state,network,fuel_line,bus,stored_pro
     conditions.noise.propulsors[turboprop.tag]                 = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
-    conditions.energy.converters[compressor.tag]  = deepcopy(conditions.energy.converters[compressor_0.tag] ) 
+    conditions.energy.converters[compressor.tag]               = deepcopy(conditions.energy.converters[compressor_0.tag] ) 
     conditions.energy.converters[combustor.tag]                = deepcopy(conditions.energy.converters[combustor_0.tag]               )
     conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
     conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
