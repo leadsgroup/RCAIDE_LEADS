@@ -753,6 +753,5 @@ def configs_setup(vehicle):
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
     configs.append(config)    
-    
 
     return configs  

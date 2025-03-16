@@ -247,7 +247,7 @@ def Jet_engine():
     turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                = 'starboard_propulsor' 
     turbofan.origin                             = [[13.72, 4.86,-1.1]] 
-    turbofan.engine_length                      = 2.71     
+    turbofan.length                             = 2.71     
     turbofan.bypass_ratio                       = 5.4    
     turbofan.design_altitude                    = 35000.0*Units.ft
     turbofan.design_mach_number                 = 0.78   
