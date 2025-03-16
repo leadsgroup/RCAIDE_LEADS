@@ -488,14 +488,14 @@ def VLM(conditions,settings,geometry):
     Clift_y             = LIFT/CHORD_strip/ES
 
     results   = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw)
-    Cdrag_i_y = results.Cdi_distribution
-    Cdrag_i_wing = results.CD_i_wing
+    CDi_y = results.Cdi_distribution
+    CDi_wing = results.CD_i_wing
     CDi = results.induced_drag_coefficient
     #Cdrag_i_y           = DRAG/CHORD_strip/ES
-    Clift_wing          = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
+    CL_wing          = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
     #Cdrag_i_wing        = results.CDi
     #Cdrag_i_wing        = np.add.reduceat(DRAG,span_breaks,axis=1)/SURF
-    alpha_i             = (Cdrag_i_y/Clift_y)*-1
+    alpha_i             = (CDi_y/Clift_y)*-1
     
     # Now calculate total coefficients
     CL       = np.atleast_2d(np.sum(LIFT,axis=1)/SREF).T          # CLTOT in VORLAX
@@ -540,8 +540,8 @@ def VLM(conditions,settings,geometry):
     #other RCAIDE outputs
     results.CL_wing        = CL_wing   
     results.CDi_wing       = CDi_wing 
-    results.cl_y           = cl_y   
-    results.cdi_y          = cdi_y       
+    results.clift_y        = Clift_y   
+    results.cdi_y          = CDi_y       
     results.alpha_i        = alpha_i  
     results.CP             = np.array(CP    , dtype=precision)
     results.gamma          = np.array(GAMMA , dtype=precision)
@@ -657,62 +657,71 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
         * Control points are located on the circulation distribution
         * Vortex filaments are aligned with the freestream
     """
-   
-    # # Rearrange cl_dist and chord_dist to match
-    rho = 1.2205 # Entirely wrong, but we'll come back to this... 
+    v_inf = 1 # Actual vlaue does not matter as it becomes non-dimensionalized.
+    rho = 1 # Actual vlaue does not matter as it becomes non-dimensionalized. 
+
+    # Caclualte circulation distirbution from local lift coefficient
     circulation_dist = 0.5 * chord_dist * v_inf * cl_dist # Convert from local lift coefficient to circulation # Good
-    L = -2*rho*v_inf*np.trapz(circulation_dist[0,0:50], y_dist[0:50]) # Good
-    CL = L/(0.5*v_inf**2*rho*sum(SURF)) # Relatively good. Check further
+    #L = -2*rho*v_inf*np.trapz(circulation_dist[0,0:50], y_dist[0:50]) # Good
+    #CL = L/(0.5*v_inf**2*rho*sum(SURF)) # Relatively good. Check further
     
+    # Control points. Control points are the points where the induced velocity is evaluated at. 
     y_control_points = y_dist.reshape(len(n_sw), -1)
     z_control_points = z_dist.reshape(len(n_sw), -1)
     x_control_points = x_dist.reshape(len(n_sw), -1)
 
-    centerpoints_y = (y_control_points[:, :-1] + y_control_points[:, 1:]) / 2 # Good
-    centerpoints_z = (z_control_points[:, :-1] + z_control_points[:, 1:]) / 2 # Good
-    centerpoints_x = (x_control_points[:, :-1] + x_control_points[:, 1:]) / 2 # Good
+    # Calculate centerpoints. Centerpoints are between control points and are defined to be where the vortices are shed from. 
+    y_centerpoints = (y_control_points[:, :-1] + y_control_points[:, 1:]) / 2 # Good
+    z_centerpoints = (z_control_points[:, :-1] + z_control_points[:, 1:]) / 2 # Good
+    x_centerpoints = (x_control_points[:, :-1] + x_control_points[:, 1:]) / 2 # Good
     
     circulation_segments = circulation_dist.reshape(circulation_dist.shape[0], len(n_sw), -1)[0] # Good
 
-    shed_vortex_segments = [np.flip(np.diff(np.flip(circulation_segments[0]))), np.diff(circulation_segments[1])] # Good
-    
+    direction = np.sign([[i[1] - i[0]] for i in y_control_points]) * np.ones_like(y_centerpoints)
+    shed_vortex_segments = direction*np.diff(circulation_segments)
+
     # Trefftz Plane Y-Z location:
-    TP_y = centerpoints_y # Is this correct? Which are the control points which are locations where vortices are shed?
-    TP_z = centerpoints_z #np.cos(alpha_cases) * centerpoints_z - np.sin(alpha_cases) * centerpoints_x # REDEFINE THIS. I think this is alright now? 
+    TP_y_centerpoints = y_centerpoints 
+    TP_z_centerpoints = np.cos(alpha_cases) * z_centerpoints - np.sin(alpha_cases) * x_centerpoints
+    
+    TP_y_control_points = y_control_points
+    TP_z_control_points = np.cos(alpha_cases) * z_control_points - np.sin(alpha_cases) * x_control_points
 
     V_induced = np.zeros_like(y_control_points)
     for i in range(len(y_control_points)): # Loop through each test case
         for j in range(len(y_control_points[1])): # Loop through each control point
-            # currently R does not account for the direction that the vortice is in and thus the direction!!! Also, need to 
-            r = np.sqrt(np.square(y_control_points[i,j] - TP_y) + np.square(z_control_points[i,j] - TP_z)) # Distance from segment to control point
-            component = -1*np.sign(y_control_points[i,j] - TP_y) # The component of the induced velocity perpendicular to the wake trace as well as direction correction. Check coordinate convention. 
+            r = np.sqrt(np.square(TP_y_control_points[i,j] - TP_y_centerpoints) + np.square(TP_z_control_points[i,j] - TP_z_centerpoints)) # Distance from segment to control point
+            component = -1*np.sign(TP_y_control_points[i,j] - TP_y_centerpoints) # The component of the induced velocity perpendicular to the wake trace as well as direction correction. Check coordinate convention. 
             V_induced[i,j] = np.sum(component*shed_vortex_segments / (2*np.pi*r)) # Downwash. Note that we only care about the perpendicular component. Need to account for that!
     
-    x = np.linspace(0,20,1000)
-    y_ellipse = np.sqrt(1 - (x/10)**2)*1*circulation_segments[0][0]
-    x_ellipse = x
+    #x = np.linspace(0,20,1000)
+    #y_ellipse = np.sqrt(1 - (x/10)**2)*1*circulation_segments[0][0]
+    #x_ellipse = x
 
-    #plt.plot(y_cp[0], V_induced[0],'ko-')
-    #plt.plot(x_ellipse,y_ellipse)
+    #plt.plot(y_control_points[0], V_induced[0],'ko-')
     #plt.show()
 
     # Calculate Induced Drag
-    D_induced = np.zeros(len(centerpoints_y))
+    D_induced = np.zeros(len(y_control_points))
     for i in range(len(y_control_points)):
         if y_control_points[i][-1] > y_control_points[i][0]:
             D_induced[i] = -0.5 * rho * trapz(V_induced[i] * circulation_segments[i], y_control_points[i]) 
         else:
             D_induced[i] = -0.5 * rho * trapz(np.flip(V_induced[i]) * np.flip(circulation_segments[i]), np.flip(y_control_points[i])) 
-    #D_induced = 0.5 * rho * np.sum(V_induced * circulation_segments_interp) 
-    #plt.plot(centerpoints_y[0], D_induced[0],'ko-')
-    #plt.show()
     
+    # CDi for each wing
     CDi_wing = D_induced / (0.5 * rho * v_inf**2 * SURF) # per wing
 
-    CDi = np.sum(D_induced) / (0.5 * rho * v_inf**2 * np.sum(SURF)) # per wing
+    # CDi for the entire vehicle 
+    CDi_total = np.sum(D_induced) / (0.5 * rho * v_inf**2 * np.sum(SURF))
+    
+    # Calculate the induced angle of attack and local induced drag coefficient
+    alpha_i = np.arctan(V_induced / v_inf)
+    Cd_i_distribution = cl_dist.reshape(len(n_sw), -1)*np.sin(alpha_i)
 
+    # Pack results
     results = Data()
-    results.induced_drag_coefficient = CDi
-    results.Cdi_distribution = np.array([0])#cd_induced_dist])
+    results.induced_drag_coefficient = CDi_total
+    results.Cdi_distribution = Cd_i_distribution.reshape(1, -1)
     results.CD_i_wing = CDi_wing
     return results
