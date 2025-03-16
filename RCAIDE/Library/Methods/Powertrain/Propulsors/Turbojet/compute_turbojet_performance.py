@@ -165,7 +165,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
         afterburner.working_fluid                            = low_pressure_turbine.working_fluid
 
         #flow through the afterburner 
-        compute_combustor_performance(afterburner,afterburner_conditions,conditions)
+        compute_combustor_performance(afterburner,conditions)
 
         #link the core nozzle to the afterburner
         core_nozzle_conditions.inputs.stagnation_temperature = afterburner_conditions.outputs.stagnation_temperature
@@ -204,7 +204,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     turbojet_conditions.flow_through_core                        = 1.0 #scaled constant to turn on core thrust computation  
     
     # Compute the thrust
-    compute_thrust(turbojet,turbojet_conditions,conditions)
+    compute_thrust(turbojet,conditions)
     
     # Compute forces and moments
     moment_vector              = 0*state.ones_row(3)

@@ -157,7 +157,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     turboprop_conditions.total_pressure_reference         = compressor_conditions.inputs.stagnation_pressure 
 
     # Compute the power
-    compute_thrust(turboprop,turboprop_conditions,conditions) 
+    compute_thrust(turboprop,conditions) 
 
     # Compute forces and moments
     moment_vector      = 0*state.ones_row(3)
@@ -166,7 +166,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     moment_vector[:,0] = turboprop.origin[0][0] -   center_of_gravity[0][0] 
     moment_vector[:,1] = turboprop.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2] = turboprop.origin[0][2]  -  center_of_gravity[0][2]
-    M                  =  np.cross(moment_vector, thrust_vector)   
+    M                  = np.cross(moment_vector, thrust_vector)   
     moment             = M 
     power              = turboprop_conditions.power 
   
@@ -190,7 +190,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     
     if compressor.generator != None and len(state.numerics.time.differentiate) > 0:
         D     = state.numerics.time.differentiate   
-        compressor_generator_conditions                 = conditions.energy.converters[compressor.generator.tag] 
+        compressor_generator_conditions                = conditions.energy.converters[compressor.generator.tag] 
         compressor_generator_conditions.inputs.power   = np.dot(D,compressor_generator_conditions.inputs.work_done)         
         compressor_generator_conditions.inputs.omega   = compressor_conditions.omega
         

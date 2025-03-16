@@ -63,7 +63,7 @@ def design_turbojet(turbojet):
    
     segment                                        = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions                       = conditions 
-    turbojet.append_operating_conditions(segment)        
+    turbojet.append_operating_conditions(segment,conditions.energy,conditions.noise)        
     
     ram                       = turbojet.ram
     inlet_nozzle              = turbojet.inlet_nozzle

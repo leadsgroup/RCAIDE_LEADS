@@ -85,7 +85,8 @@ def Actuator_Disk_performance(rotor,conditions):
             power_loading                     = power_loading,  
             thrust_per_blade                  = thrust/B, 
             torque_per_blade                  = torque/B,
-            blade_pitch_command               = pitch_c, 
+            blade_pitch_command               = pitch_c,
+            commanded_thrust_vector_angle     = commanded_TV,  
             figure_of_merit                   = FoM,) 
 
     return  

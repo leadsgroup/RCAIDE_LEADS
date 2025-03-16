@@ -398,7 +398,8 @@ def BEMT_Helmholtz_performance(rotor,conditions):
                 blade_H_distribution              = rotor_drag_distribution,
                 rotor_drag                        = rotor_drag,
                 rotor_drag_coefficient            = Crd,
-                blade_pitch_command               = pitch_c, 
+                blade_pitch_command               = pitch_c,
+                commanded_thrust_vector_angle     = commanded_TV, 
                 figure_of_merit                   = FoM, 
         )  
 

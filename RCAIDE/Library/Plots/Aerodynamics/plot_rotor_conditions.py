@@ -194,15 +194,14 @@ def plot_propulsor_data(results, propulsor, axis_1, axis_2, axis_3, axis_4, axis
     elif 'propeller' in  propulsor:
         thrustor = propulsor.propeller
         
-    for i in range(len(results.segments)): 
-        bus_results  =  results.segments[i].conditions.energy
+    for i in range(len(results.segments)):  
         time         =  results.segments[i].conditions.frames.inertial.time[:,0] / Units.min   
-        rpm          =  bus_results[propulsor.tag][thrustor.tag].rpm[:,0]
-        thrust       =  np.linalg.norm(bus_results[propulsor.tag][thrustor.tag].thrust , axis =1)
-        torque       =  bus_results[propulsor.tag][thrustor.tag].torque[:,0]
-        eta          =  bus_results[propulsor.tag][thrustor.tag].efficiency[:,0]
-        angle        =  bus_results[propulsor.tag].commanded_thrust_vector_angle[:,0]
-        beta         =  bus_results[propulsor.tag][thrustor.tag].blade_pitch_command[:,0]
+        rpm          =  results.segments[i].conditions.energy.converters[thrustor.tag].rpm[:,0]
+        thrust       =  np.linalg.norm(results.segments[i].conditions.energy.converters[thrustor.tag].thrust , axis =1)
+        torque       =  results.segments[i].conditions.energy.converters[thrustor.tag].torque[:,0]
+        eta          =  results.segments[i].conditions.energy.converters[thrustor.tag].efficiency[:,0]
+        angle        =  results.segments[i].conditions.energy.converters[thrustor.tag].commanded_thrust_vector_angle[:,0]
+        beta         =  results.segments[i].conditions.energy.converters[thrustor.tag].blade_pitch_command[:,0]
   
         if  i == 0 :
             axis_1.plot(time,rpm, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width, label = thrustor.tag)

@@ -104,7 +104,7 @@ class Correlation_Buildup(Noise):
           # iterate through sources  
         for network in config.networks:  
             for propulsor in network.propulsors:        
-                engine_noise                = turbofan_engine_noise(microphone_locations,propulsor,conditions.noise[propulsor.tag],segment,settings)    
+                engine_noise                = turbofan_engine_noise(microphone_locations,propulsor,conditions.noise.propulsors[propulsor.tag],segment,settings)    
                 total_SPL_dBA               = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],engine_noise.SPL_dBA[:,None,:]),axis =1),sum_axis=1)
                 total_SPL_spectra[:,:,5:]   = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,5:],engine_noise.SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1)
                      

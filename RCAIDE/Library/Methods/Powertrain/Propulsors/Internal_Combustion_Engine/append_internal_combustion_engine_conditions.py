@@ -13,11 +13,9 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_internal_combustion_engine_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_internal_combustion_engine_conditions(propulsor,segment):  
+def append_internal_combustion_engine_conditions(propulsor,segment,energy_conditions,noise_conditions):  
     # unpack 
-    ones_row          = segment.state.ones_row
-    energy_conditions = segment.state.conditions.energy
-    noise_conditions  = segment.state.conditions.noise
+    ones_row          = segment.state.ones_row 
     
     # add propulsor conditions 
     energy_conditions.propulsors[propulsor.tag]                               = Conditions()  

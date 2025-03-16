@@ -45,7 +45,7 @@ def compute_voltage_out_from_throttle(esc,conditions):
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_current_in_from_throttle
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_current_in_from_throttle(esc,esc_conditions,conditions):
+def compute_current_in_from_throttle(esc,conditions):
     """ The current going into the speed controller
     
         Assumptions:
@@ -61,12 +61,12 @@ def compute_current_in_from_throttle(esc,esc_conditions,conditions):
             esc.efficiency - [0-1] efficiency of the ESC
            
     """
-    
-    # Unpack, don't modify the throttle
-    eta        = esc_conditions.throttle
-    eff        = esc.efficiency
-    currentout = esc_conditions.outputs.current 
-    currentin  = currentout*eta/eff # The inclusion of eta satisfies a power balance: p_in = p_out/eff
+     
+    esc_conditions = conditions.energy.modulators[esc.tag]
+    eta            = esc_conditions.throttle
+    eff            = esc.efficiency
+    currentout     = esc_conditions.outputs.current 
+    currentin      = currentout*eta/eff # The inclusion of eta satisfies a power balance: p_in = p_out/eff
     
     # Pack 
     esc_conditions.inputs.current   = currentin

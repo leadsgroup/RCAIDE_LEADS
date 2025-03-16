@@ -71,26 +71,27 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_range = np.array
     elif isinstance(compoment,RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor): 
         propulsor = deepcopy(compoment)
         propulsor.working_fluid =  working_fluid
+        propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
         
-        if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+        #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan:
+            #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     
-        if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+        #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet:
+            #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     
-        if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+        #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop:
+            #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
             
-        if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+        #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine:
+            #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     
-            if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine:
-                distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()            
+            #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine:
+                #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()            
         
-        propulsor.append_operating_conditions(segment)   
-        segment.state.conditions.energy[distributor.tag] = Conditions() 
-        segment.state.conditions.noise[distributor.tag]  = Conditions()    
-        propulsor.append_propulsor_unknowns_and_residuals(segment)
+        propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)   
+        #segment.state.conditions.energy[distributor.tag] = Conditions() 
+        #segment.state.conditions.noise[distributor.tag]  = Conditions()    
+        #propulsor.append_propulsor_unknowns_and_residuals(segment)
 
     segment.state.conditions.expand_rows(ctrl_pts)              
     return segment.state

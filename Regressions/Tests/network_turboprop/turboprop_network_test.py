@@ -50,8 +50,8 @@ def main():
     results = missions.base_mission.evaluate()
     
     # Extract sample values from computation  
-    thrust     = results.segments.climbing_cruise.conditions.energy['starboard_propulsor'].thrust[3][0]
-    throttle   = results.segments.climbing_cruise.conditions.energy['starboard_propulsor'].throttle[3][0]  
+    thrust     = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].thrust[3][0]
+    throttle   = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].throttle[3][0]  
     
     #print values for resetting regression
     show_vals = True

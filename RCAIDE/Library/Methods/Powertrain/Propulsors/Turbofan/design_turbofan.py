@@ -77,7 +77,7 @@ def design_turbofan(turbofan):
      
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions 
-    turbofan.append_operating_conditions(segment)
+    turbofan.append_operating_conditions(segment,conditions.energy,conditions.noise)
                     
     ram                       = turbofan.ram
     inlet_nozzle              = turbofan.inlet_nozzle

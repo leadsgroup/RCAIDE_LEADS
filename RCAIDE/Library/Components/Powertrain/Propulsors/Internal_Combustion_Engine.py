@@ -69,11 +69,11 @@ class Internal_Combustion_Engine(Propulsor):
         self.diameter                     = 0.0      
         self.length                       = 0.0
 
-    def append_operating_conditions(self,segment):
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
         Appends operating conditions to the segment.
         """
-        append_internal_combustion_engine_conditions(self,segment)
+        append_internal_combustion_engine_conditions(self,segment,energy_conditions,noise_conditions)
         return
 
     def unpack_propulsor_unknowns(self,segment):  

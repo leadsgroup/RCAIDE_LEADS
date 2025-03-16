@@ -21,7 +21,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turboshaft_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_turboshaft_performance(turboshaft,state,converter,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]): 
+def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]): 
     ''' Computes the perfomrance of one turboshaft
     
     Assumptions: 
@@ -161,7 +161,7 @@ def compute_turboshaft_performance(turboshaft,state,converter,fuel_line=None,bus
     turboshaft_conditions.flow_through_fan                         =  0.0 #scaled constant to turn on fan thrust computation     
 
     # Compute the power
-    compute_power(turboshaft,turboshaft_conditions,conditions)
+    compute_power(turboshaft,conditions)
  
     compressor_conditions.omega   = compressor.design_angular_velocity * turboshaft_conditions.throttle   
     

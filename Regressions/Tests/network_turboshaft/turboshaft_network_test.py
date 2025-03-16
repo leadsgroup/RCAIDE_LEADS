@@ -120,12 +120,12 @@ def turboshaft_engine_Boeing_502_14(altitude,mach):
     operating_state  = setup_operating_conditions(turboshaft) 
     
     # Assign conditions to the turboshaft
-    turboshaft_conditions = operating_state.conditions.energy[turboshaft.tag]    
+    turboshaft_conditions = operating_state.conditions.energy.converters[turboshaft.tag]    
     turboshaft_conditions.throttle[:,0] = 1.0
     
     compute_turboshaft_performance(turboshaft,operating_state)  
     
-    power                = turboshaft_conditions.shaft_power[0][0]
+    power                = turboshaft_conditions.power[0][0]
     thermal_efficiency   = turboshaft_conditions.thermal_efficiency[0][0]
     PSFC                 = turboshaft_conditions.power_specific_fuel_consumption[0][0]
 

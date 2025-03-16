@@ -62,8 +62,8 @@ def main():
     plot_mission(results)    
 
     # Extract sample values from computation  
-    thrust     = results.segments.climb_1.conditions.energy['inner_right_turbojet'].thrust[3][0]
-    throttle   = results.segments.level_cruise.conditions.energy['inner_right_turbojet'].throttle[3][0] 
+    thrust     = results.segments.climb_1.conditions.energy.propulsors['inner_right_turbojet'].thrust[3][0]
+    throttle   = results.segments.level_cruise.conditions.energy.propulsors['inner_right_turbojet'].throttle[3][0] 
     CL         = results.segments.descent_1.conditions.aerodynamics.coefficients.lift.total[2][0] 
     
     #print values for resetting regression

@@ -67,7 +67,7 @@ def design_turboprop(turboprop):
           
     segment                                               = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions                              = conditions 
-    turboprop.append_operating_conditions(segment)       
+    turboprop.append_operating_conditions(segment,conditions.energy,conditions.noise)       
          
     ram                                                   = turboprop.ram
     inlet_nozzle                                          = turboprop.inlet_nozzle

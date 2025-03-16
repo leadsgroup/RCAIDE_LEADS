@@ -25,16 +25,14 @@ import numpy                                                                as n
 
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turboshaft
-# ----------------------------------------------------------------------------------------------------------------------   
-def design_turboshaft(converter,segment,fuel_line):  
-    # need to put if statements to check if Turboelectric generator houses the turboshaft or it is standalone
-    if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator):
-        turboshaft = converter.turboshaft
-    else:
-        turboshaft = converter
-    # check if mach number and temperature are passed
-    if(turboshaft.design_mach_number==None) and (turboshaft.design_altitude==None): 
-        raise NameError('The sizing conditions require an altitude and a Mach number') 
+# ----------------------------------------------------------------------------------------------------------------------
+def design_turboshaft(turboshaft):  
+    #check if mach number and temperature are passed
+    if(turboshaft.design_mach_number==None or turboshaft.design_altitude==None):
+        
+        #raise an error
+        raise NameError('The sizing conditions require an altitude and a Mach number')
+    
     else:
         #call the atmospheric model to get the conditions at the specified altitude
         atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
@@ -45,9 +43,8 @@ def design_turboshaft(converter,segment,fuel_line):
         T   = atmo_data.temperature       
         rho = atmo_data.density          
         a   = atmo_data.speed_of_sound    
-        mu  = atmo_data.dynamic_viscosity           
-        U   = a*turboshaft.design_mach_number
-        
+        mu  = atmo_data.dynamic_viscosity   
+    
         # setup conditions
         conditions = RCAIDE.Framework.Mission.Common.Results()
     
@@ -63,11 +60,14 @@ def design_turboshaft(converter,segment,fuel_line):
         conditions.freestream.Cp                          = np.atleast_1d(turboshaft.working_fluid.compute_cp(T,p))
         conditions.freestream.R                           = np.atleast_1d(turboshaft.working_fluid.gas_specific_constant)
         conditions.freestream.speed_of_sound              = np.atleast_1d(a)
-        conditions.freestream.velocity                    = np.atleast_1d(U) 
-     
+        conditions.freestream.velocity                    = np.atleast_1d(a*turboshaft.design_mach_number)
+         
+          
+    fuel_line                = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()    # may not need
+    
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
-    segment.state.conditions = conditions 
-    turboshaft.append_operating_conditions(segment,conditions.energy) 
+    segment.state.conditions = conditions
+    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.noise)  
             
     ram                     = turboshaft.ram
     inlet_nozzle            = turboshaft.inlet_nozzle
@@ -204,9 +204,9 @@ def design_turboshaft(converter,segment,fuel_line):
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data_sea_level  = atmosphere.compute_values(0.0,0.0)   
     V                    = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state      = setup_operating_conditions(converter, altitude = 0,velocity_range=np.array([V]))  
+    operating_state      = setup_operating_conditions(turboshaft, altitude = 0,velocity_range=np.array([V]))  
     operating_state.conditions.energy.converters[turboshaft.tag].throttle[:,0] = 1.0  
-    sls_P,_,_                                                       = turboshaft.compute_performance(operating_state,converter,fuel_line) 
+    sls_P,_,_                                                       = turboshaft.compute_performance(operating_state,fuel_line) 
     turboshaft.sealevel_static_power                                = sls_P[0][0]
      
     return      

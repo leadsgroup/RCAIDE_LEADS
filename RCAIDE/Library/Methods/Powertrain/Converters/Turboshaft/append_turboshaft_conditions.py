@@ -12,7 +12,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_turboshaft_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turboshaft_conditions(turboshaft,segment,energy_conditions):
+def append_turboshaft_conditions(turboshaft,segment,energy_conditions,noise_conditions):
     '''
     MATTEO
     
@@ -29,8 +29,8 @@ def append_turboshaft_conditions(turboshaft,segment,energy_conditions):
  
     for tag, item in  turboshaft.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,energy_conditions) 
+            item.append_operating_conditions(segment,energy_conditions,noise_conditions) 
             for sub_tag, sub_item in  item.items(): 
                 if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
-                    sub_item.append_operating_conditions(segment,energy_conditions) 
+                    sub_item.append_operating_conditions(segment,energy_conditions,noise_conditions) 
     return 

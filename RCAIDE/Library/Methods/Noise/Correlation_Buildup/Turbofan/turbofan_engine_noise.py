@@ -77,15 +77,12 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
     Temperature_secondary  = aeroacoustic_data.fan_nozzle.exit_stagnation_temperature[:,0] 
     Pressure_secondary     = aeroacoustic_data.fan_nozzle.exit_stagnation_pressure[:,0]  
     Velocity_aircraft      = segment.conditions.freestream.velocity[:,0]
-    Mach_aircraft          = segment.conditions.freestream.mach_number
-    Altitude               = segment.conditions.freestream.altitude[:,0] 
+    Mach_aircraft          = segment.conditions.freestream.mach_number 
     AOA                    = np.mean(segment.conditions.aerodynamics.angles.alpha / Units.deg) 
     noise_time             = segment.conditions.frames.inertial.time[:,0]  
-    distance_microphone    = np.linalg.norm(microphone_locations,axis = 1)
-    angles                 = np.arccos(microphone_locations[:,0]/distance_microphone) 
-    phi                    = np.arccos(microphone_locations[:,1]/distance_microphone)      
+    distance_microphone    = np.linalg.norm(microphone_locations,axis = 1)     
     
-    N1                     = turbofan.fan.angular_velocity * 0.92*(turbofan.design_thrust/52700.)
+    N1                     = turbofan.fan.design_angular_velocity * 0.92*(turbofan.design_thrust/52700.)
     Diameter_primary       = turbofan.core_nozzle.diameter
     Diameter_secondary     = turbofan.fan_nozzle.diameter
     height                 = turbofan.height

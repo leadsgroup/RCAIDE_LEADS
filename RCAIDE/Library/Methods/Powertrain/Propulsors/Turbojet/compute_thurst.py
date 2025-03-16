@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_thrust
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_thrust(turbojet,turbojet_conditions,conditions):
+def compute_thrust(turbojet,conditions):
     """Computes thrust and other properties as below.
 
     Assumptions:
@@ -80,7 +80,8 @@ def compute_thrust(turbojet,turbojet_conditions,conditions):
     Tref                        = turbojet.reference_temperature
     Pref                        = turbojet.reference_pressure
     mdhc                        = turbojet.compressor_nondimensional_massflow
-    SFC_adjustment              = turbojet.SFC_adjustment 
+    SFC_adjustment              = turbojet.SFC_adjustment
+    turbojet_conditions         = conditions.energy.propulsors[turbojet.tag]
     f                           = turbojet_conditions.fuel_to_air_ratio
     total_temperature_reference = turbojet_conditions.total_temperature_reference
     total_pressure_reference    = turbojet_conditions.total_pressure_reference   
