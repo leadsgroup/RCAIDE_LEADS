@@ -8,7 +8,7 @@ The script below documents how to set up and plot the results of non uniform pro
 # -------------------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core   import Units, Data 
-from RCAIDE.Library.Methods.Performance    import propeller_aerodynamic_analysis  
+from RCAIDE.Library.Methods.Performance    import rotor_aerodynamic_analysis  
 from RCAIDE.Library.Plots import  *
 
 import numpy as np
@@ -62,11 +62,13 @@ def inclined_angle_test():
     angular_velocity = 207.16160479940007
     
     # run pr
-    results        = propeller_aerodynamic_analysis(propeller, velocity_range,
-                                                    angular_velocity = angular_velocity,
-                                                    angle_of_attack = 0, 
-                                                    altitude = 0,
-                                                    delta_isa =0 )
+    results        = rotor_aerodynamic_analysis(propeller,
+                                                velocity_range,
+                                                angular_velocity = angular_velocity,
+                                                blade_pitch_command = 0, 
+                                                angle_of_attack = 0, 
+                                                altitude = 0) 
+                                   
     
     # spin propeller in nonuniform flow
     thrust  = np.linalg.norm( results.thrust )

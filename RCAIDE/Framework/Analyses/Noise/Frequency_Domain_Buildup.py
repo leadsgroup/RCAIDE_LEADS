@@ -84,14 +84,13 @@ class Frequency_Domain_Buildup(Noise):
         """         
     
         # unpack 
-        config        = segment.analyses.noise.vehicle 
-        settings      = self.settings  
-        conditions    = segment.state.conditions  
-        dim_cf        = len(settings.center_frequencies ) 
-        ctrl_pts      = int(segment.state.numerics.number_of_control_points) 
-         
-        microphone_locations =  generate_hemisphere_microphone_locations(settings)     
-        N_hemisphere_mics    =  len(microphone_locations)
+        config               = segment.analyses.noise.vehicle 
+        settings             = self.settings  
+        conditions           = segment.state.conditions  
+        dim_cf               = len(settings.center_frequencies ) 
+        ctrl_pts             = int(segment.state.numerics.number_of_control_points) 
+        microphone_locations = generate_hemisphere_microphone_locations(settings)     
+        N_hemisphere_mics    = len(microphone_locations)
         
         # create empty arrays for results      
         total_SPL_dBA          = np.ones((ctrl_pts,N_hemisphere_mics))*1E-16 

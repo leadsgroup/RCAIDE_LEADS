@@ -66,12 +66,7 @@ class Evaluate(Segment):
         self.bank_angle                           = 0.0
         self.hybrid_power_split_ratio             = 0.0
         self.trim_lift_coefficient                = None
-        self.state.conditions.update(Results())
-        
-
-        #self.state.inputs_last                = None
-        #self.state.objective_value            = 0.0
-        #self.state.constraint_values          = 0.0        
+        self.state.conditions.update(Results())       
         
         # ---------------------------------------------------------------
         # Define Flight Controls and Residuals 
@@ -89,8 +84,8 @@ class Evaluate(Segment):
         # --------------------------------------------------------------         
         #   Converge 
         # -------------------------------------------------------------- 
-        converge = self.process.converge 
-        converge.solver              = Solver.converge     
+        converge                           = self.process.converge 
+        converge.solver                    = Solver.converge     
 
         # --------------------------------------------------------------          
         #   Iterate  
@@ -125,13 +120,7 @@ class Evaluate(Segment):
         iterate.conditions.planet_position       = Common.Update.planet_position
 
         # Solve Residuals
-        iterate.residuals = Process()
-        
-
-        #iterate.outputs = Process()   
-        #iterate.outputs.objective          = Methods.Climb.Optimized.objective
-        #iterate.outputs.constraints        = Methods.Climb.Optimized.constraints
-        #iterate.outputs.cache_inputs       = Methods.Climb.Optimized.cache_inputs        
+        iterate.residuals = Process()     
 
         # --------------------------------------------------------------  
         #  Post Process   

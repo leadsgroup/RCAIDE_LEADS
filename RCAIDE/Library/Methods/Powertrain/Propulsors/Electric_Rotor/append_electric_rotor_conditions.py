@@ -13,11 +13,12 @@ from RCAIDE.Framework.Mission.Common                      import Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append electric rotor network conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_electric_rotor_conditions(propulsor,segment): 
+def append_electric_rotor_conditions(propulsor,segment,energy_conditions,noise_conditions):
+    '''
+    Appends data structures arrays for storing electric rotor conditions  
+    '''
     # unpack 
-    ones_row          = segment.state.ones_row
-    energy_conditions = segment.state.conditions.energy
-    noise_conditions  = segment.state.conditions.noise
+    ones_row          = segment.state.ones_row 
     
     # add propulsor conditions              
     energy_conditions.propulsors[propulsor.tag]                               = Conditions()  

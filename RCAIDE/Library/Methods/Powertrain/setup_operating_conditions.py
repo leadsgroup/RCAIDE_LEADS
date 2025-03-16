@@ -9,35 +9,34 @@
 
 # RCAIDE Imports
 import RCAIDE   
-from RCAIDE.Framework.Mission.Common import  Conditions, Results, Residuals
+from RCAIDE.Framework.Mission.Common import Results, Residuals
 from RCAIDE.Library.Mission.Common.Update.orientations import orientations
 
 # Python package imports
-import numpy as np
-from copy import deepcopy
+import numpy as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Operating Test Conditions Set-up
 # ---------------------------------------------------------------------------------------------------------------------- 
 def setup_operating_conditions(compoment, altitude = 0,velocity_range = np.array([10]), angle_of_attack = 0):
     '''
-    Set up operating conditions 
-    
+    Sets up operating conditions for single component analysis 
     '''
     
-    ctrl_pts  = len(velocity_range)
         
     planet                                            = RCAIDE.Library.Attributes.Planets.Earth()
-    working_fluid                                     = RCAIDE.Library.Attributes.Gases.Air()
+    working_fluid                                     = RCAIDE.Library.Attributes.Gases.Air() 
+    
+    # append working fluid properties 
+    compoment.working_fluid                           = working_fluid     
+    
     atmosphere_sls                                    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmo_data                                         = atmosphere_sls.compute_values(altitude,0.0)
-                                                      
+    atmo_data                                         = atmosphere_sls.compute_values(altitude,0.0) 
     p                                                 = atmo_data.pressure          
     T                                                 = atmo_data.temperature       
     rho                                               = atmo_data.density          
     a                                                 = atmo_data.speed_of_sound    
-    mu                                                = atmo_data.dynamic_viscosity
-      
+    mu                                                = atmo_data.dynamic_viscosity 
                                                       
     conditions                                        = Results() 
     conditions.freestream.altitude                    = np.atleast_2d(altitude)
@@ -51,8 +50,10 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_range = np.array
     conditions.freestream.Cp                          = np.atleast_2d(working_fluid.compute_cp(T,p))
     conditions.freestream.R                           = np.atleast_2d(working_fluid.gas_specific_constant)
     conditions.freestream.speed_of_sound              = np.atleast_2d(a)
-    conditions._size = ctrl_pts
-    conditions.expand_rows(ctrl_pts)
+
+    num_ctrl_pts      = len(velocity_range)    
+    conditions._size  = num_ctrl_pts
+    conditions.expand_rows(num_ctrl_pts)
      
     conditions.freestream.velocity                    = np.atleast_2d(velocity_range) 
     conditions.frames.body.inertial_rotations[:, 1]   = angle_of_attack
@@ -62,38 +63,11 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_range = np.array
     segment                                          = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions                         = conditions    
     orientations(segment) 
-    segment.state.residuals.network                  = Residuals()  
-   
-    if isinstance(compoment,RCAIDE.Library.Components.Powertrain.Converters.Converter): 
-        compoment.append_operating_conditions(segment,segment.state.conditions.energy)
-        return segment.state 
-                        
-    elif isinstance(compoment,RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor): 
-        propulsor = deepcopy(compoment)
-        propulsor.working_fluid =  working_fluid
-        propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
-        
-        #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan:
-            #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    segment.state.residuals.network                  = Residuals()
     
-        #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet:
-            #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
-    
-        #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop:
-            #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
-            
-        #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine:
-            #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
-    
-            #if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine:
-                #distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()            
-        
-        propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)   
-        #segment.state.conditions.energy[distributor.tag] = Conditions() 
-        #segment.state.conditions.noise[distributor.tag]  = Conditions()    
-        #propulsor.append_propulsor_unknowns_and_residuals(segment)
-
-    segment.state.conditions.expand_rows(ctrl_pts)              
+    # append component-specific operating conditions 
+    compoment.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)    
+    segment.state.conditions.expand_rows(num_ctrl_pts)              
     return segment.state
  
     

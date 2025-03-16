@@ -16,7 +16,6 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_par
 import time 
 import os
 import sys
-from copy import  deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Lift-rotor
@@ -52,37 +51,36 @@ def design_lift_rotor(rotor,number_of_stations = 20,solver_name= 'SLSQP',iterati
           Source:
              None 
     """    
-    # Unpack rotor geometry   
-    unoptimized_rotor         = deepcopy(rotor)
-    unoptimized_rotor.tag     = 'unoptimized_rotor'
+    # Unpack rotor geometry  
+    rotor_tag     = rotor.tag
+    rotor.tag     = 'rotor'
     
     # start optimization 
     ti                   = time.time()   
-    optimization_problem = optimization_setup(unoptimized_rotor,number_of_stations,print_iterations)
+    optimization_problem = optimization_setup(rotor,number_of_stations,print_iterations)
 
     # Commense suppression of console window output  
     devnull = open(os.devnull,'w')
     sys.stdout = devnull 
-    output               = scipy_setup.SciPy_Solve(optimization_problem,
+    outputs               = scipy_setup.SciPy_Solve(optimization_problem,
                                                    solver=solver_name,
                                                    iter = iterations ,
                                                    sense_step = solver_sense_step,
                                                    tolerance = solver_tolerance)
     # Terminate suppression of console window output   
-    sys.stdout = sys.__stdout__ 
-     
-    if output[3] != 0:
-        print("Lift-rotor desing optimization failed: ",output[4]) 
+    sys.stdout = sys.__stdout__
+
+    if outputs[3] != 0:  
+        print('Lift-rotor Optimization Failed: ', outputs[4] )   
+    else:
+        print('Lift-rotor Optimization Successful')  
         
     tf                   = time.time()
     elapsed_time         = round((tf-ti)/60,2)
-    print('Lift-rotor Optimization Simulation Time: ' + str(elapsed_time) + ' mins')   
-    
-    # print optimization results 
-    print (output)  
-    
+    print('Simulation Time: ' + str(elapsed_time) + ' mins')   
+     
     # set remaining rotor variables using optimized parameters 
-    optimized_rotor     = set_optimized_parameters(rotor,optimization_problem)
-    optimized_rotor.tag = rotor.tag
+    rotor     = set_optimized_parameters(rotor,optimization_problem)
+    rotor.tag = rotor_tag
     
-    return optimized_rotor 
+    return rotor 

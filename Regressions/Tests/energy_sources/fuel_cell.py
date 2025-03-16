@@ -55,12 +55,9 @@ def main():
     
         # create analyses
         analyses = analyses_setup(configs)
-    
-        # mission analyses
-        mission  = mission_setup(analyses) 
         
-        # create mission instances (for multiple types of missions)
-        missions = missions_setup(mission) 
+        # create missions 
+        missions = missions_setup(analyses) 
          
         # mission analysis 
         results = missions.base_mission.evaluate()  
@@ -133,9 +130,13 @@ def mission_setup(analyses):
      
     return mission 
 
-def missions_setup(mission): 
+def missions_setup(analyses):
+    
+    # mission analyses
+    mission  = mission_setup(analyses)     
  
-    missions         = RCAIDE.Framework.Mission.Missions()
+    # missions container 
+    missions = RCAIDE.Framework.Mission.Missions()
     
     # base mission 
     mission.tag  = 'base_mission'

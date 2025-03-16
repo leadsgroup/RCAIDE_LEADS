@@ -13,15 +13,12 @@ from RCAIDE.Framework.Mission.Common                             import Conditio
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append electric ducted fan network conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_electric_ducted_fan_conditions(propulsor,segment):
+def append_electric_ducted_fan_conditions(propulsor,segment,energy_conditions,noise_conditions):
     '''
-    MATTEO
-    
+    Appends data structures arrays for storing electric ducted fan conditions  
     '''
     # unpack 
-    ones_row          = segment.state.ones_row
-    energy_conditions = segment.state.conditions.energy
-    noise_conditions  = segment.state.conditions.noise
+    ones_row          = segment.state.ones_row 
     
     # add propulsor conditions 
     energy_conditions.propulsors[propulsor.tag]                               = Conditions()  

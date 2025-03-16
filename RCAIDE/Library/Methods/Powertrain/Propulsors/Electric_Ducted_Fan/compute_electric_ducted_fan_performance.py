@@ -67,7 +67,7 @@ def compute_electric_ducted_fan_performance(propulsor,state,fuel_line=None,bus=N
     conditions.energy.converters[ducted_fan.tag].tip_mach           = (conditions.energy.converters[motor.tag].outputs.omega * ducted_fan.tip_radius) / conditions.freestream.speed_of_sound
     conditions.energy.converters[ducted_fan.tag].throttle           = conditions.energy.modulators[esc.tag].throttle 
     conditions.energy.converters[ducted_fan.tag].commanded_thrust_vector_angle =  conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
-    compute_ducted_fan_performance(propulsor,state)
+    compute_ducted_fan_performance(ducted_fan,conditions)
 
     # Compute moment 
     moment_vector      = 0*state.ones_row(3)
@@ -130,7 +130,7 @@ def reuse_stored_electric_ducted_fan_data(propulsor,state,network,fuel_line,bus,
     # deep copy results 
     conditions.energy.converters[motor.tag]        = deepcopy(conditions.energy.converters[motor_0.tag])
     conditions.energy.converters[ducted_fan.tag]   = deepcopy(conditions.energy.converters[ducted_fan_0.tag])
-    conditions.energy.modulators[esc.tag]          = deepcopy(conditions.energy.converters[esc_0.tag])
+    conditions.energy.modulators[esc.tag]          = deepcopy(conditions.energy.modulators[esc_0.tag])
   
     # compute moment 
     thrust_vector           = conditions.energy.converters[ducted_fan.tag].thrust  

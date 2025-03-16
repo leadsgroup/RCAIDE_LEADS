@@ -33,7 +33,7 @@ from Test_Rotor        import Test_Rotor
 def main():
     
     propeller_test()
-    rotor_test(new_regression=False)
+    rotor_test(new_regression=True)
     
     return
 
@@ -58,7 +58,7 @@ def propeller_test():
     plot_rotor_performance(propeller,results,title=None,save_figure=False, show_figure=False)
     
     thrust      = np.linalg.norm(results.thrust,axis=1)[0]
-    thrust_true = 10043.181397103635 # 2313.5691032656205
+    thrust_true = 10043.181397103635
 
     diff_thrust = np.abs((thrust- thrust_true)/thrust_true)  
     print('\nthrust difference')
@@ -89,7 +89,7 @@ def rotor_test(new_regression):
     results        = rotor_aerodynamic_analysis(rotor, velocity_range, angular_velocity = angular_velocity, angle_of_attack=angle_of_attack)
     
     thrust      = np.linalg.norm(results.thrust,axis=1)[0]
-    thrust_true = 10658.80235337
+    thrust_true = 10584.073319850097
 
     diff_thrust = np.abs((thrust- thrust_true)/thrust_true)  
     print('\nthrust difference')

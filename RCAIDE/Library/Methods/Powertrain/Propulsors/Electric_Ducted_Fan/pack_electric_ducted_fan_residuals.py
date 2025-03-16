@@ -13,7 +13,7 @@ def pack_electric_ducted_fan_residuals(propulsor,segment):
     # unpack 
     motor         = propulsor.motor
     ducted_fan    = propulsor.ducted_fan 
-    q_motor       = segment.state.conditions.energy.converters[motor.tag].torque
+    q_motor       = segment.state.conditions.energy.converters[motor.tag].outputs.torque
     q_ducted_fan  = segment.state.conditions.energy.converters[ducted_fan.tag].torque
     
     # compute torque matching residual

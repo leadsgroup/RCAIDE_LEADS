@@ -64,8 +64,7 @@ def modify_blade_geometry(nexus):
              None
     """        
  
-    # Pull out the vehicles
-
+    # Pull out the vehicles 
     vehicle_hover     = nexus.vehicle_configurations.hover
     rotor_hover       = vehicle_hover.networks.electric.propulsors.electric_rotor.rotor
     vehicle_oei       = nexus.vehicle_configurations.oei
@@ -166,9 +165,8 @@ def updated_blade_geometry(chi,c_r,p,q,c_t):
 def run_rotor_hover(nexus):
      
     # Unpack    
-    network               = nexus.vehicle_configurations.hover.networks.electric 
-    bus                   = network.busses.bus 
-    electric_rotor        = network.propulsors.electric_rotor
+    network               = nexus.vehicle_configurations.hover.networks.electric
+    electric_rotor        = network.propulsors.electric_rotor  
     rotor                 = electric_rotor.rotor
     
     # Setup Test conditions
@@ -186,10 +184,8 @@ def run_rotor_hover(nexus):
     conditions.frames.wind.transform_to_inertial        = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
     conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]])  
     segment.state.conditions                            = conditions
-    
-    segment.state.conditions.energy[bus.tag] = Conditions()
-    segment.state.conditions.noise[bus.tag]  = Conditions() 
-    electric_rotor.append_operating_conditions(segment)
+     
+    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
     
     rotor_conditions                      =  segment.state.conditions.energy.converters[rotor.tag]     
     rotor_conditions.omega                = (atmosphere_conditions.speed_of_sound*rotor.hover.design_tip_mach)/rotor.tip_radius
@@ -217,9 +213,8 @@ def run_rotor_hover(nexus):
     S_hover                                          = np.maximum(altitude[0],20*Units.feet)  
     mic_positions_hover                              = np.array([[0.0 , S_hover*np.sin(theta)  ,S_hover*np.cos(theta)]])      
     
-    # Run noise model  
-    conditions.noise[bus.tag]                        = RCAIDE.Framework.Mission.Common.Conditions()      
-    conditions.noise[electric_rotor.tag]             = RCAIDE.Framework.Mission.Common.Conditions()  
+ 
+    # Run noise model    
     conditions.noise.relative_microphone_locations   = np.repeat(mic_positions_hover[ np.newaxis,:,: ],1,axis=0)
     conditions.aerodynamics.angles.alpha             = np.ones((ctrl_pts,1))* 0. * Units.degrees 
     segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 
@@ -231,7 +226,7 @@ def run_rotor_hover(nexus):
     conditions.noise.number_of_microphones           = num_mic   
     
     if alpha != 1: 
-        compute_rotor_noise(bus,electric_rotor,segment,settings)    
+        compute_rotor_noise(conditions.noise.relative_microphone_locations,rotor,segment,settings)    
         nexus.results.hover.mean_SPL   = np.mean(conditions.noise.converters[rotor.tag].SPL_dBA) 
     else: 
         nexus.results.hover.mean_SPL   = 0  
@@ -244,8 +239,7 @@ def run_rotor_hover(nexus):
 def run_rotor_OEI(nexus):
     
     # Unpack   
-    network               = nexus.vehicle_configurations.oei.networks.electric 
-    bus                   = network.busses.bus 
+    network               = nexus.vehicle_configurations.oei.networks.electric  
     electric_rotor        = network.propulsors.electric_rotor    
     rotor                 = electric_rotor.rotor
     
@@ -253,8 +247,7 @@ def run_rotor_OEI(nexus):
     speed                 = rotor.oei.design_freestream_velocity 
     altitude              = np.array([rotor.oei.design_altitude]) 
     atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere_conditions = atmosphere.compute_values(altitude)  
-  
+    atmosphere_conditions = atmosphere.compute_values(altitude)   
   
     segment                                             = RCAIDE.Framework.Mission.Segments.Segment()  
     conditions                                          = RCAIDE.Framework.Mission.Common.Results()
@@ -264,10 +257,8 @@ def run_rotor_OEI(nexus):
     conditions.frames.wind.transform_to_inertial        = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
     conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
     segment.state.conditions                            = conditions
-    
-    segment.state.conditions.energy[bus.tag] = Conditions()
-    segment.state.conditions.noise[bus.tag]  = Conditions()
-    electric_rotor.append_operating_conditions(segment) 
+     
+    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
                 
     rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
     rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.oei.design_tip_mach)/rotor.tip_radius
@@ -314,10 +305,8 @@ def run_rotor_cruise(nexus):
         conditions.frames.wind.transform_to_inertial        = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
         conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
         segment.state.conditions                            = conditions
-        
-        segment.state.conditions.energy[bus.tag] = Conditions()
-        segment.state.conditions.noise[bus.tag]  = Conditions()
-        electric_rotor.append_operating_conditions(segment) 
+          
+        rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
             
         rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
         rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.cruise.design_tip_mach)/rotor.tip_radius
@@ -358,7 +347,7 @@ def run_rotor_cruise(nexus):
         conditions.noise.number_of_microphones           = num_mic    
         
         if alpha != 1: 
-            compute_rotor_noise(bus,electric_rotor,segment,settings)      
+            compute_rotor_noise(conditions.noise.relative_microphone_locations,rotor,segment,settings)  
             nexus.results.cruise.mean_SPL   = np.mean(conditions.noise.converters[rotor.tag].SPL_dBA)   
         else:
             nexus.results.cruise.mean_SPL   = 0  

@@ -14,6 +14,9 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 #  append_propulsor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_turbojet_conditions(propulsor,segment,energy_conditions,noise_conditions):
+    '''
+    Appends data structures arrays for storing turbojet conditions  
+    '''
     # unpack 
     ones_row          = segment.state.ones_row 
     

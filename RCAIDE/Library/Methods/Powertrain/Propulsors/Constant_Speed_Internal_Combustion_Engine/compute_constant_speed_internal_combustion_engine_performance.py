@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # internal_combustion_engine_constant_speed_propulsor
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_constant_speed_internal_combustion_engine_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
+def compute_constant_speed_internal_combustion_engine_performance(propulsor,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]):  
     ''' Computes the perfomrance of one propulsor
     
     Assumptions: 

@@ -310,7 +310,7 @@ class Electric(Network):
         
         for network in segment.analyses.energy.vehicle.networks:
             for p_i, propulsor in enumerate(network.propulsors): 
-                propulsor.append_operating_conditions(segment)                      
+                propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)                      
             
             for bus_i, bus in enumerate(network.busses):   
                 # ------------------------------------------------------------------------------------------------------            

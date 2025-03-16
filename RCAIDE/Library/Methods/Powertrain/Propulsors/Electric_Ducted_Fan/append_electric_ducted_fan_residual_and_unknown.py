@@ -10,9 +10,6 @@ def append_electric_ducted_fan_residual_and_unknown(propulsor,segment):
     Appends the torque matching residual and unknown
     ''' 
     ones_row     = segment.state.ones_row 
-    ducted_fan   = propulsor.ducted_fan
-    cp_init      = ducted_fan.cruise.design_power_coefficient
-    segment.state.unknowns[ propulsor.tag  + '_ducted_fan_cp']               = cp_init * ones_row(1)  
-    segment.state.residuals.network[ propulsor.tag  + '_ducted_fan_motor_torque'] = 0. * ones_row(1)    
-    
+    motor       = propulsor.motor 
+    segment.state.unknowns[propulsor.tag + '_motor_current']  = motor.design_current * ones_row(1) 
     return 

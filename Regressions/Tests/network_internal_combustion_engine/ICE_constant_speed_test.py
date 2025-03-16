@@ -38,11 +38,8 @@ def main():
     # create analyses
     analyses = analyses_setup(configs)
 
-    # mission analyses
-    mission  = mission_setup(analyses) 
-
     # create mission instances (for multiple types of missions)
-    missions = missions_setup(mission) 
+    missions = missions_setup(analyses) 
 
     # mission analysis 
     results = missions.base_mission.evaluate()   
@@ -50,7 +47,7 @@ def main():
     P_truth     = 53698.45856056677
     mdot_truth  = 0.004718069503961755
     
-    P    = results.segments.cruise.state.conditions.energy.ice_constant_speed_propeller.internal_combustion_engine.power[-1,0]
+    P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle_mass_rate[-1,0]     
 
     # Check the errors
@@ -161,7 +158,11 @@ def analyses_setup(configs):
 
     return analyses
 
-def missions_setup(mission):  
+def missions_setup(analyses):
+ 
+    # mission analyses
+    mission  = mission_setup(analyses)
+    
     missions         = RCAIDE.Framework.Mission.Missions() 
     mission.tag  = 'base_mission'
     missions.append(mission)

@@ -3,9 +3,7 @@
 # Created:  Jan 2025, M. Clarke
 
 """
-Ducted Fan Methods Package
-
-This module contains methods for analyzing and designing ducted fan propulsion systems. 
+Ducted Fan - Rankine Froude Momentum Theory Methods Package
 """
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -13,4 +11,4 @@ This module contains methods for analyzing and designing ducted fan propulsion s
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .RFMT_performance import RFMT_performance
-from .RFMT_performance import  compute_ducted_fan_efficiency
+from .RFMT_performance import compute_ducted_fan_efficiency

@@ -166,8 +166,7 @@ def add_mission_variables(segment):
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_AVL_Trimmed) or \
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion) or \
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Throttle) 
-
-
+ 
     
     # Step 2: Optimizer Inputs 
     # Step 2.1: Extract inputs
