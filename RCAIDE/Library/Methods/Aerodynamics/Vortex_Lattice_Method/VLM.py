@@ -691,23 +691,33 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
     for i in range(len(y_control_points)): # Loop through each test case
         for j in range(len(y_control_points[1])): # Loop through each control point
             r = np.sqrt(np.square(TP_y_control_points[i,j] - TP_y_centerpoints) + np.square(TP_z_control_points[i,j] - TP_z_centerpoints)) # Distance from segment to control point
-            component = -1*np.sign(TP_y_control_points[i,j] - TP_y_centerpoints) # The component of the induced velocity perpendicular to the wake trace as well as direction correction. Check coordinate convention. 
-            V_induced[i,j] = np.sum(component*shed_vortex_segments / (2*np.pi*r)) # Downwash. Note that we only care about the perpendicular component. Need to account for that!
-    
-    #x = np.linspace(0,20,1000)
-    #y_ellipse = np.sqrt(1 - (x/10)**2)*1*circulation_segments[0][0]
-    #x_ellipse = x
+            
+            # Calculate normal vector to the wake trace
+            slope = np.gradient(TP_z_control_points[i], TP_y_control_points[i])
+            n_hat = np.array([np.cos(np.arctan2(-1, slope[j])), np.sin(np.arctan2(-1, slope[j]))]) # Normal vector to the wake trace
+            
+            # Calculate induced velocity vector
+            v_hat = np.array([-1*(TP_z_control_points[i,j] - TP_z_centerpoints)/r, (TP_y_control_points[i,j] - TP_y_centerpoints)/r])
+            v = v_hat * shed_vortex_segments / (2*np.pi*r)
 
+            V_induced[i,j] = np.sum(n_hat[0]*v[0] + n_hat[1]*v[1]) # Downwash. Dot product of normal vector and induced velocity vector. 
+    
     #plt.plot(y_control_points[0], V_induced[0],'ko-')
     #plt.show()
 
     # Calculate Induced Drag
     D_induced = np.zeros(len(y_control_points))
     for i in range(len(y_control_points)):
+        """
         if y_control_points[i][-1] > y_control_points[i][0]:
-            D_induced[i] = -0.5 * rho * trapz(V_induced[i] * circulation_segments[i], y_control_points[i]) 
+            s_wake = np.sqrt(np.square(y_control_points[i]) + np.square(z_control_points[i]))
+            D_induced[i] = -0.5 * rho * trapz(V_induced[i] * circulation_segments[i], s_wake) 
         else:
-            D_induced[i] = -0.5 * rho * trapz(np.flip(V_induced[i]) * np.flip(circulation_segments[i]), np.flip(y_control_points[i])) 
+            s_wake = np.sqrt(np.flip(y_control_points[i])**2 + np.flip(z_control_points[i])**2)
+            D_induced[i] = -0.5 * rho * trapz(np.flip(V_induced[i]) * np.flip(circulation_segments[i]), s_wake) 
+        """
+        s_wake = np.sqrt(y_control_points[i]**2 + z_control_points[i]**2)
+        D_induced[i] = -0.5 * rho * trapz(V_induced[i] * circulation_segments[i], s_wake) 
     
     # CDi for each wing
     CDi_wing = D_induced / (0.5 * rho * v_inf**2 * SURF) # per wing
