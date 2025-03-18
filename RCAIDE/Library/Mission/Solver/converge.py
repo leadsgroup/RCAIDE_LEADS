@@ -204,11 +204,15 @@ def add_mission_variables(segment):
     units             = np.broadcast_to(Units.less,(len_inputs,))
     new_inputs        = np.reshape(np.tile(np.atleast_2d(np.array([None,None,None,None,None,None])),len_inputs), (-1, 6))
     
+    scaling_power = np.log10(initial_values)
+    scaling_power[np.isinf(scaling_power)] = 0
+    scaling = 10 ** scaling_power 
+    
     # Step 2.4 Add in the inputs 
     new_inputs[:,0]     = input_names   
     new_inputs[:,1]     = initial_values 
     new_inputs[:,2:4]   = bounds   
-    new_inputs[:,4]     = 1
+    new_inputs[:,4]     = scaling
     new_inputs[:,5]     = units 
     optimization_problem.inputs = np.array(new_inputs,dtype=object)
     

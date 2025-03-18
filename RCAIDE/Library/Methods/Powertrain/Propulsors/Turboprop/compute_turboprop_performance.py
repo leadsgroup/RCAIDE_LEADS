@@ -182,18 +182,22 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     turboprop_conditions.thermal_efficiency        = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)   
     compressor_conditions.omega                    = compressor.design_angular_velocity * turboprop_conditions.throttle 
 
-    if compressor.motor != None and  len(state.numerics.time.differentiate) > 0:
-        D     = state.numerics.time.differentiate   
+    power_elec = 0*state.ones_row(1)
+    if compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
         compressor_motor_conditions                 = conditions.energy.converters[compressor.motor.tag] 
-        compressor_motor_conditions.outputs.power   = np.dot(D,compressor_motor_conditions.outputs.work_done) 
+        compressor_motor_conditions.outputs.power   = power *conditions.energy.hybrid_power_split_ratio   
         compressor_motor_conditions.outputs.omega   = compressor_conditions.omega
+        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
+        power_elec =  compressor_motor_conditions.outputs.power  
     
-    if compressor.generator != None and len(state.numerics.time.differentiate) > 0:
-        D     = state.numerics.time.differentiate   
+    if compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
         compressor_generator_conditions                = conditions.energy.converters[compressor.generator.tag] 
-        compressor_generator_conditions.inputs.power   = np.dot(D,compressor_generator_conditions.inputs.work_done)         
+        compressor_generator_conditions.inputs.power   = power *conditions.energy.hybrid_power_split_ratio  
         compressor_generator_conditions.inputs.omega   = compressor_conditions.omega
-        
+        compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
+        power_elec =  compressor_generator_conditions.inputs.power  
+    
+            
     # Store data
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
@@ -207,9 +211,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     
     # Pack results    
     stored_results_flag    = True
-    stored_propulsor_tag   = turboprop.tag
-     
-    power_elec =  compressor_conditions.outputs.external_electrical_power  
+    stored_propulsor_tag   = turboprop.tag 
     
     return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
 
@@ -273,8 +275,15 @@ def reuse_stored_turboprop_data(turboprop,state,network,fuel_line,bus,stored_pro
 
     power                                              = conditions.energy.propulsors[turboprop.tag].power 
     conditions.energy.propulsors[turboprop.tag].moment = moment
-
-    # compute total electrical power generation or comsumtion
-    power_elec =  conditions.energy.converters[compressor.tag].outputs.external_electrical_power 
+ 
+    
+    power_elec = 0*state.ones_row(1)
+    if compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
+        conditions.energy.converters[compressor.motor.tag]  = deepcopy(conditions.energy.converters[compressor_0.motor.tag]) 
+        power_elec =  conditions.energy.converters[compressor.motor.tag].outputs.power  
+    
+    if compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
+        conditions.energy.converters[compressor.generator.tag]  = deepcopy(conditions.energy.converters[compressor_0.generator.tag]) 
+        power_elec =  conditions.energy.converters[compressor.generator.tag].inputs.power   
 
     return thrust_vector,moment,power, power_elec

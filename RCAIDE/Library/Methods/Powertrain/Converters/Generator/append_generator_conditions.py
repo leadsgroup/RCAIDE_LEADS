@@ -7,15 +7,15 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 #  append_generator_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_generator_conditions(generator,segment,conditions):  
-    ones_row                                 = segment.state.ones_row                  
-    conditions[generator.tag]                = Conditions()
-    conditions[generator.tag].inputs         = Conditions()
-    conditions[generator.tag].outputs        = Conditions()
-    conditions[generator.tag].torque         = 0. * ones_row(1) 
-    conditions[generator.tag].current        = 0. * ones_row(1) 
-    conditions[generator.tag].voltage        = 0. * ones_row(1) 
-    conditions[generator.tag].inputs.power   = 0. * ones_row(1)
-    conditions[generator.tag].inputs.omega   = 0. * ones_row(1)
+    ones_row                                             = segment.state.ones_row                  
+    conditions.converters[generator.tag]                 = Conditions()
+    conditions.converters[generator.tag].inputs          = Conditions()
+    conditions.converters[generator.tag].inputs.torque   = 0. * ones_row(1) 
+    conditions.converters[generator.tag].inputs.power    = 0. * ones_row(1)
+    conditions.converters[generator.tag].inputs.omega    = 0. * ones_row(1)
+    conditions.converters[generator.tag].outputs         = Conditions()
+    conditions.converters[generator.tag].outputs.current = 0. * ones_row(1) 
+    conditions.converters[generator.tag].outputs.voltage = 0. * ones_row(1) 
     
     return 
 

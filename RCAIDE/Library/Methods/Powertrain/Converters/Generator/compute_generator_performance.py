@@ -7,7 +7,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
-from RCAIDE.Framework.Core import  Units
+
 # package imports 
 import numpy as np
  
@@ -59,34 +59,35 @@ def compute_generator_performance(generator,conditions):
  
     if type(generator) == RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:   
         if generator.inverse_calculation == False:
-            power  = generator_conditions.inputs.power 
-            Res    = generator.resistance  
-            Kv     = generator.speed_constant
-            G      = generator.gearbox.gear_ratio 
-            io     = generator.no_load_current  
-            v      = generator_conditions.voltage 
-            omega  = generator_conditions.outputs.omega           
-            i      = (v - (omega/G) /Kv)/Res  
-            Q      = power / omega  
-            etam   = (1-io/i)*(1-i*Res/v)
+            power          = generator_conditions.inputs.power 
+            Res            = generator.resistance  
+            Kv             = generator.speed_constant
+            G              = generator.gearbox.gear_ratio 
+            io             = generator.no_load_current  
+            v              = generator_conditions.outputs.voltage 
+            omega          = generator_conditions.inputs.omega
+            omega_internal = omega * G
+            i              = (v - (omega_internal) /Kv)/Res  
+            Q              = power / omega  
+            etam           = (1-io/i)*(1-i*Res/v)
             
         else:
-            Res    = generator.resistance  
-            Kv     = generator.speed_constant
-            G      = generator.gearbox.gear_ratio 
-            io     = generator.no_load_current  
-            v      = generator_conditions.voltage             
-            P_elec = generator_conditions.outputs.power
-            i      = P_elec /v
-            omega  = ((v - (Res * i)) * Kv)   
-            Q      = (((v-omega /Kv)/Res -io)/Kv)
-            omega  = omega / G
-            Q      = Q * G
-            etam   = (1-io/i)*(1-i*Res/v)
+            Res             = generator.resistance  
+            Kv              = generator.speed_constant
+            G               = generator.gearbox.gear_ratio 
+            io              = generator.no_load_current  
+            v               = generator_conditions.outputs.voltage             
+            P_elec          = generator_conditions.outputs.power
+            i               = P_elec /v
+            omega_internal  = ((v - (Res * i)) * Kv)   
+            Q_internal      = (((v-omega_internal /Kv)/Res -io)/Kv)
+            omega           = omega_internal / G
+            Q               = Q_internal * G
+            etam            = (1-io/i)*(1-i*Res/v)
         
         generator_conditions.outputs.current    = i 
-        generator_conditions.outputs.power      = i *v   
-        generator_conditions.inputs.power       = Q * omega  
+        generator_conditions.outputs.power      = i *v  
+        generator_conditions.inputs.power       = Q * omega 
         generator_conditions.outputs.efficiency = etam          
         
     elif type(generator) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator: 
@@ -107,8 +108,7 @@ def compute_generator_performance(generator,conditions):
         etam   = (1-io/i)*(1-i*Res/v) 
     
         generator_conditions.outputs.current    = i 
-        generator_conditions.outputs.power      = i *v   
-        generator_conditions.inputs.power       = Q * omega 
+        generator_conditions.outputs.power      = i *v    
         generator_conditions.outputs.efficiency = etam       
    
  

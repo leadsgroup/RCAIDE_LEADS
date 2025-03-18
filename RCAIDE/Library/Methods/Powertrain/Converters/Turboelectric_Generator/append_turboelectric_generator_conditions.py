@@ -1,7 +1,6 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Turboelectric_Generator/append_turboelectric_generator_conditions.py 
 # 
 # Created:  Feb 2025, M. Clarke  
-import RCAIDE
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 

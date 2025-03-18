@@ -50,7 +50,10 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
     generator_conditions               = conditions.energy.converters[generator.tag]
     turboshaft_conditions              = conditions.energy.converters[turboshaft.tag]
     compressor_conditions              = conditions.energy.converters[compressor.tag]
-    generator.mode                     = turboelectric_generator.mode 
+    
+    generator.inverse_calculation      =  turboelectric_generator.inverse_calculation
+    turboshaft.inverse_calculation     =  turboelectric_generator.inverse_calculation
+    
     if turboelectric_generator.inverse_calculation == False:
         # here we run the turboshaft first, then run the generator
         turboshaft_conditions.throttle = turboelectric_generator_conditions.throttle
@@ -63,29 +66,31 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
         generator_conditions.inputs.omega  = compressor_conditions.omega         
         
         # assign voltage across bus 
-        generator_conditions.voltage = bus.voltage*np.ones_like(generator_conditions.inputs.power)
+        generator_conditions.outputs.voltage = bus.voltage*np.ones_like(generator_conditions.inputs.power)
         
          # run the generator 
-        compute_generator_performance(generator,generator_conditions,conditions)   
+        compute_generator_performance(generator,conditions)   
+        turboelectric_generator_conditions.fuel_flow_rate =  turboshaft_conditions.fuel_flow_rate  
          
     else:
         # here , we know the electric power produced by the generator and we want to determine how much fuel was used to produce said power
         
         # assign voltage across bus 
-        generator_conditions.voltage = bus.voltage*np.ones_like(generator_conditions.outputs.power)
+        generator_conditions.outputs.voltage = bus.voltage*np.ones_like(generator_conditions.outputs.power)
         
         # run the generator 
-        compute_generator_performance(generator,generator_conditions,conditions)
+        compute_generator_performance(generator,conditions)
         
         # connect properties of the generator to the turboshaft 
         turboshaft_conditions.power  = generator_conditions.inputs.power
         
         # run the turboshaft 
         P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
+        turboelectric_generator_conditions.fuel_flow_rate =  turboshaft_conditions.fuel_flow_rate  
     
     
     P_elec                      = generator_conditions.outputs.power 
-    bus_conditions.power_draw  +=  generator_conditions.outputs.powerr*bus.power_split_ratio /bus.efficiency        
+    bus_conditions.power_draw  +=  generator_conditions.outputs.power*bus.power_split_ratio /bus.efficiency        
     
     # Pack results      
     stored_results_flag    = True
@@ -138,8 +143,8 @@ def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,fuel
 
     # deep copy results 
     conditions.energy.converters[generator.tag]                = deepcopy(conditions.energy.converters[generator_0.tag]              ) 
-    conditions.energy.converters[turboshaft.tag]                = deepcopy(conditions.energy.converters[turboshaft_0.tag]             )
-    conditions.energy.propulsors[turboelectric_generator.tag]  = deepcopy(conditions.energy.propulsors[stored_converter_tag]) 
+    conditions.energy.converters[turboshaft.tag]               = deepcopy(conditions.energy.converters[turboshaft_0.tag]             )
+    conditions.energy.converters[turboelectric_generator.tag]  = deepcopy(conditions.energy.converters[stored_converter_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
     conditions.energy.converters[compressor.tag]               = deepcopy(conditions.energy.converters[compressor_0.tag] )

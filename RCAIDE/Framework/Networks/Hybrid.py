@@ -174,15 +174,15 @@ class Hybrid(Network):
                         converter.inverse_calculation = True           
                         if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator): 
                             generator             = converter.generator   
-                            state.conditions.energy[converter.tag][generator.tag].outputs.power  =  total_elec_power*(1 - phi) 
+                            state.conditions.energy.converters[generator.tag].outputs.power  =  total_elec_power*(1 - phi) 
                             P_mech, P_elec, stored_results_flag,stored_propulsor_tag = converter.compute_performance(state,fuel_line,bus)  
-                            fuel_mdot += conditions.energy[converter.tag].turboshaft.fuel_flow_rate  
+                            fuel_mdot += conditions.energy.converters[converter.tag].fuel_flow_rate  
              
                         if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft):  
                             power_mech           = total_mech_power*(1 - phi)   
-                            state.conditions.energy[converter.tag].power = power_mech 
+                            state.conditions.energy.converters[converter.tag].power = power_mech 
                             P_mech,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state)   
-                            fuel_mdot  += conditions.energy[converter.tag].turboshaft.fuel_flow_rate   
+                            fuel_mdot  += conditions.energy.converters[converter.tag].fuel_flow_rate   
                           
                     
         for bus in busses: 
@@ -191,16 +191,15 @@ class Hybrid(Network):
                 for converter_tag in converter_group:
                     converter =  converters[converter_tag]
                     if converter.active and bus.active: 
-                        converter.inverse_calculation = True 
-                        electric_machine_conditions = conditions.energy[converter.tag]
+                        converter.inverse_calculation = True
                         if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.DC_Motor) or isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):  
-                            compute_motor_performance(converter,electric_machine_conditions,conditions)
-                            bus_conditions.power_draw   += electric_machine_conditions.inputs.power/bus.efficiency
+                            compute_motor_performance(converter,conditions)
+                            bus_conditions.power_draw   += conditions.energy.converters[converter.tag].inputs.power/bus.efficiency
                             bus_conditions.current_draw  = bus_conditions.power_draw/bus.voltage                            
                             
                         if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.DC_Generator) or isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator):                              
-                            compute_generator_performance(converter,electric_machine_conditions,conditions) 
-                            bus_conditions.power_draw   += electric_machine_conditions.outputs.power/bus.efficiency
+                            compute_generator_performance(converter,conditions) 
+                            bus_conditions.power_draw   += conditions.energy.converters[converter.tag].outputs.power/bus.efficiency
                             bus_conditions.current_draw  = bus_conditions.power_draw/bus.voltage                            
                         
         # ----------------------------------------------------------        
@@ -281,7 +280,7 @@ class Hybrid(Network):
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.power                = total_mech_power 
         conditions.energy.thrust_moment_vector = total_moment 
-        conditions.weights.vehicle_mass_rate    = total_mdot  
+        conditions.weights.vehicle_mass_rate   = total_mdot  
 
         return
     
@@ -381,7 +380,7 @@ class Hybrid(Network):
         
         for network in segment.analyses.energy.vehicle.networks:
             for propulsor in network.propulsors: 
-                propulsor.append_operating_conditions(segment)
+                propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)     
     
             for converter in network.converters: 
                 converter.append_operating_conditions(segment,segment.state.conditions.energy)                 

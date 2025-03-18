@@ -193,7 +193,7 @@ def compute_motor_performance(motor,conditions):
             v              = motor_conditions.inputs.voltage  
             i              = motor_conditions.inputs.current 
             omega          = ((v - (Res * i)) * Kv)  
-            Q              = (((v- (omega) /Kv)/Res -io)/Kv)  
+            Q              = ((v- (omega) /Kv)/Res -io)/Kv  
             etam           = (1-io/i)*(1-i*Res/v)
             omega_gearbox  = omega * G
             Q_gearbox      = Q / G 
@@ -211,9 +211,9 @@ def compute_motor_performance(motor,conditions):
             Q              = Q_gearbox * G
             Res            = motor.resistance  
             Kv             = motor.speed_constant  
-            io             = motor.no_load_current 
-            v              = ((Q *Kv) + io) * Res +  omega/Kv
-            i              = (v - (omega)/Kv)/Res 
+            io             = motor.no_load_current
+            v              = ((Q *Kv) + io) * Res +  omega/Kv 
+            i              = (v - (omega)/Kv)/Res  
             P              = i * v 
             etam           = (1-io/i)*(1-i*Res/v)
 
