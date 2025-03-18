@@ -716,7 +716,13 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
             s_wake = np.sqrt(np.flip(y_control_points[i])**2 + np.flip(z_control_points[i])**2)
             D_induced[i] = -0.5 * rho * trapz(np.flip(V_induced[i]) * np.flip(circulation_segments[i]), s_wake) 
         """
-        s_wake = np.sqrt(y_control_points[i]**2 + z_control_points[i]**2)
+        sum = np.sqrt(np.square(y_control_points[i][0]) + np.square(z_control_points[i][0]))
+        s_wake = np.array([sum])
+        for j in range(1,len(y_control_points[i])):
+            dist = np.sqrt(np.square(y_control_points[i][j] - y_control_points[i][j-1]) + np.square(z_control_points[i][j] - z_control_points[i][j-1]))
+            sum += dist
+            s_wake = np.append(s_wake, sum)
+            
         D_induced[i] = -0.5 * rho * trapz(V_induced[i] * circulation_segments[i], s_wake) 
     
     # CDi for each wing
