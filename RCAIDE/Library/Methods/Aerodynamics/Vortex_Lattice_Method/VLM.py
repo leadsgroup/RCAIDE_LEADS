@@ -489,13 +489,13 @@ def VLM(conditions,settings,geometry):
 
     results   = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw)
     CDi_y = results.Cdi_distribution
-    CDi_wing = results.CD_i_wing
+    CDi_wing = results.CD_i_wing.reshape(1,len(n_sw)) 
     CDi = results.induced_drag_coefficient
     #Cdrag_i_y           = DRAG/CHORD_strip/ES
-    CL_wing          = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
+    CL_wing            = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
     #Cdrag_i_wing        = results.CDi
     #Cdrag_i_wing        = np.add.reduceat(DRAG,span_breaks,axis=1)/SURF
-    alpha_i             = (CDi_y/Clift_y)*-1
+    alpha_i             = results.alpha_i
     
     # Now calculate total coefficients
     CL       = np.atleast_2d(np.sum(LIFT,axis=1)/SREF).T          # CLTOT in VORLAX
@@ -536,11 +536,14 @@ def VLM(conditions,settings,geometry):
     results.CL_mom     =  CL_mom 
     results.CM         =  CM  
     results.CN         =  CN
+
+    results.chord_sections    = n_cp
+    results.spanwise_stations = Y
     
     #other RCAIDE outputs
     results.CL_wing        = CL_wing   
-    results.CDi_wing       = CDi_wing 
-    results.clift_y        = Clift_y   
+    results.CDi_wing       = CDi_wing
+    results.cl_y           = Clift_y   
     results.cdi_y          = CDi_y       
     results.alpha_i        = alpha_i  
     results.CP             = np.array(CP    , dtype=precision)
@@ -702,8 +705,8 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
 
             V_induced[i,j] = np.sum(n_hat[0]*v[0] + n_hat[1]*v[1]) # Downwash. Dot product of normal vector and induced velocity vector. 
     
-    #plt.plot(y_control_points[0], V_induced[0],'ko-')
-    #plt.show()
+    # plt.plot(y_control_points[0], V_induced[0],'ko-')
+    # plt.show()
 
     # Calculate Induced Drag
     D_induced = np.zeros(len(y_control_points))
@@ -733,11 +736,13 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
     
     # Calculate the induced angle of attack and local induced drag coefficient
     alpha_i = np.arctan(V_induced / v_inf)
+    alpha_i = alpha_i.reshape(2, 1, 50)
     Cd_i_distribution = cl_dist.reshape(len(n_sw), -1)*np.sin(alpha_i)
 
     # Pack results
     results = Data()
-    results.induced_drag_coefficient = CDi_total
+    results.induced_drag_coefficient = np.array([[CDi_total]])
     results.Cdi_distribution = Cd_i_distribution.reshape(1, -1)
     results.CD_i_wing = CDi_wing
+    results.alpha_i = alpha_i
     return results
