@@ -1,4 +1,4 @@
-# RCAIDE/Library/Missions/Segments/converge.py
+# RCAIDE/Library/Missions/Segments/converge_root.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke  
@@ -42,8 +42,10 @@ def converge(segment):
 
     Properties Used:
     N/A
-    """       
-    
+    """
+    if segment.state.numerics.solver.print_output: 
+        print('Currently solving',segment.tag, 'flight segment')
+        
     if segment.state.numerics.solver.type  == "optimize": 
         problem  = add_mission_variables(segment) 
        
@@ -166,7 +168,8 @@ def add_mission_variables(segment):
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_AVL_Trimmed) or \
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion) or \
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Throttle) 
- 
+
+
     
     # Step 2: Optimizer Inputs 
     # Step 2.1: Extract inputs
@@ -175,13 +178,10 @@ def add_mission_variables(segment):
     unknown_keys.remove('tag') 
     if ground_seg_flag: 
         n_points     = segment.state.numerics.number_of_control_points
-        if len(unknown_keys) == 2: 
-            len_inputs   = n_points
-        else:
-            len_inputs   = n_points +  (len(unknown_keys) - 2) * n_points
+        len_inputs = n_points 
     elif constant_throttle_seg:
         n_points     = segment.state.numerics.number_of_control_points  
-        len_inputs   = n_points*(len(unknown_keys)-1) + 1
+        len_inputs = n_points*(len(unknown_keys)-1) + 1
     elif single_pt_seg:
         n_points   = 1
         len_inputs = len(unknown_keys)
@@ -204,9 +204,10 @@ def add_mission_variables(segment):
     units             = np.broadcast_to(Units.less,(len_inputs,))
     new_inputs        = np.reshape(np.tile(np.atleast_2d(np.array([None,None,None,None,None,None])),len_inputs), (-1, 6))
     
+
     scaling_power = np.log10(initial_values)
     scaling_power[np.isinf(scaling_power)] = 0
-    scaling = 10 ** scaling_power 
+    scaling = 10 ** scaling_power
     
     # Step 2.4 Add in the inputs 
     new_inputs[:,0]     = input_names   
@@ -237,40 +238,19 @@ def add_mission_variables(segment):
     # Step 4. Aliases 
     # Step 4.1: Setup the aliases for the inputs
     basic_string_con = Data()
-    input_string = []     
+    input_string = []
 
-    if ground_seg_flag: 
-        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2))         
-        count = 0
-        for unkn in unknown_keys: 
-            basic_string_con = Data()
-            input_string = []            
-            if unkn == 'elapsed_time':
-                output_numbers = np.array([0])
-                basic_string_con[unkn] = np.tile('segment.state.unknowns.'+unkn , 1)
-                input_string.append(np.core.defchararray.add(basic_string_con[unkn],np.array(output_numbers).astype(str))) 
-                input_string       = np.core.defchararray.add(input_string, np.tile(']',1)) 
-                input_aliases[count:count+1,1] = 'segment.state.unknowns.'+unkn
-                count += 1
-                
-            elif unkn == 'ground_velocity': 
-                output_numbers = np.linspace(0,n_points-2,n_points-1,dtype=np.int16)                    
-                basic_string_con[unkn] = np.tile('segment.state.unknowns.'+unkn+'[', n_points-1)
-                input_string.append(np.core.defchararray.add(basic_string_con[unkn],np.array(output_numbers).astype(str)))
-                input_string       = np.core.defchararray.add(input_string, np.tile(']',n_points-1))  
-                input_aliases[count:count+n_points-1,1] = input_string
-                count += n_points-1 
-            
-            else: 
-                output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16)                     
-                basic_string_con[unkn] = np.tile('segment.state.unknowns.'+unkn+'[', n_points)
-                input_string.append(np.core.defchararray.add(basic_string_con[unkn],np.array(output_numbers).astype(str))) 
-                input_string       = np.core.defchararray.add(input_string, np.tile(']',n_points))     
-                input_aliases[count:count+n_points,1] = input_string
-                count += n_points 
-             
-        input_aliases[:,0] = input_names
-                
+    if ground_seg_flag:       
+        output_numbers = np.linspace(0,n_points-2,n_points-1,dtype=np.int16)
+        basic_string_con[unknown_keys[1]] = np.tile('segment.state.unknowns.'+unknown_keys[1]+'[', n_points-1)
+        input_string.append(np.core.defchararray.add(basic_string_con[unknown_keys[1]],np.array(output_numbers).astype(str)))
+        input_string        = np.array(input_string[0])
+        input_string        = np.core.defchararray.add(input_string, np.tile(']',len_inputs-1))
+        input_aliases       = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
+        input_aliases[:,0]  = input_names
+        input_aliases[0,1]  = 'segment.state.unknowns.'+unknown_keys[0] 
+        input_aliases[1:,1] = input_string
+        
     elif constant_throttle_seg: 
         output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16)        
         for unkn in unknown_keys[:-1]:

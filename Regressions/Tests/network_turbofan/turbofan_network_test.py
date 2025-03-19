@@ -236,40 +236,40 @@ def mission_setup(analyses):
     base_segment = Segments.Segment()
     base_segment.state.numerics.number_of_control_points = 4  
  
-    ## ------------------------------------------------------------------------------------------------------------------------------------ 
-    ##   Takeoff Roll
-    ## ------------------------------------------------------------------------------------------------------------------------------------ 
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
+    #   Takeoff Roll
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
 
-    #segment = Segments.Ground.Takeoff(base_segment)
-    #segment.tag = "Takeoff" 
-    #segment.analyses.extend( analyses.takeoff )
-    #segment.velocity_start                                           = 100.* Units.knots
-    #segment.velocity_end                                             = 150 * Units.knots
-    #segment.friction_coefficient                                     = 0.04
-    #segment.altitude                                                 = 0.0   
-    #mission.append_segment(segment)
+    segment = Segments.Ground.Takeoff(base_segment)
+    segment.tag = "Takeoff" 
+    segment.analyses.extend( analyses.takeoff )
+    segment.velocity_start                                           = 100.* Units.knots
+    segment.velocity_end                                             = 150 * Units.knots
+    segment.friction_coefficient                                     = 0.04
+    segment.altitude                                                 = 0.0   
+    mission.append_segment(segment)
     
 
-    ## ------------------------------------------------------------------------------------------------------------------------------------ 
-    ##    Climb 1 : Constant Speed Constant Rate  
-    ## ------------------------------------------------------------------------------------------------------------------------------------ 
-    #segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
-    #segment.tag = "climb_1" 
-    #segment.analyses.extend( analyses.takeoff )  
-    #segment.altitude_end                                             = 1.0  * Units.km
-    #segment.air_speed                                                = 150   * Units.knots
-    #segment.climb_rate                                               = 10.0  * Units['m/s'] 
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
+    #    Climb 1 : Constant Speed Constant Rate  
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
+    segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "climb_1" 
+    segment.analyses.extend( analyses.takeoff )  
+    segment.altitude_end                                             = 1.0  * Units.km
+    segment.air_speed                                                = 150   * Units.knots
+    segment.climb_rate                                               = 10.0  * Units['m/s'] 
                 
-    ## define flight dynamics to model             
-    #segment.flight_dynamics.force_x                                  = True  
-    #segment.flight_dynamics.force_z                                  = True     
+    # define flight dynamics to model             
+    segment.flight_dynamics.force_x                                  = True  
+    segment.flight_dynamics.force_z                                  = True     
     
-    ## define flight controls 
-    #segment.assigned_control_variables.throttle.active               = True           
-    #segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    #segment.assigned_control_variables.body_angle.active             = True                
+    # define flight controls 
+    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
+    segment.assigned_control_variables.body_angle.active             = True                
     
-    #mission.append_segment(segment)
+    mission.append_segment(segment)
 
    
     # ------------------------------------------------------------------------------------------------------------------------------------ 
@@ -278,7 +278,6 @@ def mission_setup(analyses):
     segment = Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle(base_segment)
     segment.tag = "climb_2"
     segment.analyses.extend( analyses.base )  
-    segment.altitude_start                                             = 1.0  * Units.km
     segment.altitude_end                                             = 2.    * Units.km
     segment.climb_angle                                              = 5.   * Units.degrees 
     segment.dynamic_pressure                                         = 3800 * Units.pascals
