@@ -57,9 +57,9 @@ def tiltwing_transition_test(update_regression_values):
     TW_results = TW_missions.base_mission.evaluate()  
     
     # Extract sample values from computation    
-    hover_throttle            = TW_results.segments.hover.conditions.energy['lift_rotor_propulsor_1'].throttle[1][0]
-    vertical_climb_1_throttle = TW_results.segments.vertical_climb_1.conditions.energy['lift_rotor_propulsor_1'].throttle[1][0] 
-    vertical_descent_throttle = TW_results.segments.vertical_descent.conditions.energy['lift_rotor_propulsor_1'].throttle[1][0] 
+    hover_throttle            = TW_results.segments.hover.conditions.energy.converters['lift_rotor_propulsor_1'].throttle[1][0]
+    vertical_climb_1_throttle = TW_results.segments.vertical_climb_1.conditions.energy.converters['lift_rotor_propulsor_1'].throttle[1][0] 
+    vertical_descent_throttle = TW_results.segments.vertical_descent.conditions.energy.converters['lift_rotor_propulsor_1'].throttle[1][0] 
     
     #print values for resetting regression
     show_vals = True
@@ -102,9 +102,9 @@ def stopped_rotor_transition_test(update_regression_values):
     SR_results = SR_missions.base_mission.evaluate()  
     
     # Extract sample values from computation    
-    hover_throttle     = SR_results.segments.vertical_climb.conditions.energy['lift_propulsor_1'].throttle[1][0]
-    lst_throttle       = SR_results.segments.low_speed_transition.conditions.energy['lift_propulsor_1'].throttle[1][0] 
-    hsct_throttle      = SR_results.segments.high_speed_climbing_transition.conditions.energy['lift_propulsor_1'].throttle[1][0] 
+    hover_throttle     = SR_results.segments.vertical_climb.conditions.energy.converters['lift_propulsor_1'].throttle[1][0]
+    lst_throttle       = SR_results.segments.low_speed_transition.conditions.energy.converters['lift_propulsor_1'].throttle[1][0] 
+    hsct_throttle      = SR_results.segments.high_speed_climbing_transition.conditions.energy.converters['lift_propulsor_1'].throttle[1][0] 
     
     #print values for resetting regression
     show_vals = True

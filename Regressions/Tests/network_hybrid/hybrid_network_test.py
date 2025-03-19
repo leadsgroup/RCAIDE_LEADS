@@ -20,15 +20,14 @@ import os
 import sys
 
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles')) 
-from conventional_ATR_72             import vehicle_setup as conventional_vehicle_setup
-from conventional_ATR_72             import configs_setup as conventional_configs_setup
+from ATR_72                          import vehicle_setup as conventional_vehicle_setup
+from ATR_72                          import configs_setup as conventional_configs_setup
 from all_electric_ATR_72             import vehicle_setup as all_electric_vehicle_setup
 from all_electric_ATR_72             import configs_setup as all_electric_configs_setup
 from series_hybrid_electric_ATR_72   import configs_setup as series_hybrid_configs_setup
 from series_hybrid_electric_ATR_72   import vehicle_setup as series_hybrid_vehicle_setup
 from parallel_hybrid_electric_ATR_72 import configs_setup as parallel_hybrid_configs_setup
-from parallel_hybrid_electric_ATR_72 import vehicle_setup as parallel_hybrid_vehicle_setup
-from conventional_ATR_72             import configs_setup as conventional_configs_setup
+from parallel_hybrid_electric_ATR_72 import vehicle_setup as parallel_hybrid_vehicle_setup 
 
 import time 
 
@@ -50,7 +49,10 @@ def main():
         configs  = conventional_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
-        conventional_results  = missions.base_mission.evaluate() 
+        conventional_results  = missions.base_mission.evaluate()
+
+        # check values MATTEO
+        
         plot_data.append(conventional_results)
         powertrain_labels.append("Conventional")
     if all_electric:        
@@ -59,7 +61,10 @@ def main():
         configs  = all_electric_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
-        electric_results  = missions.base_mission.evaluate() 
+        electric_results  = missions.base_mission.evaluate()
+
+        # check values MATTEO
+        
         plot_data.append(electric_results)
         powertrain_labels.append("All-Electric")
     if series_hybrid:        
@@ -68,7 +73,11 @@ def main():
         configs  = series_hybrid_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
-        series_hybrid_results  = missions.base_mission.evaluate() 
+        series_hybrid_results  = missions.base_mission.evaluate()
+        
+        # check values MATTEO
+        
+        
         plot_data.append(series_hybrid_results)
         powertrain_labels.append("Series Hybrid")
     if parallel_hybrid:        
@@ -78,8 +87,16 @@ def main():
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         parallel_hybrid_results  = missions.base_mission.evaluate()
+        
+        # check values MATTEO
+        
         plot_data.append(parallel_hybrid_results)
-        powertrain_labels.append("Parallel Hybrid") 
+        powertrain_labels.append("Parallel Hybrid")
+        
+        
+        
+
+    # add remaining networks MATTEO        
 
     print("Elapsed Time", (time.time()-t0)/60)         
      
