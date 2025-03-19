@@ -285,8 +285,7 @@ def run_rotor_OEI(nexus):
 def run_rotor_cruise(nexus):
  
     if nexus.prop_rotor_flag:     
-        network         = nexus.vehicle_configurations.cruise.networks.electric 
-        bus             = network.busses.bus 
+        network         = nexus.vehicle_configurations.cruise.networks.electric  
         electric_rotor  = network.propulsors.electric_rotor
         rotor           = electric_rotor.rotor 
         alpha           = rotor.optimization_parameters.multiobjective_aeroacoustic_weight       
@@ -334,8 +333,6 @@ def run_rotor_cruise(nexus):
         mic_positions_cruise                             = np.array([[0.0 ,S_cruise*np.sin(theta)  ,S_cruise*np.cos(theta)]])      
         
         # Run noise model  
-        conditions.noise[bus.tag]                        = RCAIDE.Framework.Mission.Common.Conditions()      
-        conditions.noise[electric_rotor.tag]             = RCAIDE.Framework.Mission.Common.Conditions()  
         conditions.noise.relative_microphone_locations   = np.repeat(mic_positions_cruise[ np.newaxis,:,: ],1,axis=0)
         conditions.aerodynamics.angles.alpha             = np.ones((ctrl_pts,1))* 0. * Units.degrees 
         segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 

@@ -43,19 +43,15 @@ def compute_compressor_performance(compressor,conditions):
     
     # Unpack component inputs
     PR                    = compressor.pressure_ratio
-    etapold               = compressor.polytropic_efficiency 
-    motor                 = compressor.motor
-    generator             = compressor.generator
+    etapold               = compressor.polytropic_efficiency
+    working_fluid         = compressor.working_fluid
     compressor_conditions = conditions.energy.converters[compressor.tag]
     Tt_in                 = compressor_conditions.inputs.stagnation_temperature
     Pt_in                 = compressor_conditions.inputs.stagnation_pressure 
     T0                    = compressor_conditions.inputs.static_temperature
     P0                    = compressor_conditions.inputs.static_pressure  
     M0                    = compressor_conditions.inputs.mach_number 
-    
-    # Unpack ram inputs
-    working_fluid           = compressor.working_fluid
- 
+     
     # Compute the working fluid properties 
     gamma  = working_fluid.compute_gamma(T0,P0) 
     Cp     = working_fluid.compute_cp(T0,P0)    
@@ -85,25 +81,7 @@ def compute_compressor_performance(compressor,conditions):
     compressor_conditions.outputs.mach_number             = M_out
     compressor_conditions.outputs.gas_constant            = R
     compressor_conditions.outputs.gamma                   = gamma 
-    compressor_conditions.outputs.cp                      = Cp  
-        
-    #if motor != None: 
-        #compressor_motor_conditions  = conditions.energy.converters[motor.tag]
-        #phi_motor                    = deepcopy(phi)
-        #phi_motor[phi_motor<0]       =  0
-        
-        ## mechanical power 
-        #compressor_motor_conditions.outputs.work_done          = phi_motor * work_done 
-        #compressor_conditions.outputs.external_shaft_work_done = phi_motor * work_done  
-        
-    #elif generator != None: 
-        #compressor_generator_conditions = conditions.energy.converters[generator.tag] 
-        #phi_generator                   = deepcopy(phi)
-        #phi_generator[phi_generator>0]  = 0 
-
-        ## mechanical power         
-        #compressor_generator_conditions.inputs.work_done        = phi_generator * work_done
-        #compressor_conditions.outputs.external_shaft_work_done  = phi_generator * work_done 
-        
+    compressor_conditions.outputs.cp                      = Cp
+    
     return 
 

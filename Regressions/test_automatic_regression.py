@@ -38,6 +38,7 @@ modules = [
     'Tests/network_electric/battery_electric_aircraft_test.py',
     'Tests/network_electric/hydrogen_fuel_cell_aircraft_test.py', 
     'Tests/network_electric/electric_ducted_fan_aircraft_test.py',
+    'Tests/network_hybrid/hybrid_network_test.py',
     'Tests/network_turbofan/turbofan_network_test.py',
     'Tests/network_turbojet/turbojet_network_test.py',
     'Tests/network_turboprop/turboprop_network_test.py',

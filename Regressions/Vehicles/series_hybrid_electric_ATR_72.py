@@ -1,28 +1,35 @@
-''' 
-  Concorde.py
-  
-  Created: June 2024, M Clarke 
+# ATR_72.py
 
-''' 
+# Created: 2025, M. Clarke, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core                                  import Units , Data     
-from RCAIDE.Library.Plots     import *     
-
-from   RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop  import design_turboprop
+from   RCAIDE.Framework.Core import Units
+from   RCAIDE.Library.Plots  import *   
+from   RCAIDE.Library.Methods.Performance.estimate_stall_speed import estimate_stall_speed 
 from   RCAIDE.Library.Methods.Geometry.Planform                import segment_properties
+
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                   import design_propeller 
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                   import design_optimal_motor
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common               import compute_motor_weight 
+from RCAIDE.Library.Methods.Performance.estimate_stall_speed                              import estimate_stall_speed
+from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator                 import design_turboelectric_generator 
+from RCAIDE.Library.Plots.Mission.plot_flight_conditions                                  import plot_flight_conditions
+from RCAIDE.Library.Plots import *
 
 # python imports 
 import numpy as np  
-from copy import deepcopy
+from   copy import deepcopy
+import matplotlib.pyplot as plt 
 import os
 
+# ----------------------------------------------------------------------
+#   Main
+# ----------------------------------------------------------------------
 def vehicle_setup():
-
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------
@@ -385,94 +392,9 @@ def vehicle_setup():
     
     # add to vehicle
     vehicle.append_component(fuselage)  
-    
-    # ------------------------------------------------------------------
-    #   Landing gear
-    # ------------------------------------------------------------------  
-    landing_gear                                = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
-    main_gear                                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    nose_gear                                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
-    main_gear.strut_length                      = 12. * Units.inches  
-    nose_gear.strut_length                      = 6. * Units.inches 
-                                                
-    landing_gear.main                           = main_gear
-    landing_gear.nose                           = nose_gear
-    
-    #add to vehicle                             
-    vehicle.landing_gear                        = landing_gear
 
-    # ########################################################  Energy Network  #########################################################  
-    net                                         = RCAIDE.Framework.Networks.Fuel()    
-
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
-    #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
- 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Propulsor
-    #------------------------------------------------------------------------------------------------------------------------------------    
-    starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop()    
-    starboard_propulsor.tag                          = 'starboard_propulsor'  
-    starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
-    starboard_propulsor.design_altitude              = 25000*Units.ft                                   # [-]         Design Altitude 
-    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts      
-    starboard_propulsor.design_propeller_efficiency  = 0.86
-    starboard_propulsor.design_thrust                = 10000.0 * Units.N                                # [-]         Design Thrust          
-    starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()            
-    starboard_propulsor.design_propeller_efficiency  = 0.83                                             # [-]         Design Propeller Efficiency
-    starboard_propulsor.gearbox.efficiency           = 0.99                                             # [-]         Design Gearbox Efficiency
-    
-    # Ram inlet 
-    ram                                              = RCAIDE.Library.Components.Powertrain.Converters.Ram()
-    ram.tag                                          = 'ram' 
-    starboard_propulsor.ram                          = ram 
-          
-    # inlet nozzle          
-    inlet_nozzle                                     = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
-    inlet_nozzle.tag                                 = 'inlet nozzle'                                       
-    inlet_nozzle.pressure_ratio                      = 0.98
-    inlet_nozzle.compressibility_effects             = False
-    starboard_propulsor.inlet_nozzle                 = inlet_nozzle
-                                                     
-    # compressor                        
-    compressor                                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
-    compressor.tag                                   = 'lpc'                   
-    compressor.pressure_ratio                        = 10                   
-    starboard_propulsor.compressor                   = compressor
-    
-    # combustor      
-    combustor                                        = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
-    combustor.tag                                    = 'Comb'
-    combustor.efficiency                             = 0.99                   
-    combustor.turbine_inlet_temperature              = 1370                    
-    combustor.pressure_ratio                         = 0.96                    
-    combustor.fuel_data                              = RCAIDE.Library.Attributes.Propellants.Jet_A()  
-    starboard_propulsor.combustor                    = combustor
-        
-    # high pressure turbine         
-    high_pressure_turbine                            = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
-    high_pressure_turbine.tag                        ='hpt'
-    high_pressure_turbine.mechanical_efficiency      = 0.99                       
-    starboard_propulsor.high_pressure_turbine        = high_pressure_turbine 
-        
-    # low pressure turbine      
-    low_pressure_turbine                             = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
-    low_pressure_turbine.tag                         ='lpt'
-    low_pressure_turbine.mechanical_efficiency       = 0.99                      
-    starboard_propulsor.low_pressure_turbine         = low_pressure_turbine
-    
-    # core nozzle    
-    core_nozzle                                      = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
-    core_nozzle.tag                                  = 'core nozzle'          
-    core_nozzle.pressure_ratio                       = 0.99
-    starboard_propulsor.core_nozzle                  = core_nozzle
-    
-    # design starboard_propulsor
-    design_turboprop(starboard_propulsor)
-    
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    #   Nacelles
+    #   Nacelle
     #------------------------------------------------------------------------------------------------------------------------------------ 
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
     nacelle.tag                                 = 'nacelle_1'
@@ -544,23 +466,241 @@ def vehicle_setup():
     nac_segment.height                          = 0.001
     nac_segment.width                           = 0.001  
     nacelle.append_segment(nac_segment) 
-
-    starboard_propulsor.nacelle =  nacelle
     
-    net.propulsors.append(starboard_propulsor)    
+    vehicle.append_component(nacelle)  
+
+    nacelle_2          = deepcopy(nacelle)
+    nacelle_2.tag      = 'nacelle_2'
+    nacelle_2.origin   = [[8.941625295,-4.219315295, 1.616135105 ]]
+    vehicle.append_component(nacelle_2) 
+
+    # ------------------------------------------------------------------
+    #   Landing gear
+    # ------------------------------------------------------------------  
+    landing_gear                                = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
+    main_gear                                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    nose_gear                                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    main_gear.strut_length                      = 12. * Units.inches  
+    nose_gear.strut_length                      = 6. * Units.inches 
+                                                
+    landing_gear.main                           = main_gear
+    landing_gear.nose                           = nose_gear
+    
+    #add to vehicle                             
+    vehicle.landing_gear                        = landing_gear 
+ 
+    # ########################################################  Energy Network  #########################################################  
+    net                                         = RCAIDE.Framework.Networks.Hybrid()    
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Bus
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
+
+    #------------------------------------------------------------------------------------------------------------------------------------           
+    # Battery
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
+    bat_module.electrical_configuration.series             = 20 
+    bat_module.electrical_configuration.parallel           = 210 *  4 
+    bat_module.cell.nominal_capacity                       = 3.8 
+    bat_module.geometrtic_configuration.normal_count       = 42 
+    bat_module.geometrtic_configuration.parallel_count     = 100 *  4 
+
+    for _ in range(12):
+        bat_copy = deepcopy(bat_module)
+        bus.battery_modules.append(bat_copy)
+
+    bus.battery_module_electric_configuration = 'Series' 
+    bus.initialize_bus_properties() 
 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Propulsor: Port Propulsor
-    #------------------------------------------------------------------------------------------------------------------------------------      
+    #  Starboard Propulsor
+    #------------------------------------------------------------------------------------------------------------------------------------   
+    starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
+    starboard_propulsor.tag                          = 'starboard_propulsor'
 
-    port_propulsor                                  = deepcopy(starboard_propulsor) 
-    port_propulsor.tag                              = 'port_propulsor' 
-    port_propulsor.origin                           = [[ 9.559106394 ,-4.219315295, 1.616135105]]  # change origin 
-    port_propulsor.nacelle.tag                      = 'port_propulsor_nacelle' 
-    port_propulsor.nacelle.origin                   = [[8.941625295,-4.219315295, 1.616135105 ]]
-         
+    # Electronic Speed Controller       
+    esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
+    esc.tag                                          = 'esc_1'
+    esc.efficiency                                   = 0.95 
+    esc.origin                                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
+    starboard_propulsor.electronic_speed_controller  = esc   
+    # Propeller              
+    propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
+    propeller.tag                                    = 'propeller_1'  
+    propeller.tip_radius                             = 13*Units.ft / 2
+    propeller.number_of_blades                       = 6
+    propeller.hub_radius                             = 20.  * Units.inches / 2 
+    propeller.cruise.design_freestream_velocity      = 270 * Units.kts  
+    propeller.cruise.design_angular_velocity         = 1200 *  Units.rpm 
+    propeller.cruise.design_altitude                 = 25000. * Units.feet 
+    propeller.cruise.design_thrust                   = 10000 * Units.N  
+    
+    propeller.origin                                 = [[ 9.559106394 ,4.219315295, 1.616135105]] 
+    ospath                                           = os.path.abspath(__file__)
+    separator                                        = os.path.sep
+    rel_path                                         = os.path.dirname(ospath)   + separator + '..' + separator 
+    airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.tag                                      = 'NACA_4412' 
+    airfoil.coordinate_file                          =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   
+    airfoil.polar_files                              =[ rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
+                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
+                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
+                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
+                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
+    propeller.append_airfoil(airfoil)                       
+    propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
+    propeller                                        = design_propeller(propeller)    
+    starboard_propulsor.rotor                        = propeller   
+              
+    # DC_Motor       
+    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    motor.efficiency                                 = 0.98
+    motor.origin                                     = [[ 9.559106394 ,4.219315295, 1.616135105]]
+    motor.nominal_voltage                            = bus.voltage * 0.7
+    motor.no_load_current                            = 1
+    motor.rotor_radius                               = propeller.tip_radius
+    motor.design_torque                              = propeller.cruise.design_torque 
+    motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity # Horse power of gas engine variant  750 * Units['hp']
+    design_optimal_motor(motor)  
+    motor.mass_properties.mass                       = compute_motor_weight(motor) 
+    starboard_propulsor.motor                        = motor 
+
+    # append propulsor to distribution line 
+    net.propulsors.append(starboard_propulsor) 
+
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Port Propulsor
+    #------------------------------------------------------------------------------------------------------------------------------------   
+    port_propulsor                             = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
+    port_propulsor.tag                         = "port_propulsor"
+
+    esc_2                                      = deepcopy(esc)
+    esc_2.origin                               = [[ 9.559106394 ,-4.219315295, 1.616135105]]       
+    port_propulsor.electronic_speed_controller = esc_2  
+
+    propeller_2                                = deepcopy(propeller)
+    propeller_2.tag                            = 'propeller_2' 
+    propeller_2.origin                         =  [[ 9.559106394 ,-4.219315295, 1.616135105]]
+    propeller_2.clockwise_rotation             = False        
+    port_propulsor.rotor                       = propeller_2  
+
+    motor_2                                    = deepcopy(motor)
+    motor_2.origin                             =  [[ 9.559106394 ,-4.219315295, 1.616135105]]     
+    port_propulsor.motor                       = motor_2  
+
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor) 
+
+    #------------------------------------------------------------------------------------------------------------------------------------           
+    # Payload 
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    payload                      = RCAIDE.Library.Components.Payloads.Payload()
+    payload.power_draw           = 10. # Watts
+    payload.mass_properties.mass = 1.0 * Units.kg
+    bus.payload                  = payload
+
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Avionics
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.power_draw          = 20. # Watts
+    bus.avionics                 = avionics
+
+    #------------------------------------------------------------------------------------------------------------------------------------   
+    # Assign propulsors to bus       
+    bus.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]] 
+
+    # append bus   
+    net.busses.append(bus)
+
+
+    #------------------------------------------------------------------------------------------------------------------------- 
+    # Fuel Distrubition Line 
+    #------------------------------------------------------------------------------------------------------------------------- 
+    fuel_line                                  = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
+
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Turboelectric_Generator
+    #------------------------------------------------------------------------------------------------------------------------------------         
+    turboelectric_generator                                     = RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator() 
+    turboelectric_generator.origin                              = [[ 15 ,0, 1.616135105]]  
+    turboelectric_generator.length                              = 0.945 
+
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Turboshaft of the Turboelectric_Generator
+    turboshaft = turboelectric_generator.turboshaft 
+    turboshaft.design_altitude          = 25000*Units.ft
+    turboshaft.design_mach_number       = 0.5   
+    turboshaft.design_power             = 3E6 *Units.W       
+    turboshaft.design_angular_velocity  = 30000.0*Units.rpm  
+
+    # working fluid                                    
+    turboshaft.working_fluid          = RCAIDE.Library.Attributes.Gases.Air() 
+    ram                                                       = RCAIDE.Library.Components.Powertrain.Converters.Ram()
+    ram.tag                                                   = 'ram' 
+    turboshaft.ram                    = ram 
+
+    # inlet nozzle                                 
+    inlet_nozzle                                              = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
+    inlet_nozzle.tag                                          = 'inlet nozzle'
+    inlet_nozzle.polytropic_efficiency                        = 0.98
+    inlet_nozzle.pressure_ratio                               = 0.98 
+    turboshaft.inlet_nozzle           = inlet_nozzle 
+
+    # compressor                                   
+    compressor                                                = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
+    compressor.tag                                            = 'compressor'
+    compressor.polytropic_efficiency                          = 0.91
+    compressor.pressure_ratio                                 = 4.35  
+    compressor.mass_flow_rate                                 = 1.9 
+    turboshaft.compressor             = compressor
+
+    # low pressure turbine  
+    low_pressure_turbine                                      = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
+    low_pressure_turbine.tag                                  ='lpt'
+    low_pressure_turbine.mechanical_efficiency                = 0.99
+    low_pressure_turbine.polytropic_efficiency                = 0.93 
+    turboshaft.low_pressure_turbine   = low_pressure_turbine
+
+    # high pressure turbine     
+    high_pressure_turbine                                     = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
+    high_pressure_turbine.tag                                 ='hpt'
+    high_pressure_turbine.mechanical_efficiency               = 0.99
+    high_pressure_turbine.polytropic_efficiency               = 0.93 
+    turboshaft.high_pressure_turbine  = high_pressure_turbine 
+
+    # combustor  
+    combustor                                                 = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
+    combustor.tag                                             = 'Comb'
+    combustor.efficiency                                      = 0.99 
+    combustor.alphac                                          = 1.0     
+    combustor.turbine_inlet_temperature                       = 889
+    combustor.pressure_ratio                                  = 0.95
+    combustor.fuel_data                                       = RCAIDE.Library.Attributes.Propellants.Jet_A()  
+    turboshaft.combustor              = combustor
+
+    # core nozzle
+    core_nozzle                                               = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
+    core_nozzle.tag                                           = 'core nozzle'
+    core_nozzle.polytropic_efficiency                         = 0.95
+    core_nozzle.pressure_ratio                                = 0.99  
+    turboshaft.core_nozzle            = core_nozzle
+
+    #-----------------------------------------------------------------------------------------------------------------------------------  
+    # Generator of the Turboelectric_Generator 
+    generator = turboelectric_generator.generator 
+    generator.efficiency              = 0.98 
+    generator.nominal_voltage         = bus.voltage 
+    generator.no_load_current         = 1  
+    generator.design_power            = turboshaft.design_power 
+    generator.design_angular_velocity = turboshaft.design_angular_velocity
+
+    # design turboelectric_generator
+    design_turboelectric_generator(turboelectric_generator)
+    
+    net.converters.append(turboelectric_generator)
+    fuel_line.assigned_converters = [[turboelectric_generator.tag]]
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
@@ -573,14 +713,9 @@ def vehicle_setup():
     fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
     fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center
     fuel_tank.volume                                 = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
-    
+
     # apend fuel tank to dataclass of fuel tanks on fuel line 
     fuel_line.fuel_tanks.append(fuel_tank) 
-
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line    
-    fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
-    
 
     # Append fuel line to Network      
     net.fuel_lines.append(fuel_line)   
@@ -589,8 +724,6 @@ def vehicle_setup():
     vehicle.append_energy_network(net)     
 
     return vehicle
-
-
 
 # ----------------------------------------------------------------------
 #   Define the Configurations

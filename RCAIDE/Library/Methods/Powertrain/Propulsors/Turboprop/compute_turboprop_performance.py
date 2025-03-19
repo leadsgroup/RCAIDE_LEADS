@@ -25,7 +25,6 @@ import numpy as np
 # compute_turboprop_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]):    
-    
     ''' Computes the performance of one turboprop
     
     Assumptions: 
@@ -181,7 +180,8 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     turboprop_conditions.overall_efficiency        = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
     turboprop_conditions.thermal_efficiency        = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)   
     compressor_conditions.omega                    = compressor.design_angular_velocity * turboprop_conditions.throttle 
-
+    
+    # compute electrical power if generated/supplied  
     power_elec = 0*state.ones_row(1)
     if compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
         compressor_motor_conditions                 = conditions.energy.converters[compressor.motor.tag] 
@@ -196,7 +196,6 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
         compressor_generator_conditions.inputs.omega   = compressor_conditions.omega
         compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
         power_elec =  compressor_generator_conditions.inputs.power  
-    
             
     # Store data
     core_nozzle_res = Data(
@@ -275,7 +274,6 @@ def reuse_stored_turboprop_data(turboprop,state,network,fuel_line,bus,stored_pro
 
     power                                              = conditions.energy.propulsors[turboprop.tag].power 
     conditions.energy.propulsors[turboprop.tag].moment = moment
- 
     
     power_elec = 0*state.ones_row(1)
     if compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 

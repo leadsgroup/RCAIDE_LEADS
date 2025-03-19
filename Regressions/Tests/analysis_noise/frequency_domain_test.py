@@ -49,10 +49,8 @@ def Harmonic_Noise_Validation(PP):
     
     F8745_D4_verification_values_60deg = [156.92733365790193,100.86943888034477,109.60611659108622 ]
     F8745_D4_verification_values_90deg = [159.07711862067382,107.37402397630274,117.14527113998096 ]
-    fidelities                         = ['point_source', 'line_source', 'plane_source'] 
-    electric_rotor                     = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
-    rotor                              = F8745_D4_Propeller() 
-    electric_rotor.rotor               = rotor
+    fidelities                         = ['point_source', 'line_source', 'plane_source']  
+    rotor                              = F8745_D4_Propeller()  
     
     plot_rotor(rotor, save_figure=False, show_figure=False)
     
@@ -126,7 +124,7 @@ def Harmonic_Noise_Validation(PP):
     # Run simulation using different fidelities 
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     for fid in  range(len(fidelities)): 
-        electric_rotor.append_operating_conditions(segment)
+        rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.noise)
         
         # Run BEMT
         segment.state.conditions.expand_rows(ctrl_pts)
@@ -217,10 +215,8 @@ def Broadband_Noise_Validation(PP):
                                                   60.58095738])
 
     
-    
-    electric_rotor                 = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
-    rotor                          = APC_11x4_Propeller()  
-    electric_rotor.rotor           = rotor     
+     
+    rotor                          = APC_11x4_Propeller()   
     
     # Operating Conditions       
     APC_SF_inflow_ratio           = 0.08  
@@ -283,7 +279,7 @@ def Broadband_Noise_Validation(PP):
     rotor.number_azimuthal_stations                        = 16
     rotor.use_2d_analysis                                  = True
      
-    electric_rotor.append_operating_conditions(segment) 
+    rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.noise)
     # Run BEMT
     segment.state.conditions.expand_rows(ctrl_pts)
     rotor_conditions             =  segment.state.conditions.energy.converters[rotor.tag]       

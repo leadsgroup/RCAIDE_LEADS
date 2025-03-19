@@ -1,4 +1,4 @@
-# RCAIDE/Framework/Energy/Networks/Fuel.py
+# RCAIDE/Framework/Energy/Networks/Hybrid.py
 # 
 # Created:  Oct 2023, M. Clarke
 #           Jan 2025, M. Clarke 
@@ -10,43 +10,32 @@
 import  RCAIDE 
 from RCAIDE.Framework.Mission.Common                      import Residuals 
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
-from .Network                                             import Network
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw import compute_avionics_power_draw
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw  import compute_payload_power_draw
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance  import *
+from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw                import compute_avionics_power_draw
+from RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw                 import compute_payload_power_draw
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import *
+from .Network                                             import Network
 
+# python imports 
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Fuel
 # ----------------------------------------------------------------------------------------------------------------------  
-class Hybrid(Network):
-    """ This is a  hybrid-based network. 
+class Hybrid(Network): 
+    """ MATTEO UPDATE
+     This is a  hybrid-based network. 
     
-        Assumptions:
-        None
-        
-        Source: 
+        An electric network comprising one or more electrichemical energy source and/or fuel cells that to power electro-
+        mechanical conversion machines eg. electric motors via a bus. Electronic speed controllers, thermal management
+        system, avionics, and other eletric power systes paylaods are also modeled. Ducted fans, generators, rotors and
+        motors etc. arranged into groups, called propulsor groups, to siginify how they are connected in the network.
+        The network also takes into consideration thermal management components that are connected to a coolant line.
+        Based on the propulsor, additional unknowns and residuals are added to the mission
     """      
     
     def __defaults__(self):
         """ This sets the default values for the network to function.
-    
-            Assumptions:
-            None
-    
-            Source:
-            N/A
-    
-            Inputs:
-            None
-    
-            Outputs:
-            None
-    
-            Properties Used:
-            N/A
         """           
 
         self.tag                          ='hybrid'
@@ -57,40 +46,32 @@ class Hybrid(Network):
     # linking the different network components
     def evaluate(network,state,center_of_gravity):
         """ Calculate thrust given the current state of the vehicle
-    
-            Assumptions:
-            None
-    
-            Source:
-            N/A
-    
-            Inputs: 
-    
-            Outputs:  
+         MATTEO UPDATE
+         
         """
         
 
         # unpack   
-        conditions        = state.conditions 
-        busses            = network.busses 
-        fuel_lines        = network.fuel_lines 
-        coolant_lines     = network.coolant_lines
-        converters        = network.converters 
-        total_thrust      = 0. * state.ones_row(3) 
-        total_mech_power  = 0. * state.ones_row(1) 
-        total_elec_power  = 0. * state.ones_row(1) 
-        total_moment      = 0. * state.ones_row(3)  
-        fuel_mdot         = 0. * state.ones_row(1)
-        total_mdot        = 0. * state.ones_row(1)
-        cryogen_mdot      = 0. * state.ones_row(1)  
-        reverse_thrust    = network.reverse_thrust
-
-        stored_results_flag  = False
-        stored_propulsor_tag = None         
+        conditions           = state.conditions 
+        busses               = network.busses 
+        fuel_lines           = network.fuel_lines 
+        coolant_lines        = network.coolant_lines
+        converters           = network.converters 
+        total_thrust         = 0. * state.ones_row(3) 
+        total_mech_power     = 0. * state.ones_row(1) 
+        total_elec_power     = 0. * state.ones_row(1) 
+        total_moment         = 0. * state.ones_row(3)  
+        fuel_mdot            = 0. * state.ones_row(1)
+        total_mdot           = 0. * state.ones_row(1)
+        cryogen_mdot         = 0. * state.ones_row(1)  
+        reverse_thrust       = network.reverse_thrust 
 
         # ----------------------------------------------------------       
         # 1.0 Propulsors 
-        # ----------------------------------------------------------       
+        # ----------------------------------------------------------
+        # 1.1 Fuel Propulsors 
+        stored_results_flag  = False
+        stored_propulsor_tag = None    
         for fuel_line in fuel_lines:
             for propulsor_group in fuel_line.assigned_propulsors:
                 for propulsor_tag in propulsor_group:
@@ -114,10 +95,12 @@ class Hybrid(Network):
         
                         # compute total mass flow rate 
                         fuel_mdot     += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
-                        
-       
-        for bus in busses:  
-            bus_conditions  = state.conditions.energy[bus.tag]
+                
+        # 1.1 Electric Propulsors                 
+        stored_results_flag  = False
+        stored_propulsor_tag = None   
+        for bus in busses:   
+            bus_conditions  = state.conditions.energy[bus.tag] 
             avionics        = bus.avionics
             payload         = bus.payload  
 
@@ -128,7 +111,7 @@ class Hybrid(Network):
             compute_payload_power_draw(payload,bus,conditions)
 
             # Bus Voltage 
-            bus_voltage = bus.voltage * state.ones_row(1)
+            bus_voltage = bus.voltage * state.ones_row(1)       
 
             if conditions.energy.recharging:             
                 bus.charging_current         = bus.nominal_capacity * bus.charging_c_rate 
@@ -164,8 +147,8 @@ class Hybrid(Network):
              
         # ------------------------------------------------------------------------------------------------------------------- 
         # 2.0 Converters
-        # ------------------------------------------------------------------------------------------------------------------- 
-        phi   = state.conditions.energy.hybrid_power_split_ratio 
+        # -------------------------------------------------------------------------------------------------------------------  
+        # 2.1 Fuel Converters         
         for fuel_line in fuel_lines:  
             for converter_group in fuel_line.assigned_converters:
                 for converter_tag in converter_group:
@@ -174,17 +157,16 @@ class Hybrid(Network):
                         converter.inverse_calculation = True           
                         if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator): 
                             generator             = converter.generator   
-                            state.conditions.energy.converters[generator.tag].outputs.power  =  total_elec_power*(1 - phi) 
+                            state.conditions.energy.converters[generator.tag].outputs.power  =  total_elec_power*(1 - state.conditions.energy.hybrid_power_split_ratio ) 
                             P_mech, P_elec, stored_results_flag,stored_propulsor_tag = converter.compute_performance(state,fuel_line,bus)  
                             fuel_mdot += conditions.energy.converters[converter.tag].fuel_flow_rate  
              
-                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft):  
-                            power_mech           = total_mech_power*(1 - phi)   
-                            state.conditions.energy.converters[converter.tag].power = power_mech 
+                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft):   
+                            state.conditions.energy.converters[converter.tag].power = total_mech_power*(1 - state.conditions.energy.hybrid_power_split_ratio )   
                             P_mech,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state)   
                             fuel_mdot  += conditions.energy.converters[converter.tag].fuel_flow_rate   
-                          
                     
+        # 2.1 Electric Converters                            
         for bus in busses: 
             bus_conditions  = state.conditions.energy[bus.tag]            
             for converter_group in bus.assigned_converters:
@@ -205,13 +187,16 @@ class Hybrid(Network):
         # ----------------------------------------------------------        
         # 3.0 Sources
         # ----------------------------------------------------------
+        # 3.1 Fuel Sources  
         for fuel_line in fuel_lines:     
             for fuel_tank in fuel_line.fuel_tanks:  
                 conditions.energy[fuel_line.tag][fuel_tank.tag].mass_flow_rate  += fuel_tank.fuel_selector_ratio*fuel_mdot + fuel_tank.secondary_fuel_flow
                    
         time               = state.conditions.frames.inertial.time[:,0] 
         delta_t            = np.diff(time)
-        total_mdot         += fuel_mdot 
+        total_mdot         += fuel_mdot
+        
+        # 3.2 Electric Sources   
         for bus in  busses: 
             for t_idx in range(state.numerics.number_of_control_points):            
                 stored_results_flag       = False
@@ -284,9 +269,6 @@ class Hybrid(Network):
 
         return
     
-     
-   
-      
     def unpack_unknowns(self,segment):
         """Unpacks the unknowns set in the mission to be available for the mission.
 
@@ -306,14 +288,17 @@ class Hybrid(Network):
         """            
          
         unknowns(segment) 
-        if issubclass(type(segment), type(RCAIDE.Framework.Mission.Segments.Ground)):
-            pass 
+        #if issubclass(type(segment), type(RCAIDE.Framework.Mission.Segments.Ground)):
+            #pass 
         for network in segment.analyses.energy.vehicle.networks:
+            # Fuel unknowns 
             for fuel_line_i, fuel_line in enumerate(network.fuel_lines):    
                 if fuel_line.active:
                     for propulsor_group in  fuel_line.assigned_propulsors:
                         propulsor = network.propulsors[propulsor_group[0]]
-                        propulsor.unpack_propulsor_unknowns(segment) 
+                        propulsor.unpack_propulsor_unknowns(segment)
+                        
+            # electric unknowns 
             for bus_i, bus in enumerate(network.busses):    
                 if bus.active:
                     for propulsor_group in  bus.assigned_propulsors:
@@ -376,7 +361,6 @@ class Hybrid(Network):
             N/A
         """                   
         segment.state.residuals.network = Residuals()
-        segment.state.conditions.energy.hybrid_power_split_ratio = segment.hybrid_power_split_ratio * segment.state.ones_row(1)
         
         for network in segment.analyses.energy.vehicle.networks:
             for propulsor in network.propulsors: 

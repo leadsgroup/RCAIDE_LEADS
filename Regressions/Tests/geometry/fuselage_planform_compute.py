@@ -58,7 +58,7 @@ def main():
  
      fuselage_planform(fuselage)
 
-     show_figure = True
+     show_figure = False
      plot_layout_of_passenger_accommodations(fuselage, show_figure=show_figure)
      
      # Truth Values

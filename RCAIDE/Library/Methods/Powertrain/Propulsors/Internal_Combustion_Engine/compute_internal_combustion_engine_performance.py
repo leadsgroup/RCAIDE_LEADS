@@ -78,7 +78,7 @@ def compute_internal_combustion_engine_performance(propulsor,state,fuel_line=Non
     ice_conditions.power       = conditions.energy.converters[propeller.tag].power  
     
     # currently, no hybridization
-    power_elec =  0*state.ones_row(3)
+    power_elec =  0*state.ones_row(1)
     
     return ice_conditions.thrust,ice_conditions.moment,ice_conditions.power,power_elec,stored_results_flag,stored_propulsor_tag  
     
@@ -134,7 +134,7 @@ def reuse_stored_internal_combustion_engine_data(propulsor,state,network,fuel_li
     conditions.energy.propulsors[propulsor.tag].moment = moment  
     conditions.energy.propulsors[propulsor.tag].power  = power
   
-    power_elec =  0*state.ones_row(3)
+    power_elec =  0*state.ones_row(1)
     
     return thrust_vector,moment,power, power_elec
 

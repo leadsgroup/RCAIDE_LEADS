@@ -229,20 +229,27 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     turbojet_conditions.overall_efficiency         = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
     turbojet_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
  
+
+    # compute shaft RPMs   
     lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
     hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+   
+    # compute electrical power if generated/supplied  
+    power_elec = 0*state.ones_row(1)
+    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
+        compressor_motor_conditions                 = conditions.energy.converters[low_pressure_compressor.motor.tag] 
+        compressor_motor_conditions.outputs.power   = power *conditions.energy.hybrid_power_split_ratio   
+        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
+        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
+        power_elec =  compressor_motor_conditions.outputs.power  
+    
+    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
+        compressor_generator_conditions                = conditions.energy.converters[low_pressure_compressor.generator.tag] 
+        compressor_generator_conditions.inputs.power   = power *conditions.energy.hybrid_power_split_ratio  
+        compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
+        compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
+        power_elec =  compressor_generator_conditions.inputs.power  
 
-    if low_pressure_compressor.motor != None:
-        D     = state.numerics.time.differentiate   
-        lpc_motor_conditions                     = low_pressure_compressor[low_pressure_compressor.motor.tag]
-        lpc_motor_conditions.outputs.power       = np.dot(D,lpc_motor_conditions.outputs.work_done)         
-        lpc_motor_conditions.outputs.omega       = lpc_conditions.omega
-         
-    if low_pressure_compressor.generator != None:
-        D     = state.numerics.time.differentiate   
-        lpc_generator_conditions                 = low_pressure_compressor[low_pressure_compressor.generator.tag] 
-        lpc_generator_conditions.inputs.power   = np.dot(D,lpc_generator_conditions.inputs.work_done)         
-        lpc_generator_conditions.inputs.omega   = lpc_generator_conditions.omega 
         
     # store data
     core_nozzle_res = Data(
@@ -329,8 +336,14 @@ def reuse_stored_turbojet_data(turbojet,state,network,fuel_line,bus,stored_propu
     power                                             = conditions.energy.propulsors[turbojet.tag].power 
     conditions.energy.propulsors[turbojet.tag].moment = moment
 
-    # compute total electrical power generation or comsumtion     
-    power_elec =  conditions.energy.converters[low_pressure_compressor.tag].outputs.external_electrical_power + conditions.energy.converters[high_pressure_compressor.tag].outputs.external_electrical_power 
+    power_elec = 0*state.ones_row(1)
+    if low_pressure_turbine.motor != None and  len(state.numerics.time.differentiate) > 0: 
+        conditions.energy.converters[low_pressure_turbine.motor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.motor.tag]) 
+        power_elec =  conditions.energy.converters[low_pressure_turbine.motor.tag].outputs.power  
     
+    if low_pressure_turbine.generator != None and len(state.numerics.time.differentiate) > 0:  
+        conditions.energy.converters[low_pressure_turbine.generator.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
+        power_elec =  conditions.energy.converters[low_pressure_turbine.generator.tag].inputs.power
+        
     return thrust_vector,moment,power, power_elec
  

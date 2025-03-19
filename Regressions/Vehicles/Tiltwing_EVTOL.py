@@ -312,7 +312,7 @@ def vehicle_setup(new_regression=True):
     prop_rotor_motor.nominal_voltage         = bus.voltage *0.75
     prop_rotor_motor.no_load_current         = 0.1
     prop_rotor_motor.design_torque           = prop_rotor.hover.design_torque
-    prop_rotor_motor.design_angular_velocity = prop_rotor.hover.design_angular_velocity/prop_rotor_motor.gear_ratio  
+    prop_rotor_motor.design_angular_velocity = prop_rotor.hover.design_angular_velocity  
     design_optimal_motor(prop_rotor_motor)
     prop_rotor_motor.mass_properties.mass    = compute_motor_weight(prop_rotor_motor)     
     lift_propulsor.motor                     = prop_rotor_motor
