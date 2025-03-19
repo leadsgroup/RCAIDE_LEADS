@@ -96,7 +96,7 @@ class Hybrid(Network):
                         # compute total mass flow rate 
                         fuel_mdot     += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
                 
-        # 1.1 Electric Propulsors                 
+        # 1.2 Electric Propulsors                 
         stored_results_flag  = False
         stored_propulsor_tag = None   
         for bus in busses:   
@@ -287,9 +287,7 @@ class Hybrid(Network):
         N/A
         """            
          
-        unknowns(segment) 
-        #if issubclass(type(segment), type(RCAIDE.Framework.Mission.Segments.Ground)):
-            #pass 
+        unknowns(segment)  
         for network in segment.analyses.energy.vehicle.networks:
             # Fuel unknowns 
             for fuel_line_i, fuel_line in enumerate(network.fuel_lines):    
@@ -333,11 +331,11 @@ class Hybrid(Network):
                     for propulsor_group in  fuel_line.assigned_propulsors:
                         propulsor =  network.propulsors[propulsor_group[0]]
                         propulsor.pack_propulsor_residuals(segment) 
-            for bus_i, bus in enumerate(network.busses):    
-                if bus.active:
-                    for propulsor_group in  bus.assigned_propulsors:
-                        propulsor =  network.propulsors[propulsor_group[0]]
-                        propulsor.pack_propulsor_residuals(segment)   
+            #for bus_i, bus in enumerate(network.busses):    
+                #if bus.active:
+                    #for propulsor_group in  bus.assigned_propulsors:
+                        #propulsor =  network.propulsors[propulsor_group[0]]
+                        #propulsor.pack_propulsor_residuals(segment)   
         return      
     
     def add_unknowns_and_residuals_to_segment(self, segment):
@@ -368,28 +366,31 @@ class Hybrid(Network):
     
             for converter in network.converters: 
                 converter.append_operating_conditions(segment,segment.state.conditions.energy)                 
-
-            # ------------------------------------------------------------------------------------------------------            
-            # Create fuel_line results data structure  
-            # ------------------------------------------------------------------------------------------------------    
+ 
             for fuel_line_i, fuel_line in enumerate(network.fuel_lines):   
+                # ------------------------------------------------------------------------------------------------------            
+                # Create fuel_line results data structure  
+                # ------------------------------------------------------------------------------------------------------   
                 segment.state.conditions.energy[fuel_line.tag] = RCAIDE.Framework.Mission.Common.Conditions() 
                 segment.state.conditions.noise[fuel_line.tag]  = RCAIDE.Framework.Mission.Common.Conditions()   
                  
-                # Assign network-specific  residuals, unknowns and results data structures 
+                # ------------------------------------------------------------------------------------------------------
+                # Assign network-specific  residuals, unknowns and results data structures
+                # ------------------------------------------------------------------------------------------------------
                 if fuel_line.active:
                     for propulsor_group in  fuel_line.assigned_propulsors:
                         propulsor =  network.propulsors[propulsor_group[0]]
                         propulsor.append_propulsor_unknowns_and_residuals(segment)
                         
-                # Assign sub component results data structures 
+                # ------------------------------------------------------------------------------------------------------
+                # Assign sub component results data structures
+                # ------------------------------------------------------------------------------------------------------  
                 for fuel_tank in  fuel_line.fuel_tanks: 
                     fuel_tank.append_operating_conditions(segment,fuel_line) 
     
             # ------------------------------------------------------------------------------------------------------            
             # Create bus results data structure  
-            # ------------------------------------------------------------------------------------------------------                       
-            
+            # ------------------------------------------------------------------------------------------------------     
             for bus_i, bus in enumerate(network.busses):   
                 # ------------------------------------------------------------------------------------------------------            
                 # Create bus results data structure  
@@ -428,10 +429,10 @@ class Hybrid(Network):
                 # Create coolant_lines results data structure  
                 # ------------------------------------------------------------------------------------------------------
                 segment.state.conditions.energy[coolant_line.tag] = RCAIDE.Framework.Mission.Common.Conditions()        
+                
                 # ------------------------------------------------------------------------------------------------------
                 # Assign network-specific  residuals, unknowns and results data structures
-                # ------------------------------------------------------------------------------------------------------ 
-                 
+                # ------------------------------------------------------------------------------------------------------       
                 for battery_module in coolant_line.battery_modules: 
                     for btms in battery_module:
                         btms.append_operating_conditions(segment,coolant_line)

@@ -7,15 +7,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-# RCAIDE imports 
-import RCAIDE  
-from RCAIDE.Framework.Mission.Common                      import Residuals
-from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns  
-import numpy as np
-
-from .Hybrid import Hybrid
-# Python imports
-import  numpy as  np
+# RCAIDE imports  
+from .Hybrid import Hybrid 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electric
@@ -27,3 +20,4 @@ class Electric(Hybrid):
         """ This sets the default values for the network to function. 
         """         
         self.tag                          = 'electric' 
+        self.hybrid_power_split_ratio     = 0.0        

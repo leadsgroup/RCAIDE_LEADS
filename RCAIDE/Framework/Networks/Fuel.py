@@ -19,4 +19,4 @@ class Fuel(Hybrid):
         """ This sets the default values for the network to function. 
         """  
         self.tag                          = 'fuel'
-     
+        self.hybrid_power_split_ratio     = 0.0
