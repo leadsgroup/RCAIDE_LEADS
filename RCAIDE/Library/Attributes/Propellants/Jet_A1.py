@@ -49,25 +49,24 @@ class Jet_A1(Propellant):
         self.fuel_surrogate_S3                      = {'NC12H26':0.384, 'MCYC6':0.234, 'IC16H34' : 0.148,'C7H8':0.234, 'C10H8':0.02}
         self.fuel_surrogate_S4                      = {'NC12H26':0.290, 'IC16H34' : 0.142,'C7H8':0.249, 'DECALIN':0.319, 'C10H8':0.02}
         self.fuel_surrogate_S5                      = {'NC12H26':0.371, 'IC8H18':0.02, 'IC16H34' : 0.206,'C7H8':0.259, 'DECALIN':0.145, 'C10H8':0.02}
-        self.air_chemical_properties                = {'O2':0.2095, 'N2':0.7809, 'AR':0.0096}
-        self.chemical_kinetics                      = 'POLIMI_PRF_PAH_RFUELS_HT_1412.yaml'
+        self.kinetic_mechanism                      = 'POLIMI_PRF_PAH_RFUELS_HT_1412.yaml'
         
         # critical temperatures   
-        self.temperatures.flash                     = 311.15  # K
-        self.temperatures.autoignition              = 483.15  # K
-        self.temperatures.freeze                    = 233.15  # K
-        self.temperatures.boiling                   = 0.0     # K  
+        self.temperatures.flash                     = 311.15  # [K]
+        self.temperatures.autoignition              = 483.15  # [K]
+        self.temperatures.freeze                    = 233.15  # [K]
+        self.temperatures.boiling                   = 0.0     # [K]  
         
-        self.emission_indices.Production            = 0.4656  # kg/kg Greet 
-        self.emission_indices.CO2                   = 3.16    # kg/kg  fuel
-        self.emission_indices.H2O                   = 1.23    # kg/kg  fuel 
-        self.emission_indices.SO2                   = 0.0012  # kg/kg  fuel
-        self.emission_indices.NOx                   = 0.01514 # kg/kg  fuel
-        self.emission_indices.Soot                  = 0.0012  # kg/kg  fuel
+        self.emission_indices.Production            = 0.4656  # [kg/kg Greet] 
+        self.emission_indices.CO2                   = 3.16    # [kg/kg  fuel]
+        self.emission_indices.H2O                   = 1.23    # [kg/kg  fuel] 
+        self.emission_indices.SO2                   = 0.0012  # [kg/kg  fuel]
+        self.emission_indices.NOx                   = 0.01514 # [kg/kg  fuel]
+        self.emission_indices.Soot                  = 0.0012  # [kg/kg  fuel]
 
-        self.global_warming_potential_100.CO2       = 1       # CO2e/kg  
-        self.global_warming_potential_100.H2O       = 0.06    # CO2e/kg  
-        self.global_warming_potential_100.SO2       = -226    # CO2e/kg  
-        self.global_warming_potential_100.NOx       = 52      # CO2e/kg  
-        self.global_warming_potential_100.Soot      = 1166    # CO2e/kg    
-        self.global_warming_potential_100.Contrails = 11      # kg/CO2e/km  
+        self.global_warming_potential_100.CO2       = 1       # [CO2e/kg]  
+        self.global_warming_potential_100.H2O       = 0.06    # [CO2e/kg]  
+        self.global_warming_potential_100.SO2       = -226    # [CO2e/kg]  
+        self.global_warming_potential_100.NOx       = 52      # [CO2e/kg]  
+        self.global_warming_potential_100.Soot      = 1166    # [CO2e/kg]    
+        self.global_warming_potential_100.Contrails = 11      # [kg/CO2e/km]  
