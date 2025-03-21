@@ -134,8 +134,8 @@ def train_model(aerodynamics, Mach):
     conditions.aerodynamics.angles.alpha            = np.ones_like(Machs)*AoAs 
 
     VLM_results,Clift_wing_res,Cdrag_wing_res = call_VLM(conditions,settings,vehicle)
-    Clift_res = VLM_results.Clift
-    Cdrag_res = VLM_results.Cdrag_i
+    Clift_res = VLM_results.CL
+    Cdrag_res = VLM_results.CDi
     CX_res    = VLM_results.CX
     CY_res    = VLM_results.CY
     CZ_res    = VLM_results.CZ
@@ -196,8 +196,8 @@ def train_model(aerodynamics, Mach):
     conditions.aerodynamics.angles.beta             = np.ones_like(Machs)*Betas   
     
     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-    Clift_res = VLM_results.Clift
-    Cdrag_res = VLM_results.Cdrag_i
+    Clift_res = VLM_results.CL
+    Cdrag_res = VLM_results.CDi
     CX_res    = VLM_results.CX
     CY_res    = VLM_results.CY
     CZ_res    = VLM_results.CZ
@@ -226,8 +226,8 @@ def train_model(aerodynamics, Mach):
     
 
     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-    Clift_res = VLM_results.Clift
-    Cdrag_res = VLM_results.Cdrag_i
+    Clift_res = VLM_results.CL
+    Cdrag_res = VLM_results.CDi
     CX_res    = VLM_results.CX
     CY_res    = VLM_results.CY
     CZ_res    = VLM_results.CZ
@@ -235,8 +235,8 @@ def train_model(aerodynamics, Mach):
     CM_res    = VLM_results.CM
     CN_res    = VLM_results.CN
     
-    Clift_u     = np.reshape(VLM_results.Clift,(len_Mach,len_u)).T - Clift_alpha_0
-    Cdrag_u     = np.reshape(VLM_results.Cdrag_i,(len_Mach,len_u)).T - Cdrag_alpha_0
+    Clift_u     = np.reshape(VLM_results.CL,(len_Mach,len_u)).T - Clift_alpha_0
+    Cdrag_u     = np.reshape(VLM_results.CDi,(len_Mach,len_u)).T - Cdrag_alpha_0
     CX_u        = np.reshape(VLM_results.CX,(len_Mach,len_u)).T    - CX_alpha_0   
     CY_u        = np.reshape(VLM_results.CY,(len_Mach,len_u)).T    - CY_alpha_0   
     CZ_u        = np.reshape(VLM_results.CZ,(len_Mach,len_u)).T    - CZ_alpha_0   
@@ -256,8 +256,8 @@ def train_model(aerodynamics, Mach):
     conditions.aerodynamics.angles.beta             = np.zeros_like(Machs)       
     
     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-    Clift_res = VLM_results.Clift
-    Cdrag_res = VLM_results.Cdrag_i
+    Clift_res = VLM_results.CL
+    Cdrag_res = VLM_results.CDi
     CX_res    = VLM_results.CX
     CY_res    = VLM_results.CY
     CZ_res    = VLM_results.CZ
@@ -286,8 +286,8 @@ def train_model(aerodynamics, Mach):
     conditions.aerodynamics.angles.beta             = np.zeros_like(Machs) 
     
     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-    Clift_res = VLM_results.Clift
-    Cdrag_res = VLM_results.Cdrag_i
+    Clift_res = VLM_results.CL
+    Cdrag_res = VLM_results.CDi
     CX_res    = VLM_results.CX
     CY_res    = VLM_results.CY
     CZ_res    = VLM_results.CZ
@@ -318,8 +318,8 @@ def train_model(aerodynamics, Mach):
     conditions.freestream.velocity                  = Machs * 343 # speed of sound   
     
     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-    Clift_res = VLM_results.Clift
-    Cdrag_res = VLM_results.Cdrag_i
+    Clift_res = VLM_results.CL
+    Cdrag_res = VLM_results.CDi
     CX_res    = VLM_results.CX
     CY_res    = VLM_results.CY
     CZ_res    = VLM_results.CZ
@@ -349,8 +349,8 @@ def train_model(aerodynamics, Mach):
     conditions.static_stability.roll_rate           = np.ones_like(Machs)*p_s 
     conditions.freestream.velocity                  = Machs * 343 # speed of sound           
     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-    Clift_res = VLM_results.Clift
-    Cdrag_res = VLM_results.Cdrag_i
+    Clift_res = VLM_results.CL
+    Cdrag_res = VLM_results.CDi
     CX_res    = VLM_results.CX
     CY_res    = VLM_results.CY
     CZ_res    = VLM_results.CZ
@@ -381,8 +381,8 @@ def train_model(aerodynamics, Mach):
     conditions.freestream.velocity                  = Machs * 343
     
     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-    Clift_res = VLM_results.Clift
-    Cdrag_res = VLM_results.Cdrag_i
+    Clift_res = VLM_results.CL
+    Cdrag_res = VLM_results.CDi
     CX_res    = VLM_results.CX
     CY_res    = VLM_results.CY
     CZ_res    = VLM_results.CZ
@@ -573,8 +573,8 @@ def train_model(aerodynamics, Mach):
                     conditions.freestream.mach_number               = Machs    
                     vehicle.wings[wing.tag].control_surfaces.aileron.deflection =  delta_a[a_i]
                     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-                    Clift_res = VLM_results.Clift
-                    Cdrag_res = VLM_results.Cdrag_i
+                    Clift_res = VLM_results.CL
+                    Cdrag_res = VLM_results.CDi
                     CX_res    = VLM_results.CX
                     CY_res    = VLM_results.CY
                     CZ_res    = VLM_results.CZ
@@ -633,8 +633,8 @@ def train_model(aerodynamics, Mach):
                     vehicle.wings[wing.tag].control_surfaces.elevator.deflection =  delta_e[e_i]
                 
                     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-                    Clift_res = VLM_results.Clift
-                    Cdrag_res = VLM_results.Cdrag_i
+                    Clift_res = VLM_results.CL
+                    Cdrag_res = VLM_results.CDi
                     CX_res    = VLM_results.CX
                     CY_res    = VLM_results.CY
                     CZ_res    = VLM_results.CZ
@@ -691,8 +691,8 @@ def train_model(aerodynamics, Mach):
                     conditions.freestream.mach_number               = Machs    
                     vehicle.wings[wing.tag].control_surfaces.rudder.deflection =  delta_r[r_i]
                     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-                    Clift_res = VLM_results.Clift
-                    Cdrag_res = VLM_results.Cdrag_i
+                    Clift_res = VLM_results.CL
+                    Cdrag_res = VLM_results.CDi
                     CX_res    = VLM_results.CX
                     CY_res    = VLM_results.CY
                     CZ_res    = VLM_results.CZ
@@ -747,8 +747,8 @@ def train_model(aerodynamics, Mach):
                     conditions.freestream.mach_number               = Machs    
                     vehicle.wings[wing.tag].control_surfaces.flap.deflection = delta_f[f_i]
                     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-                    Clift_res = VLM_results.Clift
-                    Cdrag_res = VLM_results.Cdrag_i
+                    Clift_res = VLM_results.CL
+                    Cdrag_res = VLM_results.CDi
                     CX_res    = VLM_results.CX
                     CY_res    = VLM_results.CY
                     CZ_res    = VLM_results.CZ
@@ -803,8 +803,8 @@ def train_model(aerodynamics, Mach):
                     conditions.freestream.mach_number               = Machs     
                     vehicle.wings[wing.tag].control_surfaces.slat.deflection = delta_s[s_i]
                     VLM_results,_,_ = call_VLM(conditions,settings,vehicle)
-                    Clift_res = VLM_results.Clift
-                    Cdrag_res = VLM_results.Cdrag_i
+                    Clift_res = VLM_results.CL
+                    Cdrag_res = VLM_results.CDi
                     CX_res    = VLM_results.CX
                     CY_res    = VLM_results.CY
                     CZ_res    = VLM_results.CZ
@@ -1272,7 +1272,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     #AoA_wing_induced    = Data()
     
     #results = VLM(conditions,settings,vehicle)
-    #Clift   = results.CL       
+    #CL   = results.CL       
     #Cdrag   = results.CDi     
     #Clift_w = results.Clift_wing        
     #Cdrag_w = results.Cdrag_i_wing       
@@ -1314,6 +1314,6 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
             #AoA_wing_induced[wing.tag] = alpha_i[i]
         #i+=1
     
-    #return Clift,Cdrag,CX,CY,CZ,CL,CM,CN, S_ref,b_ref,c_ref,X_ref,Y_ref ,Z_ref, Clift_wings,Cdrag_wings,AoA_wing_induced,Clift_sectional,Cdrag_i_sectional,CPi  
+    #return CL,Cdrag,CX,CY,CZ,CL,CM,CN, S_ref,b_ref,c_ref,X_ref,Y_ref ,Z_ref, Clift_wings,Cdrag_wings,AoA_wing_induced,Clift_sectional,Cdrag_i_sectional,CPi  
 
         

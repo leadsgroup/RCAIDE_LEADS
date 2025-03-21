@@ -490,19 +490,15 @@ def VLM(conditions,settings,geometry):
     results   = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw)
     CDi_y = results.Cdi_distribution
     CDi_wing = results.CD_i_wing
-    CDi = results.induced_drag_coefficient
-    CDi_2      = np.atleast_2d(np.sum(DRAG,axis=1)/SREF).T 
-    #Cdrag_i_y           = DRAG/CHORD_strip/ES
+    CDi = results.induced_drag_coefficient 
     CL_wing            = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
-    #Cdrag_i_wing        = results.CDi
-    #Cdrag_i_wing        = np.add.reduceat(DRAG,span_breaks,axis=1)/SURF
     alpha_i             = results.induced_AoA_distribution
     
     # Now calculate total coefficients
     CL       = np.atleast_2d(np.sum(LIFT,axis=1)/SREF).T          # CLTOT in VORLAX
     # plt.plot(Y, Clift_y[0,:],'ko')
     # plt.show()
-    #CDi      = np.atleast_2d(np.sum(DRAG,axis=1)/SREF).T        # CDTOT in VORLAX
+    CDi      = np.atleast_2d(np.sum(DRAG,axis=1)/SREF).T        # CDTOT in VORLAX
     CX       = (TANALF * CL - CDi)/(COSALF - SINALF*TANALF)
     CZ       = (CDi+ CX*COSALF)/SINALF 
     CM       = np.atleast_2d(np.sum(MOMENT,axis=1)/SREF).T/c_bar  # CMTOT in VORLAX 1. check deflection is accounted for correctly. 2. check this is right
