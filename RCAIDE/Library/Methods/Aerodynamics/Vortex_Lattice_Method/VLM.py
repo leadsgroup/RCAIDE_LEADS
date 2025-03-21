@@ -487,7 +487,7 @@ def VLM(conditions,settings,geometry):
     # Now calculate the coefficients for each wing
     Clift_y             = LIFT/CHORD_strip/ES
 
-    results   = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw)
+    results   = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw,SREF)
     CDi_y = results.Cdi_distribution
     CDi_wing = results.CD_i_wing
     CDi = results.induced_drag_coefficient 
@@ -620,97 +620,92 @@ def strip_cumsum(arr, chord_breaks, strip_lengths):
     offsets = np.repeat(offsets, strip_lengths, axis=1)
     return cumsum - offsets
 
-def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dist, SURF, n_sw, v_inf=1):
-    rho = 1
-    n_cases, n_segments = cl_dist.shape
+def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dist, SURF, n_sw,SREF, v_inf=1):
+    n_cases = len(alpha_cases)
     n_wings = len(n_sw)
-    wing_indices = np.cumsum([0] + n_sw)
-    
-    # Pre-compute all circulations [n_cases, n_segments]
-    circulation_dist = 0.5 * chord_dist * v_inf * cl_dist
+    rho = 1    
 
-    # Trefftz Plane transformation for all cases [n_cases, n_segments]
-    cos_alpha = np.cos(alpha_cases)[:, None]
-    sin_alpha = np.sin(alpha_cases)[:, None]
-    TP_z_all = cos_alpha * z_dist - sin_alpha * x_dist
-
-    # Split into wings [list of n_wings arrays]
-    y_wings = np.split(y_dist, wing_indices[1:-1], axis=1)
-    z_wings = np.split(TP_z_all, wing_indices[1:-1], axis=1)
-    circ_wings = np.split(circulation_dist, wing_indices[1:-1], axis=1)
-    cl_wings = np.split(cl_dist, wing_indices[1:-1], axis=1)
-
-    # Process all wings simultaneously using vectorized operations
+    # Initialize results storage
+    CDi_total = np.zeros(n_cases)
+    CDi_wing = np.zeros((n_cases, n_wings))
     D_induced = np.zeros((n_cases, n_wings))
-    alpha_i_wings = []
-    Cd_i_wings = []
+    Cd_i_distribution = np.zeros_like(cl_dist)
+    alpha_i = np.zeros_like(cl_dist)
 
-    for wing_idx in range(n_wings):
-        y_control = y_wings[wing_idx]
-        z_control = z_wings[wing_idx]
-        circulation = circ_wings[wing_idx]
-        cl_wing = cl_wings[wing_idx]
+    # Loop over all alpha cases
+    for case_idx in range(n_cases):
+        # Get data for this alpha case
+        cl = cl_dist[case_idx]  
+        alpha = alpha_cases[case_idx]
+
+        # Calculate circulation for this case
+        circulation_dist = 0.5 * chord_dist * v_inf * cl 
+       
+        wing_span_index = 0
+        # Induced velocity calculation for this case
         
-        # Vectorized control point calculations [n_cases, n_segments-1]
-        y_centers = (y_control[:, :-1] + y_control[:, 1:]) / 2
-        z_centers = (z_control[:, :-1] + z_control[:, 1:]) / 2
-        
-        # Shed vortex strength [n_cases, n_segments-1]
-        shed_vortex = np.sign(np.diff(y_control, axis=1)) * np.diff(circulation, axis=1)
+        for wing_index,wing_segments in enumerate(n_sw):
+            wing_span_index_previous = wing_span_index
+            wing_span_index += wing_segments
+            circulation_segments = circulation_dist[wing_span_index_previous:wing_span_index]
+            cl_segments = cl[wing_span_index_previous:wing_span_index]
+            # Control points 
+            y_control_points = y_dist[wing_span_index_previous:wing_span_index]
+            z_control_points = z_dist[wing_span_index_previous:wing_span_index]
+            x_control_points = x_dist[wing_span_index_previous:wing_span_index]
 
-        # Create batched distance matrices [n_cases, M, K]
-        M = y_control.shape[1]  # Number of control points
-        K = y_centers.shape[1]   # Number of vortex segments
-        
-        # Broadcasting all combinations [n_cases, M, K]
-        dy = y_control[:, :, None] - y_centers[:, None, :]
-        dz = z_control[:, :, None] - z_centers[:, None, :]
-        r = np.hypot(dy, dz)
+            # Centerpoints 
+            y_centerpoints = (y_control_points[:-1] + y_control_points[1:]) / 2
+            z_centerpoints = (z_control_points[:-1] + z_control_points[1:]) / 2
+            x_centerpoints = (x_control_points[:-1] + x_control_points[1:]) / 2
 
-        # Vectorized normal vectors [n_cases, M]
-        slope = np.gradient(z_control, y_control, axis=1, edge_order=2)
-        theta = np.arctan2(-1, slope)
-        n_hat = np.stack([np.cos(theta), np.sin(theta)], axis=-1)  [n_cases, M, 2]
+            # Shed vortex segments for this case
+            differences = np.diff(y_control_points)
+            direction = np.sign(differences) * np.ones_like(y_centerpoints)
+            shed_vortex_segments = direction * np.diff(circulation_segments)
 
-        # Induced velocity contributions [n_cases, M, K]
-        with np.errstate(divide='ignore', invalid='ignore'):
-            v_contrib = np.stack([-dz/r, dy/r], axis=-1)  # [n_cases, M, K, 2]
-            v_contrib = np.where(np.isnan(v_contrib), 0, v_contrib)
-            
-            # Dot product with normal vectors [n_cases, M, K]
-            dot_prod = np.sum(v_contrib * n_hat[:, :, None, :], axis=-1)
-            V_induced = np.sum(dot_prod * shed_vortex[:, None, :]/(2*np.pi*r), axis=2)
+            # Trefftz Plane Y-Z location:
+            TP_y_centerpoints = y_centerpoints
+            TP_z_centerpoints = np.cos(alpha) * z_centerpoints - np.sin(alpha) * x_centerpoints
+            TP_y_control_points = y_control_points
+            TP_z_control_points = np.cos(alpha) * z_control_points - np.sin(alpha) * x_control_points
 
-        # Vectorized wake distance calculation
-        dy_wake = np.diff(y_control, axis=1)
-        dz_wake = np.diff(z_control, axis=1)
-        seg_dist = np.hypot(dy_wake, dz_wake)
-        s_wake = np.cumsum(
-            np.hstack([np.hypot(y_control[:, [0]], z_control[:, [0]]), seg_dist]), 
-            axis=1
-        )
+            V_induced = np.zeros_like(y_control_points)
+            for j in range(len(y_control_points)): # Loop through each control point
+                r = np.sqrt(np.square(TP_y_control_points[j] - TP_y_centerpoints) + np.square(TP_z_control_points[j] - TP_z_centerpoints)) # Distance from segment to control point
+                # Calculate normal vector to the wake trace
+                if TP_y_control_points.size < 2 or TP_z_control_points.size < 2:
+                    slope[0] = 0.0  # or np.zeros_like(TP_y_control_points) if needed
+                else:
+                    slope = np.gradient(TP_z_control_points, TP_y_control_points)
+                n_hat = np.array([np.cos(np.arctan2(-1, slope[j])), np.sin(np.arctan2(-1, slope[j]))]) # Normal vector to the wake trace
+                # Calculate induced velocity vector
+                v_hat = np.array([-1*(TP_z_control_points[j] - TP_z_centerpoints)/r, (TP_y_control_points[j] - TP_y_centerpoints)/r])
+                v = v_hat * shed_vortex_segments / (2*np.pi*r)
+                V_induced[j] = np.sum(n_hat[0]*v[0] + n_hat[1]*v[1]) # Downwash. Dot product of normal vector and induced velocity vector.
 
-        # Batched trapezoidal integration [n_cases]
-        D_induced[:, wing_idx] = -0.5 * rho * trapz(V_induced * circulation, s_wake, axis=1)
+            sum = np.sqrt(np.square(y_control_points[0]) + np.square(z_control_points[0]))
+            s_wake = np.array([sum])
+            for j in range(1,len(y_control_points)):
+                dist = np.sqrt(np.square(y_control_points[j] - y_control_points[j-1]) + np.square(z_control_points[j] - z_control_points[j-1]))
+                sum += dist
+                s_wake = np.append(s_wake, sum)
+            D_induced[case_idx,wing_index] = -0.5 * rho * trapz(V_induced * circulation_segments, s_wake)
 
-        # Store distribution results
-        alpha_i = np.arctan(V_induced / v_inf)
-        Cd_i_wings.append(cl_wing * np.sin(-alpha_i))
-        alpha_i_wings.append(alpha_i)
+            # Per-wing CDi (using wing's reference area)
+            CDi_wing[case_idx,wing_index] = D_induced[case_idx,wing_index] / (0.5 * rho * v_inf**2 * SURF[wing_index])
 
-    # Combine results from all wings
-    Cd_i_distribution = np.hstack(Cd_i_wings)
-    alpha_i = np.hstack(alpha_i_wings)
+            # Store results for this case
+            alpha_i_case = np.arctan(V_induced.flatten() / v_inf)
+            Cd_i_distribution[case_idx,wing_span_index_previous:wing_span_index] = cl_segments * np.sin(-alpha_i_case)
+            alpha_i[case_idx,wing_span_index_previous:wing_span_index] = alpha_i_case
 
-    # Final coefficients calculation
-    CDi_wing = D_induced / (0.5 * rho * v_inf**2 * SURF)
-    CDi_total = np.sum(D_induced, axis=1, keepdims=True) / (0.5 * rho * v_inf**2 * np.sum(SURF))
+        CDi_total[case_idx] = np.sum(D_induced[case_idx,:]) / (0.5 * rho * v_inf**2 * SREF)
 
-
+    # Package results
     results = Data()
-    results.induced_drag_coefficient = CDi_total[:, None]
+    results.induced_drag_coefficient = CDi_total[:, np.newaxis]
     results.Cdi_distribution = Cd_i_distribution
     results.CD_i_wing = CDi_wing
     results.induced_AoA_distribution = alpha_i
     return results
-
