@@ -664,52 +664,40 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
         direction = np.sign([[i[1] - i[0]] for i in y_control_points]) * np.ones_like(y_centerpoints)
         shed_vortex_segments = direction * np.diff(circulation_segments)
 
-        # Trefftz Plane coordinates for this alpha
+       # Trefftz Plane Y-Z location:
+        TP_y_centerpoints = y_centerpoints
         TP_z_centerpoints = np.cos(alpha) * z_centerpoints - np.sin(alpha) * x_centerpoints
+        TP_y_control_points = y_control_points
         TP_z_control_points = np.cos(alpha) * z_control_points - np.sin(alpha) * x_control_points
 
         # Induced velocity calculation for this case
         V_induced = np.zeros_like(y_control_points)
-        for i in range(len(y_control_points)):  # Wings
-            for j in range(y_control_points.shape[1]):  # Control points
-                r = np.sqrt(
-                    (y_control_points[i,j] - y_centerpoints[i])**2 + 
-                    (TP_z_control_points[i,j] - TP_z_centerpoints[i])**2
-                )
-                
-                slope = np.gradient(TP_z_control_points[i], y_control_points[i])
-                n_hat = np.array([np.cos(np.arctan2(-1, slope[j])), 
-                                np.sin(np.arctan2(-1, slope[j]))])
-                
-                v_hat = np.array([
-                    -(TP_z_control_points[i,j] - TP_z_centerpoints[i])/r,
-                    (y_control_points[i,j] - y_centerpoints[i])/r
-                ])
-                
-                v = v_hat * shed_vortex_segments[i] / (2*np.pi*r)
-                V_induced[i,j] = np.sum(n_hat[0]*v[0] + n_hat[1]*v[1])
+        for i in range(len(y_control_points)): # Loop through each test case
+            for j in range(len(y_control_points[1])): # Loop through each control point
+                r = np.sqrt(np.square(TP_y_control_points[i,j] - TP_y_centerpoints) + np.square(TP_z_control_points[i,j] - TP_z_centerpoints)) # Distance from segment to control point
+                # Calculate normal vector to the wake trace
+                slope = np.gradient(TP_z_control_points[i], TP_y_control_points[i])
+                n_hat = np.array([np.cos(np.arctan2(-1, slope[j])), np.sin(np.arctan2(-1, slope[j]))]) # Normal vector to the wake trace
+                # Calculate induced velocity vector
+                v_hat = np.array([-1*(TP_z_control_points[i,j] - TP_z_centerpoints)/r, (TP_y_control_points[i,j] - TP_y_centerpoints)/r])
+                v = v_hat * shed_vortex_segments / (2*np.pi*r)
+                V_induced[i,j] = np.sum(n_hat[0]*v[0] + n_hat[1]*v[1]) # Downwash. Dot product of normal vector and induced velocity vector.
 
-        D_induced_per_wing = np.zeros(n_wings)  # <-- Track drag per wing
-        for wing_idx in range(n_wings):
-            # Wake distance calculation for this wing
-            s_wake = np.cumsum(np.sqrt(
-                np.gradient(y_control_points[wing_idx])**2 + 
-                np.gradient(TP_z_control_points[wing_idx])**2
-            ))
-            
-            # Drag contribution from this wing
-            D_wing = -0.5 * rho * np.trapz(
-                V_induced[wing_idx] * circulation_segments[wing_idx], 
-                s_wake
-            )
-            D_induced_per_wing[wing_idx] = D_wing
+        D_induced = np.zeros(len(y_control_points))
+        for i in range(len(y_control_points)):
+            sum = np.sqrt(np.square(y_control_points[i][0]) + np.square(z_control_points[i][0]))
+            s_wake = np.array([sum])
+            for j in range(1,len(y_control_points[i])):
+                dist = np.sqrt(np.square(y_control_points[i][j] - y_control_points[i][j-1]) + np.square(z_control_points[i][j] - z_control_points[i][j-1]))
+                sum += dist
+                s_wake = np.append(s_wake, sum)
+            D_induced[i] = -0.5 * rho * trapz(V_induced[i] * circulation_segments[i], s_wake)
 
             # Per-wing CDi (using wing's reference area)
-            CDi_wing[case_idx, wing_idx] = D_wing / (0.5 * rho * v_inf**2 * SURF[wing_idx])
+            CDi_wing[case_idx] = D_induced / (0.5 * rho * v_inf**2 * SURF)
 
-        D_induced = np.sum(D_induced_per_wing)
         # Store results for this case
-        CDi_total[case_idx] = D_induced / (0.5 * rho * v_inf**2 * sum(SURF))
+        CDi_total[case_idx] = np.sum(D_induced) / (0.5 * rho * v_inf**2 * np.sum(SURF))
         alpha_i_case = np.arctan(V_induced.flatten() / v_inf)
         Cd_i_distribution[case_idx] = cl * np.sin(-alpha_i_case)
         alpha_i[case_idx] = alpha_i_case
