@@ -498,7 +498,7 @@ def VLM(conditions,settings,geometry):
     CL       = np.atleast_2d(np.sum(LIFT,axis=1)/SREF).T          # CLTOT in VORLAX
     # plt.plot(Y, Clift_y[0,:],'ko')
     # plt.show()
-    CDi      = np.atleast_2d(np.sum(DRAG,axis=1)/SREF).T        # CDTOT in VORLAX
+    #CDi      = np.atleast_2d(np.sum(DRAG,axis=1)/SREF).T        # CDTOT in VORLAX
     CX       = (TANALF * CL - CDi)/(COSALF - SINALF*TANALF)
     CZ       = (CDi+ CX*COSALF)/SINALF 
     CM       = np.atleast_2d(np.sum(MOMENT,axis=1)/SREF).T/c_bar  # CMTOT in VORLAX 1. check deflection is accounted for correctly. 2. check this is right
@@ -700,7 +700,7 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
 
     # Package results
     results = Data()
-    results.induced_drag_coefficient = CDi_total
+    results.induced_drag_coefficient = CDi_total[:, np.newaxis]
     results.Cdi_distribution = Cd_i_distribution
     results.CD_i_wing = CDi_wing
     results.induced_AoA_distribution = alpha_i
