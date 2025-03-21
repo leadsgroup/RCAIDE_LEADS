@@ -159,7 +159,7 @@ class Combustor(Converter):
         self.l_SA_FM                           = 0.055          # [-] Secondary air length fraction (of L_SZ) in fast mode
         self.l_DA_start                        = 0.95           # [-] Dilution air start length fraction (of L_SZ)
         self.l_DA_end                          = 1.0            # [-] Dilution air end length fraction (of L_SZ)
-        self.joint_mixing_fraction           = 0.6            # [-] Joint mixing fraction
+        self.joint_mixing_fraction             = 0.6            # [-] Joint mixing fraction
         self.design_equivalence_ratio_SZ       = 0.7            # [-] Design Equivalence Ratio in Secondary Zone at Maximum Throttle
   
     def append_operating_conditions(self,segment,propulsor):
