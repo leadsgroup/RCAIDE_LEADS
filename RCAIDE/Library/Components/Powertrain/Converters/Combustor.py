@@ -145,15 +145,22 @@ class Combustor(Converter):
         self.burner_drag_coefficient           = 0.0
         self.absolute_sensible_enthalpy        = 0.0 
 
-        self.diameter                          = 0.1   # [m] Combustor Diameter
-        self.length                            = 0.3   # [m] Combustor Length
-        self.number_of_combustors              = 10    # [-] Number of Combustors for one engine
-        self.N_PZ                              = 21    # [-] Number of PSR in the Primary Zone
-        self.L_PZ                              = 0.05  # [m] Primary Zone length  
-        self.N_SZ                              = 3     # [-] Number of dilution air inlets in the Secondary Zone        
-        self.S_PZ                              = 0.39  # [-] Mixing parameter in the Primary Zone  
-        self.design_equivalence_ratio_PZ       = 1.77  # [-] Design Equivalence Ratio in Primary Zone at Maximum Throttle
-        self.design_equivalence_ratio_SZ       = 0.7   # [-] Design Equivalence Ratio in Secondary Zone at Maximum Throttle
+        self.diameter                          = 0.437          # [m] Combustor Diameter
+        self.length                            = 0.0903         # [m] Combustor Length
+        self.number_of_combustors              = 1              # [-] Number of Combustors for one engine
+        self.F_SC                              = 1              # [-] Fuel scale factor
+        self.N_PZ                              = 21             # [-] Number of PSR in the Primary Zone
+        self.L_PZ                              = 0.0153         # [m] Primary Zone length  
+        self.S_PZ                              = 0.39           # [-] Mixing parameter in the Primary Zone  
+        self.design_equivalence_ratio_PZ       = 1.77           # [-] Design Equivalence Ratio in Primary Zone at Maximum Throttle  
+        self.N_SZ                              = 500            # [-] Number of discritizations in the Secondary Zone
+        self.f_SM                              = 0.5            # [-] Slow mode fraction
+        self.l_SA_SM                           = 0.55           # [-] Secondary air length fraction (of L_SZ) in slow mode
+        self.l_SA_FM                           = 0.055          # [-] Secondary air length fraction (of L_SZ) in fast mode
+        self.l_DA_start                        = 0.95           # [-] Dilution air start length fraction (of L_SZ)
+        self.l_DA_end                          = 1.0            # [-] Dilution air end length fraction (of L_SZ)
+        self.joint_mixing_fraction           = 0.6            # [-] Joint mixing fraction
+        self.design_equivalence_ratio_SZ       = 0.7            # [-] Design Equivalence Ratio in Secondary Zone at Maximum Throttle
   
     def append_operating_conditions(self,segment,propulsor):
         """

@@ -36,13 +36,13 @@ class Jet_A1(Propellant):
         self.specific_energy                        = 43.15e6   # [J/kg]
         self.energy_density                         = 34692.6e6 # [J/m^3]
         self.lower_heating_value                    = 43.24e6   # [J/kg] 
-        self.heat_of_vaporization                   = 360000    # [J/kg]
+        self.heat_of_vaporization                   = 360000    # [J/kg] Heat of vaporization at standard conditions
         self.max_mass_fraction                      = Data({'Air' : 0.0633, 'O2' : 0.3022}) # [kg propellant / kg oxidizer]
         self.temperatures.flash                     = 311.15    # [K]
         self.temperatures.autoignition              = 483.15    # [K]
         self.temperatures.freeze                    = 226.15    # [K]
         self.temperatures.boiling                   = 0.0       # [K]   
-        self.stoichiometric_fuel_air_ratio          = 0.068     # [-]
+        self.stoichiometric_fuel_air_ratio          = 0.068     # [-] Stoichiometric Fuel to Air ratio
 
         self.fuel_surrogate_S1                      = {'NC12H26':0.404, 'IC8H18':0.295, 'TMBENZ' : 0.073,'NPBENZ':0.228, 'C10H8':0.02}
         self.fuel_surrogate_S2                      = {'NC12H26':0.303, 'MCYC6':0.485, 'XYLENE' : 0.212, 'C10H8':0.02}
