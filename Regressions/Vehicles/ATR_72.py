@@ -1,5 +1,5 @@
 ''' 
-  Concorde.py
+  ATR  72.py
   
   Created: June 2024, M Clarke 
 
@@ -10,9 +10,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core                                  import Units , Data     
-from RCAIDE.Library.Plots     import *     
-
+from RCAIDE.Framework.Core                                     import Units , Data     
 from   RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop  import design_turboprop
 from   RCAIDE.Library.Methods.Geometry.Planform                import segment_properties
 
@@ -552,7 +550,6 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------      
-
     port_propulsor                                  = deepcopy(starboard_propulsor) 
     port_propulsor.tag                              = 'port_propulsor' 
     port_propulsor.origin                           = [[ 9.559106394 ,-4.219315295, 1.616135105]]  # change origin 

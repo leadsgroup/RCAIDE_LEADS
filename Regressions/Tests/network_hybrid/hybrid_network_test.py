@@ -7,13 +7,12 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports 
 import RCAIDE
-from   RCAIDE.Framework.Core import Units
+from   RCAIDE.Framework.Core import Units, Data
 from   RCAIDE.Library.Plots  import *   
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
 
 # python imports 
-import numpy as np  
-from   copy import deepcopy
+import numpy as np   
 import matplotlib.pyplot as plt 
 import matplotlib.cm as cm
 import os 
@@ -40,66 +39,82 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
+    convetional_cruise_CL_truth      = 0.6932848873745743
+    electric_cruise_CL_truth         = 0.6933626967980594
+    series_hybrid_cruise_CL_truth    = 0.6930654692769096
+    parallel_hybrid_cruise_CL_truth  = 0.693292681216277
+
+    error = Data()
+    
     plot_data =  []
     powertrain_labels = []
     t0=time.time()
     if conventional:
-        print("Running Conventional Powertrain") 
+        print("\n Conventional Powertrain Test") 
         vehicle  = conventional_vehicle_setup()  
         configs  = conventional_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         conventional_results  = missions.base_mission.evaluate()
 
-        # check values MATTEO
+        cruise_CL        = conventional_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]   
+        print("Conventional ATR 72 Cruise CL: " + str(cruise_CL)) 
+        error.conventional_cruise_CL = np.max(np.abs( convetional_cruise_CL_truth  - cruise_CL  )/ convetional_cruise_CL_truth )  
         
         plot_data.append(conventional_results)
         powertrain_labels.append("Conventional")
     if all_electric:        
-        print("Running All-Electric Powertrain")  
+        print("\n All-Electric Powertrain Test")  
         vehicle  = all_electric_vehicle_setup()  
         configs  = all_electric_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         electric_results  = missions.base_mission.evaluate()
 
-        # check values MATTEO
+        cruise_CL        = electric_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]   
+        print("Electric ATR 72 Cruise CL: " + str(cruise_CL))   
+        error.electric_cruise_CL = np.max(np.abs( electric_cruise_CL_truth  - cruise_CL  )/ electric_cruise_CL_truth )  
         
         plot_data.append(electric_results)
         powertrain_labels.append("All-Electric")
     if series_hybrid:        
-        print("Series Hybrid") 
+        print("\n Series Hybrid Powertrain Test") 
         vehicle  = series_hybrid_vehicle_setup() 
         configs  = series_hybrid_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         series_hybrid_results  = missions.base_mission.evaluate()
-        
-        # check values MATTEO
-        
+    
+        cruise_CL        = series_hybrid_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
+        print("Series Hybrid ATR 72 Cruise CL: " + str(cruise_CL))
+        error.series_hybrid_cruise_CL= np.max(np.abs( series_hybrid_cruise_CL_truth  - cruise_CL  )/ series_hybrid_cruise_CL_truth )  
         
         plot_data.append(series_hybrid_results)
         powertrain_labels.append("Series Hybrid")
     if parallel_hybrid:        
-        print("Parallel Hybrid") 
+        print("\n Parallel Hybrid Powertrain Test") 
         vehicle  = parallel_hybrid_vehicle_setup() 
         configs  = parallel_hybrid_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
-        parallel_hybrid_results  = missions.base_mission.evaluate()
-        
-        # check values MATTEO
+        parallel_hybrid_results  = missions.base_mission.evaluate() 
+    
+        cruise_CL        = parallel_hybrid_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
+        print("Parallel Hybrid ATR 72 Cruise CL: " + str(cruise_CL))
+        error.parallel_hybrid_cruise_CL = np.max(np.abs( parallel_hybrid_cruise_CL_truth  - cruise_CL  )/ parallel_hybrid_cruise_CL_truth )
         
         plot_data.append(parallel_hybrid_results)
         powertrain_labels.append("Parallel Hybrid")
-        
-        
-        
+         
 
-    # add remaining networks MATTEO        
-
+    # add remaining networks MATTEO          
     print("Elapsed Time", (time.time()-t0)/60)         
-     
+
+    print('Errors:')
+    print(error) 
+    for k,v in list(error.items()): 
+        assert(np.abs(v)<1e-6)
+        
     plot_battery_pack_conditions(plot_data,powertrain_labels)
     
     return

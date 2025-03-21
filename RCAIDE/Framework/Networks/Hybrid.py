@@ -331,11 +331,11 @@ class Hybrid(Network):
                     for propulsor_group in  fuel_line.assigned_propulsors:
                         propulsor =  network.propulsors[propulsor_group[0]]
                         propulsor.pack_propulsor_residuals(segment) 
-            #for bus_i, bus in enumerate(network.busses):    
-                #if bus.active:
-                    #for propulsor_group in  bus.assigned_propulsors:
-                        #propulsor =  network.propulsors[propulsor_group[0]]
-                        #propulsor.pack_propulsor_residuals(segment)   
+            for bus_i, bus in enumerate(network.busses):    
+                if bus.active:
+                    for propulsor_group in  bus.assigned_propulsors:
+                        propulsor =  network.propulsors[propulsor_group[0]]
+                        propulsor.pack_propulsor_residuals(segment)   
         return      
     
     def add_unknowns_and_residuals_to_segment(self, segment):

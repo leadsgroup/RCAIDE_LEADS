@@ -1,4 +1,4 @@
-# ATR_72.py
+# series_hybrid_electric_ATR_72.py
 
 # Created: 2025, M. Clarke, M. Guidotti
 
@@ -7,23 +7,16 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports 
 import RCAIDE
-from   RCAIDE.Framework.Core import Units
-from   RCAIDE.Library.Plots  import *   
-from   RCAIDE.Library.Methods.Performance.estimate_stall_speed import estimate_stall_speed 
-from   RCAIDE.Library.Methods.Geometry.Planform                import segment_properties
-
+from   RCAIDE.Framework.Core import Units 
+from   RCAIDE.Library.Methods.Geometry.Planform                                           import segment_properties 
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                   import design_propeller 
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                   import design_optimal_motor
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common               import compute_motor_weight 
-from RCAIDE.Library.Methods.Performance.estimate_stall_speed                              import estimate_stall_speed
-from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator                 import design_turboelectric_generator 
-from RCAIDE.Library.Plots.Mission.plot_flight_conditions                                  import plot_flight_conditions
-from RCAIDE.Library.Plots import *
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common               import compute_motor_weight  
+from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator                 import design_turboelectric_generator   
 
 # python imports 
 import numpy as np  
-from   copy import deepcopy
-import matplotlib.pyplot as plt 
+from   copy import deepcopy 
 import os
 
 # ----------------------------------------------------------------------
@@ -392,87 +385,7 @@ def vehicle_setup():
     
     # add to vehicle
     vehicle.append_component(fuselage)  
-
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    #   Nacelle
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    nacelle                                     = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
-    nacelle.tag                                 = 'nacelle_1'
-    nacelle.length                              = 5
-    nacelle.diameter                            = 0.85 
-    nacelle.areas.wetted                        = 1.0   
-    nacelle.origin                              = [[8.941625295,4.219315295, 1.616135105 ]]
-    nacelle.flow_through                        = False     
-
-    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                             = 'segment_1'
-    nac_segment.percent_x_location              = 0.0 
-    nac_segment.height                          = 0.0
-    nac_segment.width                           = 0.0
-    nacelle.append_segment(nac_segment)   
-
-    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                             = 'segment_2'
-    nac_segment.percent_x_location              = 0.2 /  nacelle.length
-    nac_segment.percent_z_location              = 0 
-    nac_segment.height                          = 0.4 
-    nac_segment.width                           = 0.4 
-    nacelle.append_segment(nac_segment)   
-
-    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                             = 'segment_3'
-    nac_segment.percent_x_location              = 0.6 /  nacelle.length
-    nac_segment.percent_z_location              = 0 
-    nac_segment.height                          = 0.52 
-    nac_segment.width                           = 0.700 
-    nacelle.append_segment(nac_segment)  
-
-    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                             = 'segment_4'
-    nac_segment.percent_x_location              = 0.754 /  nacelle.length
-    nac_segment.percent_z_location              = -0.16393 /  nacelle.length
-    nac_segment.height                          = 0.9	 
-    nac_segment.width                           = 0.85 
-    nacelle.append_segment(nac_segment)  
-
-    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                             = 'segment_5'
-    nac_segment.percent_x_location              = 1.154  /  nacelle.length
-    nac_segment.percent_z_location              = -0.0819  /  nacelle.length
-    nac_segment.height                          = 0.8 
-    nac_segment.width                           = 0.85 
-    nacelle.append_segment(nac_segment)   
-
-    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                             = 'segment_6'
-    nac_segment.percent_x_location              = 3.414   / nacelle.length
-    nac_segment.percent_z_location              = 0.08197  /  nacelle.length 
-    nac_segment.height                          = 0.6 
-    nac_segment.width                           = 0.85 
-    nacelle.append_segment(nac_segment)
-
-    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                             = 'segment_6'
-    nac_segment.percent_x_location              = 0.96 
-    nac_segment.percent_z_location              = 0.08197  /  nacelle.length 
-    nac_segment.height                          = 0.3
-    nac_segment.width                           = 0.50
-    nacelle.append_segment(nac_segment)    
-
-    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                             = 'segment_7'
-    nac_segment.percent_x_location              = 1.0 
-    nac_segment.percent_z_location              = 0 	
-    nac_segment.height                          = 0.001
-    nac_segment.width                           = 0.001  
-    nacelle.append_segment(nac_segment) 
-    
-    vehicle.append_component(nacelle)  
-
-    nacelle_2          = deepcopy(nacelle)
-    nacelle_2.tag      = 'nacelle_2'
-    nacelle_2.origin   = [[8.941625295,-4.219315295, 1.616135105 ]]
-    vehicle.append_component(nacelle_2) 
+ 
 
     # ------------------------------------------------------------------
     #   Landing gear
@@ -539,7 +452,7 @@ def vehicle_setup():
     propeller.origin                                 = [[ 9.559106394 ,4.219315295, 1.616135105]] 
     ospath                                           = os.path.abspath(__file__)
     separator                                        = os.path.sep
-    rel_path                                         = os.path.dirname(ospath)   + separator + '..' + separator 
+    rel_path                                         = os.path.dirname(ospath)   + separator  
     airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.tag                                      = 'NACA_4412' 
     airfoil.coordinate_file                          =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   
@@ -566,28 +479,98 @@ def vehicle_setup():
     motor.mass_properties.mass                       = compute_motor_weight(motor) 
     starboard_propulsor.motor                        = motor 
 
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    #   Nacelle
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    nacelle                                     = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
+    nacelle.tag                                 = 'nacelle_1'
+    nacelle.length                              = 5
+    nacelle.diameter                            = 0.85 
+    nacelle.areas.wetted                        = 1.0   
+    nacelle.origin                              = [[ 9.559106394 ,4.219315295, 1.616135105]]
+    nacelle.flow_through                        = False     
+
+    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                             = 'segment_1'
+    nac_segment.percent_x_location              = 0.0 
+    nac_segment.height                          = 0.0
+    nac_segment.width                           = 0.0
+    nacelle.append_segment(nac_segment)   
+
+    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                             = 'segment_2'
+    nac_segment.percent_x_location              = 0.2 /  nacelle.length
+    nac_segment.percent_z_location              = 0 
+    nac_segment.height                          = 0.4 
+    nac_segment.width                           = 0.4 
+    nacelle.append_segment(nac_segment)   
+
+    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                             = 'segment_3'
+    nac_segment.percent_x_location              = 0.6 /  nacelle.length
+    nac_segment.percent_z_location              = 0 
+    nac_segment.height                          = 0.52 
+    nac_segment.width                           = 0.700 
+    nacelle.append_segment(nac_segment)  
+
+    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                             = 'segment_4'
+    nac_segment.percent_x_location              = 0.754 /  nacelle.length
+    nac_segment.percent_z_location              = -0.16393 /  nacelle.length
+    nac_segment.height                          = 0.9	 
+    nac_segment.width                           = 0.85 
+    nacelle.append_segment(nac_segment)  
+
+    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                             = 'segment_5'
+    nac_segment.percent_x_location              = 1.154  /  nacelle.length
+    nac_segment.percent_z_location              = -0.0819  /  nacelle.length
+    nac_segment.height                          = 0.8 
+    nac_segment.width                           = 0.85 
+    nacelle.append_segment(nac_segment)   
+
+    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                             = 'segment_6'
+    nac_segment.percent_x_location              = 3.414   / nacelle.length
+    nac_segment.percent_z_location              = 0.08197  /  nacelle.length 
+    nac_segment.height                          = 0.6 
+    nac_segment.width                           = 0.85 
+    nacelle.append_segment(nac_segment)
+
+    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                             = 'segment_7'
+    nac_segment.percent_x_location              = 0.96 
+    nac_segment.percent_z_location              = 0.08197  /  nacelle.length 
+    nac_segment.height                          = 0.3
+    nac_segment.width                           = 0.50
+    nacelle.append_segment(nac_segment)    
+
+    nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                             = 'segment_8'
+    nac_segment.percent_x_location              = 1.0 
+    nac_segment.percent_z_location              = 0 	
+    nac_segment.height                          = 0.001
+    nac_segment.width                           = 0.001  
+    nacelle.append_segment(nac_segment) 
+
+    starboard_propulsor.nacelle =  nacelle
+    
     # append propulsor to distribution line 
     net.propulsors.append(starboard_propulsor) 
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    port_propulsor                             = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
-    port_propulsor.tag                         = "port_propulsor"
-
-    esc_2                                      = deepcopy(esc)
-    esc_2.origin                               = [[ 9.559106394 ,-4.219315295, 1.616135105]]       
-    port_propulsor.electronic_speed_controller = esc_2  
-
-    propeller_2                                = deepcopy(propeller)
-    propeller_2.tag                            = 'propeller_2' 
-    propeller_2.origin                         =  [[ 9.559106394 ,-4.219315295, 1.616135105]]
-    propeller_2.clockwise_rotation             = False        
-    port_propulsor.rotor                       = propeller_2  
-
-    motor_2                                    = deepcopy(motor)
-    motor_2.origin                             =  [[ 9.559106394 ,-4.219315295, 1.616135105]]     
-    port_propulsor.motor                       = motor_2  
+    port_propulsor                                     = deepcopy(starboard_propulsor) 
+    port_propulsor.tag                                 = "port_propulsor" 
+    port_propulsor.electronic_speed_controller.origin  = [[ 9.559106394 ,-4.219315295, 1.616135105]]       
+    port_propulsor.electronic_speed_controller.tag     = 'port_propulsor_esc'  
+    port_propulsor.rotor.tag                           = 'port_propulsor_propeller' 
+    port_propulsor.rotor.origin                        =  [[ 9.559106394 ,-4.219315295, 1.616135105]] 
+    port_propulsor.nacelle.tag                         = 'port_propulsor_nacelle' 
+    port_propulsor.nacelle.origin                      =  [[ 9.559106394 ,-4.219315295, 1.616135105]]   
+    port_propulsor.motor.t                             ='port_propulsor_motor' 
+    port_propulsor.motor.origin                        =  [[ 9.559106394 ,-4.219315295, 1.616135105]]    
 
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor) 

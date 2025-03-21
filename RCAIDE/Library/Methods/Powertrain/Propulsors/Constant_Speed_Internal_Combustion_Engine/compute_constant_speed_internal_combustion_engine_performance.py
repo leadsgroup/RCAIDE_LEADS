@@ -78,7 +78,7 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor,stat
     ice_cs_conditions.power       = conditions.energy.converters[propeller.tag].power  
 
     # currently, no hybridization
-    power_elec =  0*state.ones_row(3)
+    power_elec =  0*state.ones_row(1)
     
     return ice_cs_conditions.thrust ,ice_cs_conditions.moment,ice_cs_conditions.power,power_elec,stored_results_flag,stored_propulsor_tag 
     
@@ -132,6 +132,6 @@ def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,
     conditions.energy.propulsors[propulsor.tag].moment = moment  
     conditions.energy.propulsors[propulsor.tag].power  = power
     
-    power_elec =  0*state.ones_row(3)  
+    power_elec =  0*state.ones_row(1)  
     return thrust,moment,power, power_elec
  

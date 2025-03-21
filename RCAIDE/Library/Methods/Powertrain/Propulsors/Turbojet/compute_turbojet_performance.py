@@ -266,7 +266,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbojet.tag
     
-    power_elec =  0*state.ones_row(3)
+    power_elec =  0*state.ones_row(1)
     
     return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
 
