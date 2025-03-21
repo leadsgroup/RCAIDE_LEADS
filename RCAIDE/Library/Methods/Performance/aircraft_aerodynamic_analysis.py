@@ -65,7 +65,7 @@ def aircraft_aerodynamic_analysis(vehicle,
     aerodynamics.settings.use_surrogate                = use_surrogate
     aerodynamics.vehicle                               = vehicle
     aerodynamics.settings.model_fuselage               = model_fuselage 
-    aerodynamics.settings.number_of_spanwise_vortices  = 10
+    aerodynamics.settings.number_of_spanwise_vortices  = 50
     aerodynamics.settings.number_of_chordwise_vortices = 10
     aerodynamics.initialize()
     state.analyses.aerodynamics = aerodynamics 
