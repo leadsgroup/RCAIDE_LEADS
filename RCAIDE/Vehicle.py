@@ -36,7 +36,6 @@ class Vehicle(Data):
         self.systems                                                       = Components.Powertrain.Systems.System.Container()
         self.avionics                                                      = Components.Powertrain.Systems.Avionics.Container()
         self.booms                                                         = Components.Booms.Boom.Container()
-        self.mass_properties                                               = Vehicle_Mass_Container()
         self.payload                                                       = Components.Payloads.Payload.Container()
         self.costs                                                         = Data()     
         self.landing_gears                                                 = Components.Landing_Gear.Landing_Gear.Container()  
@@ -85,6 +84,16 @@ class Vehicle(Data):
         self.flight_envelope.gust.load_factor.velocity_max_gust            = 0
         self.flight_envelope.gust.load_factor.velocity_max_cruise          = 0
         self.flight_envelope.gust.load_factor.velocity_max_dive            = 0 
+
+        self.mass_properties                                               = Vehicle_Mass_Container()
+        self.mass_properties.max_takeoff                                   = 0
+        self.mass_properties.max_zero_fuel                                 = 0
+        self.mass_properties.max_fuel                                      = 0
+
+        self.mass_properties.mission                                       = Vehicle_Mass_Container()
+        self.mass_properties.mission.takeoff                               = 0
+        self.mass_properties.mission.fuel                                  = 0
+        self.mass_properties.mission.payload                               = 0
         
         self.performance                              = DataOrdered()
          
