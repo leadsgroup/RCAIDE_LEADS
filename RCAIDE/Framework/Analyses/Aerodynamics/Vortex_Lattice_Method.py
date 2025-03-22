@@ -168,6 +168,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         compute.lift                               = Process() 
         compute.lift.inviscid_wings                = None 
         compute.lift.fuselage                      = Common.Lift.fuselage_correction 
+        #compute.LIFT.spoiler
         compute.drag                               = Process()
         compute.drag.parasite                      = Process()
         compute.drag.parasite.wings                = Process_Geometry('wings')

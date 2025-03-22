@@ -78,7 +78,7 @@ def miscellaneous_drag(state,settings,geometry):
         
     # Store results 
     conditions.aerodynamics.coefficients.drag.miscellaneous = Data( 
-        total            = total_miscellaneous_drag  ,
+        total            = total_miscellaneous_drag*3 # correction factor  ,
     ) 
     return  
     
