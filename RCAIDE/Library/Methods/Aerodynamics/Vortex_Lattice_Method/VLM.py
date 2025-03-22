@@ -15,8 +15,7 @@ from RCAIDE.Framework.Core import Data
 from .compute_wing_induced_velocity      import compute_wing_induced_velocity
 from .generate_vortex_distribution       import generate_vortex_distribution 
 from .compute_RHS_matrix                 import compute_RHS_matrix 
-from scipy.integrate import trapz
-import matplotlib.pyplot as plt
+from scipy.integrate import trapezoid 
 # ----------------------------------------------------------------------
 #  Vortex Lattice
 # ----------------------------------------------------------------------
@@ -690,7 +689,7 @@ def compute_induced_drag(cl_dist, alpha_cases, x_dist, y_dist, z_dist, chord_dis
                 dist = np.sqrt(np.square(y_control_points[j] - y_control_points[j-1]) + np.square(z_control_points[j] - z_control_points[j-1]))
                 sum += dist
                 s_wake = np.append(s_wake, sum)
-            D_induced[case_idx,wing_index] = -0.5 * rho * trapz(V_induced * circulation_segments, s_wake)
+            D_induced[case_idx,wing_index] = -0.5 * rho * trapezoid(V_induced * circulation_segments, s_wake)
 
             # Per-wing CDi (using wing's reference area)
             CDi_wing[case_idx,wing_index] = D_induced[case_idx,wing_index] / (0.5 * rho * v_inf**2 * SURF[wing_index])
