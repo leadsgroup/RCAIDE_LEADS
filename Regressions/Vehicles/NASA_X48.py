@@ -38,6 +38,9 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     vehicle.mass_properties.takeoff       = 227  
     vehicle.mass_properties.max_zero_fuel = 227 
     vehicle.mass_properties.cargo         = 0.0 
+    vehicle.flight_envelope.design_mach_number        = 0.12
+    vehicle.flight_envelope.design_range              = 5000
+    vehicle.flight_envelope.design_dynamic_pressure   = 854.5 
 
     # envelope properties
     vehicle.flight_envelope.ultimate_load = 2.5
@@ -148,11 +151,9 @@ def vehicle_setup(regression_flag, ducted_fan_type):
 
     # add to vehicle
     vehicle.append_component(wing)
-
-    #------------------------------------------------------------------------------------------------------------------------- 
-    #  Turbofan Network
-    #-------------------------------------------------------------------------------------------------------------------------     
-    fuselage = RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage()   
+  
+    fuselage = RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage()  
+    fuselage.lengths.total                      = 6.4 
     vehicle.append_component(fuselage)    
     
     #------------------------------------------------------------------------------------------------------------------------------------  
