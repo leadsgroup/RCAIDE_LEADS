@@ -29,8 +29,8 @@ def main():
          
     battery_types = ['lithium_ion_nmc', 'lithium_ion_lfp']
     btms_types    = ['Liquid_Cooled_Wavy_Channel', 'Air_Cooled', None] 
-    CL_true       = [[0.8025301499309839,0.8025301499333614,0.8025301499333614],
-                     [0.8025301499284809,0.802530149928007,0.802530149928007]] 
+    CL_true       = [[0.802792459281424,0.8027924592814237,0.8027924592814237],
+                     [0.8027924592814237,0.8027924592814297,0.8027924592814297]] 
     # vehicle data
     for i , battery_type in enumerate(battery_types):
         for j , btms_type in enumerate(btms_types):
