@@ -50,7 +50,8 @@ def parasite_total(state,settings,geometry):
     for wing in geometry.wings:
         parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[wing.tag].total 
         conditions.aerodynamics.coefficients.drag.parasite[wing.tag].total  = parasite_drag * wing.areas.reference/vehicle_reference_area
-        total_parasite_drag += parasite_drag * wing.areas.reference/vehicle_reference_area
+        total_parasite_drag += parasite_drag * wing.areas.reference/vehicle_reference_area# OLD 
+        #total_parasite_drag += parasite_drag * wing.areas.wetted/vehicle_reference_area
  
     # renormalize parasite drag from fuselages using reference area of aircraft 
     for fuselage in geometry.fuselages:
@@ -58,17 +59,20 @@ def parasite_total(state,settings,geometry):
             continue
         parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag].total 
         conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag].total = parasite_drag * fuselage.areas.front_projected/vehicle_reference_area
-        total_parasite_drag += parasite_drag * fuselage.areas.front_projected/vehicle_reference_area
+        total_parasite_drag += parasite_drag * fuselage.areas.front_projected/vehicle_reference_area # OLD 
+        #total_parasite_drag += parasite_drag * fuselage.areas.wetted/vehicle_reference_area
     
     # renormalize parasite drag from nacelles and pylons using reference area of aircraft  
     for network in  geometry.networks: 
         for propulsor in network.propulsors:  
             if 'nacelle' in propulsor:
-                nacelle       =  propulsor.nacelle 
-                ref_area      = nacelle.diameter**2 / 4 * np.pi
+                nacelle       = propulsor.nacelle 
+                #ref_area      = nacelle.diameter**2 / 4 * np.pi
+                ref_area      =  np.pi * nacelle.diameter * nacelle.length
                 parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total 
                 conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total  = parasite_drag * ref_area/vehicle_reference_area
-                total_parasite_drag += parasite_drag * ref_area/vehicle_reference_area 
+                total_parasite_drag += parasite_drag * ref_area/vehicle_reference_area # OLD 
+                #total_parasite_drag += parasite_drag * ref_area/vehicle_reference_area 
                     
                 if nacelle.has_pylon:
                     parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag + '_pylon'].total 

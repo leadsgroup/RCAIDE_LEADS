@@ -66,16 +66,14 @@ class Vortex_Lattice_Method(Stability):
                    
         # correction factors            
         self.settings.fuselage_lift_correction                           = 1.14
-        self.settings.trim_drag_correction_factor                        = 1.0
+        self.settings.trim_drag_correction_factor                        = 1.2
         self.settings.wing_parasite_drag_form_factor                     = 1.1
         self.settings.fuselage_parasite_drag_form_factor                 = 2.3
-        self.settings.maximum_lift_coefficient_factor                    = 1.0        
-        self.settings.lift_to_drag_adjustment                            = 0.0  
+        self.settings.maximum_lift_coefficient_factor                    = 1.0   
         self.settings.oswald_efficiency_factor                           = None
         self.settings.span_efficiency                                    = None
         self.settings.viscous_lift_dependent_drag_factor                 = 0.38
-        self.settings.drag_coefficient_increment                         = 0.0
-        self.settings.spoiler_drag_increment                             = 0.0
+        self.settings.drag_coefficient_increment                         = 0.0 
         self.settings.maximum_lift_coefficient                           = np.inf 
         self.settings.use_surrogate                                      = True
         self.settings.recalculate_total_wetted_area                      = False

@@ -431,8 +431,7 @@ def base_analysis(vehicle):
     aerodynamics.vehicle = vehicle
     aerodynamics.settings.number_of_spanwise_vortices   = 40
     aerodynamics.settings.number_of_chordwise_vortices  = 4 
-    aerodynamics.settings.fuselage_lift_correction      = 1
-    aerodynamics.settings.trim_drag_correction_factor                        = 1.2
+    aerodynamics.settings.fuselage_lift_correction      = 1 
     aerodynamics.settings.wing_parasite_drag_form_factor                     = 1.5
     aerodynamics.settings.fuselage_parasite_drag_form_factor                 = 3.0
     aerodynamics.settings.viscous_lift_dependent_drag_factor                 = 1.0

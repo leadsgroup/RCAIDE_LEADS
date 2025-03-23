@@ -33,7 +33,7 @@ class Slat(Control_Surface):
     -----
     The slat is a leading edge high-lift device used to increase maximum lift coefficient 
     and stall angle at low speeds. It inherits basic control surface functionality from 
-    the Control_Surface class and adds specific attributes for slat operation.
+    the Control_Surface class and adds specific attributes for slat operation. 
     
     **Definitions**
 

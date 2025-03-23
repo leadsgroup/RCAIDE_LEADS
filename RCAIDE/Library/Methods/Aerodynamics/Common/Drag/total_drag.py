@@ -17,8 +17,7 @@ def total_drag(state,settings,geometry):
 
     Args:
         settings.
-          drag_coefficient_increment                          (float): drag_coefficient_increment [Unitless]
-          lift_to_drag_adjustment                             (float): lift_to_drag_adjustment    [Unitless]  
+          drag_coefficient_increment                          (float): drag_coefficient_increment [Unitless] 
         state.conditions.aerodynamics.coefficients.drag.
           trim_corrected_drag                         (numpy.ndarray): trim corrected drag        [Unitless]
           spoiler_drag                                (numpy.ndarray): spoiler drag               [Unitless]
@@ -30,8 +29,9 @@ def total_drag(state,settings,geometry):
     """
 
     # unpack inputs  
-    trim_correction_factor  = settings.trim_drag_correction_factor    
-    drag                    =  state.conditions.aerodynamics.coefficients.drag
+    trim_correction_factor     = settings.trim_drag_correction_factor    
+    drag_coefficient_increment = settings.drag_coefficient_increment  
+    drag                       = state.conditions.aerodynamics.coefficients.drag
 
     # various drag components
     parasite_total        = drag.parasite.total            
@@ -39,25 +39,16 @@ def total_drag(state,settings,geometry):
     compressibility_total = drag.compressible.total     
     miscellaneous_drag    = drag.miscellaneous.total
     cooling_drag          = drag.cooling.total 
+    spoiler_drag          = drag.spoiler.total 
 
     # untrimmed drag 
-    untrimmed_drag  =  parasite_total + induced_total  + compressibility_total + miscellaneous_drag + cooling_drag
+    untrimmed_drag  =  parasite_total + induced_total  + compressibility_total + miscellaneous_drag + cooling_drag + spoiler_drag
     
     # trim correction
-    corrected_aircraft_total_trim_drag = trim_correction_factor * untrimmed_drag 
-    drag.miscellaneous.trim_correction_factor = trim_correction_factor    
-
-    # Unpack inputs 
-
-    drag_coefficient_increment = settings.drag_coefficient_increment 
-    spoiler_drag               = drag.spoiler_drag 
-
-    # Add drag_coefficient_increment
-    aircraft_total_drag =  corrected_aircraft_total_trim_drag   + drag_coefficient_increment + spoiler_drag
-    drag.drag_coefficient_increment = drag_coefficient_increment
-    
-    # Add L/D correction
-    aircraft_total_drag  = aircraft_total_drag/(1.+settings.lift_to_drag_adjustment) 
+    corrected_aircraft_total_trim_drag = trim_correction_factor * untrimmed_drag   
+     
+    # total drag 
+    aircraft_total_drag =  corrected_aircraft_total_trim_drag   + drag_coefficient_increment
 
     # Store to results 
     drag.total           = aircraft_total_drag
