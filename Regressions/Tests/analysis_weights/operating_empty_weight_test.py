@@ -40,6 +40,7 @@ def Transport_Aircraft_Test(update_regression_values, show_figure):
             weight_analysis.vehicle = transport_setup()
             weight_analysis.method = method_type
             weight_analysis.settings.advanced_composites = advanced_composites
+            weight_analysis.aircraft_type = 'Transport'
 
             if method_type == 'FLOPS':
                 save_filename = f'FLOPS_{"Simple" if FLOPS_number == 0 else "Complex"}'
