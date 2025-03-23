@@ -63,11 +63,11 @@ class Internal_Combustion_Engine(Propulsor):
     """
     def __defaults__(self):    
         # setting the default values
-        self.tag                          = 'ice_propeller'    
-        self.engine                       = None
-        self.propeller                    = None
-        self.diameter                     = 0.0      
-        self.length                       = 0.0
+        self.tag         = 'ice_propeller'    
+        self.engine      = None
+        self.propeller   = None
+        self.diameter    = 0.4    
+        self.length      = 0.5
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """

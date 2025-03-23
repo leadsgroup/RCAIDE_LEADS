@@ -51,7 +51,7 @@ class Electric(Weights):
         N/A
         """
         self.method                                        = 'Physics_Based'
-        self.aircraft_type                                 = 'General_Aviation'
+        self.aircraft_type                                 = None
         self.propulsion_architecture                       = 'Electric'
                   
         self.settings.use_max_fuel_weight                  = True 

@@ -247,10 +247,12 @@ def base_analysis(vehicle):
     analyses = RCAIDE.Framework.Analyses.Vehicle()
  
     # ------------------------------------------------------------------
-    #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle = vehicle
+    #  Weights 
+    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional()
+    weights.aircraft_type   = 'General_Aviation'
+    weights.vehicle         = vehicle 
     analyses.append(weights)
+
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis

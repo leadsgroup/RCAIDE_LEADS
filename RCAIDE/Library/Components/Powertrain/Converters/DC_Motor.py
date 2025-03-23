@@ -100,7 +100,7 @@ class DC_Motor(Converter):
         self.gearbox.gear_ratio      = 1.0 
         self.design_angular_velocity = 0.0 
         self.design_torque           = 0.0 
-        self.design_current          = 0.0 
+        self.design_current          = 0.0
         self.inverse_calculation     = False
         self.interpolated_func       = None
         

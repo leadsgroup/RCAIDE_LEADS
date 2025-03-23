@@ -188,8 +188,7 @@ def run_rotor_hover(nexus):
     rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
     
     rotor_conditions                      =  segment.state.conditions.energy.converters[rotor.tag]     
-    rotor_conditions.omega                = (atmosphere_conditions.speed_of_sound*rotor.hover.design_tip_mach)/rotor.tip_radius
-    rotor_conditions.optimize_blade_pitch = False
+    rotor_conditions.omega                = (atmosphere_conditions.speed_of_sound*rotor.hover.design_tip_mach)/rotor.tip_radius 
     rotor_conditions.blade_pitch_command[:,0]   = rotor.hover.design_pitch_command
     
     compute_rotor_performance(rotor,conditions)   
@@ -261,8 +260,7 @@ def run_rotor_OEI(nexus):
     rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
                 
     rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
-    rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.oei.design_tip_mach)/rotor.tip_radius
-    rotor_conditions.optimize_blade_pitch       = False
+    rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.oei.design_tip_mach)/rotor.tip_radius 
     rotor_conditions.blade_pitch_command[:,0]   = rotor.oei.design_pitch_command
     
     compute_rotor_performance(rotor,conditions)    
@@ -308,8 +306,7 @@ def run_rotor_cruise(nexus):
         rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
             
         rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
-        rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.cruise.design_tip_mach)/rotor.tip_radius
-        rotor_conditions.optimize_blade_pitch       = False
+        rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.cruise.design_tip_mach)/rotor.tip_radius 
         rotor_conditions.blade_pitch_command[:,0]   = rotor.cruise.design_pitch_command
         
         compute_rotor_performance(rotor,conditions)   

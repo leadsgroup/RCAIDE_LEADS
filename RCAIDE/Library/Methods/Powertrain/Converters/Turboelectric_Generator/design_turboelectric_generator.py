@@ -14,12 +14,13 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Generator          import desi
 #  Design Turboshaft
 # ----------------------------------------------------------------------------------------------------------------------   
 def design_turboelectric_generator(turboelectric_generator):  
+    """ Turboelectric generator design script. Sequentially calls the functions that
+    design a turboshaft and optimally sizes a generator 
     """
-    MATTEO HEADER
-    """
-
+    # call the turboshaft script 
     design_turboshaft(turboelectric_generator.turboshaft ) 
 
+    # call the generator design script 
     design_optimal_generator(turboelectric_generator.generator)    
 
     return

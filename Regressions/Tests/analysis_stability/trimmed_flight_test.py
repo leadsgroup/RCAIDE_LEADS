@@ -48,7 +48,6 @@ def main():
     elevator_deflection_true   = -0.9463130674298652
     elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
     print('Error1: ',elevator_deflection_diff)
-    # There is assertion error somehow, not related to any dimension error pertaining to numpy
     assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
 
     aileron_deflection        = results.segments.climb.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg  
@@ -56,7 +55,6 @@ def main():
     aileron_deflection_diff   = np.abs(aileron_deflection - aileron_deflection_true)
     print('Error2: ',aileron_deflection_diff)
     assert np.abs(aileron_deflection_diff/aileron_deflection_true) < 5e-3
-    
 
     rudder_deflection        = results.segments.climb.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg  
     rudder_deflection_true   = 1.5262876204179927
@@ -93,7 +91,10 @@ def base_analysis(vehicle, configs):
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional() 
+    weights.aircraft_type                     = 'General_Aviation' 
+    weights.settings.update_center_of_gravity = False
+    weights.settings.update_moment_of_inertia = False   
     weights.vehicle = vehicle
     analyses.append(weights)
 

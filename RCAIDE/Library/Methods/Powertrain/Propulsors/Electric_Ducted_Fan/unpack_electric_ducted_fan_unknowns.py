@@ -11,7 +11,7 @@ def unpack_electric_ducted_fan_unknowns(propulsor,segment):
     """Unpack electric ducted fan unknowns and assigns them to the specfic
     compoment each interation of the mission solver
     """
-    motor   = propulsor.motor
+    motor      = propulsor.motor  
     motor_conditions = segment.state.conditions.energy.converters[motor.tag]
     motor_conditions.inputs.current = segment.state.unknowns[propulsor.tag + '_motor_current'] 
     return 

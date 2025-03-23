@@ -83,6 +83,7 @@ class Propulsor(Component):
         self.tag                          = 'propulsor' 
         self.active                       = True 
         self.wing_mounted                 = True
+        self.sealevel_static_thrust       = 0.0
         
          
     def append_operating_conditions(self,segment):

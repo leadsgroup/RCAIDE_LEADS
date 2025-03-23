@@ -324,7 +324,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
     if main_landing_gear == False:
         main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
         main_gear.mass_properties.mass =  weight.landing_gear
-        vehicle.append_component(main_gear)
+        vehicle.landing_gears.append(main_gear)
         
     #-------------------------------------------------------------------------------
     # Fuselage  Weight  

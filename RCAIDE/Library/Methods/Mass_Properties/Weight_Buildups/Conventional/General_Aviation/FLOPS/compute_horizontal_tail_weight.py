@@ -57,7 +57,7 @@ def compute_horizontal_tail_weight(vehicle):
     """
     SHT     = vehicle.wings.horizontal_stabilizer.areas.reference / Units.ft **2
     DG      = vehicle.mass_properties.max_takeoff / Units.lbs
-    QCRUS    = vehicle.design_dynamic_pressure / Units.psf
-    ULF      = vehicle.flight_envelope.ultimate_load   
+    QCRUS   = vehicle.flight_envelope.design_dynamic_pressure / Units.psf
+    ULF     = vehicle.flight_envelope.ultimate_load   
     WHT     = 0.016*SHT**0.873 * ( ULF * DG)**0.414 * QCRUS**0.122 
     return WHT * Units.lbs

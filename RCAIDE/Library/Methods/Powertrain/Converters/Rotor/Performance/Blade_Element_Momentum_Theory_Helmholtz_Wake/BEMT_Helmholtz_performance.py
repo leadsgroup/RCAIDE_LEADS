@@ -16,16 +16,78 @@ import  numpy as  np
 #  BEMT_Helmholtz_performance
 # ----------------------------------------------------------------------------------------------------------------------  
 def BEMT_Helmholtz_performance(rotor,conditions):
-    '''
+    """Analyzes a general rotor given geometry and operating conditions using
+    Blade Element Momentum Theory with a Helmholts Vortex Wake Prescription 
     
-    MATTEO CITE QPROP
-    
-    '''  
+    Parameters
+    ----------
+    rotor : Data
+        Rotor compoment
+        
+        - number_of_blades : int  
+        - tip_radius: float  
+        - twist_distribution : array_like  [radians]
+        - chord_distribution : array_like  [m]
+        - orientation_euler_angles: list   [rad, rad, rad]
+        
+    conditions : Data
+        State conditions within segment 
+
+         - energy.converters[rotor.tag]: Data
+         - freestream.density :  array_like                 [kg/m^3]
+         - freestream.dynamic_viscosity :  array_like       [kg/(m-s)]
+         - freestream.speed_of_sound :  array_like          [m/s]
+         - freestream.temperature :  array_like             [K]
+         - frames.body.transform_to_inertial :  array_like  (rotation matrix)
+         - frames.inertial.velocity_vector :  array_like    [m/s] 
+
+    Notes
+    -----
+    The following perperties are computed in the conditions.energy[rotor.tag]
+       - number_radial_stations :  array_like            [-]
+       - number_azimuthal_stations :  array_like         [-]
+       - disc_radial_distribution :  array_like          [m]
+       - speed_of_sound :  array_like                    [m/s]
+       - density :  array_like                           [kg/m-3]
+       - velocity :  array_like                          [m/s]
+       - disc_tangential_induced_velocity :  array_like  [m/s]
+       - disc_axial_induced_velocity  :  array_like      [m/s]
+       - disc_tangential_velocity :  array_like          [m/s]
+       - disc_axial_velocity  :  array_like              [m/s]
+       - drag_coefficient  :  array_like                 [-]
+       - lift_coefficient  :  array_like                 [-]
+       - omega :  array_like                             [rad/s]
+       - disc_circulation  :  array_like                 [-]
+       - blade_dQ_dR  :  array_like                      [N/m]
+       - blade_dT_dr  :  array_like                      [N]
+       - blade_thrust_distribution :  array_like         [N]
+       - disc_thrust_distribution  :  array_like         [N]
+       - thrust_per_blade  :  array_like                 [N]
+       - thrust_coefficient :  array_like                [-]
+       - azimuthal_distribution  :  array_like           [rad]
+       - disc_azimuthal_distribution :  array_like       [rad]
+       - blade_dQ_dR  :  array_like                      [N]
+       - blade_dQ_dr  :  array_like                      [Nm]
+       - blade_torque_distribution :  array_like         [Nm]
+       - disc_torque_distribution  :  array_like         [Nm]
+       - torque_per_blade  :  array_like                 [Nm]
+       - torque_coefficient  :  array_like               [-]
+       - power  :  array_like                            [W]
+       - power_coefficient  :  array_like                [-]
+       
+    References
+    ----------
+    [1] Drela, M. "Qprop Formulation", MIT AeroAstro, June 2006
+        http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
+
+    [2] Leishman, Gordon J. Principles of helicopter aerodynamics
+        Cambridge university press, 2006.
+
+    """
     commanded_TV          = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
     pitch_c               = conditions.energy.converters[rotor.tag].blade_pitch_command
     eta                   = conditions.energy.converters[rotor.tag].throttle 
-    omega                 = conditions.energy.converters[rotor.tag].omega 
-    optimize_blade_pitch  = conditions.energy.converters[rotor.tag].optimize_blade_pitch
+    omega                 = conditions.energy.converters[rotor.tag].omega  
     design_flag           = conditions.energy.converters[rotor.tag].design_flag
     B                     = rotor.number_of_blades
     R                     = rotor.tip_radius
@@ -344,8 +406,7 @@ def BEMT_Helmholtz_performance(rotor,conditions):
                 torque                            = torque,
                 thrust                            = thrust_vector,  
                 power                             = power, 
-                azimuthal_distribution            = psi, 
-                optimize_blade_pitch              = optimize_blade_pitch, 
+                azimuthal_distribution            = psi,  
                 design_flag                       = design_flag,             
                 rpm                               = omega /Units.rpm ,   
                 tip_mach                          = omega * R / conditions.freestream.speed_of_sound, 

@@ -186,8 +186,7 @@ class Rotor(Component):
         self.number_azimuthal_stations         = 16 
         self.vtk_airfoil_points                = 40        
         self.airfoils                          = Airfoil_Container() 
-        self.airfoil_polar_stations            = []    
-        self.proppeller_efficiency             = 0.86       
+        self.airfoil_polar_stations            = []       
 
         # Initialize the default wake set to Fidelity Zero         
         self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'          
@@ -199,7 +198,9 @@ class Rotor(Component):
         self.cruise.design_torque              = None 
         self.cruise.design_power_coefficient   = 0.01 
         self.cruise.design_thrust_coefficient  = 0.01
+        self.cruise.design_torque_coefficient  = 0.005
         self.cruise.design_Cl                  = 0.7 
+        self.cruise.design_efficiency          = 0.86  
         self.cruise.design_angular_velocity    = None
         self.cruise.design_tip_mach            = None
         self.cruise.design_acoustics           = None

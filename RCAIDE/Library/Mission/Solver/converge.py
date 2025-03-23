@@ -1,4 +1,4 @@
-# RCAIDE/Library/Missions/Segments/converge_root.py
+# RCAIDE/Library/Missions/Segments/converge.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke  
@@ -42,9 +42,7 @@ def converge(segment):
 
     Properties Used:
     N/A
-    """
-    if segment.state.numerics.solver.print_output:
-        print('Currently solving ' + segment.tag + ' flight segment')
+    """ 
     
     if segment.state.numerics.solver.type  == "optimize": 
         problem  = add_mission_variables(segment) 
@@ -204,11 +202,16 @@ def add_mission_variables(segment):
     units             = np.broadcast_to(Units.less,(len_inputs,))
     new_inputs        = np.reshape(np.tile(np.atleast_2d(np.array([None,None,None,None,None,None])),len_inputs), (-1, 6))
     
+    # scaling factor for optimizer 
+    factor = np.ceil(np.log10(abs(initial_values)))
+    factor[np.isinf(factor)] = 0
+    sclae  = 10 ** (factor)
+    
     # Step 2.4 Add in the inputs 
     new_inputs[:,0]     = input_names   
     new_inputs[:,1]     = initial_values 
     new_inputs[:,2:4]   = bounds   
-    new_inputs[:,4]     = 1
+    new_inputs[:,4]     = sclae
     new_inputs[:,5]     = units 
     optimization_problem.inputs = np.array(new_inputs,dtype=object)
     

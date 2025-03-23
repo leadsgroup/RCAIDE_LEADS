@@ -52,8 +52,8 @@ class Conventional(Weights):
         N/A
         """
         self.method                                        = 'FLOPS'
-        self.aircraft_type                                 = 'Transport'
         self.propulsion_architecture                       = 'Conventional'
+        self.aircraft_type                                 = None
                  
         self.settings.use_max_fuel_weight                  = True 
         self.settings.advanced_composites                  = False

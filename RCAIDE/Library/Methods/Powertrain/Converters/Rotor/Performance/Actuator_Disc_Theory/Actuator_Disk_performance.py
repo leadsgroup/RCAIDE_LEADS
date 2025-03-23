@@ -7,8 +7,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports 
-from RCAIDE.Framework.Core  import Data , Units  
-from RCAIDE.Framework.Core                              import Data , Units, orientation_product, orientation_transpose  
+from RCAIDE.Framework.Core  import Data , Units, orientation_product, orientation_transpose  
 
 # package imports
 import  numpy as  np   
@@ -17,20 +16,52 @@ import  numpy as  np
 # Actuator_Disk_performance
 # ----------------------------------------------------------------------------------------------------------------------  
 def Actuator_Disk_performance(rotor,conditions):
-    '''
+    """Analyzes a general rotor given geometry and operating conditions using
+    Actuator Disc Theory  
     
-    MATTEO
-    
-    '''
+    Parameters
+    ----------
+    rotor : Data
+        Rotor compoment
+        
+        - number_of_blades : int  
+        - tip_radius: float  
+        - twist_distribution : array_like  [radians]
+        - chord_distribution : array_like  [m]
+        - orientation_euler_angles: list   [rad, rad, rad]
+        
+    conditions : Data
+        State conditions within segment 
 
+         - energy.converters[rotor.tag]: Data
+         - freestream.density :  array_like                 [kg/m^3]
+         - freestream.dynamic_viscosity :  array_like       [kg/(m-s)]
+         - freestream.speed_of_sound :  array_like          [m/s]
+         - freestream.temperature :  array_like             [K]
+         - frames.body.transform_to_inertial :  array_like  (rotation matrix)
+         - frames.inertial.velocity_vector :  array_like    [m/s] 
+
+    Notes
+    -----
+    The following perperties are computed in the conditions.energy[rotor.tag] 
+       - speed_of_sound :  array_like                    [m/s]
+       - density :  array_like                           [kg/m-3]
+       - velocity :  array_like                          [m/s] 
+       - omega :  array_like                             [rad/s] 
+       - torque_per_blade  :  array_like                 [Nm]
+       - torque_coefficient  :  array_like               [-]
+       - power  :  array_like                            [W]
+       - power_coefficient  :  array_like                [-] 
+
+    """
     rho                   = conditions.freestream.density     
     commanded_TV          = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle   
     pitch_c               = conditions.energy.converters[rotor.tag].blade_pitch_command
     omega                 = conditions.energy.converters[rotor.tag].omega
-    torque                = conditions.energy.converters[rotor.tag].motor_torque 
     B                     = rotor.number_of_blades   
     R                     = rotor.tip_radius 
-    eta_p                 = rotor.proppeller_efficiency    
+    eta_p                 = rotor.cruise.design_efficiency
+    Cq                    = rotor.cruise.design_torque_coefficient
     
     # Unpack ducted_fan blade parameters and operating conditions  
     Vv                    = conditions.frames.inertial.velocity_vector 
@@ -46,16 +77,15 @@ def Actuator_Disk_performance(rotor,conditions):
     # Check and correct for hover
     V         = V_thrust[:,0,None]
     V[V==0.0] = 1E-6
-    
-    eta    = eta_p * np.ones_like(V) 
-    power  = torque*omega
-    n      = omega/(2.*np.pi) 
+
+    n      = omega/(2.*np.pi)      
     D      = 2*R 
+    torque = Cq * (rho*(n*n)*(D*D*D*D*D)) 
+    eta    = eta_p * np.ones_like(V) 
+    power  = torque * omega
     thrust = eta*power/V 
-    Cp     = power/(rho*(n*n*n)*(D*D*D*D*D)) 
-    Cq     = torque/(rho*(n*n)*(D*D*D*D*D))
-    Ct     = thrust/(rho*(n*n)*(D*D*D*D))
-    Cp     = power/(rho*(n*n*n)*(D*D*D*D*D)) 
+    Ct     = thrust/(rho*(n*n)*(D*D*D*D)) 
+    Cp     = power / (rho*(n*n*n)*(D*D*D*D*D)) 
     
     ctrl_pts              = len(V) 
     thrust_vector         = np.zeros((ctrl_pts,3))

@@ -80,11 +80,11 @@ def inclined_angle_test():
     # plot velocities at propeller plane and resulting performance
     plot_rotor_disc_performance(propeller,results,title='Case 1: Operating at Thrust Angle')
      
-    thrust_r = 4944.824082775179
-    torque_r = 1076.6497275518457
-    power_r  = 223040.4853664772
-    Cp_r     = 0.1266072752046623
-    etap_r   = 0.6515825891352817
+    thrust_r = 3626.0934776933077
+    torque_r = 1021.8314803935085
+    power_r  = 211684.24931286593
+    Cp_r     = 0.10904336568423793
+    etap_r   = 0.791544502251096
     print('\nCase 1 Errors: \n')
     print('Thrust difference = ', np.abs(thrust - thrust_r) / thrust_r )
     print('Torque difference = ', np.abs(torque - torque_r) / torque_r )
@@ -133,11 +133,11 @@ def arbitrary_nonuniform_freestream_test():
     angular_velocity = 2500*Units.rpm 
 
     # run pr
-    results        = propeller_aerodynamic_analysis(propeller, velocity_range,
-                                                    angular_velocity = angular_velocity,
-                                                    angle_of_attack = 0, 
-                                                    altitude = 0,
-                                                    delta_isa =0 )
+    results        = rotor_aerodynamic_analysis(propeller,
+                                                velocity_range,
+                                                angular_velocity = angular_velocity,
+                                                angle_of_attack = 0, 
+                                                altitude = 0,)
     
     # spin propeller in nonuniform flow
     thrust  = np.linalg.norm( results.thrust )
@@ -150,11 +150,11 @@ def arbitrary_nonuniform_freestream_test():
     plot_rotor_disc_performance(propeller,results,title='Case 2: Arbitrary Freestream')
 
     # expected results 
-    thrust_r = 5331.676911368302
-    torque_r = 1326.7646919395129
-    power_r  = 347346.18410329154
-    Cp_r     = 0.09769209269258024
-    etap_r   = 0.7548147211901529
+    thrust_r = 5482.871133438794
+    torque_r = 1512.9208369567918
+    power_r  = 396081.7489038649
+    Cp_r     = 0.10109215484548903
+    etap_r   = 0.6807102296693119
     print('\nCase 2 Errors: \n')
     print('Thrust difference = ', np.abs(thrust - thrust_r) / thrust_r )
     print('Torque difference = ', np.abs(torque - torque_r) / torque_r )

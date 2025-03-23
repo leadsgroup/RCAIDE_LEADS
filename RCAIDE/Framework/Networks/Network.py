@@ -4,7 +4,6 @@
 # Created:  Jul 2024, RCAIDE Team
 # Modified: Aug 2023, E. Botero
 
-
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
@@ -31,7 +30,10 @@ class Network(Component):
         self.coolant_lines                = Container()
         self.fuel_lines                   = Container()
         self.converters                   = Container()
-        self.identical_propulsors         = True
+        self.identical_propulsors         = True 
+        self.reverse_thrust               = False
+        self.wing_mounted                 = True   
+        self.system_voltage               = None        
         
 # ----------------------------------------------------------------------
 #  Component Container
@@ -40,19 +42,13 @@ class Container(Component.Container):
     """ The Network container class 
     """
     def evaluate(self,state,center_of_gravity):
-        """ This is used to evaluate the thrust produced by the network.
+        """ This is used to evaluate the thrust and moments produced by the network.
 
             Assumptions:  
                 If multiple networks are attached their performances will be summed
 
             Source:
-                None
-
-            Args:
-                State (dict): flight conditions 
-
-            Returns:
-                results (dict): Results of the evaluate method 
+                None 
         """ 
         for net in self.values(): 
             net.evaluate(state,center_of_gravity)  

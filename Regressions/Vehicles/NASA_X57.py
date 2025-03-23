@@ -35,25 +35,21 @@ def vehicle_setup(rotor_type):
     vehicle.mass_properties.max_takeoff               = 2712. * Units.pounds
     vehicle.mass_properties.takeoff                   = 2712. * Units.pounds
     vehicle.mass_properties.max_zero_fuel             = 2712. * Units.pounds 
-    vehicle.mass_properties.max_payload               = 50.  * Units.pounds  # kg 
+    vehicle.mass_properties.max_payload               = 50.  * Units.pounds  #
+    
+    
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 2.5 
     vehicle.flight_envelope.design_mach_number        = 0.78 
     vehicle.flight_envelope.design_cruise_altitude    = 2500. * Units.ft
     vehicle.flight_envelope.design_range              = 200 * Units.nmi 
+    vehicle.flight_envelope.design_dynamic_pressure   = 2072.1614727510914
+    vehicle.flight_envelope.design_mach_number        = 0.17734782770792362
+    
     vehicle.reference_area                            = 14.76
     vehicle.passengers                                = 4
     vehicle.systems.control                           = "fully powered"
-    vehicle.systems.accessories                       = "commuter"    
-                 
-    cruise_speed                                      = 135.*Units['mph']    
-    atmo                                              = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    freestream                                        = atmo.compute_values (0.)
-    freestream0                                       = atmo.compute_values (vehicle.flight_envelope.design_cruise_altitude )
-    mach_number                                       = (cruise_speed/freestream.speed_of_sound)[0][0] 
-    vehicle.design_dynamic_pressure                   = ( .5 *freestream0.density*(cruise_speed*cruise_speed))[0][0]
-    vehicle.design_mach_number                        =  mach_number
-
+    vehicle.systems.accessories                       = "commuter"     
          
     #------------------------------------------------------------------------------------------------------------------------------------
     # ######################################################## Wings ####################################################################  
@@ -415,7 +411,7 @@ def vehicle_setup(rotor_type):
         motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
-        motor.nominal_voltage                            = bus.voltage 
+        motor.nominal_voltage                            = bus.voltage* 0.5  
         motor.no_load_current                            = 1
         motor.design_torque                              = propeller.cruise.design_torque
         motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity 
@@ -440,12 +436,12 @@ def vehicle_setup(rotor_type):
         motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
-        motor.nominal_voltage                            = bus.voltage 
-        motor.no_load_current                            = 1
+        motor.nominal_voltage                            = bus.voltage * 0.5 
+        motor.no_load_current                            = 1.0
         motor.rotor_radius                               = propeller.tip_radius
         motor.design_torque                              = 629.5930446195773
         motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity 
-        design_optimal_motor(motor)  
+        design_optimal_motor(motor)
         motor.mass_properties.mass                       = compute_motor_weight(motor) 
         starboard_propulsor.motor                        = motor   
  

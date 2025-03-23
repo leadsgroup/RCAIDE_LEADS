@@ -43,9 +43,13 @@ def vehicle_setup():
     vehicle.mass_properties.moments_of_inertia.tensor = [[10 ** 5, 0, 0],[0, 10 ** 6, 0,],[0,0, 10 ** 7]] 
 
     # envelope properties
-    vehicle.flight_envelope.ultimate_load             = 3.5
-    vehicle.flight_envelope.positive_limit_load       = 1.5
-
+    vehicle.flight_envelope.ultimate_load             = 3.5 
+    vehicle.flight_envelope.ultimate_load             = 3.75
+    vehicle.flight_envelope.positive_limit_load       = 2.5 
+    vehicle.flight_envelope.design_mach_number        = 0.78 
+    vehicle.flight_envelope.design_cruise_altitude    = 35000*Units.feet
+    vehicle.flight_envelope.design_range              = 3500 * Units.nmi
+    
     # basic parameters
     vehicle.reference_area                            = 92.
     vehicle.passengers                                = 106

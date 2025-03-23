@@ -17,13 +17,7 @@ import numpy as np
 # Operating Empty Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_operating_empty_weight(vehicle, settings=None):
-    """"
-
-
-        Properties Used:
-            N/A
-
-        Also creates system components and assigns weights to them. These are appended to the vehicle.
+    """"Computes the operating empty weight of a vehicle 
     """
     
     if settings == None:
@@ -302,11 +296,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     if nose_landing_gear == False:
         nose_gear = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()  
         nose_gear.mass_properties.mass = landing_gear.nose    
-        vehicle.append_component(nose_gear) 
+        vehicle.landing_gears.append(nose_gear) 
     if main_landing_gear == False:
         main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
         main_gear.mass_properties.mass = landing_gear.main  
-        vehicle.append_component(main_gear) 
+        vehicle.landing_gears.append(main_gear) 
 
     # Create components and assign weights for systems
     control_systems                         = RCAIDE.Library.Components.Component()

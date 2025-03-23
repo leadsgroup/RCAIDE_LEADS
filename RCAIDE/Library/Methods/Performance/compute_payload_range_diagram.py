@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(vehicle,assigned_propulsors,weights_analysis,aerodynamics_analysis,cruise_airspeed = 515*Units.mph, cruise_altitude= 35000*Units.feet,max_range_guess = 1000*Units.nmi, reserves=0., plot_diagram = True, fuel_name=None):  
+def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",cruise_airspeed = 515*Units.mph, cruise_altitude= 35000*Units.feet,max_range_guess = 1000*Units.nmi, reserves=0., plot_diagram = True, fuel_name=None):  
     """Calculates and plots the payload range diagram for an aircraft by modifying the cruise segment and weights of the aicraft .
 
         Sources:
@@ -37,33 +37,22 @@ def compute_payload_range_diagram(vehicle,assigned_propulsors,weights_analysis,a
         Outputs: 
             payload_range       data structure of payload range properties   [m/s]
     """ 
-
-    configs  =  configs_setup(vehicle)
-
-    # create analyses
-    analyses =  analyses_setup(configs,weights_analysis,aerodynamics_analysis)              
+            
+    if mission == None:
+        raise AssertionError('Mission not specifed!')
+    
+    initial_segment =  list(mission.segments.keys())[0]
+    
+    # perform inital weights analysis 
+    weights_analysis   = mission.segments[initial_segment].analyses.weights
+    _ =  weights_analysis.evaluate()
+    vehicle = weights_analysis.vehicle
     
     for network in vehicle.networks:
-        if type(network) == RCAIDE.Framework.Networks.Fuel:
-            electric_aircraft =  False
-            
-            # mission analyses 
-            mission =  mission_setup(analyses,electric_aircraft,assigned_propulsors,cruise_airspeed, cruise_altitude, max_range_guess)
-            
-            # create mission instances (for multiple types of missions)
-            missions = missions_setup(mission) 
-            cruise_segment_tag = 'cruise'
-            payload_range  =  conventional_payload_range_diagram(vehicle, missions.base_mission,cruise_segment_tag,reserves,plot_diagram,fuel_name) 
-        elif type(network) == RCAIDE.Framework.Networks.Electric:
-            electric_aircraft =  True
-             
-            # mission analyses 
-            mission =  mission_setup(analyses,electric_aircraft,assigned_propulsors,cruise_airspeed, cruise_altitude, max_range_guess)
-            
-            # create mission instances (for multiple types of missions)
-            missions = missions_setup(mission) 
-            cruise_segment_tag = 'cruise'
-            payload_range  =  electric_payload_range_diagram(vehicle,missions.base_mission,cruise_segment_tag,plot_diagram)
+        if type(network) == RCAIDE.Framework.Networks.Fuel:  
+            payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,reserves,plot_diagram,fuel_name) 
+        else:
+            payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram)
     return payload_range 
              
 def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,reserves,plot_diagram, fuel_name): 
@@ -297,119 +286,119 @@ def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagr
 
     return payload_range
 
-# ---------------------------------------------------------------------
-#   Define the Configurations
-# ---------------------------------------------------------------------
+## ---------------------------------------------------------------------
+##   Define the Configurations
+## ---------------------------------------------------------------------
 
-def configs_setup(vehicle):
+#def configs_setup(vehicle):
  
     
-    # ------------------------------------------------------------------
-    #   Initialize Configurations
-    # ------------------------------------------------------------------
+    ## ------------------------------------------------------------------
+    ##   Initialize Configurations
+    ## ------------------------------------------------------------------
 
-    configs     = RCAIDE.Library.Components.Configs.Config.Container() 
-    base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag = 'base'  
-    configs.append(base_config)
+    #configs     = RCAIDE.Library.Components.Configs.Config.Container() 
+    #base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
+    #base_config.tag = 'base'  
+    #configs.append(base_config)
  
-    return configs
+    #return configs
   
-def analyses_setup(configs,weights,aerodynamics):
+#def analyses_setup(configs,weights,aerodynamics):
 
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+    #analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
-    # build a base analysis for each config
-    for tag,config in configs.items():
-        analysis = base_analysis(config,weights,aerodynamics)
-        analyses[tag] = analysis
+    ## build a base analysis for each config
+    #for tag,config in configs.items():
+        #analysis = base_analysis(config,weights,aerodynamics)
+        #analyses[tag] = analysis
 
-    return analyses
+    #return analyses
 
-def base_analysis(vehicle,weights,aerodynamics):
+#def base_analysis(vehicle,weights,aerodynamics):
 
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    ## ------------------------------------------------------------------
+    ##   Initialize the Analyses
+    ## ------------------------------------------------------------------     
+    #analyses = RCAIDE.Framework.Analyses.Vehicle() 
     
-    # ------------------------------------------------------------------
-    #  Weights 
-    analyses.append(weights)
+    ## ------------------------------------------------------------------
+    ##  Weights 
+    #analyses.append(weights)
 
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis    
-    analyses.append(aerodynamics)   
+    ## ------------------------------------------------------------------
+    ##  Aerodynamics Analysis    
+    #analyses.append(aerodynamics)   
 
-    # ------------------------------------------------------------------
-    #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
-    analyses.append(energy)
+    ## ------------------------------------------------------------------
+    ##  Energy
+    #energy          = RCAIDE.Framework.Analyses.Energy.Energy()
+    #energy.vehicle  = vehicle 
+    #analyses.append(energy)
 
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
+    ## ------------------------------------------------------------------
+    ##  Planet Analysis
+    #planet = RCAIDE.Framework.Analyses.Planets.Earth()
+    #analyses.append(planet)
 
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
-    analyses.append(atmosphere)   
+    ## ------------------------------------------------------------------
+    ##  Atmosphere Analysis
+    #atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    #atmosphere.features.planet = planet.features
+    #analyses.append(atmosphere)   
 
-    # done!
-    return analyses    
+    ## done!
+    #return analyses    
 
-# ----------------------------------------------------------------------
-#   Define the Mission
-# ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
+##   Define the Mission
+## ----------------------------------------------------------------------
  
-def mission_setup(analyses,electric_aircraft,assigned_propulsors, cruise_airspeed, cruise_altitude, max_range_guess): 
+#def mission_setup(analyses,electric_aircraft,assigned_propulsors, cruise_airspeed, cruise_altitude, max_range_guess): 
     
-    # ------------------------------------------------------------------
-    #   Initialize the Mission
-    # ------------------------------------------------------------------
+    ## ------------------------------------------------------------------
+    ##   Initialize the Mission
+    ## ------------------------------------------------------------------
 
-    mission = RCAIDE.Framework.Mission.Sequential_Segments()
-    mission.tag = 'mission'
+    #mission = RCAIDE.Framework.Mission.Sequential_Segments()
+    #mission.tag = 'mission'
   
-    Segments = RCAIDE.Framework.Mission.Segments 
-    base_segment = Segments.Segment()
-    base_segment.state.numerics.number_of_control_points  = 3   
+    #Segments = RCAIDE.Framework.Mission.Segments 
+    #base_segment = Segments.Segment()
+    #base_segment.state.numerics.number_of_control_points  = 3   
 
-    # ------------------------------------------------------------------    
-    #   Cruise Segment 
-    # ------------------------------------------------------------------    
+    ## ------------------------------------------------------------------    
+    ##   Cruise Segment 
+    ## ------------------------------------------------------------------    
 
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag = "cruise" 
-    segment.analyses.extend( analyses.base )
-    if electric_aircraft: 
-        segment.initial_battery_state_of_charge               = 1.0
+    #segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    #segment.tag = "cruise" 
+    #segment.analyses.extend( analyses.base )
+    #if electric_aircraft: 
+        #segment.initial_battery_state_of_charge               = 1.0
      
-    segment.altitude  = cruise_altitude
-    segment.air_speed = cruise_airspeed
-    segment.distance  = max_range_guess
+    #segment.altitude  = cruise_altitude
+    #segment.air_speed = cruise_airspeed
+    #segment.distance  = max_range_guess
     
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
+    ## define flight dynamics to model 
+    #segment.flight_dynamics.force_x                      = True  
+    #segment.flight_dynamics.force_z                      = True     
     
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = assigned_propulsors
-    segment.assigned_control_variables.body_angle.active             = True                
+    ## define flight controls 
+    #segment.assigned_control_variables.throttle.active               = True           
+    #segment.assigned_control_variables.throttle.assigned_propulsors  = assigned_propulsors
+    #segment.assigned_control_variables.body_angle.active             = True                
     
-    mission.append_segment(segment) 
+    #mission.append_segment(segment) 
  
 
-    return mission
+    #return mission
 
-def missions_setup(mission): 
+#def missions_setup(mission): 
  
-    missions     = RCAIDE.Framework.Mission.Missions() 
-    mission.tag  = 'base_mission'
-    missions.append(mission)
+    #missions     = RCAIDE.Framework.Mission.Missions() 
+    #mission.tag  = 'base_mission'
+    #missions.append(mission)
  
-    return missions   
+    #return missions   

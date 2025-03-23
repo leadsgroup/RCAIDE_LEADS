@@ -20,7 +20,24 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.comput
 class Turboelectric_Generator(Converter):
     """
     A Turboelectric_Generator propulsion system model that simulates the performance of a Turboelectric_Generator engine.
- 
+   
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the shaft engine. Default is 'turboshaft'. 
+        
+    turboshaft : Component
+        Turboshaft component. Default is the Turboshaft Class.
+        
+    generator : Component
+        Generator component. Default is DC_Generator Class.
+        
+    gearbox : Component
+        Gearbox data structure. Default is None. 
+        
+    inverse_calculation : Component
+        Flag that determines the how calculations are performed. Default is False    
 
     Notes
     -----
@@ -40,7 +57,6 @@ class Turboelectric_Generator(Converter):
         self.generator                 = DC_Generator()
         self.gearbox                   = Data()
         self.gearbox.gear_ratio        = None  
-        self.active                    = True
         self.inverse_calculation       = False
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 

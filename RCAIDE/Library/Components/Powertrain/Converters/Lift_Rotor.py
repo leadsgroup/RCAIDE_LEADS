@@ -178,10 +178,12 @@ class Lift_Rotor(Rotor):
         self.hover.design_acoustics           = None
         self.hover.design_performance         = None
         self.hover.design_pitch_command       = 0.0
+        self.hover.design_efficiency          = 0.86  
         self.hover.design_SPL_dBA             = None
         self.hover.design_Cl                  = None
         self.hover.design_thrust_coefficient  = None
         self.hover.design_power_coefficient   = None 
+        self.hover.design_torque_coefficient  = None
         
         self.oei                              = Data()
         self.oei.design_thrust                = None

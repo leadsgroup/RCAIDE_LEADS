@@ -138,10 +138,11 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
 
     # ------------------------------------------------------------------
     #  Weights
-    weights                                          = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle                                  = vehicle
+    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional()
+    weights.aircraft_type   = 'General_Aviation'
+    weights.vehicle         = vehicle 
     analyses.append(weights)
- 
+
     #  Aerodynamics Analysis
     aerodynamics                                     = RCAIDE.Framework.Analyses.Aerodynamics.Athena_Vortex_Lattice()
     aerodynamics.vehicle                             = vehicle 

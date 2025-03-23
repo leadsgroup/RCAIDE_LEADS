@@ -64,12 +64,11 @@ def vehicle_setup():
     fuel_percentage = 1.0
 
     # envelope properties
-    vehicle.flight_envelope.ultimate_load = 3.5
-    vehicle.flight_envelope.limit_load    = 1.5
-    
-    vehicle.flight_envelope.design_range = 3700 * Units.mile
+    vehicle.flight_envelope.ultimate_load          = 3.5
+    vehicle.flight_envelope.limit_load             = 1.5 
+    vehicle.flight_envelope.design_range           = 3700 * Units.mile
     vehicle.flight_envelope.design_cruise_altitude = 35000 * Units.feet
-    vehicle.flight_envelope.design_mach_number  = 0.75
+    vehicle.flight_envelope.design_mach_number     = 0.75
     
 
     # basic parameters

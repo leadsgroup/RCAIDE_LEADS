@@ -185,22 +185,25 @@ def compute_motor_performance(motor,conditions):
             
     else:
         if motor.inverse_calculation == False:
-            G      = motor.gearbox.gear_ratio  
+            G              = motor.gearbox.gear_ratio  
             Res            = motor.resistance  
             Kv             = motor.speed_constant
             G              = motor.gearbox.gear_ratio 
             io             = motor.no_load_current  
-            v              = motor_conditions.inputs.voltage  
+            v              = motor_conditions.inputs.voltage
+             
             i              = motor_conditions.inputs.current 
             omega          = ((v - (Res * i)) * Kv)  
             Q              = ((v- (omega) /Kv)/Res -io)/Kv  
             etam           = (1-io/i)*(1-i*Res/v)
             omega_gearbox  = omega * G
-            Q_gearbox      = Q / G 
+            Q_gearbox      = Q / G
+                
             motor_conditions.outputs.torque = Q_gearbox
             motor_conditions.outputs.omega  = omega_gearbox 
             motor_conditions.outputs.power  = omega_gearbox*Q_gearbox 
             motor_conditions.efficiency     = etam
+            
         else: 
             G              = motor.gearbox.gear_ratio 
             omega_gearbox  = motor_conditions.outputs.omega 

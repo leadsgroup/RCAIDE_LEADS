@@ -14,8 +14,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_turboshaft_conditions(turboshaft,segment,energy_conditions,noise_conditions):
     '''
-    MATTEO
-    
+    Appends data structures arrays for storing turboshaft conditions  
     '''
     ones_row    = segment.state.ones_row
     

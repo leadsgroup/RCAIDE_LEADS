@@ -18,8 +18,86 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.compute_turboshaft_
 # ----------------------------------------------------------------------
 class Turboshaft(Converter):
     """
-    MATTEO There are defaults that are defined that might not be called anywhere so need to remove them
-    """ 
+    A turboshaft system model that simulates the performance of a turboshaft engine
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the shaft engine. Default is 'turboshaft'. 
+        
+    ram : Component
+        Ram inlet component. Default is None.
+        
+    inlet_nozzle : Component
+        Inlet nozzle component. Default is None.
+        
+    compressor : Component
+        Low pressure compressor component. Default is None. 
+        
+    low_pressure_turbine : Component
+        Low pressure turbine component. Default is None.
+        
+    high_pressure_turbine : Component
+        High pressure turbine component. Default is None.
+        
+    combustor : Component
+        Combustor component. Default is None.
+        
+    core_nozzle : Component
+        Core exhaust nozzle component. Default is None. 
+        
+    active_crypgenic_tanks_tanks : None or list
+        Collection of active cryogenoc tanks. Default is None.
+        
+    diameter : float
+        Diameter of the engine [m]. Default is 0.0.
+        
+    length : float
+        Length of the engine [m]. Default is 0.0.
+        
+    height : float
+        Engine centerline height above the ground plane [m]. Default is 0.5. 
+        Engine bypass ratio. Default is 0.0.
+        
+    design_isa_deviation : float
+        ISA temperature deviation at design point [K]. Default is 0.0.
+        
+    design_altitude : float
+        Design altitude of the engine [m]. Default is 0.0.
+        
+    SFC_adjustment : float
+        Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
+        
+    compressor_nondimensional_massflow : float
+        Non-dimensional mass flow through the compressor. Default is 0.0.
+        
+    reference_temperature : float
+        Reference temperature for calculations [K]. Default is 288.15.
+        
+    reference_pressure : float
+        Reference pressure for calculations [Pa]. Default is 101325.0.
+        
+    design_mass_flow_rate : float
+        Design mass flow rate of turboshaft [kg/s]. Default is 0.0
+        
+    conversion_efficiency : float
+        Conversion efficiency of turboshaft [-]. Default is 0.5
+        
+    design_power : float
+        Design power of the engine [W]. Default is 0.0. 
+
+    **Definitions**
+
+    'ISA'
+        International Standard Atmosphere - standard atmospheric model
+
+    'SFC'
+        Specific Fuel Consumption - fuel efficiency metric 
+
+    See Also
+    --------
+    RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator
+    """
     def __defaults__(self):
         # setting the default values
         self.tag                                              = 'turboshaft'
@@ -33,6 +111,7 @@ class Turboshaft(Converter):
         self.core_nozzle                                      = None
         self.active                                           = True
         self.length                                           = 0.0
+        self.diamter                                          = 0.0
         self.design_isa_deviation                             = 0.0
         self.design_altitude                                  = 0.0
         self.SFC_adjustment                                   = 0.0  

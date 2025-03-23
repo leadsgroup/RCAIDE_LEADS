@@ -88,7 +88,7 @@ def compute_RHS_matrix(delta,phi,conditions,settings,geometry,propeller_wake_mod
                     rotor =  propulsor.rotor
                 elif 'propeller' in  propulsor :
                     rotor =  propulsor.propeller
-                rotor_conditions =  conditions.energy.propulsors[propulsor.tag][rotor.tag]
+                rotor_conditions =  conditions.energy.converters[rotor.tag]
                 if rotor.fidelity == "Blade_Element_Momentum_Theory_Helmholtz_Wake":                 
                     rot_V_wake_ind += RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.evaluate_slipstream(rotor,rotor_conditions,geometry,num_ctrl_pts) 
                     

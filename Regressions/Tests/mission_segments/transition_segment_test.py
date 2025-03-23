@@ -31,10 +31,10 @@ from Stopped_Rotor_EVTOL    import configs_setup as  SR_configs_setup
 # ----------------------------------------------------------------------
 def main(): 
     # make true only when resizing aircraft. should be left false for regression
-    update_regression_values = True
+    update_regression_values = False
      
     # TEST 1
-    #tiltwing_transition_test(update_regression_values)
+    tiltwing_transition_test(update_regression_values)
     
     # TEST 2
     stopped_rotor_transition_test(update_regression_values)
@@ -166,6 +166,7 @@ def TW_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Weights
     weights         = RCAIDE.Framework.Analyses.Weights.Electric()
+    weights.aircraft_type =  "VTOL"
     weights.vehicle = vehicle
     analyses.append(weights)
 
@@ -206,6 +207,7 @@ def SR_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Weights
     weights         = RCAIDE.Framework.Analyses.Weights.Electric()
+    weights.aircraft_type =  "VTOL"
     weights.vehicle = vehicle
     analyses.append(weights)
 
@@ -367,7 +369,7 @@ def SR_mission_setup(analyses,vehicle):
     segment.air_speed_end                                 = 0.75 * Vstall
     segment.acceleration                                  = 1.5
     segment.pitch_initial                                 = 0.0 * Units.degrees
-    segment.pitch_final                                   = 2.  * Units.degrees    
+    segment.pitch_final                                   = 2.  * Units.degrees 
 
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  
@@ -377,7 +379,7 @@ def SR_mission_setup(analyses,vehicle):
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['cruise_propulsor_1','cruise_propulsor_2'],
                                                              ['lift_propulsor_1','lift_propulsor_2','lift_propulsor_3','lift_propulsor_4',
-                                                            'lift_propulsor_5','lift_propulsor_6','lift_propulsor_7','lift_propulsor_8']]
+                                                            'lift_propulsor_5','lift_propulsor_6','lift_propulsor_7','lift_propulsor_8']] 
     mission.append_segment(segment) 
     
     #------------------------------------------------------------------------------------------------------------------------------------  

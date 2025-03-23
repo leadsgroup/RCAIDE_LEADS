@@ -39,22 +39,19 @@ def vehicle_setup(cell_chemistry, btms_type):
     vehicle.mass_properties.max_takeoff   = 5670  # kg 
     vehicle.mass_properties.takeoff       = 5670  # kg 
     vehicle.mass_properties.max_zero_fuel = 5670  # kg 
-
-    vehicle.flight_envelope.ultimate_load = 5.7
-    vehicle.flight_envelope.limit_load    = 3.8 
     vehicle.reference_area                = 39 
     vehicle.passengers                    = 19
     vehicle.systems.control               = "fully powered"
     vehicle.systems.accessories           = "commuter"    
-    
-    cruise_speed                          = 130 * Units.kts
-    altitude                              = 5000 * Units.feet
-    atmo                                  = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    freestream                            = atmo.compute_values (0.)
-    freestream0                           = atmo.compute_values (altitude)
-    mach_number                           = (cruise_speed/freestream.speed_of_sound)[0][0] 
-    vehicle.design_dynamic_pressure       = ( .5 *freestream0.density*(cruise_speed*cruise_speed))[0][0]
-    vehicle.design_mach_number            =  mach_number
+     
+    vehicle.flight_envelope.design_cruise_altitude   = 5000 * Units.feet
+    vehicle.flight_envelope.design_dynamic_pressure  = 2130.457961
+    vehicle.flight_envelope.design_mach_number       = 0.19
+    vehicle.flight_envelope.ultimate_load            = 5.7
+    vehicle.flight_envelope.limit_load               = 3.8       
+    vehicle.flight_envelope.positive_limit_load      = 2.5  
+    vehicle.flight_envelope.design_range             = 3500 * Units.nmi
+        
 
          
     # ##########################################################  Wings ################################################################    
@@ -74,8 +71,8 @@ def vehicle_setup(cell_chemistry, btms_type):
     wing.aspect_ratio                     = wing.spans.projected**2. / wing.areas.reference 
     wing.twists.root                      = 3. * Units.degree 
     wing.twists.tip                       = 0
-    wing.origin                           = [[5.38, 0, 1, 35]] 
-    wing.aerodynamic_center               = [[5.38 + 0.25 *wing.chords.root , 0, 1, 35]]  
+    wing.origin                           = [[5.38, 0, 1.35]] 
+    wing.aerodynamic_center               = [[5.38 + 0.25 *wing.chords.root , 0, 1.35]]  
     wing.vertical                         = False
     wing.symmetric                        = True
     wing.high_lift                        = True 

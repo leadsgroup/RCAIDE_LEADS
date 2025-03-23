@@ -23,34 +23,56 @@ import numpy as np
 # Fuel
 # ----------------------------------------------------------------------------------------------------------------------  
 class Hybrid(Network): 
-    """ MATTEO UPDATE
-     This is a  hybrid-based network. 
+    """ Generalized Hybrid Energy Network (powertrain) Class capable of creating all derivatives of hybrid
+    networks, the conventional fuel network and the all-electric network.
     
-        An electric network comprising one or more electrichemical energy source and/or fuel cells that to power electro-
-        mechanical conversion machines eg. electric motors via a bus. Electronic speed controllers, thermal management
-        system, avionics, and other eletric power systes paylaods are also modeled. Ducted fans, generators, rotors and
-        motors etc. arranged into groups, called propulsor groups, to siginify how they are connected in the network.
-        The network also takes into consideration thermal management components that are connected to a coolant line.
-        Based on the propulsor, additional unknowns and residuals are added to the mission
+                                            GENERIC NETWORK
+          .........................................:..........................................                          
+          :                        :                                :                        :
+    .-------------.         .-------------.                 .-------------.           .-------------.                     
+    | propulsor 1 |         | propulsor 2 |                 | propulsor 2 |           | propulsor 3 | 
+    '-------------'         '-------------'                 '-------------'           '-------------'            
+          ||                       ||                              ||                        ||                                  
+          ||   .-------------.     ||                              ||  .-------------.       ||
+          ||== | converter 1 |====== electric bus / fuel line =========| converter 2 |=======|| 
+               '-------------'                                         '-------------'  
+                           
+    Attributes
+    ----------
+    tag : str
+        Identifier for the network   
+
+    Notes
+    -----
+    The evaluate function is broken into three sections: Section 1 computes all the forces and moments
+    from propulsors regardless of if they are powered by fuel or an electrochemical energy storage system;
+    Section 2 computees the perfomrance of any converters on the distrution lines, for example,
+    turboshafts, motors, pumps etc; and Section 3 computes the thermal mangement of the system as
+    well as energy consumtion of the powertrain. The state of storage devices such as covnentional fuel tanks,
+    cryogenic tanks and batteries are also updates. Propulsor groups can be "active" or "inactive" to simulate
+    engine out conditions. Energy consumtion from payload and avionics is also modeled 
+    
+    **Definitions** 
+    'Propulsor Group'
+        Any single or group of compoments that work together to provide thrust.
+
+    See Also
+    --------
+    RCAIDE.Library.Framework.Networks.Fuel
+        Fuel network class 
+    RCAIDE.Library.Framework.Networks.Electric
+        All-Electric network class  
     """      
     
     def __defaults__(self):
         """ This sets the default values for the network to function.
-        """           
-
-        self.tag                          ='hybrid'
-        self.reverse_thrust               = False
-        self.wing_mounted                 = True   
-        self.system_voltage               = None
+        """        
+        self.tag  ='hybrid' 
         
     # linking the different network components
     def evaluate(network,state,center_of_gravity):
-        """ Calculate thrust given the current state of the vehicle
-         MATTEO UPDATE
-         
-        """
-        
-
+        """ Computes the performance of the network
+        """  
         # unpack   
         conditions           = state.conditions 
         busses               = network.busses 
@@ -67,15 +89,15 @@ class Hybrid(Network):
         reverse_thrust       = network.reverse_thrust 
 
         # ----------------------------------------------------------       
-        # 1.0 Propulsors 
+        # Section 1.0 Propulsor Performance 
         # ----------------------------------------------------------
-        # 1.1 Fuel Propulsors 
-        stored_results_flag  = False
-        stored_propulsor_tag = None    
-        for fuel_line in fuel_lines:
+        # 1.1 Fuel Propulsors  
+        for fuel_line in fuel_lines: 
             for propulsor_group in fuel_line.assigned_propulsors:
+                stored_results_flag  = False
+                stored_propulsor_tag = None 
                 for propulsor_tag in propulsor_group:
-                    propulsor =  network.propulsors[propulsor_tag]
+                    propulsor            = network.propulsors[propulsor_tag]
                     if propulsor.active and fuel_line.active:   
                         if network.identical_propulsors == False:
                             # run analysis  
@@ -96,13 +118,11 @@ class Hybrid(Network):
                         # compute total mass flow rate 
                         fuel_mdot     += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
                 
-        # 1.2 Electric Propulsors                 
-        stored_results_flag  = False
-        stored_propulsor_tag = None   
-        for bus in busses:   
-            bus_conditions  = state.conditions.energy[bus.tag] 
-            avionics        = bus.avionics
-            payload         = bus.payload  
+        # 1.2 Electric Propulsors         
+        for bus in busses:           
+            bus_conditions       = state.conditions.energy[bus.tag] 
+            avionics             = bus.avionics
+            payload              = bus.payload  
 
             # Avionics Power Consumtion 
             compute_avionics_power_draw(avionics,bus,conditions)
@@ -121,6 +141,8 @@ class Hybrid(Network):
 
             else:
                 for propulsor_group in bus.assigned_propulsors:
+                    stored_results_flag  = False
+                    stored_propulsor_tag = None   
                     for propulsor_tag in propulsor_group:
                         propulsor =  network.propulsors[propulsor_tag]
                         if propulsor.active and bus.active:       
@@ -146,7 +168,7 @@ class Hybrid(Network):
                 total_elec_power                 += bus_conditions.power_draw  
              
         # ------------------------------------------------------------------------------------------------------------------- 
-        # 2.0 Converters
+        # Section 2.0 Converters
         # -------------------------------------------------------------------------------------------------------------------  
         # 2.1 Fuel Converters         
         for fuel_line in fuel_lines:  
@@ -185,7 +207,7 @@ class Hybrid(Network):
                             bus_conditions.current_draw  = bus_conditions.power_draw/bus.voltage                            
                         
         # ----------------------------------------------------------        
-        # 3.0 Sources
+        # Section 3.0 Sources
         # ----------------------------------------------------------
         # 3.1 Fuel Sources  
         for fuel_line in fuel_lines:     

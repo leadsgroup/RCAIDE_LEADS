@@ -41,10 +41,10 @@ def vehicle_setup():
     vehicle.mass_properties.cargo                     = 00.  * Units.kilogram   
 
     # envelope properties
-    vehicle.flight_envelope.ultimate_load = 2.5
-    vehicle.flight_envelope.limit_load    = 1.5
+    vehicle.flight_envelope.ultimate_load      = 2.5
+    vehicle.flight_envelope.limit_load         = 1.5
     vehicle.flight_envelope.design_mach_number = 0.8
-    vehicle.flight_envelope.design_range = 8000 * Units.nmi
+    vehicle.flight_envelope.design_range       = 8000 * Units.nmi  
 
     # basic parameters
     vehicle.reference_area         = 7840. * 2 * Units.feet**2       

@@ -37,17 +37,19 @@ def vehicle_setup():
     vehicle.mass_properties.takeoff                   = 2948 * Units.pounds
     vehicle.mass_properties.moments_of_inertia.tensor = np.array([[164627.7,0.0,0.0],[0.0,471262.4,0.0],[0.0,0.0,554518.7]])
     vehicle.mass_properties.center_of_gravity         = [[2.239696797,0,-0.131189711 ]]
+     
+    vehicle.reference_area                            = 17.112 
+    vehicle.passengers                                = 2 
+    vehicle.systems.control                           = "fully powered"
+    vehicle.systems.accessories                       = "commuter"       
+    
+    # flight envelope 
+    vehicle.flight_envelope.design_cruise_altitude    = 15000*Units.feet
+    vehicle.flight_envelope.design_range              = 750 * Units.nmi
     vehicle.flight_envelope.ultimate_load             = 5.7
     vehicle.flight_envelope.positive_limit_load       = 3.8
-    vehicle.reference_area                            = 17.112 
-    vehicle.passengers                                = 2
-    vehicle.design_dynamic_pressure                   = 1929.16080736607
-
-    cruise_speed                                      = 124. * Units.kts 
-    atmo                                              = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    freestream                                        = atmo.compute_values(altitude =  8500. * Units.ft) 
-    mach_number                                       = (cruise_speed/freestream.speed_of_sound)[0][0]  
-    vehicle.flight_envelope.design_mach_number        =  mach_number
+    vehicle.flight_envelope.design_dynamic_pressure   = 1929.16080736607
+    vehicle.flight_envelope.design_mach_number        = 0.1931864244395293
     
     # ------------------------------------------------------------------        
     #   Main Wing
@@ -338,6 +340,7 @@ def vehicle_setup():
     engine.rated_speed                         = 2300. * Units.rpm 
     engine.power_specific_fuel_consumption     = 0.01  * Units['lb/hp/hr']
     ice_prop.engine                            = engine 
+    ice_prop.sealevel_static_thrust            = 2500 # N
      
     # Propeller 
     prop                                    = RCAIDE.Library.Components.Powertrain.Converters.Propeller()

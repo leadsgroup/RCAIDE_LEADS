@@ -30,18 +30,11 @@ def vehicle_setup():
     vehicle.mass_properties.cargo               = 0. 
                                                
     # envelope properties                       
-    vehicle.flight_envelope.ultimate_load       = 5.7 
-    vehicle.flight_envelope.positive_limit_load = 3.8  
-    vehicle.flight_envelope.design_range        = 750 * Units.nmi
-                                                
-    cruise_speed                                = 124. * Units.kts
-    altitude                                    = 8500. * Units.ft
-    atmo                                        = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    freestream                                  = atmo.compute_values (0.)
-    freestream0                                 = atmo.compute_values (altitude)
-    mach_number                                 = (cruise_speed/freestream.speed_of_sound)[0][0] 
-    vehicle.design_dynamic_pressure             = ( .5 *freestream0.density*(cruise_speed*cruise_speed))[0][0]
-    vehicle.flight_envelope.design_mach_number  =  mach_number
+    vehicle.flight_envelope.ultimate_load            = 5.7 
+    vehicle.flight_envelope.positive_limit_load      = 3.8  
+    vehicle.flight_envelope.design_range             = 750 * Units.nmi 
+    vehicle.flight_envelope.design_dynamic_pressure  = 1929.1574740443007
+    vehicle.flight_envelope.design_mach_number       =  0.18745866156304694
                                                 
     # basic parameters                          
     vehicle.reference_area                      = 174. * Units.feet**2       

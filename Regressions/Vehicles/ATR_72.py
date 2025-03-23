@@ -41,13 +41,14 @@ def vehicle_setup():
     vehicle.mass_properties.center_of_gravity         = [[0,0,0]] # Unknown 
     vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]] # Unknown 
     vehicle.mass_properties.max_fuel                  = 5000
-    vehicle.design_mach_number                        = 0.41 
-    vehicle.design_range                              = 5471000 *Units.meter  
-    vehicle.design_cruise_alt                         = 25000 *Units.feet
 
     # envelope properties
+    vehicle.flight_envelope.design_mach_number        = 0.41 
+    vehicle.flight_envelope.design_range              = 5471000 *Units.meter  
+    vehicle.flight_envelope.design_cruise_altitude    = 25000 *Units.feet
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 1.5
+    vehicle.flight_envelope.design_dynamic_pressure   = 4424
               
     # basic parameters              
     vehicle.reference_area                            = 61.0  
@@ -382,22 +383,21 @@ def vehicle_setup():
     fuselage.segments.append(segment) 
     
     # add to vehicle
-    vehicle.append_component(fuselage)  
-    
-    # ------------------------------------------------------------------
-    #   Landing gear
+    vehicle.append_component(fuselage) 
+
+    # ################################################# Landing Gear #############################################################   
+    # ------------------------------------------------------------------        
+    #  Landing Gear
     # ------------------------------------------------------------------  
-    landing_gear                                = RCAIDE.Library.Components.Landing_Gear.Landing_Gear()
-    main_gear                                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    nose_gear                                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
-    main_gear.strut_length                      = 12. * Units.inches  
-    nose_gear.strut_length                      = 6. * Units.inches 
-                                                
-    landing_gear.main                           = main_gear
-    landing_gear.nose                           = nose_gear
-    
-    #add to vehicle                             
-    vehicle.landing_gear                        = landing_gear
+    main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.strut_length  = 12. * Units.inches  
+    main_gear.wheels        = 2   
+    vehicle.append_component(main_gear)  
+
+    nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()      
+    nose_gear.wheels        = 2    
+    nose_gear.strut_length  = 6. * Units.inches 
+    vehicle.append_component(nose_gear)  
 
     # ########################################################  Energy Network  #########################################################  
     net                                         = RCAIDE.Framework.Networks.Fuel()    

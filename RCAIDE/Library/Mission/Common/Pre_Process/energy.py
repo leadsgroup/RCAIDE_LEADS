@@ -11,26 +11,19 @@ import RCAIDE
 #  energy
 # ----------------------------------------------------------------------------------------------------------------------  
 def energy(mission):
-    """ Appends all unknows and residuals to the network 
-    
-        Assumptions:
-            N/A
-        
-        Inputs:
-            None
-            
-        Outputs:
-            None 
-
-        Properties Used:
-        N/A                
+    """ Appends all unknows and residuals to the network            
     """       
     for segment in mission.segments: 
         for network in segment.analyses.energy.vehicle.networks: 
             if type(network) == RCAIDE.Framework.Networks.Hybrid:
-                segment.state.conditions.energy.hybrid_power_split_ratio = segment.hybrid_power_split_ratio * segment.state.ones_row(1)
-            else: 
-                segment.state.conditions.energy.hybrid_power_split_ratio = network.hybrid_power_split_ratio *  segment.state.ones_row(1)            
-                    
+                if segment.hybrid_power_split_ratio == None:
+                    raise AssertionError('Hybridization power split ratio not set! Specify in mission segment') 
+            elif type(network) == RCAIDE.Framework.Networks.Fuel: 
+                if segment.hybrid_power_split_ratio == None:                
+                    segment.hybrid_power_split_ratio = 0.0 
+            elif type(network) == RCAIDE.Framework.Networks.Electric: 
+                if segment.hybrid_power_split_ratio == None:                
+                    segment.hybrid_power_split_ratio = 1.0  
+            segment.state.conditions.energy.hybrid_power_split_ratio = segment.hybrid_power_split_ratio * segment.state.ones_row(1)                    
             network.add_unknowns_and_residuals_to_segment(segment) 
     return 
