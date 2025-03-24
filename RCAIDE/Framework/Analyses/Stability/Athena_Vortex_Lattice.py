@@ -67,7 +67,7 @@ class Athena_Vortex_Lattice(Stability):
         # correction factors           
         settings                                                     = self.settings 
         settings.fuselage_lift_correction                            = 1.14
-        settings.trim_drag_correction_factor                         = 1.2
+        settings.trim_drag_correction_factor                         = 1.05
         settings.wing_parasite_drag_form_factor                      = 1.1
         settings.fuselage_parasite_drag_form_factor                  = 2.3
         settings.maximum_lift_coefficient_factor                     = 1.0
