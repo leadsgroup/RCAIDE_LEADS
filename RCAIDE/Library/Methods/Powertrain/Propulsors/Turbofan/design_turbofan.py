@@ -1,5 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/design_turbofan.py
-# (c) Copyright 2023 Aerospace Research Community LLC
+# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/design_turbofan.py 
 # 
 # Created:  Jul 2024, RCAIDE Team
 
