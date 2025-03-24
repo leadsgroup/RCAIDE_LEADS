@@ -28,7 +28,6 @@ def compute_motor_weight(motor):
             N/A
     """
     
-    torque =  motor.design_torque
-    mass  = -2E-7 * (torque ** 2) +  0.0117 * torque +  34.124
-     
-    return mass 
+    torque =  motor.design_torque 
+    motor.mass_properties.mass = -2E-7 * (torque ** 2) +  0.0117 * torque +  34.124
+    return   

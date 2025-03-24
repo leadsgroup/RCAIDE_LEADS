@@ -9,7 +9,11 @@
 
 # RCAIDE Imports
 import RCAIDE 
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor   import design_propeller  
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                   import design_propeller 
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                   import design_lift_rotor 
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                   import design_prop_rotor 
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                   import design_optimal_motor 
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common               import compute_motor_weight
 
 # Python package imports
 import numpy as np
@@ -17,7 +21,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_electric_rotor(ER):
+def design_electric_rotor(electric_rotor):
     """Compute perfomance properties of a propeller-driven internal combustion engine model
     Turbofan is created by manually linking the different components
     
@@ -28,15 +32,34 @@ def design_electric_rotor(ER):
     Source:
     
     Args:
-        ER (dict):  electric rotor [-]
+        electric_rotor (dict):  electric rotor [-]
     
     Returns:
         None 
     
     """
     
-    # Step 1 Design the Propeller  
-    design_propeller(ER.propeller)
+    rotor = electric_rotor.rotor
+    motor = electric_rotor.motor
+    
+    if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Propeller: 
+        design_propeller(rotor)
+        motor.design_torque            = rotor.cruise.design_torque 
+        motor.design_angular_velocity  = rotor.cruise.design_angular_velocity 
+    if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor:
+        design_prop_rotor(rotor)
+        motor.design_torque            = rotor.hover.design_torque 
+        motor.design_angular_velocity  = rotor.hover.design_angular_velocity 
+    else: 
+        design_lift_rotor(rotor)  
+        motor.design_torque            = rotor.hover.design_torque 
+        motor.design_angular_velocity  = rotor.hover.design_angular_velocity
+    
+    # design motor 
+    design_optimal_motor(motor)
+    
+    # compute weight of motor 
+    compute_motor_weight(motor) 
      
     # Step 2 Static Sea Level Thrust  
     #atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
