@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Powertrain/Sources/Batteries/__init__.py
+# RCAIDE/Methods/Powertrain/Sources/Batteries/Lithium_Ion_P30b/__init__.py
 # 
 
 """ RCAIDE Package Setup
@@ -7,8 +7,5 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-from . import Common
-from . import Lithium_Ion_LFP
-from . import Lithium_Ion_NMC
-from . import Aluminum_Air
-from . import Lithium_Ion_P30b
+from .compute_p30b_cell_performance   import compute_p30b_cell_performance, reuse_stored_p30b_cell_data
+from .update_p30b_cell_age            import update_p30b_cell_age
