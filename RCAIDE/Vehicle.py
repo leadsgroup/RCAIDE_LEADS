@@ -89,11 +89,9 @@ class Vehicle(Data):
         self.mass_properties.max_takeoff                                   = 0
         self.mass_properties.max_zero_fuel                                 = 0
         self.mass_properties.max_fuel                                      = 0
-
-        self.mass_properties.mission                                       = Vehicle_Mass_Container()
-        self.mass_properties.mission.takeoff                               = 0
-        self.mass_properties.mission.fuel                                  = 0
-        self.mass_properties.mission.payload                               = 0
+        self.mass_properties.takeoff                                       = 0
+        self.mass_properties.fuel                                          = 0
+        self.mass_properties.payload                                       = 0
         
         self.performance                              = DataOrdered()
          
