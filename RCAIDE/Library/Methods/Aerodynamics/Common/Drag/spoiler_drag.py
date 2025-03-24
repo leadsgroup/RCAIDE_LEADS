@@ -13,13 +13,24 @@ from RCAIDE.Framework.Core import Units
 #  Spolier Drag 
 # ---------------------------------------------------------------------------------------------------------------------- 
 def spoiler_drag(state,settings,geometry):
-    """Updates the aerdoynamic performce of an aircraft with spoilers
+    """Updates the aerodynamic performance of an aircraft given the influence of deflected spoilers
+  
+    Parameters
+    ----------
+    state : Data
+        flight conditions of aircraft
+        
+    settings : dict
+        aerodynamic settings
+        
+    geometry : Data
+        aircraft geometry 
 
-    Assumptions:
-        None
-
-    Source:
-        None  
+    References
+    ----------
+    [1]  Croom, Delwin R. Low-speed wind-tunnel investigation of various segments of flight spoilers
+         as trailing-vortex-alleviation devices on a transport aircraft model. No. NASA-TN-D-8162. 1976.
+      
     """    
     # unpack   
     parasite_total        = state.conditions.aerodynamics.coefficients.drag.parasite.total            
