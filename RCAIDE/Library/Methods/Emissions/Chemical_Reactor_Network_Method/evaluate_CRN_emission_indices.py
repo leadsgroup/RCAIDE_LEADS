@@ -105,7 +105,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     CO_total  = 0 * state.ones_row(1) 
     H2O_total = 0 * state.ones_row(1) 
     NOx_total  = 0 * state.ones_row(1) 
-    soot_total = 0 * state.ones_row(1) 
+    Soot_total = 0 * state.ones_row(1) 
 
     for network in vehicle.networks:  
         for fuel_line in network.fuel_lines:
