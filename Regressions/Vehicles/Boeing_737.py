@@ -564,7 +564,7 @@ def vehicle_setup():
     combustor.air_mass_flow_rate_take_off          = 40       # [kg/s  ]
     combustor.fuel_to_air_ratio_take_off           = 0.025    # [-]
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()
-    combustor.air_data                            = RCAIDE.Library.Attributes.Gases.Air()
+    combustor.air_data                             = RCAIDE.Library.Attributes.Gases.Air()
     turbofan.combustor                             = combustor
 
     # core nozzle

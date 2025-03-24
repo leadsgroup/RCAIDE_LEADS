@@ -129,12 +129,12 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
     try: 
         combustor_results = compute_combustor_performance(combustor, T, P, mdot_air, FAR, gas) # [-]       Run combustor function
         
-        results                 = Data()                                            # [-]       Create results data structure
-        results.EI_CO2          = combustor_results['SZ']['final']['EI']['CO2']     # [-]       Assign CO2 Emission Index to the results data structure
-        results.EI_CO           = combustor_results['SZ']['final']['EI']['CO']      # [-]       Assign CO Emission Index to the results data structure
-        results.EI_H2O          = combustor_results['SZ']['final']['EI']['H2O']     # [-]       Assign H2O Emission Index to the results data structure
-        results.EI_NOx          = combustor_results['SZ']['final']['EI']['NOx']     # [-]       Assign NOx Emission Index to the results data structure
-        results.EI_soot         = combustor_results['SZ']['final']['EI']['soot']    # [-]       Assign Soot Emission Index to the results data structure   
+        results                 = Data()                                            # [-]          Create results data structure
+        results.EI_CO2          = combustor_results['SZ']['final']['EI']['CO2']     # [kg/kg_fuel] Assign CO2 Emission Index to the results data structure
+        results.EI_CO           = combustor_results['SZ']['final']['EI']['CO']      # [kg/kg_fuel] Assign CO Emission Index to the results data structure
+        results.EI_H2O          = combustor_results['SZ']['final']['EI']['H2O']     # [kg/kg_fuel] Assign H2O Emission Index to the results data structure
+        results.EI_NOx          = combustor_results['SZ']['final']['EI']['NOx']     # [kg/kg_fuel] Assign NOx Emission Index to the results data structure
+        results.EI_soot         = combustor_results['SZ']['final']['EI']['soot']    # [kg/kg_fuel] Assign Soot Emission Index to the results data structure   
  
     except ImportError:
         print('cantera required: run pip install cantera') 
@@ -158,8 +158,8 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
     mdot_air          = mdot_air_tot / combustor.number_of_combustors  # [kg/s] Air mass flow rate per combustor
     mdot_fuel         = mdot_fuel_tot / combustor.number_of_combustors # [kg/s] Fuel mass flow rate per combustor
 
-    f_air_PZ          = mdot_fuel_TakeOff * combustor.F_SC / (combustor.design_equivalence_ratio_PZ * combustor.air_mass_flow_rate_take_off * combustor.fuel.stoichiometric_fuel_air_ratio) # [-] Air mass flow rate fraction in Primary Zone
-    phi_sign          = (mdot_fuel * combustor.F_SC) / (mdot_air * f_air_PZ * combustor.fuel.stoichiometric_fuel_air_ratio) # [-] Mean equivalence ratio in the Primary Zone
+    f_air_PZ          = mdot_fuel_TakeOff * combustor.F_SC / (combustor.design_equivalence_ratio_PZ * combustor.air_mass_flow_rate_take_off * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [-] Air mass flow rate fraction in Primary Zone
+    phi_sign          = (mdot_fuel * combustor.F_SC) / (mdot_air * f_air_PZ * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [-] Mean equivalence ratio in the Primary Zone
     sigma_phi         = phi_sign * combustor.S_PZ                      # [-] Standard deviation of the Equivalence Ratio in the Primary Zone
     A_PZ              = np.pi * (combustor.diameter / 2) ** 2          # [m^2] Cross-sectional area of the Primary Zone
     V_PZ              = A_PZ * combustor.L_PZ                          # [m^3] Volume of the Primary Zone
@@ -169,13 +169,13 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
     Delta_phi         = np.abs(phi_PSR[0] - phi_PSR[1])                # [-] Equivalence ratio step in the Primary Zone
 
     fuel              = ct.Solution(gas)                               # [-] Fuel object
-    fuel.TPX          = combustor.fuel.temperature, combustor.fuel.pressure, combustor.fuel.fuel_surrogate_S1                   # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of fuel
+    fuel.TPX          = combustor.fuel_data.temperature, combustor.fuel_data.pressure, combustor.fuel_data.fuel_surrogate_S1                   # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of fuel
     fuel_reservoir    = ct.Reservoir(fuel)                             # [-] Fuel reservoir
     air               = ct.Solution(gas)                               # [-] Air object
-    air.TPX           = Temp_air, Pres_air, combustor.air.air_surrogate                      # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of air
+    air.TPX           = Temp_air, Pres_air, combustor.air_data.air_surrogate                      # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of air
     air_reservoir     = ct.Reservoir(air)                              # [-] Air reservoir
     fuel_hot          = ct.Solution(gas)                               # [-] Fuel hot state
-    fuel_hot.TPX      = Temp_air, Pres_air, combustor.fuel.fuel_surrogate_S1                     # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of hot fuel
+    fuel_hot.TPX      = Temp_air, Pres_air, combustor.fuel_data.fuel_surrogate_S1                     # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of hot fuel
     delta_h           = np.abs(fuel.h - fuel_hot.h)                    # [J/kg] Fuel specific enthalpy difference
 
     PZ_Structures     = {"PSRs": {}, "MFC_AirToPSR": {}, "MFC_FuelToPSR": {}, "PSR_Networks": {}, "MFC_PSRToMixer": {}} # [-] Primary Zone structures
@@ -270,14 +270,14 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
     for i in range(combustor.N_PZ):
 
         f_PSR_PZ_i      = f_PSR_data[i]                                # [-] Fuel mass flow rate fraction in the PSR
-        mdot_air_PZ_i   = f_PSR_PZ_i * (mdot_air_PZ + mdot_fuel) / (1 + phi_PSR[i] * combustor.fuel.stoichiometric_fuel_air_ratio) # [kg/s] Air mass flow rate in the PSR
-        mdot_fuel_PZ_i  = mdot_air_PZ_i * phi_PSR[i] * combustor.fuel.stoichiometric_fuel_air_ratio # [kg/s] Fuel mass flow rate in the PSR
+        mdot_air_PZ_i   = f_PSR_PZ_i * (mdot_air_PZ + mdot_fuel) / (1 + phi_PSR[i] * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [kg/s] Air mass flow rate in the PSR
+        mdot_fuel_PZ_i  = mdot_air_PZ_i * phi_PSR[i] * combustor.fuel_data.stoichiometric_fuel_air_ratio # [kg/s] Fuel mass flow rate in the PSR
         mdot_total_PZ_i = mdot_air_PZ_i + mdot_fuel_PZ_i               # [kg/s] Total mass flow rate in the PSR
         mdot_PZ.append(mdot_total_PZ_i)                                # [-] Store total mass flow rate in the PSR
 
-        h_mix_PZ_i      = (1 / (mdot_air_PZ_i + mdot_fuel_PZ_i)) * (mdot_air_PZ_i * air.h + mdot_fuel_PZ_i * fuel_hot.h - mdot_fuel_PZ_i * (combustor.fuel.heat_of_vaporization + delta_h)) # [J/kg] Mixture specific enthalpy
+        h_mix_PZ_i      = (1 / (mdot_air_PZ_i + mdot_fuel_PZ_i)) * (mdot_air_PZ_i * air.h + mdot_fuel_PZ_i * fuel_hot.h - mdot_fuel_PZ_i * (combustor.fuel_data.heat_of_vaporization + delta_h)) # [J/kg] Mixture specific enthalpy
         psr_gas_PZ_i    = ct.Solution(gas)                             # [-] PSR gas object
-        psr_gas_PZ_i.set_equivalence_ratio(phi_PSR[i], combustor.fuel.fuel_surrogate_S1, combustor.air.air_surrogate)  # [-] Set equivalence ratio, fuel, and air mole fractions
+        psr_gas_PZ_i.set_equivalence_ratio(phi_PSR[i], combustor.fuel_data.fuel_surrogate_S1, combustor.air_data.air_surrogate)  # [-] Set equivalence ratio, fuel, and air mole fractions
         psr_gas_PZ_i.HP = h_mix_PZ_i, Pres_air                         # [J/kg, Pa] Set enthalpy and pressure
         psr_gas_PZ_i.equilibrate('HP')                                 # [-] Equilibrate the gas at constant enthalpy and pressure
         psr_PZ_i        = ct.ConstPressureReactor(psr_gas_PZ_i, name=f'PSR_{i+1}') # [-] PSR object
@@ -311,8 +311,8 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         O2_PZ_i            = psr_gas_PZ_i['O2'].X[0]*total_moles_PZ_i/(V_PZ_PSR) # [kmol/m^3] ???
         O_PZ_i             = psr_gas_PZ_i['O'].X[0]*total_moles_PZ_i/(V_PZ_PSR) # [kmol/m^3] ???
 
-        dM_dt_outflow = (-mdot_total_PZ_i / (rho_PZ_i * V_PZ_PSR)) * combustor.fuel.M_mech # [-] ???
-        dM_dt_mech = total_mech_mass(combustor.fuel.nuc_fac, combustor.fuel.sg_fac, combustor.fuel.ox_fac, combustor.fuel.L, combustor.fuel.PAH_species, combustor.fuel.radii, combustor.fuel.mu_matrix, psr_gas_PZ_i.T, combustor.fuel.n_C_matrix, PAH_conc_PZ_i, C2H2_conc_PZ_i, OH_PZ_i, O2_PZ_i, O_PZ_i) + dM_dt_outflow # [kg/m^3/s] ???
+        dM_dt_outflow = (-mdot_total_PZ_i / (rho_PZ_i * V_PZ_PSR)) * combustor.fuel_data.M_mech # [-] ???
+        dM_dt_mech = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, psr_gas_PZ_i.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ_i, C2H2_conc_PZ_i, OH_PZ_i, O2_PZ_i, O_PZ_i) + dM_dt_outflow # [kg/m^3/s] ???
         mdot_soot_PZ_i = dM_dt_mech * V_PZ_PSR                         # [kg/s] Soot mass flow rate
         
         EI = calculate_emission_indices(psr_PZ_i, mdot_total_PZ_i, mdot_fuel_PZ_i, mdot_soot_PZ_i) # [-] Emission indices computation
@@ -320,11 +320,11 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         combustor_results['PZ']['psr']['phi'].append(phi_PSR[i])                 # [-] Store Equivalence ratio
         combustor_results['PZ']['psr']['T'].append(psr_gas_PZ_i.T)               # [K] Store Temperature
         combustor_results['PZ']['psr']['f_psr'].append(f_PSR_PZ_i)               # [-] Store mass flow rate fraction
-        combustor_results['PZ']['psr']['EI']['NOx'].append(EI['NOx'])            # [-] Store NOx emission index
-        combustor_results['PZ']['psr']['EI']['CO2'].append(EI['CO2'])            # [-] Store CO2 emission index
-        combustor_results['PZ']['psr']['EI']['CO'].append(EI['CO'])              # [-] Store CO emission index
-        combustor_results['PZ']['psr']['EI']['H2O'].append(EI['H2O'])            # [-] Store H2O emission index
-        combustor_results['PZ']['psr']['EI']['soot'].append(EI['soot'])          # [-] Store soot emission index
+        combustor_results['PZ']['psr']['EI']['NOx'].append(EI['NOx'])            # [kg/kg_fuel] Store NOx emission index
+        combustor_results['PZ']['psr']['EI']['CO2'].append(EI['CO2'])            # [kg/kg_fuel] Store CO2 emission index
+        combustor_results['PZ']['psr']['EI']['CO'].append(EI['CO'])              # [kg/kg_fuel] Store CO emission index
+        combustor_results['PZ']['psr']['EI']['H2O'].append(EI['H2O'])            # [kg/kg_fuel] Store H2O emission index
+        combustor_results['PZ']['psr']['EI']['soot'].append(EI['soot'])          # [kg/kg_fuel] Store soot emission index
 
     # ----------------------------------------------------------------------
     #  Initial Mixing
@@ -357,19 +357,19 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
     O2_PZ        = mixture_sum.phase['O2'].X[0]*total_moles_PZ/(V_PZ)  # [kmol/m^3] ???
     O_PZ         = mixture_sum.phase['O'].X[0]*total_moles_PZ/(V_PZ)   # [kmol/m^3] ???
     
-    dM_dt_outflow_PZ = (-mdot_tot_PZ / (rho_PZ * V_PZ)) * combustor.fuel.M_mech       # [-] ???
-    dM_dt_mech_PZ = total_mech_mass(combustor.fuel.nuc_fac, combustor.fuel.sg_fac, combustor.fuel.ox_fac, combustor.fuel.L, combustor.fuel.PAH_species, combustor.fuel.radii, combustor.fuel.mu_matrix, mixture_sum.T, combustor.fuel.n_C_matrix, PAH_conc_PZ, C2H2_conc_PZ, OH_PZ, O2_PZ, O_PZ) + dM_dt_outflow_PZ # [kg/m^3/s] ???
+    dM_dt_outflow_PZ = (-mdot_tot_PZ / (rho_PZ * V_PZ)) * combustor.fuel_data.M_mech       # [-] ???
+    dM_dt_mech_PZ = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixture_sum.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ, C2H2_conc_PZ, OH_PZ, O2_PZ, O_PZ) + dM_dt_outflow_PZ # [kg/m^3/s] ???
     mdot_soot_PZ = dM_dt_mech_PZ * V_PZ                                # [kg/s] Soot mass flow rate
     
     EI_mixer_initial = calculate_emission_indices(mixture_sum, mdot_tot_PZ, mdot_fuel, mdot_soot_PZ) # [-] Emission indices computation
 
     combustor_results['PZ']['final']['phi'] = mixture_sum.equivalence_ratio()    # [-] Store Equivalence ratio
     combustor_results['PZ']['final']['T'] = mixture_sum.T                        # [K] Store Temperature
-    combustor_results['PZ']['final']['EI']['NOx'] = EI_mixer_initial['NOx']      # [-] Store NOx emission index
-    combustor_results['PZ']['final']['EI']['CO2'] = EI_mixer_initial['CO2']      # [-] Store CO2 emission index
-    combustor_results['PZ']['final']['EI']['CO'] = EI_mixer_initial['CO']        # [-] Store CO emission index
-    combustor_results['PZ']['final']['EI']['H2O'] = EI_mixer_initial['H2O']      # [-] Store H2O emission index
-    combustor_results['PZ']['final']['EI']['soot'] = EI_mixer_initial['soot']    # [-] Store soot emission index
+    combustor_results['PZ']['final']['EI']['NOx'] = EI_mixer_initial['NOx']      # [kg/kg_fuel] Store NOx emission index
+    combustor_results['PZ']['final']['EI']['CO2'] = EI_mixer_initial['CO2']      # [kg/kg_fuel] Store CO2 emission index
+    combustor_results['PZ']['final']['EI']['CO'] = EI_mixer_initial['CO']        # [kg/kg_fuel] Store CO emission index
+    combustor_results['PZ']['final']['EI']['H2O'] = EI_mixer_initial['H2O']      # [kg/kg_fuel] Store H2O emission index
+    combustor_results['PZ']['final']['EI']['soot'] = EI_mixer_initial['soot']    # [kg/kg_fuel] Store soot emission index
 
     # ----------------------------------------------------------------------
     #  Secondary Zone
@@ -377,7 +377,7 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
 
     combustor.L_SZ                      = combustor.length - combustor.L_PZ # [m] Secondary Zone length
     A_SZ                                = np.pi * (combustor.diameter / 2) ** 2 # [m^2] Cross-sectional area of Secondary Zone
-    f_air_SA                            = mdot_fuel_TakeOff / (combustor.design_equivalence_ratio_SZ * combustor.fuel.stoichiometric_fuel_air_ratio * combustor.air_mass_flow_rate_take_off) # [-] Secondary air mass flow fraction
+    f_air_SA                            = mdot_fuel_TakeOff / (combustor.design_equivalence_ratio_SZ * combustor.fuel_data.stoichiometric_fuel_air_ratio * combustor.air_mass_flow_rate_take_off) # [-] Secondary air mass flow fraction
     f_air_DA                            = 1 - f_air_PZ - f_air_SA      # [-] Dilution air mass flow fraction
     f_FM                                = 1 - combustor.f_SM           # [-] Fast mode fraction
     beta_SA_FM                          = (f_air_SA * f_FM * mdot_air) / (combustor.l_SA_FM * combustor.L_SZ) # [kg/s/m] Secondary air mass flow rate per unit length in fast mode
@@ -424,8 +424,8 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         O2_SZ_sm_i                      = mixed_gas_sm['O2'].X[0] * total_moles_SZ_sm_i / V_SZ_sm_i # [kmol/m^3] O2 concentration
         O_SZ_sm_i                       = mixed_gas_sm['O'].X[0] * total_moles_SZ_sm_i / V_SZ_sm_i # [kmol/m^3] O concentration
 
-        dM_dt_outflow_SZ_sm_i           = (-mdot_total_sm / (rho_SZ_sm_i * V_SZ_sm_i)) * combustor.fuel.M_mech # [kg/m^3/s] Soot mass outflow rate
-        dM_dt_mech_SZ_sm_i              = total_mech_mass(combustor.fuel.nuc_fac, combustor.fuel.sg_fac, combustor.fuel.ox_fac, combustor.fuel.L, combustor.fuel.PAH_species, combustor.fuel.radii, combustor.fuel.mu_matrix, mixed_gas_sm.T, combustor.fuel.n_C_matrix, PAH_conc_SZ_sm_i, C2H2_conc_SZ_sm_i, OH_SZ_sm_i, O2_SZ_sm_i, O_SZ_sm_i) + dM_dt_outflow_SZ_sm_i # [kg/m^3/s] Soot mass change rate
+        dM_dt_outflow_SZ_sm_i           = (-mdot_total_sm / (rho_SZ_sm_i * V_SZ_sm_i)) * combustor.fuel_data.M_mech # [kg/m^3/s] Soot mass outflow rate
+        dM_dt_mech_SZ_sm_i              = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_sm.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_sm_i, C2H2_conc_SZ_sm_i, OH_SZ_sm_i, O2_SZ_sm_i, O_SZ_sm_i) + dM_dt_outflow_SZ_sm_i # [kg/m^3/s] Soot mass change rate
         mdot_soot_SZ_sm_i               = dM_dt_mech_SZ_sm_i * V_SZ_sm_i # [kg/s] Soot mass flow rate
 
         EI_sm                           = calculate_emission_indices(mixed_gas_sm, mdot_total_sm, combustor.f_SM * mdot_fuel, mdot_soot_SZ_sm_i) # [-] Emission indices    
@@ -433,11 +433,11 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         combustor_results['SZ']['sm']['phi'].append(mixed_gas_sm.equivalence_ratio()) # [-] Store equivalence ratio
         combustor_results['SZ']['sm']['T'].append(mixed_gas_sm.T)                # [K] Store temperature 
         combustor_results['SZ']['sm']['z'].append(z_frac_sm * 100)               # [%] Store position percentage 
-        combustor_results['SZ']['sm']['EI']['CO2'].append(EI_sm['CO2'])          # [g/kg_fuel] Store CO2 emission index 
-        combustor_results['SZ']['sm']['EI']['NOx'].append(EI_sm['NOx'])          # [g/kg_fuel] Store NOx emission index 
-        combustor_results['SZ']['sm']['EI']['CO'].append(EI_sm['CO'])            # [g/kg_fuel] Store CO emission index 
-        combustor_results['SZ']['sm']['EI']['H2O'].append(EI_sm['H2O'])          # [g/kg_fuel] Store H2O emission index
-        combustor_results['SZ']['sm']['EI']['soot'].append(EI_sm['soot'])        # [g/kg_fuel] Store soot emission index
+        combustor_results['SZ']['sm']['EI']['CO2'].append(EI_sm['CO2'])          # [kg/kg_fuel] Store CO2 emission index 
+        combustor_results['SZ']['sm']['EI']['NOx'].append(EI_sm['NOx'])          # [kg/kg_fuel] Store NOx emission index 
+        combustor_results['SZ']['sm']['EI']['CO'].append(EI_sm['CO'])            # [kg/kg_fuel] Store CO emission index 
+        combustor_results['SZ']['sm']['EI']['H2O'].append(EI_sm['H2O'])          # [kg/kg_fuel] Store H2O emission index
+        combustor_results['SZ']['sm']['EI']['soot'].append(EI_sm['soot'])        # [kg/kg_fuel] Store soot emission index
 
     # Fast Mode
     mixed_gas_fm                        = ct.Solution(gas)             # [-] Fast mode gas object
@@ -475,8 +475,8 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         O2_SZ_fm_i                      = mixed_gas_fm['O2'].X[0] * total_moles_SZ_fm_i / V_SZ_fm_i # [kmol/m^3] O2 concentration
         O_SZ_fm_i                       = mixed_gas_fm['O'].X[0] * total_moles_SZ_fm_i / V_SZ_fm_i # [kmol/m^3] O concentration
 
-        dM_dt_outflow_SZ_fm_i           = (-mdot_total_fm / (rho_SZ_fm_i * V_SZ_fm_i)) * combustor.fuel.M_mech # [kg/m^3/s] Soot mass outflow rate
-        dM_dt_mech_SZ_fm_i              = total_mech_mass(combustor.fuel.nuc_fac, combustor.fuel.sg_fac, combustor.fuel.ox_fac, combustor.fuel.L, combustor.fuel.PAH_species, combustor.fuel.radii, combustor.fuel.mu_matrix, mixed_gas_fm.T, combustor.fuel.n_C_matrix, PAH_conc_SZ_fm_i, C2H2_conc_SZ_fm_i, OH_SZ_fm_i, O2_SZ_fm_i, O_SZ_fm_i) + dM_dt_outflow_SZ_fm_i # [kg/m^3/s] Soot mass change rate
+        dM_dt_outflow_SZ_fm_i           = (-mdot_total_fm / (rho_SZ_fm_i * V_SZ_fm_i)) * combustor.fuel_data.M_mech # [kg/m^3/s] Soot mass outflow rate
+        dM_dt_mech_SZ_fm_i              = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_fm.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_fm_i, C2H2_conc_SZ_fm_i, OH_SZ_fm_i, O2_SZ_fm_i, O_SZ_fm_i) + dM_dt_outflow_SZ_fm_i # [kg/m^3/s] Soot mass change rate
         mdot_soot_SZ_fm_i               = dM_dt_mech_SZ_fm_i * V_SZ_fm_i # [kg/s] Soot mass flow rate
 
         EI_fm                           = calculate_emission_indices(mixed_gas_fm, mdot_total_fm, f_FM * mdot_fuel, mdot_soot_SZ_fm_i) # [-] Emission indices
@@ -484,11 +484,11 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         combustor_results['SZ']['fm']['phi'].append(mixed_gas_fm.equivalence_ratio()) # [-] Store equivalence ratio
         combustor_results['SZ']['fm']['T'].append(mixed_gas_fm.T)                # [K] Store temperature 
         combustor_results['SZ']['fm']['z'].append(z_frac_fm * 100)               # [%] Store position percentage 
-        combustor_results['SZ']['fm']['EI']['CO2'].append(EI_fm['CO2'])          # [g/kg_fuel] Store CO2 emission index 
-        combustor_results['SZ']['fm']['EI']['NOx'].append(EI_fm['NOx'])          # [g/kg_fuel] Store NOx emission index 
-        combustor_results['SZ']['fm']['EI']['CO'].append(EI_fm['CO'])            # [g/kg_fuel] Store CO emission index 
-        combustor_results['SZ']['fm']['EI']['H2O'].append(EI_fm['H2O'])          # [g/kg_fuel] Store H2O emission index
-        combustor_results['SZ']['fm']['EI']['soot'].append(EI_fm['soot'])        # [g/kg_fuel] Store soot emission index
+        combustor_results['SZ']['fm']['EI']['CO2'].append(EI_fm['CO2'])          # [kg/kg_fuel] Store CO2 emission index 
+        combustor_results['SZ']['fm']['EI']['NOx'].append(EI_fm['NOx'])          # [kg/kg_fuel] Store NOx emission index 
+        combustor_results['SZ']['fm']['EI']['CO'].append(EI_fm['CO'])            # [kg/kg_fuel] Store CO emission index 
+        combustor_results['SZ']['fm']['EI']['H2O'].append(EI_fm['H2O'])          # [kg/kg_fuel] Store H2O emission index
+        combustor_results['SZ']['fm']['EI']['soot'].append(EI_fm['soot'])        # [kg/kg_fuel] Store soot emission index
 
     # Joint Mixing 
     mixed_gas_joint                     = ct.Solution(gas)             # [-] Joint mode gas object
@@ -532,8 +532,8 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         O2_SZ_joint_i                   = mixed_gas_joint['O2'].X[0] * total_moles_SZ_joint_i / V_SZ_joint_i # [kmol/m^3] O2 concentration
         O_SZ_joint_i                    = mixed_gas_joint['O'].X[0] * total_moles_SZ_joint_i / V_SZ_joint_i # [kmol/m^3] O concentration
 
-        dM_dt_outflow_SZ_joint_i        = (-mdot_total_joint / (rho_SZ_joint_i * V_SZ_joint_i)) * combustor.fuel.M_mech # [kg/m^3/s] Soot mass outflow rate
-        dM_dt_mech_SZ_joint_i           = total_mech_mass(combustor.fuel.nuc_fac, combustor.fuel.sg_fac, combustor.fuel.ox_fac, combustor.fuel.L, combustor.fuel.PAH_species, combustor.fuel.radii, combustor.fuel.mu_matrix, mixed_gas_joint.T, combustor.fuel.n_C_matrix, PAH_conc_SZ_joint_i, C2H2_conc_SZ_joint_i, OH_SZ_joint_i, O2_SZ_joint_i, O_SZ_joint_i) + dM_dt_outflow_SZ_joint_i # [kg/m^3/s] Soot mass change rate
+        dM_dt_outflow_SZ_joint_i        = (-mdot_total_joint / (rho_SZ_joint_i * V_SZ_joint_i)) * combustor.fuel_data.M_mech # [kg/m^3/s] Soot mass outflow rate
+        dM_dt_mech_SZ_joint_i           = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_joint.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_joint_i, C2H2_conc_SZ_joint_i, OH_SZ_joint_i, O2_SZ_joint_i, O_SZ_joint_i) + dM_dt_outflow_SZ_joint_i # [kg/m^3/s] Soot mass change rate
         mdot_soot_SZ_joint_i            = dM_dt_mech_SZ_joint_i * V_SZ_joint_i # [kg/s] Soot mass flow rate
 
         EI_joint                        = calculate_emission_indices(mixed_gas_joint, mdot_total_joint, mdot_fuel, mdot_soot_SZ_joint_i) # [-] Emission indices
@@ -541,13 +541,19 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         combustor_results['SZ']['joint']['phi'].append(mixed_gas_joint.equivalence_ratio()) # [-] Store equivalence ratio
         combustor_results['SZ']['joint']['T'].append(mixed_gas_joint.T)          # [K] Store temperature 
         combustor_results['SZ']['joint']['z'].append(z_frac_joint * 100)         # [%] Store position percentage 
-        combustor_results['SZ']['joint']['EI']['CO2'].append(EI_joint['CO2'])    # [g/kg_fuel] Store CO2 emission index 
-        combustor_results['SZ']['joint']['EI']['NOx'].append(EI_joint['NOx'])    # [g/kg_fuel] Store NOx emission index 
-        combustor_results['SZ']['joint']['EI']['CO'].append(EI_joint['CO'])      # [g/kg_fuel] Store CO emission index 
-        combustor_results['SZ']['joint']['EI']['H2O'].append(EI_joint['H2O'])    # [g/kg_fuel] Store H2O emission index
-        combustor_results['SZ']['joint']['EI']['soot'].append(EI_joint['soot'])  # [g/kg_fuel] Store soot emission index
+        combustor_results['SZ']['joint']['EI']['CO2'].append(EI_joint['CO2'])    # [kg/kg_fuel] Store CO2 emission index 
+        combustor_results['SZ']['joint']['EI']['NOx'].append(EI_joint['NOx'])    # [kg/kg_fuel] Store NOx emission index 
+        combustor_results['SZ']['joint']['EI']['CO'].append(EI_joint['CO'])      # [kg/kg_fuel] Store CO emission index 
+        combustor_results['SZ']['joint']['EI']['H2O'].append(EI_joint['H2O'])    # [kg/kg_fuel] Store H2O emission index
+        combustor_results['SZ']['joint']['EI']['soot'].append(EI_joint['soot'])  # [kg/kg_fuel] Store soot emission index
 
-    combustor_results['SZ']['final']['EI']['soot'] = EI_joint['soot']  # [-] Store soot emission index
+    combustor_results['SZ']['final']['phi'] = mixed_gas_joint.equivalence_ratio() # [-] Store Equivalence ratio
+    combustor_results['SZ']['final']['T'] = mixed_gas_joint.T                    # [K] Store Temperature
+    combustor_results['SZ']['final']['EI']['NOx'] = EI_joint['NOx']              # [kg/kg_fuel] Store NOx emission index
+    combustor_results['SZ']['final']['EI']['CO2'] = EI_joint['CO2']              # [kg/kg_fuel] Store CO2 emission index
+    combustor_results['SZ']['final']['EI']['CO'] = EI_joint['CO']                # [kg/kg_fuel] Store CO emission index
+    combustor_results['SZ']['final']['EI']['H2O'] = EI_joint['H2O']              # [kg/kg_fuel] Store H2O emission index
+    combustor_results['SZ']['final']['EI']['soot'] = EI_joint['soot']            # [kg/kg_fuel] Store soot emission index
 
     return combustor_results
 
@@ -555,19 +561,19 @@ def calculate_emission_indices(reactor,  mdot_total, mdot_fuel, mdot_soot):
     """Calculate emission indices for combustion products"""
     gas                                 = reactor.thermo if hasattr(reactor, 'thermo') else reactor # [-] Extract gas object
     NOx_species                         = ['NO', 'NO2']              # [-] List of NOx species
-    EI_NOx                              = 0.0                        # [g/kg_fuel] Initialize NOx emission index
+    EI_NOx                              = 0.0                        # [kg/kg_fuel] Initialize NOx emission index
     for species in NOx_species:
         try:
             idx                         = gas.species_index(species) # [-] Species index
-            EI_NOx                     += gas.Y[idx] * 1000 * mdot_total / mdot_fuel # [g/kg_fuel] Add contribution to NOx EI
+            EI_NOx                     += gas.Y[idx] * mdot_total / mdot_fuel # [kg/kg_fuel] Add contribution to NOx EI
         except ValueError:
             continue
     EI                                  = {
-        'CO2': gas.Y[gas.species_index('CO2')] * 1000 * mdot_total / mdot_fuel, # [g/kg_fuel] CO2 emission index
-        'CO': gas.Y[gas.species_index('CO')] * 1000 * mdot_total / mdot_fuel,   # [g/kg_fuel] CO emission index
-        'H2O': gas.Y[gas.species_index('H2O')] * 1000 * mdot_total / mdot_fuel, # [g/kg_fuel] H2O emission index
-        'NOx': EI_NOx,                                                          # [g/kg_fuel] NOx emission index
-        'soot': mdot_soot * 1000 / mdot_fuel                                   # [g/kg_fuel] Soot emission index
+        'CO2': gas.Y[gas.species_index('CO2')] * mdot_total / mdot_fuel, # [kg/kg_fuel] CO2 emission index
+        'CO': gas.Y[gas.species_index('CO')] * mdot_total / mdot_fuel,   # [kg/kg_fuel] CO emission index
+        'H2O': gas.Y[gas.species_index('H2O')] * mdot_total / mdot_fuel, # [kg/kg_fuel] H2O emission index
+        'NOx': EI_NOx,                                                   # [kg/kg_fuel] NOx emission index
+        'soot': mdot_soot / mdot_fuel                                    # [kg/kg_fuel] Soot emission index
     }
     return EI                                                            # [-] Return emission indices dictionary
 
