@@ -31,6 +31,9 @@ class Compression_Nozzle(Converter):
     pressure_recovery : float
         Pressure recovery factor. Default is 1.0.
         
+    diameter : float
+        Diameter of compression nozzle. Default is 1.0.
+        
     compressibility_effects : bool
         Flag for including compressibility effects. Default is False.
         
@@ -86,6 +89,7 @@ class Compression_Nozzle(Converter):
         self.compressibility_effects         = False 
         self.compression_levels              = 0.0
         self.theta                           = 0.0
+        self.diameter                        = 1.0
 
     def append_operating_conditions(self,segment,propulsor): 
         propulsor_conditions =  segment.state.conditions.energy[propulsor.tag]

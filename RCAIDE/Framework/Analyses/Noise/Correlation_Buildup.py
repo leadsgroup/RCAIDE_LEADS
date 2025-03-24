@@ -94,12 +94,10 @@ class Correlation_Buildup(Noise):
         # create empty arrays for results      
         total_SPL_dBA        = np.ones((ctrl_pts,N_hemisphere_mics))*1E-16 
         total_SPL_spectra    = np.ones((ctrl_pts,N_hemisphere_mics,dim_cf))*1E-16
-    
-        # flap noise - only applicable for turbofan aircraft
-        if 'flap' in config.wings.main_wing.control_surfaces:    
-            airframe_noise_res        = airframe_noise(microphone_locations,segment,config,settings) 
-            total_SPL_dBA             = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],airframe_noise_res.SPL_dBA[:,None,:]),axis =1),sum_axis=1)
-            total_SPL_spectra[:,:,5:] = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,5:],airframe_noise_res.SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1)
+         
+        airframe_noise_res        = airframe_noise(microphone_locations,segment,config,settings) 
+        total_SPL_dBA             = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],airframe_noise_res.SPL_dBA[:,None,:]),axis =1),sum_axis=1)
+        total_SPL_spectra[:,:,5:] = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,5:],airframe_noise_res.SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1)
               
           # iterate through sources  
         for network in config.networks:  

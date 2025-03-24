@@ -27,7 +27,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Airframe Noise 
 # ----------------------------------------------------------------------
-def airframe_noise(microphone_locations,segment,config,settings):  
+def airframe_noise(microphone_locations,segment,config,settings):
     """ This computes the noise from different sources of the airframe for a given vehicle for a constant altitude flight. 
 
     Assumptions:
@@ -75,59 +75,79 @@ def airframe_noise(microphone_locations,segment,config,settings):
     Properties Used:
         N/A      
         
-    """  
-    # Unpack 
-    wing     = config.wings
-    flap     = wing.main_wing.control_surfaces.flap 
-    Sw       = wing.main_wing.areas.reference  / (Units.ft)**2              # wing area, sq.ft
-    bw       = wing.main_wing.spans.projected / Units.ft                    # wing span, ft
-    Sht      = wing.horizontal_stabilizer.areas.reference / (Units.ft)**2   # horizontal tail area, sq.ft
-    bht      = wing.horizontal_stabilizer.spans.projected / Units.ft        # horizontal tail span, ft
-    Svt      = wing.vertical_stabilizer.areas.reference / (Units.ft)**2     # vertical tail area, sq.ft
-    bvt      = wing.vertical_stabilizer.spans.projected  / Units.ft         # vertical tail span, ft
-    deltaf   = flap.deflection                                              # flap delection, rad
-    Sf       = flap.area  / (Units.ft)**2                                   # flap area, sq.ft        
-    cf       = flap.chord_dimensional  / Units.ft                           # flap chord, ft
-
-    Dp           = 0
-    Dn           = 0
-    main_wheels  = 0
-    main_units   = 0
-    Hp           = 0
-    Hn           = 0 
-    nose_wheels  = 0 
-    for landing_gear in  config.landing_gears:
-        if isinstance(landing_gear,RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-            Dp            = landing_gear.tire_diameter  / Units.ft           # MLG tyre diameter, ft
-            Dn            = landing_gear.strut_length   / Units.ft           # NLG tyre diameter, ft
-            main_wheels   = landing_gear.wheels                          # Number of wheels   
-            gear_extended = landing_gear.gear_extended                   # Gear up or gear down 
-            main_units    = landing_gear.units                           # Number of main units
-        elif isinstance(landing_gear,RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
-            Hp            = landing_gear.tire_diameter  / Units.ft           # MLG strut length, ft
-            Hn            = landing_gear.strut_length   / Units.ft           # NLG strut length, ft
-            gear_extended = landing_gear.gear_extended                   # Gear up or gear down 
-            nose_wheels   = landing_gear.wheels                          # Number of wheels   
-    
-    
+    """
+    # Unpack conditions 
     velocity     = segment.conditions.freestream.velocity                  # aircraft velocity  
-    noise_time   = segment.conditions.frames.inertial.time[:,0]             # time discretization 
+    noise_time   = segment.conditions.frames.inertial.time[:,0]            # time discretization
 
-    # determining flap slot number
-    if wing.main_wing.control_surfaces.flap.configuration_type   == 'single_slotted':
-        slots = 1
-    elif wing.main_wing.control_surfaces.flap.configuration_type == 'double_slotted':
-        slots = 2
-    elif wing.main_wing.control_surfaces.flap.configuration_type == 'triple_slotted':
-        slots = 3
-        
-    
     # Generate array with the One Third Octave Band Center Frequencies
     frequency = settings.center_frequencies[5:]  
     num_f     = len(frequency) 
     n_cpts    = len(noise_time)  
-    n_mic     = len(microphone_locations)        
-
+    n_mic     = len(microphone_locations)
+    
+    # Unpack Geometry  
+    slots      = 0
+    deltas     = 0
+    for wing in config.wings:
+        if type(wing) == RCAIDE.Library.Components.Wings.Main_Wing:
+            taper = wing.taper 
+            Sw    = wing.areas.reference  / (Units.ft)**2              # wing area, sq.ft
+            bw    = wing.spans.projected / Units.ft                    # wing span, ft
+            for cs in  wing.control_surfaces: 
+                if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
+                    deltas                  = cs.deflection  
+                if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap: 
+                    deltaf                  = cs.deflection                                             
+                    chord_root              = 2*Sw/bw/(1+taper) 
+                    chord_tip               = taper * chord_root
+                    delta_chord             = chord_tip - chord_root 
+                    wing_chord_flap_start   = chord_root + delta_chord * cs.span_fraction_start 
+                    wing_chord_flap_end     = chord_root + delta_chord * cs.span_fraction_end
+                    wing_mac_flap           = 2./3.*( wing_chord_flap_start+wing_chord_flap_end - wing_chord_flap_start*wing_chord_flap_end/   (wing_chord_flap_start+wing_chord_flap_end) ) 
+                    flap_chord_start        = wing_chord_flap_start * cs.chord_fraction
+                    flap_chord_end          = wing_chord_flap_end * cs.chord_fraction
+                    Sf                      = (flap_chord_start + flap_chord_end) * (cs.span_fraction_end- cs.span_fraction_start)*bw / 2.  
+                    cf                      = wing_mac_flap * cs.chord_fraction 
+                
+                    # determining flap slot number
+                    if cs.configuration_type   == 'single_slotted':
+                        slots = 1
+                    elif cs.configuration_type == 'double_slotted':
+                        slots = 2
+                    elif cs.configuration_type == 'triple_slotted':
+                        slots = 3  
+        elif type(wing) == RCAIDE.Library.Components.Wings.Horizontal_Tail: 
+            Sht                     = wing.areas.reference / (Units.ft)**2   # horizontal tail area, sq.ft
+            bht                     = wing.spans.projected / Units.ft        # horizontal tail span, ft
+        elif type(wing) == RCAIDE.Library.Components.Wings.Vertical_Tail:  
+            Svt                     = wing.areas.reference / (Units.ft)**2     # vertical tail area, sq.ft
+            bvt                     = wing.spans.projected  / Units.ft         # vertical tail span, ft
+    
+     
+    Dp                 = 0
+    Dn                 = 0
+    main_wheels        = 0
+    main_units         = 0
+    Hp                 = 0
+    Hn                 = 0 
+    nose_wheels        = 0
+    main_gear_extended = False
+    nose_gear_extended = False
+    
+    for landing_gear in  config.landing_gears:
+        if isinstance(landing_gear,RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
+            Dp                 = landing_gear.tire_diameter  / Units.ft           # MLG tyre diameter, ft
+            Dn                 = landing_gear.strut_length   / Units.ft           # NLG tyre diameter, ft
+            main_wheels        = landing_gear.wheels                          # Number of wheels   
+            main_gear_extended = landing_gear.gear_extended                   # Gear up or gear down 
+            main_units         = landing_gear.units                           # Number of main units
+        elif isinstance(landing_gear,RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
+            Hp                 = landing_gear.tire_diameter  / Units.ft           # MLG strut length, ft
+            Hn                 = landing_gear.strut_length   / Units.ft           # NLG strut length, ft
+            nose_gear_extended = landing_gear.gear_extended                   # Gear up or gear down 
+            nose_wheels        = landing_gear.wheels                          # Number of wheels   
+      
     # Geometric information from the source to observer position  
     distance_vector     = np.linalg.norm(microphone_locations,axis = 1)
     thetas              = np.tile(np.arctan2(microphone_locations[:, 1], microphone_locations[:, 0])[None,:],(n_cpts,1)) 
@@ -165,22 +185,32 @@ def airframe_noise(microphone_locations,segment,config,settings):
             SPLht    = clean_wing_noise(Sht,bht,0,1,velocity[i,0],viscosity[i],M[i],phi,theta,distance,frequency)  -delta_atmo    #Horizontal Tail Noise
             SPLvt    = clean_wing_noise(Svt,bvt,0,0,velocity[i,0],viscosity[i],M[i],phi,theta,distance,frequency)  -delta_atmo    #Vertical Tail Noise
      
-            SPL_slat = leading_edge_slat_noise(SPL_wing,Sw,bw,velocity[i,0],viscosity[i],M[i],phi,theta,distance,frequency) -delta_atmo        #Slat leading edge
-     
-            if (deltaf==0):
+            # Slat noise  
+            if deltas == 0: 
+                SPL_slat = np.zeros(num_f)
+            else:
+                SPL_slat = leading_edge_slat_noise(SPL_wing,Sw,bw,velocity[i,0],viscosity[i],M[i],phi,theta,distance,frequency) -delta_atmo     
+            
+            # Flap noise 
+            if deltaf==0:
                 SPL_flap = np.zeros(num_f)
             else:
-                SPL_flap = trailing_edge_flap_noise(Sf,cf,deltaf,slots,velocity[i,0],M[i],phi,theta,distance,frequency) - delta_atmo #Trailing Edge Flaps Noise
-     
-            if gear_extended == False:  
+                SPL_flap = trailing_edge_flap_noise(Sf,cf,deltaf,slots,velocity[i,0],M[i],phi,theta,distance,frequency) - delta_atmo  
+    
+            # Main landing gear noise     
+            if main_gear_extended == False:  
                 SPL_main_landing_gear = np.zeros(num_f)
+            else:
+                SPL_main_landing_gear = landing_gear_noise(Dp,Hp,main_wheels,M[i],velocity[i,0],phi,theta,distance,frequency)  - delta_atmo
+                if main_units>1: # Incoherent summation of each main landing gear unit
+                    SPL_main_landing_gear = SPL_main_landing_gear+3*(main_units-1)      
+                
+            # Nose landing gear noise
+            if nose_gear_extended == False:                  
                 SPL_nose_landing_gear = np.zeros(num_f)
             else:
-                SPL_main_landing_gear = landing_gear_noise(Dp,Hp,main_wheels,M[i],velocity[i,0],phi,theta,distance,frequency)  - delta_atmo     #Main Landing Gear Noise
-                SPL_nose_landing_gear = landing_gear_noise(Dn,Hn,nose_wheels,M[i],velocity[i,0],phi,theta,distance,frequency)  - delta_atmo     #Nose Landing Gear Noise
-            if main_units>1: # Incoherent summation of each main landing gear unit
-                SPL_main_landing_gear = SPL_main_landing_gear+3*(main_units-1) 
-     
+                SPL_nose_landing_gear = landing_gear_noise(Dn,Hn,nose_wheels,M[i],velocity[i,0],phi,theta,distance,frequency)  - delta_atmo  
+               
             # Total Airframe Noise
             SPL_total = 10.*np.log10(10.0**(0.1*SPL_wing)+10.0**(0.1*SPLht)+10**(0.1*SPL_flap)+ \
                  10.0**(0.1*SPL_slat)+10.0**(0.1*SPL_main_landing_gear)+10.0**(0.1*SPL_nose_landing_gear))

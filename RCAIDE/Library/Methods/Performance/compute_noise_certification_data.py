@@ -11,6 +11,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data  
 from RCAIDE.Library.Plots.Common import set_axes, plot_style    
+from RCAIDE.Library.Plots import *
  
 # Pacakge imports 
 import numpy as np
@@ -63,20 +64,25 @@ def compute_noise_certification_data(approach_mission = None, takeoff_mission = 
     takeoff_results  = takeoff_mission.evaluate()
     
     # post process results
-    noise_data  =  post_process_noise_data(approach_results,takeoff_results)
+    noise_data  =  post_process_certification_noise_data(approach_results,takeoff_results)
     
     # plot diagram
     if plot_diagram:
-        noise_data.coordiates 
-        noise_data.coordiates
+        noise_data.coordinates 
+        noise_data.coordinates
         
     return noise_data 
     
-def post_process_noise_data(approach_results,takeoff_results):
+def post_process_certification_noise_data(approach_results,takeoff_results):
     
     res = Data()
+
+    approach_noise_data   = post_process_noise_data(approach_results)
+    takeoff_noise_data   = post_process_noise_data(takeoff_results)
+        
     
     # cooridate points
+
     
     # shift approach coordinates back by 
     

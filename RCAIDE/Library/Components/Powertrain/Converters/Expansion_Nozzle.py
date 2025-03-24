@@ -27,6 +27,9 @@ class Expansion_Nozzle(Converter):
         
     pressure_ratio : float
         Ratio of outlet to inlet pressure. Default is 1.0.
+        
+    diameter : float
+        Diameter of compression nozzle. Default is 1.0.
 
     Notes
     -----
@@ -79,6 +82,7 @@ class Expansion_Nozzle(Converter):
         self.tag = 'Nozzle'
         self.polytropic_efficiency           = 1.0
         self.pressure_ratio                  = 1.0
+        self.diameter                        = 1.0
 
     def append_operating_conditions(self,segment,propulsor): 
         propulsor_conditions =  segment.state.conditions.energy[propulsor.tag]
