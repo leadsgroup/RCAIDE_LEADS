@@ -15,7 +15,7 @@ import RCAIDE
 # ---------------------------------------------------------------------------------------------------------------------- 
 def converge_physics_based_weight_buildup(base_vehicle,
                     print_iterations              = False,
-                    miscelleneous_weight_factor   = 1.1,):
+                    miscelleneous_weight_factor   = 1.1):
     '''Converges the maximum takeoff weight of an aircraft using the eVTOL 
     weight buildup routine.  
     
@@ -47,13 +47,9 @@ def converge_physics_based_weight_buildup(base_vehicle,
 
     weight_analysis                                      = RCAIDE.Framework.Analyses.Weights.Electric()
     weight_analysis.vehicle                              = base_vehicle
-    weight_analysis.settings.miscelleneous_weight_factor =  miscelleneous_weight_factor
     weight_analysis.aircraft_type                        = 'VTOL'
-    weight_analysis.method                               = 'Physics_Based'
-    weight_analysis.settings.safety_factor               = 1.5    # CHECK THIS VALUE
-    weight_analysis.settings.disk_area_factor            = 1.15
-    weight_analysis.settings.max_thrust_to_weight_ratio  = 1.1
-    weight_analysis.settings.max_g_load                  = 3.8
+    weight_analysis.method                               = 'Physics_Based' 
+    weight_analysis.settings.miscelleneous_weight_factor = miscelleneous_weight_factor 
     breakdown                                            = weight_analysis.evaluate() 
     build_up_mass                                        = breakdown.total    
     diff                                                 = weight_analysis.vehicle.mass_properties.max_takeoff - build_up_mass

@@ -173,9 +173,9 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP() 
     bat.tag                                                = 'li_ion_battery'
     bat.electrical_configuration.series                    = 40  
-    bat.electrical_configuration.parallel                  = 1 
+    bat.electrical_configuration.parallel                  = 10 
     bat.geometrtic_configuration.normal_count              = 40  
-    bat.geometrtic_configuration.parallel_count            = 1
+    bat.geometrtic_configuration.parallel_count            = 10
     bus.battery_modules.append(bat)      
     bus.initialize_bus_properties()
     

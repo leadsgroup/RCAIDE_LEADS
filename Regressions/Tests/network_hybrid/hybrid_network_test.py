@@ -39,10 +39,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6932848873745743
-    electric_cruise_CL_truth         = 0.6933626967980594
-    series_hybrid_cruise_CL_truth    = 0.6930654692769096
-    parallel_hybrid_cruise_CL_truth  = 0.693292681216277
+    convetional_cruise_CL_truth      = 0.6932926812206293
+    electric_cruise_CL_truth         = 0.6933626967980622
+    series_hybrid_cruise_CL_truth    = 0.6930654692768995
+    parallel_hybrid_cruise_CL_truth  = 0.6932926812206293
 
     error = Data()
     
@@ -146,22 +146,13 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
-
-    # ------------------------------------------------------------------ 
-    #  Weights
-    weights                 = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.aircraft_type   = 'General_Aviation'
-    weights.vehicle         = vehicle 
-    analyses.append(weights)
-
+    analyses = RCAIDE.Framework.Analyses.Vehicle()  
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------     
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                            = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.vehicle                            = vehicle 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------

@@ -61,22 +61,14 @@ def compute_operating_empty_weight(vehicle,settings = None):
                         ECS               - Environmental Control System
                         BRS               - Ballistic Recovery System
                         Wiring            - Aircraft Electronic Wiring
-                    Payload
-
+                    Payload 
     """
-    
-    if settings == None: 
-        miscelleneous_weight_factor   = 1.1
-        safety_factor                 = 1.5   
-        disk_area_factor              = 1.15     
-        max_thrust_to_weight_ratio    = 1.1
-        max_g_load                    = 3.8
-    else:
-        miscelleneous_weight_factor   = settings.miscelleneous_weight_factor
-        safety_factor                 = settings.safety_factor              
-        disk_area_factor              = settings.disk_area_factor           
-        max_thrust_to_weight_ratio    = settings.max_thrust_to_weight_ratio 
-        max_g_load                    = settings.max_g_load  
+     
+    miscelleneous_weight_factor   = settings.miscelleneous_weight_factor  
+    safety_factor                 = 1.5   
+    disk_area_factor              = 1.15     
+    max_thrust_to_weight_ratio    = 1.1
+    max_g_load                    = 3.8        
                
     # Set up data structures for RCAIDE weight methods
     weight                                  = Data()  

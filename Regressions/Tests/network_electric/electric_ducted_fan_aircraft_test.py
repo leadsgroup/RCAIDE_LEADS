@@ -92,8 +92,7 @@ def analyses_setup(configs):
 
 def plot_results(results):
     # Plots fligh conditions 
-    plot_flight_conditions(results) 
-    
+    plot_flight_conditions(results)  
     
     plot_battery_cell_conditions(results) 
     
@@ -107,13 +106,6 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
-    
-    # ------------------------------------------------------------------
-    #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional() 
-    weights.aircraft_type   = 'BWB'    
-    weights.vehicle = vehicle
-    analyses.append(weights)
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis

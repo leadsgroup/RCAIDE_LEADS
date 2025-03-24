@@ -218,8 +218,7 @@ def compute_turboprop_performance(turboprop,state,fuel_line=None,bus=None,center
     
     # Pack results    
     stored_results_flag    = True
-    stored_propulsor_tag   = turboprop.tag 
-    
+    stored_propulsor_tag   = turboprop.tag
     return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
 
 def reuse_stored_turboprop_data(turboprop,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):

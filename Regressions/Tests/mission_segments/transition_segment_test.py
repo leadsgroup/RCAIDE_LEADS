@@ -69,9 +69,9 @@ def tiltwing_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth              = 0.6032731206904142
-    vertical_climb_1_throttle_truth   = 0.606892139245807
-    vertical_descent_throttle_truth   = 0.5965847517907135
+    hover_throttle_truth              = 0.6041174679038527
+    vertical_climb_1_throttle_truth   = 0.6077054260404342
+    vertical_descent_throttle_truth   = 0.5974514917095902
     
     # Store errors 
     error = Data() 
@@ -114,9 +114,9 @@ def stopped_rotor_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth  = 0.650918038833368
-    lst_throttle_truth    = 0.6359963559059645
-    hsct_throttle_truth   = 0.5475420672366067
+    hover_throttle_truth  = 0.6527273513270221
+    lst_throttle_truth    = 0.6380592990685354
+    hsct_throttle_truth   = 0.5495036492276676
     
     # Store errors 
     error = Data() 
@@ -173,8 +173,7 @@ def TW_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.vehicle = vehicle 
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
@@ -214,8 +213,7 @@ def SR_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.vehicle = vehicle 
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------

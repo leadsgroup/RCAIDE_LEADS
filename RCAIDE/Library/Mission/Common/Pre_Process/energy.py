@@ -11,7 +11,7 @@ import RCAIDE
 #  energy
 # ----------------------------------------------------------------------------------------------------------------------  
 def energy(mission):
-    """ Appends all unknows and residuals to the network            
+    """ Pre-processes energy network by appending all unknowns and residuals             
     """       
     for segment in mission.segments: 
         for network in segment.analyses.energy.vehicle.networks: 
