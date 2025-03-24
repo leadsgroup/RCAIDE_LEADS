@@ -22,9 +22,7 @@ import numpy as np
 #  Design Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
 def design_electric_rotor(electric_rotor):
-    """Compute perfomance properties of a propeller-driven internal combustion engine model
-    Turbofan is created by manually linking the different components
-    
+    """Compute perfomance properties of an electrically powered rotor, which is driven by an electric machine
     
     Assumtions:
        None 
