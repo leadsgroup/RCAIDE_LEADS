@@ -2,15 +2,14 @@
 
 # Created: June 2024, M. Clarke, M. Guidotti 
 # Updated: Mar 2025, M. Guidotti
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
 from   RCAIDE.Framework.Core import Data  
-import pandas                as pd
 import numpy                 as np
-import importlib
 import os
 import cantera as ct
 
@@ -20,102 +19,6 @@ import cantera as ct
 def evaluate_cantera(combustor,T,P,mdot_air,FAR): 
 
     """
-    Evaluates emission indices using Chemical Reactor Network (CRN) built in Cantera.
-    
-    Parameters
-    ----------
-    combustor : Data
-        Combustor configuration data
-        
-        - f_air_PZ : float
-            Fraction of total air entering Primary Zone [-]
-        - FAR_st : float
-            Stoichiometric Fuel to Air ratio [-]
-        - N_comb : int
-            Number of can-annular combustors [-]
-        - N_PZ : int
-            Number of PSR (Perfectly Stirred Reactors) [-]
-        - A_PZ : float
-            Primary Zone cross-sectional area [m^2]
-        - L_PZ : float
-            Primary Zone length [m]
-        - N_SZ : int
-            Number of dilution air inlets [-]
-        - A_SZ : float
-            Secondary Zone cross-sectional area [m^2]
-        - L_SZ : float
-            Secondary Zone length [m]
-        - phi_SZ : float
-            Equivalence Ratio in the Secondary Zone [-]
-        - S_PZ : float
-            Mixing parameter for Primary Zone [-]
-        - F_SC : float
-            Fuel scaler [-]
-        - number_of_assigned_PSR_1st_mixers : int
-            Number of PSR assigned to first row of mixers [-]
-        - number_of_assigned_PSR_2nd_mixers : int
-            Number of PSR assigned to second row of mixers [-]
-        - fuel_data : Data
-            Fuel chemical properties and kinetics data
-
-    T : float
-        Stagnation Temperature entering combustors [K]
-    P : float
-        Stagnation Pressure entering combustors [Pa]
-    mdot : float
-        Air mass flow enetring the combustor [kg/s]
-    FAR : float
-        Fuel-to-Air ratio [-]
-
-    Returns
-    -------
-    results : Data
-        Container for emission indices
-        
-        - EI_CO2 : float
-            CO2 emission index [kg_CO2/kg_fuel]
-        - EI_CO : float
-            CO emission index [kg_CO/kg_fuel]
-        - EI_H2O : float
-            H2O emission index [kg_H2O/kg_fuel]
-        - EI_NO : float
-            NO emission index [kg_NO/kg_fuel]
-        - EI_NO2 : float
-            NO2 emission index [kg_NO2/kg_fuel]
-
-    Notes
-    -----
-    This model estimates emission indices using a Chemical Reactor Network built with Cantera.
-    The network consists of Perfectly Stirred Reactors (PSRs) in the Primary Zone and 
-    Plug Flow Reactors (PFRs) in the Secondary Zone.
-
-    **Extra modules required**
-
-    * Cantera
-    * pandas
-    * numpy
-
-    **Major Assumptions**
-
-    * PSRs represent the Primary Zone
-    * Air is added between different PFRs in Secondary Zone
-    * Primary Zone has a normal Equivalence Ratio distribution
-
-    **Theory**
-    The model uses a network of reactors to simulate combustion:
-    
-    1. Primary Zone: Multiple PSRs with varying equivalence ratios
-    2. Mixing Zones: Ideal mixing between reactor outputs
-    3. Secondary Zone: PFRs with dilution air addition
-
-    See Also
-    --------
-    RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices
-    RCAIDE.Library.Components.Powertrain.Converters.Combustor
-
-    References
-    ----------
-    [1] Goodwin, D. G., Speth, R. L., Moffat, H. K., & Weber, B. W. (2023). Cantera: An object-oriented software toolkit for chemical kinetics, thermodynamics, and transport processes (Version 3.0.0) [Computer software]. https://www.cantera.org
     """   
 
     # ------------------------------------------------------------------------------              
@@ -129,21 +32,85 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
     try: 
         combustor_results = compute_combustor_performance(combustor, T, P, mdot_air, FAR, gas) # [-]       Run combustor function
         
-        results                 = Data()                                            # [-]          Create results data structure
-        results.EI_CO2          = combustor_results['SZ']['final']['EI']['CO2']     # [kg/kg_fuel] Assign CO2 Emission Index to the results data structure
-        results.EI_CO           = combustor_results['SZ']['final']['EI']['CO']      # [kg/kg_fuel] Assign CO Emission Index to the results data structure
-        results.EI_H2O          = combustor_results['SZ']['final']['EI']['H2O']     # [kg/kg_fuel] Assign H2O Emission Index to the results data structure
-        results.EI_NOx          = combustor_results['SZ']['final']['EI']['NOx']     # [kg/kg_fuel] Assign NOx Emission Index to the results data structure
-        results.EI_soot         = combustor_results['SZ']['final']['EI']['soot']    # [kg/kg_fuel] Assign Soot Emission Index to the results data structure   
- 
+        results                  = Data()                                         # [-]          
+        results.EI_CO2           = combustor_results['SZ']['final']['EI']['CO2']  # [kg/kg_fuel] 
+        results.EI_CO            = combustor_results['SZ']['final']['EI']['CO']   # [kg/kg_fuel] 
+        results.EI_H2O           = combustor_results['SZ']['final']['EI']['H2O']  # [kg/kg_fuel] 
+        results.EI_NOx           = combustor_results['SZ']['final']['EI']['NOx']  # [kg/kg_fuel] 
+        results.EI_soot          = combustor_results['SZ']['final']['EI']['soot'] # [kg/kg_fuel] 
+        results.PZ_phi           = combustor_results['PZ']['psr']['phi']          # [-] 
+        results.PZ_T             = combustor_results['PZ']['psr']['T']            # [K] 
+        results.PZ_f_psr         = combustor_results['PZ']['psr']['f_psr']        # [-] 
+        results.PZ_EI_CO2        = combustor_results['PZ']['psr']['EI']['CO2']    # [kg/kg_fuel] 
+        results.PZ_EI_CO         = combustor_results['PZ']['psr']['EI']['CO']     # [kg/kg_fuel] 
+        results.PZ_EI_H2O        = combustor_results['PZ']['psr']['EI']['H2O']    # [kg/kg_fuel] 
+        results.PZ_EI_NOx        = combustor_results['PZ']['psr']['EI']['NOx']    # [kg/kg_fuel] 
+        results.PZ_EI_soot       = combustor_results['PZ']['psr']['EI']['soot']   # [kg/kg_fuel] 
+        results.SZ_sm_z          = combustor_results['SZ']['sm']['z']             # [-] 
+        results.SZ_sm_phi        = combustor_results['SZ']['sm']['phi']           # [-] 
+        results.SZ_sm_T          = combustor_results['SZ']['sm']['T']             # [K] 
+        results.SZ_sm_EI_CO2     = combustor_results['SZ']['sm']['EI']['CO2']     # [kg/kg_fuel] 
+        results.SZ_sm_EI_CO      = combustor_results['SZ']['sm']['EI']['CO']      # [kg/kg_fuel] 
+        results.SZ_sm_EI_H2O     = combustor_results['SZ']['sm']['EI']['H2O']     # [kg/kg_fuel] 
+        results.SZ_sm_EI_NOx     = combustor_results['SZ']['sm']['EI']['NOx']     # [kg/kg_fuel] 
+        results.SZ_sm_EI_soot    = combustor_results['SZ']['sm']['EI']['soot']    # [kg/kg_fuel] 
+        results.SZ_fm_z          = combustor_results['SZ']['fm']['z']             # [-] 
+        results.SZ_fm_phi        = combustor_results['SZ']['fm']['phi']           # [-] 
+        results.SZ_fm_T          = combustor_results['SZ']['fm']['T']             # [K] 
+        results.SZ_fm_EI_CO2     = combustor_results['SZ']['fm']['EI']['CO2']     # [kg/kg_fuel] 
+        results.SZ_fm_EI_CO      = combustor_results['SZ']['fm']['EI']['CO']      # [kg/kg_fuel] 
+        results.SZ_fm_EI_H2O     = combustor_results['SZ']['fm']['EI']['H2O']     # [kg/kg_fuel] 
+        results.SZ_fm_EI_NOx     = combustor_results['SZ']['fm']['EI']['NOx']     # [kg/kg_fuel] 
+        results.SZ_fm_EI_soot    = combustor_results['SZ']['fm']['EI']['soot']    # [kg/kg_fuel] 
+        results.SZ_joint_z       = combustor_results['SZ']['joint']['z']          # [-] 
+        results.SZ_joint_phi     = combustor_results['SZ']['joint']['phi']        # [-] 
+        results.SZ_joint_T       = combustor_results['SZ']['joint']['T']          # [K] 
+        results.SZ_joint_EI_CO2  = combustor_results['SZ']['joint']['EI']['CO2']  # [kg/kg_fuel] 
+        results.SZ_joint_EI_CO   = combustor_results['SZ']['joint']['EI']['CO']   # [kg/kg_fuel] 
+        results.SZ_joint_EI_H2O  = combustor_results['SZ']['joint']['EI']['H2O']  # [kg/kg_fuel] 
+        results.SZ_joint_EI_NOx  = combustor_results['SZ']['joint']['EI']['NOx']  # [kg/kg_fuel] 
+        results.SZ_joint_EI_soot = combustor_results['SZ']['joint']['EI']['soot'] # [kg/kg_fuel] 
+
     except ImportError:
         print('cantera required: run pip install cantera') 
-        results                 = Data()                                               
-        results.EI_CO2          = 0                               
-        results.EI_CO           = 0                               
-        results.EI_H2O          = 0                               
-        results.EI_NOx          = 0                                                    
-        results.EI_soot         = 0                                                                           
+        results                  = Data()                                               
+        results.EI_CO2           = 0                               
+        results.EI_CO            = 0                               
+        results.EI_H2O           = 0                               
+        results.EI_NOx           = 0                                                    
+        results.EI_soot          = 0  
+        results.PZ_phi           = [] # [-] 
+        results.PZ_T             = [] # [K] 
+        results.PZ_f_psr         = [] # [-] 
+        results.PZ_EI_CO2        = [] # [kg/kg_fuel] 
+        results.PZ_EI_CO         = [] # [kg/kg_fuel] 
+        results.PZ_EI_H2O        = [] # [kg/kg_fuel] 
+        results.PZ_EI_NOx        = [] # [kg/kg_fuel] 
+        results.PZ_EI_soot       = [] # [kg/kg_fuel] 
+        results.SZ_sm_z          = [] # [-] 
+        results.SZ_sm_phi        = [] # [-] 
+        results.SZ_sm_T          = [] # [K] 
+        results.SZ_sm_EI_CO2     = [] # [kg/kg_fuel] 
+        results.SZ_sm_EI_CO      = [] # [kg/kg_fuel] 
+        results.SZ_sm_EI_H2O     = [] # [kg/kg_fuel] 
+        results.SZ_sm_EI_NOx     = [] # [kg/kg_fuel] 
+        results.SZ_sm_EI_soot    = [] # [kg/kg_fuel] 
+        results.SZ_fm_z          = [] # [-] 
+        results.SZ_fm_phi        = [] # [-] 
+        results.SZ_fm_T          = [] # [K] 
+        results.SZ_fm_EI_CO2     = [] # [kg/kg_fuel] 
+        results.SZ_fm_EI_CO      = [] # [kg/kg_fuel] 
+        results.SZ_fm_EI_H2O     = [] # [kg/kg_fuel] 
+        results.SZ_fm_EI_NOx     = [] # [kg/kg_fuel] 
+        results.SZ_fm_EI_soot    = [] # [kg/kg_fuel] 
+        results.SZ_joint_z       = [] # [-] 
+        results.SZ_joint_phi     = [] # [-] 
+        results.SZ_joint_T       = [] # [K] 
+        results.SZ_joint_EI_CO2  = [] # [kg/kg_fuel] 
+        results.SZ_joint_EI_CO   = [] # [kg/kg_fuel] 
+        results.SZ_joint_EI_H2O  = [] # [kg/kg_fuel] 
+        results.SZ_joint_EI_NOx  = [] # [kg/kg_fuel] 
+        results.SZ_joint_EI_soot = [] # [kg/kg_fuel]                                                                          
      
     return results
 

@@ -27,8 +27,9 @@ from Boeing_737    import configs_setup as configs_setup
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
-    emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
+    # emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
     use_surrogate     = [True, False]
+    emissions_methods = ['Emission_Index_CRN_Method']
     
     cantera_installation = False 
     try: 
@@ -37,8 +38,8 @@ def main():
     except:
         pass 
     
-    true_EI_CO2s =  [3.16, 3.0996295865239563, 3.1371106320136155]
-    true_EI_H2Os =  [1.34, 1.1911420639654764, 1.2053455595806213]
+    true_EI_CO2s =  [3.16, 3.102342112842955, 3.0314334973667685]
+    true_EI_H2Os =  [1.23, 1.241535923661115, 1.2007950309221447]
     i =  0
     for em in  range(2):
         for sur in  range(2):
