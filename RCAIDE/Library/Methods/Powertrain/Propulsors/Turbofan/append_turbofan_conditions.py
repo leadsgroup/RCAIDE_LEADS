@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan_Propulsor/append_turbofan_conditions.py
+# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/append_turbofan_conditions.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke  

@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Turbofan_Propulsor/compute_thrust.py
+# RCAIDE/Methods/Energy/Propulsors/Turbofan/compute_thrust.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan_Propulsor/design_turbofan.py
+# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/design_turbofan.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jul 2024, RCAIDE Team
@@ -27,7 +27,7 @@ import numpy as np
 #  Design Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
 def design_turbofan(turbofan):
-    """Compute perfomance properties of a turbofan based on polytropic ration and combustor properties.
+    """Compute perfomance properties of a turbofan based on polytropic ratio and combustor properties.
     Turbofan is created by manually linking the different components
     
     

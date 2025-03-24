@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Turbojet_Propulsor/design_turbojet.py
+# RCAIDE/Methods/Energy/Propulsors/Turbojet/design_turbojet.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 

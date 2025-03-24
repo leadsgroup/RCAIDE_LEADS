@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Networks/Turbojet_Propulsor/compute_turbojet_performance.py
+# RCAIDE/Methods/Energy/Propulsors/Networks/Turbojet/compute_turbojet_performance.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke

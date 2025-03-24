@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Turbofan_Propulsor/compute_turbofan_performance.py
+# RCAIDE/Methods/Energy/Propulsors/Turbofan/compute_turbofan_performance.py
 # 
 # 
 # Created:  Jul 2024, RCAIDE Team

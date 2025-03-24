@@ -53,8 +53,7 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
                     -.twists.tip: twist of wing at tip                          [deg]
                     -.flap_ratio: flap surface area over wing surface area
                  -.networks: data dictionary containing all propulsion properties
-                    -.number_of_engines: number of engines
-                    -.sealevel_static_thrust: thrust at sea level               [N]
+                    -.number_of_engines: number of engines 
             WPOD - weight of engine pod including the nacelle                   [kilograms]
             complexity - "simple" or "complex" depending on the wing weight method chosen
 

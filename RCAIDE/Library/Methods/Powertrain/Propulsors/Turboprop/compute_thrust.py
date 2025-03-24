@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Turboprop_Propulsor/compute_thrust.py
+# RCAIDE/Methods/Energy/Propulsors/Turboprop/compute_thrust.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke, M. Guidotti
@@ -45,7 +45,7 @@ def compute_thrust(turboprop,conditions):
     low_pressure_turbine                           = turboprop.low_pressure_turbine
     core_nozzle                                    = turboprop.core_nozzle  
     Tt4                                            = turboprop.combustor.turbine_inlet_temperature                                                               
-    propeller_efficiency                           = turboprop.design_propeller_efficiency                                                                      
+    propeller_efficiency                           = turboprop.propeller_efficiency                                                                      
     gearbox_efficiency                             = turboprop.gearbox.efficiency                                                                        
     low_pressure_turbine_mechanical_efficiency     = turboprop.low_pressure_turbine.mechanical_efficiency                                                       
     lower_heating_value                            = turboprop.combustor.fuel_data.lower_heating_value 

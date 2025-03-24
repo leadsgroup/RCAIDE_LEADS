@@ -10,8 +10,8 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
-from RCAIDE.Framework.Core import Units   
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor import design_propeller
+from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine import design_internal_combustion_engine
 import os 
 
 # python imports 
@@ -350,9 +350,12 @@ def vehicle_setup():
                                                rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
                                                rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']  
     prop.append_airfoil(airfoil)      
-    prop.airfoil_polar_stations             = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]  
-    design_propeller(prop)    
-    ice_prop.propeller                      = prop  
+    prop.airfoil_polar_stations             = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]   
+    ice_prop.propeller                      = prop
+
+    # design propeller ICE  
+    design_internal_combustion_engine(ice_prop) 
+    
     net.propulsors.append(ice_prop)
 
     #------------------------------------------------------------------------------------------------------------------------------------   

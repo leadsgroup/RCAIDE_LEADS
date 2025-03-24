@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbojet_Propulsor/append_turbojet_conditions.py
+# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbojet/append_turbojet_conditions.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke  

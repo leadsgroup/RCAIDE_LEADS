@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Turbofan_Propulsor/size_core.py
+# RCAIDE/Methods/Energy/Propulsors/Turbofan/size_core.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke

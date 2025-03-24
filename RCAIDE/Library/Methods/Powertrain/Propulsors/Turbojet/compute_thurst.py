@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Turbojet_Propulsor/compute_thrust.py
+# RCAIDE/Methods/Energy/Propulsors/Turbojet/compute_thrust.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke

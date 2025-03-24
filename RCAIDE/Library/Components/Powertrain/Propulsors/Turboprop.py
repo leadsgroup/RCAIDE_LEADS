@@ -51,7 +51,7 @@ class Turboprop(Propulsor):
     design_altitude : float
         Design altitude of the engine [m]. Default is 0.0.
         
-    design_propeller_efficiency : float
+    propeller_efficiency : float
         Design point propeller efficiency. Default is 0.0.
         
     gearbox.efficiency : float
@@ -102,7 +102,7 @@ class Turboprop(Propulsor):
         self.height                                   = 0.5      
         self.design_isa_deviation                     = 0.0
         self.design_altitude                          = 0.0
-        self.design_propeller_efficiency              = 0.0
+        self.propeller_efficiency                     = 0.0
         self.gearbox                                  = Data()
         self.gearbox.gear_ratio                       = 1.0
         self.gearbox.efficiency                       = 0.0 
