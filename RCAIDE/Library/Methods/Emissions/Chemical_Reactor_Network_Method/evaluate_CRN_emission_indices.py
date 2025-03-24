@@ -124,13 +124,10 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                             propulsor_conditions = state.conditions.energy[propulsor.tag] 
                             combustor_conditions = propulsor_conditions[combustor.tag]  
 
-                            
                             T    = combustor_conditions.inputs.stagnation_temperature
                             P    = combustor_conditions.inputs.stagnation_pressure 
                             mdot = propulsor_conditions.core_mass_flow_rate 
                             FAR  = combustor_conditions.outputs.fuel_to_air_ratio 
-                            mdot_air_TakeOff = propulsor_conditions.core_mass_flow_rate_take_off
-                            FAR_TakeOff      = combustor_conditions.outputs.fuel_to_air_ratio_take_off
 
                             EI_CO2_comb    = 0 * state.ones_row(1)   
                             EI_CO_comb     = 0 * state.ones_row(1)  
@@ -148,7 +145,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                             else:     
                                 for t_idx in range(n_cp):
                                     # Call cantera 
-                                    results = evaluate_cantera(combustor,T[t_idx,0],P[t_idx,0],mdot[t_idx,0],FAR[t_idx,0],mdot_air_TakeOff[t_idx,0],FAR_TakeOff[t_idx,0])
+                                    results = evaluate_cantera(combustor,T[t_idx,0],P[t_idx,0],mdot[t_idx,0],FAR[t_idx,0])
                                     
                                     EI_CO2_comb[t_idx,0] = results.EI_CO2
                                     EI_CO_comb[t_idx,0]  = results.EI_CO 
@@ -301,10 +298,8 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
                     P    = combustor_conditions.inputs.stagnation_pressure 
                     mdot = propulsor_conditions.core_mass_flow_rate 
                     FAR  = combustor_conditions.outputs.fuel_to_air_ratio 
-                    mdot_air_TakeOff = propulsor_conditions.core_mass_flow_rate_take_off
-                    FAR_TakeOff      = combustor_conditions.outputs.fuel_to_air_ratio_take_off
                     
-                    pts = np.hstack((T,P,mdot,FAR )) 
+                    pts = np.hstack((T,P,mdot,FAR)) 
 
                     EI_CO2_comb  = np.atleast_2d(surrogates.EI_CO2(pts)).T
                     EI_CO_comb   = np.atleast_2d(surrogates.EI_CO(pts)).T 
