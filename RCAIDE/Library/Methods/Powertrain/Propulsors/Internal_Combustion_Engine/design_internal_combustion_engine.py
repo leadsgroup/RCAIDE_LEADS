@@ -35,7 +35,7 @@ def design_internal_combustion_engine(ICE):
     
     """
     
-    # Step 1 Static Sea Level Thrust  
+    # Step 1 Design the Propeller  
     design_propeller(ICE.propeller)
      
     # Step 2 Static Sea Level Thrust  
