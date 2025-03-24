@@ -69,7 +69,7 @@ def compute_propulsion_system_weight(vehicle,network):
     WNAC            = compute_nacelle_weight(vehicle,ref_nacelle, NENG, WENG)
     WEC, WSTART     = compute_misc_engine_weight(vehicle,NENG, WENG)
     WTHR            = 0
-    WPRO            = WENG + WFSYS + WEC + WSTART + WTHR + WNAC
+    WPRO            = WENG + WFSYS + WEC + WSTART + WTHR # Nacelle weight is not included in the propulsion system weight. it is included in the structural weight. 
 
     output                      = Data()
     output.W_prop               = WPRO
