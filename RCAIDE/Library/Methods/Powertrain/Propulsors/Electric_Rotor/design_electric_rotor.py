@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Electric_Rotor/design_electric_rotor.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jul 2024, RCAIDE Team
 
