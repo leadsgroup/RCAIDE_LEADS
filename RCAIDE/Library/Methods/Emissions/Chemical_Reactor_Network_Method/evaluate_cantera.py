@@ -145,8 +145,8 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR,mdot_air_TakeOff, FAR_TakeOff):
         results.EI_CO2          = combustor_results['SZ']['final']['EI']['CO2']     # [-]       Assign CO2 Emission Index to the results data structure
         results.EI_CO           = combustor_results['SZ']['final']['EI']['CO']      # [-]       Assign CO Emission Index to the results data structure
         results.EI_H2O          = combustor_results['SZ']['final']['EI']['H2O']     # [-]       Assign H2O Emission Index to the results data structure
-        results.EI_NOx          = combustor_results['SZ']['final']['EI']['NOx']     # [-]       Assign NO Emission Index to the results data structure
-        results.EI_soot         = combustor_results['SZ']['final']['EI']['soot']    # [-]       Assign NO2 Emission Index to the results data structure   
+        results.EI_NOx          = combustor_results['SZ']['final']['EI']['NOx']     # [-]       Assign NOx Emission Index to the results data structure
+        results.EI_soot         = combustor_results['SZ']['final']['EI']['soot']    # [-]       Assign Soot Emission Index to the results data structure   
  
     except ImportError:
         print('cantera required: run pip install cantera') 
