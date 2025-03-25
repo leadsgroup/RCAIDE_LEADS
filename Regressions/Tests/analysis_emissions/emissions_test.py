@@ -230,12 +230,12 @@ def plot_PZ_results(results):
     fig, ax1 = plt.subplots(figsize=(10, 6))
     color = 'tab:red'
     ax1.set_xlabel('Equivalence ratio in primary zone reactor i [-]')
-    ax1.set_ylabel(r'EI CO [g/kg$_{\text{fuel}}$]', color=color)
+    ax1.set_ylabel(r'EI CO [kg/kg$_{\text{fuel}}$]', color=color)
     ax1.plot(results.segments.cruise.conditions.emissions.index.PZ_phi[0], results.segments.cruise.conditions.emissions.index.PZ_EI_CO[0], '-', color=color, label='EI CO RCAIDE')
     ax1.tick_params(axis='y', labelcolor=color)
     ax2 = ax1.twinx()
     color = 'tab:purple'
-    ax2.set_ylabel(r'EI NO$_{x}$ [g/kg$_{\text{fuel}}$]', color=color)
+    ax2.set_ylabel(r'EI NO$_{x}$ [kg/kg$_{\text{fuel}}$]', color=color)
     ax2.plot(results.segments.cruise.conditions.emissions.index.PZ_phi[0], results.segments.cruise.conditions.emissions.index.PZ_EI_NOx[0], '-', color=color, label='EI NOx RCAIDE')
     ax2.tick_params(axis='y', labelcolor=color)
     fig.tight_layout()
@@ -243,12 +243,12 @@ def plot_PZ_results(results):
     fig, ax1 = plt.subplots(figsize=(10, 6))
     color = 'tab:blue'
     ax1.set_xlabel('Equivalence ratio in primary zone reactor i [-]')
-    ax1.set_ylabel(r'EI CO$_{2}$ [g/kg$_{\text{fuel}}$]', color=color)
+    ax1.set_ylabel(r'EI CO$_{2}$ [kg/kg$_{\text{fuel}}$]', color=color)
     ax1.plot(results.segments.cruise.conditions.emissions.index.PZ_phi[0], results.segments.cruise.conditions.emissions.index.PZ_EI_CO2[0], '-', color=color, label='EI CO2 RCAIDE')
     ax1.tick_params(axis='y', labelcolor=color)
     ax2 = ax1.twinx()
     color = 'tab:green'
-    ax2.set_ylabel(r'EI H$_{2}$O [g/kg$_{\text{fuel}}$]', color=color)
+    ax2.set_ylabel(r'EI H$_{2}$O [kg/kg$_{\text{fuel}}$]', color=color)
     ax2.plot(results.segments.cruise.conditions.emissions.index.PZ_phi[0], results.segments.cruise.conditions.emissions.index.PZ_EI_H2O[0], '-', color=color, label='EI H2O RCAIDE')
     ax2.tick_params(axis='y', labelcolor=color)
     fig.tight_layout()
@@ -256,7 +256,7 @@ def plot_PZ_results(results):
     plt.figure(figsize=(10, 6))
     plt.plot(results.segments.cruise.conditions.emissions.index.PZ_phi[0],  results.segments.cruise.conditions.emissions.index.PZ_EI_soot[0], '-', color=color, label='EI soot RCAIDE')
     plt.xlabel('Equivalence ratio in primary zone reactor i [-]')
-    plt.ylabel(r'EI soot at exit of primary zone reactor i [g/kg$_{\text{fuel}}$]')
+    plt.ylabel(r'EI soot at exit of primary zone reactor i [kg/kg$_{\text{fuel}}$]')
     plt.grid(True, linestyle='--', alpha=0.7)
 
 def plot_SZ_results(results):
@@ -269,7 +269,7 @@ def plot_SZ_results(results):
     plt.plot(results.segments.cruise.conditions.emissions.index.SZ_joint_z[0], results.segments.cruise.conditions.emissions.index.SZ_joint_EI_CO2[0], 'g-', label='Joint Mixing')
     plt.xlim(0, 100)
     plt.xlabel('Percentage downstream SZ [%]')
-    plt.ylabel(r'EI CO$_2$ [g/kg$_{\text{fuel}}$]')
+    plt.ylabel(r'EI CO$_2$ [kg/kg$_{\text{fuel}}$]')
     plt.legend()
     plt.grid(True)
 
@@ -280,7 +280,7 @@ def plot_SZ_results(results):
     plt.plot(results.segments.cruise.conditions.emissions.index.SZ_joint_z[0], results.segments.cruise.conditions.emissions.index.SZ_joint_EI_NOx[0], 'g-', label='Joint Mixing')
     plt.xlim(0, 100)
     plt.xlabel('Percentage downstream SZ [%]')
-    plt.ylabel(r'EI NO$_x$ [g/kg$_{\text{fuel}}$]')
+    plt.ylabel(r'EI NO$_x$ [kg/kg$_{\text{fuel}}$]')
     plt.legend()
     plt.grid(True)
 
@@ -291,7 +291,7 @@ def plot_SZ_results(results):
     plt.plot(results.segments.cruise.conditions.emissions.index.SZ_joint_z[0], results.segments.cruise.conditions.emissions.index.SZ_joint_EI_CO[0], 'g-', label='Joint Mixing')
     plt.xlim(0, 100)
     plt.xlabel('Percentage downstream SZ [%]')
-    plt.ylabel(r'EI CO [g/kg$_{\text{fuel}}$]')
+    plt.ylabel(r'EI CO [kg/kg$_{\text{fuel}}$]')
     plt.legend()
     plt.grid(True)
 
@@ -302,7 +302,7 @@ def plot_SZ_results(results):
     plt.plot(results.segments.cruise.conditions.emissions.index.SZ_joint_z[0], results.segments.cruise.conditions.emissions.index.SZ_joint_EI_H2O[0], 'g-', label='Joint Mixing')
     plt.xlim(0, 100)
     plt.xlabel('Percentage downstream SZ [%]')
-    plt.ylabel(r'EI H$_2$O [g/kg$_{\text{fuel}}$]')
+    plt.ylabel(r'EI H$_2$O [kg/kg$_{\text{fuel}}$]')
     plt.legend()
     plt.grid(True)
 
@@ -313,7 +313,7 @@ def plot_SZ_results(results):
     plt.plot(results.segments.cruise.conditions.emissions.index.SZ_joint_z[0], results.segments.cruise.conditions.emissions.index.SZ_joint_EI_soot[0], 'g-', label='Joint Mixing')
     plt.xlim(0, 100)
     plt.xlabel('Percentage downstream SZ [%]')
-    plt.ylabel(r'EI soot [g/kg$_{\text{fuel}}$]')
+    plt.ylabel(r'EI soot [kg/kg$_{\text{fuel}}$]')
     plt.legend()
     plt.grid(True)
 
