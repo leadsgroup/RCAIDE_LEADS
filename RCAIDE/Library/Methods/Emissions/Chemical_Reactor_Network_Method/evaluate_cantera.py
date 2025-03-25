@@ -13,6 +13,18 @@ import numpy                 as np
 import os
 import cantera as ct
 
+# ----------------------------------------------------------------------
+#  References
+# ----------------------------------------------------------------------
+# [1] Brink, L. F. J. (2020). Modeling the impact of fuel composition on 
+#     aircraft engine NOₓ, CO, and soot emissions. Master's thesis, 
+#     Massachusetts Institute of Technology.
+# [2] Allaire, D. L. (2006). A physics-based emissions model for 
+#     aircraft gas turbine combustors. Master's thesis, Massachusetts 
+#     Institute of Technology.
+# [3] Lefebvre, A. H., & Ballal, D. R. (2010). Gas turbine combustion: 
+#     Alternative fuels and emissions (3rd ed.). CRC Press.
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  evaluate_cantera
 # ----------------------------------------------------------------------------------------------------------------------   
@@ -25,9 +37,9 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
     # ------------------------------ Combustor Inputs ------------------------------              
     # ------------------------------------------------------------------------------              
 
-    rcaide_root                                       = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-    mechanism_path                                    = os.path.join(rcaide_root, 'Emissions', 'Chemical_Reactor_Network_Method', 'Data', 'POLIMI_PRF_PAH_RFUELS_HT_1412.yaml')
-    gas                                               = mechanism_path
+    rcaide_root    = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    mechanism_path = os.path.join(rcaide_root, 'Emissions', 'Chemical_Reactor_Network_Method', 'Data')
+    gas            = mechanism_path + '/' + combustor.fuel_data.kinetic_mechanism
 
     try: 
         combustor_results = compute_combustor_performance(combustor, T, P, mdot_air, FAR, gas) # [-]       Run combustor function
