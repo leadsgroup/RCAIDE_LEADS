@@ -50,6 +50,8 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
         results.EI_H2O           = combustor_results['SZ']['final']['EI']['H2O']  # [kg/kg_fuel] 
         results.EI_NOx           = combustor_results['SZ']['final']['EI']['NOx']  # [kg/kg_fuel] 
         results.EI_soot          = combustor_results['SZ']['final']['EI']['soot'] # [kg/kg_fuel] 
+        results.final_phi        = combustor_results['SZ']['final']['phi']        # [-] 
+        results.final_T          = combustor_results['SZ']['final']['T']          # [K] 
         results.PZ_phi           = combustor_results['PZ']['psr']['phi']          # [-] 
         results.PZ_T             = combustor_results['PZ']['psr']['T']            # [K] 
         results.PZ_f_psr         = combustor_results['PZ']['psr']['f_psr']        # [-] 
@@ -91,6 +93,8 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
         results.EI_H2O           = 0                               
         results.EI_NOx           = 0                                                    
         results.EI_soot          = 0  
+        results.final_phi        = 0 # [-] 
+        results.final_T          = 0 # [K] 
         results.PZ_phi           = [] # [-] 
         results.PZ_T             = [] # [K] 
         results.PZ_f_psr         = [] # [-] 
