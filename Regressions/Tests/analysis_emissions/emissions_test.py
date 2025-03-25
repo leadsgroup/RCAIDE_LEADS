@@ -213,29 +213,7 @@ def missions_setup(mission):
     return missions 
 
 def plot_PZ_results(results):
-    """
-    Plot combustor performance results.
-
-    Parameters
-    ----------
-    phi_data : list
-        Equivalence ratios for each PSR
-    f_PSR_data : list
-        Mass flow fractions for each PSR
-    T_data : list
-        Temperature data for each PSR
-    EI_NOx_data : list
-        NOx emission index data for each PSR
-    EI_CO2_data : list
-        CO2 emission index data for each PSR
-    EI_CO_data : list
-        CO emission index data for each PSR
-    EI_H2O_data : list
-        H2O emission index data for each PSR
-    EI_soot_data : list
-        Soot emission index data for each PSR
-    """
-    
+        
     fig, ax1 = plt.subplots(figsize=(10, 6))
     color = 'black'
     ax1.set_xlabel('Equivalence ratio in primary zone [-]')
@@ -282,17 +260,7 @@ def plot_PZ_results(results):
     plt.grid(True, linestyle='--', alpha=0.7)
 
 def plot_SZ_results(results):
-    """
-    Plot emission indices (EI) trends over the secondary zone (SZ) length for the slow mode.
-    
-    Parameters:
-    - z_percentages: List of positions as percentages downstream in the SZ [%]
-    - EI_CO2_list: List of EI values for CO2 [g/kg_fuel]
-    - EI_NOx_list: List of EI values for NOx [g/kg_fuel]
-    - EI_CO_list: List of EI values for CO [g/kg_fuel]
-    - EI_H2O_list: List of EI values for H2O [g/kg_fuel]
-    - EI_soot_list: List of EI values for soot [g/kg_fuel]
-    """
+
     
     # Plot CO2 EI
     plt.figure(figsize=(10, 6))
