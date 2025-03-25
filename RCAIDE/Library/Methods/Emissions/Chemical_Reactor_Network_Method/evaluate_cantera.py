@@ -13,25 +13,179 @@ import numpy                 as np
 import os
 import cantera as ct
 
-# ----------------------------------------------------------------------
-#  References
-# ----------------------------------------------------------------------
-# [1] Brink, L. F. J. (2020). Modeling the impact of fuel composition on 
-#     aircraft engine NOₓ, CO, and soot emissions. Master's thesis, 
-#     Massachusetts Institute of Technology.
-# [2] Allaire, D. L. (2006). A physics-based emissions model for 
-#     aircraft gas turbine combustors. Master's thesis, Massachusetts 
-#     Institute of Technology.
-# [3] Lefebvre, A. H., & Ballal, D. R. (2010). Gas turbine combustion: 
-#     Alternative fuels and emissions (3rd ed.). CRC Press.
-
 # ----------------------------------------------------------------------------------------------------------------------
 #  evaluate_cantera
 # ----------------------------------------------------------------------------------------------------------------------   
 def evaluate_cantera(combustor,T,P,mdot_air,FAR): 
 
     """
-    """   
+    Evaluates emission indices using a Chemical Reactor Network (CRN) built in Cantera.
+    
+    Parameters
+    ----------
+    combustor : Data
+        Combustor configuration data
+        - diameter : float
+            Combustor diameter [m]
+        - length : float
+            Combustor length [m]
+        - number_of_combustors : int
+            Number of combustors for one engine [-]
+        - F_SC : float
+            Fuel scale factor [-]
+        - N_PZ : int
+            Number of PSR in the Primary Zone [-]
+        - L_PZ : float
+            Primary Zone length [m]
+        - S_PZ : float
+            Mixing parameter in the Primary Zone [-]
+        - design_equivalence_ratio_PZ : float
+            Design Equivalence Ratio in Primary Zone at Maximum Throttle [-]
+        - N_SZ : int
+            Number of discretizations in the Secondary Zone [-]
+        - f_SM : float
+            Slow mode fraction [-]
+        - l_SA_SM : float
+            Secondary air length fraction (of L_SZ) in slow mode [-]
+        - l_SA_FM : float
+            Secondary air length fraction (of L_SZ) in fast mode [-]
+        - l_DA_start : float
+            Dilution air start length fraction (of L_SZ) [-]
+        - l_DA_end : float
+            Dilution air end length fraction (of L_SZ) [-]
+        - joint_mixing_fraction : float
+            Joint mixing fraction [-]
+        - design_equivalence_ratio_SZ : float
+            Design Equivalence Ratio in Secondary Zone [-]
+        - air_mass_flow_rate_take_off : float
+            Air mass flow rate at take-off [kg/s]
+        - fuel_to_air_ratio_take_off : float
+            Fuel to air ratio at take-off [-]
+        - air_data : Data
+            Air object containing air surrogate species
+        - fuel_data : Data
+            Fuel object containing fuel properties and kinetics
+    
+    T : float
+        Stagnation Temperature entering combustors [K]
+    P : float
+        Stagnation Pressure entering combustors [Pa]
+    mdot_air : float
+        Air mass flow entering the combustor [kg/s]
+    FAR : float
+        Fuel-to-Air ratio [-]
+    
+    Returns
+    -------
+    results : Data
+        Container for emission indices
+        - EI_CO2 : float
+            CO2 emission index [kg_CO2/kg_fuel]
+        - EI_CO : float
+            CO emission index [kg_CO/kg_fuel]
+        - EI_H2O : float
+            H2O emission index [kg_H2O/kg_fuel]
+        - EI_NOx : float
+            NOx emission index [kg_NOx/kg_fuel]
+        - EI_soot : float
+            Soot emission index [kg_soot/kg_fuel]
+        - final_phi : float
+            Final equivalence ratio [-]
+        - final_T : float
+            Final temperature [K]
+        - PZ_phi : list
+            Equivalence ratio in the Primary Zone [-]
+        - PZ_T : list
+            Temperature in the Primary Zone [K]
+        - PZ_f_psr : list
+            Fraction of mass flow entering each PSR [-]
+        - PZ_EI_CO2 : list
+            CO2 emission index in the Primary Zone [kg_CO2/kg_fuel]
+        - PZ_EI_CO : list
+            CO emission index in the Primary Zone [kg_CO/kg_fuel]
+        - PZ_EI_H2O : list
+            H2O emission index in the Primary Zone [kg_H2O/kg_fuel]
+        - PZ_EI_NOx : list
+            NOx emission index in the Primary Zone [kg_NOx/kg_fuel]
+        - PZ_EI_soot : list
+            Soot emission index in the Primary Zone [kg_soot/kg_fuel]
+        - SZ_sm_z : list
+            Positions in the Secondary Zone slow mode [-]
+        - SZ_sm_phi : list
+            Equivalence ratio in the Secondary Zone slow mode [-]
+        - SZ_sm_T : list
+            Temperature in the Secondary Zone slow mode [K]
+        - SZ_sm_EI_CO2 : list
+            CO2 emission index in the Secondary Zone slow mode [kg_CO2/kg_fuel]
+        - SZ_sm_EI_CO : list
+            CO emission index in the Secondary Zone slow mode [kg_CO/kg_fuel]
+        - SZ_sm_EI_H2O : list
+            H2O emission index in the Secondary Zone slow mode [kg_H2O/kg_fuel]
+        - SZ_sm_EI_NOx : list
+            NOx emission index in the Secondary Zone slow mode [kg_NOx/kg_fuel]
+        - SZ_sm_EI_soot : list
+            Soot emission index in the Secondary Zone slow mode [kg_soot/kg_fuel]
+        - SZ_fm_z : list
+            Positions in the Secondary Zone fast mode [-]
+        - SZ_fm_phi : list
+            Equivalence ratio in the Secondary Zone fast mode [-]
+        - SZ_fm_T : list
+            Temperature in the Secondary Zone fast mode [K]
+        - SZ_fm_EI_CO2 : list
+            CO2 emission index in the Secondary Zone fast mode [kg_CO2/kg_fuel]
+        - SZ_fm_EI_CO : list
+            CO emission index in the Secondary Zone fast mode [kg_CO/kg_fuel]
+        - SZ_fm_EI_H2O : list
+            H2O emission index in the Secondary Zone fast mode [kg_H2O/kg_fuel]
+        - SZ_fm_EI_NOx : list
+            NOx emission index in the Secondary Zone fast mode [kg_NOx/kg_fuel]
+        - SZ_fm_EI_soot : list
+            Soot emission index in the Secondary Zone fast mode [kg_soot/kg_fuel]
+        - SZ_joint_z : list
+            Positions in the Secondary Zone joint mode [-]
+        - SZ_joint_phi : list
+            Equivalence ratio in the Secondary Zone joint mode [-]
+        - SZ_joint_T : list
+            Temperature in the Secondary Zone joint mode [K]
+        - SZ_joint_EI_CO2 : list
+            CO2 emission index in the Secondary Zone joint mode [kg_CO2/kg_fuel]
+        - SZ_joint_EI_CO : list
+            CO emission index in the Secondary Zone joint mode [kg_CO/kg_fuel]
+        - SZ_joint_EI_H2O : list
+            H2O emission index in the Secondary Zone joint mode [kg_H2O/kg_fuel]
+        - SZ_joint_EI_NOx : list
+            NOx emission index in the Secondary Zone joint mode [kg_NOx/kg_fuel]
+        - SZ_joint_EI_soot : list
+            Soot emission index in the Secondary Zone joint mode [kg_soot/kg_fuel]
+    
+    Notes
+    -----
+    This function uses Cantera to simulate the chemical kinetics and thermodynamics of the combustor. It requires the Cantera module to be installed.
+    
+    **Extra modules required**
+    
+    * Cantera
+    
+    **Major Assumptions**
+        * The combustor operates under steady-state conditions.
+        * The fuel and air are perfectly mixed before entering the combustor.
+    
+    **Theory**
+    
+    The function evaluates the emission indices by simulating the chemical reactions in the combustor using Cantera. The emissions are calculated based on the chemical kinetics and thermodynamics of the fuel and air mixture.
+    
+    References
+    ----------
+    [1] Goodwin, D. G., Speth, R. L., Moffat, H. K., & Weber, B. W. (2023). Cantera: An object-oriented software toolkit for chemical kinetics, thermodynamics, and transport processes (Version 3.0.0) [Computer software]. https://www.cantera.org
+    [2] Brink, L. F. J. (2020). Modeling the impact of fuel composition on aircraft engine NOₓ, CO, and soot emissions. Master's thesis, Massachusetts Institute of Technology.
+    [3] Allaire, D. L. (2006). A physics-based emissions model for aircraft gas turbine combustors. Master's thesis, Massachusetts Institute of Technology.
+    [4] Lefebvre, A. H., & Ballal, D. R. (2010). Gas turbine combustion: Alternative fuels and emissions (3rd ed.). CRC Press.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices_no_surrogate
+    RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices_surrogate
+    """
 
     # ------------------------------------------------------------------------------              
     # ------------------------------ Combustor Inputs ------------------------------              
