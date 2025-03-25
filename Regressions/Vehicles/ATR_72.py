@@ -33,30 +33,28 @@ def vehicle_setup():
     # ------------------------------------------------------------------
 
     # mass properties
-    vehicle.mass_properties.max_takeoff               = 23000 
-    vehicle.mass_properties.takeoff                   = 23000  
-    vehicle.mass_properties.operating_empty           = 13600  
-    vehicle.mass_properties.max_zero_fuel             = 21000 
-    vehicle.mass_properties.cargo                     = 7400
+    vehicle.mass_properties.max_takeoff               = 22800 
+    vehicle.mass_properties.takeoff                   = 22800  
+    vehicle.mass_properties.operating_empty           = 12950
+    vehicle.mass_properties.max_zero_fuel             = 20000 
+    vehicle.mass_properties.cargo                     = 7850
     vehicle.mass_properties.center_of_gravity         = [[0,0,0]] # Unknown 
     vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]] # Unknown 
     vehicle.mass_properties.max_fuel                  = 5000
 
     # envelope properties
-    vehicle.flight_envelope.design_mach_number        = 0.41 
-    vehicle.flight_envelope.design_range              = 5471000 *Units.meter  
-    vehicle.flight_envelope.design_cruise_altitude    = 25000 *Units.feet
+    vehicle.flight_envelope.design_mach_number        = 0.43 
+    vehicle.flight_envelope.design_range              = 890 * Units.nmi
+    vehicle.flight_envelope.design_cruise_altitude    = 25000 * Units.feet
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 1.5
-    vehicle.flight_envelope.design_dynamic_pressure   = 4424
               
     # basic parameters              
     vehicle.reference_area                            = 61.0  
-    vehicle.passengers                                = 72
+    vehicle.passengers                                = 78
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "short range"  
-
- 
+    
     # ------------------------------------------------------------------
     #   Main Wing
     # ------------------------------------------------------------------
