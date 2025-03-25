@@ -59,7 +59,7 @@ class Jet_A(Propellant):
         self.emission_indices.Production  = 0.4656   # kg/kg Greet 
         self.emission_indices.CO2         = 3.16    # kg/kg
         self.emission_indices.CO          = 0.00201 # kg/kg
-        self.emission_indices.H2O         = 1.34    # kg/kg  
+        self.emission_indices.H2O         = 1.23    # kg/kg  
         self.emission_indices.SO2         = 0.0012  # kg/kg
         self.emission_indices.NOx         = 0.01514 # kg/kg
         self.emission_indices.Soot        = 0.0012  # kg/kg
