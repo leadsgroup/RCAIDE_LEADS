@@ -37,8 +37,9 @@ class Jet_A1(Propellant):
         self.specific_energy                        = 43.15e6   # [J/kg]
         self.energy_density                         = 34692.6e6 # [J/m^3]
         self.lower_heating_value                    = 43.24e6   # [J/kg] 
-        self.heat_of_vaporization                   = 360000    # [J/kg] Heat of vaporization at standard conditions
         self.max_mass_fraction                      = Data({'Air' : 0.0633, 'O2' : 0.3022}) # [kg propellant / kg oxidizer] 
+
+        self.heat_of_vaporization                   = 360000    # [J/kg] Heat of vaporization at standard conditions
         self.stoichiometric_fuel_air_ratio          = 0.068     # [-] Stoichiometric Fuel to Air ratio
         self.temperature                            = 298.15    # [K] Temperature of fuel
         self.pressure                               = 101325    # [Pa] Pressure of fuel
@@ -59,7 +60,6 @@ class Jet_A1(Propellant):
                                                                 [25, 25, 26, 27, 29],
                                                                 [26, 26, 27, 28, 30],
                                                                 [28, 28, 29, 30, 32]]) # [???]
-
         self.fuel_surrogate_S1                      = {'NC12H26':0.404, 'IC8H18':0.295, 'TMBENZ' : 0.073,'NPBENZ':0.228, 'C10H8':0.02}
         self.fuel_surrogate_S2                      = {'NC12H26':0.303, 'MCYC6':0.485, 'XYLENE' : 0.212, 'C10H8':0.02}
         self.fuel_surrogate_S3                      = {'NC12H26':0.384, 'MCYC6':0.234, 'IC16H34' : 0.148,'C7H8':0.234, 'C10H8':0.02}
@@ -73,13 +73,13 @@ class Jet_A1(Propellant):
         self.temperatures.freeze                    = 233.15  # [K]
         self.temperatures.boiling                   = 0.0     # [K]  
 
-        self.emission_indices.Production  = 0.4656   # kg/kg Greet 
-        self.emission_indices.CO2         = 3.16    # kg/kg
-        self.emission_indices.CO          = 0.00201 # kg/kg
-        self.emission_indices.H2O         = 1.23    # kg/kg  
-        self.emission_indices.SO2         = 0.0012  # kg/kg
-        self.emission_indices.NOx         = 0.01514 # kg/kg
-        self.emission_indices.Soot        = 0.0012  # kg/kg
+        self.emission_indices.Production            = 0.4656  # [kg/kg Greet 
+        self.emission_indices.CO2                   = 3.16    # [kg/kg]
+        self.emission_indices.CO                    = 0.00201 # [kg/kg]
+        self.emission_indices.H2O                   = 1.23    # [kg/kg]  
+        self.emission_indices.SO2                   = 0.0012  # [kg/kg]
+        self.emission_indices.NOx                   = 0.01514 # [kg/kg]
+        self.emission_indices.Soot                  = 0.0012  # [kg/kg]
 
         self.global_warming_potential_100.CO2       = 1       # [CO2e/kg]  
         self.global_warming_potential_100.H2O       = 0.06    # [CO2e/kg]  
