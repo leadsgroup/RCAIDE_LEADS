@@ -35,7 +35,7 @@ class Air(Gas):
         self.composition.CO2        = 0.00036
         self.composition.N2         = 0.78084
         self.composition.other      = 0.00
-        self.air_surrogate          = {'O2':0.2095, 'N2':0.7809, 'AR':0.0096}
+        self.air_surrogate          = {'O2':0.2095, 'N2':0.7809, 'AR':0.0096} # [-] Mole fractions of air surrogate species
         self.kinetic_mechanism      = 'Air.yaml'
 
     def compute_density(self,T=300.,p=101325.):

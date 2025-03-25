@@ -60,12 +60,12 @@ class Jet_A1(Propellant):
                                                                 [25, 25, 26, 27, 29],
                                                                 [26, 26, 27, 28, 30],
                                                                 [28, 28, 29, 30, 32]]) # [???]
-        self.fuel_surrogate_S1                      = {'NC12H26':0.404, 'IC8H18':0.295, 'TMBENZ' : 0.073,'NPBENZ':0.228, 'C10H8':0.02}
-        self.fuel_surrogate_S2                      = {'NC12H26':0.303, 'MCYC6':0.485, 'XYLENE' : 0.212, 'C10H8':0.02}
-        self.fuel_surrogate_S3                      = {'NC12H26':0.384, 'MCYC6':0.234, 'IC16H34' : 0.148,'C7H8':0.234, 'C10H8':0.02}
-        self.fuel_surrogate_S4                      = {'NC12H26':0.290, 'IC16H34' : 0.142,'C7H8':0.249, 'DECALIN':0.319, 'C10H8':0.02}
-        self.fuel_surrogate_S5                      = {'NC12H26':0.371, 'IC8H18':0.02, 'IC16H34' : 0.206,'C7H8':0.259, 'DECALIN':0.145, 'C10H8':0.02}
-        self.kinetic_mechanism                      = 'POLIMI_PRF_PAH_RFUELS_HT_1412.yaml'
+        self.fuel_surrogate_S1                      = {'NC12H26':0.404, 'IC8H18':0.295, 'TMBENZ' : 0.073,'NPBENZ':0.228, 'C10H8':0.02} # [-] Mole fractions of fuel surrogate species
+        self.fuel_surrogate_S2                      = {'NC12H26':0.303, 'MCYC6':0.485, 'XYLENE' : 0.212, 'C10H8':0.02} # [-] Mole fractions of fuel surrogate species       
+        self.fuel_surrogate_S3                      = {'NC12H26':0.384, 'MCYC6':0.234, 'IC16H34' : 0.148,'C7H8':0.234, 'C10H8':0.02} # [-] Mole fractions of fuel surrogate species
+        self.fuel_surrogate_S4                      = {'NC12H26':0.290, 'IC16H34' : 0.142,'C7H8':0.249, 'DECALIN':0.319, 'C10H8':0.02} # [-] Mole fractions of fuel surrogate species
+        self.fuel_surrogate_S5                      = {'NC12H26':0.371, 'IC8H18':0.02, 'IC16H34' : 0.206,'C7H8':0.259, 'DECALIN':0.145, 'C10H8':0.02} # [-] Mole fractions of fuel surrogate species
+        self.kinetic_mechanism                      = 'POLIMI_PRF_PAH_RFUELS_HT_1412.yaml' # [-] Kinetic mechanism for fuel surrogate species
         
         # critical temperatures   
         self.temperatures.flash                     = 311.15  # [K]
