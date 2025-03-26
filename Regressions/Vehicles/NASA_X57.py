@@ -10,11 +10,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units   
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                      import design_propeller 
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor                      import design_optimal_motor 
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common  import compute_motor_weight
+from RCAIDE.Framework.Core import Units    
 from RCAIDE.Library.Methods.Geometry.Planform                                import wing_segmented_planform 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
 
 # python imports 
 import numpy as np 
@@ -402,9 +400,6 @@ def vehicle_setup(rotor_type):
                                                             rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
         propeller.append_airfoil(airfoil)                       
         propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
-    
-        design_propeller(propeller)    
-        
         starboard_propulsor.rotor                        = propeller   
                   
         # DC_Motor       
@@ -413,11 +408,10 @@ def vehicle_setup(rotor_type):
         motor.origin                                     = [[2.,  2.5, 0.95]]
         motor.nominal_voltage                            = bus.voltage* 0.5  
         motor.no_load_current                            = 1
-        motor.design_torque                              = propeller.cruise.design_torque
-        motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity 
-        design_optimal_motor(motor)  
-        motor.mass_properties.mass                       = compute_motor_weight(motor) 
         starboard_propulsor.motor                        = motor 
+
+        # design starboard propulsor 
+        design_electric_rotor(starboard_propulsor)
     
     elif rotor_type == 'Actuator_Disk_Theory':       
         propeller.fidelity = rotor_type 
@@ -438,12 +432,10 @@ def vehicle_setup(rotor_type):
         motor.origin                                     = [[2.,  2.5, 0.95]]
         motor.nominal_voltage                            = bus.voltage * 0.5 
         motor.no_load_current                            = 1.0
-        motor.rotor_radius                               = propeller.tip_radius
-        motor.design_torque                              = 629.5930446195773
-        motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity 
-        design_optimal_motor(motor)
-        motor.mass_properties.mass                       = compute_motor_weight(motor) 
         starboard_propulsor.motor                        = motor   
+
+        # design starboard propulsor 
+        design_electric_rotor(starboard_propulsor)
  
     # ##########################################################   Nacelles  ############################################################    
     nacelle                        = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()

@@ -54,7 +54,7 @@ def vehicle_setup():
     vehicle.passengers                                = 78
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "short range"  
-    
+
     # ------------------------------------------------------------------
     #   Main Wing
     # ------------------------------------------------------------------
@@ -398,7 +398,7 @@ def vehicle_setup():
     vehicle.append_component(nose_gear)  
 
     # ########################################################  Energy Network  #########################################################  
-    net                                         = RCAIDE.Framework.Networks.Fuel()    
+    net                                              = RCAIDE.Framework.Networks.Fuel()    
 
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distrubition Line 
@@ -411,8 +411,8 @@ def vehicle_setup():
     starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop()    
     starboard_propulsor.tag                          = 'starboard_propulsor'  
     starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
-    starboard_propulsor.design_altitude              = 25000*Units.ft                                   # [-]         Design Altitude 
-    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts      
+    starboard_propulsor.design_altitude              = 25000 * Units.ft                                 # [-]         Design Altitude 
+    starboard_propulsor.design_freestream_velocity   = 141.94 * Units.meter_per_second      
     starboard_propulsor.design_thrust                = 10000.0 * Units.N                                # [-]         Design Thrust          
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()            
     starboard_propulsor.design_propeller_efficiency  = 0.83                                             # [-]         Design Propeller Efficiency
@@ -575,7 +575,6 @@ def vehicle_setup():
     # Assign propulsors to fuel line    
     fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
     
-
     # Append fuel line to Network      
     net.fuel_lines.append(fuel_line)   
 
@@ -583,8 +582,6 @@ def vehicle_setup():
     vehicle.append_energy_network(net)     
 
     return vehicle
-
-
 
 # ----------------------------------------------------------------------
 #   Define the Configurations

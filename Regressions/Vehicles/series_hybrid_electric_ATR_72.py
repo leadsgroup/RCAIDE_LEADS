@@ -9,9 +9,7 @@
 import RCAIDE
 from   RCAIDE.Framework.Core import Units 
 from   RCAIDE.Library.Methods.Geometry.Planform                                           import segment_properties 
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                                   import design_propeller 
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor                                   import design_optimal_motor
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common               import compute_motor_weight  
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator                 import design_turboelectric_generator   
 
 # python imports 
@@ -462,7 +460,6 @@ def vehicle_setup():
                                                         rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
     propeller.append_airfoil(airfoil)                       
     propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
-    propeller                                        = design_propeller(propeller)    
     starboard_propulsor.rotor                        = propeller   
               
     # DC_Motor       
@@ -471,12 +468,10 @@ def vehicle_setup():
     motor.origin                                     = [[ 9.559106394 ,4.219315295, 1.616135105]]
     motor.nominal_voltage                            = bus.voltage * 0.7
     motor.no_load_current                            = 1
-    motor.rotor_radius                               = propeller.tip_radius
-    motor.design_torque                              = propeller.cruise.design_torque 
-    motor.design_angular_velocity                    = propeller.cruise.design_angular_velocity # Horse power of gas engine variant  750 * Units['hp']
-    design_optimal_motor(motor)  
-    motor.mass_properties.mass                       = compute_motor_weight(motor) 
     starboard_propulsor.motor                        = motor 
+
+    # design starboard propulsor 
+    design_electric_rotor(starboard_propulsor)
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #   Nacelle

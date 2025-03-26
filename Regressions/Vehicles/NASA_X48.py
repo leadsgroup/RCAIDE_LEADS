@@ -9,11 +9,9 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
 from RCAIDE.Library.Methods.Geometry.Planform                               import segment_properties    
-from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan                import design_ducted_fan
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor                     import design_optimal_motor 
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common import compute_motor_weight
 from RCAIDE.Library.Plots                                                   import *     
- 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan       import design_electric_ducted_fan
+
 # python imports 
 import numpy as np  
 from copy import deepcopy 
@@ -224,7 +222,6 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     else:
         dfdc_bin_name                                = 'dfdc' 
      
-    design_ducted_fan(ducted_fan,dfdc_bin_name,regression_flag,keep_files = True) 
     center_propulsor.ducted_fan                  = ducted_fan    
               
     # DC_Motor       
@@ -233,11 +230,11 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     motor.origin                                  = [[2.,  0, 0.95]]
     motor.nominal_voltage                         = bus.voltage 
     motor.no_load_current                         = 0.001
-    motor.design_torque                           = ducted_fan.cruise.design_torque
-    motor.design_angular_velocity                 = ducted_fan.cruise.design_angular_velocity 
-    design_optimal_motor(motor)   
-    motor.mass_properties.mass                    = compute_motor_weight(motor) 
     center_propulsor.motor                        = motor  
+
+    # design center propulsor 
+    design_electric_ducted_fan(center_propulsor)
+
     net.propulsors.append(center_propulsor) 
 
     #------------------------------------------------------------------------------------------------------------------------------------  
