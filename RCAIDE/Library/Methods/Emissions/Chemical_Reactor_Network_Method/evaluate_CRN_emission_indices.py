@@ -129,6 +129,8 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                             mdot = propulsor_conditions.core_mass_flow_rate 
                             FAR  = combustor_conditions.outputs.fuel_to_air_ratio 
 
+                            mdot_fuel = propulsor_conditions.fuel_flow_rate
+
                             EI_CO2_comb    = 0 * state.ones_row(1)   
                             EI_CO_comb     = 0 * state.ones_row(1)  
                             EI_H2O_comb    = 0 * state.ones_row(1)  
@@ -292,11 +294,11 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                                     combustor_SZ_joint_EI_NOx_prev  = combustor_SZ_joint_EI_NOx 
                                     combustor_SZ_joint_EI_soot_prev = combustor_SZ_joint_EI_soot
                                 
-                            CO2_total  += np.dot(I,mdot*EI_CO2_comb)
-                            CO_total   += np.dot(I,mdot *EI_CO_comb )
-                            H2O_total  += np.dot(I,mdot*EI_H2O_comb)
-                            NOx_total   += np.dot(I,mdot *EI_NOx_comb ) 
-                            Soot_total  += np.dot(I,mdot *EI_soot_comb)
+                            CO2_total  += np.dot(I,mdot_fuel*EI_CO2_comb)
+                            CO_total   += np.dot(I,mdot_fuel *EI_CO_comb )
+                            H2O_total  += np.dot(I,mdot_fuel*EI_H2O_comb)
+                            NOx_total   += np.dot(I,mdot_fuel *EI_NOx_comb ) 
+                            Soot_total  += np.dot(I,mdot_fuel *EI_soot_comb)
 
     emissions                        = Data()
     emissions.total                  = Data()
@@ -463,6 +465,8 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
                     P    = combustor_conditions.inputs.stagnation_pressure 
                     mdot = propulsor_conditions.core_mass_flow_rate 
                     FAR  = combustor_conditions.outputs.fuel_to_air_ratio 
+
+                    mdot_fuel = propulsor_conditions.fuel_flow_rate
                     
                     pts = np.hstack((T,P,mdot,FAR)) 
 
@@ -472,11 +476,11 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
                     EI_NOx_comb  = np.atleast_2d(surrogates.EI_NOx(pts)).T 
                     EI_soot_comb = np.atleast_2d(surrogates.EI_soot(pts)).T        
                           
-                    CO2_total += np.dot(I,mdot*EI_CO2_comb)
-                    CO_total  += np.dot(I,mdot *EI_CO_comb )
-                    H2O_total += np.dot(I,mdot*EI_H2O_comb)
-                    NOx_total  += np.dot(I,mdot *EI_NOx_comb ) 
-                    Soot_total += np.dot(I,mdot *EI_soot_comb)
+                    CO2_total += np.dot(I,mdot_fuel*EI_CO2_comb)
+                    CO_total  += np.dot(I,mdot_fuel *EI_CO_comb )
+                    H2O_total += np.dot(I,mdot_fuel*EI_H2O_comb)
+                    NOx_total  += np.dot(I,mdot_fuel *EI_NOx_comb ) 
+                    Soot_total += np.dot(I,mdot_fuel *EI_soot_comb)
 
     emissions                 = Data()
     emissions.total           = Data()
