@@ -66,7 +66,7 @@ def compute_thrust(turbojet,turbojet_conditions,conditions):
       reference_temperature              [K]
       reference_pressure                 [Pa]
       compressor_nondimensional_massflow [-]
-      SFC_adjustment                     [-]
+      specifc_fuel_consumtion_reduction_factor                     [-]
     """           
     #unpack the values
 
@@ -82,7 +82,7 @@ def compute_thrust(turbojet,turbojet_conditions,conditions):
     Tref                        = turbojet.reference_temperature
     Pref                        = turbojet.reference_pressure
     mdhc                        = turbojet.compressor_nondimensional_massflow
-    SFC_adjustment              = turbojet.SFC_adjustment 
+    SFC_adjustment              = turbojet.specifc_fuel_consumtion_reduction_factor 
     f                           = turbojet_conditions.fuel_to_air_ratio
     total_temperature_reference = turbojet_conditions.total_temperature_reference
     total_pressure_reference    = turbojet_conditions.total_pressure_reference   

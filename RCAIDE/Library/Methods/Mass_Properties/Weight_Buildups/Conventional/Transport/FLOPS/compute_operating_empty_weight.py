@@ -105,26 +105,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
         use_max_fuel_weight = True 
     else:
         use_max_fuel_weight = settings.use_max_fuel_weight 
-        
-    # Set the factors
-    if not hasattr(settings, 'weight_reduction_factors'):
-        W_factors              = Data() 
-        W_factors.main_wing    = 0.
-        W_factors.empennage    = 0.
-        W_factors.fuselage     = 0.
-        W_factors.structural   = 0.
-        W_factors.systems      = 0.
-    else:
-        W_factors = settings.weight_reduction_factors
-        if 'structural' in W_factors and W_factors.structural != 0.:
-            print('Overriding individual structural weight factors')
-            W_factors.main_wing    = 0.
-            W_factors.empennage    = 0.
-            W_factors.fuselage     = 0.
-            W_factors.systems      = 0.
-        else:
-            W_factors.structural   = 0.
-            W_factors.systems      = 0. 
+    
+    W_factors = settings.weight_reduction_factors         
     
     Wings = RCAIDE.Library.Components.Wings  
 
@@ -259,10 +241,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
 
     ##-------------------------------------------------------------------------------                 
     # Wing Weight 
-    ##------------------------------------------------------------------------------- 
-    Al_rho   = Aluminum().density
-    Al_sigma = Aluminum().yield_tensile_strength      
-    
+    ##-------------------------------------------------------------------------------     
     num_main_wings      = 0
     W_main_wing        = 0.0
     W_tail_horizontal  = 0.0
@@ -363,8 +342,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
                     fuel_weight =  total_fuel_weight/number_of_tanks  
                     fuel_tank.fuel.mass_properties.mass = fuel_weight
     else:
-         total_fuel_weight = vehicle.mass_properties.fuel
-         for network in vehicle.networks: 
+        total_fuel_weight = vehicle.mass_properties.fuel
+        for network in vehicle.networks: 
             for fuel_line in network.fuel_lines:  
                 for fuel_tank in fuel_line.fuel_tanks:
                     fuel_weight =  total_fuel_weight/number_of_tanks  

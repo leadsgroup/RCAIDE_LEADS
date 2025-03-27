@@ -60,6 +60,7 @@ class Noise(Analysis):
         self.settings.aircraft_destination_location          = np.array([0,0,0])
         self.settings.aircraft_origin_coordinates            = np.array([0.0,0.0])
         self.settings.aircraft_destination_coordinates       = np.array([0.0,0.0])
+        self.settings.noise_reduction_factors.SPL_dbA        = 0.0     # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.topography_file                        = None
         self.settings.microphone_locations                   = None   
         self.settings.microphone_coordinates                 = None

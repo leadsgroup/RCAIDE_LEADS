@@ -109,7 +109,7 @@ class Correlation_Buildup(Noise):
                 total_SPL_dBA             = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],engine_noise.SPL_dBA[:,None,:]),axis =1),sum_axis=1)
                 total_SPL_spectra[:,:,5:] = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,5:],engine_noise.SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
                      
-        conditions.noise.hemisphere_SPL_dBA              = total_SPL_dBA
-        conditions.noise.hemisphere_SPL_1_3_spectrum_dBA = total_SPL_spectra                                                      
+        conditions.noise.hemisphere_SPL_dBA              = total_SPL_dBA *  (1 - settings.noise_reduction_factors.SPL_dbA)
+        conditions.noise.hemisphere_SPL_1_3_spectrum_dBA = total_SPL_spectra   *  (1 - settings.noise_reduction_factors.SPL_dbA)                                                    
         return   
 

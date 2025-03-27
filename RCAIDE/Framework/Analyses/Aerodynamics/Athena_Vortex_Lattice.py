@@ -58,10 +58,10 @@ class Athena_Vortex_Lattice(Aerodynamics):
         Properties Used:
         N/A
         """          
-        self.tag                                                    = 'Athena_Vortex_Lattice'  
-        self.vehicle                                                = Data()  
-        self.process                                                = Process()
-        self.process.initialize                                     = Process()  
+        self.tag                                                     = 'Athena_Vortex_Lattice'  
+        self.vehicle                                                 = Data()  
+        self.process                                                 = Process()
+        self.process.initialize                                      = Process()  
                    
         # correction factors           
         settings                                                     = self.settings 
@@ -71,6 +71,10 @@ class Athena_Vortex_Lattice(Aerodynamics):
         settings.fuselage_parasite_drag_form_factor                  = 2.3
         settings.maximum_lift_coefficient_factor                     = 1.0  
         settings.viscous_lift_dependent_drag_factor                  = 0.38
+        settings.drag_reduction_factors                              = Data()
+        settings.drag_reduction_factors.parasite_drag                = 0.0 # Reduction factors are proportional (.1 is a 10% weight reduction)
+        settings.drag_reduction_factors.induced_drag                 = 0.0 # Reduction factors are proportional (.1 is a 10% weight reduction)
+        settings.drag_reduction_factors.compressibility_drag         = 0.0 # Reduction factors are proportional (.1 is a 10% weight reduction)
         settings.drag_coefficient_increment                          = 0.0 
         settings.maximum_lift_coefficient                            = np.inf  
         settings.recalculate_total_wetted_area                       = False  

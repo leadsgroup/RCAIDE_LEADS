@@ -26,16 +26,16 @@ def compute_noise_certification_data(approach_mission  = None,
                                      takeoff_mission   = None,
                                      percent_engine_noise_reduction = 0,
                                      noise_level       = None,
-                                     min_noise_level   = 30,  
-                                     max_noise_level   = 120, 
+                                     min_noise_level   = 45,  
+                                     max_noise_level   = 105, 
                                      noise_scale_label = "Max. SPL [dbA]",
                                      save_figure       = False,
                                      show_figure       = True,
-                                     save_filename     = "2D_Noise_Contour", 
+                                     save_filename     = "Certification_Noise", 
                                      colormap          = 'jet',
                                      file_type         = ".png",
-                                     width             = 10, 
-                                     height            = 7):
+                                     width             = 12, 
+                                     height            = 6):
     """Calculates the noise at certification points as well as the noise contours of approach and takeoff.
     A combined approach-takeoff noisec contour is also created 
     """ 
@@ -90,7 +90,7 @@ def compute_noise_certification_data(approach_mission  = None,
         fig = plt.figure(save_filename)
         fig.set_size_inches(width,height) 
         
-        noise_levels   = np.linspace(min_noise_level,max_noise_level,10)  
+        noise_levels   = np.linspace(min_noise_level,max_noise_level,7)  
         noise_cmap     = plt.get_cmap('turbo')
         noise_new_cmap = truncate_colormap(noise_cmap,0.0, 1.0) 
 

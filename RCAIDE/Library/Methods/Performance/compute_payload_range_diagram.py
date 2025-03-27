@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", reserves=0., plot_diagram = True, fuel_name=None):  
+def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0., plot_diagram = True, fuel_name=None):  
     """Calculates and plots the payload range diagram for an aircraft by modifying the cruise segment and weights of the aicraft .
 
         Sources:
@@ -32,7 +32,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
             vehicle             data structure for aircraft                  [-]
             mission             data structure for mission                   [-] 
             cruise_segment_tag  string of cruise segment                     [string]
-            reserves            reserve fuel                                 [unitless] 
+            fuel_reserve_percentage            reserve fuel                                 [unitless] 
             
         Outputs: 
             payload_range       data structure of payload range properties   [m/s]
@@ -50,12 +50,12 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     
     for network in vehicle.networks:
         if type(network) == RCAIDE.Framework.Networks.Fuel:  
-            payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,reserves,plot_diagram,fuel_name) 
+            payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage,plot_diagram,fuel_name) 
         else:
             payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram)
     return payload_range 
              
-def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,reserves,plot_diagram, fuel_name): 
+def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage,plot_diagram, fuel_name): 
     """Calculates and plots the payload range diagram for a fuel-bases aircraft by modifying the
     cruise segment range and weights of the aicraft .
 
@@ -69,7 +69,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,reserv
             vehicle             data structure for aircraft                  [-]
             mission             data structure for mission                   [-] 
             cruise_segment_tag  string of cruise segment                     [string]
-            reserves            reserve fuel                                 [unitless] 
+            fuel_reserve_percentage            reserve fuel                                 [unitless] 
             
         Outputs: 
             payload_range       data structure of payload range properties   [m/s]
@@ -141,7 +141,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,reserv
             TotalFuel  = TOW[i] - results.segments[-1].conditions.weights.total_mass[-1,0]
 
             # Difference between burned fuel and target fuel
-            missingFuel = FUEL[i] - TotalFuel - reserves
+            missingFuel = FUEL[i] - TotalFuel - fuel_reserve_percentage * FUEL[i]
 
             # Current distance and fuel consuption in the cruise segment
             CruiseDist = np.diff( segment.conditions.frames.inertial.position_vector[[0,-1],0] )[0]        # Distance [m]
@@ -158,7 +158,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,reserv
             segment = results.segments[cruise_segment_tag]
 
             # Difference between burned fuel and target fuel
-            err = ( TOW[i] - results.segments[-1].conditions.weights.total_mass[-1,0] ) - FUEL[i] + reserves 
+            err = ( TOW[i] - results.segments[-1].conditions.weights.total_mass[-1,0] ) - FUEL[i] + fuel_reserve_percentage *FUEL[i] 
 
         # Allocating resulting range in ouput array.
         R[i] =  results.segments[-1].conditions.frames.inertial.position_vector[-1,0]   
@@ -175,7 +175,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,reserv
     payload_range.payload        = np.array(PLD)
     payload_range.fuel           = np.array(FUEL)
     payload_range.takeoff_weight = np.array(TOW)
-    payload_range.reserves       = reserves
+    payload_range.fuel_reserve_percentage       = fuel_reserve_percentage
      
     if plot_diagram:  
         # get plotting style 
@@ -191,13 +191,18 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,reserv
             fig  = plt.figure('Fuel_Payload_Range_Diagram')
         else:
             fig  = plt.figure('Fuel_Payload_Range_Diagram for ' + fuel_name)
-        axis = fig.add_subplot(1,1,1)
-        axis.plot(payload_range.range /Units.nmi,payload_range.payload,color = 'k', linewidth = ps.line_width )
-        axis.set_xlabel('Range (nautical miles)')
-        axis.set_ylabel('Payload (kg)')
-        axis.set_title("Fuel Payload Range Diagram") 
+        axis_1 = fig.add_subplot(1,2,1)
+        axis_1.plot(payload_range.range /Units.nmi,payload_range.payload*Units.lbs,color = 'k', linewidth = ps.line_width )
+        axis_1.set_xlabel('Range (nautical miles)')
+        axis_1.set_ylabel('Payload (lbs)') 
+        set_axes(axis_1) 
+
+        axis_2 = fig.add_subplot(1,2,2)
+        axis_2.plot(payload_range.range /Units.nmi,(payload_range.payload + OEW) *Units.lbs ,color = 'k', linewidth = ps.line_width )
+        axis_2.set_xlabel('Range (nautical miles)')
+        axis_2.set_ylabel('OEW + Payload (lbs)') 
+        set_axes(axis_2) 
         fig.tight_layout()
-        set_axes(axis) 
 
     return payload_range 
  
@@ -215,7 +220,7 @@ def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagr
             vehicle             data structure for aircraft                  [-]
             mission             data structure for mission                   [-] 
             cruise_segment_tag  string of cruise segment                     [string]
-            reserves            reserve fuel                                 [unitless] 
+            fuel_reserve_percentage            reserve fuel                                 [unitless] 
             
         Outputs: 
             payload_range       data structure of payload range properties   [m/s]

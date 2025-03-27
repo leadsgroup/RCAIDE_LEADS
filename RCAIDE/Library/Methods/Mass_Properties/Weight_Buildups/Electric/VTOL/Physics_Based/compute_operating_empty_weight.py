@@ -78,6 +78,9 @@ def compute_operating_empty_weight(vehicle,settings = None):
         max_thrust_to_weight_ratio    = settings.max_thrust_to_weight_ratio 
         max_g_load                    = settings.max_g_load  
                
+    
+    W_factors = settings.weight_reduction_factors
+    
     # Set up data structures for RCAIDE weight methods
     weight                                  = Data()  
     weight.battery                          = 0.0

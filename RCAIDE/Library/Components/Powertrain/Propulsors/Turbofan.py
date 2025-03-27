@@ -90,7 +90,7 @@ class Turbofan(Propulsor):
     design_altitude : float
         Design altitude of the engine [m]. Default is 0.0.
         
-    SFC_adjustment : float
+    specifc_fuel_consumtion_reduction_factor : float
         Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
         
     compressor_nondimensional_massflow : float
@@ -159,7 +159,7 @@ class Turbofan(Propulsor):
         self.bypass_ratio                             = 0.0 
         self.design_isa_deviation                     = 0.0
         self.design_altitude                          = 0.0
-        self.SFC_adjustment                           = 0.0 # Less than 1 is a reduction
+        self.specifc_fuel_consumtion_reduction_factor                           = 0.0 # Less than 1 is a reduction
         self.compressor_nondimensional_massflow       = 0.0
         self.reference_temperature                    = 288.15
         self.reference_pressure                       = 1.01325*10**5 
