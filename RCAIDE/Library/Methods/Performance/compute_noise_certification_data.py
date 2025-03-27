@@ -45,9 +45,9 @@ def compute_noise_certification_data(approach_mission  = None,
     if takeoff_mission == None:
         raise AssertionError('Takeoff mission not specifed!')
      
-    microphone_x_resolution                = 801
+    microphone_x_resolution                = 401 
     microphone_y_resolution                = 9  
-    noise_times_steps                      = 101
+    noise_times_steps                      = 51 
     number_of_microphone_in_stencil        = 2000   
     
     # update weights analysis
@@ -153,7 +153,8 @@ def compute_noise_certification_data(approach_mission  = None,
         set_axes(axis_1)
         set_axes(axis_2)
         set_axes(axis_3)
-        
+
+        axis_0.set_title('Flight Trajectory')        
         axis_1.set_title('Approach and Takeoff Noise')
         axis_2.set_title('Approach Noise')
         axis_3.set_title('Takeoff Noise')
@@ -172,12 +173,12 @@ def post_process_certification_noise_data(approach_results,takeoff_results,eta):
     
     # append approach noise                                
     approach_pos         = approach_noise_data.aircraft_position
-    approach_pos[0,:]   -= 3200  # shift approach coordinates back by 3000 m  
+    approach_pos[:,0]   -= 2000 
     
     # append takeoff noise  
     cert_SPL_dBA_max  = np.max(np.concatenate((approach_noise_data.SPL_dBA,takeoff_noise_data.SPL_dBA), axis = 0) ,axis = 0)                      
     cert_pos          = np.concatenate((approach_pos, takeoff_noise_data.aircraft_position), axis = 0)     
-    cert_mic_locs     = takeoff_noise_data.microphone_locations # np.concatenate((approach_ml, takeoff_noise_data.microphone_locations), axis = 0)     
+    cert_mic_locs     = takeoff_noise_data.microphone_locations 
      
     res = Data(
         certification_SPL_dBA_max         = cert_SPL_dBA_max*(1-eta),  

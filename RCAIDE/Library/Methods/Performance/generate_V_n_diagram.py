@@ -68,7 +68,7 @@ def generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA):
         reference_area  = vehicle.reference_area 
         Cmac            = wing.chords.mean_aerodynamic 
         pos_limit_load  = vehicle.flight_envelope.positive_limit_load
-        neg_limit_load  = vehicle.flight_envelope.negative_limit_load
+        neg_limit_load  = vehicle.flight_envelope.positive_limit_load
 
     category_tag = vehicle.flight_envelope.category
     

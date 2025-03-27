@@ -10,7 +10,6 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import  Data 
-from RCAIDE.Library.Mission.Common.Update.orientations import orientations
  
 # Pacakge imports 
 import numpy as np  
@@ -24,12 +23,9 @@ def aircraft_aerodynamic_analysis(vehicle,
                                   control_surface_deflection_range = np.array([[0]]),
                                   altitude = 0,
                                   delta_ISA=0,
-                                  use_surrogate  = False,
+                                  use_surrogate = True,
                                   model_fuselage = True):  
-    
-    
-    if  len(angle_of_attack_range[:, 0] ) != len(Mach_number_range[:, 0]) :
-        assert print('Mach and AoA range must be the same dimension')
+
     #------------------------------------------------------------------------
     # setup flight conditions
     #------------------------------------------------------------------------   
@@ -50,41 +46,69 @@ def aircraft_aerodynamic_analysis(vehicle,
     state.conditions.freestream.density           = rho * np.ones_like(angle_of_attack_range)
     state.conditions.freestream.dynamic_viscosity = mu  * np.ones_like(angle_of_attack_range)
     state.conditions.freestream.temperature       = T   * np.ones_like(angle_of_attack_range)
-    state.conditions.freestream.pressure          = P   * np.ones_like(angle_of_attack_range) 
-    state.conditions.aerodynamics.angles.beta     = np.zeros_like(angle_of_attack_range)  
-    state.conditions.freestream.u                 = np.zeros_like(angle_of_attack_range)       
-    state.conditions.freestream.v                 = np.zeros_like(angle_of_attack_range)       
-    state.conditions.freestream.w                 = np.zeros_like(angle_of_attack_range)      
-    state.conditions.static_stability.roll_rate   = np.zeros_like(angle_of_attack_range)
-    state.conditions.static_stability.pitch_rate  = np.zeros_like(angle_of_attack_range)
-    state.conditions.static_stability.yaw_rate    = np.zeros_like(angle_of_attack_range)
+    state.conditions.freestream.pressure          = P   * np.ones_like(angle_of_attack_range)
+    state.conditions.aerodynamics.angles.alpha    = angle_of_attack_range  
+    state.conditions.aerodynamics.angles.beta     = angle_of_attack_range *0  
+    state.conditions.freestream.u                 = angle_of_attack_range *0       
+    state.conditions.freestream.v                 = angle_of_attack_range *0       
+    state.conditions.freestream.w                 = angle_of_attack_range *0       
+    state.conditions.static_stability.roll_rate   = angle_of_attack_range *0       
+    state.conditions.static_stability.pitch_rate  = angle_of_attack_range *0 
+    state.conditions.static_stability.yaw_rate    = angle_of_attack_range *0  
     state.conditions.expand_rows(ctrl_pts)
-  
-    state.analyses                                     = Data()
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.use_surrogate                = use_surrogate
-    aerodynamics.vehicle                               = vehicle
-    aerodynamics.settings.model_fuselage               = model_fuselage 
-    aerodynamics.settings.number_of_spanwise_vortices  = 50
-    aerodynamics.settings.number_of_chordwise_vortices = 10
+ 
+    CL_vals    = np.zeros((len(angle_of_attack_range),len(Mach_number_range)))  
+    CD_vals    = np.zeros((len(angle_of_attack_range),len(Mach_number_range)))
+    
+ 
+    state.analyses                                  =  Data()
+    aerodynamics                                    = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics.settings.use_surrogate             = use_surrogate 
+    aerodynamics.vehicle                            = vehicle
+    aerodynamics.settings.model_fuselage            = model_fuselage   
     aerodynamics.initialize()
     state.analyses.aerodynamics = aerodynamics 
-      
-    state.conditions.freestream.mach_number                 = Mach_number_range
-    state.conditions.freestream.velocity                    = Mach_number_range  * a   
-    state.conditions.freestream.reynolds_number             = state.conditions.freestream.density * state.conditions.freestream.velocity / state.conditions.freestream.dynamic_viscosity 
-    state.conditions.frames.inertial.velocity_vector[:,0]   = Mach_number_range[:,0] * a[:,0]    
-    state.conditions.frames.body.inertial_rotations[:,1]    = angle_of_attack_range[:,0]
     
+    for i in range (len(Mach_number_range)):  
+        state.conditions.freestream.mach_number                 = Mach_number_range[i, 0] * np.ones_like(angle_of_attack_range)
+        state.conditions.freestream.velocity                    = Mach_number_range[i, 0] * a   * np.ones_like(angle_of_attack_range)   
+        state.conditions.freestream.reynolds_number             = state.conditions.freestream.density * state.conditions.freestream.velocity / state.conditions.freestream.dynamic_viscosity 
+        state.conditions.frames.inertial.velocity_vector[:,0]   = Mach_number_range[i, 0] * a[0, 0]   *  angle_of_attack_range[:, 0] 
+        
+     
+        # ---------------------------------------------------------------------------------------
+        # Evaluate With Surrogate
+        # ---------------------------------------------------------------------------------------  
+        _                 = state.analyses.aerodynamics.evaluate(state)        
+        CL_vals[:,i]      = state.conditions.aerodynamics.coefficients.lift.total[:, 0]
+        CD_vals[:,i]      = state.conditions.aerodynamics.coefficients.drag.total[:, 0] 
 
-    # setup conditions   
-    segment        = RCAIDE.Framework.Mission.Segments.Segment()  
-    segment.state  = state
-    orientations(segment) 
- 
-    # ---------------------------------------------------------------------------------------
-    # Evaluate With Surrogate
-    # ---------------------------------------------------------------------------------------  
-    _                 = state.analyses.aerodynamics.evaluate(state)    
-          
-    return  state.conditions.aerodynamics
+  
+    results = Data(
+        Mach              = Mach_number_range, 
+        alpha             = angle_of_attack_range, 
+        lift_coefficient  = CL_vals, 
+        drag_coefficient  = CD_vals, 
+    )  
+         
+    # FUTURE WORK          
+    #control_surfaces_aerodynamics = Data()
+    #num_defl =  len(control_surface_deflection_range)
+    #for wing in vehicle.wings:
+        #for control_surface in  wing.control_surfaces: 
+            #CL_cs = np.zeros((num_defl,1))
+            #CD_cs = np.zeros((num_defl,1))
+            #for cs_i in  range(num_defl):
+                #control_surface.deflection = control_surface_deflection_range[i]
+                
+                #_        = state.analyses.aerodynamics.evaluate(state)     
+                #CL_cs[:,cs_i]    = state.conditions.aerodynamics.coefficients.lift.total
+                #CD_cs[:,cs_i]    = state.conditions.aerodynamics.coefficients.drag.total 
+                
+            #control_surfaces_aerodynamics[control_surface.tag].lift_coefficient =  CL_cs
+            #control_surfaces_aerodynamics[control_surface.tag].drag_coefficient =  CD_cs
+            
+            #control_surface.deflection =  0
+    #results.control_surfaces_aerodynamics    = control_surfaces_aerodynamics
+    #results.control_surface_deflection_range = control_surface_deflection_range 
+    return results  
