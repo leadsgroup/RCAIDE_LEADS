@@ -67,10 +67,7 @@ class Turbofan(Propulsor):
         Length of the engine [m]. Default is 0.0.
         
     engine_height : float
-        Engine centerline height above the ground plane [m]. Default is 0.5.
-        
-    exa : float
-        Distance from fan face to fan exit normalized by fan diameter. Default is 1.0.
+        Engine centerline height above the ground plane [m]. Default is 0.5. 
         
     plug_diameter : float
         Diameter of the engine plug [m]. Default is 0.1.
@@ -154,8 +151,7 @@ class Turbofan(Propulsor):
         self.fan_nozzle                               = None       
         self.engine_diameter                          = 0.0      
         self.engine_length                            = 0.0
-        self.engine_height                            = 0.5     # Engine centerline heigh above the ground plane
-        self.exa                                      = 1       # distance from fan face to fan exit/ fan diameter)
+        self.engine_height                            = 0.5     # Engine centerline heigh above the ground plane 
         self.plug_diameter                            = 0.1     # dimater of the engine plug
         self.geometry_xe                              = 1.      # Geometry information for the installation effects function
         self.geometry_ye                              = 1.      # Geometry information for the installation effects function

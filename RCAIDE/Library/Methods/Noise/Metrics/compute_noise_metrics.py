@@ -9,6 +9,9 @@
 # RCAIDE imports 
 from RCAIDE.Framework.Core import Units 
 from RCAIDE.Library.Methods.Noise.Common.background_noise     import background_noise 
+from RCAIDE.Library.Methods.Noise.Common                      import noise_tone_correction
+from RCAIDE.Library.Methods.Noise.Metrics.PNL_noise_metric    import PNL_noise_metric
+from RCAIDE.Library.Methods.Noise.Metrics.EPNL_noise_metric   import EPNL_noise_metric
 
 # Python package imports   
 import numpy as np  
@@ -105,5 +108,17 @@ def compute_noise_metrics(noise_data, flight_times = ['12:00:00'],time_period = 
     P0                = np.ma.masked_array(p_sq_ref_flight_sq_SEL, SPL >SPL_max_min10)
     P0_tot            = np.nansum((1/(t_interval))*P0, axis=0)
     SENEL             = 10*np.log10(P0_tot)
-    noise_data.SENEL  = SENEL      
+    noise_data.SENEL  = SENEL 
+              
+    # Calculation of the Perceived Noise Level EPNL based on the sound time history 
+    PNL_noise_metric(noise_data) 
+     
+    # Calculation of the tones corrections on the SPL for each component and total
+    tone_correction_total   = noise_tone_correction(noise_data)  
+    
+    # Calculation of the PLNT for each component and total
+    noise_data.PNLT   = noise_data.PNL+tone_correction_total 
+    
+    #Calculation of the EPNL for each component and total
+    EPNL_noise_metric(noise_data)     
     return  

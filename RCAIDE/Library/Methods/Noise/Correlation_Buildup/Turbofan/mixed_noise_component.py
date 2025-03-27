@@ -21,7 +21,8 @@ def mixed_noise_component(Velocity_primary,theta_m,sound_ambient,Velocity_second
         N/A
 
     Source:
-        None
+       [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
+       [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
 
     Inputs:
         SPL_m               [dB]

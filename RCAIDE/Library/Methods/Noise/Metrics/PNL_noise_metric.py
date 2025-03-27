@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------  
 #  PNL_noise_metric
 # ----------------------------------------------------------------------------------------------------------------------       
-def PNL_noise_metric(SPL):
+def PNL_noise_metric(noise_data):
     """This method calculates de Perceived Noise Level PNL from a 1/3 octave band noise spectra
  
     Assumptions:
@@ -61,6 +61,7 @@ def PNL_noise_metric(SPL):
 
     
     # Defining the necessary arrays for the calculation
+    SPL     = noise_data.SPL_dBA
     n_cpts  = len(SPL[:,0,0])
     n_mic   = len(SPL[0,:,0])
     SPL_noy = np.zeros((n_cpts,n_mic,24))
@@ -96,5 +97,6 @@ def PNL_noise_metric(SPL):
             if Perceived_noisinees==0:
                 Perceived_noisinees = 0.0625
             PNL[j,k] = 40+(10/np.log10(2))*np.log10(Perceived_noisinees)
-        
-    return PNL
+    
+    noise_data.PNL = PNL
+    return 

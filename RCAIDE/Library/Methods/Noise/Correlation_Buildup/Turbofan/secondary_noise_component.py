@@ -21,7 +21,8 @@ def secondary_noise_component(Velocity_primary,theta_s,sound_ambient,Velocity_se
         None
 
     Source:
-        None
+       [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
+       [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
 
     Inputs:
         SPL_s               [dB]
@@ -48,7 +49,7 @@ def secondary_noise_component(Velocity_primary,theta_s,sound_ambient,Velocity_se
     velocity_exponent = 0.5 * 0.1*theta_s
 
     # Calculation of the Source Strengh Function (FV)
-    FV = ((Velocity_secondary-Velocity_aircraft)/sound_ambient)**velocity_exponent * \
+    FV = ((Velocity_secondary-Velocity_aircraft)/sound_ambient)**velocity_exponent *\
         ((Velocity_secondary+Velocity_aircraft)/sound_ambient)**(1-velocity_exponent)
 
     # Determination of the noise model coefficients
@@ -57,8 +58,8 @@ def secondary_noise_component(Velocity_primary,theta_s,sound_ambient,Velocity_se
     Z3 = -0.7
     Z4 = 0.6 - 0.5*((1.8*theta_s/np.pi)-0.6)**2+0.5*(0.6-np.log10(1+Area_secondary/Area_primary))
     Z5 = 51 + 54*theta_s/np.pi - 9*((1.8*theta_s/np.pi)-0.6)**3
-    Z6 = 99 + 36*theta_s/np.pi - 15*((1.8*theta_s/np.pi)-0.6)**4 + 5*Velocity_secondary*(Velocity_primary-Velocity_secondary)/(sound_ambient**2) + \
-        DSPL_s + EX_s
+    Z6 = 99 + 36*theta_s/np.pi - 15*((1.8*theta_s/np.pi)-0.6)**4 + \
+        5*Velocity_secondary*(Velocity_primary-Velocity_secondary)/(sound_ambient**2) +  DSPL_s + EX_s
 
     # Determination of Sound Pressure Level for the secondary jet component
     SPL_s = (Z1*np.log10(FV)+Z2)*(np.log10(Str_s)-Z3*np.log10(FV)-Z4)**2 + Z5*np.log10(FV) + Z6

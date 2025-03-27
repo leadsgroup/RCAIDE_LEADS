@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------  
 #  EPNL_noise_metric
 # ----------------------------------------------------------------------------------------------------------------------        
-def EPNL_noise_metric(PNLT):
+def EPNL_noise_metric(noise_data):
     """This method calculates the effective perceived noise level (EPNL) based on a
     time history Perceived Noise Level with Tone Correction (PNLT).
      
@@ -31,7 +31,9 @@ def EPNL_noise_metric(PNLT):
      
     Properties Used:
         N/A  
-    """           
+    """
+    PNLT = noise_data.PNLT
+    
     # Maximum PNLT on the time history data    
     n_mic    = len(PNLT[0,:])
     PNLT_max = np.max(PNLT,axis=0)
@@ -66,4 +68,5 @@ def EPNL_noise_metric(PNLT):
         # Final EPNL calculation
         EPNL[j] = PNLT_max[j]+duration_correction
     
-    return EPNL   
+    noise_data.EPNL = EPNL
+    return   

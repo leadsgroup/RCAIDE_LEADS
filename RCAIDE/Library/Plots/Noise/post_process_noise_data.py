@@ -8,8 +8,8 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 # noise imports
 from RCAIDE.Framework.Core import  Data
-from RCAIDE.Library.Methods.Noise.Common.background_noise     import background_noise
-from RCAIDE.Library.Methods.Noise.Metrics import * 
+from RCAIDE.Library.Methods.Noise.Common.background_noise     import background_noise   
+from RCAIDE.Library.Methods.Noise.Metrics                     import * 
 from RCAIDE.Library.Methods.Noise.Common.generate_zero_elevation_microphone_locations import generate_zero_elevation_microphone_locations 
 from RCAIDE.Library.Methods.Noise.Common.generate_terrain_microphone_locations        import generate_terrain_microphone_locations     
 from RCAIDE.Library.Methods.Noise.Common.compute_relative_noise_evaluation_locations  import compute_relative_noise_evaluation_locations
@@ -111,6 +111,7 @@ def post_process_noise_data(results,
     n          = settings.number_of_microphone_in_stencil
     N_gm_x     = settings.microphone_x_resolution
     N_gm_y     = settings.microphone_y_resolution    
+    dim_cf     = len(settings.center_frequencies )    
     noise_data = Data()   
      
     # Step 2: Determing microhpone points where noise is to be computed
@@ -129,7 +130,7 @@ def post_process_noise_data(results,
     noise_data.microphone_locations          = microphone_locations.reshape(N_gm_x,N_gm_y,3)         
     
     # Step 3: Create empty arrays to store noise data 
-    N_segs = len(results.segments)
+    N_segs          = len(results.segments)
     num_gm_mic      = len(microphone_locations)
     num_noise_time  = settings.noise_times_steps 
     
@@ -147,7 +148,7 @@ def post_process_noise_data(results,
         segment    = results.segments[seg]
         settings   = segment.analyses.noise.settings  
         phi        = settings.noise_hemisphere_phi_angles
-        theta      = settings.noise_hemisphere_theta_angles
+        theta      = settings.noise_hemisphere_theta_angles     
         conditions = segment.state.conditions  
         time       = conditions.frames.inertial.time[:,0]
         
@@ -168,26 +169,27 @@ def post_process_noise_data(results,
             # Step 5.2.1 :Noise interpolation 
             delta_t         = (noise_time[i] -time[cpt]) / (time[cpt+1] - time[cpt])
             SPL_lower       = conditions.noise.hemisphere_SPL_dBA[cpt].reshape(len(phi),len(theta))
-            SPL_uppper      = conditions.noise.hemisphere_SPL_dBA[cpt+1].reshape(len(phi),len(theta))
-            SPL_gradient    = SPL_uppper -  SPL_lower
+            SPL_upper       = conditions.noise.hemisphere_SPL_dBA[cpt+1].reshape(len(phi),len(theta))
+            SPL_gradient    = SPL_upper -  SPL_lower
             SPL_interp      = SPL_lower + SPL_gradient *delta_t
-     
+            
             #  Step 5.2.2 Create surrogate   
-            SPL_dBA_surrogate = RegularGridInterpolator((phi, theta),SPL_interp  ,method = 'linear',   bounds_error=False, fill_value=None)       
+            SPL_dBA_surrogate          = RegularGridInterpolator((phi, theta),SPL_interp  ,method = 'linear',   bounds_error=False, fill_value=None)    
             
             #  Step 5.2.3 Query surrogate
             R                 = np.linalg.norm(RML[i], axis=1) 
             locs              = np.argsort(R)[:n]
             pts               = (PHI[i][locs],THETA[i][locs]) 
-            SPL_dBA_unscaled  = SPL_dBA_surrogate(pts) 
+            SPL_dBA_unscaled  = SPL_dBA_surrogate(pts)  
             
             #  Step 5.2.4 Scale data using radius  
-            R_ref                = settings.noise_hemisphere_radius  
-            SPL_dBA_scaled       = SPL_dBA_unscaled - 20*np.log10(R[locs]/R_ref)
+            R_ref                = settings.noise_hemisphere_radius
+            noise_reduction      = 20*np.log10(R[locs]/R_ref) 
+            SPL_dBA_scaled       = SPL_dBA_unscaled - noise_reduction 
             
             SPL_dBA_temp         = SPL_dBA[idx].flatten()
             SPL_dBA_temp[locs]   = SPL_dBA_scaled
-            SPL_dBA[idx]         = SPL_dBA_temp.reshape(N_gm_x,N_gm_y) 
+            SPL_dBA[idx]         = SPL_dBA_temp.reshape(N_gm_x,N_gm_y)  
             mic_locs[idx]        = locs 
             idx += 1
             
@@ -196,16 +198,16 @@ def post_process_noise_data(results,
                 
     # Step 6: Make any readings less that background noise equal to background noise
     SPL_dBA                             = np.nan_to_num(SPL_dBA) 
-    SPL_dBA[SPL_dBA<background_noise()] = background_noise()  
+    SPL_dBA[SPL_dBA<background_noise()] = background_noise() 
      
     # Step 7: Store data 
-    noise_data.SPL_dBA               = SPL_dBA
-    noise_data.time                  = Time 
-    noise_data.aircraft_position     = Aircraft_pos
-    noise_data.microhpone_locations  = mic_locs
+    noise_data.SPL_dBA                      = SPL_dBA
+    noise_data.time                         = Time 
+    noise_data.aircraft_position            = Aircraft_pos
+    noise_data.microhpone_locations_indexes = mic_locs 
     
     # Step 8: Perform noise metric calculations
     if evalaute_noise_metrics:
-        compute_noise_metrics(noise_data, flight_times)
+        compute_noise_metrics(noise_data, flight_times)   
     
     return noise_data
