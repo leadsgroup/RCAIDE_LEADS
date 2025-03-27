@@ -352,15 +352,32 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
     output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff
-    total_fuel_weight           = vehicle.mass_properties.max_takeoff - output.zero_fuel_weight
+   
     
-    # assume fuel is equally distributed in fuel tanks
+    # assume fuel is equally distributed in fuel tanks and check 
     if use_max_fuel_weight:
+        total_fuel_weight = vehicle.mass_properties.max_takeoff - output.zero_fuel_weight
         for network in vehicle.networks: 
             for fuel_line in network.fuel_lines:  
                 for fuel_tank in fuel_line.fuel_tanks:
                     fuel_weight =  total_fuel_weight/number_of_tanks  
                     fuel_tank.fuel.mass_properties.mass = fuel_weight
+    else:
+         total_fuel_weight = vehicle.mass_properties.fuel
+         for network in vehicle.networks: 
+            for fuel_line in network.fuel_lines:  
+                for fuel_tank in fuel_line.fuel_tanks:
+                    fuel_weight =  total_fuel_weight/number_of_tanks  
+                    fuel_tank.fuel.mass_properties.mass = fuel_weight
+
+    output.takeoff_weight = output.zero_fuel_weight + total_fuel_weight
+
+    if vehicle.mass_properties.takeoff != 0:
+        print('Takeoff weight prescribed, overwritting computed values')
+        output.takeoff_weight = vehicle.mass_properties.takeoff
+    
+    if vehicle.mass_properties.max_takeoff < output.takeoff_weight:
+        print('Warning: Takeoff weight exceeds aircrafts limits')
                     
     nose_landing_gear = False
     main_landing_gear =  False
