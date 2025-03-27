@@ -116,8 +116,8 @@ def plot_aircraft_aerodynamics(results,
     axis_1 = fig.add_subplot(1, 2, 1)
     axis_2 = fig.add_subplot(1, 2, 2) 
   
-    axis_1.plot(results.angles.alpha/Units.degree, results.coefficients.lift.total ) 
-    axis_2.plot(results.angles.alpha/Units.degree, results.coefficients.drag.total ) 
+    axis_1.plot(results.alpha/Units.degree, results.lift_coefficient ) 
+    axis_2.plot(results.alpha/Units.degree, results.drag_coefficient ) 
 
     axis_1.set_title('$C_L$') 
     axis_2.set_title('$C_D$')            

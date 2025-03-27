@@ -99,14 +99,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
         Properties Used:
             N/A
     """
-    
-    if settings == None:
-        W_factors = Data()
-        use_max_fuel_weight = True 
-    else:
-        use_max_fuel_weight = settings.use_max_fuel_weight 
-    
-    W_factors = settings.weight_reduction_factors         
+     
+    use_max_fuel_weight = settings.use_max_fuel_weight  
+    W_factors           = settings.weight_reduction_factors         
     
     Wings = RCAIDE.Library.Components.Wings  
 

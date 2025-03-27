@@ -61,11 +61,6 @@ class Conventional(Weights):
         self.settings.cargo_doors_number                   = 1 # 0 if no cargo doors, 1 if 1 cargo door, 2 if 2 cargo doors
         self.settings.cargo_doors_clamshell                = False # True if clamshell cargo doors, False if not
         
-        self.settings.weight_reduction_factors             = Data()  
-        self.settings.weight_reduction_factors.main_wing   = 0.  # Reduction factors are proportional (.1 is a 10% weight reduction)
-        self.settings.weight_reduction_factors.fuselage    = 0.  # Reduction factors are proportional (.1 is a 10% weight reduction)
-        self.settings.weight_reduction_factors.empennage   = 0.  # applied to horizontal and vertical stabilizers
-        
         # FLOPS settings
         self.settings.FLOPS                                = Data() 
         self.settings.FLOPS.complexity                     = 'Simple' 
