@@ -42,7 +42,7 @@ phases:
 - name: gas
   thermo: ideal-gas
   elements: [C, H, Cl, O, N, Ar, He]
-  species: [HE, AR, N2, O2, H2, H2O, H2O2, CO, CO2, CH2O, CH4, CH3OH, CH3OOH,
+  species: [N, HE, AR, N2, O2, H2, H2O, H2O2, CO, CO2, CH2O, CH4, CH3OH, CH3OOH,
     C2H2, CH2CO, C2H2O2, C2H4, C2H4O, CH3CHO, C2H4O2, C2-OQOOH, C2H6, C2H5OH,
     C2H5OOH, C3H2, AC3H4, PC3H4, C2H3CHO, C3H6, C2H5CHO, C3H6O, CH3COCH3,
     C3H8, C4H2, C4H4, C4H6, C3H5CHO, IC3H5CHO, IC4H8, NC4H8, C4H8O, C3H7CHO,
@@ -69,6 +69,22 @@ phases:
   state: {T: 300.0, P: 1 atm}
 
 species:
+- name: N
+  composition: {N: 1}
+  thermo:
+    model: NASA7
+    temperature-ranges: [200.0, 1000.0, 6000.0]
+    data:
+    - [2.5, 0.0, 0.0, 0.0, 0.0, 5.6104637e+04, 4.1939087]
+    - [2.4159429, 1.7489065e-04, -1.1902369e-07, 3.0226245e-11, -2.0360982e-15,
+      5.6133773e+04, 4.6496096]
+    note: L 6/88
+  transport:
+    model: gas
+    geometry: atom
+    well-depth: 71.4
+    diameter: 3.298
+    note: '*'
 - name: HE
   composition: {He: 1}
   thermo:
