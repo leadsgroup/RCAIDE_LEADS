@@ -63,7 +63,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.process.initialize                                           = Process()  
                     
         # correction factors             
-        self.settings.fuselage_lift_correction                            = 1.0 #1.14
+        self.settings.fuselage_lift_correction                            = 1.14
         self.settings.trim_drag_correction_factor                         = 1.1
         self.settings.wing_parasite_drag_form_factor                      = 1.1
         self.settings.fuselage_parasite_drag_form_factor                  = 2.3

@@ -146,6 +146,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             # Current distance and fuel consuption in the cruise segment
             CruiseDist = np.diff( segment.conditions.frames.inertial.position_vector[[0,-1],0] )[0]        # Distance [m]
             CruiseFuel = segment.conditions.weights.total_mass[0,0] - segment.conditions.weights.total_mass[-1,0]    # [kg]
+            
             # Current specific range (m/kg)
             CruiseSR    = CruiseDist / CruiseFuel        # [m/kg]
 
@@ -171,13 +172,13 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     TOW.insert(0,0)
 
     # packing results
-    payload_range                = Data()
-    payload_range.range          = np.array(R)
-    payload_range.payload        = np.array(PLD)
-    payload_range.oew_plus_payload        = np.array(OEW_PLD)
-    payload_range.fuel           = np.array(FUEL)
-    payload_range.takeoff_weight = np.array(TOW)
-    payload_range.fuel_reserve_percentage       = fuel_reserve_percentage
+    payload_range                          = Data()
+    payload_range.range                    = np.array(R)
+    payload_range.payload                  = np.array(PLD)
+    payload_range.oew_plus_payload         = np.array(OEW_PLD)
+    payload_range.fuel                     = np.array(FUEL)
+    payload_range.takeoff_weight           = np.array(TOW)
+    payload_range.fuel_reserve_percentage  = fuel_reserve_percentage
      
     if plot_diagram:  
         # get plotting style 
