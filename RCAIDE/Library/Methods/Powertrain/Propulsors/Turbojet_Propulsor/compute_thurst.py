@@ -26,47 +26,47 @@ def compute_thrust(turbojet,turbojet_conditions,conditions):
 
     Inputs:
     conditions.freestream.
-      isentropic_expansion_factor        [-] (gamma)
-      specific_heat_at_constant_pressure [J/(kg K)]
-      velocity                           [m/s]
-      speed_of_sound                     [m/s]
-      mach_number                        [-]
-      pressure                           [Pa]
-      gravity                            [m/s^2]
-    conditions.throttle                  [-] (.1 is 10%)
-    turbojet_conditions.
-      fuel_to_air_ratio                  [-]
-      total_temperature_reference        [K]
-      total_pressure_reference           [Pa]
-      core_nozzle.
-        velocity                         [m/s]
-        static_pressure                  [Pa]
-        area_ratio                       [-]
-      fan_nozzle.
-        velocity                         [m/s]
-        static_pressure                  [Pa]
-        area_ratio                       [-]
-      number_of_engines                  [-]
-      bypass_ratio                       [-]
-      flow_through_core                  [-] percentage of total flow (.1 is 10%)
-      flow_through_fan                   [-] percentage of total flow (.1 is 10%)
-
-    Outputs:
-    turbojet_conditions.
-      thrust                             [N]
-      thrust_specific_fuel_consumption   [N/N-s]
-      non_dimensional_thrust             [-]
-      core_mass_flow_rate                [kg/s]
-      fuel_flow_rate                     [kg/s]
-      power                              [W]
-      Specific Impulse                   [s]
-
-    Properties Used:
-    turbojet.
-      reference_temperature              [K]
-      reference_pressure                 [Pa]
-      compressor_nondimensional_massflow [-]
-      specifc_fuel_consumtion_reduction_factor                     [-]
+      isentropic_expansion_factor                 [-] (gamma)
+      specific_heat_at_constant_pressure          [J/(kg K)]
+      velocity                                    [m/s]
+      speed_of_sound                              [m/s]
+      mach_number                                 [-]
+      pressure                                    [Pa]
+      gravity                                     [m/s^2]
+    conditions.throttle                           [-] (.1 is 10%)
+    turbojet_conditions.         
+      fuel_to_air_ratio                           [-]
+      total_temperature_reference                 [K]
+      total_pressure_reference                    [Pa]
+      core_nozzle.         
+        velocity                                  [m/s]
+        static_pressure                           [Pa]
+        area_ratio                                [-]
+      fan_nozzle.         
+        velocity                                  [m/s]
+        static_pressure                           [Pa]
+        area_ratio                                [-]
+      number_of_engines                           [-]
+      bypass_ratio                                [-]
+      flow_through_core                           [-] percentage of total flow (.1 is 10%)
+      flow_through_fan                            [-] percentage of total flow (.1 is 10%)
+         
+    Outputs:         
+    turbojet_conditions.         
+      thrust                                      [N]
+      thrust_specific_fuel_consumption            [N/N-s]
+      non_dimensional_thrust                      [-]
+      core_mass_flow_rate                         [kg/s]
+      fuel_flow_rate                              [kg/s]
+      power                                       [W]
+      Specific Impulse                            [s]
+         
+    Properties Used:         
+    turbojet.         
+      reference_temperature                       [K]
+      reference_pressure                          [Pa]
+      compressor_nondimensional_massflow          [-]
+      specific_fuel_consumption_reduction_factor  [-]
     """           
     #unpack the values
 
@@ -82,7 +82,7 @@ def compute_thrust(turbojet,turbojet_conditions,conditions):
     Tref                        = turbojet.reference_temperature
     Pref                        = turbojet.reference_pressure
     mdhc                        = turbojet.compressor_nondimensional_massflow
-    SFC_adjustment              = turbojet.specifc_fuel_consumtion_reduction_factor 
+    SFC_adjustment              = turbojet.specific_fuel_consumption_reduction_factor 
     f                           = turbojet_conditions.fuel_to_air_ratio
     total_temperature_reference = turbojet_conditions.total_temperature_reference
     total_pressure_reference    = turbojet_conditions.total_pressure_reference   

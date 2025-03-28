@@ -68,10 +68,10 @@ def compute_power(turboshaft,turboshaft_conditions,conditions):
                                                
     Properties Used:                           
     turboshaft.                                
-      reference_temperature                    [K]
-      reference_pressure                       [Pa]
-      compressor_nondimensional_massflow       [-]
-      specifc_fuel_consumtion_reduction_factor                           [-]
+      reference_temperature                      [K]
+      reference_pressure                         [Pa]
+      compressor_nondimensional_massflow         [-]
+      specific_fuel_consumption_reduction_factor [-]
     """           
     #unpack the values
     fuel_type                                  = turboshaft.fuel_type
@@ -83,7 +83,7 @@ def compute_power(turboshaft,turboshaft_conditions,conditions):
     total_temperature_reference                = turboshaft_conditions.total_temperature_reference                                                     
     total_pressure_reference                   = turboshaft_conditions.total_pressure_reference                                                        
     eta_c                                      = turboshaft.conversion_efficiency
-    SFC_adjustment                             = turboshaft.specifc_fuel_consumtion_reduction_factor
+    SFC_adjustment                             = turboshaft.specific_fuel_consumption_reduction_factor
                                                     
                                                                                                                                                        
     #unpacking from turboshaft                                                                                                                         

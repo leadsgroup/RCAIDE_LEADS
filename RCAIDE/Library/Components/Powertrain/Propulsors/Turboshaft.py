@@ -71,7 +71,7 @@ class Turboshaft(Propulsor):
     afterburner_active : bool
         Flag indicating if afterburner is in use. Default is False.
         
-    specifc_fuel_consumtion_reduction_factor : float
+    specific_fuel_consumption_reduction_factor : float
         Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
         
     reference_temperature : float
@@ -155,7 +155,7 @@ class Turboshaft(Propulsor):
         self.design_isa_deviation                             = 0.0
         self.design_altitude                                  = 0.0
         self.afterburner_active                               = False
-        self.specifc_fuel_consumtion_reduction_factor                                   = 0.0  
+        self.specific_fuel_consumption_reduction_factor       = 0.0  
         self.reference_temperature                            = 288.15
         self.reference_pressure                               = 1.01325*10**5 
         self.design_thrust                                    = 0.0

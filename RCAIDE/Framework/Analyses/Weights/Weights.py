@@ -46,18 +46,19 @@ class Weights(Analysis):
         Properties Used:
         N/A
         """           
-        self.tag                     = 'weights' 
-        self.method                  = None
-        self.vehicle                 = None
-        self.aircraft_type           = None
-        self.propulsion_architecture = None
-        self.settings                = Data()
-        self.settings.weight_reduction_factors = Data()
+        self.tag                                            = 'weights' 
+        self.method                                         = None
+        self.vehicle                                        = None
+        self.aircraft_type                                  = None
+        self.propulsion_architecture                        = None
+        self.settings                                       = Data()
+        self.settings.weight_reduction_factors              = Data()
         self.settings.weight_reduction_factors.main_wing    = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.weight_reduction_factors.empennage    = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.weight_reduction_factors.fuselage     = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.weight_reduction_factors.structural   = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)
-        self.settings.weight_reduction_factors.systems      = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)      
+        self.settings.weight_reduction_factors.systems      = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)  
+        self.settings.weight_reduction_factors.nacelle      = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)    
         
     def evaluate(self):
         """Evaluate the weight analysis.

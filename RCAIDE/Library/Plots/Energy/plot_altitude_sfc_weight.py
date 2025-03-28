@@ -93,7 +93,7 @@ def plot_altitude_sfc_weight(results,
     
     for i in range(len(results.segments)): 
         time      = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        Weight    = results.segments[i].conditions.weights.total_mass[:, 0] * 9.81   
+        Weight    = results.segments[i].conditions.weights.total_mass[:, 0] * 9.81   *  0.224809
         mdot      = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]
         thrust    = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
         thrust    = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
@@ -103,13 +103,13 @@ def plot_altitude_sfc_weight(results,
 
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')       
-        axis_1.plot(time, Weight/1000 , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name )  
-        axis_1.set_ylabel(r'Weight (kN)')  
+        axis_1.plot(time, Weight , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name )  
+        axis_1.set_ylabel(r'Weight (lbf)')  
         set_axes(axis_1) 
 
-        axis_2.plot(time, fuel_mass, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
+        axis_2.plot(time, fuel_mass/ Units.lb, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_2.set_xlabel('Time (mins)')
-        axis_2.set_ylabel(r'Fuel Consumption (kg)')
+        axis_2.set_ylabel(r'Fuel Consumption (lb)')
         set_axes(axis_2)
         
 
@@ -118,9 +118,9 @@ def plot_altitude_sfc_weight(results,
         axis_3.set_ylabel(r'SFC (lb/lbf-hr)')
         set_axes(axis_3) 
 
-        axis_4.plot(time, mdot, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
+        axis_4.plot(time, mdot/ Units.lb, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_4.set_xlabel('Time (mins)')
-        axis_4.set_ylabel(r'Fuel Rate (kg/s)')
+        axis_4.set_ylabel(r'Fuel Rate (lb/s)')
         set_axes(axis_4)         
         
     

@@ -44,8 +44,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     initial_segment =  list(mission.segments.keys())[0]
     
     # perform inital weights analysis 
-    weights_analysis   = mission.segments[initial_segment].analyses.weights
-    _ =  weights_analysis.evaluate()
+    weights_analysis   = mission.segments[initial_segment].analyses.weights 
     vehicle = weights_analysis.vehicle
     
     for network in vehicle.networks:
@@ -109,6 +108,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     TOW     = [ MTOW                               , MTOW                   , OEW + MaxFuel ]
     FUEL    = [ min(TOW[1] - OEW - MaxPLD,MaxFuel) , MaxFuel                , MaxFuel       ]
     PLD     = [ MaxPLD                             , min(MTOW - MaxFuel - OEW, MaxPLD)   , 0.   ]
+    OEW_PLD = [  OEW + MaxPLD                      , min(MTOW - MaxFuel - OEW, MaxPLD) +OEW   , 0.   ]
     
     # allocating Range array
     R       = [0,0,0]
@@ -165,7 +165,8 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
 
     # Inserting point (0,0) in output arrays
     R.insert(0,0)
-    PLD.insert(0,MaxPLD)
+    PLD.insert(0,MaxPLD) 
+    OEW_PLD.insert(0,OEW + MaxPLD   ) 
     FUEL.insert(0,0)
     TOW.insert(0,0)
 
@@ -173,6 +174,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     payload_range                = Data()
     payload_range.range          = np.array(R)
     payload_range.payload        = np.array(PLD)
+    payload_range.oew_plus_payload        = np.array(OEW_PLD)
     payload_range.fuel           = np.array(FUEL)
     payload_range.takeoff_weight = np.array(TOW)
     payload_range.fuel_reserve_percentage       = fuel_reserve_percentage
@@ -188,17 +190,17 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         plt.rcParams.update(parameters)
         
         if fuel_name ==  None: 
-            fig  = plt.figure('Fuel_Payload_Range_Diagram')
+            fig  = plt.figure( vehicle.tag + ' Fuel_Payload_Range_Diagram')
         else:
-            fig  = plt.figure('Fuel_Payload_Range_Diagram for ' + fuel_name)
+            fig  = plt.figure(vehicle.tag + ' Fuel_Payload_Range_Diagram for ' + fuel_name)
         axis_1 = fig.add_subplot(1,2,1)
-        axis_1.plot(payload_range.range /Units.nmi,payload_range.payload*Units.lbs,color = 'k', linewidth = ps.line_width )
+        axis_1.plot(payload_range.range /Units.nmi,payload_range.payload/Units.lbm  ,color = 'k', linewidth = ps.line_width )
         axis_1.set_xlabel('Range (nautical miles)')
         axis_1.set_ylabel('Payload (lbs)') 
         set_axes(axis_1) 
 
         axis_2 = fig.add_subplot(1,2,2)
-        axis_2.plot(payload_range.range /Units.nmi,(payload_range.payload + OEW) *Units.lbs ,color = 'k', linewidth = ps.line_width )
+        axis_2.plot(payload_range.range /Units.nmi,payload_range.oew_plus_payload/Units.lbm ,color = 'k', linewidth = ps.line_width )
         axis_2.set_xlabel('Range (nautical miles)')
         axis_2.set_ylabel('OEW + Payload (lbs)') 
         set_axes(axis_2) 

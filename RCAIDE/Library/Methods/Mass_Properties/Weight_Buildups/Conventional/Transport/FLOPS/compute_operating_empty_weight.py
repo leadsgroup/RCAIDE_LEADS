@@ -189,7 +189,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_energy_network.W_engine_controls  += W_propulsion.W_engine_controls
         W_energy_network.W_starter          += W_propulsion.W_starter
         W_energy_network.W_fuel_system      += W_propulsion.W_fuel_system 
-        W_energy_network.W_nacelle          += W_propulsion.W_nacelle    
+        W_energy_network.W_nacelle          += W_propulsion.W_nacelle * (1. - W_factors.nacelle)   
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
         for propulsor in network.propulsors:
@@ -223,7 +223,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         WTNFA  = W_energy_network.W_engine + W_energy_network.W_thrust_reverser + W_energy_network.W_starter \
                 + 0.25 * W_energy_network.W_engine_controls + 0.11 * W_systems.W_instruments + 0.13 * W_systems.W_electrical \
                 + 0.13 * W_systems.W_hyd_pnu + 0.25 * W_energy_network.W_fuel_system
-        WPOD += WTNFA / np.max([1, NENG]) + W_energy_network.W_nacelle / np.max(
+        WPOD += WTNFA / np.max([1, NENG]) + W_energy_network.W_nacelle* (1. - W_factors.nacelle)    / np.max(
             [1.0, NENG + 1. / 2 * (NENG - 2 * np.floor(NENG / 2.))])
  
     output.empty.propulsion.total               = W_energy_network_cumulative
@@ -295,7 +295,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.structural.wings                  = W_main_wing +   W_tail_horizontal +  W_tail_vertical 
     output.empty.structural.fuselage              = W_fuselage_total
     output.empty.structural.landing_gear          = landing_gear.main +  landing_gear.nose  
-    output.empty.structural.nacelle               = W_energy_network.W_nacelle
+    output.empty.structural.nacelle               = W_energy_network.W_nacelle* (1. - W_factors.nacelle)   
     
   
     print('Paint weight is currently ignored in FLOPS calculations.')

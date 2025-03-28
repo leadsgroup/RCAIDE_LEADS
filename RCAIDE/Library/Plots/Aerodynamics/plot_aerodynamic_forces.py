@@ -109,35 +109,35 @@ def plot_aerodynamic_forces(results,
     
     for i in range(len(results.segments)): 
         time   = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-        Power  = results.segments[i].conditions.energy.power[:,0] 
-        Thrust = results.segments[i].conditions.frames.body.thrust_force_vector[:,0]
-        Lift   = -results.segments[i].conditions.frames.wind.force_vector[:,2]
-        Drag   = -results.segments[i].conditions.frames.wind.force_vector[:,0]
+        Power  = results.segments[i].conditions.energy.power[:,0] * 0.00134102
+        Thrust = results.segments[i].conditions.frames.body.thrust_force_vector[:,0] * 0.224809
+        Lift   = -results.segments[i].conditions.frames.wind.force_vector[:,2] * 0.224809
+        Drag   = -results.segments[i].conditions.frames.wind.force_vector[:,0] *  0.224809
          
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')
         
         # power 
         axis_1 = plt.subplot(2,2,1)
-        axis_1.set_ylabel(r'Power (MW)')
-        axis_1.plot(time,Power/1E6, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name) 
+        axis_1.set_ylabel(r'Power (hp)')
+        axis_1.plot(time,Power, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name) 
         set_axes(axis_1)                
         
         axis_2 = plt.subplot(2,2,2)
         axis_2.plot(time, Thrust/1000, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width) 
-        axis_2.set_ylabel(r'Thrust (kN)')
+        axis_2.set_ylabel(r'Thrust (lbf)')
         set_axes(axis_2) 
 
         axis_3 = plt.subplot(2,2,3)
         axis_3.plot(time, Lift/1000, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_3.set_xlabel('Time (mins)')
-        axis_3.set_ylabel(r'Lift (kN)')
+        axis_3.set_ylabel(r'Lift (lbf)')
         set_axes(axis_3) 
         
         axis_4 = plt.subplot(2,2,4)
         axis_4.plot(time,Drag/1000 , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_4.set_xlabel('Time (mins)')
-        axis_4.set_ylabel(r'Drag (kN)')
+        axis_4.set_ylabel(r'Drag (lbf)')
         set_axes(axis_4)  
         
  

@@ -232,7 +232,7 @@ def wing_planform(wing, overwrite_reference = False):
         wing.total_length                   = total_length 
     
         # update remainder segment properties
-        segment_properties(wing)
+        segment_properties(wing, update_wet_areas = overwrite_reference)
     
     return wing
  

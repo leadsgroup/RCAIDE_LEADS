@@ -24,7 +24,6 @@ import plotly.graph_objects as go
 # ----------------------------------------------------------------------  
 def compute_noise_certification_data(approach_mission  = None,
                                      takeoff_mission   = None,
-                                     percent_engine_noise_reduction = 0,
                                      noise_level       = None,
                                      min_noise_level   = 45,  
                                      max_noise_level   = 105, 
@@ -83,7 +82,7 @@ def compute_noise_certification_data(approach_mission  = None,
     takeoff_results  = takeoff_mission.evaluate()
     
     # post process results
-    noise_data  =  post_process_certification_noise_data(approach_results,takeoff_results,percent_engine_noise_reduction)
+    noise_data  =  post_process_certification_noise_data(approach_results,takeoff_results)
     
     # plot diagram
     if show_figure:  
@@ -166,7 +165,7 @@ def compute_noise_certification_data(approach_mission  = None,
         
     return noise_data 
     
-def post_process_certification_noise_data(approach_results,takeoff_results,eta): 
+def post_process_certification_noise_data(approach_results,takeoff_results): 
    
     approach_noise_data   = post_process_noise_data(approach_results,evalaute_noise_metrics=False)
     takeoff_noise_data    = post_process_noise_data(takeoff_results,evalaute_noise_metrics=False) 
@@ -181,18 +180,18 @@ def post_process_certification_noise_data(approach_results,takeoff_results,eta):
     cert_mic_locs     = takeoff_noise_data.microphone_locations 
      
     res = Data(
-        certification_SPL_dBA_max         = cert_SPL_dBA_max*(1-eta),  
+        certification_SPL_dBA_max         = cert_SPL_dBA_max, 
         certification_trajectory          = cert_pos,     
         certification_microphone_locations= cert_mic_locs,
 
-        approach_SPL_dBA_max              = np.max(approach_noise_data.SPL_dBA,axis = 0)*(1-eta),
-        approach_SPL_dBA                  = approach_noise_data.SPL_dBA*(1-eta), 
+        approach_SPL_dBA_max              = np.max(approach_noise_data.SPL_dBA,axis = 0),
+        approach_SPL_dBA                  = approach_noise_data.SPL_dBA, 
         approach_time                     = approach_noise_data.time,   
         approach_trajectory               = approach_pos,     
         approach_microphone_locations     = takeoff_noise_data.microphone_locations, 
 
-        takeoff_SPL_dBA_max               = np.max(takeoff_noise_data.SPL_dBA,axis = 0)*(1-eta),
-        takeoff_SPL_dBA                   = takeoff_noise_data.SPL_dBA*(1-eta), 
+        takeoff_SPL_dBA_max               = np.max(takeoff_noise_data.SPL_dBA,axis = 0),
+        takeoff_SPL_dBA                   = takeoff_noise_data.SPL_dBA, 
         takeoff_time                      = takeoff_noise_data.time,   
         takeoff_trajectory                = takeoff_noise_data.aircraft_position,     
         takeoff_microphone_locations      = takeoff_noise_data.microphone_locations     
