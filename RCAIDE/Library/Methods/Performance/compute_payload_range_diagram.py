@@ -107,8 +107,8 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     #Point  = [ RANGE WITH MAX. PLD   , RANGE WITH MAX. FUEL , FERRY RANGE   ]
     TOW     = [ MTOW                               , MTOW                   , OEW + MaxFuel ]
     FUEL    = [ min(TOW[1] - OEW - MaxPLD,MaxFuel) , MaxFuel                , MaxFuel       ]
-    PLD     = [ MaxPLD                             , min(MTOW - MaxFuel - OEW, MaxPLD)   , 0.   ]
-    OEW_PLD = [  OEW + MaxPLD                      , min(MTOW - MaxFuel - OEW, MaxPLD) +OEW   , 0.   ]
+    PLD     = [ MaxPLD                             , MTOW - MaxFuel - OEW   , 0.   ]
+    OEW_PLD = [  OEW + MaxPLD                      , MTOW - MaxFuel         , OEW  ]
     
     # allocating Range array
     R       = [0,0,0]
@@ -117,7 +117,9 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     for i in range(len(TOW)):
         ##    for i in [2]: 
         # Define takeoff weight
-        mission.segments[0].analyses.weights.vehicle.mass_properties.takeoff = TOW[i]
+        mission.segments[0].analyses.weights.vehicle.mass_properties.takeoff  = TOW[i]
+        mission.segments[0].analyses.weights.vehicle.mass_properties.payload  = PLD[i]
+        mission.segments[0].analyses.weights.vehicle.mass_properties.fuel     = FUEL[i]
 
         # Evaluate mission with current TOW
         results = mission.evaluate()
@@ -138,10 +140,12 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             iter = iter + 1
 
             # Current total fuel burned in mission
-            TotalFuel  = TOW[i] - results.segments[-1].conditions.weights.total_mass[-1,0]
+            TotalFuel  = results.segments[-1].conditions.energy.cumulative_fuel_consumption[-1, 0]
 
             # Difference between burned fuel and target fuel
-            missingFuel = FUEL[i] - TotalFuel - fuel_reserve_percentage * FUEL[i]
+            if i == 0:
+                reserve_fuel = fuel_reserve_percentage *FUEL[i] 
+            missingFuel = FUEL[i] - TotalFuel - reserve_fuel
 
             # Current distance and fuel consuption in the cruise segment
             CruiseDist = np.diff( segment.conditions.frames.inertial.position_vector[[0,-1],0] )[0]        # Distance [m]
@@ -159,7 +163,11 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             segment = results.segments[cruise_segment_tag]
 
             # Difference between burned fuel and target fuel
-            err = ( TOW[i] - results.segments[-1].conditions.weights.total_mass[-1,0] ) - FUEL[i] + fuel_reserve_percentage *FUEL[i] 
+            err = ( TOW[i] - results.segments[-1].conditions.weights.total_mass[-1,0] ) - FUEL[i] + reserve_fuel
+
+            if iter == maxIter:
+                print(f"Did not converge.")
+                break
 
         # Allocating resulting range in ouput array.
         R[i] =  results.segments[-1].conditions.frames.inertial.position_vector[-1,0]   
