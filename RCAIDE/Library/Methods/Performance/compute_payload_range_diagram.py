@@ -143,8 +143,8 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             TotalFuel  = results.segments[-1].conditions.energy.cumulative_fuel_consumption[-1, 0]
 
             # Difference between burned fuel and target fuel
-            if i == 0:
-                reserve_fuel = fuel_reserve_percentage *FUEL[i] 
+        
+            reserve_fuel = fuel_reserve_percentage * MaxFuel
             missingFuel = FUEL[i] - TotalFuel - reserve_fuel
 
             # Current distance and fuel consuption in the cruise segment
