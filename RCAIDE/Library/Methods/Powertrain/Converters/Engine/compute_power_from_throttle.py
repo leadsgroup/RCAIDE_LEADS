@@ -51,7 +51,7 @@ def compute_power_from_throttle(engine,conditions):
     PSLS              = engine.sea_level_power  
     h_flat            = engine.flat_rate_altitude
     engine_conditions = conditions.energy.converters[engine.tag] 
-    omega             = engine_conditions.speed
+    omega             = engine_conditions.omega
     PSFC              = engine.power_specific_fuel_consumption  
 
     # shift in power lapse due to flat rate

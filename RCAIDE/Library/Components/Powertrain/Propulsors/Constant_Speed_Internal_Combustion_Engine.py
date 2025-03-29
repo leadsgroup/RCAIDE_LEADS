@@ -71,11 +71,11 @@ class Constant_Speed_Internal_Combustion_Engine(Propulsor):
     def append_propulsor_unknowns_and_residuals(self,segment): 
         return
         
-    def compute_performance(self,state,fuel_line = None,bus = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_constant_speed_internal_combustion_engine_performance(self,state,fuel_line,bus,center_of_gravity)
+    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_constant_speed_internal_combustion_engine_performance(self,state,center_of_gravity)
         return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(ICE_cs_prop, state,network,fuel_line = None, bus = None, stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec  = reuse_stored_constant_speed_internal_combustion_engine_data(ICE_cs_prop,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity)
+    def reuse_stored_data(ICE_cs_prop, state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
+        thrust,moment,power_mech,power_elec  = reuse_stored_constant_speed_internal_combustion_engine_data(ICE_cs_prop,state,network,stored_propulsor_tag,center_of_gravity)
         return thrust,moment,power_mech,power_elec       
  

@@ -23,7 +23,7 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turbojet_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]):  
+def compute_turbojet_performance(turbojet,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
     ''' Computes the perfomrance of a turbojet
     
     Parameters
@@ -277,7 +277,7 @@ def compute_turbojet_performance(turbojet,state,fuel_line=None,bus=None,center_o
     
     return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
 
-def reuse_stored_turbojet_data(turbojet,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
+def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbojet for identical propulsors
     
     Assumptions: 

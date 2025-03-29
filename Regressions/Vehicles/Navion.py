@@ -9,7 +9,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE 
 from RCAIDE.Framework.Core import Units   
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor import design_propeller
+from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine import design_internal_combustion_engine
 from RCAIDE.Library.Methods.Geometry.Planform  import segment_properties
 from RCAIDE.Library.Plots       import *  
 
@@ -354,8 +355,10 @@ def vehicle_setup():
     prop.cruise.design_altitude             = 12000. * Units.feet
     prop.cruise.design_power                = .64 * 180. * Units.horsepower
     prop.variable_pitch                     = True    
-    design_propeller(prop)    
     ice_prop.propeller                      = prop
+
+    # design propeller ICE  
+    design_internal_combustion_engine(ice_prop)
     
     net.propulsors.append(ice_prop) 
     

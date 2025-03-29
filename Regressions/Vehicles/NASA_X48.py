@@ -187,6 +187,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     esc                                           = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                       = 'esc_1'
     esc.efficiency                                = 0.95 
+    esc.bus_voltage                               = bus.voltage   
     center_propulsor.electronic_speed_controller  = esc   
         
 
@@ -218,9 +219,9 @@ def vehicle_setup(regression_flag, ducted_fan_type):
         airfoil                                      = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
         airfoil.NACA_4_Series_code                   = '0008'    
         ducted_fan.append_hub_airfoil(airfoil)   
-        dfdc_bin_name                                = '/Users/matthewclarke/Documents/LEADS/CODES/DFDC/bin/dfdc'  
+        ducted_fan.DFDC.bin_name                     = '/Users/matthewclarke/Documents/LEADS/CODES/DFDC/bin/dfdc'  
     else:
-        dfdc_bin_name                                = 'dfdc' 
+        ducted_fan.DFDC.bin_name                     = 'dfdc' 
      
     center_propulsor.ducted_fan                  = ducted_fan    
               

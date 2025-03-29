@@ -434,7 +434,9 @@ def vehicle_setup():
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95 
     esc.origin                                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
-    starboard_propulsor.electronic_speed_controller  = esc   
+    esc.bus_voltage                                  = bus.voltage   
+    starboard_propulsor.electronic_speed_controller  = esc
+    
     # Propeller              
     propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
     propeller.tag                                    = 'propeller_1'  

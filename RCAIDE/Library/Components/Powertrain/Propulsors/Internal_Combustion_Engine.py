@@ -97,16 +97,16 @@ class Internal_Combustion_Engine(Propulsor):
         append_internal_combustion_engine_residual_and_unknown(self,segment)
         return    
     
-    def compute_performance(self,state,fuel_line = None,bus = None,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
         """
         Computes propulsor performance including thrust, moment, and power.
         """
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_internal_combustion_engine_performance(self,state,fuel_line,bus,center_of_gravity)
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_internal_combustion_engine_performance(self,state,center_of_gravity)
         return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(ICE_prop, state,network,fuel_line = None, bus = None, stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
+    def reuse_stored_data(ICE_prop, state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored propulsor data for performance calculations.
         """
-        thrust,moment,power_mech,power_elec = reuse_stored_internal_combustion_engine_data(ICE_prop,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity)
+        thrust,moment,power_mech,power_elec = reuse_stored_internal_combustion_engine_data(ICE_prop,state,network,stored_propulsor_tag,center_of_gravity)
         return thrust,moment,power_mech,power_elec

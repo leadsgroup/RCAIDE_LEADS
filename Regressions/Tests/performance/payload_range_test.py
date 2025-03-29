@@ -25,21 +25,8 @@ from NASA_X57       import vehicle_setup as X57_vehicle_setup
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main(): 
-    fuel_payload_range_res = fuel_aircraft_payload_range()
-    fuel_r                 = fuel_payload_range_res.range[-1]
-    fuel_r_true            = 7203560.009994414
-    print('Fuel Range: ' + str(fuel_r))
-    fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
-    assert(abs(fuel_error)<1e-6)
-    
-    rotor_type  = ['Blade_Element_Momentum_Theory_Helmholtz_Wake', 'Actuator_Disk_Theory']  
-    electric_r_truth = [37039.99999999999, 37039.99999999999]
-    for i in range(len(rotor_type)):
-        electric_payload_range_res = electric_aircraft_payload_range(rotor_type[i])       
-        electric_r         =  electric_payload_range_res.range[-1]
-        print('Electric Range: ' + str(electric_r ))
-        electric_error =  abs(electric_r - electric_r_truth[i]) /electric_r_truth[i]
-        assert(abs(electric_error)<1e-6)
+    fuel_aircraft_payload_range()
+    electric_aircraft_payload_range() 
     return
     
 def fuel_aircraft_payload_range():
@@ -66,27 +53,43 @@ def fuel_aircraft_payload_range():
     # run payload range analysis 
     payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission)
                                    
-    return payload_range_results 
 
-def electric_aircraft_payload_range(rotor_type):
-    # vehicle data
-    vehicle             = X57_vehicle_setup(rotor_type) 
-
-    # Set up vehicle configs
-    configs  = configs_setup(vehicle)
-
-    # create analyses
-    analyses = electric_aircraft_analyses_setup(configs)
-
-    # mission analyses 
-    mission = electric_aircraft_mission_setup(analyses)
+    fuel_r                 = payload_range_results.range[-1]
+    fuel_r_true            = 7203560.009994125
+    print('Fuel Range: ' + str(fuel_r))
+    fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
+    assert(abs(fuel_error)<1e-6)
     
-    # create mission instances (for multiple types of missions)
-    missions = missions_setup(mission)   
+    return  
 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission)
+def electric_aircraft_payload_range(): 
 
-    return payload_range_results 
+    rotor_type  =  ['Blade_Element_Momentum_Theory_Helmholtz_Wake', 'Actuator_Disk_Theory']  
+    electric_r_truth = [37039.99999999999, 37039.99999999999]
+    for i in range(len(rotor_type)):
+        
+        # vehicle data
+        vehicle             = X57_vehicle_setup(rotor_type[i]) 
+    
+        # Set up vehicle configs
+        configs  = configs_setup(vehicle)
+    
+        # create analyses
+        analyses = electric_aircraft_analyses_setup(configs)
+    
+        # mission analyses 
+        mission = electric_aircraft_mission_setup(analyses)
+        
+        # create mission instances (for multiple types of missions)
+        missions = missions_setup(mission)   
+    
+        payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission) 
+        electric_r         =  payload_range_results.range[-1]
+        print('Electric Range: ' + str(electric_r ))
+        electric_error =  abs(electric_r - electric_r_truth[i]) /electric_r_truth[i]
+        assert(abs(electric_error)<1e-6)        
+
+    return  
 
 # ---------------------------------------------------------------------
 #   Define the Configurations
@@ -140,7 +143,8 @@ def fuel_aircraft_base_analysis(vehicle):
     #  Weights 
     weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
     weights.aircraft_type =  "Transport"
-    weights.vehicle = vehicle
+    weights.vehicle = vehicle 
+    weights.print_weight_analysis_report  = False    
     analyses.append(weights)
 
     # ------------------------------------------------------------------
@@ -184,6 +188,7 @@ def electric_aircraft_base_analysis(vehicle):
     #  Weights 
     weights = RCAIDE.Framework.Analyses.Weights.Electric()
     weights.aircraft_type   = 'General_Aviation'
+    weights.print_weight_analysis_report  = False  
     weights.vehicle = vehicle
     analyses.append(weights)
 

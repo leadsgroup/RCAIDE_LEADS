@@ -371,6 +371,7 @@ def vehicle_setup(rotor_type):
     esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95 
+    esc.bus_voltage                                  = bus.voltage   
     starboard_propulsor.electronic_speed_controller  = esc   
      
     # Propeller    
@@ -400,18 +401,18 @@ def vehicle_setup(rotor_type):
                                                             rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
         propeller.append_airfoil(airfoil)                       
         propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
-        starboard_propulsor.rotor                        = propeller   
-                  
+        starboard_propulsor.rotor                        = propeller
+
         # DC_Motor       
         motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
-        motor.nominal_voltage                            = bus.voltage* 0.5  
-        motor.no_load_current                            = 1
-        starboard_propulsor.motor                        = motor 
-
+        motor.nominal_voltage                            = bus.voltage * 0.5 
+        motor.no_load_current                            = 1.0
+        starboard_propulsor.motor                        = motor   
+    
         # design starboard propulsor 
-        design_electric_rotor(starboard_propulsor)
+        design_electric_rotor(starboard_propulsor)        
     
     elif rotor_type == 'Actuator_Disk_Theory':       
         propeller.fidelity = rotor_type 
@@ -422,18 +423,22 @@ def vehicle_setup(rotor_type):
         propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
         propeller.cruise.design_altitude                 = 2500. * Units.feet
         propeller.cruise.design_power_coefficient        = 0.11404579
-        propeller.cruise.design_thrust                   = 2000   
-     
-        starboard_propulsor.rotor                        = propeller   
-                  
+        propeller.cruise.design_thrust                   = 2000 
+        starboard_propulsor.rotor                        = propeller
+    
         # DC_Motor       
         motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
-        motor.nominal_voltage                            = bus.voltage * 0.5 
-        motor.no_load_current                            = 1.0
-        starboard_propulsor.motor                        = motor   
-
+        motor.nominal_voltage                            = bus.voltage 
+        motor.no_load_current                            = 1
+        motor.rotor_radius                               = propeller.tip_radius
+        motor.design_torque                              = 629.5930446195773
+        motor.speed_constant                             = 1.0717509992157075
+        motor.resistance                                 = 0.007377702131715494
+        motor.angular_velocity                           = propeller.cruise.design_angular_velocity 
+        starboard_propulsor.motor                        = motor           
+                  
         # design starboard propulsor 
         design_electric_rotor(starboard_propulsor)
  

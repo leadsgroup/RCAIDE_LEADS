@@ -9,12 +9,10 @@
 # ---------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Units 
-from RCAIDE.Library.Methods.Geometry.Planform                                  import segment_properties,wing_segmented_planform 
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common    import compute_motor_weight
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor                      import design_optimal_motor 
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor                        import design_propeller ,design_lift_rotor 
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based            import converge_physics_based_weight_buildup 
-from RCAIDE.Library.Plots                                                      import *       
+from RCAIDE.Library.Methods.Geometry.Planform                                             import segment_properties,wing_segmented_planform 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based   import converge_physics_based_weight_buildup 
+from RCAIDE.Library.Plots                                                                 import *       
 from RCAIDE.load    import load as load_rotor
 from RCAIDE.save    import save as save_rotor  
  
@@ -405,8 +403,9 @@ def vehicle_setup(new_regression=True) :
     propeller_esc                                          = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller() 
     propeller_esc.efficiency                               = 0.95  
     propeller_esc.origin                                   = [[6.583, 1.300,  1.092 ]] 
-    propeller_esc.tag                                      = 'propeller_esc_1' 
-    cruise_propulsor_1.electronic_speed_controller= propeller_esc      
+    propeller_esc.tag                                      = 'propeller_esc_1'
+    propeller_esc.bus_voltage                              = cruise_bus.voltage
+    cruise_propulsor_1.electronic_speed_controller         = propeller_esc      
     
     # Propeller 
     g                                                      = 9.81                                   # gravitational acceleration 
@@ -439,8 +438,7 @@ def vehicle_setup(new_regression=True) :
                                                              rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
                                                              rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
     propeller.append_airfoil(airfoil)                     
-    propeller.airfoil_polar_stations                       = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]  
-    propeller                                              = design_propeller(propeller)   
+    propeller.airfoil_polar_stations                       = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]   
     cruise_propulsor_1.rotor                               = propeller    
                 
     # Propeller Motor              
@@ -452,12 +450,10 @@ def vehicle_setup(new_regression=True) :
     propeller_motor.origin                                 = propeller.origin
     propeller_motor.propeller_radius                       = propeller.tip_radius 
     propeller_motor.no_load_current                        = 0.001
-    propeller_motor.wing_tag                               = 'horizontal_tail'
-    propeller_motor.design_torque                          = propeller.cruise.design_torque
-    propeller_motor.design_angular_velocity                = propeller.cruise.design_angular_velocity 
-    design_optimal_motor(propeller_motor)  
-    propeller_motor.mass_properties.mass                   = compute_motor_weight(propeller_motor)  
-    cruise_propulsor_1.motor                               = propeller_motor 
+    propeller_motor.wing_tag                               = 'horizontal_tail' 
+    cruise_propulsor_1.motor                               = propeller_motor
+    
+    design_electric_rotor(cruise_propulsor_1)
       
     # rear propeller nacelle 
     propeller_nacelle                = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
@@ -586,16 +582,17 @@ def vehicle_setup(new_regression=True) :
     #------------------------------------------------------------------------------------------------------------------------------------    
      
     # Define Lift Propulsor Container 
-    lift_propulsor_1                                       = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()
-    lift_propulsor_1.tag                                   = 'lift_propulsor_1'
-    lift_propulsor_1.wing_mounted                          = True         
+    lift_propulsor                                        = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()
+    lift_propulsor.tag                                    = 'lift_propulsor_1'
+    lift_propulsor.wing_mounted                           = True         
               
     # Electronic Speed Controller           
     lift_rotor_esc                                         = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller() 
     lift_rotor_esc.efficiency                              = 0.95    
     lift_rotor_esc.tag                                     = 'lift_rotor_esc_1' 
     lift_rotor_esc.origin                                  = [[-0.073 ,  1.950 , 1.2]] 
-    lift_propulsor_1.electronic_speed_controller           = lift_rotor_esc 
+    lift_rotor_esc.bus_voltage                             = lift_bus.voltage
+    lift_propulsor.electronic_speed_controller            = lift_rotor_esc 
            
     # Lift Rotor Design              
     lift_rotor                                             = RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor()   
@@ -623,22 +620,10 @@ def vehicle_setup(new_regression=True) :
                                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
                                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
     lift_rotor.append_airfoil(airfoil)                         
-    lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
-    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../Tests/analysis_weights'))
+    lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    lift_propulsor.rotor                                 = lift_rotor
     
-    if new_regression:
-        design_lift_rotor(lift_rotor)
-        save_rotor(lift_rotor, os.path.join(test_dir, 'stopped_rotor_geometry.res'))
-    else:
-        regression_lift_rotor = deepcopy(lift_rotor)
-        design_lift_rotor(regression_lift_rotor, iterations=2)
-        loaded_lift_rotor = load_rotor(os.path.join(test_dir, 'stopped_rotor_geometry.res'))
-        
-        for key,item in lift_rotor.items():
-            lift_rotor[key] = loaded_lift_rotor[key]       
-            
-    lift_propulsor_1.rotor =  lift_rotor          
-    
+
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Motor  
     #------------------------------------------------------------------------------------------------------------------------------------    
@@ -649,15 +634,8 @@ def vehicle_setup(new_regression=True) :
     lift_rotor_motor.propeller_radius                      = lift_rotor.tip_radius
     lift_rotor_motor.tag                                   = 'lift_rotor_motor_1' 
     lift_rotor_motor.no_load_current                       = 0.01  
-    lift_rotor_motor.wing_tag                              = 'main_wing'
-    lift_rotor_motor.design_torque                         = lift_rotor.hover.design_torque
-    lift_rotor_motor.design_angular_velocity               = lift_rotor.hover.design_angular_velocity
-    design_optimal_motor(lift_rotor_motor)
-    lift_rotor_motor.mass_properties.mass                  = compute_motor_weight(lift_rotor_motor)     
-    lift_propulsor_1.motor                                 = lift_rotor_motor
-    
-
-
+    lift_rotor_motor.wing_tag                              = 'main_wing'     
+    lift_propulsor.motor                                 = lift_rotor_motor 
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Nacelle
     #------------------------------------------------------------------------------------------------------------------------------------     
@@ -669,17 +647,27 @@ def vehicle_setup(new_regression=True) :
     nacelle.flow_through              = False   
     nacelle.tag                       = 'rotor_nacelle_1'
     nacelle.origin                    = [[  -0.073,  1.950, 1.2]]
-    lift_propulsor_1.nacelle          =  nacelle 
-    network.propulsors.append(lift_propulsor_1)   
-
-
+    lift_propulsor.nacelle          =  nacelle    
+    
+    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../Tests/analysis_weights')) 
+    if new_regression:
+        design_electric_rotor(lift_propulsor)
+        save_rotor(lift_propulsor, os.path.join(test_dir, 'stopped_rotor_lift_rotor.res'))
+        network.propulsors.append(lift_propulsor)
+    else:
+        regression_lift_propulsor = deepcopy(lift_propulsor)        
+        design_electric_rotor(regression_lift_propulsor, iterations=2)
+        loaded_lift_propulsor = load_rotor(os.path.join(test_dir, 'stopped_rotor_lift_rotor.res'))
+        network.propulsors.append(loaded_lift_propulsor) 
+            
     # make and append copy of lift propulsor (efficient coding)    
-    lift_propulsor_2                                       = deepcopy(lift_propulsor_1)
+    lift_propulsor_2                                       = deepcopy(lift_propulsor)
     lift_propulsor_2.tag                                   = 'lift_propulsor_2' 
     lift_propulsor_2.rotor.tag                             = 'lift_rotor_2'  
     lift_propulsor_2.rotor.orientation_euler_angle         = [-10.0* Units.degrees,np.pi/2.,0.]
-    lift_propulsor_2.motor.origin                          = [[-0.073  , -1.950  , 1.2]] 
     lift_propulsor_2.rotor.origin                          = [[-0.073  , -1.950  , 1.2]] 
+    lift_propulsor_2.motor.tag                             = 'lift_rotor_motor_2' 
+    lift_propulsor_2.motor.origin                          = [[-0.073  , -1.950  , 1.2]] 
     rotor_nacelle                                          = deepcopy(nacelle)
     rotor_nacelle.tag                                      = 'rotor_nacelle_2' 
     rotor_nacelle.origin                                   = [[ -0.073, -1.950, 1.2]]
@@ -687,12 +675,13 @@ def vehicle_setup(new_regression=True) :
     network.propulsors.append(lift_propulsor_2)    
         
 
-    lift_propulsor_3                                       = deepcopy(lift_propulsor_1)
+    lift_propulsor_3                                       = deepcopy(lift_propulsor)
     lift_propulsor_3.tag                                   = 'lift_propulsor_3'  
     lift_propulsor_3.rotor.tag                             = 'lift_rotor_3'  
+    lift_propulsor_3.rotor.origin                          = [[ 4.440 ,  1.950 , 1.2]] 
     lift_propulsor_3.rotor.orientation_euler_angle         = [10.0* Units.degrees,np.pi/2.,0.]
     lift_propulsor_3.motor.origin                          = [[ 4.440 ,  1.950 , 1.2]] 
-    lift_propulsor_3.rotor.origin                          = [[ 4.440 ,  1.950 , 1.2]] 
+    lift_propulsor_3.motor.tag                             = 'lift_rotor_motor_3' 
     rotor_nacelle                                          = deepcopy(nacelle)
     rotor_nacelle.tag                                      = 'rotor_nacelle_3'  
     rotor_nacelle.origin                                   = [[   4.413,   1.950 ,1.2]]
@@ -700,13 +689,13 @@ def vehicle_setup(new_regression=True) :
     network.propulsors.append(lift_propulsor_3)    
     
 
-    lift_propulsor_4                                       = deepcopy(lift_propulsor_1)
+    lift_propulsor_4                                       = deepcopy(lift_propulsor)
     lift_propulsor_4.tag                                   = 'lift_propulsor_4'  
     lift_propulsor_4.rotor.tag                             = 'lift_rotor_4' 
-    lift_propulsor_4.rotor.origin                          = [[ 4.440  , -1.950  , 1.2]]  
+    lift_propulsor_4.rotor.origin                          = [[ 4.440  , -1.950  , 1.2]]   
     lift_propulsor_4.rotor.orientation_euler_angle         = [-10.0* Units.degrees,np.pi/2.,0.]
     lift_propulsor_4.motor.origin                          = [[ 4.440  , -1.950  , 1.2]] 
-    lift_propulsor_4.rotor.origin                          = [[ 4.440  , -1.950  , 1.2]] 
+    lift_propulsor_4.motor.tag                             = 'lift_rotor_motor_4' 
     rotor_nacelle                                          = deepcopy(nacelle)
     rotor_nacelle.tag                                      = 'rotor_nacelle_4' 
     rotor_nacelle.origin                                   = [[   4.413, -1.950, 1.2]]
@@ -714,13 +703,13 @@ def vehicle_setup(new_regression=True) :
     network.propulsors.append(lift_propulsor_4)    
     
 
-    lift_propulsor_5                                       = deepcopy(lift_propulsor_1)
+    lift_propulsor_5                                       = deepcopy(lift_propulsor)
     lift_propulsor_5.tag                                   = 'lift_propulsor_5'  
     lift_propulsor_5.rotor.tag                             = 'lift_rotor_5' 
     lift_propulsor_5.rotor.origin                          = [[ 0.219 ,  4.891 , 1.2]]  
     lift_propulsor_5.rotor.orientation_euler_angle         = [10.0* Units.degrees,np.pi/2.,0.]
     lift_propulsor_5.motor.origin                          = [[ 0.219 ,  4.891 , 1.2]] 
-    lift_propulsor_5.rotor.origin                          = [[ 0.219 ,  4.891 , 1.2]] 
+    lift_propulsor_5.motor.tag                             = 'lift_rotor_motor_5' 
     rotor_nacelle                                          = deepcopy(nacelle)
     rotor_nacelle.tag                                      = 'rotor_nacelle_5'  
     rotor_nacelle.origin                                   = [[   0.219 ,   4.891 , 1.2]] 
@@ -728,12 +717,13 @@ def vehicle_setup(new_regression=True) :
     network.propulsors.append(lift_propulsor_5)    
     
 
-    lift_propulsor_6                                       = deepcopy(lift_propulsor_1)
+    lift_propulsor_6                                       = deepcopy(lift_propulsor)
     lift_propulsor_6.tag                                   = 'lift_propulsor_6'  
     lift_propulsor_6.rotor.tag                             = 'lift_rotor_2'  
+    lift_propulsor_6.rotor.origin                          = [[ 0.219  , - 4.891 , 1.2]] 
     lift_propulsor_6.rotor.orientation_euler_angle         = [-10.0* Units.degrees,np.pi/2.,0.]
     lift_propulsor_6.motor.origin                          = [[ 0.219  , - 4.891 , 1.2]] 
-    lift_propulsor_6.rotor.origin                          = [[ 0.219  , - 4.891 , 1.2]] 
+    lift_propulsor_6.motor.tag                             = 'lift_rotor_motor_6' 
     rotor_nacelle                                          = deepcopy(nacelle)
     rotor_nacelle.tag                                      = 'rotor_nacelle_6'  
     rotor_nacelle.origin                                   = [[   0.219 , -  4.891 ,1.2]]
@@ -742,12 +732,13 @@ def vehicle_setup(new_regression=True) :
     
     
 
-    lift_propulsor_7                                       = deepcopy(lift_propulsor_1)
+    lift_propulsor_7                                       = deepcopy(lift_propulsor)
     lift_propulsor_7.tag                                   = 'lift_propulsor_7'  
     lift_propulsor_7.rotor.tag                             = 'lift_rotor_7'  
     lift_propulsor_7.rotor.orientation_euler_angle         = [10.0* Units.degrees,np.pi/2.,0.]
-    lift_propulsor_7.motor.origin                          = [[ 4.196 ,  4.891 , 1.2]] 
-    lift_propulsor_7.rotor.origin                          = [[ 4.196 ,  4.891 , 1.2]]   
+    lift_propulsor_7.rotor.origin                          = [[ 4.196 ,  4.891 , 1.2]]  
+    lift_propulsor_7.motor.origin                          = [[ 4.196 ,  4.891 , 1.2]]  
+    lift_propulsor_7.motor.tag                             = 'lift_rotor_motor_7' 
     rotor_nacelle                                          = deepcopy(nacelle)
     rotor_nacelle.tag                                      = 'rotor_nacelle_7'  
     rotor_nacelle.origin                                   = [[  4.196 ,   4.891 ,1.2]]
@@ -755,12 +746,13 @@ def vehicle_setup(new_regression=True) :
     network.propulsors.append(lift_propulsor_7)    
     
 
-    lift_propulsor_8                                       = deepcopy(lift_propulsor_1)
+    lift_propulsor_8                                       = deepcopy(lift_propulsor)
     lift_propulsor_8.tag                                   = 'lift_propulsor_8'  
     lift_propulsor_8.rotor.tag                             = 'lift_rotor_8'  
     lift_propulsor_8.rotor.orientation_euler_angle         = [-10.0* Units.degrees,np.pi/2.,0.]
-    lift_propulsor_8.motor.origin                          = [[ 4.196  , - 4.891 , 1.2]] 
     lift_propulsor_8.rotor.origin                          = [[ 4.196  , - 4.891 , 1.2]]  
+    lift_propulsor_8.motor.origin                          = [[ 4.196  , - 4.891 , 1.2]]   
+    lift_propulsor_8.motor.tag                             = 'lift_rotor_motor_8' 
     rotor_nacelle                                          = deepcopy(nacelle)
     rotor_nacelle.tag                                      = 'rotor_nacelle_8' 
     rotor_nacelle.origin                                   = [[   4.196, -  4.891 ,1.2]]
@@ -783,7 +775,7 @@ def vehicle_setup(new_regression=True) :
     avionics.mass_properties.mass                           = 1.0 * Units.kg
     lift_bus.avionics                                       = avionics    
 
-    lift_bus.assigned_propulsors =  [[lift_propulsor_1.tag, lift_propulsor_2.tag, lift_propulsor_3.tag, lift_propulsor_4.tag,
+    lift_bus.assigned_propulsors =  [[lift_propulsor.tag, lift_propulsor_2.tag, lift_propulsor_3.tag, lift_propulsor_4.tag,
                                       lift_propulsor_5.tag, lift_propulsor_6.tag, lift_propulsor_7.tag, lift_propulsor_8.tag]]
     network.busses.append(lift_bus)       
         

@@ -45,7 +45,8 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     
     # perform inital weights analysis 
     weights_analysis   = mission.segments[initial_segment].analyses.weights 
-    vehicle = weights_analysis.vehicle
+    weights_analysis.evaluate() # evaluate weights to make sure mass variables are defined 
+    vehicle = weights_analysis.vehicle 
     
     for network in vehicle.networks:
         if type(network) == RCAIDE.Framework.Networks.Fuel:  
@@ -143,8 +144,8 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             TotalFuel  = results.segments[-1].conditions.energy.cumulative_fuel_consumption[-1, 0]
 
             # Difference between burned fuel and target fuel
-            if i == 0:
-                reserve_fuel = fuel_reserve_percentage *FUEL[i] 
+        
+            reserve_fuel = fuel_reserve_percentage * MaxFuel
             missingFuel = FUEL[i] - TotalFuel - reserve_fuel
 
             # Current distance and fuel consuption in the cruise segment
@@ -238,20 +239,17 @@ def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagr
     """ 
     mass = vehicle.mass_properties
     if not mass.operating_empty:
-        print("Error calculating Payload Range Diagram: vehicle Operating Empty Weight is undefined.")
-        return True
+        raise AttributeError("Error calculating Payload Range Diagram: vehicle Operating Empty Weight is undefined.") 
     else:
         OEW = mass.operating_empty
 
     if not mass.max_payload:
-        print("Error calculating Payload Range Diagram: vehicle Maximum Payload Weight is undefined.")
-        return True
+        raise AttributeError("Error calculating Payload Range Diagram: vehicle Maximum Payload Weight is undefined.") 
     else:
         MaxPLD = mass.max_payload
 
     if not mass.max_takeoff:
-        print("Error calculating Payload Range Diagram: vehicle Maximum Payload Weight is undefined.")
-        return True
+        raise AttributeError("Error calculating Payload Range Diagram: vehicle Maximum Payload Weight is undefined.") 
     else:
         MTOW = mass.max_takeoff
 

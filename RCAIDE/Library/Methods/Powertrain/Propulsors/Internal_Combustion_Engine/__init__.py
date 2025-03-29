@@ -13,3 +13,4 @@ from .compute_internal_combustion_engine_performance         import compute_inte
 from .append_internal_combustion_engine_conditions           import append_internal_combustion_engine_conditions
 from .unpack_internal_combustion_engine_unknowns             import unpack_internal_combustion_engine_unknowns
 from .pack_internal_combustion_engine_residuals              import pack_internal_combustion_engine_residuals
+from .design_internal_combustion_engine                      import design_internal_combustion_engine

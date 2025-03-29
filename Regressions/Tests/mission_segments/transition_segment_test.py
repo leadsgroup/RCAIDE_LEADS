@@ -57,9 +57,9 @@ def tiltwing_transition_test(update_regression_values):
     TW_results = TW_missions.base_mission.evaluate()  
     
     # Extract sample values from computation    
-    hover_throttle            = TW_results.segments.hover.conditions.energy.propulsors['lift_rotor_propulsor_1'].throttle[1][0]
-    vertical_climb_1_throttle = TW_results.segments.vertical_climb_1.conditions.energy.propulsors['lift_rotor_propulsor_1'].throttle[1][0] 
-    vertical_descent_throttle = TW_results.segments.vertical_descent.conditions.energy.propulsors['lift_rotor_propulsor_1'].throttle[1][0] 
+    hover_throttle            = TW_results.segments.hover.conditions.energy.propulsors['prop_rotor_propulsor_1'].throttle[1][0]
+    vertical_climb_1_throttle = TW_results.segments.vertical_climb_1.conditions.energy.propulsors['prop_rotor_propulsor_1'].throttle[1][0] 
+    vertical_descent_throttle = TW_results.segments.vertical_descent.conditions.energy.propulsors['prop_rotor_propulsor_1'].throttle[1][0] 
     
     #print values for resetting regression
     show_vals = True
@@ -265,8 +265,8 @@ def TW_mission_setup(analyses ):
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['lift_rotor_propulsor_1','lift_rotor_propulsor_2','lift_rotor_propulsor_3','lift_rotor_propulsor_4',
-                                                            'lift_rotor_propulsor_5','lift_rotor_propulsor_6','lift_rotor_propulsor_7','lift_rotor_propulsor_8']]
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
+                                                            'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]
       
     mission.append_segment(segment)
  
@@ -287,8 +287,8 @@ def TW_mission_setup(analyses ):
 
     # define flight controls  
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['lift_rotor_propulsor_1','lift_rotor_propulsor_2','lift_rotor_propulsor_3','lift_rotor_propulsor_4',
-                                                            'lift_rotor_propulsor_5','lift_rotor_propulsor_6','lift_rotor_propulsor_7','lift_rotor_propulsor_8']]
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
+                                                            'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]
     
     mission.append_segment(segment)   
     
@@ -308,8 +308,8 @@ def TW_mission_setup(analyses ):
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['lift_rotor_propulsor_1','lift_rotor_propulsor_2','lift_rotor_propulsor_3','lift_rotor_propulsor_4',
-                                                                             'lift_rotor_propulsor_5','lift_rotor_propulsor_6','lift_rotor_propulsor_7','lift_rotor_propulsor_8']]  
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
+                                                                             'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]  
             
     mission.append_segment(segment)       
      

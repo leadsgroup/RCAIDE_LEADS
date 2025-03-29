@@ -1,6 +1,6 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Electric_Rotor/design_electric_rotor.py
 # 
-# Created:  Jul 2024, RCAIDE Team
+# Created:  Mar 2025, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -19,9 +19,10 @@ from RCAIDE.Library.Methods.Powertrain                                      impo
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Design Turbofan
+#  Design Electric Rotor 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_electric_rotor(electric_rotor):
+def design_electric_rotor(electric_rotor,number_of_stations = 20,solver_name= 'SLSQP',iterations = 200,
+                      solver_sense_step = 1E-5,solver_tolerance = 1E-4,print_iterations = False):
     """Compute perfomance properties of an electrically powered rotor, which is driven by an electric machine
     
     Assumtions:
@@ -36,32 +37,41 @@ def design_electric_rotor(electric_rotor):
         None 
     
     """
+
+    if electric_rotor.electronic_speed_controller == None: 
+        raise AssertionError("electric speed controller not defined on propulsor")
+    
+    if electric_rotor.electronic_speed_controller.bus_voltage == None: 
+        raise AssertionError("ESC bus voltage not specified on propulsor") 
+    
     if electric_rotor.rotor == None:
-        raise AssertionError("Rotor not specified on propulsor")
+        raise AssertionError("Rotor not defined on propulsor")
     rotor = electric_rotor.rotor
 
     if electric_rotor.motor == None:
-        raise AssertionError("Motor not specified on propulsor")    
+        raise AssertionError("Motor not defined on propulsor")
+    
     motor = electric_rotor.motor
     
     if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Propeller: 
-        design_propeller(rotor)
+        design_propeller(rotor,number_of_stations = number_of_stations)
         motor.design_torque            = rotor.cruise.design_torque 
         motor.design_angular_velocity  = rotor.cruise.design_angular_velocity 
-    if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor:
-        design_prop_rotor(rotor)
+    elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor:
+        design_prop_rotor(rotor,number_of_stations ,solver_name,iterations,solver_sense_step,solver_tolerance,print_iterations)
         motor.design_torque            = rotor.hover.design_torque 
         motor.design_angular_velocity  = rotor.hover.design_angular_velocity 
-    else: 
-        design_lift_rotor(rotor)  
+    elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor: 
+        design_lift_rotor(rotor,number_of_stations ,solver_name,iterations,solver_sense_step,solver_tolerance,print_iterations)
         motor.design_torque            = rotor.hover.design_torque 
         motor.design_angular_velocity  = rotor.hover.design_angular_velocity
     
-    # design motor 
-    design_optimal_motor(motor)
+    # design motor if design torque is specified 
+    if motor.design_torque != None: 
+        design_optimal_motor(motor)
     
-    # compute weight of motor 
-    compute_motor_weight(motor) 
+        # compute weight of motor 
+        compute_motor_weight(motor) 
      
     # Static Sea Level Thrust   
     atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 

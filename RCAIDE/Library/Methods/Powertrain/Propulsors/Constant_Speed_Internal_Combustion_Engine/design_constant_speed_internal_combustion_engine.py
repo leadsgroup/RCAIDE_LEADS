@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Propulsors/Internal_Combustion_Engine/design_internal_combustion_engine.py
+# RCAIDE/Library/Methods/Powertrain/Propulsors/Constant_Speed_Internal_Combustion_Engine/design_constant_speed_internal_combustion_engine.py
 # 
 # Created:  Mar 2025, M. Clarke
 
@@ -17,8 +17,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Electric Rotor 
 # ----------------------------------------------------------------------------------------------------------------------
-def design_internal_combustion_engine(ICE,number_of_stations = 20,solver_name= 'SLSQP',iterations = 200,
-                      solver_sense_step = 1E-5,solver_tolerance = 1E-4,print_iterations = False):
+def design_constant_speed_internal_combustion_engine(ICE_CS,number_of_stations = 20):
     """Sizes the propeller of an propeller-driven internal combustion engine 
     
     Assumtions:
@@ -27,7 +26,7 @@ def design_internal_combustion_engine(ICE,number_of_stations = 20,solver_name= '
     Source:
     
     Args:
-        ICE (dict):  propeller-driven internal combustion engine [-]
+        ICE_CS (dict):  propeller-driven internal combustion engine [-]
     
     Returns:
         None 
@@ -35,15 +34,15 @@ def design_internal_combustion_engine(ICE,number_of_stations = 20,solver_name= '
     """
     
     # Step 1 Design the Propeller  
-    design_propeller(ICE.propeller,number_of_stations = 20) 
+    design_propeller(ICE_CS.propeller,number_of_stations = 20) 
      
     # Static Sea Level Thrust   
     atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(ICE, altitude = 0,velocity_range=np.array([V]))  
-    operating_state.conditions.energy.propulsors[ICE.tag].throttle[:,0] = 1.0  
-    sls_T,_,sls_P,_,_,_               = ICE.compute_performance(operating_state) 
-    ICE.sealevel_static_thrust        = sls_T[0][0]
-    ICE.sealevel_static_power         = sls_P[0][0]
+    operating_state       = setup_operating_conditions(ICE_CS, altitude = 0,velocity_range=np.array([V]))  
+    operating_state.conditions.energy.propulsors[ICE_CS.tag].throttle[:,0] = 1.0  
+    sls_T,_,sls_P,_,_,_               = ICE_CS.compute_performance(operating_state) 
+    ICE_CS.sealevel_static_thrust        = sls_T[0][0]
+    ICE_CS.sealevel_static_power         = sls_P[0][0]
     return 

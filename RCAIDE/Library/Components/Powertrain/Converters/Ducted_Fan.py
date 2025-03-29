@@ -104,7 +104,9 @@ class Ducted_Fan(Converter):
         self.exit_radius                           = 1.1
         self.blade_clearance                       = 0.01
         self.length                                = 1 
-        self.fan_effectiveness                     = 1.1 
+        self.fan_effectiveness                     = 1.1
+        self.DFDC                                  = Data()
+        self.DFDC.bin_name                         = 'dfdc'
         self.Cp_polynomial_coefficients            = [0.551,  0.0182, -0.0869]   
         self.Ct_polynomial_coefficients            = [0.4605,-0.0529, -0.1203]   
         self.etap_polynomial_coefficients          = [0.0653,4.1603 , -7.6128]  

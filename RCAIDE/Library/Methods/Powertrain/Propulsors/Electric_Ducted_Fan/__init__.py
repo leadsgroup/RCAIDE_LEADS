@@ -12,3 +12,4 @@ from .compute_electric_ducted_fan_performance  import compute_electric_ducted_fa
 from .append_electric_ducted_fan_conditions    import append_electric_ducted_fan_conditions
 from .pack_electric_ducted_fan_residuals       import pack_electric_ducted_fan_residuals
 from .unpack_electric_ducted_fan_unknowns      import unpack_electric_ducted_fan_unknowns
+from .design_electric_ducted_fan               import design_electric_ducted_fan

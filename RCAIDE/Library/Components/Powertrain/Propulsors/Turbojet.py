@@ -175,10 +175,10 @@ class Turbojet(Propulsor):
     def append_propulsor_unknowns_and_residuals(self,segment): 
         return
     
-    def compute_performance(self,state,fuel_line = None,bus = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turbojet_performance(self,state,fuel_line,bus,center_of_gravity)
+    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
         return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(turbojet,state,network,fuel_line = None, bus = None, stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec  = reuse_stored_turbojet_data(turbojet,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity)
+    def reuse_stored_data(turbojet,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
+        thrust,moment,power_mech,power_elec  = reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity)
         return thrust,moment,power_mech,power_elec

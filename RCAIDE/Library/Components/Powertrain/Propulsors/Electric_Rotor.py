@@ -106,16 +106,16 @@ class Electric_Rotor(Propulsor):
         pack_electric_rotor_residuals(self,segment)
         return    
     
-    def compute_performance(self,state,fuel_line = None,bus = None,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
         """
         Computes propulsor performance including thrust, moment, and power. 
         """
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_electric_rotor_performance(self,state,fuel_line,bus,center_of_gravity)
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_electric_rotor_performance(self,state,center_of_gravity)
         return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(electric_rotor,state,network,fuel_line = None, bus = None, stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
+    def reuse_stored_data(electric_rotor,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored propulsor data for performance calculations.
         """
-        thrust,moment,power_mech,power_elec = reuse_stored_electric_rotor_data(electric_rotor,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity)
+        thrust,moment,power_mech,power_elec = reuse_stored_electric_rotor_data(electric_rotor,state,network,stored_propulsor_tag,center_of_gravity)
         return thrust,moment,power_mech,power_elec

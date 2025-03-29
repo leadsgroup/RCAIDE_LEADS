@@ -17,7 +17,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turboelectric_generator_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_turboelectric_generator_performance(turboelectric_generator,state,fuel_line, bus):    
+def compute_turboelectric_generator_performance(turboelectric_generator,state,fuel_line=None,bus=None): 
     ''' Computes the perfomrance of one turboelectric_generator
     
     Assumptions: 
@@ -42,7 +42,6 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
     '''
 
     conditions                         = state.conditions
-    bus_conditions                     = conditions.energy[bus.tag]
     generator                          = turboelectric_generator.generator
     turboshaft                         = turboelectric_generator.turboshaft 
     compressor                         = turboshaft.compressor
@@ -86,11 +85,9 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,fu
         
         # run the turboshaft 
         P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
-        turboelectric_generator_conditions.fuel_flow_rate =  turboshaft_conditions.fuel_flow_rate  
+        turboelectric_generator_conditions.fuel_flow_rate =  turboshaft_conditions.fuel_flow_rate   
     
-    
-    P_elec                      = generator_conditions.outputs.power 
-    bus_conditions.power_draw  +=  generator_conditions.outputs.power*bus.power_split_ratio /bus.efficiency        
+    P_elec                      = generator_conditions.outputs.power       
     
     # Pack results      
     stored_results_flag    = True
@@ -121,7 +118,6 @@ def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,fuel
     '''
  
     conditions                  = state.conditions 
-    bus_conditions              = conditions.energy[bus.tag]
     generator                   = turboelectric_generator.generator
     turboshaft                  = turboelectric_generator.turboshaft
     ram                         = turboelectric_generator.ram
@@ -154,9 +150,7 @@ def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,fuel
     conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             ) 
  
     P_elec         = conditions.energy.converters[generator.tag].outputs.power 
-    P_mech         = conditions.energy.converters[turboshaft.tag].outputs.power
-
-    bus_conditions.power_draw  +=  conditions.energy.converters[generator.tag].outputs.powerr*bus.power_split_ratio /bus.efficiency       
+    P_mech         = conditions.energy.converters[turboshaft.tag].outputs.power  
     
     return P_mech, P_elec
  

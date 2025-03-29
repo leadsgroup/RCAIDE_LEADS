@@ -27,7 +27,7 @@ import numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 #  design_ducted_fan
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_ducted_fan(ducted_fan, dfdc_bin_name = 'dfdc', new_regression_results = False, keep_files = True): 
+def design_ducted_fan(ducted_fan, new_regression_results = False, keep_files = True): 
     """
     Designs and optimizes a ducted fan propulsor using either Rankine-Froude Momentum Theory or 
     Blade Element Momentum Theory (BEMT) with DFDC integration.
@@ -130,7 +130,7 @@ def design_ducted_fan(ducted_fan, dfdc_bin_name = 'dfdc', new_regression_results
             
         dfdc_analysis                                   = Ducted_Fan_Design_Code() 
         dfdc_analysis.geometry                          = ducted_fan
-        dfdc_analysis.settings.filenames.dfdc_bin_name  = dfdc_bin_name
+        dfdc_analysis.settings.filenames.dfdc_bin_name  = ducted_fan.DFDC.bin_name
         dfdc_analysis.settings.new_regression_results   = new_regression_results
         dfdc_analysis.settings.keep_files               = keep_files
         

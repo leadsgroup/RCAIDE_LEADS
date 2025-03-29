@@ -20,7 +20,7 @@ import os
 
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
 from Cessna_172                       import vehicle_setup  
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor import design_propeller
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine import design_constant_speed_internal_combustion_engine
 
 # ----------------------------------------------------------------------
 #   Main
@@ -44,8 +44,8 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()   
     
-    P_truth     = 53698.45856056677
-    mdot_truth  = 0.004718069503961755
+    P_truth     = 53737.23498612651
+    mdot_truth  = 0.004721475676394328
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle_mass_rate[-1,0]     
@@ -104,7 +104,7 @@ def ICE_CS(vehicle):
     engine.flat_rate_altitude                  = 0.0
     engine.rated_speed                         = 2700. * Units.rpm
     engine.rated_power                         = 180.  * Units.hp   
-    engine.power_specific_fuel_consumption     = 0.52 
+    engine.power_specific_fuel_consumption     = 0.52  
     propulsor.engine                           = engine 
     
     # Prop  
@@ -126,10 +126,12 @@ def ICE_CS(vehicle):
                                            '../../Vehicles/Airfoils/Polars/NACA_4412_polar_Re_500000.txt' ,
                                            '../../Vehicles/Airfoils/Polars/NACA_4412_polar_Re_1000000.txt' ] 
     prop.append_airfoil(airfoil)  
-    prop.airfoil_polar_stations            = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    design_propeller(prop)   
+    prop.airfoil_polar_stations            = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
     propulsor.propeller                    = prop  
 
+    # design propeller ICE  
+    design_constant_speed_internal_combustion_engine(propulsor)
+    
     net.propulsors.append(propulsor)
 
     #------------------------------------------------------------------------------------------------------------------------------------   
@@ -220,7 +222,6 @@ def mission_setup(analyses):
     segment.altitude                                      = 12000. * Units.feet
     segment.air_speed                                     = 119.   * Units.knots
     segment.distance                                      = 10 * Units.nautical_mile
-    segment.state.conditions.energy.rpm                   = 2650. *  ones_row(1)
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  

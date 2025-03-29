@@ -11,7 +11,6 @@ from RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.co
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance                      import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance                      import * 
 
-
 # pacakge imports  
 import numpy as np 
 from copy import deepcopy
@@ -19,7 +18,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_electric_rotor_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]):   
+def compute_electric_rotor_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):   
     ''' Computes the perfomrance of one propulsor
     
     Assumptions: 
@@ -51,12 +50,10 @@ def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,c
     conditions                 = state.conditions    
     motor                      = propulsor.motor 
     rotor                      = propulsor.rotor 
-    esc                        = propulsor.electronic_speed_controller  
-    bus_conditions             = conditions.energy[bus.tag]
+    esc                        = propulsor.electronic_speed_controller   
     electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag]
     eta                        = electric_rotor_conditions.throttle
-    
-    conditions.energy.modulators[esc.tag].inputs.voltage   = bus.voltage * state.ones_row(1)    
+     
     conditions.energy.modulators[esc.tag].throttle         = eta 
     compute_voltage_out_from_throttle(esc,conditions)
 
@@ -88,12 +85,10 @@ def compute_electric_rotor_performance(propulsor,state,fuel_line=None,bus=None,c
     electric_rotor_conditions.thrust      = conditions.energy.converters[rotor.tag].thrust 
     electric_rotor_conditions.power       = conditions.energy.converters[rotor.tag].power 
     electric_rotor_conditions.moment      = moment
-      
-    bus_conditions.power_draw  +=  conditions.energy.modulators[esc.tag].inputs.power*bus.power_split_ratio /bus.efficiency    
     
     return electric_rotor_conditions.thrust,electric_rotor_conditions.moment,electric_rotor_conditions.power,conditions.energy.modulators[esc.tag].inputs.power,stored_results_flag,stored_propulsor_tag 
                 
-def reuse_stored_electric_rotor_data(propulsor,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
+def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors
     
     Assumptions: 
@@ -120,7 +115,6 @@ def reuse_stored_electric_rotor_data(propulsor,state,network,fuel_line,bus,store
     N.A.        
     ''' 
     conditions                 = state.conditions 
-    bus_conditions             = conditions.energy[bus.tag]
     motor                      = propulsor.motor 
     rotor                      = propulsor.rotor 
     esc                        = propulsor.electronic_speed_controller  
@@ -144,7 +138,5 @@ def reuse_stored_electric_rotor_data(propulsor,state,network,fuel_line,bus,store
      
     conditions.energy.propulsors[propulsor.tag].power             = P_mech  
     conditions.energy.propulsors[propulsor.tag].thrust            = thrust_vector  
-    conditions.energy.propulsors[propulsor.tag].moment            = moment   
-
-    bus_conditions.power_draw  += P_elec*bus.power_split_ratio /bus.efficiency        
+    conditions.energy.propulsors[propulsor.tag].moment            = moment          
     return thrust_vector,moment,P_mech,P_elec

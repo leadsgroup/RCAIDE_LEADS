@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # internal_combustion_engine_constant_speed_propulsor
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_constant_speed_internal_combustion_engine_performance(propulsor,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]):   
+def compute_constant_speed_internal_combustion_engine_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):   
     ''' Computes the perfomrance of a internal combustion engine
     
     Parameters
@@ -55,9 +55,8 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor,stat
     engine                  = propulsor.engine 
     propeller               = propulsor.propeller 
 
-    # Run the propeller to get the power
-    conditions.energy.converters[engine.tag].rpm                     = ice_cs_conditions.rpm 
-    conditions.energy.converters[propeller.tag].omega                = conditions.energy.converters[engine.tag].rpm * Units.rpm
+    # Run the propeller to get the power 
+    conditions.energy.converters[propeller.tag].omega                = conditions.energy.converters[engine.tag].omega  
     conditions.energy.converters[propeller.tag].blade_pitch_command  = ice_cs_conditions.throttle - 0.5
     conditions.energy.converters[propeller.tag].throttle             = ice_cs_conditions.throttle
     compute_rotor_performance(propeller,conditions)

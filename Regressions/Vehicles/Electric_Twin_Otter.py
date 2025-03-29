@@ -528,7 +528,8 @@ def vehicle_setup(cell_chemistry, btms_type):
     esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95 
-    esc.origin                                       = [[3.8,2.8129,1.22 ]]   
+    esc.origin                                       = [[3.8,2.8129,1.22 ]]
+    esc.bus_voltage                                  = bus.voltage   
     starboard_propulsor.electronic_speed_controller  = esc   
      
     # Propeller              

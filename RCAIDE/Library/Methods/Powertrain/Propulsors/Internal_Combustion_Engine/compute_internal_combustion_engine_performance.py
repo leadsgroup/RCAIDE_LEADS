@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_internal_combustion_engine_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_internal_combustion_engine_performance(propulsor,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]):  
+def compute_internal_combustion_engine_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
     ''' Computes the perfomrance of a internal combustion engine
     
     Parameters
@@ -55,14 +55,13 @@ def compute_internal_combustion_engine_performance(propulsor,state,fuel_line=Non
     propeller               = propulsor.propeller
     ice_conditions          = conditions.energy.propulsors[propulsor.tag]
 
-    # Throttle the engine
-    conditions.energy.converters[engine.tag] .speed           = conditions.energy.converters[engine.tag].rpm * Units.rpm
-    conditions.energy.converters[engine.tag] .throttle        = conditions.energy.propulsors[propulsor.tag].throttle 
+    # Throttle the engine 
+    conditions.energy.converters[engine.tag].throttle        = conditions.energy.propulsors[propulsor.tag].throttle 
     compute_power_from_throttle(engine,conditions)        
      
     # Run the propeller to get the power
-    conditions.energy.converters[propeller.tag].omega          = conditions.energy.converters[engine.tag].rpm * Units.rpm
-    conditions.energy.converters[propeller.tag].throttle       = conditions.energy.converters[engine.tag] .throttle
+    conditions.energy.converters[propeller.tag].omega          = conditions.energy.converters[engine.tag].omega 
+    conditions.energy.converters[propeller.tag].throttle       = conditions.energy.converters[engine.tag].throttle
     conditions.energy.converters[propeller.tag].commanded_thrust_vector_angle =  conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
     compute_rotor_performance(propeller,conditions)
 
@@ -90,7 +89,7 @@ def compute_internal_combustion_engine_performance(propulsor,state,fuel_line=Non
     return ice_conditions.thrust,ice_conditions.moment,ice_conditions.power,power_elec,stored_results_flag,stored_propulsor_tag  
     
     
-def reuse_stored_internal_combustion_engine_data(propulsor,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
+def reuse_stored_internal_combustion_engine_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors
     
     Assumptions: 

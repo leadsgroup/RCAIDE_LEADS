@@ -144,13 +144,13 @@ def EVTOL_Aircraft_Test(update_regression_values):
     weight_analysis          = RCAIDE.Framework.Analyses.Weights.Electric()
     weight_analysis.method    = 'Physics_Based'
     weight_analysis.aircraft_type = 'VTOL'
-    weight_analysis.settings.safety_factor = 1.5    # CHECK THIS VALUE
-    weight_analysis.settings.miscelleneous_weight_factor = 1.1 # CHECK THIS VALUE
-    weight_analysis.settings.disk_area_factor = 1.15
-    weight_analysis.settings.max_thrust_to_weight_ratio = 1.1
-    weight_analysis.settings.max_g_load = 3.8
-    weight_analysis.vehicle  = vehicle
-    results                  = weight_analysis.evaluate() 
+    weight_analysis.settings.safety_factor               = 1.5    
+    weight_analysis.settings.miscelleneous_weight_factor = 1.1 
+    weight_analysis.settings.disk_area_factor            = 1.15
+    weight_analysis.settings.max_thrust_to_weight_ratio  = 1.1
+    weight_analysis.settings.max_g_load                  = 3.8
+    weight_analysis.vehicle                              = vehicle
+    results                                              = weight_analysis.evaluate() 
     
     # ------------------------------------------------------------------
     #   CG Location

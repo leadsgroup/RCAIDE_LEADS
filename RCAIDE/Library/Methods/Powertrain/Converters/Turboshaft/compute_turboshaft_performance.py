@@ -21,7 +21,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turboshaft_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]): 
+def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None): 
     ''' Computes the perfomrance of a turboshaft
     
     Parameters
@@ -179,7 +179,7 @@ def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None,cent
 
     return power,stored_results_flag,stored_propulsor_tag
 
-def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_converter_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
+def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_converter_tag):
     '''Reuses results from one turboshaft for identical propulsors
     
     Assumptions: 
@@ -229,5 +229,6 @@ def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_c
     conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             ) 
   
     P_mech = conditions.energy.converters[turboshaft.tag].power
+    P_elec = P_mech * 0
     
-    return P_mech  
+    return P_mech , P_elec

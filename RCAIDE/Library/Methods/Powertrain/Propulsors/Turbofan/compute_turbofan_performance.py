@@ -23,7 +23,7 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_performance
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_turbofan_performance(turbofan,state,fuel_line=None,bus=None,center_of_gravity= [[0.0, 0.0,0.0]]):
+def compute_turbofan_performance(turbofan,state,center_of_gravity= [[0.0, 0.0,0.0]]):
     ''' Computes the perfomrance of a turbofan
     
     Parameters
@@ -299,7 +299,7 @@ def compute_turbofan_performance(turbofan,state,fuel_line=None,bus=None,center_o
     
     return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
     
-def reuse_stored_turbofan_data(turbofan,state,network,fuel_line,bus,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
+def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbofan for identical turbofans
     
     Assumptions: 
