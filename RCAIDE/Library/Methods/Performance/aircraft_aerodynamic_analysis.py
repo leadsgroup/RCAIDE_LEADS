@@ -25,6 +25,60 @@ def aircraft_aerodynamic_analysis(vehicle,
                                   delta_ISA=0,
                                   use_surrogate = True,
                                   model_fuselage = True):  
+    """
+    Computes aerodynamic coefficients across ranges of angle of attack and Mach numbers using vortex lattice methods.
+ 
+ 
+    Parameters
+    --------
+    vehicle : Vehicle
+        The vehicle instance to be analyzed
+    angle_of_attack_range : ndarray
+        Array of angle of attack values to evaluate [radians]
+    Mach_number_range : ndarray
+        Array of Mach numbers to evaluate
+    control_surface_deflection_range : ndarray, optional
+        Array of control surface deflection angles [radians], default [[0]]
+    altitude : float, optional
+        Altitude for atmospheric properties [m], default 0
+    delta_ISA : float, optional
+        Temperature offset from ISA conditions [K], default 0
+    use_surrogate : bool, optional
+        Flag for using surrogate model in analysis, default True
+    model_fuselage : bool, optional
+        Flag for including fuselage effects, default True. Of note, fuselage modeling can 
+        sometimes be difficult for VLM solvers.
+ 
+    Returns
+    --------
+    results : Data
+        Container of analysis results including:
+            * Mach : ndarray
+                Evaluated Mach numbers
+            * alpha : ndarray
+                Evaluated angles of attack [rad]
+            * lift_coefficient : ndarray
+                Computed lift coefficients
+            * drag_coefficient : ndarray
+                Computed drag coefficients
+ 
+    Notes
+    -----
+    The function uses the US Standard Atmosphere 1976 model for atmospheric properties
+    and evaluates aerodynamic coefficients using vortex lattice methods. Can use a surrogate model
+    for faster evaluation or just direct evaluation of the aerodynamics. 
+ 
+    **Major Assumptions**
+        * Flow is steady and inviscid
+        * Small angle approximations apply
+        * Linear aerodynamics
+        * Atmospheric properties follow US Standard Atmosphere 1976
+ 
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method
+    RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976
+    """
 
     #------------------------------------------------------------------------
     # setup flight conditions

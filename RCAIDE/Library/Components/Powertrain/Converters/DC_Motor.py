@@ -63,11 +63,11 @@ class DC_Motor(Converter):
     The DC_Motor class models a direct current electric motor's performance
     characteristics. It accounts for electrical, mechanical, and thermal effects
     including:
-    * Internal resistance losses
-    * No-load current losses
-    * Gearbox losses
-    * Speed-torque relationships
-    * Power distribution for multiple loads
+        * Internal resistance losses
+        * No-load current losses
+        * Gearbox losses
+        * Speed-torque relationships
+        * Power distribution for multiple loads
 
     **Definitions**
 

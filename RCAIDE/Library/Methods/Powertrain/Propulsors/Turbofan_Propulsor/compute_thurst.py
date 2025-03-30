@@ -16,50 +16,87 @@ import numpy as np
 #  compute_thrust
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_thrust(turbofan,turbofan_conditions,conditions):
-    """Computes thrust and other properties of the turbofan listed below: 
-    turbofan.  
-      .outputs.thrust                                    (numpy.ndarray): thrust                               [N] 
-      .outputs.thrust_specific_fuel_consumption          (numpy.ndarray): TSFC                                 [N/N-s] 
-      .outputs.non_dimensional_thrust                    (numpy.ndarray): non-dim thurst                       [unitless] 
-      .outputs.core_mass_flow_rate                       (numpy.ndarray): core nozzle mass flow rate           [kg/s] 
-      .outputs.fuel_flow_rate                            (numpy.ndarray): fuel flow rate                       [kg/s] 
-      .outputs.power                                     (numpy.ndarray): power                                [W] 
-      
-    Assumptions:
-        Perfect gas
-
-    Source:
-        Stanford AA 283 Course Notes: https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
-
-
-    Args: 
-        conditions. 
-           freestream.isentropic_expansion_factor                (float): isentropic expansion factor          [unitless]  
-           freestream.specific_heat_at_constant_pressure         (float): speific heat                         [J/(kg K)] 
-           freestream.velocity                           (numpy.ndarray): freestream velocity                  [m/s] 
-           freestream.speed_of_sound                     (numpy.ndarray): freestream speed_of_sound            [m/s] 
-           freestream.mach_number                        (numpy.ndarray): freestream mach_number               [unitless] 
-           freestream.pressure                           (numpy.ndarray): freestream pressure                  [Pa] 
-           freestream.gravity                            (numpy.ndarray): freestream gravity                   [m/s^2] 
-           propulsion.throttle                           (numpy.ndarray): throttle                             [unitless] 
-        turbofan 
-           .fuel_to_air_ratio                                    (float): fuel_to_air_ratio                    [unitless] 
-           .total_temperature_reference                          (float): total_temperature_reference          [K] 
-           .total_pressure_reference                             (float): total_pressure_reference             [Pa]    
-           .core_nozzle.velocity                         (numpy.ndarray): turbofan core nozzle velocity        [m/s] 
-           .core_nozzle.static_pressure                  (numpy.ndarray): turbofan core nozzle static pressure [Pa] 
-           .core_nozzle.area_ratio                               (float): turbofan core nozzle area ratio      [unitless] 
-           .fan_nozzle.velocity                          (numpy.ndarray): turbofan fan nozzle velocity         [m/s] 
-           .fan_nozzle.static_pressure                   (numpy.ndarray): turbofan fan nozzle static pressure  [Pa] 
-           .fan_nozzle.area_ratio                                (float): turbofan fan nozzle area ratio       [unitless]   
-           .reference_temperature                                (float): reference_temperature                [K] 
-           .reference_pressure                                   (float): reference_pressure                   [Pa] 
-           .compressor_nondimensional_massflow                   (float): non-dim mass flow rate               [unitless]
-      
-    Returns:
-        None
-         
-    """      
+    """
+     Computes thrust and related performance metrics for a turbofan engine based on operating conditions and engine parameters.
+ 
+     Parameters
+     ----------
+     turbofan : RCAIDE.Library.Components.Propulsors.Turbofan
+         Turbofan engine instance containing reference conditions and geometry
+     turbofan_conditions : Conditions
+         Container for turbofan operating conditions and outputs
+             - fuel_to_air_ratio : float
+                 Ratio of fuel mass to air mass
+             - total_temperature_reference : float
+                 Reference total temperature [K]
+             - total_pressure_reference : float
+                 Reference total pressure [Pa]
+             - flow_through_core : float
+                 Core mass flow rate coefficient
+             - flow_through_fan : float
+                 Fan mass flow rate coefficient
+             - fan/core_nozzle properties : float
+                 Various nozzle exit conditions
+     conditions : Conditions
+         Flight conditions container
+             - freestream : Conditions
+                 Atmospheric and flight conditions
+                     - velocity : array
+                         Flight velocity [m/s]
+                     - pressure : array
+                         Ambient pressure [Pa]
+                     - other properties : various
+                         Additional atmospheric properties
+ 
+     Returns
+     -------
+     None
+         Results are stored in turbofan_conditions:
+             - thrust : array
+                 Total engine thrust [N]
+             - thrust_specific_fuel_consumption : array
+                 TSFC [N/N-s]
+             - non_dimensional_thrust : array
+                 Non-dimensional thrust coefficient
+             - core_mass_flow_rate : array
+                 Core mass flow rate [kg/s]
+             - fuel_flow_rate : array
+                 Fuel consumption rate [kg/s]
+             - power : array
+                 Engine power output [W]
+ 
+     Notes
+     -----
+     The function implements standard turbofan performance calculations including:
+         * Non-dimensional thrust computation for core and fan
+         * Specific thrust and specific impulse
+         * TSFC and fuel flow calculations
+         * Core mass flow rate determination
+ 
+     **Major Assumptions**
+         * Perfect gas behavior
+         * Quasi-steady flow
+         * No installation effects
+         * Ideal nozzle expansion
+ 
+     **Theory**
+     The thrust calculation follows standard gas turbine theory:
+ 
+     .. math::
+         F_{sp} = \\frac{1}{\\gamma M_0}[\\dot{m}_f(\\frac{V_f}{V_0}-1) + A_f(\\frac{P_f}{P_0}-1) + \\dot{m}_c(\\frac{V_c}{V_0}-1) + A_c(\\frac{P_c}{P_0}-1)]
+ 
+     Where subscripts f and c denote fan and core properties respectively.
+ 
+     References
+     ----------
+     [1] Cantwell, B., "AA283 Aircraft and Rocket Propulsion", Stanford University Course Notes, 
+         https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+ 
+     See Also
+     --------
+     RCAIDE.Library.Methods.Propulsors.Turbofan_Propulsor.compute_turbofan_performance
+     RCAIDE.Library.Methods.Propulsors.Turbofan_Propulsor.size_core
+     """       
     # Unpack flight conditions 
     gamma                       = conditions.freestream.isentropic_expansion_factor 
     u0                          = conditions.freestream.velocity

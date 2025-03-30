@@ -35,18 +35,18 @@ class Fan(Converter):
     -----
     The Fan class models the compression and energy addition process in a fan stage.
     The model:
-    * Calculates work input required for given pressure ratio
-    * Accounts for losses through polytropic efficiency
-    * Handles variable speed operation
-    * Assumes axial flow conditions
-    * Models both subsonic and transonic fan operation
+        * Calculates work input required for given pressure ratio
+        * Accounts for losses through polytropic efficiency
+        * Handles variable speed operation
+        * Assumes axial flow conditions
+        * Models both subsonic and transonic fan operation
 
     **Major Assumptions**
-    * Pressure ratio and efficiency do not change with varying conditions
-    * Uniform flow at inlet and exit
-    * No radial variations in flow properties
-    * Adiabatic process (no heat transfer with surroundings)
-    * Steady flow conditions
+        * Pressure ratio and efficiency do not change with varying conditions
+        * Uniform flow at inlet and exit
+        * No radial variations in flow properties
+        * Adiabatic process (no heat transfer with surroundings)
+        * Steady flow conditions
 
     **Definitions**
 

@@ -100,18 +100,14 @@ class Turboshaft(Propulsor):
         
     areas : Data
         Collection of engine areas
-
-        - wetted : float
-            Wetted area [m²]. Default is 0.0.
-
-        - maximum : float
-            Maximum cross-sectional area [m²]. Default is 0.0.
-
-        - exit : float
-            Exit area [m²]. Default is 0.0.
-
-        - inflow : float
-            Inflow area [m²]. Default is 0.0.
+            * wetted : float
+                Wetted area [m²]. Default is 0.0.
+            * maximum : float
+                Maximum cross-sectional area [m²]. Default is 0.0.
+            * exit : float
+                Exit area [m²]. Default is 0.0.
+            * inflow : float
+                Inflow area [m²]. Default is 0.0.
 
     Notes
     -----

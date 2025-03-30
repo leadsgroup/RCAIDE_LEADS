@@ -27,22 +27,67 @@ import numpy as np
 #  Design Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
 def design_turbofan(turbofan):
-    """Compute perfomance properties of a turbofan based on polytropic ration and combustor properties.
-    Turbofan is created by manually linking the different components
-    
-    
-    Assumtions:
-       None 
-    
-    Source:
-    
-    Args:
-        turbofan (dict): turbofan data structure [-]
-    
-    Returns:
-        None 
-    
     """
+     Computes performance properties of a turbofan and sizes components based on design conditions.
+ 
+     Parameters
+     ----------
+     turbofan : Turbofan
+         Turbofan engine object containing all component definitions and design parameters
+             - design_mach_number : float
+                 Design point Mach number
+             - design_altitude : float
+                 Design point altitude [m]
+             - design_isa_deviation : float
+                 ISA temperature deviation [K]
+             - bypass_ratio : float
+                 Engine bypass ratio
+             - Components:
+                 - ram : Ram
+                 - inlet_nozzle : Compression_Nozzle
+                 - fan : Fan
+                 - low_pressure_compressor : Compressor
+                 - high_pressure_compressor : Compressor
+                 - combustor : Combustor
+                 - high_pressure_turbine : Turbine
+                 - low_pressure_turbine : Turbine
+                 - core_nozzle : Expansion_Nozzle
+                 - fan_nozzle : Expansion_Nozzle
+ 
+     Returns
+     -------
+     None
+         Updates turbofan object attributes in-place
+ 
+     Notes
+     -----
+     This function performs the following steps:
+        1. Computes atmospheric conditions at design point
+        2. Sets up freestream conditions
+        3. Links and computes performance through each component
+        4. Sizes the core based on design mass flow
+        5. Computes static sea level performance
+ 
+     **Major Assumptions**
+         * Quasi-one-dimensional flow
+         * Each component operates in steady state
+         * Perfect gas behavior in non-combustion sections
+         * US Standard Atmosphere 1976 model
+         * Earth gravity model
+ 
+     **Theory**
+     The design process follows standard gas turbine design principles, linking
+     components in series and ensuring conservation of mass, momentum, and energy
+     through each component.
+ 
+     .. math::
+         \\text{Mass flow continuity: } \\dot{m}_{in} = \\dot{m}_{out}
+ 
+     References
+     ----------
+     [1] Mattingly, J. D., "Elements of Gas Turbine Propulsion", McGraw-Hill, 1996
+     [2] Walsh, P. P., Fletcher, P., "Gas Turbine Performance", Blackwell Science, 2004
+     """
     # check if mach number and temperature are passed
     if(turbofan.design_mach_number==None) and (turbofan.design_altitude==None): 
         raise NameError('The sizing conditions require an altitude and a Mach number') 

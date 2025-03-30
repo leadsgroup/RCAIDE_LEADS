@@ -45,15 +45,15 @@ class Electric_Rotor(Propulsor):
     controller (ESC) to regulate power delivery from the electrical system to the motor.
     
     The class provides methods for:
-    - Computing rotor performance (thrust, moment, power)
-    - Managing operating conditions
-    - Handling system states and residuals
-    - Reusing stored performance data for computational efficiency
+        * Computing rotor performance (thrust, moment, power)
+        * Managing operating conditions
+        * Handling system states and residuals
+        * Reusing stored performance data for computational efficiency
     
     This propulsor type is commonly used in:
-    - Multicopters
-    - eVTOL aircraft
-    - Hybrid helicopters
+        * Multicopters
+        * eVTOL aircraft
+        * Hybrid helicopters
     
     **Definitions**
 
@@ -68,7 +68,8 @@ class Electric_Rotor(Propulsor):
     See Also
     --------
     RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor
-    RCAIDE.Library.Components.Energy
+    RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan
+    RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_ICE_Propeller
     """
     def __defaults__(self):    
         # setting the default values

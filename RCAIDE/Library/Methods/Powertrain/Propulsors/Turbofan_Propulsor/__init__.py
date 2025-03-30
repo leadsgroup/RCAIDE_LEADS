@@ -1,7 +1,14 @@
 # RCAIDE/Methods/Energy/Propulsors/Converters/Turbofan/__init__.py
 # 
 
-""" RCAIDE Package Setup
+"""
+Collection of methods for modeling and analyzing turbofan propulsion systems. This module provides functionality for designing, 
+sizing, and computing performance characteristics of turbofan engines including thrust calculations and core sizing.
+ 
+See Also
+ --------
+RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan
+RCAIDE.Framework.Analysis.Propulsion
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

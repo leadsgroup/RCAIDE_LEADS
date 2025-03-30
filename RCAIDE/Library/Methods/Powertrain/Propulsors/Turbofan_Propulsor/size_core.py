@@ -15,28 +15,71 @@ import numpy as np
 #  size_core
 # ---------------------------------------------------------------------------------------------------------------------- 
 def size_core(turbofan,turbofan_conditions,conditions):
-    """Sizes the core flow for the design condition by computing the
-    non-dimensional thrust 
-
-    Assumptions:
-        Working fluid is a perfect gas
-
-    Source:
-        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
-
-    Args:
-        conditions.freestream.speed_of_sound  (numpy.ndarray): [m/s]  
-        turbofan
-          .bypass_ratio                (float): bypass_ratio                [-]
-          .total_temperature_reference (float): total temperature reference [K]
-          .total_pressure_reference    (float): total pressure reference    [Pa]  
-          .reference_temperature              (float): reference temperature       [K]
-          .reference_pressure                 (float): reference pressure          [Pa]
-          .design_thrust                      (float): design thrust               [N]  
-
-    Returns:
-        None 
-    """             
+    """
+    Sizes the core flow for the design condition by computing non-dimensional thrust 
+    and required mass flow rates.
+ 
+    Parameters
+    ----------
+    turbofan : Turbofan
+        Turbofan engine object containing design parameters
+            * bypass_ratio : float
+                Engine bypass ratio [-]
+            * reference_temperature : float
+                Reference temperature [K]
+            * reference_pressure : float
+                Reference pressure [Pa]
+            * design_thrust : float
+                Design thrust requirement [N]
+    turbofan_conditions : Data
+        Turbofan operating conditions
+            * total_temperature_reference : float
+                Total temperature at reference station [K]
+            * total_pressure_reference : float
+                Total pressure at reference station [Pa]
+            * throttle : float
+                Throttle setting [-]
+    conditions : Data
+        Flight conditions
+            * freestream.speed_of_sound : float
+                Freestream speed of sound [m/s]
+ 
+    Returns
+    -------
+    None
+        Updates turbofan object attributes in-place:
+            * TSFC : float
+                Thrust specific fuel consumption [kg/(N*s)]
+            * mass_flow_rate_design : float
+                Design core mass flow rate [kg/s]
+            * compressor_nondimensional_massflow : float
+                Non-dimensional mass flow parameter [-]
+ 
+    Notes
+    -----
+    This function determines the required core mass flow rate to achieve the design
+    thrust using non-dimensional analysis.
+ 
+    **Major Assumptions**
+        * Working fluid is a perfect gas
+        * Steady state operation
+        * One-dimensional flow
+    
+    **Theory**
+    The core sizing is based on non-dimensional thrust parameters:
+    .. math::
+         \\dot{m}_{core} = \\frac{F_{design}}{F_{sp} a_0 (1+BPR) \\theta}
+    where:
+         - :math:`F_{design}` is the design thrust
+         - :math:`F_{sp}` is the specific thrust
+         - :math:`a_0` is the freestream speed of sound
+         - :math:`BPR` is the bypass ratio
+         - :math:`\\theta` is the throttle setting
+        
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor.compute_thrust
+    """            
     # Unpack flight conditions 
     a0             = conditions.freestream.speed_of_sound
 

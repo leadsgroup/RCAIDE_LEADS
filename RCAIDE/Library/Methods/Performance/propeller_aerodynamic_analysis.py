@@ -17,6 +17,70 @@ def propeller_aerodynamic_analysis(propeller,
                            angle_of_attack = 0, 
                            altitude = 0,
                            delta_isa =0 ): 
+    """
+    Computes propeller aerodynamic performance across a range of flight velocities using blade element momentum theory.
+
+    Parameters
+    ----------
+    propeller : Propeller
+        The propeller instance containing geometry and operating conditions
+    velocity_range : ndarray
+        Array of freestream velocities to analyze [m/s]
+    angular_velocity : float, optional
+        Propeller rotation speed [rad/s], default 2500 rpm
+    angle_of_attack : float, optional
+        Propeller axis angle of attack [rad], default 0
+    altitude : float, optional
+        Analysis altitude [m], default 0
+    delta_isa : float, optional
+        Temperature offset from ISA conditions [K], default 0
+
+    Returns
+    -------
+    results : Results
+        Container of analysis results including:
+            - thrust_force_vector : ndarray
+                Thrust force components [N]
+            - torque_force_vector : ndarray
+                Torque force components [N-m]
+            - power : ndarray
+                Power required [W]
+            - efficiency : ndarray
+                Propeller efficiency
+            - blade_loading : Data
+                Local blade aerodynamic conditions
+
+    Notes
+    -----
+    Uses Blade Element Momentum Theory (BEMT) to compute:
+        * Local blade section forces
+        * Induced velocities
+        * Overall propeller performance
+
+    **Major Assumptions**
+        * Steady flow conditions
+        * No blade-to-blade interference
+        * Rigid blades
+        * Small angle approximations for induced velocities
+        * No tip losses or hub losses (unless specifically enabled)
+
+    **Theory**
+    BEMT combines blade element theory and momentum theory:
+    
+    .. math::
+        dT = \\rho n^2 D^4 C_T(J) dr
+        
+    where:
+        * ρ = air density
+        * n = rotational speed
+        * D = diameter
+        * CT = thrust coefficient
+        * J = advance ratio
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Propulsors.Converters.Rotor.compute_rotor_performance
+    """
     # design aircract 
     electric_rotor                 = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
     electric_rotor.rotor           = propeller 

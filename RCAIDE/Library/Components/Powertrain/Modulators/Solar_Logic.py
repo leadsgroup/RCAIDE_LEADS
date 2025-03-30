@@ -28,8 +28,8 @@ class Solar_Logic(Component):
     -----
     The Solar Logic component manages the complex power flow in solar aircraft,
     including:
-    - Maximum power point tracking for solar panels
-    - System voltage
+        * Maximum power point tracking for solar panels
+        * System voltage
 
     **Definitions**
 
@@ -39,8 +39,6 @@ class Solar_Logic(Component):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Solar_Panels
-        Solar panel components
     RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules
         Battery storage components
     """

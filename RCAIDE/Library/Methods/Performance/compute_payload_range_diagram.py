@@ -20,23 +20,68 @@ from matplotlib import pyplot as plt
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
 def compute_payload_range_diagram(vehicle,assigned_propulsors,weights_analysis,aerodynamics_analysis,cruise_airspeed = 515*Units.mph, cruise_altitude= 35000*Units.feet,max_range_guess = 1000*Units.nmi, reserves=0., plot_diagram = True, fuel_name=None):  
-    """Calculates and plots the payload range diagram for an aircraft by modifying the cruise segment and weights of the aicraft .
+    """
+    Calculates and optionally plots the payload-range diagram for both conventional and electric aircraft.
+ 
+    Parameters
+    ----------
+    vehicle : Vehicle
+        The vehicle instance to be analyzed
+    assigned_propulsors : list
+        List of propulsion systems to be used in the analysis
+    weights_analysis : Analysis
+        Vehicle weights analysis instance
+    aerodynamics_analysis : Analysis
+        Vehicle aerodynamics analysis instance
+    cruise_airspeed : float, optional
+        Cruise velocity [m/s], default 515 mph
+    cruise_altitude : float, optional
+        Cruise altitude [m], default 35000 ft
+    max_range_guess : float, optional
+        Initial guess for maximum range [m], default 1000 nmi
+    reserves : float, optional
+        Reserve fuel fraction, default 0
+    plot_diagram : bool, optional
+         Flag to generate payload-range plot, default True
+     fuel_name : str, optional
+         Name of fuel type for plot title, default None
+ 
+    Returns
+    -------
+    payload_range : Data
+        Container of payload range results including:
+            - range : ndarray
+                Range points [m]
+            - payload : ndarray
+                Payload weights [kg]
+            - fuel : ndarray
+                Fuel weights [kg] (conventional aircraft only)
+            - takeoff_weight : ndarray
+                Takeoff weights [kg]
+            - reserves : float
+                Reserve fuel fraction (conventional aircraft only)
 
-        Sources:
-        N/A
+    Notes
+    -----
+    Computes three key points for conventional aircraft:
+        1. Maximum payload at maximum takeoff weight
+        2. Maximum fuel with maximum takeoff weight
+        3. Maximum fuel with zero payload (ferry range)
+    
+    For electric aircraft computes:
+        1. Maximum payload range
+        2. Ferry range (zero payload)
 
-        Assumptions:
-        None 
+    **Major Assumptions**
+        * Constant cruise speed and altitude
+        * Fixed reserve fuel fraction
+        * Linear interpolation between payload-range points
+        * Battery energy content remains constant (electric aircraft)
 
-        Inputs:
-            vehicle             data structure for aircraft                  [-]
-            mission             data structure for mission                   [-] 
-            cruise_segment_tag  string of cruise segment                     [string]
-            reserves            reserve fuel                                 [unitless] 
-            
-        Outputs: 
-            payload_range       data structure of payload range properties   [m/s]
-    """ 
+    **Theory**
+    Range for conventional aircraft follows the Breguet range equation:
+    
+    """
 
     configs  =  configs_setup(vehicle)
 

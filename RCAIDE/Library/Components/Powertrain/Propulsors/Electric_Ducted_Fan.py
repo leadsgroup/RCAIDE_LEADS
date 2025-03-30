@@ -42,10 +42,10 @@ class Electric_Ducted_Fan(Propulsor):
     (ESC) to regulate power delivery from the electrical system to the motor.
     
     The ducted fan configuration provides several advantages over open propellers:
-    - Higher static thrust efficiency
-    - Reduced tip losses
-    - Lower noise emission
-    - Improved safety through shrouding
+        * Higher static thrust efficiency
+        * Reduced tip losses
+        * Lower noise emission
+        * Improved safety through shrouding
     
     **Definitions**
 

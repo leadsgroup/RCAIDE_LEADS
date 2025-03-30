@@ -1,7 +1,17 @@
 # RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/__init__.py
 # 
 
-"""RCAIDE Package Setup
+"""
+Methods for computing component weights for a transport aircraft using NASA's Flight Optimization System (FLOPS) 
+correlations. This module provides weight estimation techniques derived from NASA's 
+extensive aircraft database and analysis tools.
+
+See Also
+--------
+RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer
+    Raymer's weight estimation methods
+RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport
+    Transport aircraft weight methods
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

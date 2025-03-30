@@ -41,16 +41,16 @@ class Engine(Converter):
     -----
     The Engine class models an internal combustion engine's performance characteristics
     including:
-    * Sea level power rating
-    * Power lapse with altitude
-    * Fuel consumption characteristics
-    * Power distribution capabilities
-    * Operating speed effects
+        * Sea level power rating
+        * Power lapse with altitude
+        * Fuel consumption characteristics
+        * Power distribution capabilities
+        * Operating speed effects
 
     **Major Assumptions**
-    * Constant power specific fuel consumption
-    * Fuel properties remain constant
-    * Steady-state operation (no transient effects)
+        * Constant power specific fuel consumption
+        * Fuel properties remain constant
+        * Steady-state operation (no transient effects)
 
     **Definitions**
     

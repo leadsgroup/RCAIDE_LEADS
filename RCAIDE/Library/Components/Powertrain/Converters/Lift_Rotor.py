@@ -126,11 +126,11 @@ class Lift_Rotor(Rotor):
     -----
     The Lift_Rotor class models rotors specifically designed for vertical lift applications.
     It includes capabilities for:
-    * Hover performance analysis
-    * One engine inoperative (OEI) conditions
-    * Variable pitch operation
-    * Acoustic analysis
-    * Performance coefficient calculations
+        * Hover performance analysis
+        * One engine inoperative (OEI) conditions
+        * Variable pitch operation
+        * Acoustic analysis
+        * Performance coefficient calculations
 
     **Definitions**
 
