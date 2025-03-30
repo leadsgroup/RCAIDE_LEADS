@@ -26,7 +26,7 @@ def sequential_segments(mission):
         segment.process.initialize.expand_state(segment) 
         segment.process.initialize.expand_state = RCAIDE.Library.Methods.skip        
         segment.evaluate()
-        print('\n Solving', segment.tag, ' segment. Mission simulation completion status: ')
+        print('\n Solving', segment.tag, 'segment. Mission simulation completion status: ')
         pbar.update(progress_interval)
         print('\n')
     pbar.close()
