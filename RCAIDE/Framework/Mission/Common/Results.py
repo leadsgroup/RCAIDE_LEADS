@@ -266,6 +266,9 @@ class Results(Conditions):
         self.control_surfaces.slat.static_stability.coefficients.N             = ones_1col * 0           
         self.control_surfaces.slat.static_stability.coefficients.e             = ones_1col * 0
 
+        self.control_surfaces.spoiler                                          = Conditions()
+        self.control_surfaces.spoiler.deflection                               = ones_1col * 0         
+
         # ----------------------------------------------------------------------------------------------------------------------
         # Stability 
         # ----------------------------------------------------------------------------------------------------------------------  

@@ -9,6 +9,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import  Data 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import  VLM
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM import call_VLM
+from copy import deepcopy
 
 # package imports
 import numpy  as np
@@ -71,7 +72,7 @@ def train_model(aerodynamics, Mach):
         None    
     """    
 
-    vehicle        = aerodynamics.vehicle
+    vehicle        = deepcopy(aerodynamics.vehicle)
     settings       = aerodynamics.settings
     AoA            = aerodynamics.training.angle_of_attack                  
     Beta           = aerodynamics.training.sideslip_angle
@@ -79,7 +80,7 @@ def train_model(aerodynamics, Mach):
     training.Mach  = Mach 
     
     # loop through wings to determine what control surfaces are present 
-    for wing in aerodynamics.vehicle.wings: 
+    for wing in vehicle.wings: 
         for control_surface in wing.control_surfaces:
             control_surface.deflection  =  0.0
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:  
@@ -549,7 +550,7 @@ def train_model(aerodynamics, Mach):
 
     '''  for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces'''
       
-    for wing in aerodynamics.vehicle.wings: 
+    for wing in vehicle.wings: 
         for control_surface in wing.control_surfaces: 
             # --------------------------------------------------------------------------------------------------------------
             # Aileron 
@@ -860,7 +861,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
         None    
     """    
 
-    vehicle        = aerodynamics.vehicle 
+    vehicle        = deepcopy(aerodynamics.vehicle)
     AoA            = aerodynamics.training.angle_of_attack                  
     Beta           = aerodynamics.training.sideslip_angle
     training       = Data() 
@@ -1244,76 +1245,4 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
         training.dCN_ddelta_s    =  np.array([training_subsonic.dCN_ddelta_s[-1]    , training_subsonic.dCN_ddelta_s[0]   ])
     training.NP            = 0  
     
-    return training
-        
-## ----------------------------------------------------------------------
-##  Evaluate VLM
-## ----------------------------------------------------------------------
-#def call_VLM(conditions,settings,vehicle):
-    #"""Calculate aerodynamics coefficients inluding specific wing coefficients using the VLM
-        
-    #Assumptions:
-        #None
-        
-    #Source:
-        #None
-
-    #Args: 
-        #conditions : flight conditions     [unitless]
-        #settings   : VLM analysis settings [unitless]
-        #vehicle    : vehicle configuration [unitless] 
-        
-    #Returns: 
-        #None  
-    #"""
- 
-    #Clift_wings         = Data()
-    #Cdrag_wings         = Data()
-    #AoA_wing_induced    = Data()
-    
-    #results = VLM(conditions,settings,vehicle)
-    #CL   = results.CL       
-    #Cdrag   = results.CDi     
-    #Clift_w = results.Clift_wing        
-    #Cdrag_w = results.Cdrag_i_wing       
-    #CX      = results.CX       
-    #CY      = results.CY       
-    #CZ      = results.CZ       
-    #CL      = results.CL_mom
-    #alpha_i = results.alpha_i 
-    #CM      = results.CM       
-    #CN      = results.CN 
-    #S_ref   = results.S_ref    
-    #b_ref   = results.b_ref    
-    #c_ref   = results.c_ref    
-    #X_ref   = results.X_ref    
-    #Y_ref   = results.Y_ref    
-    #Z_ref   = results.Z_ref
-    #Clift_sectional    = results.Clift_sectional     
-    #Cdrag_i_sectional   = results.Cdrag_i_sectional 
-    #CPi     = results.CP 
-    
-
-    ## Dimensionalize the lift and drag for each wing
-    #areas          = vehicle.vortex_distribution.wing_areas
-    #dim_wing_lifts = Clift_w  * areas
-    #dim_wing_drags = Cdrag_w * areas
-    
-    #i = 0
-    ## Assign the lift and drag and non-dimensionalize
-    #for wing in vehicle.wings.values():
-        #ref = wing.areas.reference
-        #if wing.symmetric:
-            #Clift_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_lifts[:,i:(i+2)],axis=1)).T/ref
-            #Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref
-            #AoA_wing_induced[wing.tag] = np.concatenate((alpha_i[i],alpha_i[i+1]),axis=1)
-            #i+=1
-        #else:
-            #Clift_wings[wing.tag]      = np.atleast_2d(dim_wing_lifts[:,i]).T/ref
-            #Cdrag_wings[wing.tag]      = np.atleast_2d(dim_wing_drags[:,i]).T/ref
-            #AoA_wing_induced[wing.tag] = alpha_i[i]
-        #i+=1
-    
-    #return CL,Cdrag,CX,CY,CZ,CL,CM,CN, S_ref,b_ref,c_ref,X_ref,Y_ref ,Z_ref, Clift_wings,Cdrag_wings,AoA_wing_induced,Clift_sectional,Cdrag_i_sectional,CPi  
-
-        
+    return training 

@@ -47,36 +47,25 @@ def evaluate_surrogate(state,settings,vehicle):
     Beta          = np.atleast_2d(conditions.aerodynamics.angles.beta)    
     Mach          = np.atleast_2d(conditions.freestream.mach_number)  
      
-    # loop through wings to determine what control surfaces are present
-    delta_a       = np.zeros_like(Mach)
-    delta_e       = np.zeros_like(Mach)
-    delta_r       = np.zeros_like(Mach)
-    delta_s       = np.zeros_like(Mach)
-    delta_f       = np.zeros_like(Mach)
-    
+    # loop through wings to determine what control surfaces are present  
     for wing in vehicle.wings: 
         for control_surface in wing.control_surfaces:  
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
-                if trim ==  True: 
-                    delta_a = np.atleast_2d(conditions.control_surfaces.aileron.deflection) 
-                else:
-                    delta_a = np.ones_like(Mach) * control_surface.deflection  
+                if trim !=  True:  
+                    conditions.control_surfaces.aileron.deflection[:, 0] = control_surface.deflection
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator: 
-                if trim ==  True: 
-                    delta_e = np.atleast_2d(conditions.control_surfaces.elevator.deflection)
-                else:  
-                    delta_e = np.ones_like(Mach) * control_surface.deflection
+                if trim !=  True:   
+                    conditions.control_surfaces.elevator.deflection[:, 0] = control_surface.deflection
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder: 
-                if trim ==  True: 
-                    delta_r = np.atleast_2d(conditions.control_surfaces.rudder.deflection)
-                else:  
-                    delta_r = np.ones_like(Mach) * control_surface.deflection
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:  
-                delta_s  = np.ones_like(Mach) * control_surface.deflection
+                if trim !=  True:  
+                    conditions.control_surfaces.rudder.deflection[:, 0] = control_surface.deflection
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat: 
+                conditions.control_surfaces.slat.deflection[:, 0] = control_surface.deflection
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:   
-                delta_f  = np.ones_like(Mach) * control_surface.deflection
- 
-    vehicle          = aerodynamics.vehicle 
+                conditions.control_surfaces.flap.deflection[:, 0] = control_surface.deflection
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler:   
+                conditions.control_surfaces.spoiler.deflection[:, 0] = control_surface.deflection
+  
     hsub_min         = aerodynamics.hsub_min
     hsub_max         = aerodynamics.hsub_max
     hsup_min         = aerodynamics.hsup_min
@@ -315,7 +304,7 @@ def evaluate_surrogate(state,settings,vehicle):
     # Addition of Control Surface Effect 
     # -----------------------------------------------------------------------------------------------------------------------    
     if aerodynamics.aileron_flag: 
-        pts_delta_a     = np.hstack((delta_a,Mach))
+        pts_delta_a     = np.hstack((conditions.control_surfaces.aileron.deflection,Mach))
         
         results_delta_a =  compute_coefficients(sub_sur.Clift_delta_a,sub_sur.Cdrag_delta_a,sub_sur.CX_delta_a,sub_sur.CY_delta_a,sub_sur.CZ_delta_a,sub_sur.CL_delta_a,sub_sur.CM_delta_a, sub_sur.CN_delta_a,
          trans_sur.Clift_delta_a,trans_sur.Cdrag_delta_a,trans_sur.CX_delta_a,trans_sur.CY_delta_a,trans_sur.CZ_delta_a,trans_sur.CL_delta_a,trans_sur.CM_delta_a, trans_sur.CN_delta_a,
@@ -330,14 +319,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_a      = results_delta_a.CL      
         CM_delta_a      = results_delta_a.CM      
         CN_delta_a      = results_delta_a.CN     
-        Clift_delta_a[delta_a==0.0] = 0   
-        Cdrag_delta_a[delta_a==0.0] = 0   
-        CX_delta_a[delta_a==0.0]    = 0        
-        CY_delta_a[delta_a==0.0]    = 0        
-        CZ_delta_a[delta_a==0.0]    = 0        
-        CL_delta_a[delta_a==0.0]    = 0        
-        CM_delta_a[delta_a==0.0]    = 0        
-        CN_delta_a[delta_a==0.0]    = 0
+        Clift_delta_a[conditions.control_surfaces.aileron.deflection==0.0] = 0   
+        Cdrag_delta_a[conditions.control_surfaces.aileron.deflection==0.0] = 0   
+        CX_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CY_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CZ_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CL_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CM_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CN_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0
         
         conditions.static_stability.coefficients.lift                                += Clift_delta_a
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_a
@@ -358,7 +347,7 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.aileron.static_stability.coefficients.N          = CN_delta_a             
         
     if aerodynamics.elevator_flag: 
-        pts_delta_e     = np.hstack((delta_e,Mach))
+        pts_delta_e     = np.hstack((conditions.control_surfaces.elevator.deflection,Mach))
 
         results_delta_e =  compute_coefficients(sub_sur.Clift_delta_e,sub_sur.Cdrag_delta_e,sub_sur.CX_delta_e,sub_sur.CY_delta_e,sub_sur.CZ_delta_e,sub_sur.CL_delta_e,sub_sur.CM_delta_e, sub_sur.CN_delta_e,
          trans_sur.Clift_delta_e,trans_sur.Cdrag_delta_e,trans_sur.CX_delta_e,trans_sur.CY_delta_e,trans_sur.CZ_delta_e,trans_sur.CL_delta_e,trans_sur.CM_delta_e, trans_sur.CN_delta_e,
@@ -373,14 +362,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_e      = results_delta_e.CL      
         CM_delta_e      = results_delta_e.CM      
         CN_delta_e      = results_delta_e.CN
-        Clift_delta_e[delta_e==0.0] = 0     
-        Cdrag_delta_e[delta_e==0.0] = 0    
-        CX_delta_e[delta_e==0.0]    = 0          
-        CY_delta_e[delta_e==0.0]    = 0          
-        CZ_delta_e[delta_e==0.0]    = 0          
-        CL_delta_e[delta_e==0.0]    = 0          
-        CM_delta_e[delta_e==0.0]    = 0          
-        CN_delta_e[delta_e==0.0]    = 0
+        Clift_delta_e[conditions.control_surfaces.elevator.deflection==0.0] = 0     
+        Cdrag_delta_e[conditions.control_surfaces.elevator.deflection==0.0] = 0    
+        CX_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CY_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CZ_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CL_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CM_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CN_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0
         
         conditions.static_stability.coefficients.lift                                += Clift_delta_e
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_e
@@ -401,7 +390,7 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.elevator.static_stability.coefficients.N         = CN_delta_e            
         
     if aerodynamics.rudder_flag:  
-        pts_delta_r    = np.hstack((delta_r,Mach))
+        pts_delta_r    = np.hstack((conditions.control_surfaces.rudder.deflection,Mach))
         
         results_delta_r =  compute_coefficients(sub_sur.Clift_delta_r,sub_sur.Cdrag_delta_r,sub_sur.CX_delta_r,sub_sur.CY_delta_r,sub_sur.CZ_delta_r,sub_sur.CL_delta_r,sub_sur.CM_delta_r, sub_sur.CN_delta_r,
                                                 trans_sur.Clift_delta_r,trans_sur.Cdrag_delta_r,trans_sur.CX_delta_r,trans_sur.CY_delta_r,trans_sur.CZ_delta_r,trans_sur.CL_delta_r,trans_sur.CM_delta_r, trans_sur.CN_delta_r,
@@ -416,14 +405,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_r      = results_delta_r.CL      
         CM_delta_r      = results_delta_r.CM      
         CN_delta_r      = results_delta_r.CN 
-        Clift_delta_r[delta_r==0.0] = 0    
-        Cdrag_delta_r[delta_r==0.0] = 0    
-        CX_delta_r[delta_r==0.0]    = 0          
-        CY_delta_r[delta_r==0.0]    = 0          
-        CZ_delta_r[delta_r==0.0]    = 0          
-        CL_delta_r[delta_r==0.0]    = 0          
-        CM_delta_r[delta_r==0.0]    = 0          
-        CN_delta_r[delta_r==0.0]    = 0
+        Clift_delta_r[conditions.control_surfaces.rudder.deflection==0.0] = 0    
+        Cdrag_delta_r[conditions.control_surfaces.rudder.deflection==0.0] = 0    
+        CX_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CY_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CZ_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CL_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CM_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CN_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0
         
         conditions.static_stability.coefficients.lift                                += Clift_delta_r
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_r
@@ -444,7 +433,7 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.rudder.static_stability.coefficients.N           = CN_delta_r         
         
     if aerodynamics.flap_flag:
-        pts_delta_f    = np.hstack((delta_f,Mach))
+        pts_delta_f    = np.hstack((conditions.control_surfaces.flap.deflection,Mach))
         
         results_delta_f =  compute_coefficients(sub_sur.Clift_delta_f,sub_sur.Cdrag_delta_f,sub_sur.CX_delta_f,sub_sur.CY_delta_f,sub_sur.CZ_delta_f,sub_sur.CL_delta_f,sub_sur.CM_delta_f, sub_sur.CN_delta_f,
          trans_sur.Clift_delta_f,trans_sur.Cdrag_delta_f,trans_sur.CX_delta_f,trans_sur.CY_delta_f,trans_sur.CZ_delta_f,trans_sur.CL_delta_f,trans_sur.CM_delta_f, trans_sur.CN_delta_f,
@@ -459,14 +448,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_f      = results_delta_f.CL      
         CM_delta_f      = results_delta_f.CM      
         CN_delta_f      = results_delta_f.CN
-        Clift_delta_f[delta_f==0.0] = 0   
-        Cdrag_delta_f[delta_f==0.0] = 0  
-        CX_delta_f[delta_f==0.0]    = 0        
-        CY_delta_f[delta_f==0.0]    = 0        
-        CZ_delta_f[delta_f==0.0]    = 0        
-        CL_delta_f[delta_f==0.0]    = 0        
-        CM_delta_f[delta_f==0.0]    = 0        
-        CN_delta_f[delta_f==0.0]    = 0
+        Clift_delta_f[conditions.control_surfaces.flap.deflection==0.0] = 0   
+        Cdrag_delta_f[conditions.control_surfaces.flap.deflection==0.0] = 0  
+        CX_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CY_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CZ_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CL_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CM_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CN_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0
         
         conditions.static_stability.coefficients.lift                                += Clift_delta_f
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_f
@@ -487,7 +476,7 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.flap.static_stability.coefficients.N             = CN_delta_f           
         
     if aerodynamics.slat_flag: 
-        pts_delta_s    = np.hstack((delta_s,Mach)) 
+        pts_delta_s    = np.hstack((conditions.control_surfaces.slat.deflection,Mach)) 
         
         results_delta_s =  compute_coefficients(sub_sur.Clift_delta_s,sub_sur.Cdrag_delta_s,sub_sur.CX_delta_s,sub_sur.CY_delta_s,sub_sur.CZ_delta_s,sub_sur.CL_delta_s,sub_sur.CM_delta_s, sub_sur.CN_delta_s,
          trans_sur.Clift_delta_s,trans_sur.Cdrag_delta_s,trans_sur.CX_delta_s,trans_sur.CY_delta_s,trans_sur.CZ_delta_s,trans_sur.CL_delta_s,trans_sur.CM_delta_s, trans_sur.CN_delta_s,
@@ -502,14 +491,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_s      = results_delta_s.CL      
         CM_delta_s      = results_delta_s.CM      
         CN_delta_s      = results_delta_s.CN
-        Clift_delta_s[delta_s==0.0] = 0    
-        Cdrag_delta_s[delta_s==0.0] = 0  
-        CX_delta_s[delta_s==0.0]    = 0        
-        CY_delta_s[delta_s==0.0]    = 0        
-        CZ_delta_s[delta_s==0.0]    = 0        
-        CL_delta_s[delta_s==0.0]    = 0        
-        CM_delta_s[delta_s==0.0]    = 0        
-        CN_delta_s[delta_s==0.0]    = 0          
+        Clift_delta_s[conditions.control_surfaces.slat.deflection==0.0] = 0    
+        Cdrag_delta_s[conditions.control_surfaces.slat.deflection==0.0] = 0  
+        CX_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CY_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CZ_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CL_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CM_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CN_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0          
          
         conditions.static_stability.coefficients.lift                                += Clift_delta_s
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_s

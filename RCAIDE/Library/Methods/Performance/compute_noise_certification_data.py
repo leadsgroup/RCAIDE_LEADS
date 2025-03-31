@@ -47,7 +47,7 @@ def compute_noise_certification_data(approach_mission  = None,
     microphone_x_resolution                = 401 
     microphone_y_resolution                = 9  
     noise_times_steps                      = 51 
-    number_of_microphone_in_stencil        = 2000   
+    number_of_microphone_in_stencil        = 1800
     
     # update weights analysis
     for segment in approach_mission.segments:
@@ -59,7 +59,7 @@ def compute_noise_certification_data(approach_mission  = None,
         noise_analysis.settings.noise_times_steps                      = noise_times_steps
         noise_analysis.settings.number_of_microphone_in_stencil        = number_of_microphone_in_stencil
         noise_analysis.settings.microphone_min_y                       = 1E-6   
-        noise_analysis.settings.microphone_max_y                       = 2000
+        noise_analysis.settings.microphone_max_y                       = 1800
         noise_analysis.settings.microphone_min_x                       = 1E-6   
         noise_analysis.settings.microphone_max_x                       = 8000
     
@@ -73,7 +73,7 @@ def compute_noise_certification_data(approach_mission  = None,
         noise_analysis.settings.noise_times_steps                      = noise_times_steps
         noise_analysis.settings.number_of_microphone_in_stencil        = number_of_microphone_in_stencil
         noise_analysis.settings.microphone_min_y                       = 1E-6   
-        noise_analysis.settings.microphone_max_y                       = 2000
+        noise_analysis.settings.microphone_max_y                       = 1800
         noise_analysis.settings.microphone_min_x                       = -2000 + 1E-6  
         noise_analysis.settings.microphone_max_x                       = 6000
     
@@ -197,6 +197,26 @@ def post_process_certification_noise_data(approach_results,takeoff_results):
         takeoff_microphone_locations      = takeoff_noise_data.microphone_locations     
     
     )
+    
+    print('Certification Noise')
+    print('-----------------------------------------------')
+    print('2000 m  Approach Noise   :', round(cert_SPL_dBA_max[0, 0], 2)) 
+    print('6000 m  Flyover Noise    :', round(cert_SPL_dBA_max[-1, 0], 2))
+    print('450  m  Sideline Noise   :', round(max(cert_SPL_dBA_max[:, 2]), 2))
+    
+    area_85_dbA =  len(np.where(cert_SPL_dBA_max.flatten()>85)[0]) *100 / len(cert_SPL_dBA_max.flatten()) 
+    area_65_dbA =  len(np.where(cert_SPL_dBA_max.flatten()>65)[0]) *100 / len(cert_SPL_dBA_max.flatten())
+    print('% Area > 85 dBA Threshold:', round(area_85_dbA, 2)) 
+    print('% Area > 65 dBA Threshold:', round(area_65_dbA, 2))
+    
+    res.approach_noise_2000m = cert_SPL_dBA_max[0, 0] 
+    res.flyover_noise_6000m  = cert_SPL_dBA_max[-1, 0] 
+    res.sideline_noise_450m  = max(cert_SPL_dBA_max[:, 2])
+    res.area_65_dbA = area_65_dbA
+    res.area_65_dbA = area_65_dbA
+    
+    
+    
     
     return res
 
