@@ -1,7 +1,8 @@
 # RCAIDE/Methods/Energy/Propulsors/Electric_Rotor_Propulsor/__init__.py
 # 
 
-""" RCAIDE Package Setup
+""" 
+RCAIDE Package Setup
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

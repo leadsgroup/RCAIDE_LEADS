@@ -26,7 +26,7 @@ import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_turboprop_performance(turboprop,state,center_of_gravity= [[0.0, 0.0,0.0]]):    
     
-    ''' Computes the performance of one turboprop
+    """ Computes the performance of one turboprop
     
     Assumptions: 
     N/A
@@ -48,7 +48,7 @@ def compute_turboprop_performance(turboprop,state,center_of_gravity= [[0.0, 0.0,
     
     Properties Used: 
     N.A.        
-    ''' 
+    """ 
     conditions               = state.conditions 
     noise_conditions         = conditions.noise[turboprop.tag]  
     turboprop_conditions     = conditions.energy[turboprop.tag]

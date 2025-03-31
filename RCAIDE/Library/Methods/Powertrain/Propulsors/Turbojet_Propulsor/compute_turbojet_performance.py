@@ -24,7 +24,8 @@ from copy import  deepcopy
 # compute_turbojet_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_turbojet_performance(turbojet,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
-    ''' Computes the perfomrance of one turbojet
+    """
+    Computes the perfomrance of one turbojet
     
     Assumptions: 
     N/A
@@ -47,7 +48,8 @@ def compute_turbojet_performance(turbojet,state,center_of_gravity= [[0.0, 0.0,0.
     
     Properties Used: 
     N.A.          
-    ''' 
+    """
+     
     conditions                = state.conditions
     noise_conditions          = conditions.noise[turbojet.tag]  
     turbojet_conditions       = conditions.energy[turbojet.tag] 

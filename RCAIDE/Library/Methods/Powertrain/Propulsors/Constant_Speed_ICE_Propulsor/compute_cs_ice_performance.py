@@ -19,7 +19,7 @@ import numpy as np
 # internal_combustion_engine_constant_speed_propulsor
 # ----------------------------------------------------------------------------------------------------------------------  
 def compute_cs_ice_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
-    ''' Computes the perfomrance of one propulsor
+    """Computes the perfomrance of one propulsor
     
     Assumptions: 
     N/A
@@ -42,7 +42,7 @@ def compute_cs_ice_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0
     
     Properties Used: 
     N.A.        
-    '''  
+    """  
     conditions              = state.conditions  
     ice_cs_conditions       = conditions.energy[propulsor.tag] 
     engine                  = propulsor.engine 
@@ -77,7 +77,7 @@ def compute_cs_ice_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0
     return T,M,P,stored_results_flag,stored_propulsor_tag 
     
 def reuse_stored_ice_cs_prop_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
-    '''Reuses results from one propulsor for identical propulsors
+    """Reuses results from one propulsor for identical propulsors
     
     Assumptions: 
     N/A
@@ -98,7 +98,7 @@ def reuse_stored_ice_cs_prop_data(propulsor,state,network,stored_propulsor_tag,c
     
     Properties Used: 
     N.A.        
-    ''' 
+    """ 
     conditions                 = state.conditions
     engine                     = propulsor.engine
     propeller                  = propulsor.propeller 

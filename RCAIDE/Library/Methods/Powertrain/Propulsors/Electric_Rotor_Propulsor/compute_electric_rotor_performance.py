@@ -20,7 +20,8 @@ from copy import deepcopy
 # compute_electric_rotor_performance
 # ----------------------------------------------------------------------------------------------------------------------  
 def compute_electric_rotor_performance(propulsor,state,voltage,center_of_gravity= [[0.0, 0.0,0.0]]):   
-    ''' Computes the perfomrance of one propulsor
+    """
+    Computes the perfomrance of one propulsor
     
     Assumptions: 
     N/A
@@ -46,7 +47,7 @@ def compute_electric_rotor_performance(propulsor,state,voltage,center_of_gravity
     
     Properties Used: 
     N.A.        
-    ''' 
+    """ 
     conditions                 = state.conditions    
     electric_rotor_conditions  = conditions.energy[propulsor.tag] 
     motor                      = propulsor.motor 

@@ -13,9 +13,9 @@ import RCAIDE
 #  append_electric_rotor_residual_and_unknown
 # ----------------------------------------------------------------------------------------------------------------------  
 def append_electric_rotor_residual_and_unknown(propulsor,segment):
-    ''' 
+    """ 
     appends the torque matching residual and unknown
-    '''
+    """
     ones_row    = segment.state.ones_row
     rotor       = propulsor.rotor  
     motor       = propulsor.motor

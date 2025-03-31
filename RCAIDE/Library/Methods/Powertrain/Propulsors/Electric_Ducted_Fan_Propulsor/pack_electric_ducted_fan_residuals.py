@@ -7,9 +7,9 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def pack_electric_ducted_fan_residuals(propulsor,segment):
-    '''
+    """
     Packs residuals for electric ducted fan 
-    '''
+    """
     motor         = propulsor.motor
     ducted_fan    = propulsor.ducted_fan 
     q_motor       = segment.state.conditions.energy[propulsor.tag][motor.tag].torque

@@ -22,7 +22,7 @@ from copy import deepcopy
 # compute_turboshaft_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_turboshaft_performance(turboshaft,state,center_of_gravity= [[0.0, 0.0,0.0]]):    
-    ''' Computes the perfomrance of one turboshaft
+    """ Computes the perfomrance of one turboshaft
     
     Assumptions: 
     N/A
@@ -43,7 +43,7 @@ def compute_turboshaft_performance(turboshaft,state,center_of_gravity= [[0.0, 0.
     
     Properties Used: 
     N.A.        
-    ''' 
+    """ 
     conditions                = state.conditions 
     noise_conditions          = conditions.noise[turboshaft.tag]  
     turboshaft_conditions     = conditions.energy[turboshaft.tag]

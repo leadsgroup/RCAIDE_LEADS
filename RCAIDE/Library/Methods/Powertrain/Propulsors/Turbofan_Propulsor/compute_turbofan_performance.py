@@ -25,42 +25,43 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------   
 def compute_turbofan_performance(turbofan,state,center_of_gravity= [[0.0, 0.0,0.0]]):
     """
-     Computes the performance of a turbofan engine by analyzing flow through each component.
+    Computes the performance of a turbofan engine by analyzing flow through each component.
+    
     Parameters
-     ----------
-     turbofan : Turbofan
-         Turbofan engine object containing all component definitions
-             * ram : Ram
-             * inlet_nozzle : Compression_Nozzle
-             * fan : Fan
-             * low_pressure_compressor : Compressor
-             * high_pressure_compressor : Compressor
-             * combustor : Combustor
-             * high_pressure_turbine : Turbine
-             * low_pressure_turbine : Turbine
-             * core_nozzle : Expansion_Nozzle
-             * fan_nozzle : Expansion_Nozzle
-     state : State
-         State object containing flight conditions
-     center_of_gravity : list, optional
-         Aircraft center of gravity coordinates [[x, y, z]], defaults to [[0.0, 0.0, 0.0]]
+    ----------
+    turbofan : Turbofan
+        Turbofan engine object containing all component definitions
+            * ram : Ram
+            * inlet_nozzle : Compression_Nozzle
+            * fan : Fan
+            * low_pressure_compressor : Compressor
+            * high_pressure_compressor : Compressor
+            * combustor : Combustor
+            * high_pressure_turbine : Turbine
+            * low_pressure_turbine : Turbine
+            * core_nozzle : Expansion_Nozzle
+            * fan_nozzle : Expansion_Nozzle
+    state : State
+        State object containing flight conditions
+    center_of_gravity : list, optional
+        Aircraft center of gravity coordinates [[x, y, z]], defaults to [[0.0, 0.0, 0.0]]
+
+    Returns
+    -------
+    thrust_vector : ndarray
+        Three-dimensional thrust vector [N]
+    moment : ndarray
+        Three-dimensional moment vector [N*m]
+    power : float
+        Engine power output [W]
+    stored_results_flag : bool
+        Flag indicating results have been stored
+    stored_propulsor_tag : str
+        Tag identifying the propulsor
  
-     Returns
-     -------
-     thrust_vector : ndarray
-         Three-dimensional thrust vector [N]
-     moment : ndarray
-         Three-dimensional moment vector [N*m]
-     power : float
-         Engine power output [W]
-     stored_results_flag : bool
-         Flag indicating results have been stored
-     stored_propulsor_tag : str
-         Tag identifying the propulsor
- 
-     Notes
-     -----
-     This function performs a component-by-component analysis of the turbofan engine:
+    Notes
+    -----
+    This function performs a component-by-component analysis of the turbofan engine:
         1. Computes ram performance
         2. Links and computes inlet nozzle performance
         3. Links and computes fan performance
@@ -69,19 +70,19 @@ def compute_turbofan_performance(turbofan,state,center_of_gravity= [[0.0, 0.0,0.
         6. Links and computes turbine stages
         7. Links and computes nozzle performance
         8. Computes final thrust and moments
- 
-     **Major Assumptions**
-         * Quasi-one-dimensional flow
-         * Each component operates in steady state
-         * Perfect gas behavior in non-combustion sections
- 
-         See Also
-     --------
-     RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Ram.compute_ram_performance
-     RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Combustor.compute_combustor_performance
-     RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Compressor.compute_compressor_performance
-     RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Turbine.compute_turbine_performance
-     """
+
+    **Major Assumptions**
+        * Quasi-one-dimensional flow
+        * Each component operates in steady state
+        * Perfect gas behavior in non-combustion sections
+
+        See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Ram.compute_ram_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Combustor.compute_combustor_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Compressor.compute_compressor_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Turbine.compute_turbine_performance
+    """
    
     conditions                = state.conditions   
     noise_conditions          = conditions.noise[turbofan.tag] 

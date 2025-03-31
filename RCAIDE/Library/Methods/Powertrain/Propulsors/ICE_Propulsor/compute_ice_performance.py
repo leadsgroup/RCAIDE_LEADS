@@ -19,7 +19,8 @@ import numpy as np
 # compute_ice_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_ice_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
-    ''' Computes the perfomrance of one propulsor
+    """
+    Computes the perfomrance of one propulsor
     
     Assumptions: 
     N/A
@@ -42,7 +43,7 @@ def compute_ice_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]])
     
     Properties Used: 
     N.A.        
-    '''  
+    """  
     conditions              = state.conditions  
     ice_conditions          = conditions.energy[propulsor.tag]
     engine                  = propulsor.engine 

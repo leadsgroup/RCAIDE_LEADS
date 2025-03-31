@@ -12,10 +12,10 @@ from RCAIDE.Framework.Core import  Units
 #  append_ice_residual_and_unknown
 # ----------------------------------------------------------------------------------------------------------------------  
 def append_ice_residual_and_unknown(propulsor,segment):
-    '''
+    """
     
     appends the torque matching residual and unknown
-    '''
+    """
     
     ones_row    = segment.state.ones_row                   
     propeller  = propulsor.propeller 

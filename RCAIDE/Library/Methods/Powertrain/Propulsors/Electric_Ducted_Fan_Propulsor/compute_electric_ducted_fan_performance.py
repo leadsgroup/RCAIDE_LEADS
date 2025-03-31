@@ -19,7 +19,8 @@ from copy import deepcopy
 # compute_electric_ducted_fan_performance
 # ----------------------------------------------------------------------------------------------------------------------  
 def compute_electric_ducted_fan_performance(propulsor,state,voltage,center_of_gravity= [[0.0, 0.0,0.0]]):   
-    ''' Computes the perfomrance of one propulsor
+    """
+    Computes the perfomrance of one propulsor
     
     Assumptions: 
     N/A
@@ -45,7 +46,7 @@ def compute_electric_ducted_fan_performance(propulsor,state,voltage,center_of_gr
     
     Properties Used: 
     N.A.        
-    ''' 
+    """ 
     conditions                 = state.conditions    
     edf_conditions             = conditions.energy[propulsor.tag] 
     motor                      = propulsor.motor 

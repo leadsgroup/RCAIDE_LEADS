@@ -37,6 +37,7 @@ Energy
    plot_battery_module_conditions
    plot_battery_ragone_diagram
    plot_battery_temperature
+   plot_crogenic_fuel_consumption
    plot_electric_propulsor_efficiencies
    plot_fuel_consumption
    plot_propulsor_throttles
