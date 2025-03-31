@@ -66,27 +66,43 @@ def integrate_velocity(segment):
 # ----------------------------------------------------------------------    
 
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Integrates acceleration to get velocity profile
 
-    Assumptions:
-    Constant throttle and constant altitude, allows for acceleration
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - air_speed_start : float
+                Initial true airspeed [m/s]
+            - sideslip_angle : float
+                Aircraft sideslip angle [rad]
+            state:
+                numerics:
+                    time:
+                        integrate : array
+                            Integration operator
+                conditions:
+                    frames:
+                        inertial:
+                            acceleration_vector : array
+                                Acceleration vector [m/s^2]
+                            velocity_vector : array
+                                Velocity vector [m/s]
 
-    Source:
-    N/A
+    Returns
+    -------
+    None
+        Updates velocity vector in segment conditions
+    
+    Notes
+    -----
+    This function integrates the acceleration to obtain the velocity profile,
+    considering the initial velocity and sideslip angle.
 
-    Inputs:
-    segment.altitude                             [meters]
-    segment.air_speed_start                      [meters/second]
-    segment.air_speed_end                        [meters/second] 
-    segment.state.numerics.number_of_control_points [int]
-
-    Outputs:
-    state.conditions.energy.throttle        [unitless]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
-
-    Properties Used:
-    N/A
+    **Calculation Process**
+        1. Integrate acceleration to get velocity magnitude
+        2. Decompose into components using sideslip angle
     """    
     # unpack inputs
     alt      = segment.altitude 
