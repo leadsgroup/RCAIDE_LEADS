@@ -9,20 +9,65 @@
 #  energy
 # ----------------------------------------------------------------------------------------------------------------------  
 def energy(segment):
-    """ Sets the initial battery energy at the start of the mission
+    """
+    Initializes energy states for vehicle networks at mission segment start
 
-        Assumptions:
-        N/A
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
 
-        Inputs:
-            segment
-            
-        Outputs:
-            None
-           
-        Properties Used:
-        N/A
+    Notes
+    -----
+    This function initializes energy-related conditions for all energy networks
+    in the vehicle, including batteries, fuel systems, and thermal management
+    systems. It handles both electrical and fuel-based energy storage systems.
 
+    The function processes:
+    1. Electrical networks with busses
+        - Battery module conditions
+        - Thermal management systems
+            * Battery cooling systems
+            * Heat exchangers
+            * Coolant reservoirs
+    2. Fuel-based networks
+        - Fuel tank conditions
+        - Fuel mass tracking
+
+    **Required Segment Components**
+
+    segment.analyses.energy.vehicle.networks:
+        Network configurations containing:
+        - Electrical busses with battery modules
+        - Cooling systems and heat exchangers
+        - Fuel lines and tanks
+
+    **State Variables**
+
+    conditions.energy:
+        For electrical systems:
+        - Battery states
+        - Thermal conditions
+        - Coolant properties
+
+        For fuel systems:
+        - Fuel mass
+        - Tank conditions
+
+    **Major Assumptions**
+        * Well-defined network architecture
+        * Valid initial conditions
+        * Compatible energy storage systems
+        * Proper thermal management setup
+
+    Returns
+    -------
+    None
+        Updates segment conditions directly
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """ 
 
     conditions = segment.state.conditions.energy

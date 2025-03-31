@@ -16,30 +16,65 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions_unpack_unknowns(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for constant dynamic pressure climb with fixed angle
 
-    Assumptions:
-    Constrant dynamic pressure and constant rate of climb
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
 
-    Source:
-    N/A
+    Notes
+    -----
+    This function sets up the initial conditions for a climb segment with constant
+    dynamic pressure and constant climb angle. It handles both initialization and
+    unpacking of solver unknowns.
 
-    Inputs:
-    segment.climb_angle                                 [radians]
-    segment.dynamic_pressure                            [pascals]
-    segment.altitude_start                              [meters]
-    segment.altitude_end                                [meters]
-    segment.state.numerics.dimensionless.control_points [unitless]
-    conditions.freestream.density                       [kilograms/meter^3]  
+    **Required Segment Components**
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.energy.throttle              [unitless]
-    conditions.frames.body.inertial_rotations   [radians]
+    segment:
+        - climb_angle : float
+            Fixed climb angle [rad]
+        - dynamic_pressure : float
+            Dynamic pressure to maintain [Pa]
+        - altitude_start : float
+            Initial altitude [m]
+        - sideslip_angle : float
+            Aircraft sideslip angle [rad]
+        - state:
+            conditions : Data
+                State conditions container
+            unknowns:
+                altitude : array
+                    Altitude profile [m]
 
-    Properties Used:
-    N/A
+    **Calculation Process**
+    1. Compute atmospheric properties at altitude
+    2. Calculate true airspeed from dynamic pressure:
+       V = sqrt(2q/ρ) where:
+       - q is dynamic pressure
+       - ρ is air density
+    3. Decompose velocity into components using climb angle
+
+    **Major Assumptions**
+    * Constant dynamic pressure
+    * Fixed climb angle
+    * Standard atmosphere model
+    * Small angle approximations
+    * Quasi-steady flight
+
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+        - conditions.frames.inertial.velocity_vector [m/s]
+        - conditions.frames.inertial.position_vector [m]
+        - conditions.freestream.altitude [m]
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
+    RCAIDE.Library.Mission.Common.Update.atmosphere
     """           
     
     # unpack

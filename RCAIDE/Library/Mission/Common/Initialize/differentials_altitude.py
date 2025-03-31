@@ -14,23 +14,56 @@ import numpy as np
 #  Update Differentials Altitude
 # ---------------------------------------------------------------------------------------------------------------------- 
 def differentials_altitude(segment):
-    """ Initializes the differntial altitude
-    
-        Assumptions: 
-            None
-        
-        Inputs: 
-            state.conditions:           
-                numerics.dimensionless.integrate        [-]
-                numerics.dimensionless.control_points   [s]
-                frames.position_vector                  [m]
-                inertial.velocity_vector                [m/s]
-            
-        Outputs:
-            state.conditions.frames.inertial.time       [s]
-           
-        Properties Used:
-        N/A 
+    """
+    Initializes the differential altitude for mission segment time calculations
+
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+
+    Notes
+    -----
+    This function calculates the time differentials based on altitude changes
+    in the mission segment. It uses the vertical component of velocity and
+    position to determine appropriate time steps for integration.
+
+    The function performs the following steps:
+    1. Extracts control points and integration operators
+    2. Calculates total altitude change
+    3. Determines time step based on vertical velocity
+    4. Rescales time operators
+    5. Updates segment time vector
+
+    **Required Segment State Variables**
+
+    state.numerics.dimensionless:
+        - integrate : array
+            Integration operator matrix
+        - control_points : array
+            Normalized time points
+
+    state.conditions.frames.inertial:
+        - position_vector : array
+            Vehicle position in inertial frame [m]
+        - velocity_vector : array
+            Vehicle velocity in inertial frame [m/s]
+        - time : array
+            Segment time vector [s]
+
+    **Major Assumptions**
+    * Continuous vertical velocity
+    * Well-defined altitude change
+    * No singularities in vertical velocity
+
+    Returns
+    -------
+    None
+        Updates segment state directly
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """
 
     # unpack
