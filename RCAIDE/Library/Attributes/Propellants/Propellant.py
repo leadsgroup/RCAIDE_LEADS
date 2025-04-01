@@ -15,7 +15,87 @@ from RCAIDE.Library.Components.Mass_Properties import Mass_Properties
 #  Propellant
 # ----------------------------------------------------------------------------------------------------------------------  
 class Propellant(Data):
-    """Generic class for propellant
+    """
+    Base class for defining propellant properties and characteristics in propulsion systems.
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the specific propellant type
+    reactant : str
+        Primary oxidizer used for combustion
+    density : float
+        Fuel density in kg/m³
+    specific_energy : float
+        Specific energy content in J/kg
+    energy_density : float
+        Energy density in J/m³
+    lower_heating_value : float
+        Lower heating value in J/kg
+    mass_properties : Mass_Properties
+        Object containing mass-related properties
+    max_mass_fraction : Data
+        Maximum fuel-to-oxidizer mass ratios
+            - Air : float
+                Maximum mass fraction with air
+            - O2 : float
+                Maximum mass fraction with pure oxygen
+    temperatures : Data
+        Critical temperatures in K
+            - flash : float
+                Flash point temperature
+            - autoignition : float
+                Autoignition temperature
+            - freeze : float
+                Freezing point temperature
+            - boiling : float
+                Boiling point temperature
+    emission_indices : Data
+        Emission indices in kg/kg fuel
+            - Production : float
+                CO2 production rate
+            - CO2 : float
+                Carbon dioxide emissions
+            - H2O : float
+                Water vapor emissions
+            - SO2 : float
+                Sulfur dioxide emissions
+            - NOx : float
+                Nitrogen oxides emissions
+            - Soot : float
+                Particulate matter emissions
+    global_warming_potential_100 : Data
+        100-year global warming potentials
+            - CO2 : float
+                Carbon dioxide impact
+            - H2O : float
+                Water vapor impact
+            - SO2 : float
+                Sulfur dioxide impact
+            - NOx : float
+                Nitrogen oxides impact
+            - Soot : float
+                Particulate matter impact
+            - Contrails : float
+                Contrail formation impact
+
+    Notes
+    -----
+    This base class provides a standardized structure for defining propellant 
+    properties, including physical characteristics, combustion parameters, and 
+    environmental impacts. It serves as a template for specific propellant 
+    implementations.
+
+    **Definitions**
+    
+    'Emission Index'
+        Mass of pollutant produced per unit mass of fuel burned
+    
+    'Global Warming Potential'
+        Relative measure of heat trapped in atmosphere compared to CO2
+    
+    'Lower Heating Value'
+        Heat of combustion excluding latent heat of water vapor
     """
 
     def __defaults__(self):

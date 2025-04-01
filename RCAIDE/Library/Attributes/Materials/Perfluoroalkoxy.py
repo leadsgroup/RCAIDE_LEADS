@@ -14,7 +14,27 @@ from array import *
 # Perfluoroalkoxy Insulation Material
 #------------------------------------------------------------------------------- 
 class Perfluoroalkoxy(Solid): 
-    """ Physical constants specific to Perfluoroalkoxy(PFA) 
+    """
+    A class representing Perfluoroalkoxy(PFA) and its material properties.
+
+    Attributes
+    ----------
+    electrical_permittivity : float
+        Material electrical permittivity in kg/m³ (2.1)
+    dielectric_strength_range : list
+        Range of dielectric strength in Pa (7E7,8E7)
+    density : float
+        Material density in kg/m³ (2150)
+    thermal_conductivity : float
+        Heat conduction coefficient in W/(m·K) (0.19)
+    melting_point : float
+        Material melting point in K (578)
+    temperature_range : list
+        Range of temperature in K (183, 533)
+    modulus_of_elasticity : float
+        Material modulus of elasticity in Pa (0.55E9)
+    yield_tensile_strength : float
+        Stress at which material begins to deform plastically in Pa (28e6)
     """
 
     def __defaults__(self):
