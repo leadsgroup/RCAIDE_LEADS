@@ -12,32 +12,89 @@ import numpy as np
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_compressor_performance(compressor,compressor_conditions,conditions):
-    """ Computes the performance of a compressor bases on its polytropic efficiency.
-        The following properties are computed: 
-       compressor.outputs.
-         stagnation_temperature  (numpy.ndarray): exit stagnation_temperature   [K]  
-         stagnation_pressure     (numpy.ndarray): exit stagnation_pressure      [Pa]
-         stagnation_enthalpy     (numpy.ndarray): exit stagnation_enthalpy      [J/kg]
-         work_done               (numpy.ndarray): work done                     [J/kg] 
+    """
+    Computes the performance of a compressor based on its polytropic efficiency.
 
-    Assumptions:
-        Constant polytropic efficiency and pressure ratio
+    Parameters
+    ----------
+    compressor : Compressor
+        Compressor component
+            - pressure_ratio : float
+                Pressure ratio across compressor
+            - polytropic_efficiency : float
+                Polytropic efficiency of compression
+            - working_fluid : FluidProperties
+                Working fluid properties object
+    compressor_conditions : Conditions
+        Container for compressor-specific conditions
+            - inputs.stagnation_temperature : ndarray
+                Inlet stagnation temperature [K]
+            - inputs.stagnation_pressure : ndarray
+                Inlet stagnation pressure [Pa]
+            - inputs.static_temperature : ndarray
+                Inlet static temperature [K]
+            - inputs.static_pressure : ndarray
+                Inlet static pressure [Pa]
+            - inputs.mach_number : ndarray
+                Inlet Mach number
+    conditions : Conditions
+        Freestream flow conditions
 
-    Source:
-        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+    Returns
+    -------
+    None
 
-    Args:
-        conditions.freestream.
-          isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor        [unitless]
-          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]
-        compressor.
-           inputs.stagnation_temperature      (numpy.ndarray): entering stagnation temperature [K]
-           inputs.stagnation_pressure         (numpy.ndarray): entering stagnation pressure    [Pa] 
-           pressure_ratio                             (float): pressure ratio                  [unitless]
-           polytropic_efficiency                      (float): polytropic efficiency           [unitless]
+    Notes
+    -----
+    Appends results to compressor_conditions.outputs including:
+        - work_done : ndarray
+            Specific work done by compressor [J/kg]
+        - stagnation_temperature : ndarray
+            Exit stagnation temperature [K]
+        - stagnation_pressure : ndarray
+            Exit stagnation pressure [Pa]
+        - stagnation_enthalpy : ndarray
+            Exit stagnation enthalpy [J/kg]
+        - static_temperature : ndarray
+            Exit static temperature [K]
+        - static_pressure : ndarray
+            Exit static pressure [Pa]
+        - mach_number : ndarray
+            Exit Mach number
+        - gas_constant : ndarray
+            Gas constant [J/(kg·K)]
+        - gamma : ndarray
+            Ratio of specific heats
+        - cp : ndarray
+            Specific heat at constant pressure [J/(kg·K)]
 
-    Returns:
-        None 
+    **Major Assumptions**
+        * Constant polytropic efficiency
+        * Constant pressure ratio
+        * Ideal gas behavior
+        * Adiabatic process
+
+    **Theory**
+    The compression process follows the polytropic relation:
+
+    .. math::
+        T_{t,out}/T_{t,in} = (P_{t,out}/P_{t,in})^{(\\gamma-1)/(\\gamma \\eta_{p})}
+
+    where :math:`\\eta_{p}` is the polytropic efficiency.
+
+    Enthalpy is calculated using the specific heat at constant pressure and the stagnation temperature.
+
+    .. math::
+        h_{t} = C_{p} T_{t}
+
+    References
+    ----------
+    [1] Cantwell, B., "AA283 Course Notes", Stanford University
+        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Propulsors.Converters.Compressor.append_compressor_conditions
     """          
     
     # Unpack component inputs

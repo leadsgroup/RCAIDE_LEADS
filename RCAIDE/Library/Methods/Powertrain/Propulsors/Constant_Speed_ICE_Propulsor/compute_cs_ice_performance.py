@@ -19,30 +19,55 @@ import numpy as np
 # internal_combustion_engine_constant_speed_propulsor
 # ----------------------------------------------------------------------------------------------------------------------  
 def compute_cs_ice_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
-    """Computes the perfomrance of one propulsor
+    """
+    Computes the performance of a constant speed internal combustion engine (ICE) propulsor.
     
-    Assumptions: 
-    N/A
-
-    Source:
-    N/A
-
-    Inputs:  
-    conditions           - operating conditions data structure           [-]  
-    fuel_line            - fuelline                                      [-] 
-    propulsor        - propulsor data structure            [-] 
-    total_thrust         - thrust of propulsor group              [N]
-    total_power          - power of propulsor group               [W] 
-
-    Outputs:  
-    total_thrust         - thrust of propulsor group              [N]
-    total_power          - power of propulsor group               [W] 
-    stored_results_flag  - boolean for stored results                    [-]     
-    stored_propulsor_tag - name of propulsor with stored results  [-]
+    Parameters
+    ----------
+    propulsor : RCAIDE.Library.Components.Propulsors.Constant_Speed_ICE_Propulsor
+        The constant speed ICE propulsor system containing:
+            - engine : ICE
+                Internal combustion engine component
+            - propeller : Propeller
+                Propeller component
+            - tag : str
+                Unique identifier for the propulsor
+    state : RCAIDE.Framework.Mission.Segments.Segment
+        Current mission state containing conditions
+    center_of_gravity : list of lists, optional
+        Aircraft center of gravity coordinates [[x, y, z]], defaults to [[0.0, 0.0, 0.0]]
+        
+    Returns
+    -------
+    T : array_like
+        Thrust force vector [N]
+    M : array_like
+        Moment vector [N*m]
+    P : array_like
+        Power required [W]
+    stored_results_flag : bool
+        Flag indicating if results are stored
+    stored_propulsor_tag : str
+        Tag of the propulsor with stored results
+        
+    Notes
+    -----
+    This function performs the following operations:
+        1. Parses inputs
+        2. Runs propeller performance calculations
+        3. Computes engine throttle setting based on required power
+        4. Calculates fuel flow rate
+        5. Determines total forces and moments
     
-    Properties Used: 
-    N.A.        
-    """  
+    **Major Assumptions**
+        * Propeller pitch command is derived from a linear relationship with throttle setting
+        * Moments are primarily from propeller forces
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Propulsors.Converters.Engine.compute_throttle_from_power
+    RCAIDE.Library.Methods.Propulsors.Converters.Rotor.compute_rotor_performance
+    """
     conditions              = state.conditions  
     ice_cs_conditions       = conditions.energy[propulsor.tag] 
     engine                  = propulsor.engine 

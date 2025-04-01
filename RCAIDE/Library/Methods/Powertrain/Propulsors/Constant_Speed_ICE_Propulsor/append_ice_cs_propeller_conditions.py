@@ -13,6 +13,43 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 #  append_ice_cs_propeller_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_ice_cs_propeller_conditions(ice_cs_propeller,segment):  
+    """
+    Initializes the state conditions for a constant speed ICE-driven propeller system.
+    
+    Parameters
+    ----------
+    ice_cs_propeller : RCAIDE.Library.Components.Propulsors.Constant_Speed_ICE_Propulsor
+        The constant speed ICE propeller system object
+    segment : RCAIDE.Framework.Mission.Segments.Segment
+        The mission segment to which the conditions will be appended
+        
+    Returns
+    -------
+    None
+        
+    Notes
+    -----
+    This function initializes various performance parameters for the ICE-propeller
+    system including thrust, power, fuel flow, and RPM states. All values except
+    RPM are initialized to zero and updated during mission analysis.
+    
+    The following conditions are initialized:
+        - throttle
+        - commanded thrust vector angle
+        - thrust vector
+        - power
+        - moment
+        - fuel flow rate
+        - RPM (copied from segment conditions)
+        - inputs/outputs containers
+        - noise conditions
+    
+    See Also
+    --------
+    RCAIDE.Library.Components.Propulsors.Constant_Speed_ICE_Propeller
+    RCAIDE.Framework.Mission.Common.Conditions
+    """
+    
     ones_row    = segment.state.ones_row                  
     segment.state.conditions.energy[ice_cs_propeller.tag]                               = Conditions()  
     segment.state.conditions.energy[ice_cs_propeller.tag].throttle                      = 0. * ones_row(1)      

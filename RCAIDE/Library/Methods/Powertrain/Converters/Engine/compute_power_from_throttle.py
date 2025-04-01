@@ -17,33 +17,68 @@ import numpy as np
 # compute_power_from_throttle
 # ----------------------------------------------------------------------------------------------------------------------    
 def compute_power_from_throttle(engine,engine_conditions,conditions):
-    """ The internal combustion engine output power and specific power consumption.
-    The following properties are computed:
-        engine
-          .outputs.power                           (numpy.ndarray): Brake power (or Shaft power)  [W]
-          .outputs.power_specific_fuel_consumption (numpy.ndarray): Power (brake) SFC             [lbf/(HP· h) 
-          .outputs.fuel_flow_rate                  (numpy.ndarray): Fuel flow                     [kg/s]
-          .outputs.torque                          (numpy.ndarray): Torque                        [Q]
+    """
+    Computes engine power output and performance metrics based on throttle setting and atmospheric conditions.
+
+    Parameters
+    ----------
+    engine : RCAIDE.Library.Components.Propulsors
+        Engine instance with the following attributes:
+            - sea_level_power : float
+                Maximum power output at sea level [W]
+            - flat_rate_altitude : float
+                Altitude below which power remains constant [m]
+            - power_specific_fuel_consumption : float
+                Power specific fuel consumption [kg/(W·s)]
+    engine_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Engine operating conditions with:
+            - throttle : numpy.ndarray
+                Throttle setting [dimensionless]
+            - speed : numpy.ndarray
+                Engine angular velocity [rad/s]
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions with:
+            - freestream.altitude : numpy.ndarray
+                Current altitude [m]
+            - freestream.delta_ISA : numpy.ndarray
+                Temperature offset from standard atmosphere [K]
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Power available is computed using the Gagg and Ferrar model, which accounts for
+    atmospheric density effects on engine performance.
+
+    **Major Assumptions**
+        * Power varies linearly with density ratio above flat-rate altitude
+        * Power remains constant below flat-rate altitude
+        * Standard atmosphere conditions apply except for ISA temperature offset
+        * Minimum power output is zero (negative values are clipped)
+        * Power is directly proportional to throttle setting
+
+    **Theory**
     
-    Source:
-        Gagg and Ferrar model (ref: S. Gudmundsson, 2014 - eq. 7-16)
-    
-    Assumtions:
-        None 
-    
-    Args:
-        engine
-          .sea_level_power                        (float): sea-level power      [W]
-          .flat_rate_altitude                     (float): flat rate altitude   [m]
-          .power_specific_fuel_consumption        (float): PSFC                 [RPM]
-          .throttle setting               (numpy.ndarray): throttle             [unitless]
-          .inputs.speed                   (numpy.ndarray): angular velocity     [rad/s]
-        freestream conditions 
-          .altitude                               (float): altitde              [m]
-          .delta_isa                              (float): altitude offset      [m]
-            
-    Returns:
-        None 
+    The power available is computed using:
+
+    .. math::
+        P_{available} = P_{SL} \\frac{\\sigma - 0.117}{0.883}
+
+    where:
+        - :math:`P_{SL}` is sea-level power
+        - :math:`\\sigma` is the density ratio
+
+    References
+    ----------
+    [1] Gudmundsson, S. (2014). General Aviation Aircraft Design: Applied Methods 
+        and Procedures. Butterworth-Heinemann.
+    [2] Gagg and Ferrar
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Propulsors.Converters.Engine.compute_throttle_from_power
     """
 
     # Unpack
