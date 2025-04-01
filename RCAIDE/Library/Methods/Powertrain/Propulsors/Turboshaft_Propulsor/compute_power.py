@@ -16,62 +16,92 @@ import numpy                               as np
 # ----------------------------------------------------------------------------------------------------------------------
 
 def compute_power(turboshaft,turboshaft_conditions,conditions):
-    """Computes power and other properties as below.
+    """
+    Computes the power output and performance characteristics of a turboshaft engine.
 
-    Assumptions:
-    Perfect gas
-    Turboshaft engine with free power turbine
+    Parameters
+    ----------
+    turboshaft : Turboshaft
+        Turboshaft engine object containing component definitions
+            - fuel_type : Fuel
+                Fuel object with properties including lower_heating_value
+            - conversion_efficiency : float
+                Engine power conversion efficiency
+            - reference_temperature : float
+                Reference temperature [K]
+            - reference_pressure : float
+                Reference pressure [Pa]
+            - compressor : Compressor
+                Compressor object with pressure_ratio and mass_flow_rate
+    turboshaft_conditions : Conditions
+        Turboshaft operating conditions data structure
+            - total_temperature_reference : float
+                Reference total temperature [K]
+            - total_pressure_reference : float
+                Reference total pressure [Pa]
+            - combustor_stagnation_temperature : float
+                Combustor outlet stagnation temperature [K]
+    conditions : Conditions
+        Freestream conditions data structure
+            - freestream.isentropic_expansion_factor : float
+                Ratio of specific heats (gamma)
+            - freestream.speed_of_sound : float
+                Speed of sound [m/s]
+            - freestream.mach_number : float
+                Mach number
+            - freestream.Cp : float
+                Specific heat at constant pressure [J/kg-K]
 
-    Sources:
-    [1] https://soaneemrana.org/onewebmedia/ELEMENTS%20OF%20GAS%20TURBINE%20PROPULTION2.pdf - Page 332 - 336
-    [2] https://www.colorado.edu/faculty/kantha/sites/default/files/attached-files/70652-116619_-_luke_stuyvenberg_-_dec_17_2015_1258_pm_-_stuyvenberg_helicopterturboshafts.pdf
+    Returns
+    -------
+    None
+        Results are stored in turboshaft_conditions:
+            - power_specific_fuel_consumption : float
+                Power specific fuel consumption [kg/W-s]
+            - fuel_flow_rate : float
+                Fuel mass flow rate [kg/s]
+            - power : float
+                Power output [W]
+            - non_dimensional_power : float
+                Non-dimensional power output [-]
+            - non_dimensional_thrust : float
+                Non-dimensional thrust [-]
+            - thermal_efficiency : float
+                Engine thermal efficiency [-]
+
+    Notes
+    -----
+    The function computes turboshaft performance using gas turbine cycle analysis
+    principles for a free power turbine configuration.
+
+    **Major Assumptions**
+        * Perfect gas behavior
+        * Turboshaft engine with free power turbine
+        * Constant component efficiencies
+        * No bleed air extraction
+
+    **Theory**
+
+    The analysis uses non-dimensional parameters and temperature ratios:
     
-    Inputs:
-    conditions.freestream.
-      isentropic_expansion_factor              [-] (gamma)
-      specific_heat_at_constant_pressure       [J/(kg K)]
-      velocity                                 [m/s]
-      speed_of_sound                           [m/s]
-      mach_number                              [-]
-      pressure                                 [Pa]
-      gravity                                  [m/s^2]
-    conditions.throttle                        [-] (.1 is 10%)
-    turboshaft.inputs.                         
-      fuel_to_air_ratio                        [-]
-      total_temperature_reference              [K]
-      total_pressure_reference                 [Pa]
-      core_nozzle.                             
-        velocity                               [m/s]
-        static_pressure                        [Pa]
-        area_ratio                             [-]
-      fan_nozzle.                              
-        velocity                               [m/s]
-        static_pressure                        [Pa]
-        area_ratio                             [-]
-      number_of_engines                        [-]
-      bypass_ratio                             [-]
-      flow_through_core                        [-] percentage of total flow (.1 is 10%)
-      flow_through_fan                         [-] percentage of total flow (.1 is 10
-    combustor.outputs.stagnation_temperature   [K]
-    compressor.pressure_ratio                  [-]
-    turboshaft.conversion_efficiency           [-]
-                                               
-    Outputs:                                   
-    turboshaft.outputs.                        
-      thrust                                   [N]
-      non_dimensional_thrust                   [-]
-      core_mass_flow_rate                      [kg/s]
-      fuel_flow_rate                           [kg/s]
-      power                                    [W]
-      power_specific_fuel_consumption          [kg/(W*s)]
-      Specific Impulse                         [s]
-                                               
-    Properties Used:                           
-    turboshaft.                                
-      reference_temperature                    [K]
-      reference_pressure                       [Pa]
-      compressor_nondimensional_massflow       [-]
-      SFC_adjustment                           [-]
+    .. math::
+        \\tau_\\lambda = \\frac{T_{t4}}{T_{t_{ref}}}
+    
+    .. math::
+        \\tau_r = 1 + \\frac{(\\gamma - 1)}{2}M_0^2
+    
+    .. math::
+        \\tau_c = \\pi_c^{\\frac{(\\gamma - 1)}{\\gamma}}
+
+    References
+    ----------
+    [1] https://soaneemrana.org/onewebmedia/ELEMENTS%20OF%20GAS%20TURBINE%20PROPULTION2.pdf
+    [2] https://www.colorado.edu/faculty/kantha/sites/default/files/attached-files/70652-116619_-_luke_stuyvenberg_-_dec_17_2015_1258_pm_-_stuyvenberg_helicopterturboshafts.pdf
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor.design_turboshaft 
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor.size_core 
     """           
     #unpack the values
     fuel_type                                  = turboshaft.fuel_type

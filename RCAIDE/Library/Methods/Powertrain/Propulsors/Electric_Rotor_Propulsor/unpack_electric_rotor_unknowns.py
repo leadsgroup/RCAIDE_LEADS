@@ -15,6 +15,34 @@ import RCAIDE
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def unpack_electric_rotor_unknowns(propulsor,segment): 
+    """
+    Unpacks the power coefficient unknown from the solver state into the motor conditions.
+    This function transfers the solver's estimate of the rotor power coefficient to the energy
+    conditions where it will be used to compute motor performance.
+
+    Parameters
+    ----------
+    propulsor : RCAIDE.Core.Systems.Propulsors
+        The electric rotor propulsion system
+            - tag : str
+                Identifier for the propulsor
+            - motor : Component
+                The motor component that receives the power coefficient
+    segment : RCAIDE.Core.Analyses.Mission.Segments
+        The mission segment being analyzed
+            - state : State
+                Contains solver unknowns and energy conditions
+                    - unknowns : dict
+                        Contains the power coefficient estimate
+                    - conditions : Conditions
+                        Energy conditions to be updated
+
+    Returns
+    -------
+    None
+        Function modifies the segment state conditions in-place
+    """
+    
     results = segment.state.conditions.energy[propulsor.tag]
     motor   = propulsor.motor  
     rotor   = propulsor.rotor

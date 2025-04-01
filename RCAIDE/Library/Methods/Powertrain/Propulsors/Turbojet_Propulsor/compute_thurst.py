@@ -16,58 +16,107 @@ import numpy as np
 #  compute_thrust
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_thrust(turbojet,turbojet_conditions,conditions):
-  """Computes thrust and other properties as below.
-
-  Assumptions:
-  Perfect gas
-
-  Source:
-  https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
-
-  Inputs:
-  conditions.freestream.
-    isentropic_expansion_factor        [-] (gamma)
-    specific_heat_at_constant_pressure [J/(kg K)]
-    velocity                           [m/s]
-    speed_of_sound                     [m/s]
-    mach_number                        [-]
-    pressure                           [Pa]
-    gravity                            [m/s^2]
-  conditions.throttle                  [-] (.1 is 10%)
-  turbojet_conditions.
-    fuel_to_air_ratio                  [-]
-    total_temperature_reference        [K]
-    total_pressure_reference           [Pa]
-    core_nozzle.
-      velocity                         [m/s]
-      static_pressure                  [Pa]
-      area_ratio                       [-]
-    fan_nozzle.
-      velocity                         [m/s]
-      static_pressure                  [Pa]
-      area_ratio                       [-]
-    number_of_engines                  [-]
-    bypass_ratio                       [-]
-    flow_through_core                  [-] percentage of total flow (.1 is 10%)
-    flow_through_fan                   [-] percentage of total flow (.1 is 10%)
-
-  Outputs:
-  turbojet_conditions.
-    thrust                             [N]
-    thrust_specific_fuel_consumption   [N/N-s]
-    non_dimensional_thrust             [-]
-    core_mass_flow_rate                [kg/s]
-    fuel_flow_rate                     [kg/s]
-    power                              [W]
-    Specific Impulse                   [s]
-
-  Properties Used:
-  turbojet.
-    reference_temperature              [K]
-    reference_pressure                 [Pa]
-    compressor_nondimensional_massflow [-]
-    SFC_adjustment                     [-]
-  """           
+  """
+    Computes thrust and related performance parameters for a turbojet engine.
+    
+    Parameters
+    ----------
+    turbojet : Turbojet
+        Turbojet engine object containing design parameters
+            - reference_temperature : float
+                Reference temperature [K]
+            - reference_pressure : float
+                Reference pressure [Pa]
+            - compressor_nondimensional_massflow : float
+                Non-dimensional mass flow parameter [-]
+            - SFC_adjustment : float
+                Thrust specific fuel consumption adjustment factor [-]
+    turbojet_conditions : Data
+        Operating conditions for the turbojet
+            - fuel_to_air_ratio : float
+                Fuel-to-air ratio [-]
+            - total_temperature_reference : float
+                Reference total temperature [K]
+            - total_pressure_reference : float
+                Reference total pressure [Pa]
+            - core_nozzle_area_ratio : float
+                Core nozzle area ratio [-]
+            - core_nozzle_exit_velocity : float
+                Core nozzle exit velocity [m/s]
+            - core_nozzle_static_pressure : float
+                Core nozzle static pressure [Pa]
+            - flow_through_core : float
+                Core mass flow fraction [-]
+            - throttle : float
+                Throttle setting [-]
+    conditions : Data
+        Flight conditions
+            - freestream.isentropic_expansion_factor : float
+                Ratio of specific heats (gamma) [-]
+            - freestream.velocity : float
+                Freestream velocity [m/s]
+            - freestream.speed_of_sound : float
+                Freestream speed of sound [m/s]
+            - freestream.mach_number : float
+                Freestream Mach number [-]
+            - freestream.pressure : float
+                Freestream pressure [Pa]
+            - freestream.gravity : float
+                Gravitational acceleration [m/s^2]
+    
+    Returns
+    -------
+    None
+        Updates turbojet_conditions with:
+            - thrust : float
+                Engine thrust [N]
+            - thrust_specific_fuel_consumption : float
+                TSFC [1/hr]
+            - non_dimensional_thrust : float
+                Non-dimensional thrust [-]
+            - core_mass_flow_rate : float
+                Core mass flow rate [kg/s]
+            - fuel_flow_rate : float
+                Fuel mass flow rate [kg/s]
+            - power : float
+                Engine power [W]
+            - specific_impulse : float
+                Specific impulse [s]
+    
+    Notes
+    -----
+    This function computes thrust and performance parameters using one-dimensional gas dynamics
+    and perfect gas assumptions.
+    
+    **Major Assumptions**
+        * Perfect gas behavior
+        * One-dimensional flow
+        * Steady state operation
+        * Adiabatic nozzle flow
+    
+    **Theory**
+    The non-dimensional thrust is computed as:
+    
+    .. math::
+        F_{nd} = \\phi_c(\\gamma M_0^2(\\frac{V_e}{V_0}-1) + A_r(\\frac{P_e}{P_0}-1))
+    
+    where:
+        - :math:`\\phi_c` is the core mass flow fraction
+        - :math:`\\gamma` is the ratio of specific heats
+        - :math:`M_0` is the freestream Mach number
+        - :math:`V_e/V_0` is the velocity ratio
+        - :math:`A_r` is the nozzle area ratio
+        - :math:`P_e/P_0` is the pressure ratio
+    
+    References
+    ----------
+    [1] Cantwell, B., "AA283 Course Material: Aircraft and Rocket Propulsion", Stanford University, https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor.size_core
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor.compute_turbojet_performance
+    """           
   #unpack the values
 
   #unpacking from conditions

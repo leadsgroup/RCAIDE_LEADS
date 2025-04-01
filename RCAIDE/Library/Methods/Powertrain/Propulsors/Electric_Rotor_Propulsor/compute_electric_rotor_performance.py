@@ -21,32 +21,66 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------  
 def compute_electric_rotor_performance(propulsor,state,voltage,center_of_gravity= [[0.0, 0.0,0.0]]):   
     """
-    Computes the perfomrance of one propulsor
-    
-    Assumptions: 
-    N/A
+    Computes the performance characteristics of an electric rotor propulsion system by evaluating 
+    the electronic speed controller (ESC), DC motor, and rotor in sequence.
 
-    Source:
-    N/A
+    Parameters
+    ----------
+    propulsor : RCAIDE.Library.Components.Propulsors.Electric_Rotor
+        The electric rotor propulsion system
+            - tag : str
+                Identifier for the propulsor
+            - motor : Component
+                DC motor component
+            - rotor : Component
+                Rotor component
+            - electronic_speed_controller : Component
+                ESC component
+    state : RCAIDE.Framework.Mission.Common.State
+        Contains flight conditions and operating state
+            - conditions : Conditions
+                Flight condition parameters including energy and throttle settings
+    voltage : float
+        System input voltage [V]
+    center_of_gravity : list, optional
+        Aircraft center of gravity coordinates [[x, y, z]] [m]
+        Default is [[0.0, 0.0, 0.0]]
 
-    Inputs:  
-    conditions           - operating conditions data structure    [-] 
-    voltage              - system voltage                         [V]
-    bus                  - bus                                    [-] 
-    propulsor            - propulsor data structure               [-] 
-    total_thrust         - thrust of propulsor group              [N]
-    total_power          - power of propulsor group               [W]
-    total_current        - current of propulsor group             [A]
+    Returns
+    -------
+    T : array_like
+        Thrust force vector [N]
+    M : array_like
+        Moment vector [N-m]
+    P : float
+        Total electrical power consumption [W]
+    stored_results_flag : bool
+        Indicator that results have been stored
+    stored_propulsor_tag : str
+        Identifier of the propulsor with stored results
 
-    Outputs:  
-    total_thrust         - thrust of propulsor group              [N]
-    total_power          - power of propulsor group               [W]
-    total_current        - current of propulsor group             [A]
-    stored_results_flag  - boolean for stored results             [-]     
-    stored_propulsor_tag - name of propulsor with stored results  [-]
-    
-    Properties Used: 
-    N.A.        
+    Notes
+    -----
+    The function performs a sequential computation through the propulsion system:
+        1. Unpacks conditions and propulsor components
+        2. ESC modulates input voltage based on throttle setting
+        3. Motor converts electrical power to mechanical rotation
+        4. Rotor converts mechanical rotation to thrust
+        5. System performance metrics are computed
+
+    **Major Assumptions**
+        * Components are connected in series: ESC → Motor → Rotor
+        * Power losses occur at each conversion stage
+        * Moments from motor rotation are not included (noted as future work)
+        * Perfect mechanical coupling between motor and rotor
+
+    **Definitions**
+
+    'Throttle'
+        Control input ranging from 0 to 1 that modulates power output
+
+    'Stored Results'
+        Performance data saved for reuse with identical propulsors
     """ 
     conditions                 = state.conditions    
     electric_rotor_conditions  = conditions.energy[propulsor.tag] 

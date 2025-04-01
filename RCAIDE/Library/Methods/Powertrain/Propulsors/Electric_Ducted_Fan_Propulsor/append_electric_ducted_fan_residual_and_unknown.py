@@ -6,8 +6,31 @@
 #  append_electric_ducted_fan_residual_and_unknown
 # ----------------------------------------------------------------------------------------------------------------------  
 def append_electric_ducted_fan_residual_and_unknown(propulsor,segment):
-    """ 
-    Appends the torque matching residual and unknown
+    """
+    Appends the power coefficient as an unknown and motor torque as a residual for an electric ducted fan propulsor system.
+
+    Parameters
+    ----------
+    propulsor : RCAIDE.Library.Components.Propulsors
+        The electric ducted fan propulsor system
+            - ducted_fan : Component
+                The ducted fan component of the propulsor
+            - tag : str
+                Identifier for the propulsor system
+    segment : RCAIDE.Framework.Mission.Segments.Segment
+        The mission segment being analyzed
+            - state : State
+                Contains the flight condition state variables
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    This function initializes the power coefficient unknown using the design power 
+    coefficient from cruise conditions and sets up the motor torque residual that 
+    will be used in the solver.
     """ 
     ones_row    = segment.state.ones_row 
     ducted_fan   = propulsor.ducted_fan

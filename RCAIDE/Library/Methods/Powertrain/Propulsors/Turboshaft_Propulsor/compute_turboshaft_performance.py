@@ -22,27 +22,76 @@ from copy import deepcopy
 # compute_turboshaft_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_turboshaft_performance(turboshaft,state,center_of_gravity= [[0.0, 0.0,0.0]]):    
-    """ Computes the perfomrance of one turboshaft
-    
-    Assumptions: 
-    N/A
+    """
+    Computes the performance characteristics of a turboshaft engine by analyzing flow through each component.
 
-    Source:
-    N/A
+    Parameters
+    ----------
+    turboshaft : Turboshaft
+        Turboshaft engine object containing component definitions
+            - ram : Ram
+            - inlet_nozzle : Compression_Nozzle
+            - compressor : Compressor
+            - combustor : Combustor
+            - high_pressure_turbine : Turbine
+            - low_pressure_turbine : Turbine
+            - core_nozzle : Expansion_Nozzle
+            - working_fluid : FluidProperties
+                Working fluid properties object
+    state : State
+        State data structure containing conditions
+            - conditions.energy[turboshaft.tag] : Conditions
+                Engine-specific energy conditions
+            - conditions.noise[turboshaft.tag] : Conditions
+                Engine noise conditions
+    center_of_gravity : array, optional
+        Aircraft center of gravity coordinates [[x, y, z]], defaults to [[0.0, 0.0, 0.0]]
 
-    Inputs:  
-    conditions           - operating conditions data structure     [-]  
-    fuel_line            - fuelline                                [-] 
-    turboshaft           - turboshaft data structure               [-] 
-    total_power          - power of turboshaft group               [W] 
+    Returns
+    -------
+    thrust : array
+        Three-dimensional thrust force vector [N]
+    moment : array
+        Three-dimensional moment vector [N*m]
+    power : float
+        Power output [W]
+    stored_results_flag : bool
+        Flag indicating if results were stored
+    stored_propulsor_tag : str
+        Tag identifier of the turboshaft with stored results
 
-    Outputs:  
-    total_power          - power of turboshaft group               [W] 
-    stored_results_flag  - boolean for stored results              [-]     
-    stored_propulsor_tag - name of turboshaft with stored results  [-]
-    
-    Properties Used: 
-    N.A.        
+    Notes
+    -----
+    The function performs sequential analysis through each engine component:
+        1. Ram inlet performance
+        2. Inlet nozzle compression
+        3. Compressor performance
+        4. Combustor performance
+        5. High pressure turbine expansion
+        6. Low pressure turbine expansion
+        7. Core nozzle expansion
+        8. Power and thrust computation
+
+    **Major Assumptions**
+        * Steady state operation
+        * Perfect gas behavior
+        * Adiabatic component processes except combustor
+        * No bleed air extraction
+        * Sequential component analysis
+
+    **Theory**
+
+    The analysis follows standard gas turbine cycle analysis, with each component
+    modeled using appropriate thermodynamic relations. Component matching is
+    maintained through the engine by passing appropriate flow properties between
+    components.
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Ram.compute_ram_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Combustor.compute_combustor_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Compressor.compute_compressor_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Turbine.compute_turbine_performance
     """ 
     conditions                = state.conditions 
     noise_conditions          = conditions.noise[turboshaft.tag]  

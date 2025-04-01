@@ -26,6 +26,94 @@ import numpy as np
 #  Design Turbojet
 # ----------------------------------------------------------------------------------------------------------------------   
 def design_turbojet(turbojet):  
+    """
+    Designs a turbojet engine by computing performance properties and sizing components based on design conditions.
+    
+    Parameters
+    ----------
+    turbojet : Turbojet
+        Turbojet engine object containing design parameters and components
+            - design_mach_number : float
+                Design point Mach number [-]
+            - design_altitude : float
+                Design point altitude [m]
+            - design_isa_deviation : float
+                ISA temperature deviation [K]
+            - working_fluid : Gas
+                Working fluid object for gas properties
+            - Components:
+                - ram : Ram
+                - inlet_nozzle : Compression_Nozzle
+                - low_pressure_compressor : Compressor
+                - high_pressure_compressor : Compressor
+                - combustor : Combustor
+                - high_pressure_turbine : Turbine
+                - low_pressure_turbine : Turbine
+                - core_nozzle : Supersonic_Nozzle
+    
+    Returns
+    -------
+    None
+        Updates turbojet object attributes in-place:
+            - mass_flow_rate_design : float
+                Design core mass flow rate [kg/s]
+            - design_core_massflow : float
+                Core mass flow at design point [kg/s]
+    
+    Notes
+    -----
+    This function performs the following steps:
+        1. Computes atmospheric conditions at design point
+        2. Sets up freestream conditions
+        3. Links and analyzes flow through each component:
+            - Ram inlet
+            - Inlet nozzle
+            - Low pressure compressor
+            - High pressure compressor
+            - Combustor
+            - High pressure turbine
+            - Low pressure turbine
+            - Core nozzle
+        4. Sizes the core based on design thrust requirements
+        5. Computes static sea level performance
+    
+    **Major Assumptions**
+        * Quasi-one-dimensional flow
+        * Each component operates in steady state
+        * Perfect gas behavior in non-combustion sections
+        * US Standard Atmosphere 1976 model
+        * Earth gravity model
+        * Design point defines core sizing
+    
+    **Theory**
+    The design process follows standard gas turbine design principles:
+    
+    .. math::
+        \\text{Mass flow continuity: } \\dot{m}_{in} = \\dot{m}_{out}
+    
+        \\text{Power Balance: } W_{compressor} = W_{turbine}
+    
+        \\text{Core sizing: } \\dot{m}_{core} = \\frac{F_{design}}{F_{sp} a_0}
+    
+    where:
+        - :math:`F_{design}` is the design thrust
+        - :math:`F_{sp}` is the specific thrust
+        - :math:`a_0` is the freestream speed of sound
+    
+    **Extra modules required**
+        * numpy
+    
+    References
+    ----------
+    [1] Mattingly, J. D., "Elements of Gas Turbine Propulsion", McGraw-Hill, 1996
+    [2] Walsh, P. P., Fletcher, P., "Gas Turbine Performance", Blackwell Science, 2004
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor.compute_turbojet_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor.size_core
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_static_sea_level_performance
+    """
     #check if mach number and temperature are passed
     if(turbojet.design_mach_number==None or turbojet.design_altitude==None):
         

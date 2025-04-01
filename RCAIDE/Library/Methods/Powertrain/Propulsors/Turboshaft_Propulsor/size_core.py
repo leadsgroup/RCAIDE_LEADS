@@ -16,32 +16,69 @@ import numpy                                                       as np
 #  size_core
 # ----------------------------------------------------------------------------------------------------------------------
 def size_core(turboshaft,turboshaft_conditions,conditions):
-    """Sizes the core flow for the design condition.
+    """
+    Sizes the core flow path of a turboshaft engine at the design point condition.
 
-    Assumptions:
-    Perfect gas
-    Turboshaft engine with free power turbine
+    Parameters
+    ----------
+    turboshaft : Turboshaft
+        Turboshaft engine object containing design parameters
+            - reference_temperature : float
+                Reference temperature [K]
+            - reference_pressure : float
+                Reference pressure [Pa]
+            - design_power : float
+                Design power output [W]
+            - inputs.bypass_ratio : float
+                Engine bypass ratio
+            - inputs.total_temperature_reference : float
+                Reference total temperature [K]
+            - inputs.total_pressure_reference : float
+                Reference total pressure [Pa]
+            - inputs.number_of_engines : int
+                Number of engines
+    turboshaft_conditions : Conditions
+        Turboshaft operating conditions data structure
+    conditions : Conditions
+        Freestream conditions data structure
+            - freestream.speed_of_sound : float
+                Freestream speed of sound [m/s]
 
-    Sources:
-    [1] https://soaneemrana.org/onewebmedia/ELEMENTS%20OF%20GAS%20TURBINE%20PROPULTION2.pdf - Page 332 - 336
+    Returns
+    -------
+    None
+        Results are stored in turboshaft object:
+            - mass_flow_rate_design : float
+                Design point mass flow rate [kg/s]
+            - compressor.mass_flow_rate : float
+                Compressor mass flow rate [kg/s]
+
+    Notes
+    -----
+    This function determines the core flow path size required to achieve the
+    specified design power output. The sizing process accounts for component
+    performance characteristics and operating conditions.
+
+    **Major Assumptions**
+        * Perfect gas behavior
+        * Core flow is sized at design point conditions
+        * Component efficiencies are constant
+        * Free power turbine configuration
+
+    **Theory**
+
+    The core sizing is based on achieving the required power output while
+    maintaining appropriate flow conditions through each component. The process
+    uses non-dimensional parameters to determine the required mass flow rate.
+
+    References
+    ----------
+    [1] https://soaneemrana.org/onewebmedia/ELEMENTS%20OF%20GAS%20TURBINE%20PROPULTION2.pdf
     [2] https://www.colorado.edu/faculty/kantha/sites/default/files/attached-files/70652-116619_-_luke_stuyvenberg_-_dec_17_2015_1258_pm_-_stuyvenberg_helicopterturboshafts.pdf
 
-    Inputs:
-    conditions.freestream.speed_of_sound [m/s] (conditions is also passed to turboshaft.compute(..))
-    turboshaft.inputs.
-      bypass_ratio                            [-]
-      total_temperature_reference             [K]
-      total_pressure_reference                [Pa]
-      number_of_engines                       [-]
-
-    Outputs:
-    turboshaft.outputs.non_dimensional_power  [-]
-
-    Properties Used:
-    turboshaft.
-      reference_temperature                   [K]
-      reference_pressure                      [Pa]
-      total_design                            [W] - Design power
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor.compute_power
     """             
     
     #unpack from turboshaft

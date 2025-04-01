@@ -12,31 +12,61 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor.compute_th
 #  size_core
 # ---------------------------------------------------------------------------------------------------------------------- 
 def size_core(turboprop,turboprop_conditions,conditions):
-    """Sizes the core flow for the design condition.
+    """
+    Sizes the core flow for the turboprop engine at design conditions.
 
-    Assumptions:
-    Perfect gas
-    Turboprop Engine
+    Parameters
+    ----------
+    turboprop : Turboprop
+        Turboprop engine object containing design parameters
+            - inputs.bypass_ratio : float
+                Engine bypass ratio
+            - inputs.total_temperature_reference : float
+                Reference total temperature [K]
+            - inputs.total_pressure_reference : float
+                Reference total pressure [Pa]
+            - inputs.number_of_engines : int
+                Number of engines
+            - reference_temperature : float
+                Reference temperature [K]
+            - reference_pressure : float
+                Reference pressure [Pa]
+            - total_design : float
+                Design power output [W]
+    turboprop_conditions : Conditions
+        Turboprop operating conditions data structure
+    conditions : Conditions
+        Freestream conditions data structure
+            - freestream.speed_of_sound : float
+                Freestream speed of sound [m/s]
 
-    Sources:
-    [1] 
+    Returns
+    -------
+    None
+        Results are stored in turboprop_conditions:
+            - non_dimensional_power : float
+                Non-dimensional power output [-]
 
-    Inputs:
-    conditions.freestream.speed_of_sound [m/s] (conditions is also passed to turboprop.compute(..))
-    turboprop.inputs.
-      bypass_ratio                            [-]
-      total_temperature_reference             [K]
-      total_pressure_reference                [Pa]
-      number_of_engines                       [-]
+    Notes
+    -----
+    This function sizes the core flow path of the turboprop engine to achieve
+    the required design power output while maintaining appropriate component
+    matching.
 
-    Outputs:
-    turboprop.outputs.non_dimensional_power  [-]
+    **Major Assumptions**
+        * Perfect gas behavior
+        * Core flow is sized at design point conditions
+        * Component efficiencies are constant
 
-    Properties Used:
-    turboprop.
-      reference_temperature                   [K]
-      reference_pressure                      [Pa]
-      total_design                            [W] - Design power
+    **Theory**
+
+    The core sizing is based on achieving the required power output while
+    maintaining appropriate flow conditions through each component. The
+    non-dimensional power parameter is used to scale the core flow appropriately.
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor.compute_thrust 
     """             
 
     compute_thrust(turboprop,turboprop_conditions,conditions)  

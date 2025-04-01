@@ -20,29 +20,67 @@ import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_ice_performance(propulsor,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
     """
-    Computes the perfomrance of one propulsor
-    
-    Assumptions: 
-    N/A
+    Computes the performance characteristics of an Internal Combustion Engine (ICE) propulsion 
+    system by evaluating the engine and propeller in sequence. Handles throttle settings, 
+    power generation, and thrust production.
 
-    Source:
-    N/A
+    Parameters
+    ----------
+    propulsor : RCAIDE.Library.Components.Propulsors.ICE_Propeller
+        The ICE propulsion system
+            - tag : str
+                Identifier for the propulsor
+            - engine : Component
+                Internal combustion engine component
+            - propeller : Component
+                Propeller component
+    state : RCAIDE.Framework.Mission.Common.State
+        Contains flight conditions and operating state
+            - conditions : Conditions
+                Flight condition parameters including energy settings
+                    - energy : dict
+                        Contains propulsor-specific conditions
+                            - throttle : float
+                                Engine power setting
+                            - rpm : float
+                                Engine rotational speed
+    center_of_gravity : list, optional
+        Aircraft center of gravity coordinates [[x, y, z]] [m]
+        Default is [[0.0, 0.0, 0.0]]
 
-    Inputs:  
-    conditions           - operating conditions data structure    [-]  
-    fuel_line            - fuelline                               [-] 
-    propulsor            - propulsor data structure               [-] 
-    total_thrust         - thrust of propulsor group              [N]
-    total_power          - power of propulsor group               [W] 
+    Returns
+    -------
+    T : array_like
+        Thrust force vector [N]
+    M : array_like
+        Moment vector [N-m]
+    P : float
+        Power output [W]
+    stored_results_flag : bool
+        Indicator that results have been stored
+    stored_propulsor_tag : str
+        Identifier of the propulsor with stored results
 
-    Outputs:  
-    total_thrust         - thrust of propulsor group              [N]
-    total_power          - power of propulsor group               [W] 
-    stored_results_flag  - boolean for stored results             [-]     
-    stored_propulsor_tag - name of propulsor with stored results  [-]
-    
-    Properties Used: 
-    N.A.        
+    Notes
+    -----
+    The function performs a sequential computation through the propulsion system:
+        1. Conditions and propulsor data is unpacked
+        2. Engine throttle setting is processed
+        3. Power is computed from throttle
+        4. Propeller performance is evaluated
+        5. System forces and moments are calculated
+
+    **Major Assumptions**
+        * Direct mechanical coupling between engine and propeller
+        * Moments from engine rotation are not included (noted as future work)
+
+    **Definitions**
+
+    'Throttle'
+        Control input ranging from 0 to 1 that modulates engine power output
+        
+    'Stored Results'
+        Performance data saved for reuse with identical propulsors
     """  
     conditions              = state.conditions  
     ice_conditions          = conditions.energy[propulsor.tag]

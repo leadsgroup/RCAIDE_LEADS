@@ -1,7 +1,17 @@
 # RCAIDE/Methods/Energy/Propulsors/Converters/Turbojet/__init__.py
 # 
 
-""" RCAIDE Package Setup
+"""
+Contains methods for analyzing and designing turbojet propulsion systems. This module provides functionality for computing thrust, 
+sizing engine cores, and evaluating turbojet performance characteristics.
+
+See Also
+--------
+RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Ram
+RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Combustor
+RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Compressor
+RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Turbine
+RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Expansion_Nozzle
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

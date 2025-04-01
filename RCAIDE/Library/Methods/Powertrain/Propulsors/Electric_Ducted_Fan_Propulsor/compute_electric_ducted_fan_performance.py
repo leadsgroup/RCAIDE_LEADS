@@ -20,32 +20,64 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------  
 def compute_electric_ducted_fan_performance(propulsor,state,voltage,center_of_gravity= [[0.0, 0.0,0.0]]):   
     """
-    Computes the perfomrance of one propulsor
-    
-    Assumptions: 
-    N/A
+    Computes the performance characteristics of an electric ducted fan propulsion system by evaluating the electronic speed controller (ESC), 
+    DC motor, and ducted fan in sequence.
 
-    Source:
-    N/A
+    Parameters
+    ----------
+    propulsor : RCAIDE.Library.Components.Propulsors.Electric_Ducted_Fan
+        The electric ducted fan propulsion system
+            - tag : str
+                Identifier for the propulsor
+            - motor : Component
+                DC motor component
+            - ducted_fan : Component
+                Ducted fan component
+            - electronic_speed_controller : Component
+                ESC component
+    state : RCAIDE.Framework.Mission.Common.State
+        Contains flight conditions and operating state
+            - conditions : Conditions
+                Flight condition parameters
+    voltage : float
+        System input voltage [V]
+    center_of_gravity : list, optional
+        Aircraft center of gravity coordinates [[x, y, z]] [m]
+        Default is [[0.0, 0.0, 0.0]]
 
-    Inputs:  
-    conditions           - operating conditions data structure    [-] 
-    voltage              - system voltage                         [V]
-    bus                  - bus                                    [-] 
-    propulsor            - propulsor data structure               [-] 
-    total_thrust         - thrust of propulsor group              [N]
-    total_power          - power of propulsor group               [W]
-    total_current        - current of propulsor group             [A]
+    Returns
+    -------
+    T : array_like
+        Thrust force vector [N]
+    M : array_like
+        Moment vector [N-m]
+    P : float
+        Total electrical power consumption [W]
+    stored_results_flag : bool
+        Indicator that results have been stored
+    stored_propulsor_tag : str
+        Identifier of the propulsor with stored results
 
-    Outputs:  
-    total_thrust         - thrust of propulsor group              [N]
-    total_power          - power of propulsor group               [W]
-    total_current        - current of propulsor group             [A]
-    stored_results_flag  - boolean for stored results             [-]     
-    stored_propulsor_tag - name of propulsor with stored results  [-]
-    
-    Properties Used: 
-    N.A.        
+    Notes
+    -----
+    The function performs a sequential computation through the propulsion system:
+        1. ESC converts input voltage based on throttle setting
+        2. Motor converts electrical power to mechanical rotation
+        3. Ducted fan converts mechanical rotation to thrust
+        4. System performance metrics are computed
+
+    **Major Assumptions**
+        * Components are connected in series: ESC → Motor → Ducted Fan
+        * Power losses occur at each conversion stage
+        * Moments from motor rotation are not included (noted as future work)
+
+    **Definitions**
+
+    'Throttle'
+        Control input ranging from 0 to 1 that modulates power output
+        
+    'Tip Mach'
+        Ratio of the ducted fan tip speed to the local speed of sound
     """ 
     conditions                 = state.conditions    
     edf_conditions             = conditions.energy[propulsor.tag] 

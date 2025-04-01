@@ -13,8 +13,38 @@ import RCAIDE
 #  append_electric_rotor_residual_and_unknown
 # ----------------------------------------------------------------------------------------------------------------------  
 def append_electric_rotor_residual_and_unknown(propulsor,segment):
-    """ 
-    appends the torque matching residual and unknown
+    """
+    Initializes the power coefficient unknown and torque matching residual for an electric rotor 
+    propulsion system. The initial power coefficient is set based on the rotor type (propeller, 
+    lift rotor, or prop rotor).
+
+    Parameters
+    ----------
+    propulsor : RCAIDE.Library.Components.Propulsors.Electric_Rotor
+        The electric rotor propulsion system
+            - tag : str
+                Identifier for the propulsor
+            - rotor : Component
+                The rotor component (Propeller, Lift_Rotor, or Prop_Rotor)
+    segment : RCAIDE.Framework.Mission.Segments.Segment
+        The mission segment being analyzed
+            - state : State
+                Contains solver unknowns and residuals
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The function sets up two key variables for the solver:
+        1. Power coefficient (Cp) unknown - initialized from design conditions
+        2. Motor-rotor torque matching residual - initialized to zero
+
+    **Definitions**
+
+    'Power Coefficient'
+        Non-dimensional parameter representing the power absorbed by the rotor
     """
     ones_row    = segment.state.ones_row
     rotor       = propulsor.rotor  

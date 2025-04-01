@@ -7,26 +7,54 @@
 # compute_electric_rotor_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_voltage_out_from_throttle(esc,esc_conditions,conditions):
-    """ The voltage out of the electronic speed controller
+    """
+    Computes the output voltage of the Electronic Speed Controller (ESC) based on the 
+    throttle setting. Implements a linear voltage modulation model where output voltage 
+    is proportionally controlled by the throttle position.
+
+    Parameters
+    ----------
+    esc : RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller
+        The electronic speed controller component
+    esc_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        ESC-specific operating conditions
+            - throttle : float
+                Power modulation setting [0-1]
+            - inputs : Conditions
+                Input parameters
+                    - voltage : float
+                        Input voltage [V]
+            - outputs : Conditions
+                Output parameters
+                    - voltage : float
+                        Output voltage [V]
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions (not directly used but maintained for API consistency)
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The function performs these operations:
+        1. Clamps throttle between 0 and 1
+        2. Computes output voltage as a linear function of throttle
+        3. Updates ESC conditions with new values
+
+    **Major Assumptions**
+        * Linear relationship between throttle and output voltage
+        * No voltage drop across the ESC
+        * Instantaneous throttle response
+        * Perfect voltage regulation
+        * Throttle values outside [0,1] are clamped
+
+    **Definitions**
+      
+    'Voltage Modulation'
+        Process of controlling output voltage through throttle position
+    """
     
-        Assumptions:
-        The ESC's output voltage is linearly related to throttle setting
-
-        Source:
-        N/A
-
-        Inputs:
-        conditions.energy.throttle     [0-1] 
-        esc_conditions.inputs.voltage            [volts]
-
-        Outputs:
-        voltsout                       [volts]
-        esc_conditions.outputs.voltageout        [volts]
-
-        Properties Used:
-        None
-       
-    """ 
     eta        = esc_conditions.throttle * 1.0
     
     # Negative throttle is bad

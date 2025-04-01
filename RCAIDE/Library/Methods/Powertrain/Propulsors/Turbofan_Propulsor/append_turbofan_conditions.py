@@ -42,7 +42,7 @@ def append_turbofan_conditions(turbofan,segment):
     See Also
     --------
     RCAIDE.Framework.Mission.Segments.Segment
-    RCAIDE.Library.Components.Propulsors.Turbofan
+    RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan
     """ 
     ones_row    = segment.state.ones_row                  
     segment.state.conditions.energy[turbofan.tag]                               = Conditions()  

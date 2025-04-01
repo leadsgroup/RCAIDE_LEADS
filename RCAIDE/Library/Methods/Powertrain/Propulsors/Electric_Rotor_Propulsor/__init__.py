@@ -1,8 +1,14 @@
 # RCAIDE/Methods/Energy/Propulsors/Electric_Rotor_Propulsor/__init__.py
 # 
 
-""" 
-RCAIDE Package Setup
+"""
+Collection of methods for analyzing electric rotor propulsion systems. These methods handle the 
+performance computation, state management, and solver integration for electric motor-driven rotors. 
+
+See Also
+--------
+RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor
+RCAIDE.Library.Methods.Powertrain.Propulsors.ICE_Propulsor
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

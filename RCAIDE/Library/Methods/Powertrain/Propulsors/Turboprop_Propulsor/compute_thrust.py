@@ -17,55 +17,109 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_thrust(turboprop,turboprop_conditions,conditions):
     
-    """Computes thrust and other properties as below.
+    """
+    Computes thrust, power, and performance metrics for a turboprop engine.
 
-    Assumptions:
-    Perfect gas
+    Parameters
+    ----------
+    turboprop : Turboprop
+        Turboprop engine object containing design parameters
+            - reference_temperature : float
+                Reference temperature [K]
+            - reference_pressure : float
+                Reference pressure [Pa]
+            - combustor.turbine_inlet_temperature : float
+                Turbine inlet temperature [K]
+            - design_propeller_efficiency : float
+                Design point propeller efficiency [-]
+            - design_gearbox_efficiency : float
+                Gearbox efficiency [-]
+            - low_pressure_turbine.mechanical_efficiency : float
+                Low pressure turbine mechanical efficiency [-]
+            - combustor.fuel_data.lower_heating_value : float
+                Fuel lower heating value [J/kg]
+    turboprop_conditions : Data
+        Operating conditions for the turboprop
+            - throttle : float
+                Throttle setting [-]
+            - fuel_to_air_ratio : float
+                Fuel-to-air ratio [-]
+            - stag_temp_hpt_out/in : float
+                High pressure turbine inlet/outlet temperatures [K]
+            - stag_temp_lpt_out/in : float
+                Low pressure turbine inlet/outlet temperatures [K]
+            - total_temperature_reference : float
+                Reference total temperature [K]
+            - total_pressure_reference : float
+                Reference total pressure [Pa]
+    conditions : Data
+        Flight conditions
+            - freestream.gravity : float
+                Gravitational acceleration [m/s^2]
+            - freestream.temperature : float
+                Ambient temperature [K]
+            - freestream.pressure : float
+                Ambient pressure [Pa]
+            - freestream.mach_number : float
+                Flight Mach number [-]
+            - freestream.velocity : float
+                Flight velocity [m/s]
+            - freestream.speed_of_sound : float
+                Speed of sound [m/s]
 
-    Source:
-    Mattingly, Jack D.. “Elements of Gas Turbine Propulsion.” (1996).
+    Returns
+    -------
+    None
+        Updates turboprop_conditions with:
+            - thrust : float
+                Engine thrust [N]
+            - thrust_specific_fuel_consumption : float
+                TSFC [kg/(N*hr)]
+            - non_dimensional_thrust : float
+                Specific thrust [(N*s)/kg]
+            - core_mass_flow_rate : float
+                Core mass flow rate [kg/s]
+            - fuel_flow_rate : float
+                Fuel mass flow rate [kg/s]
+            - power : float
+                Total power output [W]
+            - specific_power : float
+                Power per unit mass flow [(W*s)/kg]
+            - power_specific_fuel_consumption : float
+                PSFC [kg/(W*hr)]
+            - thermal_efficiency : float
+                Thermal efficiency [-]
+            - propulsive_efficiency : float
+                Propulsive efficiency [-]
 
-    Inputs:
-    conditions.freestream.gravity 
-    conditions.freestream.temperature
-    conditions.freestream.pressure      
-    conditions.freestream.mach_number
-    conditions.freestream.velocity
-    conditions.freestream.speed_of_sound
-    turboprop.reference_temperature
-    turboprop.reference_pressure 
-    turboprop.combustor.turbine_inlet_temperature
-    turboprop.design_propeller_efficiency
-    turboprop.design_gearbox_efficiency
-    turboprop.low_pressure_turbine.mechanical_efficiency
-    turboprop.combustor.fuel_data.lower_heating_value
-    turboprop_conditions.stag_temp_hpt_out
-    turboprop_conditions.stag_temp_hpt_in
-    turboprop_conditions.stag_temp_lpt_out
-    turboprop_conditions.stag_temp_lpt_in
-    turboprop_conditions.total_temperature_reference
-    turboprop_conditions.total_pressure_reference     
-    turboprop_conditions.fuel_to_air_ratio 
-    turboprop_conditions.cpt
-    turboprop_conditions.cpc
-    turboprop_conditions.R_t
-    turboprop_conditions.R_c
-    turboprop_conditions.T9
-    turboprop_conditions.P9  
-    turboprop_conditions.gamma_c
-    turboprop_conditions.core_exit_velocity
-    
-    Outputs:
-    turboprop_conditions.thrust                           
-    turboprop_conditions.thrust_specific_fuel_consumption 
-    turboprop_conditions.non_dimensional_thrust           
-    turboprop_conditions.core_mass_flow_rate              
-    turboprop_conditions.fuel_flow_rate                   
-    turboprop_conditions.power                            
-    turboprop_conditions.specific_power                   
-    turboprop_conditions.power_specific_fuel_consumption  
-    turboprop_conditions.thermal_efficiency               
-    turboprop_conditions.propulsive_efficiency               
+    Notes
+    -----
+    This function computes both thrust and power-based performance metrics, as turboprops
+    combine shaft power for propeller drive with residual jet thrust.
+
+    **Major Assumptions**
+        * Perfect gas behavior
+        * Quasi-steady operation
+        * Combined propeller and jet thrust
+        * Constant specific heats in turbine and compressor sections
+
+    **Theory**
+    The total power coefficient is computed as:
+
+    .. math::
+        C_{tot} = C_c + C_{prop}
+
+    where:
+        - :math:`C_c` is the core jet thrust coefficient
+        - :math:`C_{prop}` is the propeller power coefficient
+
+    References
+    ----------
+    [1] Mattingly, J. D., "Elements of Gas Turbine Propulsion", McGraw-Hill, 1996
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor.compute_turboprop_performance
     """       
     
     #compute dimensional mass flow rates 
