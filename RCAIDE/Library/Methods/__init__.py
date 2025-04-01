@@ -20,6 +20,6 @@ from . import Powertrain
 from . import Stability
 from . import Thermal_Management
 from . import Utilities
-
+from . import Propulsors
 from .skip import skip
 

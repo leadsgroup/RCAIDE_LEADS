@@ -192,7 +192,25 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     # ---------------------------------------------------------------------------------
     # Compute battery_module cell temperature 
     # ---------------------------------------------------------------------------------
-    #ADD PYBAMM MODEL HERE           
+    R_0_cell[t_idx]                     =  (0.01483*(SOC_cell[t_idx]**2) - 0.02518*SOC_cell[t_idx] + 0.1036) *battery_module_conditions.cell.resistance_growth_factor  
+    R_0_cell[t_idx][R_0_cell[t_idx]<0]  = 0. 
+
+    # Determine temperature increase         
+    sigma                 = 139 # Electrical conductivity
+    n                     = 1
+    F                     = 96485 # C/mol Faraday constant    
+    delta_S               = -496.66*(SOC_cell[t_idx])**6 +  1729.4*(SOC_cell[t_idx])**5 + -2278 *(SOC_cell[t_idx])**4 +  1382.2 *(SOC_cell[t_idx])**3 + \
+                            -380.47*(SOC_cell[t_idx])**2 +  46.508*(SOC_cell[t_idx])  + -10.692  
+
+    i_cell                = I_cell[t_idx]/electrode_area # current intensity
+    q_dot_entropy         = -(T_cell[t_idx])*delta_S*i_cell/(n*F)       
+    q_dot_joule           = (i_cell**2)*(battery_module_conditions.cell.resistance_growth_factor)/(sigma)          
+    Q_heat_cell[t_idx]    = (q_dot_joule + q_dot_entropy)*As_cell 
+    Q_heat_module[t_idx]  = Q_heat_cell[t_idx]*n_total  
+
+    V_ul_cell[t_idx]      = compute_nmc_cell_state(battery_module_data,SOC_cell[t_idx],T_cell[t_idx],abs(I_cell[t_idx])) 
+
+    V_oc_cell[t_idx]      = V_ul_cell[t_idx] + (abs(I_cell[t_idx]) * R_0_cell[t_idx])              
 
     # Effective Power flowing through battery_module 
     P_module[t_idx]       = P_bus[t_idx] /no_modules  - np.abs(Q_heat_module[t_idx]) 
@@ -237,7 +255,7 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     return stored_results_flag, stored_battery_module_tag
 
 
-def reuse_stored_nmc_cell_data(battery_module,state,bus,stored_results_flag, stored_battery_module_tag):
+def reuse_stored_p30b_cell_data(battery_module,state,bus,stored_results_flag, stored_battery_module_tag):
     '''Reuses results from one propulsor for identical batteries
     
     Assumptions: 
@@ -260,7 +278,7 @@ def reuse_stored_nmc_cell_data(battery_module,state,bus,stored_results_flag, sto
         
     return
  
-def compute_nmc_cell_state(battery_module_data,SOC,T,I):
+def compute_p30b_cell_state(battery_module_data,SOC,T,I):
     """This computes the electrical state variables of a lithium ion 
     battery_module cell with a  lithium-nickel-cobalt-aluminum oxide cathode 
     chemistry from look-up tables 

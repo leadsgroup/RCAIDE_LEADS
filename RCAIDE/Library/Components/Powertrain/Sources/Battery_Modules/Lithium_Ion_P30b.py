@@ -146,7 +146,7 @@ class Lithium_Ion_P30b(Generic_Battery_Module):
         self.cell.chemistry                   = ''
         self.cell.diameter                    = 0.0185                                                                            # [m]
         self.cell.height                      = 0.0653                                                                            # [m]
-        self.cell.mass                        =  * Units.kg                                                                  # [kg]
+        self.cell.mass                        = 100* Units.kg                                                                  # [kg]
         self.cell.surface_area                = (np.pi*self.cell.height*self.cell.diameter) + (0.5*np.pi*self.cell.diameter**2)  # [m^2]
         self.cell.volume                      = np.pi*(0.5*self.cell.diameter)**2*self.cell.height 
         self.cell.density                     = self.cell.mass/self.cell.volume                                                  # [kg/m^3]  
