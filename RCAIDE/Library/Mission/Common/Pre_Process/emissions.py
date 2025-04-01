@@ -11,16 +11,55 @@
 #  stability
 # ----------------------------------------------------------------------------------------------------------------------  
 def emissions(mission):
-    """ Runs emissions model and build surrogate
+    """
+    Initializes and processes emissions models for mission segments
+
+    Parameters
+    ----------
+    mission : Mission
+        The mission containing segments to be analyzed
+            - analyses.emissions : Analysis
+                Emissions analysis module
+                - process.emissions : Process
+                    Emissions computation process
+            - surrogates : Data
+                Emissions surrogate models
     
-        Assumptions:
-            N/A
-        
-        Inputs:
-            None
-            
-        Outputs:
-            None             
+    Returns
+    -------
+    None
+        Updates mission segment analyses directly
+
+    Notes
+    -----
+    This function prepares the emissions analysis for each mission segment.
+    It manages emissions models and surrogate data across segments for
+    computational efficiency by reusing previously computed data when possible.
+
+    The function performs the following steps:
+        1. Identifies segments requiring emissions analysis
+        2. Reuses previous segment's emissions data when possible
+        3. Initializes new emissions analyses when needed
+
+    **Process Flow**
+    
+    For each segment:
+        1. Check if emissions analysis exists
+        2. If previous segment exists with computed data:
+            - Reuse process and surrogate data
+        3. Otherwise:
+            - Initialize new emissions analysis
+            - Store segment tag for future reference
+
+    **Major Assumptions**
+        * Compatible emissions models between segments
+        * Valid initialization of first segment
+        * Continuous emissions characteristics
+        * Proper surrogate model compatibility
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """
         
     last_tag = None

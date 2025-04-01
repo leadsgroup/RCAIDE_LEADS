@@ -14,18 +14,81 @@ import numpy as np
 #  Residual Total Forces
 # ---------------------------------------------------------------------------------------------------------------------- 
 def flight_dynamics(segment):
-    '''Packs the residuals related to the flight dynamics.
-       This includes the force and moment equations about x,y and z
+    """
+    Evaluates flight dynamics residuals for mission segment analysis
+
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+
+    Returns
+    -------
+    None
+        Updates segment residuals directly
+
+    Notes
+    -----
+    This function calculates the residuals for force and moment equations
+    in all three axes. It handles special cases for transition and ground
+    segments, including acceleration calculations and final velocity constraints.
+
+    The function processes:
+        1. Force equation residuals (F = ma)
+        2. Moment equation residuals (M = Iα)
+        3. Special handling for:
+            - Transition segments
+            - Ground operations (takeoff, landing)
+
+    **Required Segment State Variables**
+
+    state.conditions.frames.inertial:
+        - velocity_vector : array
+            Vehicle velocity [m/s]
+        - acceleration_vector : array
+            Vehicle acceleration [m/s²]
+        - total_force_vector : array
+            Net forces [N]
+        - total_moment_vector : array
+            Net moments [N⋅m]
+        - angular_velocity_vector : array
+            Angular rates [rad/s]
+        - angular_acceleration_vector : array
+            Angular accelerations [rad/s²]
+
+    state.conditions.weights:
+        - total_mass : array
+            Vehicle mass [kg]
+
+    analyses.aerodynamics.vehicle.mass_properties:
+        - moments_of_inertia.tensor : array
+            Inertia tensor [kg⋅m²]
+
+    **Segment Types**
     
-    Assumptions:
-        N/A
-    
-    Inputs:
-        segment 
-        
-    Outputs:
-        None   
-    '''
+    Special handling for:
+    - Transition segments
+        * Constant acceleration
+        * Constant angle
+        * Linear climb
+    - Ground segments
+        * Takeoff
+        * Landing
+        * Ground operations
+
+    **Major Assumptions**
+        * Rigid body dynamics
+        * Principal axes aligned with body axes
+        * Constant inertia properties
+        * Valid mass properties
+        * Non-zero final velocity for ground segments
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
+    RCAIDE.Framework.Mission.Segments.Transition
+    RCAIDE.Framework.Mission.Segments.Ground
+    """
     transition_seg_flag =  type(segment) == RCAIDE.Framework.Mission.Segments.Transition.Constant_Acceleration_Constant_Angle_Linear_Climb
     ground_seg_flag =  (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Landing) or\
         (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Takeoff) or \

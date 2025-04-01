@@ -29,11 +29,11 @@ def differentials_altitude(segment):
     position to determine appropriate time steps for integration.
 
     The function performs the following steps:
-    1. Extracts control points and integration operators
-    2. Calculates total altitude change
-    3. Determines time step based on vertical velocity
-    4. Rescales time operators
-    5. Updates segment time vector
+        1. Extracts control points and integration operators
+        2. Calculates total altitude change
+        3. Determines time step based on vertical velocity
+        4. Rescales time operators
+        5. Updates segment time vector
 
     **Required Segment State Variables**
 
@@ -52,9 +52,9 @@ def differentials_altitude(segment):
             Segment time vector [s]
 
     **Major Assumptions**
-    * Continuous vertical velocity
-    * Well-defined altitude change
-    * No singularities in vertical velocity
+        * Continuous vertical velocity
+        * Well-defined altitude change
+        * No singularities in vertical velocity
 
     Returns
     -------

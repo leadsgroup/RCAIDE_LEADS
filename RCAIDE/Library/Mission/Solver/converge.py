@@ -23,25 +23,16 @@ import os
 # converge root
 # ---------------------------------------------------------------------------------------------------------------------- 
 def converge(segment):
-    """Interfaces the mission a root finder algorithm.
-
-    Assumptions:
-    N/A
-
-    Source:
-    N/A
-
-    Inputs:
-    segment                            [Data]
-    segment.settings.root_finder       [Data]
-    state.numerics.tolerance_solution  [Unitless]
-
-    Outputs:
-    state.unknowns                     [Any]
-    segment.state.numerics.converged   [Unitless]
-
-    Properties Used:
-    N/A
+    """
+    RCAIDE provides two different solvers for missions: an optimization solver and a root-finder. 
+        - Root-finder can be faster but may struggle to converge for complex vehicles
+        - Optimization solver is more robust but may be slower
+    
+    Specify the solver type in the segent state as follows: 
+        segment.state.numerics.solver.type = "optimize" or "root_finder"
+    
+    Further documentation to come...    
+    
     """       
     
     if segment.state.numerics.solver.type  == "optimize": 
