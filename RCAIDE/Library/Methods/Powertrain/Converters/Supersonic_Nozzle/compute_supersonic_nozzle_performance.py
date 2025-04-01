@@ -139,7 +139,7 @@ def compute_supersonic_nozzle_performance(supersonic_nozzle, s_nozzle_conditions
     Mach          = np.sqrt((((Pt_out/Po)**((gamma-1)/gamma))-1)*2/(gamma-1))
     
     #Remove check on mach numbers fromn expansion nozzle
-    i_low         = Mach < 10.0
+    i_low         = Mach < 1.0
     
     #initializing the Pout array
     P_out         = 1.0 *Mach/Mach
