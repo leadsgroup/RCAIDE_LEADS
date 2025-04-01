@@ -227,7 +227,7 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
     emissions                      = Data() 
     emissions.NOx_CO2e             = NOx_total   * fuel.global_warming_potential_100.NOx 
     emissions.CO2_CO2e             = CO2_total   * fuel.global_warming_potential_100.CO2
-    #emissions.CO_CO2e              = CO_total   * fuel.global_warming_potential_100.CO
+    emissions.CO_CO2e              = CO_total   * fuel.global_warming_potential_100.CO
     emissions.H2O_CO2e             = H2O_total   * fuel.global_warming_potential_100.H2O  
     emissions.SO2_CO2e             = SO2_total   * fuel.global_warming_potential_100.SO2  
     emissions.Soot_CO2e            = Soot_total  * fuel.global_warming_potential_100.Soot 

@@ -112,13 +112,14 @@ def plot_CO2e_emissions(results,
         time                = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min 
         emissions_CO2       = results.segments[i].conditions.emissions.CO2_CO2e[:, 0]  
         emissions_NOx       = results.segments[i].conditions.emissions.NOx_CO2e[:, 0] 
+        emissions_CO        = results.segments[i].conditions.emissions.CO_CO2e[:, 0] 
         emissions_H2O       = results.segments[i].conditions.emissions.H2O_CO2e[:, 0] 
         emissions_Contrails = results.segments[i].conditions.emissions.Contrails_CO2e[:, 0]
         emissions_Soot      = results.segments[i].conditions.emissions.Soot_CO2e[:, 0]
         emissions_SO2       = results.segments[i].conditions.emissions.SO2_CO2e[:, 0]  
 
         cum_y0 = np.zeros_like(emissions_CO2)  
-        cum_y1 = cum_y1_0 + emissions_CO2 +  emissions_NOx  + emissions_H2O  + emissions_Contrails +  emissions_Soot +  emissions_SO2    
+        cum_y1 = cum_y1_0 + emissions_CO2 +  emissions_NOx  + emissions_H2O  + emissions_Contrails +  emissions_Soot +  emissions_SO2 + emissions_CO    
 
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')    

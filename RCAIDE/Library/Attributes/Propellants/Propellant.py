@@ -55,6 +55,7 @@ class Propellant(Data):
         self.global_warming_potential_100.CO2       = 0
         self.global_warming_potential_100.H2O       = 0
         self.global_warming_potential_100.SO2       = 0
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
         self.global_warming_potential_100.NOx       = 0
         self.global_warming_potential_100.Soot      = 0  
         self.global_warming_potential_100.Contrails = 0        
