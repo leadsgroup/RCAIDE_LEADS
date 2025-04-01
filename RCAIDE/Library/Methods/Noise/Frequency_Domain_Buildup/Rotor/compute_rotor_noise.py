@@ -168,7 +168,7 @@ def compute_rotor_noise(microphone_locations,propulsor,rotor,segment,settings, r
         # ----------------------------------------------------------------------------------    
         # Broadband Noise
         # ---------------------------------------------------------------------------------- 
-        broadband_noise(conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt)  
+        broadband_noise(conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt)
     
         # ----------------------------------------------------------------------------------    
         # Atmospheric attenuation 
