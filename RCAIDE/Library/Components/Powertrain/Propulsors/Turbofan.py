@@ -7,7 +7,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports  
-from RCAIDE.Framework.Core      import Container
+from RCAIDE.Framework.Core      import Data
 from .                          import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor.append_turbofan_conditions     import append_turbofan_conditions 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
@@ -165,6 +165,16 @@ class Turbofan(Propulsor):
         self.reference_pressure                         = 1.01325*10**5 
         self.design_thrust                              = 0.0
         self.mass_flow_rate_design                      = 0.0
+
+        self.emission_indices                           = Data()  
+        self.emission_indices.NOx                       = None
+        self.emission_indices.CO2                       = None
+        self.emission_indices.CO                        = None
+        self.emission_indices.H2O                       = None
+        self.emission_indices.SO2                       = None
+        self.emission_indices.Soot                      = None 
+        
+        
         self.OpenVSP_flow_through                       = False
     
     def append_operating_conditions(self,segment):

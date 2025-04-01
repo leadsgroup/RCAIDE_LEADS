@@ -31,32 +31,24 @@ class Test_Stand(Evaluate):
         self.velocity             = None 
         self.throttle             = 1.0
         self.altitude             = 0.0
-        self.true_course          = 0.0 * Units.degrees 
-
-        ## -------------------------------------------------------------------------------------------------------------- 
-        ##  Mission Unknowns and Residuals
-        ## -------------------------------------------------------------------------------------------------------------- 
-        #ones_row_m1                               = self.state.ones_row_m1
-        #self.state.residuals.final_velocity_error = 0.0
-        #self.state.residuals.force_x              = ones_row_m1(1) * 0.0    
-        #self.state.unknowns.elapsed_time          = 30.                        
-        #self.state.unknowns.ground_velocity       = ones_row_m1(1) * 0  
-
-        ## -------------------------------------------------------------------------------------------------------------- 
-        ##  Mission Conditions 
-        ## --------------------------------------------------------------------------------------------------------------          
-        #ones_row = self.state.ones_row   
-
-        ## -------------------------------------------------------------------------------------------------------------- 
-        ##  Mission specific processes 
-        ## --------------------------------------------------------------------------------------------------------------  
-        #initialize                         = self.process.initialize
-        #initialize.conditions              = Ground.Takeoff.initialize_conditions
-        #iterate                            = self.process.iterate   
-        #iterate.conditions.forces_ground   = Update.ground_forces
-        #iterate.unknowns.mission           = Unpack_Unknowns.ground
-        #iterate.residuals.flight_dynamics  = Residuals.flight_dynamics
-        
+        self.time                 = 1.0
+        self.true_course          = 0.0 * Units.degrees
+ 
+        ones_row                           = self.state.ones_row 
+        self.state.unknowns['test_stand']  =  0* ones_row(1)  
+        self.state.residuals['test_stand'] =  0* ones_row(1)         
+ 
+        # -------------------------------------------------------------------------------------------------------------- 
+        #  Mission specific processes 
+        # --------------------------------------------------------------------------------------------------------------       
+        initialize                         = self.process.initialize 
+        initialize.conditions              = Ground.Test_Stand.initialize_conditions  
+        iterate                            = self.process.iterate 
+        iterate.unknowns.mission           = skip
+        iterate.conditions.aerodynamics    = skip
+        iterate.conditions.stability       = skip  
+        post_process                       = self.process.post_process  
+        post_process.noise                 = skip 
         return
 
 

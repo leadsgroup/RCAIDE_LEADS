@@ -98,19 +98,7 @@ def append_battery_conditions(battery,segment,bus):
     bus_results.battery_modules[battery.tag].cell.cycle_in_day               = 0
     bus_results.battery_modules[battery.tag].cell.resistance_growth_factor   = 1.
     bus_results.battery_modules[battery.tag].cell.capacity_fade_factor       = 1. 
-    
-    # Conditions for recharging battery 
-    if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
-        segment.state.conditions.energy.recharging  = True 
-        segment.state.unknowns['recharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['recharge'] =  0* ones_row(1)
-    elif type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
-        segment.state.conditions.energy.recharging   = False 
-        segment.state.unknowns['discharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['discharge'] =  0* ones_row(1)     
-    else:
-        segment.state.conditions.energy.recharging  = False 
-        
+      
     # first segment 
     if 'initial_battery_state_of_charge' in segment:  
         initial_battery_energy                                            = segment.initial_battery_state_of_charge*battery.maximum_energy   

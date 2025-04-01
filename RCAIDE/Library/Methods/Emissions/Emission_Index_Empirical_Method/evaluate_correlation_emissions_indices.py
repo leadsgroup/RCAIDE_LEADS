@@ -156,32 +156,66 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
     [1] Lee, D. S., et al. (2021). The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018. Atmospheric Environment, 244, 117834.
     """  
     # unpack
-    state      = segment.state
+    state      = segment.state 
     I          = state.numerics.time.integrate
     NOx_total  = 0 * state.ones_row(1)  
     CO2_total  = 0 * state.ones_row(1) 
+    CO_total   = 0 * state.ones_row(1) 
     SO2_total  = 0 * state.ones_row(1) 
     H2O_total  = 0 * state.ones_row(1) 
-    Soot_total = 0 * state.ones_row(1) 
+    Soot_total = 0 * state.ones_row(1)
 
-    for network in vehicle.networks:  
+    if segment.state.initials:   
+        NOx_0       = segment.state.initials.conditions.emissions.cumulative.NOx[-1,0]        
+        CO2_0       = segment.state.initials.conditions.emissions.cumulative.CO2[-1,0]        
+        CO_0        = segment.state.initials.conditions.emissions.cumulative.CO[-1,0]        
+        H2O_0       = segment.state.initials.conditions.emissions.cumulative.H2O[-1,0]        
+        SO2_0       = segment.state.initials.conditions.emissions.cumulative.SO2[-1,0]        
+        Soot_0      = segment.state.initials.conditions.emissions.cumulative.Soot[-1,0]         
+    else:
+        NOx_0       = 0
+        CO2_0       = 0
+        CO_0        = 0
+        H2O_0       = 0
+        SO2_0       = 0
+        Soot_0      = 0
+
+    for network in vehicle.networks:
+    
+           
+        for propulsor in network.propulsors:
+            EI_NOx  = propulsor.emission_indices.NOx   
+            EI_CO2  = propulsor.emission_indices.CO2   
+            EI_CO   = propulsor.emission_indices.CO  
+            EI_H2O  = propulsor.emission_indices.H2O    
+            EI_SO2  = propulsor.emission_indices.SO2    
+            EI_Soot = propulsor.emission_indices.Soot      
+        
         for fuel_line in network.fuel_lines:
             if fuel_line.active: 
                 for fuel_tank in fuel_line.fuel_tanks:
                     mdot = 0. * state.ones_row(1)    
                     fuel =  fuel_tank.fuel 
-             
-                    EI_NOx  = fuel.emission_indices.NOx
-                    EI_CO2  = fuel.emission_indices.CO2 
-                    EI_H2O  = fuel.emission_indices.H2O
-                    EI_SO2  = fuel.emission_indices.SO2
-                    EI_Soot = fuel.emission_indices.Soot  
+                    
+                    if EI_NOx == None: 
+                        EI_NOx  = fuel.emission_indices.NOx
+                    if EI_CO2 == None: 
+                        EI_CO2  = fuel.emission_indices.CO2
+                    if EI_CO == None: 
+                        EI_CO  = fuel.emission_indices.CO
+                    if EI_H2O == None: 
+                        EI_H2O  = fuel.emission_indices.H2O
+                    if EI_SO2 == None: 
+                        EI_SO2  = fuel.emission_indices.SO2
+                    if EI_Soot == None: 
+                        EI_Soot = fuel.emission_indices.Soot  
                     
                     mdot = segment.conditions.energy[fuel_line.tag][fuel_tank.tag].mass_flow_rate
                      
                     # Integrate them over the entire segment
                     NOx_total  += np.dot(I,mdot*EI_NOx)
                     CO2_total  += np.dot(I,mdot*EI_CO2)
+                    CO_total   += np.dot(I,mdot*EI_CO)
                     SO2_total  += np.dot(I,mdot*EI_SO2)
                     H2O_total  += np.dot(I,mdot*EI_H2O) 
                     Soot_total += np.dot(I,mdot*EI_Soot)
@@ -190,20 +224,28 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
     flight_range    =  state.conditions.frames.inertial.aircraft_range 
     Contrails_total =  (flight_range -   flight_range[0]) /1000 * fuel.global_warming_potential_100.Contrails
 
-    emissions                 = Data()
-    emissions.total           = Data()
-    emissions.index           = Data() 
-    emissions.total.NOx       = NOx_total   * fuel.global_warming_potential_100.NOx 
-    emissions.total.CO2       = CO2_total   * fuel.global_warming_potential_100.CO2
-    emissions.total.H2O       = H2O_total   * fuel.global_warming_potential_100.H2O  
-    emissions.total.SO2       = SO2_total   * fuel.global_warming_potential_100.SO2  
-    emissions.total.Soot      = Soot_total  * fuel.global_warming_potential_100.Soot 
-    emissions.total.Contrails = Contrails_total   
-    emissions.index.NOx       = EI_NOx   * state.ones_row(1)
-    emissions.index.CO2       = EI_CO2   * state.ones_row(1)
-    emissions.index.H2O       = EI_H2O   * state.ones_row(1)
-    emissions.index.SO2       = EI_SO2   * state.ones_row(1)
-    emissions.index.Soot      = EI_Soot  * state.ones_row(1)
+    emissions                      = Data() 
+    emissions.NOx_CO2e             = NOx_total   * fuel.global_warming_potential_100.NOx 
+    emissions.CO2_CO2e             = CO2_total   * fuel.global_warming_potential_100.CO2
+    #emissions.CO_CO2e              = CO_total   * fuel.global_warming_potential_100.CO
+    emissions.H2O_CO2e             = H2O_total   * fuel.global_warming_potential_100.H2O  
+    emissions.SO2_CO2e             = SO2_total   * fuel.global_warming_potential_100.SO2  
+    emissions.Soot_CO2e            = Soot_total  * fuel.global_warming_potential_100.Soot 
+    emissions.Contrails_CO2e       = Contrails_total  
+    emissions.cumulative           = Data()
+    emissions.cumulative.NOx       = NOx_0       + NOx_total    
+    emissions.cumulative.CO2       = CO2_0       + CO2_total    
+    emissions.cumulative.CO        = CO_0        + CO_total    
+    emissions.cumulative.H2O       = H2O_0       + H2O_total     
+    emissions.cumulative.SO2       = SO2_0       + SO2_total     
+    emissions.cumulative.Soot      = Soot_0      + Soot_total       
+    emissions.index                = Data() 
+    emissions.index.NOx            = EI_NOx   * state.ones_row(1)
+    emissions.index.CO2            = EI_CO2   * state.ones_row(1)
+    emissions.index.CO            = EI_CO    * state.ones_row(1)
+    emissions.index.H2O            = EI_H2O   * state.ones_row(1)
+    emissions.index.SO2            = EI_SO2   * state.ones_row(1)
+    emissions.index.Soot           = EI_Soot  * state.ones_row(1)
     
     state.conditions.emissions = emissions
     return   

@@ -65,12 +65,7 @@ class Evaluate(Segment):
         self.angle_of_attack                      = 1.0 *  Units.degree
         self.bank_angle                           = 0.0
         self.trim_lift_coefficient                = None
-        self.state.conditions.update(Results())
-        
-
-        #self.state.inputs_last                = None
-        #self.state.objective_value            = 0.0
-        #self.state.constraint_values          = 0.0        
+        self.state.conditions.update(Results())      
         
         # ---------------------------------------------------------------
         # Define Flight Controls and Residuals 
