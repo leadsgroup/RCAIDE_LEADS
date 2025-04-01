@@ -6,38 +6,107 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_turbine_performance
 # ----------------------------------------------------------------------------------------------------------------------     
-def compute_turbine_performance(turbine,turbine_conditions,conditions):
-    """This computes the output values from the input values according to
-    equations from the source. The following properties are computed: 
-    turbine.outputs.
-      stagnation_temperature   (numpy.ndarray): exiting stagnation_temperature [K]  
-      stagnation_pressure      (numpy.ndarray): exiting stagnation_pressure    [Pa]
-      stagnation_enthalpy      (numpy.ndarray): exiting stagnation_enthalpy    [J/kg]
-
-    Assumptions:
-    Constant polytropic efficiency and pressure ratio
-
-    Source:
-    https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
-
-    Args:
-        conditions.freestream.
-          isentropic_expansion_factor             (numpy.ndarray): isentropic_expansion_factor         [unitless]
-          specific_heat_at_constant_pressure      (numpy.ndarray): specific_heat_at_constant_pressure  [J/(kg K)]
-        turbine
-          .inputs.stagnation_temperature          (numpy.ndarray): entering stagnation_temperature     [K]
-          .inputs.stagnation_pressure             (numpy.ndarray): entering stagnation_pressure        [Pa]
-          .inputs.bypass_ratio                    (numpy.ndarray): bypass_ratio                        [unitless]
-          .inputs.fuel_to_air_ratio               (numpy.ndarray): fuel-to-air ratio                   [unitless]
-          .inputs.compressor.work_done            (numpy.ndarray): compressor work                     [J/(kg/s)]
-          .inputs.fan.work_done                   (numpy.ndarray): fan work done                       [J/(kg/s)]
-          .inputs.shaft_power_off_take.work_done  (numpy.ndarray): shaft power off take                [J/(kg/s)] 
-          .mechanical_efficiency                          (float): mechanical efficiency               [unitless]
-          .polytropic_efficiency                          (float): polytropic efficiency               [unitless]
-
-    Returns:
-        None 
-    """              
+def compute_turbine_performance(turbine, turbine_conditions, conditions):
+    """
+    Computes the thermodynamic properties at the exit of a turbine based on work extraction.
+    
+    Parameters
+    ----------
+    turbine : Turbine
+        The turbine component with the following attributes:
+            - mechanical_efficiency : float
+                Mechanical efficiency of the turbine [unitless]
+            - polytropic_efficiency : float
+                Polytropic efficiency of the expansion process [unitless]
+            - working_fluid : FluidModel
+                Object containing methods to compute fluid properties
+    turbine_conditions : Conditions
+        Object containing turbine inlet conditions with the following attributes:
+            - inputs.stagnation_temperature : numpy.ndarray
+                Inlet stagnation temperature [K]
+            - inputs.stagnation_pressure : numpy.ndarray
+                Inlet stagnation pressure [Pa]
+            - inputs.static_temperature : numpy.ndarray
+                Inlet static temperature [K]
+            - inputs.static_pressure : numpy.ndarray
+                Inlet static pressure [Pa]
+            - inputs.mach_number : numpy.ndarray
+                Inlet Mach number [unitless]
+            - inputs.bypass_ratio : numpy.ndarray
+                Bypass ratio [unitless]
+            - inputs.fuel_to_air_ratio : numpy.ndarray
+                Fuel-to-air ratio [unitless]
+            - inputs.compressor.work_done : numpy.ndarray
+                Compressor work [J/(kg/s)]
+            - inputs.fan.work_done : numpy.ndarray
+                Fan work done [J/(kg/s)]
+            - inputs.shaft_power_off_take.work_done : numpy.ndarray
+                Shaft power off take [J/(kg/s)]
+    conditions : Conditions
+        Object containing freestream conditions (not directly used in this function)
+    
+    Returns
+    -------
+    None
+        This function modifies the turbine_conditions.outputs object in-place with the following attributes:
+            - stagnation_temperature : numpy.ndarray
+                Exit stagnation temperature [K]
+            - stagnation_pressure : numpy.ndarray
+                Exit stagnation pressure [Pa]
+            - stagnation_enthalpy : numpy.ndarray
+                Exit stagnation enthalpy [J/kg]
+            - static_temperature : numpy.ndarray
+                Exit static temperature [K]
+            - static_pressure : numpy.ndarray
+                Exit static pressure [Pa]
+            - mach_number : numpy.ndarray
+                Exit Mach number [unitless]
+            - gas_constant : numpy.ndarray
+                Gas constant [J/(kg·K)]
+            - pressure_ratio : numpy.ndarray
+                Ratio of exit to inlet pressure [unitless]
+            - temperature_ratio : numpy.ndarray
+                Ratio of exit to inlet temperature [unitless]
+            - gamma : numpy.ndarray
+                Ratio of specific heats [unitless]
+            - cp : numpy.ndarray
+                Specific heat at constant pressure [J/(kg·K)]
+    
+    Notes
+    -----
+    This function computes the thermodynamic properties at the exit of a turbine
+    based on the work extracted to drive compressors, fans, and other components. It uses 
+    equations from the AA283 Course Notes [1] to compute the exit conditions.
+    
+    **Major Assumptions**
+        * Constant polytropic efficiency and pressure ratio
+        * Adiabatic process
+    
+    **Theory**
+    
+    The energy drop across the turbine is calculated using:
+    
+    .. math::
+        \\Delta h_t = -\\frac{1}{1+f} \\cdot (W_{comp} + W_{shaft} + \\alpha \\cdot W_{fan}) \\cdot \\frac{1}{\\eta_{mech}}
+    
+    The exit temperature is calculated using:
+    
+    .. math::
+        T_{t,out} = T_{t,in} + \\frac{\\Delta h_t}{C_p}
+    
+    The exit pressure is calculated using:
+    
+    .. math::
+        P_{t,out} = P_{t,in} \\cdot \\left(\\frac{T_{t,out}}{T_{t,in}}\\right)^{\\frac{\\gamma}{\\gamma-1}} \\cdot \\frac{1}{\\eta_{poly}}
+    
+    References
+    ----------
+    [1] Cantwell, B., "AA283 Course Notes", Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Turbine.append_turbine_conditions
+    """
                              
     # Unpack ram inputs       
     working_fluid   = turbine.working_fluid

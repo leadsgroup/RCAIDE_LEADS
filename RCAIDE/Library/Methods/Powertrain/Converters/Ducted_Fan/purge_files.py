@@ -10,23 +10,33 @@ import os
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Purge Files  
 # ----------------------------------------------------------------------------------------------------------------------   
-def purge_files(filenames_array,directory=''):
-    """ Purges folder folder of conflicting files
-
-    Assumptions:
+def purge_files(filenames_array, directory=''):
+    """
+    Removes specified files from a directory to prevent conflicts.
+    
+    Parameters
+    ----------
+    filenames_array : list
+        List of filenames to be removed from the specified directory.
+    directory : str, optional
+        Path to the directory containing the files to be removed.
+        If not specified, the current directory is used.
+    
+    Returns
+    -------
     None
-
-    Source:
-        Drela, M. and Youngren, H., AVL, http://web.mit.edu/drela/Public/web/avl
-
-    Inputs:
-        None
-
-    Outputs:
-    None
-
-    Properties Used:
-        N/A
+    
+    Notes
+    -----
+    This function attempts to remove each file in the provided list from the
+    specified directory. If a file does not exist, the function silently
+    continues without raising an error.
+    
+    This utility is necessary for cleaning DFDC files. 
+    
+    References
+    ----------
+    [1] Drela, M. and Youngren, H., AVL, http://web.mit.edu/drela/Public/web/avl
     """    	
     for f in filenames_array:
         try:

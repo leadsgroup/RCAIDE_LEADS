@@ -1,0 +1,6 @@
+RCAIDE.Library.Mission.Segments.Descent.Constant\_EAS\_Constant\_Rate.initialize\_conditions
+============================================================================================
+
+.. currentmodule:: RCAIDE.Library.Mission.Segments.Descent.Constant_EAS_Constant_Rate
+
+.. autofunction:: initialize_conditions

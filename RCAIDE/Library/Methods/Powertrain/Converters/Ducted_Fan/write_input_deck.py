@@ -12,7 +12,82 @@ from .purge_files import purge_files
 # Write Input Deck
 # ----------------------------------------------------------------------------------------------------------------------  
 def write_input_deck(dfdc_object):
-    """ This function writes the execution steps used in the DFDC call 
+    """
+    Writes the execution commands input deck for DFDC analysis.
+    
+    Parameters
+    ----------
+    dfdc_object : DFDCAnalysis
+        Analysis object containing the following attributes:
+            - current_status : Data
+                Current analysis state
+                    - deck_file : str
+                        Path to the input deck file to be created
+            - settings : Data
+                Configuration settings
+                    - filenames : Data
+                        File path information
+                            - case : str
+                                Case name for DFDC
+                    - keep_files : bool
+                        Flag to retain intermediate files
+            - geometry : DuctedFan
+                Ducted fan geometry with the following attributes:
+                    - tag : str
+                        Identifier for the ducted fan
+                    - number_of_rotor_blades : int
+                        Number of blades on the rotor
+                    - number_of_radial_stations : int
+                        Number of radial stations for blade definition
+                    - cruise : Data
+                        Cruise conditions
+                            - design_thrust : float
+                                Design thrust [N]
+                            - design_altitude : float
+                                Design altitude [m]
+                            - design_angular_velocity : float
+                                Design angular velocity [rad/s]
+                            - design_freestream_velocity : float
+                                Design freestream velocity [m/s]
+                            - design_reference_velocity : float
+                                Design reference velocity [m/s]
+            - run_cases : list
+                List of case objects with the following attributes:
+                    - tag : str
+                        Identifier for the case
+                    - altitude : float
+                        Altitude for the case [m]
+                    - velocity : float
+                        Freestream velocity for the case [m/s]
+                    - RPM : float
+                        Rotational speed for the case [RPM]
+    
+    Returns
+    -------
+    None
+        
+    Notes
+    -----
+    This function generates a DFDC input deck with the following sections:
+        1. Header commands to load the case file
+        2. Settings commands for the design case
+        3. Case commands for each analysis case
+        4. Quit command to terminate DFDC
+    
+    The input deck follows the command structure required by DFDC, including:
+        - Atmospheric conditions (altitude)
+        - Reference and freestream velocities
+        - Blade count and radial station count
+        - RPM setting
+        - Thrust target
+        - Design and execution commands
+        - Output file specifications
+        
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.purge_files
+    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.write_geometry
+    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.run_dfdc_analysis
     """
     # unpack 
     deck_filename = dfdc_object.current_status.deck_file 

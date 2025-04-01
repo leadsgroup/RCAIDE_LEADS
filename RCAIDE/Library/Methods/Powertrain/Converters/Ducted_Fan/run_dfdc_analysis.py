@@ -15,23 +15,60 @@ from .purge_files  import purge_files
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Run DFDC Analysis
 # ----------------------------------------------------------------------------------------------------------------------   
-def run_dfdc_analysis(dfdc_object,print_output):
-    """ This calls the DFDC executable and runs an analysis
-
-    Assumptions:
-        None
-        
-    Source:
-        None
-
-    Inputs:
-        dfdc_object - passed into the  call_dfdc function  
-        
-    Outputs:
-        results
-
-    Properties Used:
-        N/A
+def run_dfdc_analysis(dfdc_object, print_output):
+    """
+    Executes the DFDC (Ducted Fan Design Code) executable with the specified input deck.
+    
+    Parameters
+    ----------
+    dfdc_object : DFDCAnalysis
+        Analysis object containing the following attributes:
+            - settings : Data
+                Configuration settings
+                    - new_regression_results : bool
+                        Flag to use existing results instead of running analysis
+                    - filenames : Data
+                        File path information
+                            - log_filename : str
+                                Path to log file for stdout
+                            - err_filename : str
+                                Path to error file for stderr
+                            - dfdc_bin_name : str
+                                Path to DFDC executable
+                            - case : str
+                                Case name for DFDC
+            - current_status : Data
+                Current analysis state
+                    - deck_file : str
+                        Path to input deck file with DFDC commands
+    print_output : bool
+        Flag to control whether DFDC console output is displayed
+    
+    Returns
+    -------
+    exit_status : int
+        Return code from the DFDC process
+        0 indicates successful execution
+        Non-zero values indicate errors
+    
+    Notes
+    -----
+    This function handles the execution of the DFDC executable by:
+        1. Purging any existing log and error files
+        2. Opening the input deck file and feeding commands to DFDC
+        3. Capturing and redirecting stdout/stderr to specified files
+        4. Returning the process exit code
+    
+    This function requires the third party DFDC executable to be installed. More
+    information on the DFDC executable from Drela and Youngrencan be found at: https://web.mit.edu/drela/Public/web/dfdc/ 
+    
+    If new_regression_results is True, the function will skip execution
+    and return a success code (0) without running DFDC.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.purge_files
+    RCAIDE.Framework.Core.redirect
     """      
     new_regression_results = dfdc_object.settings.new_regression_results
     if new_regression_results:

@@ -1,7 +1,12 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Shaft_Power_Off_Take/__init__.py
-# (c) Copyright 2023 Aerospace Research Community LLC
+# RCAIDE/Library/Methods/Powertrain/Converters/Offtake_Shaft/__init__.py
 
-""" RCAIDE Package Setup
+"""
+This module provides functionality for modeling power offtake shafts in powertrains. It includes methods for computing 
+offtake shaft performance and appending offtake shaft conditions to simulation results.
+
+See Also
+--------
+RCAIDE.Library.Methods.Powertrain.Converters
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -14,41 +14,92 @@ from warnings import warn
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_compression_nozzle_performance(compression_nozzle,nozzle_conditions,conditions):
-    """  Computes the performance of a compression nozzle bases on its polytropic efficiency.
-         The following properties are computed: 
-        compression_nozzle.outputs.
-          stagnation_temperature             (numpy.ndarray): exit stagnation temperature [K]
-          stagnation_pressure                (numpy.ndarray): exit stagnation pressure    [Pa]
-          stagnation_enthalpy                (numpy.ndarray): exit stagnation enthalpy    [J/kg]
-          mach_number                        (numpy.ndarray): exit Mach number            [unitless]
-          static_temperature                 (numpy.ndarray): exit static temperature     [K]
-          static_enthalpy                    (numpy.ndarray): exit static enthalpy        [J/kg]
-          velocity                           (numpy.ndarray): exit nozzle velocity        [m/s]
-          
+def compute_compression_nozzle_performance(compression_nozzle, nozzle_conditions, conditions):
+    """
+    Computes the performance of a compression nozzle based on its polytropic efficiency.
+    
+    Parameters
+    ----------
+    compression_nozzle : CompressionNozzle
+        The compression nozzle component with the following attributes:
+            - pressure_ratio : float
+                Ratio of exit to inlet pressure
+            - polytropic_efficiency : float
+                Efficiency of the compression process
+            - pressure_recovery : float
+                Factor accounting for pressure losses
+            - compressibility_effects : bool
+                Flag to enable compressibility calculations
+            - working_fluid : FluidModel
+                Object containing methods to compute fluid properties
+    nozzle_conditions : Conditions
+        Object containing nozzle inlet conditions with the following attributes:
+            - inputs.stagnation_temperature : numpy.ndarray
+                Inlet stagnation temperature [K]
+            - inputs.stagnation_pressure : numpy.ndarray
+                Inlet stagnation pressure [Pa]
+            - inputs.static_temperature : numpy.ndarray
+                Inlet static temperature [K]
+            - inputs.static_pressure : numpy.ndarray
+                Inlet static pressure [Pa]
+            - inputs.mach_number : numpy.ndarray
+                Inlet Mach number [unitless]
+    conditions : Conditions
+        Object containing freestream conditions with the following attributes:
+            - freestream.pressure : numpy.ndarray
+                Ambient pressure [Pa]
+            - freestream.mach_number : numpy.ndarray
+                Freestream Mach number [unitless]
+    
+    Returns
+    -------
+    None
+        This function modifies the nozzle_conditions.outputs object in-place with the following attributes:
+            - stagnation_temperature : numpy.ndarray
+                Exit stagnation temperature [K]
+            - stagnation_pressure : numpy.ndarray
+                Exit stagnation pressure [Pa]
+            - stagnation_enthalpy : numpy.ndarray
+                Exit stagnation enthalpy [J/kg]
+            - mach_number : numpy.ndarray
+                Exit Mach number [unitless]
+            - static_temperature : numpy.ndarray
+                Exit static temperature [K]
+            - static_pressure : numpy.ndarray
+                Exit static pressure [Pa]
+            - static_enthalpy : numpy.ndarray
+                Exit static enthalpy [J/kg]
+            - velocity : numpy.ndarray
+                Exit nozzle velocity [m/s]
+    
+    Notes
+    -----
+    This function computes the thermodynamic properties at the exit of a compression nozzle
+    using gas dynamic relations. It handles both subsonic and supersonic inlet conditions
+    when compressibility effects are enabled.
+    
+    **Major Assumptions**
+        * Pressure ratio and polytropic efficiency do not change with varying conditions
+        * Adiabatic process
+        * Subsonic or choked output
+    
+    **Theory**
+    
+    For subsonic flow, isentropic relations are used:
+    
+    .. math::
+        M_{out} = \\sqrt{\\frac{2}{(\\gamma-1)}\\left[\\left(\\frac{P_{t,out}}{P_0}\\right)^{\\frac{\\gamma-1}{\\gamma}}-1\\right]}
+    
+    For supersonic flow, normal shock relations are applied.
+    
+    References
+    ----------
+    [1] Cantwell, B., "AA283 Course Notes", Stanford University
+        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
 
-    Assumptions:  
-        1. Pressure ratio and polytropic efficiency do not change with varying conditions.
-        2. Adiabatic
-        3. Subsonic or choked output.
-
-    Source:
-        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
-
-    Args:
-        conditions.freestream.
-          isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor        [unitless]
-          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]
-          pressure                            (numpy.ndarray): pressure                           [Pa]
-          gas_specific_constant               (numpy.ndarray): gas_specific_constant              [J/(kg K)]
-        compression_nozzle.
-          inputs.stagnation_temperature       (numpy.ndarra): entering stagnation_temperature     [K]
-          inputs.stagnation_pressure          (numpy.ndarra): entering stagnation_pressure        [Pa] 
-          pressure_ratio                             (float): pressure_ratio                      [unitless]
-          polytropic_efficiency                      (float): polytropic_efficiency               [unitless]
-          pressure_recovery                          (float): pressure_recovery                   [unitless]
-
-    Returns:
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle.append_compression_nozzle_conditions
     """
 
     # Unpack conditions
