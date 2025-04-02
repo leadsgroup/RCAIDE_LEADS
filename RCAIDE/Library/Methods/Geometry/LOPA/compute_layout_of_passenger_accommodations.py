@@ -93,13 +93,13 @@ def compute_fusselage_dimensions(fuselage):
     starboard_y_points = np.delete(y_border_pts, port_idxs)
     
     cabin_length = max(starboard_x_points)
-    cabin_wdith = 2*max(starboard_x_points)
+    cabin_wdith = 2*max(starboard_y_points)
 
     fuselage.lengths.nose = fuselage.fineness.nose*cabin_wdith
     fuselage.lengths.tail = fuselage.fineness.tail*cabin_wdith  
 
     fuselage.lengths.total = fuselage.lengths.nose + fuselage.lengths.tail + cabin_length
-    fuselage.wdith  = cabin_wdith
+    fuselage.width  = cabin_wdith
 
 def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_cabin_offset):  
     

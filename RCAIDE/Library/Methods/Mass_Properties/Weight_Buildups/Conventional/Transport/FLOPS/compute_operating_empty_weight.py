@@ -298,7 +298,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.structural.nacelle               = W_energy_network.W_nacelle* (1. - W_factors.nacelle)   
     
   
-    print('Paint weight is currently ignored in FLOPS calculations.')
+    #print('Paint weight is currently ignored in FLOPS calculations.')
     output.empty.structural.paint = 0  # TODO reconcile FLOPS paint calculations with Raymer and RCAIDE baseline
     output.empty.structural.total = output.empty.structural.wings   + output.empty.structural.fuselage + output.empty.structural.landing_gear\
                                     + output.empty.structural.paint + output.empty.structural.nacelle 
@@ -347,7 +347,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.takeoff_weight = output.zero_fuel_weight + total_fuel_weight
 
     if vehicle.mass_properties.takeoff != 0:
-        print('Takeoff weight prescribed, overwritting computed values')
+        #print('Takeoff weight prescribed, overwritting computed values')
         output.takeoff_weight = vehicle.mass_properties.takeoff
     
     if vehicle.mass_properties.max_takeoff < output.takeoff_weight:

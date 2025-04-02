@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0., plot_diagram = True, fuel_name=None):  
+def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0., plot_diagram = False, fuel_name=None):  
     """Calculates and plots the payload range diagram for an aircraft by modifying the cruise segment and weights of the aicraft .
 
         Sources:
@@ -123,7 +123,8 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     OEW_PLD = [  OEW + MaxPLD                      , MTOW - MaxFuel         , OEW  ]
     
     # allocating Range array
-    R       = [0,0,0]
+    R            = [0,0,0]
+    L_D_inv       = [0,0,0]
 
     # loop for each point of Payload Range Diagram
     for i in range(len(TOW)):
@@ -183,6 +184,9 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
 
         # Allocating resulting range in ouput array.
         R[i] =  results.segments[-1].conditions.frames.inertial.position_vector[-1,0]   
+        cl   = np.average(results.segments['cruise'].conditions.aerodynamics.coefficients.lift.total[:,0])
+        cd   = np.average(results.segments['cruise'].conditions.aerodynamics.coefficients.drag.total[:,0]) 
+        L_D_inv[i] = cd/cl  
 
     # Inserting point (0,0) in output arrays
     R.insert(0,0)
@@ -227,7 +231,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         set_axes(axis_2) 
         fig.tight_layout()
 
-    return payload_range 
+    return payload_range, L_D_inv
  
 def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram):
     """Calculates and plots the payload range diagram for an electric aircraft by modifying the
