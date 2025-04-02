@@ -309,14 +309,19 @@ def vehicle_setup(new_regression=True):
     
     current_dir = os.path.abspath(os.path.dirname(__file__))
     test_dir = os.path.abspath(os.path.join(current_dir, '..' + separator + 'Tests' + separator + 'mission_segments'))
-    
+     
+            
     if new_regression:
         design_electric_rotor(prop_rotor_propulsor)
         save_rotor(prop_rotor, os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))
     else:
         regression_prop_rotor_propulsor = deepcopy(prop_rotor_propulsor)        
         design_electric_rotor(regression_prop_rotor_propulsor, iterations=2)
-        prop_rotor_propulsor = load_rotor(os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))    
+        loaded_propulsor = load_rotor(os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))  
+        for key,item in prop_rotor_propulsor.rotor.items():
+            prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
+        for key,item in prop_rotor_propulsor.motor.items():
+            prop_rotor_propulsor.motor[key] = loaded_propulsor.motor[key] 
          
     # Front Rotors Locations 
     origins = [[-0.2, 1.347, 0.0], [-0.2, 3.2969999999999997, 0.0], [-0.2, -1.347, 0.0], [-0.2, -3.2969999999999997, 0.0],\

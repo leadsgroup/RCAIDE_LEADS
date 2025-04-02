@@ -451,9 +451,7 @@ def vehicle_setup(new_regression=True) :
     propeller_motor.no_load_current                        = 0.001
     propeller_motor.wing_tag                               = 'horizontal_tail' 
     cruise_propulsor_1.motor                               = propeller_motor
-    
-    design_electric_rotor(cruise_propulsor_1)
-      
+
     # rear propeller nacelle 
     propeller_nacelle                = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
     propeller_nacelle.tag            = 'propeller_nacelle'
@@ -526,7 +524,9 @@ def vehicle_setup(new_regression=True) :
     nac_segment.height             = 0.0
     nac_segment.width              = 0.0
     propeller_nacelle.append_segment(nac_segment)      
-    cruise_propulsor_1.nacelle = propeller_nacelle   
+    cruise_propulsor_1.nacelle = propeller_nacelle       
+    design_electric_rotor(cruise_propulsor_1)
+      
     network.propulsors.append(cruise_propulsor_1)
       
     # make and append copy of forward propulsor (efficient coding)    
@@ -657,7 +657,10 @@ def vehicle_setup(new_regression=True) :
         regression_lift_propulsor = deepcopy(lift_propulsor)        
         design_electric_rotor(regression_lift_propulsor, iterations=2)
         loaded_lift_propulsor = load_rotor(os.path.join(test_dir, 'stopped_rotor_lift_rotor.res'))
-        network.propulsors.append(loaded_lift_propulsor) 
+        for key,item in lift_propulsor.rotor.items():
+            lift_propulsor.rotor[key] = loaded_lift_propulsor.rotor[key] 
+        for key,item in lift_propulsor.motor.items():
+            lift_propulsor.motor[key] = loaded_lift_propulsor.motor[key] 
             
     # make and append copy of lift propulsor (efficient coding)    
     lift_propulsor_2                                       = deepcopy(lift_propulsor)
