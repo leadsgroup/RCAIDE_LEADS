@@ -10,8 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units 
 from RCAIDE.Library.Methods.Geometry.Planform                                             import segment_properties,wing_segmented_planform 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based   import converge_physics_based_weight_buildup 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor 
 from RCAIDE.Library.Plots                                                                 import *       
 from RCAIDE.load    import load as load_rotor
 from RCAIDE.save    import save as save_rotor  
@@ -780,15 +779,9 @@ def vehicle_setup(new_regression=True) :
     network.busses.append(lift_bus)       
         
     # append energy network 
-    vehicle.append_energy_network(network) 
-     
-    #------------------------------------------------------------------------------------------------------------------------------------
-    # ##################################   Determine Vehicle Mass Properties Using Physic Based Methods  ################################ 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    converged_vehicle, breakdown = converge_physics_based_weight_buildup(vehicle)  
-    print(breakdown) 
+    vehicle.append_energy_network(network)  
 
-    return converged_vehicle
+    return vehicle
 
 
 # ---------------------------------------------------------------------

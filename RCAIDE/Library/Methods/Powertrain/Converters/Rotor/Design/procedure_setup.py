@@ -189,7 +189,7 @@ def run_rotor_hover(nexus):
     
     rotor_conditions                      =  segment.state.conditions.energy.converters[rotor.tag]     
     rotor_conditions.omega                = (atmosphere_conditions.speed_of_sound*rotor.hover.design_tip_mach)/rotor.tip_radius 
-    rotor_conditions.blade_pitch_command[:,0]   = rotor.hover.design_pitch_command
+    rotor_conditions.blade_pitch_command[:,0]   = rotor.hover.design_blade_pitch_command
     
     compute_rotor_performance(rotor,conditions)   
      
@@ -261,7 +261,7 @@ def run_rotor_OEI(nexus):
                 
     rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
     rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.oei.design_tip_mach)/rotor.tip_radius 
-    rotor_conditions.blade_pitch_command[:,0]   = rotor.oei.design_pitch_command
+    rotor_conditions.blade_pitch_command[:,0]   = rotor.oei.design_blade_pitch_command
     
     compute_rotor_performance(rotor,conditions)    
             
@@ -307,7 +307,7 @@ def run_rotor_cruise(nexus):
             
         rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
         rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.cruise.design_tip_mach)/rotor.tip_radius 
-        rotor_conditions.blade_pitch_command[:,0]   = rotor.cruise.design_pitch_command
+        rotor_conditions.blade_pitch_command[:,0]   = rotor.cruise.design_blade_pitch_command
         
         compute_rotor_performance(rotor,conditions)   
         
@@ -448,10 +448,10 @@ def post_process(nexus):
         print("OEI Thrust                   : " + str(nexus.results.oei.thrust)) 
         print("OEI Thrust/Power Residual    : " + str(summary.OEI_hover_thrust_power_residual)) 
         print("OEI Tip Mach                 : " + str(rotor_oei.oei.design_tip_mach))  
-        print("OEI Collective (deg)         : " + str(rotor_oei.design_pitch_command/Units.degrees)) 
+        print("OEI Collective (deg)         : " + str(rotor_oei.design_blade_pitch_command/Units.degrees)) 
         if nexus.prop_rotor_flag:    
             print("Cruise RPM                   : " + str(nexus.results.cruise.omega/Units.rpm))    
-            print("Cruise Collective (deg)      : " + str(rotor_cru.design_pitch_command/Units.degrees)) 
+            print("Cruise Collective (deg)      : " + str(rotor_cru.design_blade_pitch_command/Units.degrees)) 
             if rotor_cru.cruise.design_thrust == None:  
                 print("Cruise Power                 : " + str(nexus.results.cruise.power)) 
             if rotor_cru.cruise.design_power == None:  

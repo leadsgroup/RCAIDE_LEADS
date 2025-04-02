@@ -59,7 +59,7 @@ class Lift_Rotor(Rotor):
         - design_performance : Data
             Performance metrics at design point. Default is None.
 
-        - design_pitch_command : float
+        - design_blade_pitch_command : float
             Design point blade pitch command [rad]. Default is 0.0.
 
         - design_SPL_dBA : float
@@ -101,7 +101,7 @@ class Lift_Rotor(Rotor):
         - design_acoustics : Data
             OEI acoustic characteristics. Default is None.
 
-        - design_pitch_command : float
+        - design_blade_pitch_command : float
             OEI blade pitch command [rad]. Default is 0.0.
 
         - design_performance : Data
@@ -177,7 +177,7 @@ class Lift_Rotor(Rotor):
         self.hover.design_freestream_velocity = None
         self.hover.design_acoustics           = None
         self.hover.design_performance         = None
-        self.hover.design_pitch_command       = 0.0
+        self.hover.design_blade_pitch_command       = 0.0
         self.hover.design_efficiency          = 0.86  
         self.hover.design_SPL_dBA             = None
         self.hover.design_Cl                  = None
@@ -194,7 +194,7 @@ class Lift_Rotor(Rotor):
         self.oei.design_tip_mach              = None  
         self.oei.design_altitude              = None
         self.oei.design_acoustics             = None
-        self.oei.design_pitch_command         = 0.0
+        self.oei.design_blade_pitch_command         = 0.0
         self.oei.design_performance           = None
         self.oei.design_SPL_dBA               = None
         self.oei.design_Cl                    = None

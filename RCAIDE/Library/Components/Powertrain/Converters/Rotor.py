@@ -180,6 +180,7 @@ class Rotor(Component):
         self.thickness_to_chord                = 0.0
         self.max_thickness_distribution        = 0.0
         self.radius_distribution               = None
+        self.blade_pitch_command               = 0.0
         self.mid_chord_alignment               = 0.0
         self.blade_solidity                    = 0.0 
         self.flap_angle                        = 0.0
@@ -206,7 +207,7 @@ class Rotor(Component):
         self.cruise.design_acoustics           = None
         self.cruise.design_performance         = None
         self.cruise.design_SPL_dBA             = None
-        self.cruise.design_pitch_command       = 0.0     
+        self.cruise.design_blade_pitch_command       = 0.0     
 
         # operating conditions 
         self.induced_power_factor              = 1.48        # accounts for interference effects
@@ -214,7 +215,6 @@ class Rotor(Component):
         self.clockwise_rotation                = True
         self.phase_offset_angle                = 0.0
         self.orientation_euler_angles          = [0.,0.,0.]  # vector of angles defining default orientation of rotor
-        self.blade_pitch_command               = 0.0
         self.ducted                            = False
         self.sol_tolerance                     = 1e-8 
         self.use_2d_analysis                   = False       # True if rotor is at an angle relative to freestream or nonuniform freestream

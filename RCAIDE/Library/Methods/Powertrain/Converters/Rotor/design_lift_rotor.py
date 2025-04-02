@@ -21,7 +21,7 @@ import sys
 #  Design Lift-rotor
 # ----------------------------------------------------------------------------------------------------------------------  
 def design_lift_rotor(rotor,number_of_stations = 20,solver_name= 'SLSQP',iterations = 200,
-                      solver_sense_step = 1E-5,solver_tolerance = 1E-4,print_iterations = False):  
+                      solver_sense_step = 1E-6,solver_tolerance = 1E-5,print_iterations = False):  
     """ Optimizes rotor chord and twist given input parameters to meet either design power or thurst. 
         This scrip adopts RCAIDE's native optimization style where the objective function is expressed 
         as an aeroacoustic function, considering both efficiency and radiated noise.

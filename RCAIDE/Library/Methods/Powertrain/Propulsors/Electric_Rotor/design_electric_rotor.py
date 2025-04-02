@@ -39,10 +39,10 @@ def design_electric_rotor(electric_rotor,number_of_stations = 20,solver_name= 'S
     """
 
     if electric_rotor.electronic_speed_controller == None: 
-        raise AssertionError("electric speed controller not defined on propulsor")
+        raise AssertionError("Electric Speed Controller not defined on propulsor")
     
     if electric_rotor.electronic_speed_controller.bus_voltage == None: 
-        raise AssertionError("ESC bus voltage not specified on propulsor") 
+        raise AssertionError("Electric Speed Controller  bus voltage not specified on propulsor") 
     
     if electric_rotor.rotor == None:
         raise AssertionError("Rotor not defined on propulsor")

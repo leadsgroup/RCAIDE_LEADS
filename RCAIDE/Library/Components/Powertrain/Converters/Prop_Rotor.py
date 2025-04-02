@@ -50,7 +50,7 @@ class Prop_Rotor(Rotor):
             Design point forward velocity [m/s]. Default is None.
         - design_SPL_dBA : float
             Design point sound pressure level [dBA]. Default is None.
-        - design_pitch_command : float
+        - design_blade_pitch_command : float
             Design point blade pitch command [rad]. Default is 0.0.
         - design_Cl : float
             Design point lift coefficient. Default is None.
@@ -78,7 +78,7 @@ class Prop_Rotor(Rotor):
             Performance metrics at design point. Default is None.
         - design_SPL_dBA : float
             Design point sound pressure level [dBA]. Default is None.
-        - design_pitch_command : float
+        - design_blade_pitch_command : float
             Design point blade pitch command [rad]. Default is 0.0.
         - design_Cl : float
             Design point lift coefficient. Default is None.
@@ -156,7 +156,7 @@ class Prop_Rotor(Rotor):
         self.hover.design_performance            = None
         self.hover.design_freestream_velocity    = None
         self.hover.design_SPL_dBA                = None
-        self.hover.design_pitch_command          = 0.0
+        self.hover.design_blade_pitch_command          = 0.0
         self.hover.design_efficiency             = 0.86  
         self.hover.design_Cl                     = None
         self.hover.design_thrust_coefficient     = None
@@ -172,7 +172,7 @@ class Prop_Rotor(Rotor):
         self.oei.design_acoustics                = None
         self.oei.design_performance              = None 
         self.oei.design_freestream_velocity      = None   
-        self.oei.design_pitch_command            = 0.0
+        self.oei.design_blade_pitch_command            = 0.0
         self.oei.design_efficiency               = 0.86  
         self.oei.design_altitude                 = None
         self.oei.design_SPL_dBA                  = None
@@ -190,7 +190,7 @@ class Prop_Rotor(Rotor):
         self.cruise.design_acoustics             = None
         self.cruise.design_performance           = None
         self.cruise.design_SPL_dBA               = None
-        self.cruise.design_pitch_command         = 0.0
+        self.cruise.design_blade_pitch_command         = 0.0
         self.cruise.design_efficiency            = 0.86  
         self.cruise.design_Cl                    = None
         self.cruise.design_thrust_coefficient    = None

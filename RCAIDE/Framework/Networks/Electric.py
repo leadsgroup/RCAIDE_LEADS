@@ -8,12 +8,12 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports 
-from .Hybrid import Hybrid 
+from .Network import Network 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electric
 # ----------------------------------------------------------------------------------------------------------------------  
-class Electric(Hybrid):
+class Electric(Network):
     """ Electric Network Class - Derivative of the hybrid energy network class
                                
     Attributes

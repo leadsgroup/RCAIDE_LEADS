@@ -5,9 +5,11 @@
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  RCAIDE
-# ---------------------------------------------------------------------------------------------------------------------- 
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_aircraft_moment_of_inertia
-from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity
+# ----------------------------------------------------------------------------------------------------------------------
+import RCAIDE
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_aircraft_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity                             import compute_vehicle_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based   import converge_physics_based_weight_buildup 
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  mass_properties
@@ -22,6 +24,13 @@ def mass_properties(mission):
             if last_tag == None:
                 # run weights analysis 
                 weights_analysis =  segment.analyses.weights
+                
+                if type(weights_analysis) == RCAIDE.Framework.Analyses.Weights.Electric and  weights_analysis.aircraft_type == 'VTOL':
+                    # Converge weight of aircraft before doing final weight analyis
+                    weights_analysis.print_weight_analysis_report = False
+                    converged_vehicle,breakdown = converge_physics_based_weight_buildup(weights_analysis.vehicle)
+                    print(breakdown)
+                    weights_analysis.vehicle = converged_vehicle
                  
                 _ = weights_analysis.evaluate() 
              
