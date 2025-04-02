@@ -60,11 +60,10 @@ def build_CRN_EI_surrogates(emissions):
     The interpolators are stored in the emissions.surrogates Data structure.
 
     The surrogate models interpolate emission indices based on:
-
-    - Pressure
-    - Temperature 
-    - Air mass flow rate
-    - Fuel-to-air ratio
+        - Pressure
+        - Temperature 
+        - Air mass flow rate
+        - Fuel-to-air ratio
 
     **Extra modules required**
 
