@@ -14,14 +14,57 @@ import numpy as np
 # compute_bus_conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_bus_conditions(bus, state, t_idx, delta_t): 
-    """Computes the conditions of the bus based on the response of the battery modules
+    """
+    Computes the conditions of the bus based on the response of the battery modules.
     
-    Args:
-        bus: Electrical bus object
-        state: Current system state
-        t_idx: Time index
-        delta_t: Time step
-    """  
+    Parameters
+    ----------
+    bus : ElectricalBus
+        The electrical bus component with the following attributes:
+            - tag : str
+                Identifier for the bus
+            - battery_modules : list
+                List of battery modules connected to the bus
+            - battery_module_electric_configuration : str
+                Configuration of battery modules ('Series' or 'Parallel')
+    state : State
+        Current system state containing conditions for all components
+    t_idx : int
+        Current time index in the simulation
+    delta_t : float
+        Time step [s]
+    
+    Returns
+    -------
+    None
+    
+    Notes
+    -----
+    This function calculates the electrical properties of the bus based on the connected
+    battery modules. It handles both series and parallel configurations of battery modules.
+    
+    For series configuration:
+        - Voltage is the sum of all battery module voltages
+        - Temperature and energy are averaged/summed across modules
+        - State of charge is taken from the last battery module
+    
+    For parallel configuration:
+        - Voltage is the same as the last battery module
+        - Temperature and energy are averaged/summed across modules
+        - State of charge is taken from the last battery module's cell
+    
+    The function also handles the fully charged state by setting charging current,
+    power draw, and current draw to zero when the state of charge reaches 1.0.
+    
+    **Major Assumptions**
+        * Battery modules are the primary energy source for the bus
+        * In parallel configuration, all modules have the same voltage
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
+    RCAIDE.Library.Methods.Powertrain.Energy_Storage.Battery.compute_battery_module_conditions
+    """
     bus_conditions = state.conditions.energy[bus.tag]
      
     if len(bus.battery_modules) != 0: 

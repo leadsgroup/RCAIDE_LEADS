@@ -34,14 +34,14 @@ def append_rotor_conditions(rotor, segment, energy_conditions, noise_conditions)
     during the mission analysis process.
     
     The energy conditions include various performance metrics such as:
-    - Orientation and thrust vector angle
-    - Blade pitch command
-    - Torque, thrust, and throttle settings
-    - RPM and angular velocity
-    - Disc and power loading
-    - Tip Mach number
-    - Efficiency and figure of merit
-    - Power coefficient
+        - Orientation and thrust vector angle
+        - Blade pitch command
+        - Torque, thrust, and throttle settings
+        - RPM and angular velocity
+        - Disc and power loading
+        - Tip Mach number
+        - Efficiency and figure of merit
+        - Power coefficient
     
     All values are initialized as zero or one arrays (as appropriate) with the same
     length as the segment's state vector.
