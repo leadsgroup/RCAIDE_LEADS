@@ -40,12 +40,12 @@ def set_optimized_parameters(rotor,optimization_problem):
     rotor.hover.design_thrust_coefficient  = results.hover.thurst_c
     rotor.hover.design_power_coefficient   = results.hover.power_c 
     rotor.hover.design_SPL_dBA             = results.hover.mean_SPL 
-    rotor.hover.design_blade_pitch_command       = optimal_hover_rotor.hover.design_blade_pitch_command
+    rotor.hover.design_blade_pitch_command = optimal_hover_rotor.hover.design_blade_pitch_command
     rotor.oei.design_thrust                = results.oei.thrust    
     rotor.oei.design_power                 = results.oei.power 
     rotor.oei.design_torque                = results.oei.torque  
     rotor.oei.design_angular_velocity      = results.oei.omega 
-    rotor.oei.design_blade_pitch_command         = optimal_oei_rotor.oei.design_blade_pitch_command
+    rotor.oei.design_blade_pitch_command   = optimal_oei_rotor.oei.design_blade_pitch_command
     
     if optimization_problem.prop_rotor_flag:  
         optimal_cruise_rotor  = optimization_problem.vehicle_configurations.cruise.networks.electric.propulsors.electric_rotor.rotor      

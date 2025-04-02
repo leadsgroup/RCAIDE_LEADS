@@ -156,7 +156,7 @@ class Prop_Rotor(Rotor):
         self.hover.design_performance            = None
         self.hover.design_freestream_velocity    = None
         self.hover.design_SPL_dBA                = None
-        self.hover.design_blade_pitch_command          = 0.0
+        self.hover.design_blade_pitch_command    = 0.0
         self.hover.design_efficiency             = 0.86  
         self.hover.design_Cl                     = None
         self.hover.design_thrust_coefficient     = None
