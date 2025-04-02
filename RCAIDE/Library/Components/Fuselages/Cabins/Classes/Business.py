@@ -19,7 +19,7 @@ class Business(Component):
         Sets default values for all fuselage attributes.
         """      
         
-        self.tag                                 = 'buisness_class' 
+        self.tag                                 = 'business_class' 
         self.number_of_seats_abrest              = 0
         self.number_of_rows                      = 0 
         self.seat_width                          = 18 *  Units.inches
