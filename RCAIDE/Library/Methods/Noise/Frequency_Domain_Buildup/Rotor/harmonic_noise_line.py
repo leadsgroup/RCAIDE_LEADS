@@ -115,9 +115,10 @@ def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,propulsor_cond
     p_ref          = 2E-5
         
     # net angle of inclination of propeller axis wrt inertial axis
-    alpha_4        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None],(1,num_mic,num_h_b,num_h_l))
-    alpha_5        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None,None],(1,num_mic,num_sec,num_h_b,num_h_l))
-    alpha_6        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None,None,None],(1,num_mic,num_sec,num_h_b,num_h_l,chord_coord))
+    alpha          = np.arccos(np.dot(V_thrust[0,:], velocity_vector[0,:])/(np.linalg.norm(V_thrust)*np.linalg.norm(velocity_vector)))
+    alpha_4        = np.tile(alpha, (1,num_mic,num_h_b,num_h_l))
+    alpha_5        = np.tile(alpha, (1,num_mic,num_sec,num_h_b,num_h_l))
+    alpha_6        = np.tile(alpha, (1,num_mic,num_sec,num_h_b,num_h_l,chord_coord))
     
     # rotor angular speed
     omega_3        = np.tile(aeroacoustic_data.omega[cpt][:,None,None],(1,num_mic,num_h_b))

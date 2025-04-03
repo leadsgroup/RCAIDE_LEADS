@@ -49,7 +49,7 @@ def Harmonic_Noise_Validation(PP):
     
     F8745_D4_verification_values_60deg = [156.92733365790193,100.86943888034477,109.60611659108622 ]
     F8745_D4_verification_values_90deg = [159.07711862067382,107.37402397630274,117.14527113998096 ]
-    fidelities                         = ['plane_source'] #['point_source', 'line_source', 'plane_source'] 
+    fidelities                         = ['point_source', 'line_source', 'plane_source'] 
     electric_rotor                     = RCAIDE.Library.Components.Propulsors.Electric_Rotor() 
     rotor                              = F8745_D4_Propeller() 
     electric_rotor.rotor               = rotor
