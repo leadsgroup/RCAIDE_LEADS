@@ -40,7 +40,7 @@ def find_mass_gain_rate(battery, power):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_total_mass_gain
+    RCAIDE.Library.Methods.Powertrain.Sources.Battery_Modules.Common.find_total_mass_gain
     """
     #weight gain of battery (positive means mass gain)
     mdot = -(power) * (battery.mass_gain_factor)  

@@ -8,7 +8,7 @@ It includes methods for configuring operating conditions and appending avionics 
 See Also
 --------
 RCAIDE.Library.Methods.Powertrain.Converters
-RCAIDE.Library.Methods.Powertrain.Energy_Storage
+RCAIDE.Library.Methods.Powertrain.Sources
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

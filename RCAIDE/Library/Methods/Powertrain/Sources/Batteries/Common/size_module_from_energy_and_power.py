@@ -61,7 +61,7 @@ def size_module_from_energy_and_power(battery, energy, power):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass
+    RCAIDE.Library.Methods.Powertrain.Sources.Battery_Modules.Common.size_module_from_mass
     """
     
     energy_mass = energy/battery.cell.specific_energy
