@@ -73,8 +73,7 @@ def compute_power_from_throttle(engine,conditions):
     Pavailable[h_flat > altitude] = PSLS
 
     # Regulate using throttle 
-    P       = Pavailable * engine_conditions.throttle 
-    P[P<0.] = 0.
+    P       = Pavailable * engine_conditions.throttle  
     
     m_dot  =  PSFC * P 
 
