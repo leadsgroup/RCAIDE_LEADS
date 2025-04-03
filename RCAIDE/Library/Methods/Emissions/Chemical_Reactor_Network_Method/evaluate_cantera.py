@@ -715,6 +715,7 @@ def calculate_emission_indices(reactor,  mdot_total, mdot_fuel, mdot_soot):
         'H2O': gas.Y[gas.species_index('H2O')] * mdot_total / mdot_fuel, # [kg/kg_fuel] H2O emission index
         'NOx': EI_NOx,                                                   # [kg/kg_fuel] NOx emission index
         'soot': mdot_soot / mdot_fuel                                    # [kg/kg_fuel] Soot emission index
+        # 'soot': gas.Y[gas.species_index('CSOLID')] * mdot_total / mdot_fuel # [kg/kg_fuel] Soot emission index
     }
     return EI                                                            # [-] Return emission indices dictionary
 
