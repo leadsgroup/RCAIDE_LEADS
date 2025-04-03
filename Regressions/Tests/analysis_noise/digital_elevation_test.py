@@ -166,7 +166,7 @@ def mission_setup(analyses):
   
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
-    base_segment.state.numerics.number_of_control_points  = 3  
+    base_segment.state.numerics.number_of_control_points  = 3   
     base_segment.state.numerics.discretization_method     = RCAIDE.Library.Methods.Utilities.Chebyshev.linear_data 
 
     # ------------------------------------------------------------------    

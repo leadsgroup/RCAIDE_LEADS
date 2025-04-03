@@ -356,10 +356,10 @@ def vehicle_setup(rotor_type):
     #------------------------------------------------------------------------------------------------------------------------------------  
     bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     bat.tag                                                = 'li_ion_battery'
-    bat.electrical_configuration.series                    = 16   
+    bat.electrical_configuration.series                    = 30   
     bat.electrical_configuration.parallel                  = 40
-    bat.geometrtic_configuration.normal_count              = 20
-    bat.geometrtic_configuration.parallel_count            = 32
+    bat.geometrtic_configuration.normal_count              = 30
+    bat.geometrtic_configuration.parallel_count            = 40
      
     for _ in range(8):
         bus.battery_modules.append(deepcopy(bat))      
@@ -472,7 +472,7 @@ def vehicle_setup(rotor_type):
         motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
-        motor.nominal_voltage                            = bus.voltage  * 0.5 
+        motor.nominal_voltage                            = bus.voltage   
         motor.no_load_current                            = 1.0
         starboard_propulsor.motor                        = motor   
     
