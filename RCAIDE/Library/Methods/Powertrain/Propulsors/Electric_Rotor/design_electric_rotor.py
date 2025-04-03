@@ -78,7 +78,8 @@ def design_electric_rotor(electric_rotor,number_of_stations = 20,solver_name= 'S
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state       = setup_operating_conditions(electric_rotor, altitude = 0,velocity_range=np.array([V]))  
-    operating_state.conditions.energy.propulsors[electric_rotor.tag].throttle[:,0] = 1.0  
+    operating_state.conditions.energy.propulsors[electric_rotor.tag].throttle[:,0] = 1.0
+    operating_state.conditions.energy.converters[motor.tag].inputs.current[:,0] =  motor.design_current
     sls_T,_,sls_P,_,_,_                          = electric_rotor.compute_performance(operating_state) 
     electric_rotor.sealevel_static_thrust        = sls_T[0][0]
     electric_rotor.sealevel_static_power         = sls_P[0][0]

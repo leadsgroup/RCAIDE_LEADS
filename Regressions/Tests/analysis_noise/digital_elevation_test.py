@@ -179,7 +179,7 @@ def mission_setup(analyses):
     segment.initial_battery_state_of_charge               = 1.0
      
     segment.altitude                                     = 30
-    segment.air_speed                                    = 150 * Units.mph
+    segment.air_speed                                    = 175.*Units['mph']   
     segment.distance                                     = 1 * Units.mile
     segment.distance                                     = 1 * Units.miles
     segment.true_course                                  = 130 *Units.degrees 
@@ -190,8 +190,8 @@ def mission_setup(analyses):
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]  
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.255]]         
     
     mission.append_segment(segment)  
     return mission
