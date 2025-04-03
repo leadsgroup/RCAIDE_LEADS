@@ -472,7 +472,7 @@ def vehicle_setup(rotor_type):
         motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
-        motor.nominal_voltage                            = bus.voltage   
+        motor.nominal_voltage                            = bus.voltage * 0.5  
         motor.no_load_current                            = 1.0
         starboard_propulsor.motor                        = motor   
     
