@@ -7,21 +7,42 @@
 #  METHOD
 # ---------------------------------------------------------------------------------------------------------------------- 
 def find_total_mass_gain(battery):
-    """finds the total mass of air that the battery 
-    accumulates when discharged fully
+    """
+    Calculates the total mass of air that the battery accumulates when discharged fully.
     
-    Assumptions:
-    Earth Atmospheric composition
+    Parameters
+    ----------
+    battery : Battery
+        The battery component with the following attributes:
+            - maximum_energy : float
+                Maximum energy capacity of the battery [J]
+            - mass_gain_factor : float
+                Mass of air gained per unit of energy [kg/J]
     
-    Inputs:
-    battery.maximum_energy [J]
-    battery.
-      mass_gain_factor [kg/W]
-      
-    Outputs:
-      mdot             [kg]
-    """ 
+    Returns
+    -------
+    mgain : float
+        Total mass gain when the battery is fully discharged [kg]
     
-    mgain=battery.maximum_energy*battery.mass_gain_factor
+    Notes
+    -----
+    This function calculates the total mass of air that a battery would accumulate
+    when discharged from full capacity to zero. This is relevant for metal-air batteries
+    (such as aluminum-air or zinc-air) where oxygen from the air is consumed during
+    the discharge process, resulting in a mass increase.
+    
+    The calculation is based on a linear relationship between energy output and
+    air mass gain, using the mass_gain_factor property of the battery.
+    
+    **Major Assumptions**
+        * Linear relationship between energy output and mass gain
+        * Complete discharge from maximum energy to zero
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.find_aluminum_mass
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.find_water_mass
+    """
+    mgain = battery.maximum_energy * battery.mass_gain_factor
     
     return mgain

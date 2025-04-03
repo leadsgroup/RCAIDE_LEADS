@@ -15,46 +15,47 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 #  METHODS
 # ----------------------------------------------------------------------------------------------------------------------  
 def append_battery_conditions(battery,segment,bus): 
-    """ Appends the initial battery conditions
+    """
+    Appends the initial battery conditions data structure to the segment state.
     
-        Assumptions:
-        Battery temperature is set to one degree hotter than ambient 
-        temperature for robust convergence. Initial mission energy, maxed aged energy, and 
-        initial segment energy are the same. Cycle day is zero unless specified, resistance_growth_factor and
-        capacity_fade_factor is one unless specified in the segment
+    Parameters
+    ----------
+    battery : Battery
+        The battery component for which conditions are being initialized.
+    segment : Segment
+        The mission segment in which the battery is operating.
+    bus : ElectricalBus
+        The electrical bus connected to the battery.
     
-        Source:
-        N/A
+    Returns
+    -------
+    None
     
-        Inputs:  
-            atmosphere.temperature             [Kelvin]
-            
-            Optional:
-            segment.
-                 battery.cycle_in_day               [unitless]
-                 battery.module.temperature         [Kelvin]
-                 battery.charge_throughput          [Ampere-Hours] 
-                 battery.resistance_growth_factor   [unitless]
-                 battery.capacity_fade_factor       [unitless]
-                 battery.discharge                  [boolean]
-                 increment_battery_age_by_one_day   [boolean]
-               
-        Outputs:
-            segment
-               battery_discharge                    [boolean]
-               increment_battery_age_by_one_day     [boolean]
-               segment.state.conditions.energy
-               battery.battery_discharge_flag         [boolean]
-               battery.module.maximum_initial_energy  [watts]
-               battery.module.energy                  [watts] 
-               battery.module.temperature             [kelvin]
-               battery.cycle_in_day                   [int]
-               battery.cell.charge_throughput         [Ampere-Hours] 
-               battery.resistance_growth_factor       [unitless]
-               battery.capacity_fade_factor           [unitless] 
+    Notes
+    -----
+    This function initializes various battery conditions at the start of a mission segment.
+    It creates a Conditions object for the battery module within the segment's energy
+    conditions dictionary, indexed by the bus tag and battery tag.
     
-        Properties Used:
-        None
+    The function initializes arrays for:
+        - Voltage (open circuit and under load)
+        - Internal resistance
+        - Power and current
+        - Heat energy generated
+        - Energy and state of charge
+    
+    For segments with an initial battery state of charge specified, the function sets
+    the initial energy and state of charge values accordingly. Otherwise, these values
+    are initialized to zero.
+    
+    **Major Assumptions**
+        * Initial mission energy, maxed aged energy, and initial segment energy are the same
+        * Cycle day is zero unless specified
+        * Resistance growth factor and capacity fade factor are one unless specified
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
     """
  
     ones_row                                               = segment.state.ones_row
@@ -151,22 +152,47 @@ def append_battery_conditions(battery,segment,bus):
     return 
     
 def append_battery_segment_conditions(battery, bus, conditions, segment): 
-    """Sets the initial battery energy at the start of each segment as the last point from the previous segment 
+    """
+    Sets the initial battery energy at the start of each segment as the last point from the previous segment.
     
-        Assumptions:
-        None
+    Parameters
+    ----------
+    battery : Battery
+        The battery component for which conditions are being initialized.
+    bus : ElectricalBus
+        The electrical bus connected to the battery.
+    conditions : dict
+        Dictionary containing conditions from the current segment.
+    segment : Segment
+        The current mission segment in which the battery is operating.
     
-        Source:
-        N/A
+    Returns
+    -------
+    None
+        This function modifies the conditions dictionary in-place.
     
-        Inputs:  
-         battery          (data structure)              [None]
-               
-        Outputs:
-        None
+    Notes
+    -----
+    This function initializes battery conditions at the start of a new segment based on
+    the final conditions from the previous segment. This ensures continuity of battery
+    state between mission segments.
     
-        Properties Used:
-        None
+    For segments with initial conditions from a previous segment, the function transfers:
+        - Battery discharge flag (set to False for recharge segments)
+        - Energy level
+        - Temperature
+        - Cycle count
+        - Charge throughput
+        - Resistance growth factor
+        - Capacity fade factor
+        - State of charge
+        
+    If a specific battery cell temperature is specified for the segment, the function
+    overrides the battery conditions temperature values accordingly.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_segment_conditions
     """
 
     battery_conditions = conditions[bus.tag].battery_modules[battery.tag]

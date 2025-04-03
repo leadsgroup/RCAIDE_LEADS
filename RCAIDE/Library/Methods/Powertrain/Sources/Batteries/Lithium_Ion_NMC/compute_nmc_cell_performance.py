@@ -279,27 +279,48 @@ def reuse_stored_nmc_cell_data(battery_module,state,bus,stored_results_flag, sto
         
     return
  
-def compute_nmc_cell_state(battery_module_data,SOC,T,I):
-    """This computes the electrical state variables of a lithium ion 
-    battery_module cell with a  lithium-nickel-cobalt-aluminum oxide cathode 
-    chemistry from look-up tables 
-     
-    Assumtions: 
-    N/A
+def compute_nmc_cell_state(battery_module_data, SOC, T, I):
+    """
+    Computes the electrical state variables of a lithium-nickel-manganese-cobalt-oxide (NMC) battery cell using look-up tables.
     
-    Source:  
-    N/A 
-     
-    Inputs:
-        SOC           - state of charge of cell     [unitless]
-        battery_module_data  - look-up data structure      [unitless]
-        T             - battery_module cell temperature    [Kelvin]
-        I             - battery_module cell current        [Amperes]
+    Parameters
+    ----------
+    battery_module_data : function
+        Look-up function that maps state of charge, temperature, and current to voltage
+    SOC : numpy.ndarray
+        State of charge of the cell [unitless, 0-1]
+    T : numpy.ndarray
+        Battery cell temperature [K]
+    I : numpy.ndarray
+        Battery cell current [A]
     
-    Outputs:  
-        V_ul          - under-load voltage          [Volts] 
-        
-    """ 
+    Returns
+    -------
+    V_ul : numpy.ndarray
+        Under-load voltage [V]
+    
+    Notes
+    -----
+    This function computes the voltage of an NMC battery cell under load conditions
+    by using a look-up table approach. It converts the state of charge to depth of discharge,
+    and then uses this value along with temperature and current to determine the cell voltage.
+    
+    The function applies limits to ensure the inputs are within the valid range of the
+    look-up data:
+        - SOC is limited to [0, 1]
+        - Temperature is limited to [272.65K, 322.65K] (approximately 0°C to 50°C)
+        - Current is limited to [0A, 8A]
+    
+    The input to the look-up table is a concatenated array of [current, temperature, depth_of_discharge].
+    
+    **Major Assumptions**
+        * The battery performance can be accurately represented by a look-up table
+        * The model is valid only within the specified temperature and current ranges
+    
+    See Also
+    --------
+    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC
+    """
 
     # Make sure things do not break by limiting current, temperature and current 
     SOC[SOC < 0.]   = 0.  
