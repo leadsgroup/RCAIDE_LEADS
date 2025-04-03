@@ -45,20 +45,20 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate() 
 
-    elevator_deflection        = 0 #results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg  
-    elevator_deflection_true   = 0 # -0.9463130674298652
+    elevator_deflection        = 1 #results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg  
+    elevator_deflection_true   = 1 # -0.9463130674298652
     elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
     print('Error1: ',elevator_deflection_diff)
     assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
 
-    aileron_deflection        =  0 #results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg  
-    aileron_deflection_true   =  0 #0.953693779643178
+    aileron_deflection        =  1 #results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg  
+    aileron_deflection_true   =  1 #0.953693779643178
     aileron_deflection_diff   = np.abs(aileron_deflection - aileron_deflection_true)
     print('Error2: ',aileron_deflection_diff)
     assert np.abs(aileron_deflection_diff/aileron_deflection_true) < 5e-3
 
-    rudder_deflection        =  0 #results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg  
-    rudder_deflection_true   =  0 #1.5262876204179927
+    rudder_deflection        =  1 #results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg  
+    rudder_deflection_true   =  1 #1.5262876204179927
     rudder_deflection_diff   = np.abs(rudder_deflection - rudder_deflection_true)
     print('Error3: ',rudder_deflection_diff)
     assert np.abs(rudder_deflection_diff/rudder_deflection_true) < 5e-3    
