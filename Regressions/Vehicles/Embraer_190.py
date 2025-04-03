@@ -453,7 +453,7 @@ def vehicle_setup():
     turbofan.diameter                               = 1.4
     turbofan.design_altitude                        = 35000.0*Units.ft
     turbofan.design_mach_number                     = 0.78   
-    turbofan.design_thrust                          = 37278.0* Units.N/2 
+    turbofan.design_thrust                          = 37278.0* Units.N#/2 
      
     # Nacelle 
     nacelle                                         = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
