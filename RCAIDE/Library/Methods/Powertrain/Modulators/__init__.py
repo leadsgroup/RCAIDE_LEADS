@@ -9,7 +9,7 @@ performance and managing power flow between energy sources and mechanical conver
 
 See Also
 --------
-RCAIDE.Library.Methods.Powertrain.Propulsors.Converters
+RCAIDE.Library.Methods.Powertrain.Propulsors
 RCAIDE.Library.Components.Powertrain.Modulators
 """
 

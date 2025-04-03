@@ -7,7 +7,7 @@ This module provides functionality for modeling power distribution systems in po
 See Also
 --------
 RCAIDE.Library.Methods.Powertrain.Converters
-RCAIDE.Library.Methods.Powertrain.Energy_Storage
+RCAIDE.Library.Methods.Powertrain.Sources
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

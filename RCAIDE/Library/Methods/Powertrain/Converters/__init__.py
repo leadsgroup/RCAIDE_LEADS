@@ -1,7 +1,15 @@
 # RCAIDE/Methods/Powertrain/Converters/__init__.py
 # 
 
-""" RCAIDE Package Setup
+"""
+This module provides functionality for modeling energy conversion components in powertrains. It includes methods for 
+various energy converters such as combustors, compressors, motors, fans, engines, nozzles, rotors, turbines, and reformers.
+
+See Also
+--------
+RCAIDE.Library.Components.Powertrain.Converters
+RCAIDE.Library.Methods.Powertrain.Distributors
+RCAIDE.Library.Methods.Powertrain.Sources
 """
 
 # ----------------------------------------------------------------------------------------------------------------------
