@@ -114,47 +114,44 @@ def set_residuals_and_unknowns(mission):
             num_ctrls += 1                         
                                 
         # Elevator 
-        if ctrls.elevator_deflection.active:     
-            for i in range(len(ctrls.elevator_deflection.assigned_surfaces)): 
-                if ctrls.elevator_deflection.initial_guess_values!= None:  
-                    segment.state.unknowns["elevator_" + str(i)] = ones_row(1) * ctrls.elevator_deflection.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns["elevator_" + str(i)] = ones_row(1) * 0.0 * Units.degrees  
-                num_ctrls += 1   
+        if ctrls.elevator_deflection.active:      
+            if ctrls.elevator_deflection.initial_guess_values!= None:  
+                segment.state.unknowns["elevator"] = ones_row(1) * ctrls.elevator_deflection.initial_guess_values[0][0]
+            else:
+                segment.state.unknowns["elevator" ] = ones_row(1) * 0.0 * Units.degrees  
+            num_ctrls += 1   
                 
         # Elevator 
-        if ctrls.rudder_deflection.active:  
-            for i in range(len(ctrls.rudder_deflection.assigned_surfaces)):   
-                if ctrls.rudder_deflection.initial_guess_values !=  None: 
-                    segment.state.unknowns["rudder_" + str(i)] = ones_row(1) * ctrls.rudder_deflection.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns["rudder_" + str(i)] = ones_row(1) * 0.0 * Units.degrees  
-                num_ctrls += 1    
+        if ctrls.rudder_deflection.active:    
+            if ctrls.rudder_deflection.initial_guess_values !=  None: 
+                segment.state.unknowns["rudder" ] = ones_row(1) * ctrls.rudder_deflection.initial_guess_values[0][0]
+            else:
+                segment.state.unknowns["rudder" ] = ones_row(1) * 0.0 * Units.degrees  
+            num_ctrls += 1    
                     
         # Flap  
-        if ctrls.flap_deflection.active:  
-            for i in range(len(ctrls.flap_deflection.assigned_surfaces)):
-                if ctrls.flap_deflection.initial_guess_values !=  None:
-                    segment.state.unknowns["flap_" + str(i)] = ones_row(1) * ctrls.flap_deflection.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns["flap_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
-                num_ctrls += 1    
+        if ctrls.flap_deflection.active:   
+            if ctrls.flap_deflection.initial_guess_values !=  None:
+                segment.state.unknowns["flap" ] = ones_row(1) * ctrls.flap_deflection.initial_guess_values[0][0]
+            else:
+                segment.state.unknowns["flap" ] = ones_row(1) * 0.0 * Units.degrees 
+            num_ctrls += 1
+            
         # Slat  
-        if ctrls.slat_deflection.active:  
-            for i in range(len(ctrls.slat_deflection.assigned_surfaces)):  
-                if ctrls.slat_deflection.initial_guess_values != None:      
-                    segment.state.unknowns["slat_" + str(i)] = ones_row(1) * ctrls.slat_deflection.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns["slat_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
-                num_ctrls += 1   
+        if ctrls.slat_deflection.active:   
+            if ctrls.slat_deflection.initial_guess_values != None:      
+                segment.state.unknowns["slat" ] = ones_row(1) * ctrls.slat_deflection.initial_guess_values[0][0]
+            else:
+                segment.state.unknowns["slat" ] = ones_row(1) * 0.0 * Units.degrees 
+            num_ctrls += 1   
                 
         # Aileron  
         if ctrls.aileron_deflection.active:  
             for i in range(len(ctrls.aileron_deflection.assigned_surfaces)):   
                 if ctrls.aileron_deflection.initial_guess_values !=  None:
-                    segment.state.unknowns["aileron_" + str(i)] = ones_row(1) * ctrls.aileron_deflection.initial_guess_values[i][0]
+                    segment.state.unknowns["aileron" ] = ones_row(1) * ctrls.aileron_deflection.initial_guess_values[0][0]
                 else: 
-                    segment.state.unknowns["aileron_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
+                    segment.state.unknowns["aileron" ] = ones_row(1) * 0.0 * Units.degrees 
                 num_ctrls += 1       
             
         #  Thrust Vector Angle

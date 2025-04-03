@@ -4,6 +4,11 @@
 # Created:  Jul 2023, M. Clarke 
 
 # ----------------------------------------------------------------------------------------------------------------------
+#  RCAIDE imports 
+# ----------------------------------------------------------------------------------------------------------------------
+import  numpy as  np
+
+# ----------------------------------------------------------------------------------------------------------------------
 #  Update Aerodynamics
 # ----------------------------------------------------------------------------------------------------------------------
 def aerodynamics(segment):
@@ -54,8 +59,8 @@ def aerodynamics(segment):
 
     # dimensionalize
     F      = segment.state.ones_row(3) * 0.0
-    F[:,2] = ( -CL * q * Sref )[:,0]
-    F[:,1] = ( -CY * q * Sref )[:,0]
+    F[:,2] = ( -CL * q * Sref )[:,0] *  np.cos(segment.state.conditions.frames.body.inertial_rotations[:, 0])
+    F[:,1] = ( -CY * q * Sref )[:,0] +  ( -CL * q * Sref )[:,0] *  np.sin(segment.state.conditions.frames.body.inertial_rotations[:, 0])
     F[:,0] = ( -CD * q * Sref )[:,0]
 
     # rewrite aerodynamic CL and CD

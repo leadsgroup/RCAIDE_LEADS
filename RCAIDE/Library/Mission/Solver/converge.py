@@ -205,13 +205,13 @@ def add_mission_variables(segment):
     # scaling factor for optimizer 
     factor = np.ceil(np.log10(abs(initial_values)))
     factor[np.isinf(factor)] = 0
-    sclae  = 10 ** (factor)
+    scale  = 10 ** (factor)
     
     # Step 2.4 Add in the inputs 
     new_inputs[:,0]     = input_names   
     new_inputs[:,1]     = initial_values 
     new_inputs[:,2:4]   = bounds   
-    new_inputs[:,4]     = sclae
+    new_inputs[:,4]     = scale
     new_inputs[:,5]     = units 
     optimization_problem.inputs = np.array(new_inputs,dtype=object)
     

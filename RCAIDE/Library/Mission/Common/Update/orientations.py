@@ -68,6 +68,8 @@ def orientations(segment):
 
     # project inertial velocity into body x-z plane
     V_stability = V_body * 1.
+    
+    conditions.frames.body.velocity_vector = V_body
 
     # calculate angle of attack
     alpha = np.arctan2(V_stability[:,2],V_stability[:,0])[:,None]

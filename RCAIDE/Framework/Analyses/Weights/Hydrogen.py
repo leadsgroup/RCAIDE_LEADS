@@ -51,7 +51,7 @@ class Hydrogen(Weights):
         N/A
         """
         # self.method        = 'Physics_Based'
-        # self.aircraft_type = None
+        # self.aircraft_type = 'Transport'
         # self.propulsion_architecture = 'Hydrogen'
 
         
