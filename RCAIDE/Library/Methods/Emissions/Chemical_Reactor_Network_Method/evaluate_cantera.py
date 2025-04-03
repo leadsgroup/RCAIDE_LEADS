@@ -448,8 +448,10 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         O2_PZ_i            = psr_gas_PZ_i['O2'].X[0]*total_moles_PZ_i/(V_PZ_PSR) # [kmol/m^3] ???
         O_PZ_i             = psr_gas_PZ_i['O'].X[0]*total_moles_PZ_i/(V_PZ_PSR) # [kmol/m^3] ???
 
-        dM_dt_outflow = (-mdot_total_PZ_i / (rho_PZ_i * V_PZ_PSR)) * combustor.fuel_data.M_mech # [-] ???
-        dM_dt_mech = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, psr_gas_PZ_i.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ_i, C2H2_conc_PZ_i, OH_PZ_i, O2_PZ_i, O_PZ_i) + dM_dt_outflow # [kg/m^3/s] ???
+        #dM_dt_outflow = (-mdot_total_PZ_i / (rho_PZ_i * V_PZ_PSR)) * combustor.fuel_data.M_mech # [-] ???
+        #dM_dt_mech = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, psr_gas_PZ_i.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ_i, C2H2_conc_PZ_i, OH_PZ_i, O2_PZ_i, O_PZ_i) + dM_dt_outflow # [kg/m^3/s] ???
+        
+        dM_dt_mech = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, psr_gas_PZ_i.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ_i, C2H2_conc_PZ_i, OH_PZ_i, O2_PZ_i, O_PZ_i)
         mdot_soot_PZ_i = dM_dt_mech * V_PZ_PSR                         # [kg/s] Soot mass flow rate
         
         EI = calculate_emission_indices(psr_PZ_i, mdot_total_PZ_i, mdot_fuel_PZ_i, mdot_soot_PZ_i) # [-] Emission indices computation
@@ -612,8 +614,10 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         O2_SZ_fm_i                      = mixed_gas_fm['O2'].X[0] * total_moles_SZ_fm_i / V_SZ_fm_i # [kmol/m^3] O2 concentration
         O_SZ_fm_i                       = mixed_gas_fm['O'].X[0] * total_moles_SZ_fm_i / V_SZ_fm_i # [kmol/m^3] O concentration
 
-        dM_dt_outflow_SZ_fm_i           = (-mdot_total_fm / (rho_SZ_fm_i * V_SZ_fm_i)) * combustor.fuel_data.M_mech # [kg/m^3/s] Soot mass outflow rate
-        dM_dt_mech_SZ_fm_i              = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_fm.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_fm_i, C2H2_conc_SZ_fm_i, OH_SZ_fm_i, O2_SZ_fm_i, O_SZ_fm_i) + dM_dt_outflow_SZ_fm_i # [kg/m^3/s] Soot mass change rate
+        #dM_dt_outflow_SZ_fm_i           = (-mdot_total_fm / (rho_SZ_fm_i * V_SZ_fm_i)) * combustor.fuel_data.M_mech # [kg/m^3/s] Soot mass outflow rate
+        #dM_dt_mech_SZ_fm_i              = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_fm.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_fm_i, C2H2_conc_SZ_fm_i, OH_SZ_fm_i, O2_SZ_fm_i, O_SZ_fm_i) + dM_dt_outflow_SZ_fm_i # [kg/m^3/s] Soot mass change rate
+        
+        dM_dt_mech_SZ_fm_i              = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_fm.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_fm_i, C2H2_conc_SZ_fm_i, OH_SZ_fm_i, O2_SZ_fm_i, O_SZ_fm_i) # [kg/m^3/s] Soot mass change rate
         mdot_soot_SZ_fm_i               = dM_dt_mech_SZ_fm_i * V_SZ_fm_i # [kg/s] Soot mass flow rate
 
         EI_fm                           = calculate_emission_indices(mixed_gas_fm, mdot_total_fm, f_FM * mdot_fuel, mdot_soot_SZ_fm_i) # [-] Emission indices
