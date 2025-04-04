@@ -36,13 +36,11 @@ def vehicle_setup():
     vehicle.mass_properties.max_zero_fuel             = 62732.0 * Units.kilogram 
     vehicle.mass_properties.cargo                     = 10000.  * Units.kilogram  
     vehicle.mass_properties.center_of_gravity         = [[21,0, 0, 0]]
-    
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 2.5 
     vehicle.flight_envelope.design_mach_number        = 0.78 
     vehicle.flight_envelope.design_cruise_altitude    = 35000*Units.feet
     vehicle.flight_envelope.design_range              = 3500 * Units.nmi
-    
     vehicle.reference_area                            = 124.862 * Units['meters**2']   
     vehicle.passengers                                = 170
     vehicle.systems.control                           = "fully powered" 
@@ -521,7 +519,7 @@ def vehicle_setup():
     turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                = 'starboard_propulsor' 
     turbofan.origin                             = [[13.72, 4.86,-1.1]] 
-    turbofan.length                      = 2.71     
+    turbofan.engine_length                      = 2.71
     turbofan.bypass_ratio                       = 5.4    
     turbofan.design_altitude                    = 35000.0*Units.ft
     turbofan.design_mach_number                 = 0.78   
@@ -755,5 +753,6 @@ def configs_setup(vehicle):
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
     configs.append(config)    
+
 
     return configs  
