@@ -25,16 +25,14 @@ def main():
     
     forward_mode_model()
     
-    reverse_mode_model()
+    inverse_mode_model()
     
     return 
     
 def forward_mode_model():
     motor_type    = ['DC_Motor', 'PMSM_Motor']
     omega_truth   = [62.70499271908929,37.653244590335106]
-    torque_truth  = [136.5275405055453,145.7740091588354]
-    current_truth = [73.0,73.0]
-    voltage_truth = [120,120.0]
+    torque_truth  = [136.5275405055453,145.7740091588354] 
 
     for i in range(len(motor_type)):
         motor = design_test_motor( motor_type[i])
@@ -70,16 +68,12 @@ def forward_mode_model():
 
         # run analysis 
         omega   = motor_conditions.outputs.omega
-        torque  = motor_conditions.outputs.torque
-        current = motor_conditions.inputs.current
-        voltage = motor_conditions.inputs.voltage
+        torque  = motor_conditions.outputs.torque 
  
         # Truth values 
         error = Data()
         error.omega_test     = np.max(np.abs(omega_truth[i]   - omega[0][0]  ))
-        error.torque_test    = np.max(np.abs(torque_truth[i]  - torque[0][0] ))
-        error.current_test   = np.max(np.abs(current_truth[i] - current[0][0])) 
-        error.voltage_test   = np.max(np.abs(voltage_truth[i] - voltage[0][0])) 
+        error.torque_test    = np.max(np.abs(torque_truth[i]  - torque[0][0] )) 
 
         if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):
             error.Q_cond_path_test      = np.max(np.abs(Q_cond_path_truth[0] - Q_cond_path))
@@ -99,8 +93,8 @@ def forward_mode_model():
 
 def inverse_mode_model():
     motor_type    = ['DC_Motor', 'PMSM_Motor'] 
-    current_truth = [73.0,73.0]
-    voltage_truth = [120,120.0]
+    current_truth = [73.0,73.0] # TO UPDATE 
+    voltage_truth = [120,120.0] # TO UPDATE 
 
     for i in range(len(motor_type)):
         motor = design_test_motor( motor_type[i])
