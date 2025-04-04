@@ -26,7 +26,7 @@ def compute_voltage_out_from_throttle(esc,conditions):
         None
        
     """
-    esc_conditions =  conditions.energy.modulators[esc.tag]
+    esc_conditions = conditions.energy.modulators[esc.tag]
     eta            = esc_conditions.throttle * 1.0
     
     # Negative throttle is bad
