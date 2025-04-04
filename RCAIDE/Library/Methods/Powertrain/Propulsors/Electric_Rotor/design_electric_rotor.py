@@ -22,7 +22,7 @@ import numpy as np
 #  Design Electric Rotor 
 # ---------------------------------------------------------------------------------------------------------------------- 
 def design_electric_rotor(electric_rotor,number_of_stations = 20,solver_name= 'SLSQP',iterations = 200,
-                      solver_sense_step = 1E-5,solver_tolerance = 1E-4,print_iterations = False):
+                      solver_sense_step = 1E-6,solver_tolerance = 1E-5,print_iterations = False):
     """Compute perfomance properties of an electrically powered rotor, which is driven by an electric machine
     
     Assumtions:

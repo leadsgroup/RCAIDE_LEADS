@@ -65,7 +65,7 @@ def AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_
  
     # Extract sample values from computation   
     cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    cruise_CL_thruth = 0.4679520757572514
+    cruise_CL_thruth = 0.46795223576170475
     # Truth values  
     error = Data()  
     error.cruise_CL   = np.max(np.abs(cruise_CL     - cruise_CL_thruth))   
@@ -134,14 +134,7 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
-
-    # ------------------------------------------------------------------
-    #  Weights
-    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.aircraft_type   = 'General_Aviation'
-    weights.vehicle         = vehicle 
-    analyses.append(weights)
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
 
     #  Aerodynamics Analysis
     aerodynamics                                     = RCAIDE.Framework.Analyses.Aerodynamics.Athena_Vortex_Lattice()

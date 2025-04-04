@@ -98,14 +98,11 @@ class Weights(Analysis):
         compute_operating_empty_weight = getattr(compute_module, "compute_operating_empty_weight")
         
         # Call the function
-        results = compute_operating_empty_weight(vehicle, self.settings)
-
-        # storing weigth breakdown into vehicle
-        vehicle.weight_breakdown = results
+        results = compute_operating_empty_weight(vehicle, self.settings) 
 
         # updating empty weight
-        if self.settings.update_mass_properties: 
+        if self.settings.update_mass_properties:  
             vehicle.mass_properties.operating_empty = results.empty.total
-
+            
         # done!
         return results        

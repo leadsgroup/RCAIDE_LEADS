@@ -72,16 +72,7 @@ def base_analysis(vehicle, configs):
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
-
-    # ------------------------------------------------------------------
-    #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.aircraft_type                     = 'General_Aviation' 
-    weights.settings.update_center_of_gravity = False
-    weights.settings.update_moment_of_inertia = False   
-    weights.vehicle = vehicle
-    analyses.append(weights)
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis

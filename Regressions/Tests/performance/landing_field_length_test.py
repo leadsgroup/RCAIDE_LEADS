@@ -71,9 +71,9 @@ def main():
         landing_config.mass_properties.landing = weight
         landing_field_length[id_w] = estimate_landing_field_length(landing_config,analyses)
 
-    truth_LFL = np.array([736.0921377 ,  800.90442272,  865.71670775,  930.52899278,
-        995.3412778 , 1060.15356283, 1124.96584785, 1189.77813288,
-       1254.59041791, 1319.40270293])
+    truth_LFL = np.array([ 763.53405134,  832.00525818,  900.47646503,  968.94767187,
+       1037.41887872, 1105.89008556, 1174.36129241, 1242.83249925,
+       1311.3037061 , 1379.77491294])
     LFL_error = np.max(np.abs(landing_field_length-truth_LFL))
     assert(LFL_error<1e-6)
     

@@ -122,6 +122,9 @@ def base_analysis(vehicle):
     #  Weights
     weights                 = RCAIDE.Framework.Analyses.Weights.Conventional()
     weights.aircraft_type  =  "Transport"
+    weights.settings.update_mass_properties         = False
+    weights.settings.update_center_of_gravity       = False
+    weights.settings.update_moment_of_inertia       = False
     weights.vehicle        = vehicle
     analyses.append(weights)
     

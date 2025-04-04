@@ -25,13 +25,6 @@ def mass_properties(mission):
                 # run weights analysis 
                 weights_analysis =  segment.analyses.weights
                 
-                if type(weights_analysis) == RCAIDE.Framework.Analyses.Weights.Electric and  weights_analysis.aircraft_type == 'VTOL':
-                    # Converge weight of aircraft before doing final weight analyis
-                    weights_analysis.print_weight_analysis_report = False
-                    converged_vehicle,breakdown = converge_physics_based_weight_buildup(weights_analysis.vehicle)
-                    print(breakdown)
-                    weights_analysis.vehicle = converged_vehicle
-                 
                 _ = weights_analysis.evaluate() 
              
                 # CG Location  

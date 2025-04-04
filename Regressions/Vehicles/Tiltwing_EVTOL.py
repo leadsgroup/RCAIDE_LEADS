@@ -253,7 +253,7 @@ def vehicle_setup(new_regression=True):
     prop_rotor_esc.efficiency                     = 0.95    
     prop_rotor_esc.tag                            = 'esc_1'  
     prop_rotor_esc.bus_voltage                    = bus.voltage   
-    prop_rotor_propulsor.electronic_speed_controller    = prop_rotor_esc  
+    prop_rotor_propulsor.electronic_speed_controller = prop_rotor_esc  
     
     # Lift Rotor Design
     g                                             = 9.81                                    # gravitational acceleration   
@@ -305,7 +305,7 @@ def vehicle_setup(new_regression=True):
     nacelle.length                    = 0.45
     nacelle.diameter                  = 0.3 
     nacelle.flow_through              = False    
-    prop_rotor_propulsor.nacelle            =  nacelle       
+    prop_rotor_propulsor.nacelle      =  nacelle       
     
     current_dir = os.path.abspath(os.path.dirname(__file__))
     test_dir = os.path.abspath(os.path.join(current_dir, '..' + separator + 'Tests' + separator + 'mission_segments'))
@@ -313,7 +313,7 @@ def vehicle_setup(new_regression=True):
             
     if new_regression:
         design_electric_rotor(prop_rotor_propulsor)
-        save_rotor(prop_rotor, os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))
+        save_rotor(prop_rotor_propulsor, os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))
     else:
         regression_prop_rotor_propulsor = deepcopy(prop_rotor_propulsor)        
         design_electric_rotor(regression_prop_rotor_propulsor, iterations=2)

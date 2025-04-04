@@ -660,7 +660,9 @@ def vehicle_setup(new_regression=True) :
         for key,item in lift_propulsor.rotor.items():
             lift_propulsor.rotor[key] = loaded_lift_propulsor.rotor[key] 
         for key,item in lift_propulsor.motor.items():
-            lift_propulsor.motor[key] = loaded_lift_propulsor.motor[key] 
+            lift_propulsor.motor[key] = loaded_lift_propulsor.motor[key]
+            
+    network.propulsors.append(lift_propulsor)   
             
     # make and append copy of lift propulsor (efficient coding)    
     lift_propulsor_2                                       = deepcopy(lift_propulsor)

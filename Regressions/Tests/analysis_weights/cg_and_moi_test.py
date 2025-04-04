@@ -25,7 +25,7 @@ from Stopped_Rotor_EVTOL    import vehicle_setup as EVTOL_setup
 
 def main(): 
     # make true only when resizing aircraft. should be left false for regression
-    update_regression_values = False  
+    update_regression_values = True  
     Transport_Aircraft_Test()
     General_Aviation_Test()
     EVTOL_Aircraft_Test(update_regression_values)
@@ -164,9 +164,9 @@ def EVTOL_Aircraft_Test(update_regression_values):
     
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI) 
-    accepted  = np.array([[ 6004.47496291,  -735.78919515,  -791.28569455],
-                          [ -735.78919515,  9482.3003472 ,   -25.31429029],
-                          [ -791.28569455,   -25.31429029, 14144.74031264]])
+    accepted  = np.array([[ 6006.738122284607, -735.8589693592859,  -791.3695996492773],
+                          [ -735.8589693592859,9483.160498193094 ,   -25.276014885228207],
+                          [ -791.3695996492773,-25.276014885228207, 14147.61606890896]])
     MOI_error     = MOI - accepted
 
     # Check the errors

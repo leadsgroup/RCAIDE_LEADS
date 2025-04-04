@@ -71,7 +71,8 @@ def main():
     climb_throttle_6   = results.segments.climb_6.conditions.energy.propulsors['port_propulsor'].throttle[3][0]
     climb_throttle_7   = results.segments.climb_7.conditions.energy.propulsors['port_propulsor'].throttle[3][0] 
     climb_throttle_8   = results.segments.climb_8.conditions.energy.propulsors['port_propulsor'].throttle[3][0] 
-    climb_throttle_9   = results.segments.climb_9.conditions.energy.propulsors['port_propulsor'].throttle[3][0]  
+    climb_throttle_9   = results.segments.climb_9.conditions.energy.propulsors['port_propulsor'].throttle[3][0]
+    climb_10_CL        = results.segments.climb_10.conditions.aerodynamics.coefficients
     cruise_CL_1        = results.segments.cruise_1.conditions.aerodynamics.coefficients.lift.total[2][0]
     cruise_CL_2        = results.segments.cruise_2.conditions.aerodynamics.coefficients.lift.total[2][0]
     cruise_CL_3        = results.segments.cruise_3.conditions.aerodynamics.coefficients.lift.total[2][0] 

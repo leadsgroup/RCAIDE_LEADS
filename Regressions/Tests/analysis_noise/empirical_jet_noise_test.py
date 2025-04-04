@@ -47,17 +47,14 @@ def main():
     _   = post_process_noise_data(baseline_results)      
      
     # SPL of rotor check during hover 
-    E190_SPL        = np.max(baseline_results.segments.takeoff.conditions.noise.hemisphere_SPL_dBA) 
-    E190_SPL_true   = 116.2249415386176 # this value is high because its of a hemisphere of radius 20
-    E190_diff_SPL   = np.abs(E190_SPL - E190_SPL_true)
-    print('SPL difference: ',E190_diff_SPL)
-    assert np.abs((E190_SPL - E190_SPL_true)/E190_SPL_true) < 1e-3
+    B737_SPL        = np.max(baseline_results.segments.takeoff.conditions.noise.hemisphere_SPL_dBA)
+    B737_SPL_true   = 126.84954900920607 # this value is high because its of a hemisphere of radius 20
+    B737_diff_SPL   = np.abs(B737_SPL - B737_SPL_true)
+    print('SPL difference: ',B737_diff_SPL)
+    assert np.abs((B737_SPL - B737_SPL_true)/B737_SPL_true) < 1e-3
     
     # plot aircraft
     plot_3d_vehicle(vehicle, show_figure=False)
-
-    plot_mission(baseline_results)
-
     return
 
 def base_analysis(vehicle):
@@ -66,14 +63,6 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
-
-    # ------------------------------------------------------------------
-    #  Weights
-    # ------------------------------------------------------------------
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.aircraft_type  =  "Transport"
-    weights.vehicle        = vehicle
-    analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
@@ -138,7 +127,7 @@ def baseline_mission_setup(analyses):
     base_segment = Segments.Segment() 
     base_segment.state.numerics.number_of_control_points    = 3
 
-    # ---------------------------------------------------------------------
+    # -------------------   -----------------------------------------------
     #   Mission for Landing Noise
     # ------------------------------------------------------------------     
     segment                                               = Segments.Descent.Constant_Speed_Constant_Angle(base_segment)
@@ -146,7 +135,7 @@ def baseline_mission_setup(analyses):
     segment.analyses.extend(analyses.base )   
     segment.altitude_start                                = 120.5
     segment.altitude_end                                  = 0.
-    segment.air_speed                                     = 160. * Units['knots']
+    segment.air_speed                                     = 67. * Units['m/s']
     segment.descent_angle                                 = 3.0   * Units.degrees   
     
     # define flight dynamics to model 
@@ -167,9 +156,9 @@ def baseline_mission_setup(analyses):
     segment.tag                                               = "takeoff"    
     segment.analyses.extend(analyses.takeoff )     
     segment.altitude_start                                    = 0 *  Units.meter
-    segment.altitude_end                                      = 500 * Units.meter
-    segment.air_speed                                         = 150* Units['knots']
-    segment.throttle                                          = 0.8  
+    segment.altitude_end                                      = 304.8 * Units.meter
+    segment.air_speed                                         = 100* Units['m/s']
+    segment.throttle                                          = 1.
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                           = True  
@@ -181,7 +170,28 @@ def baseline_mission_setup(analyses):
     segment.assigned_control_variables.body_angle.active                 = True        
     segment.assigned_control_variables.body_angle.initial_guess_values   = [[ 5.0 * Units.deg]]
      
-    mission.append_segment(segment) 
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    # Cutback Segment: Constant speed, constant segment angle
+    # ------------------------------------------------------------------
+    segment                                              = Segments.Climb.Constant_Speed_Constant_Angle(base_segment)
+    segment.tag                                          = "cutback"
+    segment.analyses.extend(analyses.cutback )
+    segment.air_speed                                    = 100 * Units['m/s']
+    segment.altitude_end                                 = 1. * Units.km
+    segment.climb_angle                                  = 5  * Units.degrees
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
+    segment.assigned_control_variables.body_angle.active             = True
+
+    mission.append_segment(segment)
 
     # ------------------------------------------------------------------
     #   First Climb Segment: constant Mach, constant segment angle 
@@ -220,31 +230,6 @@ def baseline_missions_setup(base_mission):
     missions.append(base_mission)
  
     return missions   
-
-# ----------------------------------------------------------------------
-#   Plot Mission
-# ----------------------------------------------------------------------
-def plot_mission(results):
-    """This function plots the results of the mission analysis and saves those results to 
-    png files."""
-
-    # Plot Flight Conditions 
-    plot_flight_conditions(results)
-
-    plot_flight_trajectory(results)
-    
-    # Plot Aerodynamic Forces 
-    plot_aerodynamic_forces(results)
-    
-    # Plot Aerodynamic Coefficients 
-    plot_aerodynamic_coefficients(results)     
-    
-    # Plot Velocities 
-    plot_aircraft_velocities(results)
-
-    plot_propulsor_throttles(results)
-    
-    return
 
 if __name__ == '__main__': 
     main()
