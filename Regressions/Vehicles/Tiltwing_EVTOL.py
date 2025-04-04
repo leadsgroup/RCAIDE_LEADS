@@ -11,8 +11,8 @@ from RCAIDE.Framework.Core                                                      
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                         import design_electric_rotor
 from RCAIDE.Library.Plots                                                                import *     
 
-from RCAIDE.load    import load as load_rotor
-from RCAIDE.save    import save as save_rotor  
+from RCAIDE.load    import load as load_propulsor
+from RCAIDE.save    import save as save_propulsor
  
 import os
 import numpy as np 
@@ -67,9 +67,9 @@ def vehicle_setup(new_regression=True):
     
     ospath                                      = os.path.abspath(__file__) 
     separator                                   = os.path.sep
-    rel_path                                    = os.path.dirname(ospath) + separator  
+    local_path                                  = os.path.dirname(ospath) + separator  
     airfoil                                     = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                     = rel_path + 'Airfoils' + separator + 'NACA_63_412.txt'
+    airfoil.coordinate_file                     = local_path + 'Airfoils' + separator + 'NACA_63_412.txt'
     
     wing.append_airfoil(airfoil)
                                                 
@@ -275,15 +275,15 @@ def vehicle_setup(new_regression=True):
     prop_rotor.cruise.design_freestream_velocity  = 130.* Units['mph']  
     
     airfoil                                       = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file                       =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'
-    airfoil.polar_files                           = [rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt' ,
-                                                     rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt' ,
-                                                     rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt' ,
-                                                     rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt' ,
-                                                     rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt',
-                                                     rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_3500000.txt',
-                                                     rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
-                                                     rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
+    airfoil.coordinate_file                       =  local_path + 'Airfoils' + separator + 'NACA_4412.txt'
+    airfoil.polar_files                           = [local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt' ,
+                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt' ,
+                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt' ,
+                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt' ,
+                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt',
+                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_3500000.txt',
+                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
+                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
     prop_rotor.append_airfoil(airfoil)                
     prop_rotor.airfoil_polar_stations             = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     prop_rotor_propulsor.rotor                    =  prop_rotor
@@ -313,11 +313,11 @@ def vehicle_setup(new_regression=True):
             
     if new_regression:
         design_electric_rotor(prop_rotor_propulsor)
-        save_rotor(prop_rotor_propulsor, os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))
+        save_propulsor(prop_rotor_propulsor, os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))
     else:
         regression_prop_rotor_propulsor = deepcopy(prop_rotor_propulsor)        
         design_electric_rotor(regression_prop_rotor_propulsor, iterations=2)
-        loaded_propulsor = load_rotor(os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))  
+        loaded_propulsor = load_propulsor(os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))  
         for key,item in prop_rotor_propulsor.rotor.items():
             prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
         for key,item in prop_rotor_propulsor.motor.items():
