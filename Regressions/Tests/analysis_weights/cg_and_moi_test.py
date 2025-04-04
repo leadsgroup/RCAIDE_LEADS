@@ -41,7 +41,7 @@ def Transport_Aircraft_Test():
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
     weight_analysis                               = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weight_analysis.aircraft_type                 =  "Transport"
+    weight_analysis.aircraft_type                 = "Transport"
     weight_analysis.vehicle                       = vehicle
     weight_analysis.method                        = 'Raymer'
     weight_analysis.settings.use_max_fuel_weight  = False  

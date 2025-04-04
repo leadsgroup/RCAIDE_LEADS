@@ -234,7 +234,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     center_propulsor.motor                        = motor  
 
     # design center propulsor 
-    design_electric_ducted_fan(center_propulsor, regression_flag)
+    design_electric_ducted_fan(center_propulsor, new_regression_results = regression_flag,keep_files = True)
 
     net.propulsors.append(center_propulsor) 
 
