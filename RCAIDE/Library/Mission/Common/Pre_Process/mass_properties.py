@@ -9,8 +9,6 @@
 import RCAIDE
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_aircraft_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity                             import compute_vehicle_center_of_gravity
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based   import converge_physics_based_weight_buildup 
- 
 # ----------------------------------------------------------------------------------------------------------------------
 #  mass_properties
 # ----------------------------------------------------------------------------------------------------------------------  

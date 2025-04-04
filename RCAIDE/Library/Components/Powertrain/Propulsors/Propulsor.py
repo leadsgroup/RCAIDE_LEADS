@@ -84,23 +84,3 @@ class Propulsor(Component):
         self.active                       = True 
         self.wing_mounted                 = True
         self.sealevel_static_thrust       = 0.0
-        
-         
-    def append_operating_conditions(self,segment):
-        """
-        Appends operating conditions to the segment. 
-        """ 
-        ones_row    = segment.state.ones_row                  
-        segment.state.conditions.energy[self.tag]                = Conditions()
-        segment.state.conditions.energy[self.tag].throttle       = 0. * ones_row(1)   
-        return
-    
-    def unpack_propulsor_unknowns(self,segment):   
-        return 
-
-    def pack_propulsor_residuals(self,segment): 
-        return    
-
-    def append_propulsor_unknowns_and_residuals(self,segment): 
-        return 
-    

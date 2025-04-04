@@ -11,6 +11,7 @@ import RCAIDE
 from   RCAIDE.Framework.Core                                   import Units , Data 
 from   RCAIDE.Library.Plots                                    import *
 from   RCAIDE.Library.Methods.Performance.estimate_stall_speed import estimate_stall_speed  
+from RCAIDE.Library            import Components
 
 # python imports     
 import numpy as np  
@@ -104,6 +105,9 @@ def base_analysis(vehicle):
     weights.settings.update_mass_properties         = False
     weights.settings.update_center_of_gravity       = False
     weights.settings.update_moment_of_inertia       = False
+    
+    # remove landing gear for regression
+    vehicle.landing_gears  = Components.Landing_Gear.Landing_Gear.Container() 
     weights.vehicle = vehicle
     analyses.append(weights)
     
@@ -145,7 +149,9 @@ def base_analysis(vehicle):
 
 def plot_mission(results):
     
-    plot_altitude_sfc_weight(results) 
+    plot_altitude_sfc_weight(results)
+    
+    plot_disc_and_power_loading(results)
         
     return 
 

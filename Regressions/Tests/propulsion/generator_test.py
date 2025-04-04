@@ -21,16 +21,8 @@ import sys
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles' + os.path.sep + 'Rotors'))
 from Test_Propeller    import Test_Propeller   
  
-def main():
-    
-    forward_mode_model()
-    
-    reverse_mode_model()
-    
-    return 
-    
-def forward_mode_model():
-    motor_type    = ['DC_Motor', 'PMSM_Motor']
+def main(): 
+    motor_type    = ['DC_Generator', 'PMSM_Generator']
     omega_truth   = [62.70499271908929,37.653244590335106]
     torque_truth  = [136.5275405055453,145.7740091588354]
     current_truth = [73.0,73.0]
@@ -88,43 +80,6 @@ def forward_mode_model():
             error.Q_conv_airgap_test    = np.max(np.abs(Q_conv_airgap_truth[0] - Q_conv_airgap))
             error.Q_conv_endspace_test  = np.max(np.abs(Q_conv_endspace_truth[0] - Q_conv_endspace))
             error.Loss_cooling_test     = np.max(np.abs(Loss_cooling_truth[0] - Loss_cooling))
-        
-        print('Errors:')
-        print(error)
-        
-        for k,v in list(error.items()):
-            assert(np.abs(v)<1e-6) 
-               
-    return
-
-def inverse_mode_model():
-    motor_type    = ['DC_Motor', 'PMSM_Motor'] 
-    current_truth = [73.0,73.0]
-    voltage_truth = [120,120.0]
-
-    for i in range(len(motor_type)):
-        motor = design_test_motor( motor_type[i])
-        motor.inverse_calculation == True
-        
-        # set up default operating conditions 
-        operating_state = setup_operating_conditions(motor) 
-        
-        # Assign conditions to the motor
-        motor_conditions = operating_state.conditions.energy.converters[motor.tag] 
-        
-        motor_conditions.outputs.omega[:, 0] = 63
-        motor_conditions.outputs.power[:, 0] = 8500
-        
-        Motor.compute_motor_performance(motor,operating_state.conditions)
-
-        # run analysis  
-        current = motor_conditions.inputs.current
-        voltage = motor_conditions.inputs.voltage
- 
-        # Truth values 
-        error = Data() 
-        error.current_test   = np.max(np.abs(current_truth[i] - current[0][0])) 
-        error.voltage_test   = np.max(np.abs(voltage_truth[i] - voltage[0][0]))  
         
         print('Errors:')
         print(error)

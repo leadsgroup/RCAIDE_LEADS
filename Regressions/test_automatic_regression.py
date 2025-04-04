@@ -56,6 +56,7 @@ modules = [
     'Tests/propulsion/rotor_performance_test.py',  
     'Tests/propulsion/propeller_non_uniform_inflow.py',    
     'Tests/propulsion/propeller_wing_interaction_test.py', 
+    'Tests/propulsion/generator_test.py',
     'Tests/propulsion/motor_test.py',
     'Tests/propulsion/reformer_test.py', 
 ]

@@ -51,7 +51,8 @@ def main():
     t0=time.time()
     if conventional:
         print("\n Conventional Powertrain Test") 
-        vehicle  = conventional_vehicle_setup()  
+        vehicle  = conventional_vehicle_setup() 
+        vehicle.network.fuel.identical_propulsors = False         
         configs  = conventional_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
@@ -66,6 +67,7 @@ def main():
     if all_electric:        
         print("\n All-Electric Powertrain Test")  
         vehicle  = all_electric_vehicle_setup()  
+        vehicle.network.electric.identical_propulsors = False      
         configs  = all_electric_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
