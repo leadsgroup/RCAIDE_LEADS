@@ -16,22 +16,22 @@ from copy import deepcopy
 # design rotor  
 def Test_Rotor(new_regression=True):
     
-    Hover_Load = 26487.0
+    Hover_Load = 26487.0*1.1
     
     # Lift Rotor Design              
     lift_rotor                                             = RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor()   
     lift_rotor.tag                                         = 'lift_rotor_1'   
-    lift_rotor.active                                      = True           
+    lift_rotor.origin                                      = [[-0.073 ,  1.950 , 1.2]] 
+    lift_rotor.active                                      = True          
     lift_rotor.tip_radius                                  = 2.8/2
     lift_rotor.hub_radius                                  = 0.1 
-    lift_rotor.orientation_euler_angles                    = [0.,70 * Units.degrees ,0.]  
     lift_rotor.number_of_blades                            = 3     
-    lift_rotor.hover.design_altitude                       = 40 * Units.feet   
+    lift_rotor.hover.design_altitude                       = 40 * Units.feet  
     lift_rotor.hover.design_thrust                         = Hover_Load/8
     lift_rotor.hover.design_freestream_velocity            = np.sqrt(lift_rotor.hover.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))  
     lift_rotor.oei.design_altitude                         = 40 * Units.feet  
     lift_rotor.oei.design_thrust                           = Hover_Load/7  
-    lift_rotor.oei.design_freestream_velocity              = np.sqrt(lift_rotor.oei.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))      
+    lift_rotor.oei.design_freestream_velocity              = np.sqrt(lift_rotor.oei.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))   
 
     ospath                                                 = os.path.abspath(__file__)
     separator                                              = os.path.sep
@@ -48,7 +48,9 @@ def Test_Rotor(new_regression=True):
                                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
                                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
     lift_rotor.append_airfoil(airfoil)                         
-    lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
+    lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    
+    
     test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..' + separator + '..' + separator + 'Tests' + separator + 'propulsion'))
     
     if new_regression:

@@ -115,7 +115,7 @@ def main():
     for k,v in list(error.items()): 
         assert(np.abs(v)<1e-6)
         
-    plot_battery_pack_conditions(plot_data,powertrain_labels)
+    plot_battery_pack_conditions(plot_data,powertrain_labels,save_figure = False, show_legend = False,)
     
     return
 
