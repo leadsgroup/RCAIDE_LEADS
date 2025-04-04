@@ -646,13 +646,12 @@ def vehicle_setup(new_regression=True) :
     nacelle.flow_through              = False   
     nacelle.tag                       = 'rotor_nacelle_1'
     nacelle.origin                    = [[  -0.073,  1.950, 1.2]]
-    lift_propulsor.nacelle          =  nacelle    
+    lift_propulsor.nacelle            =  nacelle    
     
     test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../Tests/analysis_weights')) 
     if new_regression:
         design_electric_rotor(lift_propulsor)
         save_rotor(lift_propulsor, os.path.join(test_dir, 'stopped_rotor_lift_rotor.res'))
-        network.propulsors.append(lift_propulsor)
     else:
         regression_lift_propulsor = deepcopy(lift_propulsor)        
         design_electric_rotor(regression_lift_propulsor, iterations=2)

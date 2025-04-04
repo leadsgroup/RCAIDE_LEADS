@@ -99,7 +99,8 @@ class Weights(Analysis):
         
         # Call the function
         results = compute_operating_empty_weight(vehicle, self.settings) 
-
+        vehicle.mass_properties.weight_breakdown = results
+        
         # updating empty weight
         if self.settings.update_mass_properties:  
             vehicle.mass_properties.operating_empty = results.empty.total
