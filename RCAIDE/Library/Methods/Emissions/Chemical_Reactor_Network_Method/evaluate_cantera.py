@@ -1,7 +1,7 @@
 # RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_cantera.py
 
 # Created: June 2024, M. Clarke, M. Guidotti 
-# Updated: Mar 2025, M. Guidotti
+# Updated: Mar 2025, M. Guidotti, J. Dost, D. Mehta
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -417,6 +417,7 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         psr_gas_PZ_i.set_equivalence_ratio(phi_PSR[i], combustor.fuel_data.fuel_surrogate_S1, combustor.air_data.air_surrogate)  # [-] Set equivalence ratio, fuel, and air mole fractions
         psr_gas_PZ_i.HP = h_mix_PZ_i, Pres_air                         # [J/kg, Pa] Set enthalpy and pressure
         psr_gas_PZ_i.equilibrate('HP')                                 # [-] Equilibrate the gas at constant enthalpy and pressure
+        
         psr_PZ_i        = ct.ConstPressureReactor(psr_gas_PZ_i, name=f'PSR_{i+1}') # [-] PSR object
         psr_PZ_i.volume = V_PZ_PSR                                     # [m^3] PSR volume
         PZ_Structures["PSRs"][f'PSR_{i+1}'] = psr_PZ_i                 # [-] Store PSR object
@@ -451,7 +452,7 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         #dM_dt_outflow = (-mdot_total_PZ_i / (rho_PZ_i * V_PZ_PSR)) * combustor.fuel_data.M_mech # [-] ???
         #dM_dt_mech = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, psr_gas_PZ_i.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ_i, C2H2_conc_PZ_i, OH_PZ_i, O2_PZ_i, O_PZ_i) + dM_dt_outflow # [kg/m^3/s] ???
         
-        dM_dt_mech = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, psr_gas_PZ_i.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ_i, C2H2_conc_PZ_i, OH_PZ_i, O2_PZ_i, O_PZ_i)
+        dM_dt_mech = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, psr_gas_PZ_i.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ_i, C2H2_conc_PZ_i, OH_PZ_i, O2_PZ_i, O_PZ_i)        
         mdot_soot_PZ_i = dM_dt_mech * V_PZ_PSR                         # [kg/s] Soot mass flow rate
         
         EI = calculate_emission_indices(psr_PZ_i, mdot_total_PZ_i, mdot_fuel_PZ_i, mdot_soot_PZ_i) # [-] Emission indices computation
@@ -478,6 +479,7 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         mixture.moles = mass_psr_list[i] / psr_output.mean_molecular_weight # [-] Mixture moles
         mixture_list.append(mixture)                                   # [-] Store mixture moles
     mixture_sum       = mixture_list[0]                                # [-] Define Mixture sum
+    
     for mixture in mixture_list[1:]: 
         mixture_sum  += mixture                                        # [-] Add all into a Mixture sum
  
@@ -496,8 +498,9 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
     O2_PZ        = mixture_sum.phase['O2'].X[0]*total_moles_PZ/(V_PZ)  # [kmol/m^3] ???
     O_PZ         = mixture_sum.phase['O'].X[0]*total_moles_PZ/(V_PZ)   # [kmol/m^3] ???
     
-    dM_dt_outflow_PZ = (-mdot_tot_PZ / (rho_PZ * V_PZ)) * combustor.fuel_data.M_mech       # [-] ???
-    dM_dt_mech_PZ = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixture_sum.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ, C2H2_conc_PZ, OH_PZ, O2_PZ, O_PZ) + dM_dt_outflow_PZ # [kg/m^3/s] ???
+    #dM_dt_outflow_PZ = (-mdot_tot_PZ / (rho_PZ * V_PZ))
+    #dM_dt_outflow_PZ = (-mdot_tot_PZ / (rho_PZ * V_PZ)) * combustor.fuel_data.M_mech       # [-] ???
+    dM_dt_mech_PZ = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixture_sum.T, combustor.fuel_data.n_C_matrix, PAH_conc_PZ, C2H2_conc_PZ, OH_PZ, O2_PZ, O_PZ) # [kg/m^3/s] ???
     mdot_soot_PZ = dM_dt_mech_PZ * V_PZ                                # [kg/s] Soot mass flow rate
     
     EI_mixer_initial = calculate_emission_indices(mixture_sum, mdot_tot_PZ, mdot_fuel, mdot_soot_PZ) # [-] Emission indices computation
@@ -563,8 +566,8 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         O2_SZ_sm_i                      = mixed_gas_sm['O2'].X[0] * total_moles_SZ_sm_i / V_SZ_sm_i # [kmol/m^3] O2 concentration
         O_SZ_sm_i                       = mixed_gas_sm['O'].X[0] * total_moles_SZ_sm_i / V_SZ_sm_i # [kmol/m^3] O concentration
 
-        dM_dt_outflow_SZ_sm_i           = (-mdot_total_sm / (rho_SZ_sm_i * V_SZ_sm_i)) * combustor.fuel_data.M_mech # [kg/m^3/s] Soot mass outflow rate
-        dM_dt_mech_SZ_sm_i              = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_sm.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_sm_i, C2H2_conc_SZ_sm_i, OH_SZ_sm_i, O2_SZ_sm_i, O_SZ_sm_i) + dM_dt_outflow_SZ_sm_i # [kg/m^3/s] Soot mass change rate
+        #dM_dt_outflow_SZ_sm_i           = (-mdot_total_sm / (rho_SZ_sm_i * V_SZ_sm_i)) * combustor.fuel_data.M_mech # [kg/m^3/s] Soot mass outflow rate
+        dM_dt_mech_SZ_sm_i              = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_sm.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_sm_i, C2H2_conc_SZ_sm_i, OH_SZ_sm_i, O2_SZ_sm_i, O_SZ_sm_i) # [kg/m^3/s] Soot mass change rate
         mdot_soot_SZ_sm_i               = dM_dt_mech_SZ_sm_i * V_SZ_sm_i # [kg/s] Soot mass flow rate
 
         EI_sm                           = calculate_emission_indices(mixed_gas_sm, mdot_total_sm, combustor.f_SM * mdot_fuel, mdot_soot_SZ_sm_i) # [-] Emission indices    
@@ -673,8 +676,8 @@ def compute_combustor_performance(combustor, Temp_air, Pres_air, mdot_air_tot, F
         O2_SZ_joint_i                   = mixed_gas_joint['O2'].X[0] * total_moles_SZ_joint_i / V_SZ_joint_i # [kmol/m^3] O2 concentration
         O_SZ_joint_i                    = mixed_gas_joint['O'].X[0] * total_moles_SZ_joint_i / V_SZ_joint_i # [kmol/m^3] O concentration
 
-        dM_dt_outflow_SZ_joint_i        = (-mdot_total_joint / (rho_SZ_joint_i * V_SZ_joint_i)) * combustor.fuel_data.M_mech # [kg/m^3/s] Soot mass outflow rate
-        dM_dt_mech_SZ_joint_i           = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_joint.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_joint_i, C2H2_conc_SZ_joint_i, OH_SZ_joint_i, O2_SZ_joint_i, O_SZ_joint_i) + dM_dt_outflow_SZ_joint_i # [kg/m^3/s] Soot mass change rate
+        #dM_dt_outflow_SZ_joint_i        = (-mdot_total_joint / (rho_SZ_joint_i * V_SZ_joint_i)) * combustor.fuel_data.M_mech # [kg/m^3/s] Soot mass outflow rate
+        dM_dt_mech_SZ_joint_i           = total_mech_mass(combustor.fuel_data.nuc_fac, combustor.fuel_data.sg_fac, combustor.fuel_data.ox_fac, combustor.fuel_data.L, combustor.fuel_data.PAH_species, combustor.fuel_data.radii, combustor.fuel_data.mu_matrix, mixed_gas_joint.T, combustor.fuel_data.n_C_matrix, PAH_conc_SZ_joint_i, C2H2_conc_SZ_joint_i, OH_SZ_joint_i, O2_SZ_joint_i, O_SZ_joint_i) # [kg/m^3/s] Soot mass change rate
         mdot_soot_SZ_joint_i            = dM_dt_mech_SZ_joint_i * V_SZ_joint_i # [kg/s] Soot mass flow rate
 
         EI_joint                        = calculate_emission_indices(mixed_gas_joint, mdot_total_joint, mdot_fuel, mdot_soot_SZ_joint_i) # [-] Emission indices
@@ -1160,18 +1163,40 @@ def total_mech_mass(nuc_fac, sg_fac, ox_fac, L, PAH_species, radii, mu_matrix, T
     # Compute individual mass contribution rates
     dM_dt_nuc = total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
     
-    dM_dt_sg = (total_surface_growth_rate_PAH(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc) + 
-                 total_surface_growth_rate_acetylene(L, PAH_species, radii, mu_matrix, n_C_matrix, C2H2_conc, T, PAH_conc))
+    print(f"[DEBUG] T = {T:.1f} K, [OH] = {OH_i:.3e}, [O2] = {O2_i:.3e}, [O] = {O_i:.3e}")
+    print(f"[DEBUG] Total nucleation rate = {dM_dt_nuc:.3e} kg/m^3/s")
+    
+    dM_dt_sg_PAH  = total_surface_growth_rate_PAH(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+    dM_dt_sg_C2H2 = total_surface_growth_rate_acetylene(L, PAH_species, radii, mu_matrix, n_C_matrix, C2H2_conc, T, PAH_conc)
+    dM_dt_sg = dM_dt_sg_PAH + dM_dt_sg_C2H2
+    
+    print(f"[DEBUG] Surface growth rate PAH = {dM_dt_sg:.3e} kg/m^3/s")
+    print(f"[DEBUG] Surface growth rate C2H2 = {dM_dt_sg:.3e} kg/m^3/s")
+    print(f"[DEBUG] Total surface growth rate = {dM_dt_sg:.3e} kg/m^3/s")
+    
+    print(f"[DEBUG] [PAH] = {PAH_conc:.3e} kmol/m^3")
+    print(f"[DEBUG] [C2H2] = {C2H2_conc:.3e} kmol/m^3")
+    
+    ##### RECOMPUTED #####
+    As = soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+    print(f"[DEBUG] Soot surface area = {As:.3e} m^2/m^3")    
+    ##### RECOMPUTED #####
                 
-    dM_dt_ox = (hydroxyl_oxidation_rate(T, OH_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc) +
-                O2_oxidation_rate(T, O2_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc) +
-                O_oxidation_rate(T, O_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc))
-
+    # Compute individual oxidation rates
+    dM_dt_OH = hydroxyl_oxidation_rate(T, OH_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc)
+    dM_dt_O2 = O2_oxidation_rate(T, O2_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc)
+    dM_dt_O  = O_oxidation_rate(T, O_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc)
+    
+    print(f"[DEBUG] OH oxidation rate = {dM_dt_OH:.3e} kg/m^3/s")
+    print(f"[DEBUG] O2 oxidation rate = {dM_dt_O2:.3e} kg/m^3/s")
+    print(f"[DEBUG] O oxidation rate = {dM_dt_O:.3e} kg/m^3/s")
+    
+    # Combine oxidation terms
+    dM_dt_ox = dM_dt_OH + dM_dt_O2 + dM_dt_O
+    
+    print(f"[DEBUG] Total oxidation rate = {dM_dt_ox:.3e} kg/m^3/s")
+    
     # Compute total rate of change of soot mass density
-    dM_dt_mech = (
-        nuc_fac * dM_dt_nuc +
-        sg_fac * dM_dt_sg +
-        ox_fac * dM_dt_ox
-    )
+    dM_dt_mech = (nuc_fac * dM_dt_nuc) + (sg_fac * dM_dt_sg) + (ox_fac * dM_dt_ox)
 
     return dM_dt_mech
