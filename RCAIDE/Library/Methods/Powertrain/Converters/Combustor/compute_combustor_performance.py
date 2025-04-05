@@ -12,7 +12,7 @@ import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_combustor_performance
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_combustor_performance(combustor,combustor_conditions,conditions):
+def compute_combustor_performance(combustor,conditions):
     """ This computes the output values from the input values according to
         equations from the source. The following properties are computed         
         combustor_conditions.outputs.
@@ -46,7 +46,8 @@ def compute_combustor_performance(combustor,combustor_conditions,conditions):
       
     Returns:
         None
-    """ 
+    """
+    combustor_conditions    = conditions.energy.converters[combustor.tag]
     T0                      = combustor_conditions.inputs.static_temperature
     P0                      = combustor_conditions.inputs.static_pressure  
     M0                      = combustor_conditions.inputs.mach_number 

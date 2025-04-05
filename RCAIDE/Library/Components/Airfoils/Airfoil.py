@@ -78,4 +78,18 @@ class Airfoil(Component):
         self.prev                       = None
         self.next                       = None
         self.number_of_points           = 201
+        
+
+    def append_operating_conditions(self, segment, energy_conditions): 
+        """
+        Placeholder for adding operating conditions to the airfoil.
+
+        Parameters
+        ----------
+        segment : Data
+            Flight segment data
+        propulsor : Data
+            Propulsion system data
+        """
+        return        
        

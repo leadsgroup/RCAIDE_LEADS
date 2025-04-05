@@ -8,8 +8,8 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_ram_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_ram_conditions(ram,segment,propulsor_conditions): 
-    propulsor_conditions[ram.tag]                              = Conditions() 
-    propulsor_conditions[ram.tag].inputs                       = Conditions() 
-    propulsor_conditions[ram.tag].outputs                      = Conditions() 
+def append_ram_conditions(ram,segment,energy_conditions): 
+    energy_conditions.converters[ram.tag]                              = Conditions() 
+    energy_conditions.converters[ram.tag].inputs                       = Conditions() 
+    energy_conditions.converters[ram.tag].outputs                      = Conditions() 
     return 

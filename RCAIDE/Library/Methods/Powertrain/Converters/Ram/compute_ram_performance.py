@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_ram_performance
 # ----------------------------------------------------------------------------------------------------------------------     
-def compute_ram_performance(ram,ram_conditions,conditions):
+def compute_ram_performance(ram,conditions):
     """ This computes the output values from the input values according T0
     equations from the source. The following properties are determined 
         conditions.freestream.
@@ -47,6 +47,7 @@ def compute_ram_performance(ram,ram_conditions,conditions):
 
     # Unpack ram inputs
     working_fluid  = ram.working_fluid
+    ram_conditions = conditions.energy.converters[ram.tag]
  
     # Compute the working fluid properties
     R        = working_fluid.gas_specific_constant

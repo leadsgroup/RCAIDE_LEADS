@@ -61,11 +61,10 @@ def compute_operating_items_weight(vehicle):
     """ 
     NENG =  0 
     for network in  vehicle.networks:
-        for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
-                ref_propulsor = propulsor  
-                NENG  += 1   
-    
+        for propulsor in network.propulsors: 
+            ref_propulsor = propulsor  
+            NENG  += 1
+            
     THRUST          = ref_propulsor.sealevel_static_thrust * 1 / Units.lbf
     SW              = vehicle.reference_area / Units.ft ** 2
     FMXTOT          = vehicle.mass_properties.max_zero_fuel / Units.lbs
@@ -84,10 +83,18 @@ def compute_operating_items_weight(vehicle):
     WOIL            = 0.082 * NENG * THRUST ** 0.65  # engine oil weight
     
     for fuselage in  vehicle.fuselages: 
-        if hasattr(fuselage, 'number_coach_seats'):
-            NPT = fuselage.number_coach_seats  # number of economy passengers
-            NPF = (vehicle.passengers - NPT) / 4.  # number of first clss passengers
-            NPB = vehicle.passengers - NPF - NPT  # number of bussines passengers
+        if len(fuselage.cabins) > 0:
+            NPT =  0
+            NPF =  0
+            NPB =  0
+            for cabin in fuselage.cabins:
+                for cabin_class in cabin.classes:
+                    if type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy:
+                        NPT =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
+                    elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business:
+                        NPB =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
+                    elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
+                        NPF =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
         else:
             NPF = vehicle.passengers / 20.
             NPB = vehicle.passengers / 10.

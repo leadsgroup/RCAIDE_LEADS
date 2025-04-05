@@ -11,7 +11,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core                                             import Units , Data    
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor   import design_turbojet
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet             import design_turbojet
 from RCAIDE.Library.Methods.Geometry.Planform                          import wing_segmented_planform
 from RCAIDE.Library.Plots                                              import *     
 
@@ -34,9 +34,15 @@ def vehicle_setup():
     vehicle.mass_properties.cargo           = 1000.  * Units.kilogram   
     vehicle.mass_properties.max_zero_fuel   = 92000.
         
-    # envelope properties
-    vehicle.flight_envelope.ultimate_load   = 3.75
-    vehicle.flight_envelope.limit_load      = 2.5
+    # envelope properties 
+
+    vehicle.flight_envelope.design_cruise_altitude   = 40000 * Units.feet 
+    vehicle.flight_envelope.design_dynamic_pressure  = 55169 
+    vehicle.flight_envelope.design_mach_number       = 2.05 
+    vehicle.flight_envelope.ultimate_load            = 5.7
+    vehicle.flight_envelope.limit_load               = 3.8       
+    vehicle.flight_envelope.positive_limit_load      = 2.5  
+    vehicle.flight_envelope.design_range             = 4488  * Units.nmi    
   
     # basic parameters  
     vehicle.reference_area                 = 358.25      
@@ -359,7 +365,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #initialize the fuel network
     net                                            = RCAIDE.Framework.Networks.Fuel() 
-    net.identical_propulsors                       = False # for regression 
+    net.identical_propulsors                       = True 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Fuel Distrubition Line 
@@ -372,7 +378,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------   
     outer_right_turbojet                          = RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet()  
     outer_right_turbojet.tag                      = 'outer_right_turbojet'     
-    outer_right_turbojet.engine_length            = 4.039
+    outer_right_turbojet.length            = 4.039
     outer_right_turbojet.nacelle_diameter         = 1.3
     outer_right_turbojet.inlet_diameter           = 1.212 
     outer_right_turbojet.areas.wetted             = 30

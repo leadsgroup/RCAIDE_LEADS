@@ -79,16 +79,15 @@ class Reservoir(Component):
         """
         Sets default values for the reservoir attributes.
         """
-        self.tag              = 'coolant_reservoir'
-        self.material         = Polyetherimide()
-        self.coolant          = Glycol_Water()
-        self.length           = 0.3
-        self.width            = 0.3
-        self.height           = 0.3
-        self.thickness        = 5e-3
-        self.surface_area     = 2*(self.length*self.width + self.width*self.height + 
-                                  self.length*self.height)
-        self.volume           = self.length*self.width*self.height
+        self.tag                  = 'coolant_reservoir'
+        self.material             = Polyetherimide()
+        self.coolant              = Glycol_Water()
+        self.length               = 0.3
+        self.width                = 0.3
+        self.height               = 0.3
+        self.thickness            = 5e-3
+        self.surface_area         = 2*(self.length*self.width + self.width*self.height +  self.length*self.height)
+        self.volume               = self.length*self.width*self.height
         self.mass_properties.mass = self.coolant.density*self.volume
         return
     

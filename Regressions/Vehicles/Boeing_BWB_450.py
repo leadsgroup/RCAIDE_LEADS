@@ -8,9 +8,10 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
-from RCAIDE.Library.Methods.Geometry.Planform               import segment_properties    
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor   import design_turbofan   
-from RCAIDE.Library.Plots                                   import *     
+from RCAIDE.Library.Methods.Geometry.Planform                   import segment_properties    
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan      import design_turbofan   
+from RCAIDE.Library.Methods.Geometry.Planform.fuselage_planform import fuselage_planform
+from RCAIDE.Library.Plots                                       import *     
  
 # python imports 
 import numpy as np  
@@ -40,10 +41,10 @@ def vehicle_setup():
     vehicle.mass_properties.cargo                     = 00.  * Units.kilogram   
 
     # envelope properties
-    vehicle.flight_envelope.ultimate_load = 2.5
-    vehicle.flight_envelope.limit_load    = 1.5
+    vehicle.flight_envelope.ultimate_load      = 2.5
+    vehicle.flight_envelope.limit_load         = 1.5
     vehicle.flight_envelope.design_mach_number = 0.8
-    vehicle.flight_envelope.design_range = 8000 * Units.nmi
+    vehicle.flight_envelope.design_range       = 8000 * Units.nmi  
 
     # basic parameters
     vehicle.reference_area         = 7840. * 2 * Units.feet**2       
@@ -211,19 +212,31 @@ def vehicle_setup():
 
     # add to vehicle
     vehicle.append_component(wing)
+ 
+    fuselage                                               = RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage() 
+    fuselage.aft_centerbody_area                           = 1350
+    fuselage.aft_centerbody_taper                          = 0.5
+         
+    cabin                                                  = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    economy_class                                          = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest                   = 6
+    economy_class.number_of_rows                           = 22
+    economy_class.galley_lavatory_percent_x_locations      = [0, 1.0]       
+    economy_class.type_A_exit_percent_x_locations          = [0,0.3,0.7, 1.0]
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin)  
 
-    #------------------------------------------------------------------------------------------------------------------------- 
-    #  Turbofan Network
-    #-------------------------------------------------------------------------------------------------------------------------     
-    fuselage = RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage() 
-    fuselage.aft_centerbody_area   = 1350
-    fuselage.aft_centerbody_taper  = 0.5
-    fuselage.cabin_area            = 15*450 
-    fuselage.number_coach_seats    = vehicle.passengers 
-    fuselage.seats_abreast         = 15
-    fuselage.seat_pitch            = 1 * Units.meter
-    fuselage.lengths.total         = 100
-    fuselage.width                 = 15
+    side_cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin() 
+    side_cabin.nose.fineness_ratio                         = 1.75   
+    side_economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    side_economy_class.number_of_seats_abrest              = 5
+    side_economy_class.number_of_rows                      = 22
+    side_economy_class.galley_lavatory_percent_x_locations = [0,1.0] 
+    side_economy_class.type_A_exit_percent_x_locations     = [0,0.3,0.7, 1.0]
+    side_cabin.append_cabin_class(side_economy_class) 
+    fuselage.append_cabin(side_cabin)
+    
+    fuselage_planform(fuselage,circular_cross_section=False) 
     
     # add to vehicle
     vehicle.append_component(fuselage)    
@@ -244,7 +257,7 @@ def vehicle_setup():
     turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                = 'center_propulsor' 
     turbofan.origin                             = [[120.0 *Units.feet, 0.0*Units.feet, 6.5*Units.feet]] 
-    turbofan.engine_length                      = 2.71     
+    turbofan.length                             = 2.71     
     turbofan.bypass_ratio                       = 8.4
     turbofan.design_altitude                    = 0. * Units.km
     turbofan.design_mach_number                 = 0.01

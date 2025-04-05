@@ -77,8 +77,7 @@ class Turbine(Converter):
         self.mechanical_efficiency             = 1.0
         self.polytropic_efficiency             = 1.0
 
-    def append_operating_conditions(self,segment,propulsor): 
-        propulsor_conditions =  segment.state.conditions.energy[propulsor.tag]
-        append_turbine_conditions(self,segment,propulsor_conditions)
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
+        append_turbine_conditions(self,segment,energy_conditions)
         return                            
     

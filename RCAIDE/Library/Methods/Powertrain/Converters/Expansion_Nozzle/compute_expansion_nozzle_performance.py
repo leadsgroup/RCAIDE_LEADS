@@ -16,7 +16,7 @@ from warnings import warn
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_expansion_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------        
-def compute_expansion_nozzle_performance(expansion_nozzle,nozzle_conditions,conditions):
+def compute_expansion_nozzle_performance(expansion_nozzle,conditions):
     """ This computes the output values from the input values according to
     equations from the source. The following properties are computed: 
     expansion_nozzle.outputs.
@@ -58,10 +58,11 @@ def compute_expansion_nozzle_performance(expansion_nozzle,nozzle_conditions,cond
 
     """                 
     # Unpack flight conditions     
-    M0       = conditions.freestream.mach_number
-    P0       = conditions.freestream.pressure
-    Pt0      = conditions.freestream.stagnation_pressure
-    Tt0      = conditions.freestream.stagnation_temperature
+    M0                = conditions.freestream.mach_number
+    P0                = conditions.freestream.pressure
+    Pt0               = conditions.freestream.stagnation_pressure
+    Tt0               = conditions.freestream.stagnation_temperature
+    nozzle_conditions = conditions.energy.converters[expansion_nozzle.tag]
     
     # Unpack exansion nozzle inputs
     Tt_in    = nozzle_conditions.inputs.stagnation_temperature

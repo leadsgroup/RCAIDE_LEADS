@@ -69,7 +69,6 @@ def initialize_conditions(segment):
 
     Outputs:
     conditions.frames.inertial.velocity_vector          [meters/second]
-    conditions.energy.throttle                          [Unitless]
 
     Properties Used:
     N/A

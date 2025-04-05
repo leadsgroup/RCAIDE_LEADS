@@ -18,7 +18,7 @@ import numpy as np
 def plot_aerodynamic_coefficients(results,
                              save_figure = False,  
                              show_legend = True,
-                             save_filename = "Aerodynamic_Coefficents",
+                             save_filename = "Aerodynamic_Coefficients",
                              file_type = ".png",
                              width = 11, height = 7):
     """
@@ -50,7 +50,7 @@ def plot_aerodynamic_coefficients(results,
         Flag to display segment legend (default: True)
         
     save_filename : str, optional
-        Name of file for saved figure (default: "Aerodynamic_Coefficents")
+        Name of file for saved figure (default: "Aerodynamic_Coefficients")
         
     file_type : str, optional
         File extension for saved figure (default: ".png")

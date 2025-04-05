@@ -56,9 +56,7 @@ def deflect_control_surfaces(VD,geometry,settings):
     
     
     return VD
-
-
-## @ingroup Methods-Aerodynamics-Common-Fidelity_Zero-Lift
+ 
 def deflect_control_surface(VD,wing):
     """ 
     Deflects the panels of a vortex distribution that correspond to the given VLM_wing. 
@@ -470,9 +468,7 @@ def deflect_control_surface_strip(wing, raw_VD, is_first_strip, sym_sign):
 
 # ----------------------------------------------------------------------
 #  Make Hinge Quaternion
-# ----------------------------------------------------------------------
-
-## @ingroup Methods-Aerodynamics-Common-Fidelity_Zero-Lift
+# ---------------------------------------------------------------------- 
 def make_hinge_quaternion(point_on_line, direction_unit_vector, rotation_angle):
     """ This make a quaternion that will rotate a vector about a the line that 
     passes through the point 'point_on_line' and has direction 'direction_unit_vector'.
