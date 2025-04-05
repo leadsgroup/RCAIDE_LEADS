@@ -12,63 +12,70 @@ from copy import  deepcopy
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_compressor_performance(compressor,conditions):
+def compute_compressor_performance(compressor, conditions):
     """
     Computes the performance of a compressor based on its polytropic efficiency.
 
     Parameters
     ----------
-    compressor : Compressor
-        Compressor component
+    compressor : RCAIDE.Library.Components.Converters.Compressor
+        Compressor component with the following attributes:
+            - tag : str
+                Identifier for the compressor
             - pressure_ratio : float
                 Pressure ratio across compressor
             - polytropic_efficiency : float
                 Polytropic efficiency of compression
-            - working_fluid : FluidProperties
+            - working_fluid : Data
                 Working fluid properties object
-    compressor_conditions : Conditions
-        Container for compressor-specific conditions
-            - inputs.stagnation_temperature : ndarray
-                Inlet stagnation temperature [K]
-            - inputs.stagnation_pressure : ndarray
-                Inlet stagnation pressure [Pa]
-            - inputs.static_temperature : ndarray
-                Inlet static temperature [K]
-            - inputs.static_pressure : ndarray
-                Inlet static pressure [Pa]
-            - inputs.mach_number : ndarray
-                Inlet Mach number
-    conditions : Conditions
-        Freestream flow conditions
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions with:
+            - energy.converters[compressor.tag].inputs : Data
+                Input conditions
+                - stagnation_temperature : numpy.ndarray
+                    Inlet stagnation temperature [K]
+                - stagnation_pressure : numpy.ndarray
+                    Inlet stagnation pressure [Pa]
+                - static_temperature : numpy.ndarray
+                    Inlet static temperature [K]
+                - static_pressure : numpy.ndarray
+                    Inlet static pressure [Pa]
+                - mach_number : numpy.ndarray
+                    Inlet Mach number
+            - energy.hybrid_power_split_ratio : float
+                Ratio of power split for hybrid systems
 
     Returns
     -------
     None
+        Results are stored in conditions.energy.converters[compressor.tag].outputs:
+        - work_done : numpy.ndarray
+            Specific work done by compressor [J/kg]
+        - stagnation_temperature : numpy.ndarray
+            Exit stagnation temperature [K]
+        - stagnation_pressure : numpy.ndarray
+            Exit stagnation pressure [Pa]
+        - stagnation_enthalpy : numpy.ndarray
+            Exit stagnation enthalpy [J/kg]
+        - static_temperature : numpy.ndarray
+            Exit static temperature [K]
+        - static_pressure : numpy.ndarray
+            Exit static pressure [Pa]
+        - mach_number : numpy.ndarray
+            Exit Mach number
+        - gas_constant : numpy.ndarray
+            Gas constant [J/(kg·K)]
+        - gamma : numpy.ndarray
+            Ratio of specific heats
+        - cp : numpy.ndarray
+            Specific heat at constant pressure [J/(kg·K)]
 
     Notes
     -----
-    Appends results to compressor_conditions.outputs including:
-        - work_done : ndarray
-            Specific work done by compressor [J/kg]
-        - stagnation_temperature : ndarray
-            Exit stagnation temperature [K]
-        - stagnation_pressure : ndarray
-            Exit stagnation pressure [Pa]
-        - stagnation_enthalpy : ndarray
-            Exit stagnation enthalpy [J/kg]
-        - static_temperature : ndarray
-            Exit static temperature [K]
-        - static_pressure : ndarray
-            Exit static pressure [Pa]
-        - mach_number : ndarray
-            Exit Mach number
-        - gas_constant : ndarray
-            Gas constant [J/(kg·K)]
-        - gamma : ndarray
-            Ratio of specific heats
-        - cp : ndarray
-            Specific heat at constant pressure [J/(kg·K)]
-
+    This function implements the thermodynamic calculations for a compressor with
+    a specified pressure ratio and polytropic efficiency. The work done is adjusted
+    by the hybrid power split ratio if applicable.
+    
     **Major Assumptions**
         * Constant polytropic efficiency
         * Constant pressure ratio
@@ -90,8 +97,7 @@ def compute_compressor_performance(compressor,conditions):
 
     References
     ----------
-    [1] Cantwell, B., "AA283 Course Notes", Stanford University
-        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
+    [1] Cantwell, B., "AA283 Course Notes", Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
 
     See Also
     --------

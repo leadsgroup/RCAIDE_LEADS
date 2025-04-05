@@ -71,8 +71,7 @@ def compute_power_from_throttle(engine,conditions):
 
     References
     ----------
-    [1] Gudmundsson, S. (2014). General Aviation Aircraft Design: Applied Methods 
-        and Procedures. Butterworth-Heinemann.
+    [1] Gudmundsson, S. (2014). General Aviation Aircraft Design: Applied Methods and Procedures. Butterworth-Heinemann.
     [2] Gagg and Ferrar
 
     See Also

@@ -18,8 +18,8 @@ def append_compressor_conditions(compressor,segment,energy_conditions):
         The compressor component being analyzed
     segment : Segment
         The mission segment being analyzed
-    propulsor_conditions : Conditions
-        Container for storing propulsion system conditions
+    energy_conditions : Conditions
+        Container for storing energy system conditions
     
     Returns
     -------

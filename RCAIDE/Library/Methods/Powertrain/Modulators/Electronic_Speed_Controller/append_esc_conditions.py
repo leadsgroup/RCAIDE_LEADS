@@ -1,6 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/append_motor_conditions.py
-# RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/append_esc_conditions.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke  
 
@@ -10,7 +8,6 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 #  append_esc_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_esc_conditions(esc,segment,energy_conditions): 
-def append_esc_conditions(esc,segment,propulsor_conditions): 
     """
     Initializes the Electronic Speed Controller (ESC) condition containers for tracking 
     electrical state variables. Sets up basic input/output conditions and throttle settings 
