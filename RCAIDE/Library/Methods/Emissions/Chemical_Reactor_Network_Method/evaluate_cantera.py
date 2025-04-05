@@ -1174,9 +1174,9 @@ def total_mech_mass(nuc_fac, sg_fac, ox_fac, L, PAH_species, radii, mu_matrix, T
     print(f"[DEBUG] Surface growth rate C2H2 = {dM_dt_sg:.3e} kg/m^3/s")
     print(f"[DEBUG] Total surface growth rate = {dM_dt_sg:.3e} kg/m^3/s")
     
-    print(f"[DEBUG] [PAH] = {PAH_conc:.3e} kmol/m^3")
-    print(f"[DEBUG] [C2H2] = {C2H2_conc:.3e} kmol/m^3")
-    
+    print(f"[DEBUG] [PAH] = {np.array2string(np.array(PAH_conc), precision=3, separator=', ')} kmol/m^3")
+    print(f"[DEBUG] [C2H2] = {np.array2string(np.array(C2H2_conc), precision=3, separator=', ')} kmol/m^3")
+
     ##### RECOMPUTED #####
     As = soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
     print(f"[DEBUG] Soot surface area = {As:.3e} m^2/m^3")    
