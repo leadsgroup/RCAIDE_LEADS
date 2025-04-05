@@ -107,6 +107,7 @@ def base_analysis(vehicle,emissions_method, use_surrogate):
     # ------------------------------------------------------------------
     #  Weights
     weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
+    weights.aircraft_type  =  "Transport"
     weights.vehicle = vehicle
     analyses.append(weights)
     
@@ -116,8 +117,7 @@ def base_analysis(vehicle,emissions_method, use_surrogate):
     aerodynamics.vehicle                               = vehicle
     aerodynamics.settings.number_of_spanwise_vortices  = 5
     aerodynamics.settings.number_of_chordwise_vortices = 2       
-    aerodynamics.settings.model_fuselage               = True
-    aerodynamics.settings.drag_coefficient_increment   = 0.0000
+    aerodynamics.settings.model_fuselage               = True 
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------

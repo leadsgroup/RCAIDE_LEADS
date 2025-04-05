@@ -14,7 +14,7 @@ from warnings import warn
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_compression_nozzle_performance(compression_nozzle,nozzle_conditions,conditions):
+def compute_compression_nozzle_performance(compression_nozzle,conditions):
     """  Computes the performance of a compression nozzle bases on its polytropic efficiency.
          The following properties are computed: 
         compression_nozzle.outputs.
@@ -51,11 +51,10 @@ def compute_compression_nozzle_performance(compression_nozzle,nozzle_conditions,
     Returns:
     """
 
-    # Unpack conditions
-    #gamma   = conditions.freestream.isentropic_expansion_factor
-    #Cp      = conditions.freestream.specific_heat_at_constant_pressure
-    P0      = conditions.freestream.pressure
-    M0      = conditions.freestream.mach_number 
+    # Unpack conditions 
+    P0                = conditions.freestream.pressure
+    M0                = conditions.freestream.mach_number
+    nozzle_conditions = conditions.energy.converters[compression_nozzle.tag]
 
     # Unpack inpust
     Tt_in                   = nozzle_conditions.inputs.stagnation_temperature

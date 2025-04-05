@@ -48,7 +48,7 @@ def compute_fuselage_weight(fuselage, vehicle, l_ht):
     V_fuse      = fuselage.mass_properties.volume  
     Nult        = vehicle.flight_envelope.ultimate_load 
     TOW         = vehicle.mass_properties.max_takeoff
-    q_c         = vehicle.design_dynamic_pressure
+    q_c         = vehicle.flight_envelope.design_dynamic_pressure
     
     # take average as diameter
     d_fus    = (h_fus+w_fus)/2.

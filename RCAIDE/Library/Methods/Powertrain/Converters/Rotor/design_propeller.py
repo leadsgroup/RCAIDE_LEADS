@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 import RCAIDE
 from RCAIDE.Framework.Core   import interp2d
-from RCAIDE.Library.Methods.Geometry.Airfoil    import compute_airfoil_properties, compute_naca_4series, import_airfoil_geometry 
+from RCAIDE.Library.Methods.Geometry.Airfoil    import compute_airfoil_properties, compute_naca_4series, import_airfoil_geometry
 
 # package imports 
 import numpy as np
@@ -41,8 +41,7 @@ def design_propeller(prop,number_of_stations=20):
           Assumptions/ Source:
           Based on Design of Optimum Propellers by Adkins and Liebeck
           
-    """
- 
+    """ 
     if prop.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
         # Unpack
         N            = number_of_stations       # this number determines the discretization of the propeller into stations
@@ -271,7 +270,7 @@ def design_propeller(prop,number_of_stations=20):
         prop.cruise.design_thrust_coefficient       = Ct
         prop.mid_chord_alignment                    = MCA
         prop.thickness_to_chord                     = t_c
-        prop.blade_solidity                         = sigma
+        prop.blade_solidity                         = sigma  
 
     return prop
 

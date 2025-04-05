@@ -9,8 +9,8 @@
 ## RCAIDE imports   
 from RCAIDE.Framework.Core      import Data
 from .                          import Propulsor
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor.append_turbojet_conditions     import append_turbojet_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor.compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet          .append_turbojet_conditions     import append_turbojet_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet          .compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data
  
  
 # ----------------------------------------------------------------------
@@ -55,7 +55,7 @@ class Turbojet(Propulsor):
     core_nozzle : Component
         Core exhaust nozzle component. Default is None.
         
-    engine_length : float
+    length : float
         Length of the engine [m]. Default is 0.0.
         
     bypass_ratio : float
@@ -85,7 +85,7 @@ class Turbojet(Propulsor):
     design_thrust : float
         Design thrust of the engine [N]. Default is 0.0.
         
-    mass_flow_rate_design : float
+    design_mass_flow_rate : float
         Design mass flow rate [kg/s]. Default is 0.0.
         
     OpenVSP_flow_through : bool
@@ -140,9 +140,8 @@ class Turbojet(Propulsor):
         self.high_pressure_turbine                    = None 
         self.combustor                                = None 
         self.afterburner                              = None
-        self.core_nozzle                              = None      
-        
-        self.engine_length                            = 0.0
+        self.core_nozzle                              = None   
+        self.length                                   = 0.0
         self.bypass_ratio                             = 0.0 
         self.design_isa_deviation                     = 0.0
         self.design_altitude                          = 0.0
@@ -152,7 +151,7 @@ class Turbojet(Propulsor):
         self.reference_temperature                    = 288.15
         self.reference_pressure                       = 1.01325*10**5 
         self.design_thrust                            = 0.0
-        self.mass_flow_rate_design                    = 0.0 
+        self.design_mass_flow_rate                    = 0.0 
         self.OpenVSP_flow_through                     = False
 
         #areas needed for drag; not in there yet
@@ -163,8 +162,8 @@ class Turbojet(Propulsor):
         self.areas.inflow                             = 0.0 
 
 
-    def append_operating_conditions(self,segment):
-        append_turbojet_conditions(self,segment)
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+        append_turbojet_conditions(self,segment,energy_conditions,noise_conditions)
         return
 
     def unpack_propulsor_unknowns(self,segment):   
@@ -177,9 +176,9 @@ class Turbojet(Propulsor):
         return
     
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power,stored_results_flag,stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
-        return thrust,moment,power,stored_results_flag,stored_propulsor_tag
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
+        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power  = reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power 
+    def reuse_stored_data(turbojet,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
+        thrust,moment,power_mech,power_elec  = reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,power_mech,power_elec

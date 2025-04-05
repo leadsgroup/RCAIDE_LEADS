@@ -49,11 +49,11 @@ def parasite_drag_pylon(state,settings,geometry):
                 if nacelle.has_pylon:
                     ref_area             = nacelle.diameter**2 / 4 * np.pi
                     pylon_parasite_drag  = pylon_factor *  drag.parasite[nacelle.tag].total* (ref_area/geometry.reference_area)
-                    pylon_wetted_area    = pylon_factor *  drag.parasite[nacelle.tag].wetted_area  
-                    pylon_cf             = drag.parasite[nacelle.tag].skin_friction 
+                    pylon_wetted_area    = pylon_factor *  drag.parasite[nacelle.tag].wetted_area
+                    pylon_cf             = drag.parasite[nacelle.tag].skin_friction
                     pylon_compr_fact     = drag.parasite[nacelle.tag].compressibility_factor
                     pylon_rey_fact       = drag.parasite[nacelle.tag].reynolds_factor
-                    pylon_FF             = drag.parasite[nacelle.tag].form_factor 
+                    pylon_FF             = drag.parasite[nacelle.tag].form_factor
                     pylon_result         = Data(
                         wetted_area               = pylon_wetted_area   ,
                         reference_area            = geometry.reference_area   ,

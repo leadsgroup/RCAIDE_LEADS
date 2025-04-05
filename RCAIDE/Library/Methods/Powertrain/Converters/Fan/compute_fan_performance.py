@@ -11,7 +11,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fan 
 # ----------------------------------------------------------------------------------------------------------------------            
-def compute_fan_performance(fan,fan_conditions,conditions):
+def compute_fan_performance(fan,conditions):
     """ This computes the output values from the input values according to
     equations from the source. The following outputs are computed: 
     fan_conditions.outputs.
@@ -45,6 +45,7 @@ def compute_fan_performance(fan,fan_conditions,conditions):
     # unpack from fan
     PR                      = fan.pressure_ratio
     etapold                 = fan.polytropic_efficiency
+    fan_conditions          = conditions.energy.converters[fan.tag]
     Tt_in                   = fan_conditions.inputs.stagnation_temperature
     Pt_in                   = fan_conditions.inputs.stagnation_pressure 
     P0                      = fan_conditions.inputs.static_pressure 

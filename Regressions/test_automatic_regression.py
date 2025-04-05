@@ -10,7 +10,7 @@ import sys, os, traceback, time
 sys.path.append(os.path.join(sys.path[0], 'Vehicles'))
 sys.path.append(os.path.join(sys.path[0], 'Vehicles', 'Rotors'))
 
-modules = [
+modules = [ 
     'Tests/analysis_aerodynamics/airfoil_panel_method_test.py',    
     'Tests/analysis_aerodynamics/airfoil_panel_method_convergence.py',
     'Tests/analysis_aerodynamics/VLM_control_surface_test.py',    
@@ -38,6 +38,7 @@ modules = [
     'Tests/network_electric/battery_electric_aircraft_test.py',
     'Tests/network_electric/hydrogen_fuel_cell_aircraft_test.py', 
     'Tests/network_electric/electric_ducted_fan_aircraft_test.py',
+    'Tests/network_hybrid/hybrid_network_test.py', 
     'Tests/network_turbofan/turbofan_network_test.py',
     'Tests/network_turbojet/turbojet_network_test.py',
     'Tests/network_turboprop/turboprop_network_test.py',
@@ -52,11 +53,12 @@ modules = [
     'Tests/performance/take_off_weight_from_tofl_test.py',
     'Tests/performance/aircraft_aerodynamic_analysis_test.py', 
     'Tests/performance/V_n_diagram_test.py', 
-    'Tests/propulsion/propeller_performance_test.py',  
-    'Tests/propulsion/propeller_non_uniform_inflow.py',  
+    'Tests/propulsion/rotor_performance_test.py',  
+    'Tests/propulsion/propeller_non_uniform_inflow.py',    
     'Tests/propulsion/propeller_wing_interaction_test.py', 
+    'Tests/propulsion/generator_test.py',
     'Tests/propulsion/motor_test.py',
-    'Tests/propulsion/reformer_test.py',
+    'Tests/propulsion/reformer_test.py', 
 ]
 
 def run_module_test(module_path):

@@ -44,7 +44,7 @@ def compute_horizontal_tail_weight(wing, vehicle):
     taper_h            = wing.spans.projected
     sweep_h            = wing.sweeps.quarter_chord 
     t_c_h              = wing.thickness_to_chord
-    q_c                = vehicle.design_dynamic_pressure
+    q_c                = vehicle.flight_envelope.design_dynamic_pressure
     Nult               = vehicle.flight_envelope.ultimate_load 
     TOW                = vehicle.mass_properties.max_takeoff
 

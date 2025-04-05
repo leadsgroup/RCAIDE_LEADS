@@ -21,7 +21,7 @@ import sys
 #  Design Lift-rotor
 # ----------------------------------------------------------------------------------------------------------------------  
 def design_lift_rotor(rotor,number_of_stations = 20,solver_name= 'SLSQP',iterations = 200,
-                      solver_sense_step = 1E-5,solver_tolerance = 1E-4,print_iterations = False):  
+                      solver_sense_step = 1E-6,solver_tolerance = 1E-5,print_iterations = False):  
     """ Optimizes rotor chord and twist given input parameters to meet either design power or thurst. 
         This scrip adopts RCAIDE's native optimization style where the objective function is expressed 
         as an aeroacoustic function, considering both efficiency and radiated noise.
@@ -62,20 +62,23 @@ def design_lift_rotor(rotor,number_of_stations = 20,solver_name= 'SLSQP',iterati
     # Commense suppression of console window output  
     devnull = open(os.devnull,'w')
     sys.stdout = devnull 
-    output               = scipy_setup.SciPy_Solve(optimization_problem,
+    outputs               = scipy_setup.SciPy_Solve(optimization_problem,
                                                    solver=solver_name,
                                                    iter = iterations ,
                                                    sense_step = solver_sense_step,
                                                    tolerance = solver_tolerance)
     # Terminate suppression of console window output   
-    sys.stdout = sys.__stdout__ 
+    sys.stdout = sys.__stdout__
+
+    if outputs[3] != 0:  
+        print('Lift-rotor Optimization Failed: ', outputs[4] )   
+    else:
+        print('Lift-rotor Optimization Successful')  
+        
     tf                   = time.time()
     elapsed_time         = round((tf-ti)/60,2)
-    print('Lift-rotor Optimization Simulation Time: ' + str(elapsed_time) + ' mins')   
-    
-    # print optimization results 
-    print (output)  
-    
+    print('Simulation Time: ' + str(elapsed_time) + ' mins')   
+     
     # set remaining rotor variables using optimized parameters 
     rotor     = set_optimized_parameters(rotor,optimization_problem)
     rotor.tag = rotor_tag
