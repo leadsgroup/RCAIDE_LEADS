@@ -151,8 +151,6 @@ def plot_mission(results):
     
     plot_altitude_sfc_weight(results)
     
-    plot_disc_and_power_loading(results)
-        
     return 
 
 # ----------------------------------------------------------------------

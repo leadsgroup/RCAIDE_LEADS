@@ -344,13 +344,13 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     conditions.energy.propulsors[turbojet.tag].moment = moment
 
     power_elec = 0*state.ones_row(1)
-    if low_pressure_turbine.motor != None and  len(state.numerics.time.differentiate) > 0: 
-        conditions.energy.converters[low_pressure_turbine.motor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.motor.tag]) 
-        power_elec =  conditions.energy.converters[low_pressure_turbine.motor.tag].outputs.power  
+    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
+        conditions.energy.converters[low_pressure_compressor.motor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.motor.tag]) 
+        power_elec =  conditions.energy.converters[low_pressure_compressor.motor.tag].outputs.power  
     
-    if low_pressure_turbine.generator != None and len(state.numerics.time.differentiate) > 0:  
-        conditions.energy.converters[low_pressure_turbine.generator.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
-        power_elec =  conditions.energy.converters[low_pressure_turbine.generator.tag].inputs.power
+    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
+        conditions.energy.converters[low_pressure_compressor.generator.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
+        power_elec =  conditions.energy.converters[low_pressure_compressor.generator.tag].inputs.power
         
     return thrust_vector,moment,power, power_elec
  

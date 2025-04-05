@@ -39,10 +39,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6873040861481701
-    electric_cruise_CL_truth         = 0.6933626967980622
-    series_hybrid_cruise_CL_truth    = 0.6927726066550164
-    parallel_hybrid_cruise_CL_truth  = 0.6932926812206293
+    convetional_cruise_CL_truth      = 0.6873040861531932
+    electric_cruise_CL_truth         = 0.6933626967980595
+    series_hybrid_cruise_CL_truth    = 0.6933629570853922
+    parallel_hybrid_cruise_CL_truth  = 0.6932926812157448
 
     error = Data()
     
@@ -52,7 +52,7 @@ def main():
     if conventional:
         print("\n Conventional Powertrain Test") 
         vehicle  = conventional_vehicle_setup() 
-        vehicle.network.fuel.identical_propulsors = False         
+        vehicle.networks.fuel.identical_propulsors = False         
         configs  = conventional_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
@@ -67,7 +67,7 @@ def main():
     if all_electric:        
         print("\n All-Electric Powertrain Test")  
         vehicle  = all_electric_vehicle_setup()  
-        vehicle.network.electric.identical_propulsors = False      
+        vehicle.networks.electric.identical_propulsors = False      
         configs  = all_electric_configs_setup(vehicle) 
         analyses = analyses_setup(configs) 
         missions = missions_setup(analyses,solver_type,solver_objective)  
