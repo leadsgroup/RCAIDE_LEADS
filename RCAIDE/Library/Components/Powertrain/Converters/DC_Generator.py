@@ -110,7 +110,7 @@ class DC_Generator(Converter):
         self.inverse_calculation      = False
         self.interpolated_func        = None
         
-    def append_operating_conditions(self,segment,conditions): 
+    def append_operating_conditions(self,segment,conditions, noise_conditions=None): 
         append_generator_conditions(self,segment,conditions)
         return
     

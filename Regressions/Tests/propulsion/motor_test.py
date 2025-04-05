@@ -93,12 +93,12 @@ def forward_mode_model():
 
 def inverse_mode_model():
     motor_type    = ['DC_Motor', 'PMSM_Motor'] 
-    current_truth = [73.0,73.0] # TO UPDATE 
-    voltage_truth = [120,120.0] # TO UPDATE 
+    current_truth = [72.15257242835283,70.22989177617721] 
+    voltage_truth = [120.54665356681485,21.81152380952381] 
 
     for i in range(len(motor_type)):
         motor = design_test_motor( motor_type[i])
-        motor.inverse_calculation == True
+        motor.inverse_calculation = True
         
         # set up default operating conditions 
         operating_state = setup_operating_conditions(motor) 
@@ -156,6 +156,7 @@ def design_test_motor(motor_type):
         motor.length_of_path            = 0.4                         # [m]            length of the path  
         motor.mu_0                      = 1.256637061e-5              # [N/A**2]       permeability of free space
         motor.mu_r                      = 1005                        # [N/A**2]       relative permeability of the magnetic material 
+        motor.no_load_current           = 1.0 
         
     else:
         raise ValueError('Invalid motor type')

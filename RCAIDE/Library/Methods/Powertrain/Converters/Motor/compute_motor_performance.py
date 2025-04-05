@@ -160,16 +160,16 @@ def compute_motor_performance(motor,conditions):
             motor_conditions.outputs.omega            = omega_gearbox 
             motor_conditions.outputs.power            = P
         else:
-     
+            io              = motor.no_load_current
             G               = motor.gearbox.gear_ratio 
             omega_gearbox   = motor_conditions.outputs.omega 
             omega           = omega_gearbox / G
             power           = motor_conditions.outputs.power  
             Kv              = motor.speed_constant 
-            D_in            = motor.inner_diameter  
+            D_in            = motor.stator_inner_diameter  
             kw              = motor.winding_factor  
             Res             = motor.resistance                      
-            L               = motor.stack_length                    
+            L               = motor.motor_stack_length                    
             l               = motor.length_of_path                  
             mu_0            = motor.mu_0                            
             mu_r            = motor.mu_r   
