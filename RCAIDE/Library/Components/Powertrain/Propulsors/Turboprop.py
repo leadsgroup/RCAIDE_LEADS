@@ -7,9 +7,10 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports   
-from .                          import Propulsor
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor.append_turboprop_conditions     import append_turboprop_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor.compute_turboprop_performance   import compute_turboprop_performance, reuse_stored_turboprop_data
+from .                     import Propulsor
+from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop          .append_turboprop_conditions     import append_turboprop_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop          .compute_turboprop_performance   import compute_turboprop_performance, reuse_stored_turboprop_data
  
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fan Component
@@ -35,13 +36,13 @@ class Turboprop(Propulsor):
     combustor : Component
         Combustor component of the engine. Default is None. 
         
-    engine_diameter : float
+    diameter : float
         Diameter of the engine [m]. Default is 0.0.
         
-    engine_length : float
+    length : float
         Length of the engine [m]. Default is 0.0.
         
-    engine_height : float
+    height : float
         Engine centerline height above the ground plane [m]. Default is 0.5.
         
     design_isa_deviation : float
@@ -50,10 +51,10 @@ class Turboprop(Propulsor):
     design_altitude : float
         Design altitude of the engine [m]. Default is 0.0.
         
-    design_propeller_efficiency : float
+    propeller_efficiency : float
         Design point propeller efficiency. Default is 0.0.
         
-    design_gearbox_efficiency : float
+    gearbox.efficiency : float
         Design point gearbox efficiency. Default is 0.0.
         
     design_mach_number : float
@@ -96,23 +97,27 @@ class Turboprop(Propulsor):
         self.compressor                               = None  
         self.turbine                                  = None  
         self.combustor                                = None       
-        self.engine_diameter                          = 0.0      
-        self.engine_length                            = 0.0
-        self.engine_height                            = 0.5      
+        self.diameter                                 = 0.0      
+        self.length                                   = 0.0
+        self.height                                   = 0.5      
         self.design_isa_deviation                     = 0.0
         self.design_altitude                          = 0.0
-        self.design_propeller_efficiency              = 0.0
-        self.design_gearbox_efficiency                = 0.0 
-        self.design_mach_number                       = 0.0
-        self.compressor_nondimensional_massflow       = 0.0
+        self.propeller_efficiency                     = 0.0
+        self.gearbox                                  = Data()
+        self.gearbox.gear_ratio                       = 1.0
+        self.gearbox.efficiency                       = 0.0 
+        self.design_angular_velocity                  = 0.0
+        self.design_mach_number                       = None 
+        self.design_freestream_velocity               = None
+        self.compressor_nondimensional_massflow       = 0.0 
         self.reference_temperature                    = 288.15
         self.reference_pressure                       = 1.01325*10**5  
     
-    def append_operating_conditions(self,segment):
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
         Appends operating conditions to the segment.
         """
-        append_turboprop_conditions(self,segment)
+        append_turboprop_conditions(self,segment,energy_conditions,noise_conditions)
         return
 
     def unpack_propulsor_unknowns(self,segment):   
@@ -128,12 +133,12 @@ class Turboprop(Propulsor):
         """
         Computes turboprop performance including thrust, moment, and power.
         """
-        thrust,moment,power,stored_results_flag,stored_propulsor_tag =  compute_turboprop_performance(self,state,center_of_gravity)
-        return thrust,moment,power,stored_results_flag,stored_propulsor_tag
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turboprop_performance(self,state,center_of_gravity)
+        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity = [[0, 0, 0]]):
+    def reuse_stored_data(turboprop,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored turboprop data for performance calculations.
         """
-        thrust,moment,power  = reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power 
+        thrust,moment,power_mech,power_elec  = reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,power_mech,power_elec 

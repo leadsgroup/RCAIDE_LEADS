@@ -16,106 +16,53 @@ from warnings import warn
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_expansion_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------        
-def compute_expansion_nozzle_performance(expansion_nozzle, nozzle_conditions, conditions):
-    """
-    Computes the thermodynamic properties at the exit of an expansion nozzle.
-    
-    Parameters
-    ----------
-    expansion_nozzle : ExpansionNozzle
-        The expansion nozzle component with the following attributes:
-            - pressure_ratio : float or numpy.ndarray
-                Ratio of exit to inlet pressure
-            - polytropic_efficiency : float or numpy.ndarray
-                Efficiency of the expansion process
-            - working_fluid : FluidModel
-                Object containing methods to compute fluid properties
-    nozzle_conditions : Conditions
-        Object containing nozzle inlet conditions with the following attributes:
-            - inputs.stagnation_temperature : numpy.ndarray
-                Inlet stagnation temperature [K]
-            - inputs.stagnation_pressure : numpy.ndarray
-                Inlet stagnation pressure [Pa]
-            - inputs.static_temperature : numpy.ndarray
-                Inlet static temperature [K]
-            - inputs.static_pressure : numpy.ndarray
-                Inlet static pressure [Pa]
-    conditions : Conditions
-        Object containing freestream conditions with the following attributes:
-            - freestream.mach_number : numpy.ndarray
-                Freestream Mach number [unitless]
-            - freestream.pressure : numpy.ndarray
-                Ambient pressure [Pa]
-            - freestream.stagnation_pressure : numpy.ndarray
-                Freestream stagnation pressure [Pa]
-            - freestream.stagnation_temperature : numpy.ndarray
-                Freestream stagnation temperature [K]
-            - freestream.specific_heat_at_constant_pressure : numpy.ndarray
-                Specific heat capacity [J/(kg·K)]
-            - freestream.isentropic_expansion_factor : numpy.ndarray
-                Ratio of specific heats (gamma) [unitless]
-            - freestream.specific_gas_constant : numpy.ndarray
-                Gas constant [J/(kg·K)]
-    
-    Returns
-    -------
-    None
-        This function modifies the nozzle_conditions.outputs object in-place with the following attributes:
-            - stagnation_temperature : numpy.ndarray
-                Exit stagnation temperature [K]
-            - stagnation_pressure : numpy.ndarray
-                Exit stagnation pressure [Pa]
-            - stagnation_enthalpy : numpy.ndarray
-                Exit stagnation enthalpy [J/kg]
-            - mach_number : numpy.ndarray
-                Exit Mach number [unitless]
-            - static_temperature : numpy.ndarray
-                Exit static temperature [K]
-            - static_pressure : numpy.ndarray
-                Exit static pressure [Pa]
-            - static_enthalpy : numpy.ndarray
-                Exit static enthalpy [J/kg]
-            - velocity : numpy.ndarray
-                Exit nozzle velocity [m/s]
-            - area_ratio : numpy.ndarray
-                Ratio of exit to throat area [unitless]
-    
-    Notes
-    -----
-    This function computes the thermodynamic properties at the exit of an expansion nozzle
-    using gas dynamic relations. It handles both subsonic and choked flow conditions.
-    
-    **Major Assumptions**
-        * Constant polytropic efficiency and pressure ratio
-        * If pressures make the Mach number go negative, these values are corrected
-        * Adiabatic process
-    
-    **Theory**
-    
-    For subsonic flow, isentropic relations are used:
-    
-    .. math::
-        M_{out} = \\sqrt{\\frac{2}{(\\gamma-1)}\\left[\\left(\\frac{P_{t,out}}{P_0}\\right)^{\\frac{\\gamma-1}{\\gamma}}-1\\right]}
-    
-    For choked flow, the exit pressure is calculated from:
-    
-    .. math::
-        P_{out} = \\frac{P_{t,out}}{\\left(1+\\frac{\\gamma-1}{2}M_{out}^2\\right)^{\\frac{\\gamma}{\\gamma-1}}}
-    
-    References
-    ----------
-    [1] Cantwell, B., "AA283 Course Notes", Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
+def compute_expansion_nozzle_performance(expansion_nozzle,conditions):
+    """ This computes the output values from the input values according to
+    equations from the source. The following properties are computed: 
+    expansion_nozzle.outputs.
+      stagnation_temperature  (numpy.ndarray): [K]  
+      stagnation_pressure     (numpy.ndarray): [Pa]
+      stagnation_enthalpy     (numpy.ndarray): [J/kg]
+      mach_number             (numpy.ndarray): [-]
+      static_temperature      (numpy.ndarray): [K]
+      static_enthalpy         (numpy.ndarray): [J/kg]
+      velocity                (numpy.ndarray): [m/s]
+      static_pressure         (numpy.ndarray): [Pa]
+      area_ratio              (numpy.ndarray): [-]
+      denisty                 (numpy.ndarray): [kg/m^3] 
 
-    See Also
-    --------
-    RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.append_expansion_nozzle_conditions
-    RCAIDE.Library.Methods.Gas_Dynamics.fm_id
+    Assumptions:
+        1. Constant polytropic efficiency and pressure ratio
+        2. If pressures make the Mach number go negative, these values are corrected
+
+    Source:
+        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+
+    Args:
+        conditions.freestream.
+          isentropic_expansion_factor         (numpy.ndarray): [-]
+          specific_heat_at_constant_pressure  (numpy.ndarray): [J/(kg K)]
+          pressure                            (numpy.ndarray): [Pa]
+          stagnation_pressure                 (numpy.ndarray): [Pa]
+          stagnation_temperature              (numpy.ndarray): [K]
+          specific_gas_constant               (numpy.ndarray): [J/(kg K)] 
+          mach_number                         (numpy.ndarray): [-]
+        expansion_nozzle
+          .inputs.stagnation_temperature       (numpy.ndarray): [K]
+          .inputs.stagnation_pressure          (numpy.ndarray): [Pa] 
+          .pressure_ratio                      (numpy.ndarray): [-]
+          .polytropic_efficiency               (numpy.ndarray): [-]    
+
+    Returns:
+        None 
+
     """                 
     # Unpack flight conditions     
-    M0       = conditions.freestream.mach_number
-    P0       = conditions.freestream.pressure
-    Pt0      = conditions.freestream.stagnation_pressure
-    Tt0      = conditions.freestream.stagnation_temperature
+    M0                = conditions.freestream.mach_number
+    P0                = conditions.freestream.pressure
+    Pt0               = conditions.freestream.stagnation_pressure
+    Tt0               = conditions.freestream.stagnation_temperature
+    nozzle_conditions = conditions.energy.converters[expansion_nozzle.tag]
     
     # Unpack exansion nozzle inputs
     Tt_in    = nozzle_conditions.inputs.stagnation_temperature

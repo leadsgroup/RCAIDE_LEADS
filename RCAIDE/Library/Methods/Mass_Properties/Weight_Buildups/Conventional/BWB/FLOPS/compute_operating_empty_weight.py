@@ -271,11 +271,11 @@ def compute_operating_empty_weight(vehicle,settings=None):
     if nose_landing_gear == False:
         nose_gear = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()  
         nose_gear.mass_properties.mass = landing_gear.nose    
-        vehicle.append_component(nose_gear) 
+        vehicle.landing_gears.append(nose_gear) 
     if main_landing_gear == False:
         main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
         main_gear.mass_properties.mass = landing_gear.main  
-        vehicle.append_component(main_gear) 
+        vehicle.landing_gears.append(main_gear) 
          
     control_systems.mass_properties.mass             = output.empty.systems.control_systems
     electrical_systems.mass_properties.mass          = output.empty.systems.electrical

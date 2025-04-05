@@ -75,11 +75,14 @@ def compute_propulsion_system_weight(vehicle,network):
     number_of_tanks =  0
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or\
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop): 
                 WENG          += compute_turbine_engine_weight(vehicle,propulsor)
                 JNENG  += 1 
 
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.ICE_Propeller) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_ICE_Propeller):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine) or\
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine):
                 WENG          += compute_piston_engine_weight(propulsor)
                 PNENG  += 1 
                 

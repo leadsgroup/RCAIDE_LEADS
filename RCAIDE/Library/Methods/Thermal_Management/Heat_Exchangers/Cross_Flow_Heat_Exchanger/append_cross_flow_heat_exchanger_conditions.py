@@ -52,12 +52,12 @@ def append_cross_flow_heat_exchanger_conditions(cross_flow_hex,segment,coolant_l
     segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].power                      = 0 * ones_row(1)  
     segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].inlet_air_temperature      = atmo_data.temperature[0,0]* ones_row(1) 
     segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].outlet_coolant_temperature = atmo_data.temperature[0,0]* ones_row(1) 
-    segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].air_mass_flow_rate         = 0 * ones_row(1) 
-    segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].air_inlet_pressure         = 0 * ones_row(1) 
-    segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].coolant_inlet_pressure     = 0 * ones_row(1) 
+    segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].air_mass_flow_rate         = cross_flow_hex.design_air_mass_flow_rate * ones_row(1) 
+    segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].air_inlet_pressure         = cross_flow_hex.design_air_inlet_pressure * ones_row(1) 
+    segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].coolant_inlet_pressure     = cross_flow_hex.design_coolant_inlet_pressure * ones_row(1) 
     segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].pressure_diff_air          = 0 * ones_row(1)
     segment.state.conditions.energy[coolant_line.tag][cross_flow_hex.tag].effectiveness_HEX          = 0 * ones_row(1)
-    
+     
     return
 
 def append_cross_flow_hex_segment_conditions(cross_flow_hex,segment,bus,coolant_line,conditions):

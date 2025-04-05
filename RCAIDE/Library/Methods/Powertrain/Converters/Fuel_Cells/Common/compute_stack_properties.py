@@ -122,9 +122,10 @@ def compute_stack_properties(fuel_cell_stack):
         atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
         atmo_data  = atmosphere.compute_values(design_altitude) 
          
-        segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
-        segment.state.conditions = RCAIDE.Framework.Mission.Common.Results()   
-        bus     = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
+        segment                          = RCAIDE.Framework.Mission.Segments.Segment()
+        segment.hybrid_power_split_ratio = 1.0
+        segment.state.conditions         = RCAIDE.Framework.Mission.Common.Results()   
+        bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
         bus.fuel_cell_stacks.append(fuel_cell_stack)   
         
         bus.append_operating_conditions(segment)
@@ -139,13 +140,13 @@ def compute_stack_properties(fuel_cell_stack):
             cryogenic_tank.append_operating_conditions(segment,bus)
       
         # compute fuel cell performance             
-        t_idx                      =  0
-        fuel_cell_stack_conditions = segment.state.conditions.energy[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
+        t_idx                                                                    =  0
+        fuel_cell_stack_conditions                                               = segment.state.conditions.energy[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
         fuel_cell_stack_conditions.fuel_cell.stagnation_temperature[t_idx, 0]    = atmo_data.temperature   
         fuel_cell_stack_conditions.fuel_cell.stagnation_pressure[t_idx, 0]       = atmo_data.pressure   
         fuel_cell_stack_conditions.fuel_cell.pressure_drop[t_idx, 0]             = fuel_cell.rated_p_drop_fc
         fuel_cell_stack_conditions.fuel_cell.stack_temperature[t_idx, 0]         = fuel_cell.stack_temperature 
-        rated_current_density, rated_power_density = evaluate_max_gross_power(fuel_cell_stack,fuel_cell_stack_conditions,t_idx)
+        rated_current_density, rated_power_density                               = evaluate_max_gross_power(fuel_cell_stack,fuel_cell_stack_conditions,t_idx)
         set_rated_current_density(fuel_cell_stack, rated_current_density, rated_power_density)
         
         fuel_cell_stack_conditions.fuel_cell.current_density[t_idx] = rated_current_density

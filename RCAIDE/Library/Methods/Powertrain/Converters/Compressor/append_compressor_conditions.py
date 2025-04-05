@@ -8,7 +8,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_compressor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_compressor_conditions(compressor,segment,propulsor_conditions): 
+def append_compressor_conditions(compressor,segment,energy_conditions): 
     """
     Initializes empty condition containers for compressor analysis in the propulsion system.
     
@@ -36,7 +36,10 @@ def append_compressor_conditions(compressor,segment,propulsor_conditions):
     RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance
     """
     
-    propulsor_conditions[compressor.tag]         = Conditions()
-    propulsor_conditions[compressor.tag].inputs  = Conditions()
-    propulsor_conditions[compressor.tag].outputs = Conditions()
+    ones_row    = segment.state.ones_row 
+    energy_conditions.converters[compressor.tag]                                   = Conditions()
+    energy_conditions.converters[compressor.tag].inputs                            = Conditions()
+    energy_conditions.converters[compressor.tag].outputs                           = Conditions()
+    energy_conditions.converters[compressor.tag].outputs.external_shaft_work_done  = 0*ones_row(1)
+    energy_conditions.converters[compressor.tag].outputs.external_electrical_power = 0*ones_row(1)
     return 

@@ -10,7 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units       
 from RCAIDE.Library.Methods.Geometry.Planform               import segment_properties    
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor   import design_turbofan    
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan  import design_turbofan    
 from RCAIDE.Library.Plots                                   import *     
  
 # python imports 
@@ -519,7 +519,7 @@ def vehicle_setup():
     turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                = 'starboard_propulsor' 
     turbofan.origin                             = [[13.72, 4.86,-1.1]] 
-    turbofan.engine_length                      = 2.71     
+    turbofan.engine_length                      = 2.71
     turbofan.bypass_ratio                       = 5.4    
     turbofan.design_altitude                    = 35000.0*Units.ft
     turbofan.design_mach_number                 = 0.78   
@@ -753,6 +753,6 @@ def configs_setup(vehicle):
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
     configs.append(config)    
-    
+
 
     return configs  

@@ -8,10 +8,10 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
-from RCAIDE.Library.Methods.Geometry.Planform               import segment_properties    
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor   import design_turbofan   
+from RCAIDE.Library.Methods.Geometry.Planform                   import segment_properties    
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan      import design_turbofan   
 from RCAIDE.Library.Methods.Geometry.Planform.fuselage_planform import fuselage_planform
-from RCAIDE.Library.Plots                                   import *     
+from RCAIDE.Library.Plots                                       import *     
  
 # python imports 
 import numpy as np  
@@ -41,10 +41,10 @@ def vehicle_setup():
     vehicle.mass_properties.cargo                     = 00.  * Units.kilogram   
 
     # envelope properties
-    vehicle.flight_envelope.ultimate_load = 2.5
-    vehicle.flight_envelope.limit_load    = 1.5
+    vehicle.flight_envelope.ultimate_load      = 2.5
+    vehicle.flight_envelope.limit_load         = 1.5
     vehicle.flight_envelope.design_mach_number = 0.8
-    vehicle.flight_envelope.design_range = 8000 * Units.nmi
+    vehicle.flight_envelope.design_range       = 8000 * Units.nmi  
 
     # basic parameters
     vehicle.reference_area         = 7840. * 2 * Units.feet**2       
@@ -257,7 +257,7 @@ def vehicle_setup():
     turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                = 'center_propulsor' 
     turbofan.origin                             = [[120.0 *Units.feet, 0.0*Units.feet, 6.5*Units.feet]] 
-    turbofan.engine_length                      = 2.71     
+    turbofan.length                             = 2.71     
     turbofan.bypass_ratio                       = 8.4
     turbofan.design_altitude                    = 0. * Units.km
     turbofan.design_mach_number                 = 0.01

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Missions/Segments/converge_root.py
+# RCAIDE/Library/Missions/Segments/converge.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke  
@@ -23,17 +23,26 @@ import os
 # converge root
 # ---------------------------------------------------------------------------------------------------------------------- 
 def converge(segment):
-    """
-    RCAIDE provides two different solvers for missions: an optimization solver and a root-finder. 
-        - Root-finder can be faster but may struggle to converge for complex vehicles
-        - Optimization solver is more robust but may be slower
-    
-    Specify the solver type in the segent state as follows: 
-        segment.state.numerics.solver.type = "optimize" or "root_finder"
-    
-    Further documentation to come...    
-    
-    """       
+    """Interfaces the mission a root finder algorithm.
+
+    Assumptions:
+    N/A
+
+    Source:
+    N/A
+
+    Inputs:
+    segment                            [Data]
+    segment.settings.root_finder       [Data]
+    state.numerics.tolerance_solution  [Unitless]
+
+    Outputs:
+    state.unknowns                     [Any]
+    segment.state.numerics.converged   [Unitless]
+
+    Properties Used:
+    N/A
+    """ 
     
     if segment.state.numerics.solver.type  == "optimize": 
         problem  = add_mission_variables(segment) 
@@ -193,11 +202,16 @@ def add_mission_variables(segment):
     units             = np.broadcast_to(Units.less,(len_inputs,))
     new_inputs        = np.reshape(np.tile(np.atleast_2d(np.array([None,None,None,None,None,None])),len_inputs), (-1, 6))
     
+    # scaling factor for optimizer 
+    factor = np.ceil(np.log10(abs(initial_values)))
+    factor[np.isinf(factor)] = 0
+    scale  = 10 ** (factor)
+    
     # Step 2.4 Add in the inputs 
     new_inputs[:,0]     = input_names   
     new_inputs[:,1]     = initial_values 
     new_inputs[:,2:4]   = bounds   
-    new_inputs[:,4]     = 1
+    new_inputs[:,4]     = scale
     new_inputs[:,5]     = units 
     optimization_problem.inputs = np.array(new_inputs,dtype=object)
     

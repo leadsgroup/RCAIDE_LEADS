@@ -11,87 +11,41 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fan 
 # ----------------------------------------------------------------------------------------------------------------------            
-def compute_fan_performance(fan, fan_conditions, conditions):
-    """
-    Computes the thermodynamic properties at the exit of a fan based on pressure ratio and efficiency.
-    
-    Parameters
-    ----------
-    fan : Fan
-        The fan component with the following attributes:
-            - pressure_ratio : float
-                Ratio of exit to inlet pressure
-            - polytropic_efficiency : float
-                Efficiency of the compression process
-            - working_fluid : FluidModel
-                Object containing methods to compute fluid properties
-    fan_conditions : Conditions
-        Object containing fan inlet conditions with the following attributes:
-            - inputs.stagnation_temperature : numpy.ndarray
-                Inlet stagnation temperature [K]
-            - inputs.stagnation_pressure : numpy.ndarray
-                Inlet stagnation pressure [Pa]
-            - inputs.static_temperature : numpy.ndarray
-                Inlet static temperature [K]
-            - inputs.static_pressure : numpy.ndarray
-                Inlet static pressure [Pa]
-            - inputs.mach_number : numpy.ndarray
-                Inlet Mach number [unitless]
-    conditions : Conditions
-        Object containing freestream conditions (not directly used in this function)
-    
-    Returns
-    -------
-    None
-        This function modifies the fan_conditions.outputs object in-place with the following attributes:
-            - stagnation_temperature : numpy.ndarray
-                Exit stagnation temperature [K]
-            - stagnation_pressure : numpy.ndarray
-                Exit stagnation pressure [Pa]
-            - static_temperature : numpy.ndarray
-                Exit static temperature [K]
-            - static_pressure : numpy.ndarray
-                Exit static pressure [Pa]
-            - stagnation_enthalpy : numpy.ndarray
-                Exit stagnation enthalpy [J/kg]
-            - work_done : numpy.ndarray
-                Work done by the fan [J/kg]
-            - mach_number : numpy.ndarray
-                Exit Mach number [unitless]
-    
-    Notes
-    -----
-    This function computes the thermodynamic properties at the exit of a fan
-    using gas dynamic relations and the specified pressure ratio and efficiency.
-    
-    **Major Assumptions**
-        * Constant polytropic efficiency and pressure ratio
-        * Adiabatic process
-    
-    **Theory**
-    
-    The temperature rise across the fan is calculated using:
-    
-    .. math::
-        T_{t,out} = T_{t,in} \\cdot PR^{\\frac{\\gamma-1}{\\gamma \\cdot \\eta_{polytropic}}}
-    
-    The work done by the fan is:
-    
-    .. math::
-        W = C_p \\cdot (T_{t,out} - T_{t,in})
-    
-    References
-    ----------
-    [1] Cantwell, B., "AA283 Course Notes", Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
+def compute_fan_performance(fan,conditions):
+    """ This computes the output values from the input values according to
+    equations from the source. The following outputs are computed: 
+    fan_conditions.outputs.
+      stagnation_temperature  (numpy.ndarray): exit stagnation_temperature  [K]  
+      stagnation_pressure     (numpy.ndarray): exit stagnation_pressure     [Pa]
+      stagnation_enthalpy     (numpy.ndarray): exit stagnation_enthalpy     [J/kg]
+      work_done               (numpy.ndarray): work_done                    [J/(kg-s)]
+ 
 
-    See Also
-    --------
-    RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions
+    Assumptions:
+        Constant polytropic efficiency and pressure ratio
+
+    Source:
+        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+
+    Args:
+        conditions.freestream.
+          isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor         [unitless]
+          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure  [J/(kg K)]
+        fan
+          .inputs.stagnation_temperature      (numpy.ndarray): entering stagnation temperature [K]
+          .inputs.stagnation_pressure         (numpy.ndarray): entering stagnation pressure    [Pa] 
+          .pressure_ratio                             (float): pressure ratio of fan           [unitless]
+          .polytropic_efficiency                      (float): polytropic_efficiency           [unitless]
+      
+    Returns:
+        None
+        
     """        
      
     # unpack from fan
     PR                      = fan.pressure_ratio
     etapold                 = fan.polytropic_efficiency
+    fan_conditions          = conditions.energy.converters[fan.tag]
     Tt_in                   = fan_conditions.inputs.stagnation_temperature
     Pt_in                   = fan_conditions.inputs.stagnation_pressure 
     P0                      = fan_conditions.inputs.static_pressure 

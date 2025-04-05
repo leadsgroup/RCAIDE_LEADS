@@ -21,7 +21,7 @@ RCAIDE.Library.Methods.Weights
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .setup_operating_conditions   import setup_operating_conditions
+from .setup_operating_conditions     import setup_operating_conditions
 
 from . import Converters
 from . import Distributors

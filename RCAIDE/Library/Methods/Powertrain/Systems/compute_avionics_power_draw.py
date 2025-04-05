@@ -6,7 +6,9 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
 # package imports
-def compute_avionics_power_draw(avionics, avionics_conditions, conditions): 
+def compute_avionics_power_draw(avionics,bus,conditions):
+    bus_conditions                 = conditions.energy[bus.tag]
+     avionics_conditions            = bus_ conditions[avionics.tag]    
     """
     Computes the power draw of an avionics system.
     
@@ -41,5 +43,6 @@ def compute_avionics_power_draw(avionics, avionics_conditions, conditions):
     --------
     RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions
     """
-    avionics_conditions.power[:,0] = avionics.power_draw  
+    avionics_conditions.power[:,0] = avionics.power_draw 
+    bus_conditions.power_draw      += avionics_conditions.power*bus.power_split_ratio /bus.efficiency    
     return 

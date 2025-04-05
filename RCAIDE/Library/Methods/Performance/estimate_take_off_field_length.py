@@ -198,7 +198,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
         network.add_unknowns_and_residuals_to_segment(segment)
         
         for propulsor in  network.propulsors: 
-            segment.state.conditions.energy[propulsor.tag].throttle = np.array([[1]])
+            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]])
         
         network.evaluate(segment.state,center_of_gravity = vehicle.mass_properties.center_of_gravity)
         

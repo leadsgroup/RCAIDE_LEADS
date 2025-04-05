@@ -14,110 +14,59 @@ from RCAIDE.Library.Methods.Gas_Dynamics.fm_id import fm_id
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_supersonic_nozzle_performance(supersonic_nozzle, s_nozzle_conditions, conditions):
-    """
-    Computes the thermodynamic properties at the exit of a supersonic nozzle.
+def compute_supersonic_nozzle_performance(supersonic_nozzle,conditions): 
+    """This computes the output values from the input values according to
+    equations from the source.
     
-    Parameters
-    ----------
-    supersonic_nozzle : SupersonicNozzle
-        The supersonic nozzle component with the following attributes:
-            - pressure_ratio : float or numpy.ndarray
-                Ratio of exit to inlet pressure
-            - polytropic_efficiency : float or numpy.ndarray
-                Efficiency of the expansion process
-            - pressure_recovery : float or numpy.ndarray
-                Factor accounting for pressure losses
-    s_nozzle_conditions : Conditions
-        Object containing nozzle inlet conditions with the following attributes:
-            - inputs.stagnation_temperature : numpy.ndarray
-                Inlet stagnation temperature [K]
-            - inputs.stagnation_pressure : numpy.ndarray
-                Inlet stagnation pressure [Pa]
-    conditions : Conditions
-        Object containing freestream conditions with the following attributes:
-            - freestream.isentropic_expansion_factor : numpy.ndarray
-                Ratio of specific heats (gamma) [unitless]
-            - freestream.specific_heat_at_constant_pressure : numpy.ndarray
-                Specific heat capacity [J/(kg·K)]
-            - freestream.pressure : numpy.ndarray
-                Ambient pressure [Pa]
-            - freestream.stagnation_pressure : numpy.ndarray
-                Freestream stagnation pressure [Pa]
-            - freestream.stagnation_temperature : numpy.ndarray
-                Freestream stagnation temperature [K]
-            - freestream.gas_specific_constant : numpy.ndarray
-                Gas constant [J/(kg·K)]
-            - freestream.mach_number : numpy.ndarray
-                Freestream Mach number [unitless]
+    Assumptions:
+    Constant polytropic efficiency and pressure ratio
     
-    Returns
-    -------
-    None
-        This function modifies the s_nozzle_conditions.outputs object in-place with the following attributes:
-            - stagnation_temperature : numpy.ndarray
-                Exit stagnation temperature [K]
-            - stagnation_pressure : numpy.ndarray
-                Exit stagnation pressure [Pa]
-            - stagnation_enthalpy : numpy.ndarray
-                Exit stagnation enthalpy [J/kg]
-            - mach_number : numpy.ndarray
-                Exit Mach number [unitless]
-            - static_temperature : numpy.ndarray
-                Exit static temperature [K]
-            - density : numpy.ndarray
-                Exit density [kg/m³]
-            - static_enthalpy : numpy.ndarray
-                Exit static enthalpy [J/kg]
-            - velocity : numpy.ndarray
-                Exit nozzle velocity [m/s]
-            - static_pressure : numpy.ndarray
-                Exit static pressure [Pa]
-            - area_ratio : numpy.ndarray
-                Ratio of exit to throat area [unitless]
+    Source:
+    https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
     
-    Notes
-    -----
-    This function computes the thermodynamic properties at the exit of a supersonic nozzle
-    using gas dynamic relations. It handles both supersonic and subsonic flow conditions.
-    
-    **Major Assumptions**
-        * Constant polytropic efficiency and pressure ratio
-        * Adiabatic process
-        * Mach number is limited to a maximum of 10.0
-    
-    **Theory**
-    
-    For supersonic flow, the exit Mach number is calculated using:
-    
-    .. math::
-        M_{out} = \\sqrt{\\frac{2}{(\\gamma-1)}\\left[\\left(\\frac{P_{t,out}}{P_0}\\right)^{\\frac{\\gamma-1}{\\gamma}}-1\\right]}
-    
-    The area ratio is calculated using the mass flow parameter:
-    
-    .. math::
-        \\frac{A_{out}}{A_{throat}} = \\frac{fm(M_0, \\gamma)}{fm(M_{out}, \\gamma)} \\cdot \\frac{1}{P_{t,out}/P_{t,0}} \\cdot \\sqrt{\\frac{T_{t,out}}{T_{t,0}}}
-    
-    References
-    ----------
-    [1] Cantwell, B., "AA283 Course Notes", Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
-    
-    See Also
-    --------
-    RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.append_supersonic_nozzle_conditions
-    RCAIDE.Library.Methods.Gas_Dynamics.fm_id
+    Inputs:
+    conditions.freestream.
+      isentropic_expansion_factor         [-]
+      specific_heat_at_constant_pressure  [J/(kg K)]
+      pressure                            [Pa]
+      stagnation_pressure                 [Pa]
+      stagnation_temperature              [K]
+      gas_specific_constant               [J/(kg K)]
+      mach_number                         [-]
+    self.inputs.
+      stagnation_temperature              [K]
+      stagnation_pressure                 [Pa]
+               
+    Outputs:
+    s_nozzle_conditions.
+      stagnation_temperature              [K]  
+      stagnation_pressure                 [Pa]
+      stagnation_enthalpy                 [J/kg]
+      mach_number                         [-]
+      static_temperature                  [K]
+      static_enthalpy                     [J/kg]
+      velocity                            [m/s]
+      static_pressure                     [Pa]
+      area_ratio                          [-]
+            
+    Properties Used:
+    self.
+      pressure_ratio                      [-]
+      polytropic_efficiency               [-]
+      pressure_recovery                   [-]
     """           
     
     #unpack the values
     
     #unpack from conditions
-    gamma    = conditions.freestream.isentropic_expansion_factor
-    Cp       = conditions.freestream.specific_heat_at_constant_pressure
-    Po       = conditions.freestream.pressure
-    Pto      = conditions.freestream.stagnation_pressure
-    Tto      = conditions.freestream.stagnation_temperature
-    R        = conditions.freestream.gas_specific_constant
-    Mo       = conditions.freestream.mach_number
+    gamma               = conditions.freestream.isentropic_expansion_factor
+    Cp                  = conditions.freestream.specific_heat_at_constant_pressure
+    Po                  = conditions.freestream.pressure
+    Pto                 = conditions.freestream.stagnation_pressure
+    Tto                 = conditions.freestream.stagnation_temperature
+    R                   = conditions.freestream.gas_specific_constant
+    Mo                  = conditions.freestream.mach_number
+    s_nozzle_conditions = conditions.energy.converters[supersonic_nozzle.tag]
     
     #unpack from inputs
     Tt_in    = s_nozzle_conditions.inputs.stagnation_temperature

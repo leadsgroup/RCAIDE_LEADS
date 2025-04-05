@@ -19,93 +19,51 @@ import  numpy as  np
 # Systems Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_systems_weight(vehicle):
-    """
-    Calculates aircraft systems weights using Raymer's empirical correlations.
+    """ Calculates the system weight based on the Raymer method
 
-    Parameters
-    ----------
-    vehicle : RCAIDE.Vehicle()
-        Vehicle data structure containing:
-            - networks : list
-                List of propulsion networks
-            - wings : list
-                List of wing components
-            - fuselages : list
-                List of fuselage components
-            - mass_properties.max_takeoff : float
-                Maximum takeoff weight [kg]
-            - flight_envelope.design_mach_number : float
-                Design mach number
-            - passengers : int
-                Number of passengers
-            - payload.cargo.mass_properties.mass : float
-                Cargo weight [kg]
+        Assumptions:
+            Number of flight control systems = 4
+            Max APU weight = 70 lbs
+            Assuming not a reciprocating engine and not a turboprop
+            System Electrical Rating: 60 kv · A (typically 40-60 for transports, 110-160 for fighters & bombers)
+            Uninstalled Avionics weight: 1400 lb (typically= 800-1400 lb)
 
-    Returns
-    -------
-    output : Data()
-        Systems weight breakdown:
-            - W_flight_control : float
-                Flight control system weight [kg]
-            - W_apu : float
-                APU weight [kg]
-            - W_hyd_pnu : float
-                Hydraulics and pneumatics weight [kg]
-            - W_instruments : float
-                Instruments weight [kg]
-            - W_avionics : float
-                Avionics weight [kg]
-            - W_electrical : float
-                Electrical system weight [kg]
-            - W_ac : float
-                Air conditioning system weight [kg]
-            - W_furnish : float
-                Furnishings weight [kg]
-            - W_anti_ice : float
-                Anti-ice system weight [kg]
-            - W_systems : float
-                Total systems weight [kg]
+        Source:
+            Aircraft Design: A Conceptual Approach (3rd edition)
+            Sforza, P. (2014). Commercial airplane design principles. Butterworth-Heinemann. https://doi.org/10.1016/B978-0-12-419953-8
 
-    Notes
-    -----
-    This method implements Raymer's correlations for transport aircraft systems
-    weight estimation. Each system is calculated separately using specific correlations. 
-    APU weight is calculated using a correlation from Pasquale Sforza's Commercial Airplane Design Principles.
+        Inputs:
+            vehicle - data dictionary with vehicle properties                   [dimensionless]
+                -.networks: data dictionary containing all propulsion properties
+                -.number_of_engines: number of engines 
+                -.fuselages['fuselage'].lengths.total: fuselage total length    [meters]
+                -.fuselages['fuselage'].width: fuselage width                   [meters]
+                -.fuselages['fuselage'].heights.maximum: fuselage maximum height[meters]
+                -.mass_properties.max_takeoff: MTOW                             [kilograms]
+                -.design_mach_number: design mach number for cruise flight
+                -.design_range: design range of aircraft                        [nmi]
+                -.passengers: number of passengers in aircraft
+                -.wings['main_wing']: data dictionary with main wing properties
+                    -.sweeps.quarter_chord: quarter chord sweep                 [deg]
+                    -.areas.reference: wing surface area                        [m^2]
+                    -.spans.projected: projected span of wing                   [m]
+                    -.flap_ratio: flap surface area over wing surface area
+                -.payload: payload weight of aircraft                           [kg]
 
-    **Major Assumptions**
-        * Number of flight control systems = 4
-        * Not a reciprocating engine or turboprop
-        * System electrical rating: 60 kVA (typically 40-60 for transports, 110-160 for fighters & bombers)
-        * Uninstalled avionics weight: 1400 lb
-        * Flight crew size based on passenger count
-        * Air conditioning sized for passenger count and cabin volume
+        Outputs:
+            output - a data dictionary with fields:
+               W_flight_controls - weight of the flight control system                                [kilograms]
+               W_apu - weight of the apu                                                       [kilograms]
+               W_hyd_pnu - weight of the hydraulics and pneumatics                             [kilograms]
+               W_instruments - weight of the instruments and navigational equipment            [kilograms]
+               W_avionics - weight of the avionics                                             [kilograms]
+               W_electrical - weight of the electrical items                                         [kilograms]
+               W_ac - weight of the air conditioning and anti-ice system                       [kilograms]
+               W_furnish - weight of the furnishings in the fuselage                           [kilograms]
+               W_anti_ice - weight of anti-ice system                                          [kilograms]
 
-    **Theory**
-    Key system weights are calculated using:
-    .. math::
-        W_{fc} = 36.28M^{0.003}S_{cs}^{0.489}N_s^{0.484}N_{crew}^{0.124}
-
-    .. math::
-        W_{elec} = 7.291(kVA)^{0.782}(2L)^{0.346}N_{eng}^{0.1}
-
-    .. math::
-        W_{furn} = 0.0577N_{crew}^{0.1}W_{cargo}^{0.393}S_f^{0.75} + 46N_{pax} + 75N_{crew} + 2.5N_{pax}^{1.33}
-
-    .. math::
-        W_{ac} = 62.36N_{pax}^{0.25}\left(\frac{V_{pr}}{1000}\right)^{0.604}W_{av}^{0.1}
-
-    .. math::
-        W_{ai} = 0.002W_{dg}
-
-    References
-    ----------
-    [1] Raymer, D., "Aircraft Design: A Conceptual Approach", AIAA 
-        Education Series, 2018. 
-    [2] Sforza, P. M. (2014). Commercial Airplane Design Principles. Netherlands: Elsevier Science.
-
-    See Also
-    --------
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight
+        Properties Used:
+            N/A
     """
     flap_area = 0
     ref_wing  = None 

@@ -8,7 +8,6 @@
 # ----------------------------------------------------------------------------------------------------------------------    
  # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units
 
 # package imports
 import numpy as np 
@@ -16,7 +15,7 @@ import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_power_from_throttle
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_power_from_throttle(engine,engine_conditions,conditions):
+def compute_power_from_throttle(engine,conditions):
     """
     Computes engine power output and performance metrics based on throttle setting and atmospheric conditions.
 
@@ -82,12 +81,13 @@ def compute_power_from_throttle(engine,engine_conditions,conditions):
     """
 
     # Unpack
-    altitude    = conditions.freestream.altitude
-    delta_isa   = conditions.freestream.delta_ISA 
-    PSLS        = engine.sea_level_power  # SI Units 
-    h_flat      = engine.flat_rate_altitude
-    omega       = engine_conditions.speed
-    PSFC        = engine.power_specific_fuel_consumption  
+    altitude          = conditions.freestream.altitude
+    delta_isa         = conditions.freestream.delta_ISA 
+    PSLS              = engine.sea_level_power  
+    h_flat            = engine.flat_rate_altitude
+    engine_conditions = conditions.energy.converters[engine.tag] 
+    omega             = engine_conditions.omega
+    PSFC              = engine.power_specific_fuel_consumption  
 
     # shift in power lapse due to flat rate
     altitude_virtual = altitude - h_flat       
@@ -108,8 +108,7 @@ def compute_power_from_throttle(engine,engine_conditions,conditions):
     Pavailable[h_flat > altitude] = PSLS
 
     # Regulate using throttle 
-    P       = Pavailable * engine_conditions.throttle 
-    P[P<0.] = 0.
+    P       = Pavailable * engine_conditions.throttle  
     
     m_dot  =  PSFC * P 
 

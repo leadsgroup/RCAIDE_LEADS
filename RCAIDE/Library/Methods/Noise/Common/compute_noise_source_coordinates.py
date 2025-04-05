@@ -16,7 +16,7 @@ import scipy as sp
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Source Coordinates 
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_rotor_point_source_coordinates(propulsor,rotor,conditions,mls,settings):
+def compute_rotor_point_source_coordinates(rotor,conditions,mls,settings):
     """This calculated the position vector from a point source to the observer 
             
     Assumptions:
@@ -37,9 +37,8 @@ def compute_rotor_point_source_coordinates(propulsor,rotor,conditions,mls,settin
     Properties Used:
         N/A       
     """  
-    # unpack 
-    rotor_conditions        =  conditions.energy[propulsor.tag][rotor.tag]
-    commanded_thrust_vector =  conditions.energy[propulsor.tag].commanded_thrust_vector_angle
+    # unpack  
+    commanded_thrust_vector = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
 
     # aquire dimension of matrix
     num_cpt     = len(commanded_thrust_vector)
@@ -54,7 +53,7 @@ def compute_rotor_point_source_coordinates(propulsor,rotor,conditions,mls,settin
     r           = rotor.radius_distribution  
     beta        = rotor.flap_angle
     theta       = rotor.twist_distribution   
-    theta_0     = rotor_conditions.blade_pitch_command 
+    theta_0     = conditions.energy.converters[rotor.tag].blade_pitch_command 
     MCA         = rotor.mid_chord_alignment
  
     # dimension of matrices [control point, microphone , rotor, number of blades, number of sections , x,y,z coords]    

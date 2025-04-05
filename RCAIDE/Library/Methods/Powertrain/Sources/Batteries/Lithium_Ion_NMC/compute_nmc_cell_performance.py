@@ -119,9 +119,10 @@ def compute_nmc_cell_performance(battery_module,state,bus,coolant_lines,t_idx, d
     # ---------------------------------------------------------------------------------    
     bus_conditions              = state.conditions.energy[bus.tag]
     bus_config                  = bus.battery_module_electric_configuration
+    phi                         = state.conditions.energy.hybrid_power_split_ratio
     E_bus                       = bus_conditions.energy
-    P_bus                       = bus_conditions.power_draw
-    I_bus                       = bus_conditions.current_draw
+    P_bus                       = bus_conditions.power_draw*phi
+    I_bus                       = bus_conditions.current_draw*phi
     
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions

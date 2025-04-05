@@ -28,11 +28,11 @@ from NASA_X48    import configs_setup as configs_setup
 
 def main():
 
-    regression_flag = True # Keep true for regression on Appveyor
+    regression_flag = True # Keep True for regression 
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
     
     # truth values 
-    thrust_truth         = [57.356384455604505, 57.35638445528938]
+    thrust_truth         = [57.356384455604505, 57.35638445528507]
    
     for i in range(len(ducted_fan_type)):  
         # vehicle data
@@ -58,12 +58,12 @@ def main():
                 error = Data()
                 error.thrust   = 0
             else:  
-                thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.center_propulsor.thrust, axis=1)  
+                thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['center_propulsor'].thrust, axis=1)  
                 error          = Data()
                 error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))        
                 
         elif ducted_fan_type[i] ==  'Rankine_Froude_Momentum_Theory':  
-            thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.starboard_propulsor.thrust, axis=1)  
+            thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['starboard_propulsor'].thrust, axis=1)  
             error          = Data()
             error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))   
         
@@ -92,8 +92,7 @@ def analyses_setup(configs):
 
 def plot_results(results):
     # Plots fligh conditions 
-    plot_flight_conditions(results) 
-    
+    plot_flight_conditions(results)  
     
     plot_battery_cell_conditions(results) 
     
@@ -107,12 +106,6 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
-    
-    # ------------------------------------------------------------------
-    #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.vehicle = vehicle
-    analyses.append(weights)
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis

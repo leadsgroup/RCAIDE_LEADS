@@ -19,115 +19,49 @@ import  copy
 # Main Wing Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wings):
-    """
-    Computes wing weight using NASA FLOPS weight estimation method. Includes bending material, 
-    shear material, and control surfaces.
+    """ Calculate the wing weight based on the flops method. The wing weight consists of:
+        - Total Wing Shear Material and Control Surface Weight
+        - Total Wing Miscellaneous Items Weight
+        - Total Wing Bending Material Weight
 
-    Parameters
-    ----------
-    vehicle : Vehicle
-        The vehicle instance containing:
-            - reference_area : float
-                Wing surface area [m²]
-            - mass_properties.max_takeoff : float
-                Maximum takeoff weight [kg]
-            - flight_envelope.ultimate_load : float
-                Ultimate load factor (default: 3.75)
-            - systems.accessories : str
-                Aircraft type ('short-range', 'commuter', etc.)
-            - fuselages.fuselage.width : float
-                Fuselage width [m]
-            - networks : list
-                Propulsion systems with:
-                    - propulsors : list
-                        Engine data with wing mounting info
-    wing : Wing
-        Wing instance containing:
-            - taper : float
-                Taper ratio
-            - sweeps.quarter_chord : float
-                Quarter chord sweep angle [rad]
-            - thickness_to_chord : float
-                Average t/c ratio
-            - spans.projected : float
-                Wing span [m]
-            - chords.root : float
-                Root chord [m]
-            - chords.tip : float
-                Tip chord [m]
-            - twists.root : float
-                Root twist angle [rad]
-            - twists.tip : float
-                Tip twist angle [rad]
-            - flap_ratio : float
-                Flap area / wing area
-    WPOD : float
-        Weight of engine pod including nacelle [kg]
-    complexity : str
-        'simple' or 'complex' wing weight method
-    settings : Settings
-        Configuration settings containing:
-            - FLOPS.aeroelastic_tailoring_factor : float
-                0 (none) to 1 (maximum)
-            - FLOPS.strut_braced_wing_factor : float
-                0 (no struts) to 1 (struts)
-            - FLOPS.composite_utilization_factor : float
-                0 (no composite) to 1 (full composite)
-    num_main_wings : int
-        Number of main wings
+        Assumptions:
+            Wing is elliptically loaded
+            Gloved wing area is 0
+            Load between multiple main wings is distributed equally
+            Wing sweep is fixed
 
-    Returns
-    -------
-    WWING : float
-        Total wing weight [kg]
+        Source:
+            The Flight Optimization System Weight Estimation Method
 
-    Notes
-    -----
-    **Major Assumptions**
-        * Wing is elliptically loaded
-        * Gloved wing area is 0
-        * Load between multiple main wings is distributed equally
-        * Wing sweep is fixed
-        * Standard structural design margins
-        * Conventional control surfaces
+       Inputs:
+            vehicle - data dictionary with vehicle properties                   [dimensionless]
+                -.reference_area: wing surface area                             [m^2]
+                -.mass_properties.max_takeoff: MTOW                             [kilograms]
+                -.flight_envelope.ultimate_load: ultimate load factor (default: 3.75)
+                -.systems.accessories: type of aircraft (short-range, commuter
+                                                        medium-range, long-range,
+                                                        sst, cargo)
+                -.fuselages.fuselage.width: width of the fuselage               [m]
+             -wing: data dictionary with wing properties
+                    -.taper: taper ratio
+                    -.sweeps.quarter_chord: quarter chord sweep angle           [deg]
+                    -.thickness_to_chord: thickness to chord
+                    -.spans.projected: wing span                                [m]
+                    -.chords.root: root chord                                   [m]
+                    -.tip.root: tip chord                                       [m]
+                    -.twists.root: twist of wing at root                        [deg]
+                    -.twists.tip: twist of wing at tip                          [deg]
+                    -.flap_ratio: flap surface area over wing surface area
+                 -.networks: data dictionary containing all propulsion properties
+                    -.number_of_engines: number of engines 
+            WPOD - weight of engine pod including the nacelle                   [kilograms]
+            complexity - "simple" or "complex" depending on the wing weight method chosen
 
-    **Theory**
-    For simple method:
-    .. math::
-        W_{wing} = W_{bend} + W_{shear} + W_{misc}
+       Outputs:
+            WWING - wing weight                                          [kilograms]
 
-    where:
-        * W_bend = A₀BT(1 + √(A₁/b))ULFb(1-0.4F_c)(1-0.1F_a)F_f V P_L 
-        * W_shear = A₂(1-0.17F_c)S_f^{A₃}W_{TO}^{A₄}
-        * W_misc = A₅(1-0.3F_c)S_w^{A₆}
-
-    Variables:
-        * b = wing span
-        * ULF = ultimate load factor
-        * F_c = composite utilization factor
-        * F_a = aeroelastic tailoring factor
-        * F_f = multiple fuselage factor
-        * V = variable sweep factor
-        * P_L = load fraction
-        * S_f = flap area
-        * W_TO = takeoff weight
-        * S_w = wing area
-        * A₀-A₆ = empirical constants
-
-    Complex method uses detailed spanwise integration accounting for:
-        * Local chord distribution
-        * Local thickness distribution
-        * Local sweep distribution
-        * Engine placement effects
-        * Structural load paths
-
-    References
-    ----------
-    [1] NASA Flight Optimization System (FLOPS)
-
-    See Also
-    --------
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight
+        Properties Used:
+            N/A
     """
     SW          = wing.areas.reference / (Units.ft ** 2)  # Reference wing area, ft^2
     GLOV        = 0 

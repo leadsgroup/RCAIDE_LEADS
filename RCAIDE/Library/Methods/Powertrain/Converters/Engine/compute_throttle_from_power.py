@@ -16,7 +16,7 @@ import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  calculate_throttle_from_power
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_throttle_from_power(engine, engine_conditions,conditions):
+def compute_throttle_from_power(engine,conditions):
     """
     Computes engine throttle setting and fuel consumption based on required power output.
 
@@ -87,14 +87,15 @@ def compute_throttle_from_power(engine, engine_conditions,conditions):
     """
 
     # Unpack atmospheric conditions 
-    delta_isa  = conditions.freestream.delta_ISA
-    altitude   = conditions.freestream.altitude
+    delta_isa         = conditions.freestream.delta_ISA
+    altitude          = conditions.freestream.altitude
     
     # Unpack engine operating conditions 
-    PSLS     = engine.sea_level_power
-    h_flat   = engine.flat_rate_altitude
-    P        = engine_conditions.power*1.0
-    PSFC     = engine.power_specific_fuel_consumption
+    engine_conditions = conditions.energy.converters[engine.tag] 
+    PSLS              = engine.sea_level_power
+    h_flat            = engine.flat_rate_altitude
+    P                 = engine_conditions.power*1.0
+    PSFC              = engine.power_specific_fuel_consumption
     
     altitude_virtual = altitude - h_flat        
     altitude_virtual[altitude_virtual<0.] = 0.   

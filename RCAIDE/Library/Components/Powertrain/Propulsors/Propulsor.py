@@ -8,7 +8,9 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
-from RCAIDE.Library.Components                   import Component 
+from RCAIDE.Library.Components           import Component 
+from RCAIDE.Framework.Mission.Common     import Conditions
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propusor
@@ -80,6 +82,5 @@ class Propulsor(Component):
         """          
         self.tag                          = 'propulsor' 
         self.active                       = True 
-        self.wing_mounted                 = True 
-        
-    
+        self.wing_mounted                 = True
+        self.sealevel_static_thrust       = 0.0

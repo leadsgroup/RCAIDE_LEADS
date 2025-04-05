@@ -128,5 +128,5 @@ def initialize_conditions(segment):
     conditions.ground.friction_coefficient[:,0]     = segment.friction_coefficient   
     conditions.freestream.altitude[:,0]             = alt
     conditions.frames.inertial.position_vector[:,2] = -alt   
-    conditions.weights.total_mass[:,0]              = segment.analyses.weights.vehicle.mass_properties.takeoff
+    conditions.weights.total_mass[:,0]              = segment.analyses.aerodynamics.vehicle.mass_properties.takeoff
     conditions.frames.inertial.position_vector[:,:] = conditions.frames.inertial.position_vector[0,:][None,:][:,:]

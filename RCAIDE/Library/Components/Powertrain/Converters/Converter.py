@@ -23,6 +23,7 @@ class Converter(Component):
         Assumptions:
             None 
         """
-        #set the deafult values
+        # set the deafult values
         self.tag                      = 'tag' 
-        self.working_fluid            = Data() 
+        self.working_fluid            = Data()
+        self.active                   = True

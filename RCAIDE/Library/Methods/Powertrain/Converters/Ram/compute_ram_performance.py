@@ -6,84 +6,39 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_ram_performance
 # ----------------------------------------------------------------------------------------------------------------------     
-def compute_ram_performance(ram, ram_conditions, conditions):
-    """
-    Computes the stagnation properties of air due to ram compression.
-    
-    Parameters
-    ----------
-    ram : Ram
-        The ram component with the following attributes:
-            - working_fluid : FluidModel
-                Object containing methods to compute fluid properties
-    ram_conditions : Conditions
-        Object to store ram output conditions
-    conditions : Conditions
-        Object containing freestream conditions with the following attributes:
-            - freestream.pressure : numpy.ndarray
-                Freestream static pressure [Pa]
-            - freestream.temperature : numpy.ndarray
-                Freestream static temperature [K]
-            - freestream.mach_number : numpy.ndarray
-                Freestream Mach number [unitless]
-    
-    Returns
-    -------
-    None
-        This function modifies both the ram_conditions.outputs and conditions.freestream
-        objects in-place with the following attributes:
-            - stagnation_temperature : numpy.ndarray
-                Stagnation temperature [K]
-            - stagnation_pressure : numpy.ndarray
-                Stagnation pressure [Pa]
-            - isentropic_expansion_factor : numpy.ndarray
-                Ratio of specific heats (gamma) [unitless]
-            - specific_heat_at_constant_pressure : numpy.ndarray
-                Specific heat capacity [J/(kg·K)]
-            - gas_specific_constant : numpy.ndarray
-                Gas constant [J/(kg·K)]
-            - speed_of_sound : numpy.ndarray
-                Speed of sound [m/s]
-            - static_temperature : numpy.ndarray (ram_conditions.outputs only)
-                Static temperature [K]
-            - static_pressure : numpy.ndarray (ram_conditions.outputs only)
-                Static pressure [Pa]
-            - mach_number : numpy.ndarray (ram_conditions.outputs only)
-                Mach number [unitless]
-            - velocity : numpy.ndarray (ram_conditions.outputs only)
-                Velocity [m/s]
-    
-    Notes
-    -----
-    This function computes the stagnation properties of air due to ram compression
-    using isentropic flow relations. The stagnation properties represent the state
-    that would be achieved if the flow were brought to rest isentropically.
-    
-    **Theory**
-    
-    The stagnation temperature is calculated using:
-    
-    .. math::
-        T_t = T_0 \\left(1 + \\frac{\\gamma-1}{2}M_0^2\\right)
-    
-    The stagnation pressure is calculated using:
-    
-    .. math::
-        P_t = P_0 \\left(1 + \\frac{\\gamma-1}{2}M_0^2\\right)^{\\frac{\\gamma}{\\gamma-1}}
-    
-    where:
-        - :math:`T_0` is the freestream static temperature
-        - :math:`P_0` is the freestream static pressure
-        - :math:`M_0` is the freestream Mach number
-        - :math:`\\gamma` is the ratio of specific heats
-    
-    References
-    ----------
-    [1] Cantwell, B., "AA283 Course Notes", Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
-    
-    See Also
-    --------
-    RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions
+def compute_ram_performance(ram,conditions):
+    """ This computes the output values from the input values according T0
+    equations from the source. The following properties are determined 
+        conditions.freestream.
+          stagnation_temperature              (numpy.ndarray): freestream stagnation_temperature             [K]
+          stagnation_pressure                 (numpy.ndarray): freestream stagnation_pressure                [Pa]
+          isentropic_expansion_factor         (numpy.ndarray): freestream isentropic_expansion_factor        [unitless]
+          specific_heat_at_constant_pressure  (numpy.ndarray): freestream specific_heat_at_constant_pressure [J/(kg K)]
+          gas_specific_constant               (numpy.ndarray): freestream gas_specific_constant              [J/(kg K)]
+          speed_of_sound                      (numpy.ndarray): freestream speed_of_sound                     [m/s]
+        ram.outputs.
+          stagnation_temperature              (numpy.ndarray): exiting stagnation temperature     [K]
+          stagnation_pressure                 (numpy.ndarray): exiting stagnation pressure        [Pa]
+          isentropic_expansion_factor         (numpy.ndarray): isentropic expansion factor        [unitless]
+          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]
+          gas_specific_constant               (numpy.ndarray): gas_specific_constant              [J/(kg K)]   
+
+    Assumptions:
+        None
+
+    Source:
+        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+
+    Args:
+        conditions.freestream.
+           pressure               (numpy.ndarray): freestream pressure      [Pa]
+           temperature            (numpy.ndarray): freestream temperature   [K]
+           mach_number            (numpy.ndarray): freestream Mach number   [unitless]
+        ram.inputs.working_fluid           (dict): working fluid properties [-]
+
+    Returns:
+        None 
+  
     """
     # Unpack flight conditions 
     M0 = conditions.freestream.mach_number
@@ -92,6 +47,7 @@ def compute_ram_performance(ram, ram_conditions, conditions):
 
     # Unpack ram inputs
     working_fluid  = ram.working_fluid
+    ram_conditions = conditions.energy.converters[ram.tag]
  
     # Compute the working fluid properties
     R        = working_fluid.gas_specific_constant

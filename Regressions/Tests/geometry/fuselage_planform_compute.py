@@ -57,7 +57,9 @@ def main():
      fuselage.append_cabin(cabin)        
  
      fuselage_planform(fuselage)
-     plot_layout_of_passenger_accommodations(fuselage)
+
+     show_figure = False
+     plot_layout_of_passenger_accommodations(fuselage, show_figure=show_figure)
      
      # Truth Values
      nose_length_truth   = 8.08736
