@@ -265,11 +265,15 @@ def compute_turbojet_performance(turbojet,state,center_of_gravity= [[0.0, 0.0,0.
                 exit_stagnation_temperature         = core_nozzle_conditions.outputs.stagnation_temperature,
                 exit_stagnation_pressure            = core_nozzle_conditions.outputs.static_pressure,
                 exit_velocity                       = core_nozzle_conditions.outputs.velocity
-            ) 
+            )
+
+    lpc_res = Data(
+                angular_velocity    =  lpc_conditions.omega, 
+            )    
 
     noise_conditions.fan_nozzle             = None 
     noise_conditions.core_nozzle            = core_nozzle_res
-    noise_conditions.fan                    = None   
+    noise_conditions.fan                    = lpc_res   
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbojet.tag
     

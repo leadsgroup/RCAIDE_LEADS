@@ -9,14 +9,9 @@ The script below documents how to set up and plot the results of polar analysis 
 # ---------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan
 from RCAIDE.Library.Methods.Performance                            import aircraft_aerodynamic_analysis 
-from RCAIDE.Library.Methods.Geometry.Planform                      import segment_properties 
-from RCAIDE.Library.Plots                                          import *        
-
-import matplotlib.cm as cm   
+from RCAIDE.Library.Plots                                          import *   
 import numpy as np
-from copy import deepcopy
 import matplotlib.pyplot  as plt
 import os
 import  sys
