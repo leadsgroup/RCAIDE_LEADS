@@ -64,8 +64,8 @@ class Turboshaft(Converter):
         
     design_altitude : float
         Design altitude of the engine [m]. Default is 0.0.
-        
-    SFC_adjustment : float
+         
+    specific_fuel_consumption_reduction_factor : float
         Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
         
     compressor_nondimensional_massflow : float
@@ -114,7 +114,7 @@ class Turboshaft(Converter):
         self.diamter                                          = 0.0
         self.design_isa_deviation                             = 0.0
         self.design_altitude                                  = 0.0
-        self.SFC_adjustment                                   = 0.0  
+        self.specific_fuel_consumption_reduction_factor       = 0.0  
         self.reference_temperature                            = 288.15
         self.reference_pressure                               = 1.01325*10**5 
         self.design_power                                     = 0.0
