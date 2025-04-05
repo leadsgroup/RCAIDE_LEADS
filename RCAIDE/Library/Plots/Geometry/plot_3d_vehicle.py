@@ -30,7 +30,10 @@ def plot_3d_vehicle(vehicle,
                     min_y_axis_limit            =  -20,
                     max_y_axis_limit            =  20,
                     min_z_axis_limit            =  -20,
-                    max_z_axis_limit            =  20, 
+                    max_z_axis_limit            =  20,
+                    top_view                    = False, 
+                    side_view                   = False, 
+                    front_view                  = False, 
                     camera_eye_x                = -1.5,
                     camera_eye_y                = -1.5,
                     camera_eye_z                = .8,
@@ -109,7 +112,29 @@ def plot_3d_vehicle(vehicle,
         - Propulsion systems
         - Customizable view and camera angles
     """
-
+   
+    if front_view: 
+        camera_eye_x  = 0  
+        camera_eye_y  = 0  
+        camera_eye_z  = 0
+        
+    elif side_view:
+        camera_eye_x  = 0  
+        camera_eye_y  = 0  
+        camera_eye_z  = 0 
+        
+    elif top_view:
+        camera_eye_x  = 0 
+        camera_eye_y  = 0 
+        camera_eye_z  = 0
+        
+    else: 
+        camera_eye_x  = -1.5 
+        camera_eye_y  = -1.5 
+        camera_eye_z  = .8
+   
+   
+    
     print("\nPlotting vehicle") 
     camera = dict(
         eye=dict(x=camera_eye_x, y=camera_eye_y, z=camera_eye_z), 

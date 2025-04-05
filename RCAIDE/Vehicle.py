@@ -86,12 +86,12 @@ class Vehicle(Data):
         self.flight_envelope.gust.load_factor.velocity_max_dive            = 0 
 
         self.mass_properties                                               = Vehicle_Mass_Container()
-        self.mass_properties.max_takeoff                                   = 0
-        self.mass_properties.max_zero_fuel                                 = 0
-        self.mass_properties.max_fuel                                      = 0
-        self.mass_properties.takeoff                                       = 0
-        self.mass_properties.fuel                                          = 0
-        self.mass_properties.payload                                       = 0
+        self.mass_properties.max_takeoff                                   = None
+        self.mass_properties.max_zero_fuel                                 = None
+        self.mass_properties.max_fuel                                      = None
+        self.mass_properties.takeoff                                       = None
+        self.mass_properties.fuel                                          = None
+        self.mass_properties.payload                                       = None
         
         self.performance                              = DataOrdered()
          

@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Aerodynamics/Fidelity_Zero/__init__.py
+# RCAIDE/Methods/Aerodynamics/Vortex_Lattice_Method/__init__.py
 # 
 
 """ RCAIDE Package Setup
