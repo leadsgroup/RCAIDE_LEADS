@@ -69,11 +69,11 @@ def optimization_setup(rotor,number_of_stations,print_iterations):
     inputs.append([ 'twist_q'               ,  0.5      , 0.25       , 1.5       , 1.0     ,  1*Units.less])
     inputs.append([ 'twist_t'               ,  np.pi/6  , 0          , np.pi/4   , 1.0     ,  1*Units.less])  
     inputs.append([ 'hover_tip_mach'        , tm_0_h    , tm_ll_h    , tm_ul_h   , 1.0     ,  1*Units.less])
-    inputs.append([ 'OEI_tip_mach'          , tm_0_h    , tm_ll_h    , 0.85      , 1.0     ,  1*Units.less])  
-    inputs.append([ 'OEI_collective_pitch'  , np.pi/6   , -np.pi/6   , np.pi/6   , 1.0      ,  1*Units.less]) 
+    inputs.append([ 'OEI_tip_mach'          , tm_0_h    , tm_ll_h    , 0.85      , 1.0     ,  1*Units.less])
+    inputs.append([ 'OEI_collective_pitch'  , np.pi/6   , -np.pi/5   , np.pi/5   , 1.0      ,  1*Units.less])
     if nexus.prop_rotor_flag: 
-        inputs.append([ 'cruise_tip_mach'         , tm_ll_c , tm_ll_c    , tm_ul_c   , 1.0     ,  1*Units.less]) 
-        inputs.append([ 'cuise_collective_pitch'  ,-np.pi/6  , -np.pi/6   , np.pi/6  , 1.0     ,  1*Units.less]) 
+        inputs.append([ 'cruise_tip_mach'         , tm_ll_c , tm_ll_c    , tm_ul_c  , 1.0     ,  1*Units.less]) 
+        inputs.append([ 'cuise_collective_pitch'  , np.pi/8 , -np.pi/5   , np.pi/5  , 1.0     ,  1*Units.less]) 
     problem.inputs = np.array(inputs,dtype=object)   
 
     # -------------------------------------------------------------------
@@ -122,11 +122,11 @@ def optimization_setup(rotor,number_of_stations,print_iterations):
     aliases.append([ 'chord_p_to_q_ratio'         , 'summary.chord_p_to_q_ratio'    ])  
     aliases.append([ 'twist_p_to_q_ratio'         , 'summary.twist_p_to_q_ratio'    ])   
     aliases.append([ 'OEI_hov_thrust_pow_res'     , 'summary.oei_thrust_power_residual'   ]) 
-    aliases.append([ 'OEI_collective_pitch'       , 'vehicle_configurations.oei.networks.electric.propulsors.electric_rotor.rotor.oei.design_pitch_command' ]) 
+    aliases.append([ 'OEI_collective_pitch'       , 'vehicle_configurations.oei.networks.electric.propulsors.electric_rotor.rotor.oei.design_blade_pitch_command' ]) 
     aliases.append([ 'OEI_tip_mach'               , 'vehicle_configurations.oei.networks.electric.propulsors.electric_rotor.rotor.oei.design_tip_mach' ]) 
     if nexus.prop_rotor_flag: 
         aliases.append([ 'cruise_tip_mach'        , 'vehicle_configurations.cruise.networks.electric.propulsors.electric_rotor.rotor.cruise.design_tip_mach' ])  
-        aliases.append([ 'cuise_collective_pitch' , 'vehicle_configurations.cruise.networks.electric.propulsors.electric_rotor.rotor.cruise.design_pitch_command' ])  
+        aliases.append([ 'cuise_collective_pitch' , 'vehicle_configurations.cruise.networks.electric.propulsors.electric_rotor.rotor.cruise.design_blade_pitch_command' ])  
         aliases.append([ 'cruise_thrust_pow_res'  , 'summary.cruise_thrust_power_residual'   ]) 
         aliases.append([ 'max_sectional_cl_cruise', 'summary.max_sectional_cl_cruise'])  
          

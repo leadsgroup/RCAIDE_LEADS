@@ -9,13 +9,13 @@
 
  # RCAIDE imports 
 from RCAIDE.Framework.Core                import Units , Data  
-from .angle_of_attack_effect    import angle_of_attack_effect
-from .external_plug_effect      import external_plug_effect
-from .ground_proximity_effect   import ground_proximity_effect
-from .jet_installation_effect   import jet_installation_effect
-from .mixed_noise_component     import mixed_noise_component 
-from .primary_noise_component   import primary_noise_component
-from .secondary_noise_component import secondary_noise_component
+from .angle_of_attack_effect              import angle_of_attack_effect
+from .external_plug_effect                import external_plug_effect
+from .ground_proximity_effect             import ground_proximity_effect
+from .jet_installation_effect             import jet_installation_effect
+from .mixed_noise_component               import mixed_noise_component 
+from .primary_noise_component             import primary_noise_component
+from .secondary_noise_component           import secondary_noise_component
 
 from RCAIDE.Library.Methods.Noise.Common  import noise_tone_correction
 from RCAIDE.Library.Methods.Noise.Common  import atmospheric_attenuation 
@@ -58,7 +58,7 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
             N1                         - Fan rotational speed                                [rpm]
             EXA                        - Distance from fan face to fan exit/ fan diameter    [m]
             Plug_diameter              - Diameter of the engine external plug                [m]
-            Engine_height              - Engine centerline height above the ground plane     [m]
+            height              - Engine centerline height above the ground plane     [m]
             distance_microphone        - Distance from the nozzle exhaust to the microphones [m]
             angles                     - Array containing the desired polar angles           [rad] 
 
@@ -77,18 +77,15 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
     Temperature_secondary  = aeroacoustic_data.fan_nozzle.exit_stagnation_temperature[:,0] 
     Pressure_secondary     = aeroacoustic_data.fan_nozzle.exit_stagnation_pressure[:,0]  
     Velocity_aircraft      = segment.conditions.freestream.velocity[:,0]
-    Mach_aircraft          = segment.conditions.freestream.mach_number
-    Altitude               = segment.conditions.freestream.altitude[:,0] 
+    Mach_aircraft          = segment.conditions.freestream.mach_number 
     AOA                    = np.mean(segment.conditions.aerodynamics.angles.alpha / Units.deg) 
     noise_time             = segment.conditions.frames.inertial.time[:,0]  
-    distance_microphone    = np.linalg.norm(microphone_locations,axis = 1)
-    angles                 = np.arccos(microphone_locations[:,0]/distance_microphone) 
-    phi                    = np.arccos(microphone_locations[:,1]/distance_microphone)      
+    distance_microphone    = np.linalg.norm(microphone_locations,axis = 1)     
     
-    N1                     = turbofan.fan.angular_velocity * 0.92*(turbofan.design_thrust/52700.)
+    N1                     = turbofan.fan.design_angular_velocity * 0.92*(turbofan.design_thrust/52700.)
     Diameter_primary       = turbofan.core_nozzle.diameter
     Diameter_secondary     = turbofan.fan_nozzle.diameter
-    engine_height          = turbofan.engine_height
+    height                 = turbofan.height
     EXA                    = turbofan.exa
     Plug_diameter          = turbofan.plug_diameter 
     Xe                     = turbofan.geometry_xe
@@ -268,7 +265,7 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
             Plug    = external_plug_effect(Velocity_primary[i],Velocity_secondary[i], Velocity_mixed, Diameter_primary,Diameter_secondary,
                                            Diameter_mixed, Plug_diameter, sound_ambient[i], theta_p,theta_s,theta_m)
     
-            GPROX_m = ground_proximity_effect(Velocity_mixed,sound_ambient[i],theta_m,engine_height,Diameter_mixed,frequency)
+            GPROX_m = ground_proximity_effect(Velocity_mixed,sound_ambient[i],theta_m,height,Diameter_mixed,frequency)
     
             # Calculation of the sound pressure level for each jet component
             SPL_p = primary_noise_component(Velocity_primary[i],Temperature_primary[i],R_gas,theta_p,DVPS,sound_ambient[i],

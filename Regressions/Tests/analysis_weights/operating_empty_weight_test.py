@@ -1,7 +1,7 @@
 # weights.py
 import  RCAIDE
 from RCAIDE.Framework.Core import Data, Units 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor   import design_turbofan  
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan  
 from RCAIDE.Library.Plots import * 
 from RCAIDE.load import load as load_results
 from RCAIDE.save import save as save_results 
@@ -40,6 +40,7 @@ def Transport_Aircraft_Test(update_regression_values, show_figure):
             weight_analysis.vehicle = transport_setup()
             weight_analysis.method = method_type
             weight_analysis.settings.advanced_composites = advanced_composites
+            weight_analysis.aircraft_type = 'Transport'
 
             if method_type == 'FLOPS':
                 save_filename = f'FLOPS_{"Simple" if FLOPS_number == 0 else "Complex"}'
@@ -247,7 +248,7 @@ def Jet_engine():
     turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                = 'starboard_propulsor' 
     turbofan.origin                             = [[13.72, 4.86,-1.1]] 
-    turbofan.engine_length                      = 2.71     
+    turbofan.length                             = 2.71     
     turbofan.bypass_ratio                       = 5.4    
     turbofan.design_altitude                    = 35000.0*Units.ft
     turbofan.design_mach_number                 = 0.78   

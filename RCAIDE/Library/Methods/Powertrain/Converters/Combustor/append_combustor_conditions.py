@@ -8,13 +8,13 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_combustor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_combustor_conditions(combustor,segment,propulsor_conditions):
+def append_combustor_conditions(combustor,segment,energy_conditions):
     '''
     Appends initial conditions to combustor component
     '''
     ones_row    = segment.state.ones_row 
-    propulsor_conditions[combustor.tag]                           = Conditions() 
-    propulsor_conditions[combustor.tag].inputs                    = Conditions() 
-    propulsor_conditions[combustor.tag].inputs.nondim_mass_ratio  = ones_row(1)
-    propulsor_conditions[combustor.tag].outputs                   = Conditions()
+    energy_conditions.converters[combustor.tag]                           = Conditions() 
+    energy_conditions.converters[combustor.tag].inputs                    = Conditions() 
+    energy_conditions.converters[combustor.tag].inputs.nondim_mass_ratio  = ones_row(1)
+    energy_conditions.converters[combustor.tag].outputs                   = Conditions()
     return 

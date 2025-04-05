@@ -18,7 +18,9 @@ from . import Expansion_Nozzle
 from . import Supersonic_Nozzle
 from . import Fan 
 from . import Ram
-from . import Rotor 
-from . import Offtake_Shaft
+from . import Rotor
+from . import Generator
 from . import Turbine
 from . import Reformer
+from . import Turboshaft
+from . import Turboelectric_Generator

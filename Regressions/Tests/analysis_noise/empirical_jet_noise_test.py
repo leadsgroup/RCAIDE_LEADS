@@ -47,8 +47,8 @@ def main():
     _   = post_process_noise_data(baseline_results)      
      
     # SPL of rotor check during hover 
-    B737_SPL        = np.max(baseline_results.segments.takeoff.conditions.noise.hemisphere_SPL_dBA) 
-    B737_SPL_true   = 163.14985051328844 # this value is high because its of a hemisphere of radius 20
+    B737_SPL        = np.max(baseline_results.segments.takeoff.conditions.noise.hemisphere_SPL_dBA)
+    B737_SPL_true   = 126.84954900920607 # this value is high because its of a hemisphere of radius 20
     B737_diff_SPL   = np.abs(B737_SPL - B737_SPL_true)
     print('SPL difference: ',B737_diff_SPL)
     assert np.abs((B737_SPL - B737_SPL_true)/B737_SPL_true) < 1e-3
@@ -63,13 +63,6 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
-
-    # ------------------------------------------------------------------
-    #  Weights
-    # ------------------------------------------------------------------
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle = vehicle
-    analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
@@ -165,7 +158,7 @@ def baseline_mission_setup(analyses):
     segment.altitude_start                                    = 0 *  Units.meter
     segment.altitude_end                                      = 304.8 * Units.meter
     segment.air_speed                                         = 100* Units['m/s']
-    segment.throttle                                          = 1.    
+    segment.throttle                                          = 1.
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                           = True  
@@ -179,26 +172,26 @@ def baseline_mission_setup(analyses):
      
     mission.append_segment(segment)
 
-    # ------------------------------------------------------------------  
+    # ------------------------------------------------------------------
     # Cutback Segment: Constant speed, constant segment angle
-    # ------------------------------------------------------------------   
+    # ------------------------------------------------------------------
     segment                                              = Segments.Climb.Constant_Speed_Constant_Angle(base_segment)
-    segment.tag                                          = "cutback"     
+    segment.tag                                          = "cutback"
     segment.analyses.extend(analyses.cutback )
-    segment.air_speed                                    = 100 * Units['m/s'] 
-    segment.altitude_end                                 = 1. * Units.km    
+    segment.air_speed                                    = 100 * Units['m/s']
+    segment.altitude_end                                 = 1. * Units.km
     segment.climb_angle                                  = 5  * Units.degrees
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                
-       
-    mission.append_segment(segment)   
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
+    segment.assigned_control_variables.body_angle.active             = True
+
+    mission.append_segment(segment)
 
     # ------------------------------------------------------------------
     #   First Climb Segment: constant Mach, constant segment angle 

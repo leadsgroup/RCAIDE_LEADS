@@ -113,7 +113,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                 for p_i ,  propulsor in enumerate(network.propulsors):
                     if propulsor.active == True: 
                         if (type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
-                            type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft or \
+                            type(propulsor) == RCAIDE.Library.Components.Powertrain.Converters.Turboshaft or \
                             type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop or \
                             type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet:    
                         
@@ -121,8 +121,8 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                         
                             # unpack component conditions
                             n_cp                 = state.numerics.number_of_control_points 
-                            propulsor_conditions = state.conditions.energy[propulsor.tag] 
-                            combustor_conditions = propulsor_conditions[combustor.tag]  
+                            propulsor_conditions = state.conditions.energy.propulsors[propulsor.tag] 
+                            combustor_conditions = state.conditions.energy.converters[combustor.tag]  
 
                             
                             T    = combustor_conditions.inputs.stagnation_temperature
@@ -284,14 +284,14 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
             if propulsor.active == True:
                 if (type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
                     type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop or \
-                    type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft or \
+                    type(propulsor) == RCAIDE.Library.Components.Powertrain.Converters.Turboshaft or \
                     type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet:    
                 
                     combustor = propulsor.combustor
                 
                     # unpack component conditions
-                    propulsor_conditions = segment.state.conditions.energy[propulsor.tag] 
-                    combustor_conditions = propulsor_conditions[combustor.tag]  
+                    propulsor_conditions = segment.state.conditions.energy.propulsors[propulsor.tag] 
+                    combustor_conditions = segment.state.conditions.energy.converters[combustor.tag]  
 
                     T    = combustor_conditions.inputs.stagnation_temperature
                     P    = combustor_conditions.inputs.stagnation_pressure 

@@ -57,7 +57,7 @@ def main():
     plot_results(results,noise_data,regression_plotting_flag) 
 
     X57_SPL        = np.max(results.segments.cruise.conditions.noise.hemisphere_SPL_dBA) 
-    X57_SPL_true   = 76.49100078391247
+    X57_SPL_true   = 71.50341070406208
     X57_diff_SPL   = np.abs(X57_SPL - X57_SPL_true)
     print('Error: ',X57_diff_SPL)
     assert np.abs((X57_SPL - X57_SPL_true)/X57_SPL_true) < 1e-3 
@@ -105,8 +105,9 @@ def base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle = vehicle 
+    weights                 = RCAIDE.Framework.Analyses.Weights.Electric()
+    weights.aircraft_type   = 'General_Aviation'
+    weights.vehicle         = vehicle 
     analyses.append(weights)
 
     # ------------------------------------------------------------------
@@ -165,7 +166,7 @@ def mission_setup(analyses):
   
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
-    base_segment.state.numerics.number_of_control_points  = 3  
+    base_segment.state.numerics.number_of_control_points  = 3   
     base_segment.state.numerics.discretization_method     = RCAIDE.Library.Methods.Utilities.Chebyshev.linear_data 
 
     # ------------------------------------------------------------------    
@@ -178,7 +179,7 @@ def mission_setup(analyses):
     segment.initial_battery_state_of_charge               = 1.0
      
     segment.altitude                                     = 30
-    segment.air_speed                                    = 150 * Units.mph
+    segment.air_speed                                    = 175.*Units['mph']   
     segment.distance                                     = 1 * Units.mile
     segment.distance                                     = 1 * Units.miles
     segment.true_course                                  = 130 *Units.degrees 
@@ -189,8 +190,10 @@ def mission_setup(analyses):
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]  
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.5]]  
+    segment.assigned_control_variables.body_angle.active             = True               
+    segment.assigned_control_variables.body_angle.initial_guess_values     = [[8.15*Units.degrees]]        
     
     mission.append_segment(segment)  
     return mission

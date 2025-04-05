@@ -70,7 +70,8 @@ class Untrimmed(Segment):
         self.linear_acceleration_y                   = 0.  
         self.linear_acceleration_z                   = 0. # note that down is positive
         self.roll_rate                               = 0.
-        self.pitch_rate                              = 0.  
+        self.pitch_rate                              = 0.
+        self.hybrid_power_split_ratio                = None
         self.yaw_rate                                = 0.  
         self.state.numerics.number_of_control_points = 2     
         self.trim_lift_coefficient                   = None

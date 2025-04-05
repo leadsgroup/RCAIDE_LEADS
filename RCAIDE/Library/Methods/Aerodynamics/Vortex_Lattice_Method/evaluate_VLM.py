@@ -59,17 +59,17 @@ def evaluate_surrogate(state,settings,vehicle):
         for control_surface in wing.control_surfaces:  
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
                 if trim ==  True: 
-                    delta_a = np.atleast_2d(conditions.control_surfaces.aileron.deflection) 
+                    delta_a = conditions.control_surfaces.aileron.deflection
                 else:
                     delta_a = np.ones_like(Mach) * control_surface.deflection  
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator: 
                 if trim ==  True: 
-                    delta_e = np.atleast_2d(conditions.control_surfaces.elevator.deflection)
+                    delta_e = conditions.control_surfaces.elevator.deflection
                 else:  
                     delta_e = np.ones_like(Mach) * control_surface.deflection
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder: 
                 if trim ==  True: 
-                    delta_r = np.atleast_2d(conditions.control_surfaces.rudder.deflection)
+                    delta_r = conditions.control_surfaces.rudder.deflection
                 else:  
                     delta_r = np.ones_like(Mach) * control_surface.deflection
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:  
@@ -89,9 +89,9 @@ def evaluate_surrogate(state,settings,vehicle):
     sup_trans_spline = Cubic_Spline_Blender(hsup_max, hsup_min) 
     h_sup            = lambda M:sup_trans_spline.compute(M)
     
-    u           = np.atleast_2d(conditions.freestream.u)
-    v           = np.atleast_2d(conditions.freestream.v)
-    w           = np.atleast_2d(conditions.freestream.w)
+    u           = np.atleast_2d(conditions.frames.body.velocity_vector[:, 0]).T
+    v           = np.atleast_2d(conditions.frames.body.velocity_vector[:, 1]).T
+    w           = np.atleast_2d(conditions.frames.body.velocity_vector[:, 2]).T
     p           = np.atleast_2d(conditions.static_stability.roll_rate)        
     q           = np.atleast_2d(conditions.static_stability.pitch_rate)
     r           = np.atleast_2d(conditions.static_stability.yaw_rate)   
@@ -636,7 +636,7 @@ def evaluate_surrogate(state,settings,vehicle):
         inviscid_wing_lifts = compute_coefficient(sub_sur.Clift_wing_alpha[wing.tag],trans_sur.Clift_wing_alpha[wing.tag],sup_sur.Cdrag_wing_alpha[wing.tag] ,h_sub,h_sup,Mach,pts_alpha)
         inviscid_wing_drags = compute_coefficient(sub_sur.Cdrag_wing_alpha[wing.tag],trans_sur.Cdrag_wing_alpha[wing.tag],sup_sur.Cdrag_wing_alpha[wing.tag] ,h_sub,h_sup,Mach,pts_alpha)
         # Pack 
-        conditions.aerodynamics.coefficients.lift.induced.inviscid_wings[wing.tag]         =  inviscid_wing_lifts 
+        conditions.aerodynamics.coefficients.lift.induced.inviscid_wings[wing.tag] =  inviscid_wing_lifts 
         conditions.aerodynamics.coefficients.lift.compressible_wings[wing.tag]     =  inviscid_wing_lifts 
         conditions.aerodynamics.coefficients.drag.induced.inviscid_wings[wing.tag] =  inviscid_wing_drags   
     

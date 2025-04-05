@@ -40,7 +40,7 @@ class Jet_A1(Propellant):
         self.temperatures.flash        = 311.15                           # K
         self.temperatures.autoignition = 483.15                           # K
         self.temperatures.freeze       = 226.15                           # K
-        self.temperatures.boiling      = 0.0                              # K 
+        self.temperatures.boiling      = 0.0                              # K
 
    
         self.use_high_fidelity_kinetics_model      =  True 

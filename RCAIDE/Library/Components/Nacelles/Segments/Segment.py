@@ -96,7 +96,7 @@ class Segment_Container(Container):
     --------
     RCAIDE.Framework.Core.Container
         Base container class providing core functionality
-    RCAIDE.Library.Components.Nacelles.Segment
+    RCAIDE.Library.Components.Nacelles.Segments.Segment
         The segment components stored in this container
     """     
 
