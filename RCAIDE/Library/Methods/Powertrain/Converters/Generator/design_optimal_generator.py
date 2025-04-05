@@ -1,0 +1,98 @@
+# RCAIDE/Library/Methods/Powertrain/Converters/DC_generator/design_optimal_generator.py
+# 
+# Created:  Jul 2024, RCAIDE Team 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+import RCAIDE
+
+# python imports  
+from scipy.optimize import minimize 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  design generator 
+# ----------------------------------------------------------------------------------------------------------------------     
+def design_optimal_generator(generator):
+    ''' Sizes a generator to obtain the best combination of speed constant and resistance values
+    by sizing the generator for a design RPM value. Note that this design RPM value can be compute
+    from design tip mach. The following properties are computed.  
+      generator.speed_constant  (float): speed-constant [untiless] 
+      generator.resistance      (float): resistance     [ohms]        
+    
+    Assumptions:
+        None 
+    
+    Source:
+        None
+    
+    Args:
+        generator.no_load_current  (float): no-load current  [A]
+        generator.nominal_voltage  (float): nominal voltage  [V]
+        generator.angular_velocity (float): angular velocity [radians/s]    
+        generator.efficiency       (float): efficiency       [unitless]
+        generator.design_torque    (float): design torque    [Nm]
+       
+    Returns:
+       None 
+    
+    '''
+    
+    if type(generator) != RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:
+        raise Exception('function only supports low-fidelity (DC) generator')
+    
+    # design properties of the generator 
+    io     = generator.no_load_current
+    v      = generator.nominal_voltage  
+    G      = generator.gearbox.gear_ratio      
+    omega  = generator.design_angular_velocity /G     
+    etam   = generator.efficiency 
+    P      = generator.design_power
+    
+    # define optimizer bounds 
+    KV_lower_bound  = 0.01
+    KV_upper_bound  = 100
+    Res_lower_bound = 0.001
+    Res_upper_bound = 10
+    
+    args       = (v , omega,  etam , P , io ) 
+    hard_cons  = [{'type':'eq', 'fun': hard_constraint_1,'args': args},{'type':'eq', 'fun': hard_constraint_2,'args': args}] 
+    slack_cons = [{'type':'eq', 'fun': slack_constraint_1,'args': args},{'type':'eq', 'fun': slack_constraint_2,'args': args}]  
+    bnds       = ((KV_lower_bound, KV_upper_bound), (Res_lower_bound , Res_upper_bound)) 
+    
+    # try hard constraints to find optimum generator parameters
+    sol = minimize(objective, [0.5, 0.1], args=(v , omega,  etam , P , io) , method='SLSQP', bounds=bnds, tol=1e-6, constraints=hard_cons) 
+    
+    if sol.success == False:
+        # use slack constraints if optimizer fails and generator parameters cannot be found 
+        print('\n Optimum generator design failed. Using slack constraints')
+        sol = minimize(objective, [0.5, 0.1], args=(v , omega,  etam , P , io) , method='SLSQP', bounds=bnds, tol=1e-6, constraints=slack_cons) 
+        if sol.success == False:
+            assert('\n Slack contraints failed')  
+    
+    generator.speed_constant   = sol.x[0]
+    generator.resistance       = sol.x[1]    
+    
+    return generator  
+  
+# objective function
+def objective(x, v , omega,  etam , P , io ): 
+    return (v - omega/x[0])/x[1]   
+
+# hard efficiency constraint
+def hard_constraint_1(x, v , omega,  etam , P , io ): 
+    return etam - (1- (io*x[1])/(v - omega/x[0]))*(omega/(v*x[0]))   
+
+# hard torque equality constraint
+def hard_constraint_2(x, v , omega,  etam , P , io ): 
+    P_guess = omega * ((v - omega/x[0])/x[1] - io)/x[0]
+    return P_guess - P  
+
+# slack efficiency constraint 
+def slack_constraint_1(x, v , omega,  etam , P , io ): 
+    return abs(etam - (1- (io*x[1])/(v - omega/x[0]))*(omega/(v*x[0]))) - 0.2
+
+# slack torque equality constraint 
+def slack_constraint_2(x, v , omega,  etam , P , io ): 
+    P_guess = omega * ((v - omega/x[0])/x[1] - io)/x[0] 
+    return  abs(P_guess - P) - 200 

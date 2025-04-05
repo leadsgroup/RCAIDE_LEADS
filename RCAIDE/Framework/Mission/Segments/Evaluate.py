@@ -11,7 +11,7 @@
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Framework.Mission.Segments         import Segment
 from RCAIDE.Framework.Mission.Common.Results   import Results
-from RCAIDE.Library.Mission            import Common , Solver 
+from RCAIDE.Library.Mission                    import Common , Solver 
 from RCAIDE.Framework.Analyses                 import Process  
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -64,8 +64,9 @@ class Evaluate(Segment):
         self.sideslip_angle                       = 0.0 
         self.angle_of_attack                      = 1.0 *  Units.degree
         self.bank_angle                           = 0.0
+        self.hybrid_power_split_ratio             = None
         self.trim_lift_coefficient                = None
-        self.state.conditions.update(Results())
+        self.state.conditions.update(Results())       
         
         # ---------------------------------------------------------------
         # Define Flight Controls and Residuals 
@@ -83,8 +84,8 @@ class Evaluate(Segment):
         # --------------------------------------------------------------         
         #   Converge 
         # -------------------------------------------------------------- 
-        converge = self.process.converge 
-        converge.converge_root             = Solver.converge_root        
+        converge                           = self.process.converge 
+        converge.solver                    = Solver.converge     
 
         # --------------------------------------------------------------          
         #   Iterate  
@@ -119,7 +120,7 @@ class Evaluate(Segment):
         iterate.conditions.planet_position       = Common.Update.planet_position
 
         # Solve Residuals
-        iterate.residuals = Process()
+        iterate.residuals = Process()     
 
         # --------------------------------------------------------------  
         #  Post Process   

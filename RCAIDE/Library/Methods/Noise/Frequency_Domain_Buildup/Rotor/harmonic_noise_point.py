@@ -18,7 +18,7 @@ import scipy as sp
 # ----------------------------------------------------------------------------------------------------------------------
 # Compute Harmonic Noise 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt):
+def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,coordinates,rotor,settings,Noise,cpt):
     '''This computes the harmonic noise (i.e. thickness and loading noise) in the frequency domain 
     of a rotor at any angle of attack having the loads act at a single point. This is a level 1 fidelity
     approach. The thickness source is however computed using the helicoidal surface theory.
@@ -65,7 +65,7 @@ def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,propulsor_con
                       For instance, m_6 is the 6 dimensional harmonic modes variable, m_5 is 5 dimensional harmonic modes variable
     '''
 
-    aeroacoustic_data    = propulsor_conditions[rotor.tag]  
+    aeroacoustic_data    = conditions.energy.converters[rotor.tag]  
     angle_of_attack      = np.atleast_2d(conditions.aerodynamics.angles.alpha[cpt])
     velocity_vector      = np.atleast_2d(conditions.frames.inertial.velocity_vector[cpt])  
     freestream           = conditions.freestream   
@@ -79,7 +79,7 @@ def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,propulsor_con
     num_az               = aeroacoustic_data.number_azimuthal_stations
     orientation          = np.array(rotor.orientation_euler_angles) * 1 
     body2thrust          = sp.spatial.transform.Rotation.from_rotvec(orientation).as_matrix()
-    commanded_thrust_vector = np.atleast_2d(propulsor_conditions.commanded_thrust_vector_angle[cpt])
+    commanded_thrust_vector = np.atleast_2d(conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle[cpt])
     for jj,airfoil in enumerate(airfoils):
         airfoil_points = airfoil.number_of_points
         y_u_6          = np.tile(airfoil.geometry.y_upper_surface[None,None,None,None,None,:],(num_cpt,num_mic,num_sec,num_h_b,num_h_l,1))

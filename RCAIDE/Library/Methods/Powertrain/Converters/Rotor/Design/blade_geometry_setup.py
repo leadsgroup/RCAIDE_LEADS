@@ -94,12 +94,9 @@ def blade_geometry_setup(rotor,number_of_stations):
     
     vehicle                            = RCAIDE.Vehicle()  
     net                                = RCAIDE.Framework.Networks.Electric() 
-    bus                                = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
     propulsor                          = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()
-    propulsor.rotor                    = rotor
-    bus.assigned_propulsors = [[propulsor.tag]]
-    net.propulsors.append(propulsor)
-    net.busses.append(bus)
+    propulsor.rotor                    = rotor 
+    net.propulsors.append(propulsor) 
     vehicle.append_energy_network(net)
     
     configs                             = RCAIDE.Library.Components.Configs.Config.Container()

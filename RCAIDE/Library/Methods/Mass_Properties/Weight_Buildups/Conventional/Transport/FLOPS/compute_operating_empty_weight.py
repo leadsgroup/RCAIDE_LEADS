@@ -134,7 +134,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
         raise ValueError("FLOPS requires a design range for sizing!")
     if vehicle.flight_envelope.design_cruise_altitude == None:
         raise ValueError("FLOPS requires a cruise altitude for sizing!")
-    if not hasattr(vehicle, 'flap_ratio'):
+    if not hasattr(vehicle, 'flap_ratio'): 
+        if vehicle.systems.accessories == None:
+            raise ValueError("FLOPS requires systems accessories!") 
         if vehicle.systems.accessories == "sst":
             flap_ratio = 0.22
         else:
@@ -317,17 +319,14 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------                 
     # Accumulate Structural Weight
     ##-------------------------------------------------------------------------------   
-    output.empty.structural                       = Data()
-    output.empty.structural.wings                  = W_main_wing +   W_tail_horizontal +  W_tail_vertical 
-    output.empty.structural.fuselage              = W_fuselage_total
-    output.empty.structural.landing_gear          = landing_gear.main +  landing_gear.nose  
-    output.empty.structural.nacelle               = W_energy_network.W_nacelle
-    
-  
-    print('Paint weight is currently ignored in FLOPS calculations.')
-    output.empty.structural.paint = 0  # TODO reconcile FLOPS paint calculations with Raymer and RCAIDE baseline
-    output.empty.structural.total = output.empty.structural.wings   + output.empty.structural.fuselage + output.empty.structural.landing_gear\
-                                    + output.empty.structural.paint + output.empty.structural.nacelle 
+    output.empty.structural                 = Data()
+    output.empty.structural.wings           = W_main_wing +   W_tail_horizontal +  W_tail_vertical 
+    output.empty.structural.fuselage        = W_fuselage_total
+    output.empty.structural.landing_gear    = landing_gear.main +  landing_gear.nose  
+    output.empty.structural.nacelle         = W_energy_network.W_nacelle 
+    output.empty.structural.paint           = 0  # TODO reconcile FLOPS paint calculations with Raymer and RCAIDE baseline
+    output.empty.structural.total           = output.empty.structural.wings   + output.empty.structural.fuselage + output.empty.structural.landing_gear\
+                                              + output.empty.structural.paint + output.empty.structural.nacelle 
 
     ##-------------------------------------------------------------------------------                 
     # Accumulate Systems Weight
@@ -374,11 +373,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     if nose_landing_gear == False:
         nose_gear = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()  
         nose_gear.mass_properties.mass = landing_gear.nose    
-        vehicle.append_component(nose_gear) 
+        vehicle.landing_gears.append(nose_gear) 
     if main_landing_gear == False:
         main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
         main_gear.mass_properties.mass = landing_gear.main  
-        vehicle.append_component(main_gear) 
+        vehicle.landing_gears.append(main_gear) 
 
     control_systems                         = RCAIDE.Library.Components.Component()
     control_systems.tag                     = 'control_systems'  

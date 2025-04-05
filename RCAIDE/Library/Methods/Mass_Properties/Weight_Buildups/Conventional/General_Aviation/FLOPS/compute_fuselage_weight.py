@@ -86,7 +86,7 @@ def compute_fuselage_weight(vehicle):
     DAV = (width + max_height) / 2. * 1 / Units.ft
     
     DG       = vehicle.mass_properties.max_takeoff / Units.lbs  # Design gross weight in lb
-    QCRUS    = vehicle.design_dynamic_pressure / Units.psf
+    QCRUS    = vehicle.flight_envelope.design_dynamic_pressure / Units.psf
     ULF      = vehicle.flight_envelope.ultimate_load  
     SWFUS    = 3.14159*(XL/DAV -1.7)*(DAV**2)
 

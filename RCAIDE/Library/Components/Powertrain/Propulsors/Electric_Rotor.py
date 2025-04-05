@@ -8,11 +8,11 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports 
 from .   import Propulsor 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.unpack_electric_rotor_unknowns             import unpack_electric_rotor_unknowns
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.pack_electric_rotor_residuals              import pack_electric_rotor_residuals
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.append_electric_rotor_conditions           import append_electric_rotor_conditions
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.compute_electric_rotor_performance         import compute_electric_rotor_performance, reuse_stored_electric_rotor_data
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.append_electric_rotor_residual_and_unknown import append_electric_rotor_residual_and_unknown
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.unpack_electric_rotor_unknowns             import unpack_electric_rotor_unknowns
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.pack_electric_rotor_residuals              import pack_electric_rotor_residuals
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.append_electric_rotor_conditions           import append_electric_rotor_conditions
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.compute_electric_rotor_performance         import compute_electric_rotor_performance, reuse_stored_electric_rotor_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.append_electric_rotor_residual_and_unknown import append_electric_rotor_residual_and_unknown
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Electric_Rotor
@@ -78,11 +78,11 @@ class Electric_Rotor(Propulsor):
         self.electronic_speed_controller   = None  
         self.active_crypgenic_tanks_tanks  = None 
 
-    def append_operating_conditions(self,segment):
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
         Appends operating conditions to the segment.
         """
-        append_electric_rotor_conditions(self,segment)
+        append_electric_rotor_conditions(self,segment,energy_conditions,noise_conditions)
         return
     
     def append_propulsor_unknowns_and_residuals(self,segment):
@@ -106,16 +106,16 @@ class Electric_Rotor(Propulsor):
         pack_electric_rotor_residuals(self,segment)
         return    
     
-    def compute_performance(self,state,voltage,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
         """
         Computes propulsor performance including thrust, moment, and power. 
         """
-        thrust,moment,power,stored_results_flag,stored_propulsor_tag =  compute_electric_rotor_performance(self,state,voltage,center_of_gravity)
-        return thrust,moment,power,stored_results_flag,stored_propulsor_tag
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_electric_rotor_performance(self,state,center_of_gravity)
+        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(electric_rotor,state,network,stored_propulsor_tag,center_of_gravity = [[0, 0, 0]]):
+    def reuse_stored_data(electric_rotor,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored propulsor data for performance calculations.
         """
-        thrust,moment,power = reuse_stored_electric_rotor_data(electric_rotor,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power
+        thrust,moment,power_mech,power_elec = reuse_stored_electric_rotor_data(electric_rotor,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,power_mech,power_elec

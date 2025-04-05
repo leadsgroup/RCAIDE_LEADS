@@ -47,10 +47,11 @@ def compute_lfp_cell_performance(battery_module,state,bus,coolant_lines,t_idx, d
     # Compute Bus electrical properties 
     # ---------------------------------------------------------------------------------    
     bus_conditions              = state.conditions.energy[bus.tag]
-    bus_config                  = bus.battery_module_electric_configuration
+    bus_config                  = bus.battery_module_electric_configuration 
+    phi                         = state.conditions.energy.hybrid_power_split_ratio 
     E_bus                       = bus_conditions.energy
-    P_bus                       = bus_conditions.power_draw
-    I_bus                       = bus_conditions.current_draw
+    P_bus                       = bus_conditions.power_draw*phi
+    I_bus                       = bus_conditions.current_draw*phi    
     
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions
@@ -130,7 +131,7 @@ def compute_lfp_cell_performance(battery_module,state,bus,coolant_lines,t_idx, d
     V_ul_cell[t_idx]      = compute_lfp_cell_state(battery_module,battery_module_data,SOC_cell[t_idx],T_cell[t_idx],abs(I_cell[t_idx])) 
  
     # Effective Power flowing through battery_module 
-    P_module[t_idx]       = P_bus[t_idx] /no_modules  - np.abs(Q_heat_module[t_idx]) 
+    P_module[t_idx]       = P_bus[t_idx] /no_modules - np.abs(Q_heat_module[t_idx]) 
 
     # store remaining variables  
     V_ul_module[t_idx]     = V_ul_cell[t_idx]*n_series  

@@ -18,7 +18,7 @@ import scipy as sp
 # ----------------------------------------------------------------------------------------------------------------------
 # Compute Harmonic Noise 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt):
+def harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,coordinates,rotor,settings,Noise,cpt):
     '''This computes the harmonic noise (i.e. thickness and loading noise) in the frequency domain 
     of a rotor at any angle of attack with load distribution along the blade span and blade chord. This is a 
     level 3 fidelity approach. All sources are computed using the helicoidal surface theory.
@@ -75,7 +75,7 @@ def harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,propulsor_con
     thickness_fidelity      = 'plane'
     ###############################################    
 
-    aeroacoustic_data       = propulsor_conditions[rotor.tag] 
+    aeroacoustic_data       = conditions.energy.converters[rotor.tag] 
     angle_of_attack         = np.atleast_2d(conditions.aerodynamics.angles.alpha[cpt]) 
     velocity_vector         = np.atleast_2d(conditions.frames.inertial.velocity_vector[cpt])  
     freestream              = conditions.freestream       
@@ -89,7 +89,7 @@ def harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,propulsor_con
     num_az                  = aeroacoustic_data.number_azimuthal_stations 
     orientation             = np.array(rotor.orientation_euler_angles) * 1 
     body2thrust             = sp.spatial.transform.Rotation.from_rotvec(orientation).as_matrix() 
-    commanded_thrust_vector =  np.atleast_2d(propulsor_conditions.commanded_thrust_vector_angle[cpt]) 
+    commanded_thrust_vector =  np.atleast_2d(conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle[cpt]) 
     for jj,airfoil in enumerate(airfoils):
         airfoil_points      = airfoil.number_of_points
         t_c                 = airfoil.geometry.thickness_to_chord

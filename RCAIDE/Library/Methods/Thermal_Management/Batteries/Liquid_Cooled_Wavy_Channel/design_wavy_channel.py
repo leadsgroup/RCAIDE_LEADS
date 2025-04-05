@@ -15,6 +15,8 @@ from RCAIDE.Framework.Optimization.Packages.scipy                               
 # Python package imports  
 import numpy as np  
 import time 
+import os
+import sys
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Wavy Channel Design
@@ -55,17 +57,28 @@ def design_wavy_channel(HAS,battery,single_side_contact=True, dry_mass=True,
     elif HAS.design_heat_removed  == None: 
         assert('specify heat generated') 
 
-    # start optimization 
-    ti                   = time.time()   
+    # start optimization  
     optimization_problem = wavy_channel_design_problem_setup(HAS,battery,print_iterations)
-    output               = scipy_setup.SciPy_Solve(optimization_problem,solver=solver_name, iter = iterations , sense_step = solver_sense_step,tolerance = solver_tolerance)  
+    
+    # Commense suppression of console window output  
+    devnull = open(os.devnull,'w')
+    sys.stdout = devnull
+     
+    output               = scipy_setup.SciPy_Solve(optimization_problem,solver=solver_name,
+                                                   iter = iterations ,
+                                                   sense_step = solver_sense_step,
+                                                   tolerance = solver_tolerance)  
 
-    tf                   = time.time()
-    elapsed_time         = round((tf-ti)/60,2)
-    print('Channel Cooling hex Optimization Simulation Time: ' + str(elapsed_time) + ' mins')   
+    # Terminate suppression of console window output   
+    sys.stdout = sys.__stdout__
 
-    # print optimization results 
-    print (output)   
+    if output[3] != 0:
+        print("Wavy-channel desing optimization failed: ",output[4])
+        
+    print('\nSizing ', HAS.tag)
+    print(output[4])
+
+    # print optimization results  
     HAS_opt = optimization_problem.hrs_configurations.optimized.networks.electric.coolant_lines.coolant_line.battery_modules[battery.tag].thermal_management_system.heat_acquisition_system
     HAS.mass_properties.mass       = HAS_opt.mass_properties.mass      
     HAS.design_power_draw          = HAS_opt.design_power_draw         

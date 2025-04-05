@@ -46,10 +46,10 @@ def main():
     
     # evaluate
     results     = mission.evaluate()  
-    P_truth     = 53642.7801812346
-    mdot_truth  = 0.004713177474086059
+    P_truth     = 53641.7363056914
+    mdot_truth  = 0.004713084945145902
     
-    P    = results.segments.cruise.state.conditions.energy.ice_propeller.internal_combustion_engine.power[-1,0]
+    P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle_mass_rate[-1,0]
 
     # Check the errors
@@ -117,19 +117,12 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
-
-    # ------------------------------------------------------------------
-    #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle = vehicle
-    analyses.append(weights)
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                            = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.vehicle                            = vehicle 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------

@@ -49,10 +49,8 @@ def Harmonic_Noise_Validation(PP):
     
     F8745_D4_verification_values_60deg = [156.92733365790193,100.86943888034477,109.60611659108622 ]
     F8745_D4_verification_values_90deg = [159.07711862067382,107.37402397630274,117.14527113998096 ]
-    fidelities                         = ['plane_source'] #['point_source', 'line_source', 'plane_source'] 
-    electric_rotor                     = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
-    rotor                              = F8745_D4_Propeller() 
-    electric_rotor.rotor               = rotor
+    fidelities                         = ['point_source', 'line_source', 'plane_source']  
+    rotor                              = F8745_D4_Propeller()  
     
     plot_rotor(rotor, save_figure=False, show_figure=False)
     
@@ -126,15 +124,13 @@ def Harmonic_Noise_Validation(PP):
     # Run simulation using different fidelities 
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     for fid in  range(len(fidelities)): 
-        electric_rotor.append_operating_conditions(segment) 
-        for tag, item in  electric_rotor.items(): 
-            if issubclass(type(item), RCAIDE.Library.Components.Component):
-                item.append_operating_conditions(segment,electric_rotor)  
+        rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.noise)
+        
         # Run BEMT
         segment.state.conditions.expand_rows(ctrl_pts)
-        rotor_conditions             =  segment.state.conditions.energy[electric_rotor.tag][rotor.tag]     
+        rotor_conditions             =  segment.state.conditions.energy.converters[rotor.tag]       
         rotor_conditions.omega[:,0]  = test_omega
-        compute_rotor_performance(electric_rotor,segment.state)      
+        compute_rotor_performance(rotor,segment.state.conditions)      
         
         noise                                                  = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup() 
         settings                                               = noise.settings
@@ -144,15 +140,15 @@ def Harmonic_Noise_Validation(PP):
         # time
         ti  = time.time()
         # Run Frequency Domain Rotor Noise Model           
-        compute_rotor_noise(mic_positions,electric_rotor,rotor,segment,settings)
+        compute_rotor_noise(mic_positions,rotor,segment,settings)
         tf  = time.time()
         
-        F8745D4_SPL                                            = conditions.noise[electric_rotor.tag][rotor.tag].SPL     
-        F8745D4_SPL_harmonic                                   = conditions.noise[electric_rotor.tag][rotor.tag].SPL_harmonic 
-        F8745D4_SPL_broadband                                  = conditions.noise[electric_rotor.tag][rotor.tag].SPL_broadband  
-        F8745D4_SPL_harmonic_bpf_spectrum                      = conditions.noise[electric_rotor.tag][rotor.tag].SPL_harmonic_bpf_spectrum     
+        F8745D4_SPL                                            = conditions.noise.converters[rotor.tag].SPL     
+        F8745D4_SPL_harmonic                                   = conditions.noise.converters[rotor.tag].SPL_harmonic 
+        F8745D4_SPL_broadband                                  = conditions.noise.converters[rotor.tag].SPL_broadband  
+        F8745D4_SPL_harmonic_bpf_spectrum                      = conditions.noise.converters[rotor.tag].SPL_harmonic_bpf_spectrum     
         
-        Cp =  segment.state.conditions.energy[electric_rotor.tag][rotor.tag].power_coefficient
+        Cp =  segment.state.conditions.energy.converters[rotor.tag]  .power_coefficient
 
         
         # plot results 
@@ -219,10 +215,8 @@ def Broadband_Noise_Validation(PP):
                                                   60.58095738])
 
     
-    
-    electric_rotor                 = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
-    rotor                          = APC_11x4_Propeller()  
-    electric_rotor.rotor           = rotor     
+     
+    rotor                          = APC_11x4_Propeller()   
     
     # Operating Conditions       
     APC_SF_inflow_ratio           = 0.08  
@@ -285,15 +279,12 @@ def Broadband_Noise_Validation(PP):
     rotor.number_azimuthal_stations                        = 16
     rotor.use_2d_analysis                                  = True
      
-    electric_rotor.append_operating_conditions(segment) 
-    for tag, item in  electric_rotor.items(): 
-        if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,electric_rotor)  
+    rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.noise)
     # Run BEMT
     segment.state.conditions.expand_rows(ctrl_pts)
-    rotor_conditions             =  segment.state.conditions.energy[electric_rotor.tag][rotor.tag]     
+    rotor_conditions             =  segment.state.conditions.energy.converters[rotor.tag]       
     rotor_conditions.omega[:,0]  = APC_SF_omega_vector
-    compute_rotor_performance(electric_rotor,segment.state)
+    compute_rotor_performance(rotor,segment.state.conditions)      
 
     noise                                                  = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup() 
     settings                                               = noise.settings
@@ -303,11 +294,11 @@ def Broadband_Noise_Validation(PP):
     # time
     ti = time.time()             
     # Run Frequency Domain Rotor Noise Model           
-    compute_rotor_noise(mic_positions,electric_rotor,rotor,segment,settings)
+    compute_rotor_noise(mic_positions,rotor,segment,settings)
     tf = time.time()
     
-    APC_SF_1_3_Spectrum                                     = conditions.noise[electric_rotor.tag][rotor.tag].SPL_1_3_spectrum 
-    APC_SF_SPL_broadband_1_3_spectrum                       = conditions.noise[electric_rotor.tag][rotor.tag].SPL_broadband_1_3_spectrum  
+    APC_SF_1_3_Spectrum                                     = conditions.noise.converters[rotor.tag].SPL_1_3_spectrum 
+    APC_SF_SPL_broadband_1_3_spectrum                       = conditions.noise.converters[rotor.tag].SPL_broadband_1_3_spectrum  
 
     axes_3_1,axes_3_2, axes_3_3, axes_3_4, validation_data = Broadband_Noise_Validation_Data(PP)
 

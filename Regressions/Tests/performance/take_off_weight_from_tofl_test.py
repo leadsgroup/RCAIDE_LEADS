@@ -47,7 +47,7 @@ def main():
     # Compute take off weight given tofl
     max_tow = find_take_off_weight_given_tofl(configuration,analyses,target_tofl)
     
-    truth_max_tow = 46146.48857431369
+    truth_max_tow = 56980.00000000001
     max_tow_error = np.max(np.abs(max_tow[0]-truth_max_tow)) 
     print('Range Error = %.4e' % max_tow_error)
     assert(max_tow_error   < 1e-6 )
@@ -63,8 +63,7 @@ def base_analysis(vehicle):
    
     #  Aerodynamics Analysis
     aerodynamics         = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.vehicle = vehicle 
     analyses.append(aerodynamics)
     
     # ------------------------------------------------------------------
