@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Propulsors.Converters
+RCAIDE.Library.Components.Powertrain.Converters
 
 Converters
 ==========
 
-.. automodule:: RCAIDE.Library.Components.Propulsors.Converters
+.. automodule:: RCAIDE.Library.Components.Powertrain.Converters
 
    
    

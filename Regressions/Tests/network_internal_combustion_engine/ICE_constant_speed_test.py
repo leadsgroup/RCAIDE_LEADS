@@ -20,7 +20,7 @@ import os
 
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
 from Cessna_172                       import vehicle_setup  
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor import design_propeller
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine import design_constant_speed_internal_combustion_engine
 
 # ----------------------------------------------------------------------
 #   Main
@@ -38,19 +38,16 @@ def main():
     # create analyses
     analyses = analyses_setup(configs)
 
-    # mission analyses
-    mission  = mission_setup(analyses) 
-
     # create mission instances (for multiple types of missions)
-    missions = missions_setup(mission) 
+    missions = missions_setup(analyses) 
 
     # mission analysis 
     results = missions.base_mission.evaluate()   
     
-    P_truth     = 53698.45856056677
-    mdot_truth  = 0.004718069503961755
+    P_truth     = 53736.23971445547
+    mdot_truth  = 0.00472138822956184
     
-    P    = results.segments.cruise.state.conditions.energy.ice_constant_speed_propeller.internal_combustion_engine.power[-1,0]
+    P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle_mass_rate[-1,0]     
 
     # Check the errors
@@ -80,12 +77,12 @@ def ICE_CS(vehicle):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                   = RCAIDE.Library.Components.Energy.Distributors.Fuel_Line() 
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # uel Tank and Fuel
     #------------------------------------------------------------------------------------------------------------------------------------   
-    fuel_tank                                   = RCAIDE.Library.Components.Energy.Sources.Fuel_Tanks.Fuel_Tank()
+    fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.origin                            = vehicle.wings.main_wing.origin  
     fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel.mass_properties.mass                   = 319 *Units.lbs 
@@ -98,20 +95,20 @@ def ICE_CS(vehicle):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    propulsor                                  = RCAIDE.Library.Components.Propulsors.Constant_Speed_ICE_Propeller()
+    propulsor                                  = RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine()
     propulsor.tag                              = 'ice_constant_speed_propeller' 
                                                    
     # Engine                     
-    engine                                     = RCAIDE.Library.Components.Propulsors.Converters.Engine()
+    engine                                     = RCAIDE.Library.Components.Powertrain.Converters.Engine()
     engine.sea_level_power                     = 180. * Units.horsepower
     engine.flat_rate_altitude                  = 0.0
     engine.rated_speed                         = 2700. * Units.rpm
     engine.rated_power                         = 180.  * Units.hp   
-    engine.power_specific_fuel_consumption     = 0.52 
+    engine.power_specific_fuel_consumption     = 0.52  
     propulsor.engine                           = engine 
     
     # Prop  
-    prop                                   = RCAIDE.Library.Components.Propulsors.Converters.Propeller()
+    prop                                   = RCAIDE.Library.Components.Powertrain.Converters.Propeller()
     prop.number_of_blades                  = 2.0
     prop.variable_pitch                    = True 
     prop.tip_radius                        = 76./2. * Units.inches
@@ -129,10 +126,12 @@ def ICE_CS(vehicle):
                                            '../../Vehicles/Airfoils/Polars/NACA_4412_polar_Re_500000.txt' ,
                                            '../../Vehicles/Airfoils/Polars/NACA_4412_polar_Re_1000000.txt' ] 
     prop.append_airfoil(airfoil)  
-    prop.airfoil_polar_stations            = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    design_propeller(prop)   
+    prop.airfoil_polar_stations            = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
     propulsor.propeller                    = prop  
 
+    # design propeller ICE  
+    design_constant_speed_internal_combustion_engine(propulsor)
+    
     net.propulsors.append(propulsor)
 
     #------------------------------------------------------------------------------------------------------------------------------------   
@@ -161,7 +160,11 @@ def analyses_setup(configs):
 
     return analyses
 
-def missions_setup(mission):  
+def missions_setup(analyses):
+ 
+    # mission analyses
+    mission  = mission_setup(analyses)
+    
     missions         = RCAIDE.Framework.Mission.Missions() 
     mission.tag  = 'base_mission'
     missions.append(mission)
@@ -219,7 +222,6 @@ def mission_setup(analyses):
     segment.altitude                                      = 12000. * Units.feet
     segment.air_speed                                     = 119.   * Units.knots
     segment.distance                                      = 10 * Units.nautical_mile
-    segment.state.conditions.energy.rpm                   = 2650. *  ones_row(1)
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  
@@ -244,18 +246,12 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
- 
-    # ------------------------------------------------------------------
-    #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
-    weights.vehicle = vehicle
-    analyses.append(weights)
+
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                            = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.vehicle                            = vehicle 
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------

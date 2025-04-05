@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor
+RCAIDE.Library.Methods.Powertrain.Converters.DC_Motor
 
 DC\_Motor
 =========
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.DC_Motor
 
    
    

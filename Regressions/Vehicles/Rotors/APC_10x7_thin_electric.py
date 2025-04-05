@@ -20,7 +20,7 @@ def propeller_geometry():
     # Propeller Geometry:
     # --------------------------------------------------------------------------------------------------
 
-    prop = RCAIDE.Library.Components.Propulsors.Converters.Propeller()
+    prop = RCAIDE.Library.Components.Powertrain.Converters.Propeller()
     
     prop.tag              = 'apc_10x7_propeller'
     prop.tip_radius       = 5 * Units.inches
@@ -93,7 +93,7 @@ def propeller_geometry():
         ]
     )
 
-    prop.pitch_command               = 0.0* Units.deg
+    prop.blade_pitch_command         = 0.0* Units.deg
     prop.twist_distribution          = beta * Units.deg
     prop.chord_distribution          = c_R * prop.tip_radius
     prop.radius_distribution         = r_R * prop.tip_radius

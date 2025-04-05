@@ -7,18 +7,16 @@
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-
-# package imports 
-import numpy as np
-
-from RCAIDE.Framework.Core                                       import  Data
-from RCAIDE.Library.Components.Wings                             import All_Moving_Surface
-from RCAIDE.Library.Components.Fuselages                         import Fuselage 
+import RCAIDE
+from RCAIDE.Framework.Core                                                              import  Data
+from RCAIDE.Library.Components.Wings                                                    import All_Moving_Surface 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_VD_helpers      import postprocess_VD
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.make_VLM_wings           import make_VLM_wings 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.deflect_control_surface  import deflect_control_surface
 from RCAIDE.Library.Methods.Geometry.Airfoil                                            import import_airfoil_geometry
- 
+  
+# package imports 
+import numpy as np
 
 # ----------------------------------------------------------------------
 #  Generate Vortex Distribution
@@ -900,7 +898,7 @@ def generate_fuselage_and_nacelle_vortex_distribution(VD,fus,n_cw,n_sw,precision
     fvs.chord  = np.zeros((n_sw+1)) 
     fvs.sweep  = np.zeros((n_sw+1))
 
-    if isinstance(fus, Fuselage):
+    if isinstance(fus, RCAIDE.Library.Components.Fuselages.Fuselage):
 
         # Compute the curvature of the nose/tail given fineness ratio. Curvature is derived from general quadratic equation
         # This method relates the fineness ratio to the quadratic curve formula via a spline fit interpolation

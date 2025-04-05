@@ -129,7 +129,7 @@ def import_vsp_vehicle(tag,main_wing_tag = None, network_type=None, propulsor_ty
     if isinstance(network_type,RCAIDE.Framework.Networks.Network) != True:
         raise Exception('Vehicle energy network type must be defined. \n Choose from list in RCAIDE.Framework.Networks') 
 
-    if isinstance(propulsor_type,RCAIDE.Library.Components.Propulsors.Propulsor ) != True:
+    if isinstance(propulsor_type,RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor ) != True:
         raise Exception('Vehicle propulsor type must be defined. \n Choose from list in RCAIDE.Library.Compoments.Propulsors')     
 
     # Get the last path from sys.path

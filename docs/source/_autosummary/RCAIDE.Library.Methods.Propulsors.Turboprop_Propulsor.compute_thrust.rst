@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Turboprop_Propulsor.compute_thrust
+RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor.compute_thrust
 
 compute\_thrust
 ===============
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Turboprop_Propulsor.compute_thrust
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor.compute_thrust
 
    
    

@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 import RCAIDE
-from RCAIDE.Framework.Core                              import Units, Data
-from RCAIDE.Library.Plots                               import *     
-from RCAIDE.Framework.Mission.Common import Conditions, Results, Residuals
-from RCAIDE.Library.Methods.Propulsors.Converters import Reformer
-from RCAIDE.Library.Methods.Propulsors.Converters.Reformer.compute_reformer_performance import compute_reformer_performance
+from RCAIDE.Framework.Core                        import Units, Data
+from RCAIDE.Library.Plots                         import *     
+from RCAIDE.Framework.Mission.Common              import Conditions, Results, Residuals
+from RCAIDE.Library.Methods.Powertrain.Converters import Reformer
+from RCAIDE.Library.Methods.Powertrain.Converters.Reformer.compute_reformer_performance import compute_reformer_performance
 
 import os
 import numpy as np 
@@ -35,7 +35,7 @@ def main():
     O_C_truth     = [0.011870136164444744]    
     phi_truth     = [4.13667981438515]    
 
-    reformer = RCAIDE.Library.Components.Propulsors.Converters.Reformer()
+    reformer = RCAIDE.Library.Components.Powertrain.Converters.Reformer()
 
     # set up conditions  
     ctrl_pts = 1

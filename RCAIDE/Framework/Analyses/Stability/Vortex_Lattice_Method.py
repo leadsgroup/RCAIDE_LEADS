@@ -190,7 +190,7 @@ class Vortex_Lattice_Method(Stability):
         compute.drag.spoiler                       = Common.Drag.spoiler_drag
         compute.drag.total                         = Common.Drag.total_drag
         compute.stability                          = Process()
-        compute.stability.dynamic_modes            = RCAIDE.Library.Methods.Stability.Common.compute_dynamic_flight_modes  
+        compute.stability.dynamic_modes            = RCAIDE.Library.Methods.Stability.compute_dynamic_flight_modes  
         self.process.compute                       = compute 
 
     def initialize(self):  

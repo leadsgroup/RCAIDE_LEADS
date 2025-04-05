@@ -84,14 +84,13 @@ class Frequency_Domain_Buildup(Noise):
         """         
     
         # unpack 
-        config        = segment.analyses.noise.vehicle 
-        settings      = self.settings  
-        conditions    = segment.state.conditions  
-        dim_cf        = len(settings.center_frequencies ) 
-        ctrl_pts      = int(segment.state.numerics.number_of_control_points) 
-         
-        microphone_locations =  generate_hemisphere_microphone_locations(settings)     
-        N_hemisphere_mics    =  len(microphone_locations)
+        config               = segment.analyses.noise.vehicle 
+        settings             = self.settings  
+        conditions           = segment.state.conditions  
+        dim_cf               = len(settings.center_frequencies ) 
+        ctrl_pts             = int(segment.state.numerics.number_of_control_points) 
+        microphone_locations = generate_hemisphere_microphone_locations(settings)     
+        N_hemisphere_mics    = len(microphone_locations)
         
         # create empty arrays for results      
         total_SPL_dBA          = np.ones((ctrl_pts,N_hemisphere_mics))*1E-16 
@@ -103,10 +102,10 @@ class Frequency_Domain_Buildup(Noise):
         for network in config.networks:
             for propulsor in network.propulsors:
                 for sub_tag , sub_item in  propulsor.items():
-                    if isinstance(sub_item, RCAIDE.Library.Components.Propulsors.Converters.Rotor): 
-                        rotor_tag         = compute_rotor_noise(microphone_locations,propulsor,sub_item,segment,settings, rotor_index = i, previous_rotor_tag= rotor_tag, identical_propulsors=network.identical_propulsors)   
-                        total_SPL_dBA     = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],conditions.noise[propulsor.tag][sub_item.tag].SPL_dBA[:,None,:]),axis =1),sum_axis=1)
-                        total_SPL_spectra = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,:],conditions.noise[propulsor.tag][sub_item.tag].SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
+                    if isinstance(sub_item, RCAIDE.Library.Components.Powertrain.Converters.Rotor): 
+                        rotor_tag         = compute_rotor_noise(microphone_locations,sub_item,segment,settings, rotor_index = i, previous_rotor_tag= rotor_tag, identical_propulsors=network.identical_propulsors)   
+                        total_SPL_dBA     = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],conditions.noise.converters[sub_item.tag].SPL_dBA[:,None,:]),axis =1),sum_axis=1)
+                        total_SPL_spectra = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,:],conditions.noise.converters[sub_item.tag].SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
                         i += 1
                         
         conditions.noise.hemisphere_SPL_dBA              = total_SPL_dBA

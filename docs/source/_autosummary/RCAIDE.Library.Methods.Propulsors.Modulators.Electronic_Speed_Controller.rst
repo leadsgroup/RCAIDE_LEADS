@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Modulators.Electronic_Speed_Controller
+RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller
 
 Electronic\_Speed\_Controller
 =============================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Modulators.Electronic_Speed_Controller
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller
 
    
    

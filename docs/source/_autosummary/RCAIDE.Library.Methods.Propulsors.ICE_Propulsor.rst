@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.ICE_Propulsor
+RCAIDE.Library.Methods.Powertrain.Propulsors.ICE_Propulsor
 
 ICE\_Propulsor
 ==============
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.ICE_Propulsor
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Propulsors.ICE_Propulsor
 
    
    

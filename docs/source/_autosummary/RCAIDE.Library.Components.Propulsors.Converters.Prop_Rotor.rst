@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Propulsors.Converters.Prop_Rotor
+RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor
 
 Prop\_Rotor
 ===========
 
-.. automodule:: RCAIDE.Library.Components.Propulsors.Converters.Prop_Rotor
+.. automodule:: RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor
 
    
    

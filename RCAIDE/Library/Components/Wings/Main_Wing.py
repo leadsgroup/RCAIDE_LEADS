@@ -9,7 +9,7 @@
 from .Wing import Wing
 from RCAIDE.Framework.Core import Container 
 from RCAIDE.Library.Components.Wings.Segments.Segment import Segment
-from RCAIDE.Library.Methods.Weights.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Main_Wing

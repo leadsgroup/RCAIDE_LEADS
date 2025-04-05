@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Momentum_Theory_Wake.fidelity_zero_wake_convergence
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Momentum_Theory_Wake.fidelity_zero_wake_convergence
 
 fidelity\_zero\_wake\_convergence
 =================================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Momentum_Theory_Wake.fidelity_zero_wake_convergence
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Momentum_Theory_Wake.fidelity_zero_wake_convergence
 
    
    

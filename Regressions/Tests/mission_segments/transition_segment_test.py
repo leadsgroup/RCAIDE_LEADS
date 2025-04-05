@@ -57,9 +57,9 @@ def tiltwing_transition_test(update_regression_values):
     TW_results = TW_missions.base_mission.evaluate()  
     
     # Extract sample values from computation    
-    hover_throttle            = TW_results.segments.hover.conditions.energy['lift_rotor_propulsor_1'].throttle[1][0]
-    vertical_climb_1_throttle = TW_results.segments.vertical_climb_1.conditions.energy['lift_rotor_propulsor_1'].throttle[1][0] 
-    vertical_descent_throttle = TW_results.segments.vertical_descent.conditions.energy['lift_rotor_propulsor_1'].throttle[1][0] 
+    hover_throttle            = TW_results.segments.hover.conditions.energy.propulsors['prop_rotor_propulsor_1'].throttle[1][0]
+    vertical_climb_1_throttle = TW_results.segments.vertical_climb_1.conditions.energy.propulsors['prop_rotor_propulsor_1'].throttle[1][0] 
+    vertical_descent_throttle = TW_results.segments.vertical_descent.conditions.energy.propulsors['prop_rotor_propulsor_1'].throttle[1][0] 
     
     #print values for resetting regression
     show_vals = True
@@ -69,9 +69,9 @@ def tiltwing_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth              = 0.6032731206904142
-    vertical_climb_1_throttle_truth   = 0.606892139245807
-    vertical_descent_throttle_truth   = 0.5965847517907135
+    hover_throttle_truth              = 0.5994692986064568
+    vertical_climb_1_throttle_truth   = 0.6032111666837028
+    vertical_descent_throttle_truth   = 0.5925255481996229
     
     # Store errors 
     error = Data() 
@@ -102,9 +102,9 @@ def stopped_rotor_transition_test(update_regression_values):
     SR_results = SR_missions.base_mission.evaluate()  
     
     # Extract sample values from computation    
-    hover_throttle     = SR_results.segments.vertical_climb.conditions.energy['lift_propulsor_1'].throttle[1][0]
-    lst_throttle       = SR_results.segments.low_speed_transition.conditions.energy['lift_propulsor_1'].throttle[1][0] 
-    hsct_throttle      = SR_results.segments.high_speed_climbing_transition.conditions.energy['lift_propulsor_1'].throttle[1][0] 
+    hover_throttle     = SR_results.segments.vertical_climb.conditions.energy.propulsors['lift_propulsor_1'].throttle[1][0]
+    lst_throttle       = SR_results.segments.low_speed_transition.conditions.energy.propulsors['lift_propulsor_1'].throttle[1][0] 
+    hsct_throttle      = SR_results.segments.high_speed_climbing_transition.conditions.energy.propulsors['lift_propulsor_1'].throttle[1][0] 
     
     #print values for resetting regression
     show_vals = True
@@ -114,9 +114,9 @@ def stopped_rotor_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth  = 0.650918038833368
-    lst_throttle_truth    = 0.6359963559059645
-    hsct_throttle_truth   = 0.5475420672366067
+    hover_throttle_truth  = 0.6211932586773058
+    lst_throttle_truth    = 0.607625951962474 
+    hsct_throttle_truth   = 0.5041297941502668
     
     # Store errors 
     error = Data() 
@@ -165,15 +165,15 @@ def TW_base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Weights_EVTOL()
+    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
+    weights.aircraft_type =  "VTOL"
     weights.vehicle = vehicle
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.vehicle = vehicle 
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
@@ -205,15 +205,15 @@ def SR_base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Weights_EVTOL()
+    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
+    weights.aircraft_type =  "VTOL"
     weights.vehicle = vehicle
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.vehicle = vehicle 
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
@@ -265,8 +265,8 @@ def TW_mission_setup(analyses ):
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['lift_rotor_propulsor_1','lift_rotor_propulsor_2','lift_rotor_propulsor_3','lift_rotor_propulsor_4',
-                                                            'lift_rotor_propulsor_5','lift_rotor_propulsor_6','lift_rotor_propulsor_7','lift_rotor_propulsor_8']]
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
+                                                            'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]
       
     mission.append_segment(segment)
  
@@ -287,8 +287,8 @@ def TW_mission_setup(analyses ):
 
     # define flight controls  
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['lift_rotor_propulsor_1','lift_rotor_propulsor_2','lift_rotor_propulsor_3','lift_rotor_propulsor_4',
-                                                            'lift_rotor_propulsor_5','lift_rotor_propulsor_6','lift_rotor_propulsor_7','lift_rotor_propulsor_8']]
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
+                                                            'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]
     
     mission.append_segment(segment)   
     
@@ -308,8 +308,8 @@ def TW_mission_setup(analyses ):
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['lift_rotor_propulsor_1','lift_rotor_propulsor_2','lift_rotor_propulsor_3','lift_rotor_propulsor_4',
-                                                                             'lift_rotor_propulsor_5','lift_rotor_propulsor_6','lift_rotor_propulsor_7','lift_rotor_propulsor_8']]  
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
+                                                                             'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]  
             
     mission.append_segment(segment)       
      
@@ -367,7 +367,7 @@ def SR_mission_setup(analyses,vehicle):
     segment.air_speed_end                                 = 0.75 * Vstall
     segment.acceleration                                  = 1.5
     segment.pitch_initial                                 = 0.0 * Units.degrees
-    segment.pitch_final                                   = 2.  * Units.degrees    
+    segment.pitch_final                                   = 2.  * Units.degrees 
 
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  
@@ -377,7 +377,7 @@ def SR_mission_setup(analyses,vehicle):
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['cruise_propulsor_1','cruise_propulsor_2'],
                                                              ['lift_propulsor_1','lift_propulsor_2','lift_propulsor_3','lift_propulsor_4',
-                                                            'lift_propulsor_5','lift_propulsor_6','lift_propulsor_7','lift_propulsor_8']]
+                                                            'lift_propulsor_5','lift_propulsor_6','lift_propulsor_7','lift_propulsor_8']] 
     mission.append_segment(segment) 
     
     #------------------------------------------------------------------------------------------------------------------------------------  

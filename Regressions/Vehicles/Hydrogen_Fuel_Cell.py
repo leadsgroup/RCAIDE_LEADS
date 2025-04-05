@@ -32,19 +32,19 @@ def vehicle_setup(fuel_cell_model):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus and Crogenic Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus = RCAIDE.Library.Components.Energy.Distributors.Electrical_Bus()  
+    bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()  
     if fuel_cell_model == 'PEM': 
         bus.fuel_cell_stack_electric_configuration =  "Series"
         bus.identical_fuel_cell_stacks             = False
-        fuel_cell_stack = RCAIDE.Library.Components.Energy.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
+        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
         bus.fuel_cell_stacks.append(fuel_cell_stack)  
     if fuel_cell_model == 'Larminie':
         bus.fuel_cell_stack_electric_configuration =  "Parallel"
         
-        fuel_cell_stack_1 = RCAIDE.Library.Components.Energy.Converters.Generic_Fuel_Cell_Stack()  
+        fuel_cell_stack_1 = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()  
         bus.fuel_cell_stacks.append(fuel_cell_stack_1)
 
-        fuel_cell_stack_2 = RCAIDE.Library.Components.Energy.Converters.Generic_Fuel_Cell_Stack()  
+        fuel_cell_stack_2 = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()  
         bus.fuel_cell_stacks.append(fuel_cell_stack_2)
         
     bus.initialize_bus_properties()
@@ -60,7 +60,7 @@ def vehicle_setup(fuel_cell_model):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Crogenic Tank
     #------------------------------------------------------------------------------------------------------------------------------------       
-    cryogenic_tank = RCAIDE.Library.Components.Energy.Sources.Cryogenic_Tanks.Cryogenic_Tank()  
+    cryogenic_tank = RCAIDE.Library.Components.Powertrain.Sources.Cryogenic_Tanks.Cryogenic_Tank()  
     bus.cryogenic_tanks.append(cryogenic_tank)     
 
     # append bus   

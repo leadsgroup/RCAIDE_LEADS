@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Energy.Distributors.Electrical_Bus
+RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus
 
 Electrical\_Bus
 ===============
 
-.. automodule:: RCAIDE.Library.Components.Energy.Distributors.Electrical_Bus
+.. automodule:: RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus
 
    
    

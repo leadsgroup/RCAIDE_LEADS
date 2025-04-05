@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Perscribed_Vortex_Wake
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Perscribed_Vortex_Wake
 
 Perscribed\_Vortex\_Wake
 ========================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Perscribed_Vortex_Wake
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Perscribed_Vortex_Wake
 
    
    

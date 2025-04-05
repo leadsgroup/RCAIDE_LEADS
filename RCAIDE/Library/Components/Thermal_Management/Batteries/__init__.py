@@ -7,7 +7,7 @@ cooling, and liquid cooling with wavy channels.
 
 See Also
 --------
-RCAIDE.Library.Components.Energy.Sources.Battery_Modules
+RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules
     Related module for battery system modeling
 RCAIDE.Library.Components.Thermal_Management.Heat_Exchangers
     Related module for heat exchanger components used in battery cooling

@@ -50,7 +50,7 @@ def miscellaneous_drag(state,settings,geometry):
         for network in geometry.networks: 
             for propulsor in network.propulsors:  
                 if 'nacelle' in propulsor:
-                    swet_tot += propulsor.nacelle.areas.wetted  
+                    swet_tot += propulsor.nacelle.areas.wetted
                             
         # total miscellaneous drag 
         miscellaneous_drag =  (0.40* (0.0184 + 0.000469 * swet_tot - 1.13*10**-7 * swet_tot ** 2)) / S_ref

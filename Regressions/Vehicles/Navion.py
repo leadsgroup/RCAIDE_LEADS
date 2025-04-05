@@ -9,7 +9,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE 
 from RCAIDE.Framework.Core import Units   
-from RCAIDE.Library.Methods.Propulsors.Converters.Rotor import design_propeller
+from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine import design_internal_combustion_engine
 from RCAIDE.Library.Methods.Geometry.Planform  import segment_properties
 from RCAIDE.Library.Plots       import *  
 
@@ -37,17 +38,19 @@ def vehicle_setup():
     vehicle.mass_properties.takeoff                   = 2948 * Units.pounds
     vehicle.mass_properties.moments_of_inertia.tensor = np.array([[164627.7,0.0,0.0],[0.0,471262.4,0.0],[0.0,0.0,554518.7]])
     vehicle.mass_properties.center_of_gravity         = [[2.239696797,0,-0.131189711 ]]
+     
+    vehicle.reference_area                            = 17.112 
+    vehicle.passengers                                = 2 
+    vehicle.systems.control                           = "fully powered"
+    vehicle.systems.accessories                       = "commuter"       
+    
+    # flight envelope 
+    vehicle.flight_envelope.design_cruise_altitude    = 15000*Units.feet
+    vehicle.flight_envelope.design_range              = 750 * Units.nmi
     vehicle.flight_envelope.ultimate_load             = 5.7
     vehicle.flight_envelope.positive_limit_load       = 3.8
-    vehicle.reference_area                            = 17.112 
-    vehicle.passengers                                = 2
-    vehicle.design_dynamic_pressure                   = 1929.16080736607
-
-    cruise_speed                                      = 124. * Units.kts 
-    atmo                                              = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    freestream                                        = atmo.compute_values(altitude =  8500. * Units.ft) 
-    mach_number                                       = (cruise_speed/freestream.speed_of_sound)[0][0]  
-    vehicle.flight_envelope.design_mach_number        =  mach_number
+    vehicle.flight_envelope.design_dynamic_pressure   = 1929.16080736607
+    vehicle.flight_envelope.design_mach_number        = 0.1931864244395293
     
     # ------------------------------------------------------------------        
     #   Main Wing
@@ -214,7 +217,18 @@ def vehicle_setup():
     # ------------------------------------------------------------------
     fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
     fuselage.tag                                = 'fuselage'
-    fuselage.seats_abreast                      = 2
+
+    # define cabin    
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 2
+    economy_class.number_of_rows                      = 1
+    economy_class.galley_lavatory_percent_x_locations = []  
+    economy_class.emergency_exit_percent_x_locations  = []      
+    economy_class.type_A_exit_percent_x_locations     = [] 
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin)
+    
     fuselage.lengths.total                      = 8.349950916 
     fuselage.width                              = 1.22028016 
     fuselage.heights.maximum                    = 1.634415138  
@@ -303,12 +317,12 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                   = RCAIDE.Library.Components.Energy.Distributors.Fuel_Line()   
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()   
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel
     #------------------------------------------------------------------------------------------------------------------------------------       
-    fuel_tank                                             = RCAIDE.Library.Components.Energy.Sources.Fuel_Tanks.Fuel_Tank() 
+    fuel_tank                                             = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank() 
     fuel_tank.origin                                      = vehicle.wings.main_wing.origin  
     fuel_tank.fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel_tank.fuel.mass_properties.mass                   = 319 *Units.lbs 
@@ -318,18 +332,19 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    ice_prop                                   = RCAIDE.Library.Components.Propulsors.ICE_Propeller()      
+    ice_prop                                   = RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine()      
                                                      
     # Engine                     
-    engine                                     = RCAIDE.Library.Components.Propulsors.Converters.Engine()
+    engine                                     = RCAIDE.Library.Components.Powertrain.Converters.Engine()
 
     engine.sea_level_power                     = 185. * Units.horsepower 
     engine.rated_speed                         = 2300. * Units.rpm 
     engine.power_specific_fuel_consumption     = 0.01  * Units['lb/hp/hr']
     ice_prop.engine                            = engine 
+    ice_prop.sealevel_static_thrust            = 2500 # N
      
     # Propeller 
-    prop                                    = RCAIDE.Library.Components.Propulsors.Converters.Propeller()
+    prop                                    = RCAIDE.Library.Components.Powertrain.Converters.Propeller()
     prop.tag                                = 'propeller'
     prop.number_of_blades                   = 2.0
     prop.tip_radius                         = 76./2. * Units.inches
@@ -340,8 +355,10 @@ def vehicle_setup():
     prop.cruise.design_altitude             = 12000. * Units.feet
     prop.cruise.design_power                = .64 * 180. * Units.horsepower
     prop.variable_pitch                     = True    
-    design_propeller(prop)    
     ice_prop.propeller                      = prop
+
+    # design propeller ICE  
+    design_internal_combustion_engine(ice_prop)
     
     net.propulsors.append(ice_prop) 
     
@@ -360,7 +377,7 @@ def vehicle_setup():
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------ 
     Wuav                                        = 2. * Units.lbs
-    avionics                                    = RCAIDE.Library.Components.Systems.Avionics()
+    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.mass_properties.uninstalled        = Wuav
     vehicle.avionics                            = avionics     
 

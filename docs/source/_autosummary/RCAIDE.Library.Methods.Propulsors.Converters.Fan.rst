@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Fan
+RCAIDE.Library.Methods.Powertrain.Converters.Fan
 
 Fan
 ===
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Fan
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Fan
 
    
    

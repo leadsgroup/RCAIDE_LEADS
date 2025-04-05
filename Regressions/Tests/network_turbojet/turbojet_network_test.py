@@ -62,8 +62,8 @@ def main():
     plot_mission(results)    
 
     # Extract sample values from computation  
-    thrust     = results.segments.climb_1.conditions.energy['inner_right_turbojet'].thrust[3][0]
-    throttle   = results.segments.level_cruise.conditions.energy['inner_right_turbojet'].throttle[3][0] 
+    thrust     = results.segments.climb_1.conditions.energy.propulsors['inner_right_turbojet'].thrust[3][0]
+    throttle   = results.segments.level_cruise.conditions.energy.propulsors['inner_right_turbojet'].throttle[3][0] 
     CL         = results.segments.descent_1.conditions.aerodynamics.coefficients.lift.total[2][0] 
     
     #print values for resetting regression
@@ -120,8 +120,12 @@ def base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
-    weights.vehicle = vehicle
+    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional()
+    weights.aircraft_type  =  "Transport"
+    weights.settings.update_mass_properties         = False
+    weights.settings.update_center_of_gravity       = False
+    weights.settings.update_moment_of_inertia       = False
+    weights.vehicle        = vehicle
     analyses.append(weights)
     
     # ------------------------------------------------------------------
@@ -130,8 +134,7 @@ def base_analysis(vehicle):
     aerodynamics.vehicle                              = vehicle
     aerodynamics.settings.number_of_spanwise_vortices  = 5
     aerodynamics.settings.number_of_chordwise_vortices = 2       
-    aerodynamics.settings.model_fuselage               = True
-    aerodynamics.settings.drag_coefficient_increment   = 0.0000
+    aerodynamics.settings.model_fuselage               = True 
     analyses.append(aerodynamics)
 
 

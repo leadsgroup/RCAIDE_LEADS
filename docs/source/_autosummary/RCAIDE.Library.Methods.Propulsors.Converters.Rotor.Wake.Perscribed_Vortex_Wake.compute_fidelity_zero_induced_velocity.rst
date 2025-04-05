@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Perscribed_Vortex_Wake.compute_fidelity_zero_induced_velocity
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Perscribed_Vortex_Wake.compute_fidelity_zero_induced_velocity
 
 compute\_fidelity\_zero\_induced\_velocity
 ==========================================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Wake.Perscribed_Vortex_Wake.compute_fidelity_zero_induced_velocity
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Perscribed_Vortex_Wake.compute_fidelity_zero_induced_velocity
 
    
    

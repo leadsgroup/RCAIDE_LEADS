@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Propulsors.Turbojet
+RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet
 
 Turbojet
 ========
 
-.. automodule:: RCAIDE.Library.Components.Propulsors.Turbojet
+.. automodule:: RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet
 
    
    

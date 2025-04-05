@@ -30,6 +30,13 @@ def main():
     material            = RCAIDE.Library.Attributes.Materials.Acrylic()    
     material            = RCAIDE.Library.Attributes.Materials.Magnesium()  
     material            = RCAIDE.Library.Attributes.Materials.Titanium()   
+    material            = RCAIDE.Library.Attributes.Materials.Aluminum()    
+    material            = RCAIDE.Library.Attributes.Materials.Aluminum_Alloy()  
+    material            = RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy()  
+    material            = RCAIDE.Library.Attributes.Materials.Polyetherimide()  
+    material            = RCAIDE.Library.Attributes.Materials.Polyimide()  
+    material            = RCAIDE.Library.Attributes.Materials.Polytetrafluoroethylene()
+    material            = RCAIDE.Library.Attributes.Materials.CrossLinked_Polyethylene()
       
     # gases 
     working_fluid                       = RCAIDE.Library.Attributes.Gases.CO2()        
@@ -47,6 +54,7 @@ def main():
     propellant  = RCAIDE.Library.Attributes.Propellants.Methane() 
     propellant  = RCAIDE.Library.Attributes.Propellants.Propane()
     propellant  = RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen()
+    propellant  = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     propellant  = RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture()
     propellant  = RCAIDE.Library.Attributes.Propellants.Alkane_Mixture()
     propellant  = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()

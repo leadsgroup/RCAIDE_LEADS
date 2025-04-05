@@ -11,6 +11,7 @@ import RCAIDE
 from   RCAIDE.Framework.Core                                   import Units , Data 
 from   RCAIDE.Library.Plots                                    import *
 from   RCAIDE.Library.Methods.Performance.estimate_stall_speed import estimate_stall_speed  
+from RCAIDE.Library            import Components
 
 # python imports     
 import numpy as np  
@@ -50,8 +51,8 @@ def main():
     results = missions.base_mission.evaluate()
     
     # Extract sample values from computation  
-    thrust     = results.segments.climbing_cruise.conditions.energy['starboard_propulsor'].thrust[3][0]
-    throttle   = results.segments.climbing_cruise.conditions.energy['starboard_propulsor'].throttle[3][0]  
+    thrust     = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].thrust[3][0]
+    throttle   = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].throttle[3][0]  
     
     #print values for resetting regression
     show_vals = True
@@ -61,8 +62,8 @@ def main():
             print(val)
     
     # Truth values
-    thrust_truth     = 38557.132144368166
-    throttle_truth   = 0.7711426428873633
+    thrust_truth     = 20513.494671871977
+    throttle_truth   = 0.8419670200469558
     
     # Store errors 
     error = Data()
@@ -99,15 +100,21 @@ def base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
+    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional()
+    weights.aircraft_type   = 'Transport'
+    weights.settings.update_mass_properties         = False
+    weights.settings.update_center_of_gravity       = False
+    weights.settings.update_moment_of_inertia       = False
+    
+    # remove landing gear for regression
+    vehicle.landing_gears  = Components.Landing_Gear.Landing_Gear.Container() 
     weights.vehicle = vehicle
     analyses.append(weights)
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle                              = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.vehicle                              = vehicle 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------
@@ -142,8 +149,8 @@ def base_analysis(vehicle):
 
 def plot_mission(results):
     
-    plot_altitude_sfc_weight(results) 
-        
+    plot_altitude_sfc_weight(results)
+    
     return 
 
 # ----------------------------------------------------------------------

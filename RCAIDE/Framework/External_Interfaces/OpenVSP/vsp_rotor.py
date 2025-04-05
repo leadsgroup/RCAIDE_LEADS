@@ -87,7 +87,7 @@ def read_vsp_rotor(prop_id, units_type='SI',write_airfoil_file=True):
 
 
     # Check if this is a rotor or a lift rotor 
-    rotor 	= RCAIDE.Library.Components.Propulsors.Converters.Rotor()
+    rotor 	= RCAIDE.Library.Components.Powertrain.Converters.Rotor()
 
     # Set the units
     if units_type == 'SI':
@@ -293,11 +293,11 @@ def make_section_text(vsp_bem,rotor):
     Sweep      = np.arctan(rotor.mid_chord_alignment/rotor.radius_distribution)
     t_c        = rotor.thickness_to_chord
     
-    if type(rotor) == RCAIDE.Library.Components.Propulsors.Converters.Lift_Rotor: 
+    if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor: 
         CLi        = np.ones(N)*rotor.hover.design_Cl  
-    elif type(rotor) == RCAIDE.Library.Components.Propulsors.Converters.Propeller:
+    elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Propeller:
         CLi        = np.ones(N)*rotor.cruise.design_Cl   
-    elif type(rotor) == RCAIDE.Library.Components.Propulsors.Converters.Prop_Rotor: 
+    elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor: 
         CLi        = np.ones(N)*rotor.hover.design_Cl  
     
     Axial      = np.zeros(N)

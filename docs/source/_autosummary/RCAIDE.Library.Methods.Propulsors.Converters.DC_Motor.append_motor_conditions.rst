@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor.append_motor_conditions
+RCAIDE.Library.Methods.Powertrain.Converters.DC_Motor.append_motor_conditions
 
 append\_motor\_conditions
 =========================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.DC_Motor.append_motor_conditions
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.DC_Motor.append_motor_conditions
 
    
    

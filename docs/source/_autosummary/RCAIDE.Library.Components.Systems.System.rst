@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Systems.System
+RCAIDE.Library.Components.Powertrain.Systems.System
 
 System
 ======
 
-.. automodule:: RCAIDE.Library.Components.Systems.System
+.. automodule:: RCAIDE.Library.Components.Powertrain.Systems.System
 
    
    

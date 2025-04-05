@@ -17,7 +17,6 @@ def inertial_position(segment):
                 numerics.dimensionless.integrate        [i]
                 numerics.dimensionless.control_points   [-]
                 frames.inertial.aircraft_range          [m]
-                inertial.velocity_vector                [m/s]
             
         Outputs: 
             state.conditions.frames.inertial.position_vector  [m]

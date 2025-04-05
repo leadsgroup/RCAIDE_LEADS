@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Propulsors.Converters.Expansion_Nozzle
+RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle
 
 Expansion\_Nozzle
 =================
 
-.. automodule:: RCAIDE.Library.Components.Propulsors.Converters.Expansion_Nozzle
+.. automodule:: RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle
 
    
    

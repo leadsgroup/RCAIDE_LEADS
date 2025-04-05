@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Compression_Nozzle
+RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle
 
 Compression\_Nozzle
 ===================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Compression_Nozzle
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle
 
    
    

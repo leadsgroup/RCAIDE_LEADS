@@ -14,7 +14,9 @@ from RCAIDE.Framework.Optimization.Packages.scipy     import scipy_setup
 
 # Python package imports   
 import numpy as np  
-import time 
+import time
+import os
+import sys
 
 # ----------------------------------------------------------------------
 #  Rotor Design
@@ -35,24 +37,34 @@ def design_cross_flow_heat_exchanger(HEX,coolant_line,battery, single_side_conta
     """    
     
     
-    # start optimization 
-    ti                   = time.time()  
+    # start optimization  
     optimization_problem = crossflow_heat_exchanger_design_problem_setup(HEX,coolant_line,print_iterations)
-    output               = scipy_setup.SciPy_Solve(optimization_problem,solver=solver_name, iter = iterations , sense_step = solver_sense_step,tolerance = solver_tolerance)  
     
-    tf                   = time.time()
-    elapsed_time         = round((tf-ti)/60,2)
-    print('HEX sizing optimization Simulation Time: ' + str(elapsed_time) + ' mins')    
- 
+    # Commense suppression of console window output  
+    devnull = open(os.devnull,'w')
+    sys.stdout = devnull 
+    output               = scipy_setup.SciPy_Solve(optimization_problem,
+                                                   solver=solver_name,
+                                                   iter = iterations ,
+                                                   sense_step = solver_sense_step,
+                                                   tolerance = solver_tolerance)  
+    
+    # Terminate suppression of console window output   
+    sys.stdout = sys.__stdout__ 
+    if output[3] != 0:
+        print("Cross-flow heat-exchanger desing optimization failed: ",output[4])
+        
+    print('\nSizing ', HEX.tag)
+    print(output[4])   
 
     for coolant_line in optimization_problem.hex_configurations.optimized.networks.electric.coolant_lines:
         for heat_exchanger in coolant_line.heat_exchangers: 
             HEX_opt       = heat_exchanger
              
-    HEX.design_air_inlet_pressure     = output[0]
-    HEX.design_coolant_inlet_pressure = output[1]
-    HEX.design_air_mass_flow_rate     = output[2]
-    HEX.design_coolant_mass_flow_rate = output[3]
+    HEX.design_air_inlet_pressure     = output[0][0]
+    HEX.design_coolant_inlet_pressure = output[0][1]
+    HEX.design_air_mass_flow_rate     = output[0][2]
+    HEX.design_coolant_mass_flow_rate = output[0][3]
     HEX.stack_length                  = HEX_opt.stack_length 
     HEX.stack_width                   = HEX_opt.stack_width  
     HEX.stack_height                  = HEX_opt.stack_height  

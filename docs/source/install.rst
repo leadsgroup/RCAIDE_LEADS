@@ -10,7 +10,7 @@ System Requirements
 ==================
 Before installing RCAIDE, ensure your system meets these requirements:
 
-* **Python**: Version 3.8 to 3.12
+* **Python**: Version 3.8 to 3.13
 * **pip**: Version 20.0 or higher
 * **Operating Systems**: Linux, macOS, Windows
 

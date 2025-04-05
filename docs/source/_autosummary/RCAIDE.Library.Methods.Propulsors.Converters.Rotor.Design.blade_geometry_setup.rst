@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Design.blade_geometry_setup
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup
 
 blade\_geometry\_setup
 ======================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Design.blade_geometry_setup
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup
 
    
    

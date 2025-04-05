@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Energy.Distributors.Fuel_Line
+RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line
 
 Fuel\_Line
 ==========
 
-.. automodule:: RCAIDE.Library.Components.Energy.Distributors.Fuel_Line
+.. automodule:: RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line
 
    
    

@@ -23,17 +23,22 @@ from NASA_X57    import vehicle_setup, configs_setup
 #   Main
 # ---------------------------------------------------------------------- 
 def main(): 
- 
-    plot_elevation_contours(topography_file   ='LA_Metropolitan_Area.txt',use_lat_long_coordinates = True, save_filename = "Elevation_Contours_Lat_Long")
 
-    plot_elevation_contours(topography_file   ='LA_Metropolitan_Area.txt',use_lat_long_coordinates = False, save_filename = "Elevation_Contours_XY")
+    current_dir = os.path.dirname(__file__)
+    data_file = os.path.join(current_dir, 'LA_Metropolitan_Area.txt')
+
+
+    plot_elevation_contours(topography_file   =data_file,use_lat_long_coordinates = True, save_filename = "Elevation_Contours_Lat_Long")
+
+    plot_elevation_contours(topography_file   =data_file,use_lat_long_coordinates = False, save_filename = "Elevation_Contours_XY")
     
-    vehicle  = vehicle_setup()          
+    vehicle  = vehicle_setup('Blade_Element_Momentum_Theory_Helmholtz_Wake')          
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
     mission  = mission_setup(analyses)
     missions = missions_setup(mission)  
-    results  = missions.base_mission.evaluate()   
+    results  = missions.base_mission.evaluate()  
+    results.segments[0].analyses.noise.settings.topography_file = data_file
     
     regression_plotting_flag = False 
     flight_times = np.array(['06:00:00','06:05:00','06:10:00','06:15:00',
@@ -52,7 +57,7 @@ def main():
     plot_results(results,noise_data,regression_plotting_flag) 
 
     X57_SPL        = np.max(results.segments.cruise.conditions.noise.hemisphere_SPL_dBA) 
-    X57_SPL_true   = 96.64761095865973
+    X57_SPL_true   = 71.50341070406208
     X57_diff_SPL   = np.abs(X57_SPL - X57_SPL_true)
     print('Error: ',X57_diff_SPL)
     assert np.abs((X57_SPL - X57_SPL_true)/X57_SPL_true) < 1e-3 
@@ -74,27 +79,53 @@ def analyses_setup(configs):
     return analyses  
 
 
+# ---------------------------------------------------------------------
+#   Define the Configurations
+# ---------------------------------------------------------------------
+
+def configs_setup(vehicle):
+    
+    # ------------------------------------------------------------------
+    #   Initialize Configurations
+    # ------------------------------------------------------------------
+
+    configs     = RCAIDE.Library.Components.Configs.Config.Container() 
+    base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
+    base_config.tag = 'base'  
+    configs.append(base_config)
+ 
+    return configs 
+
 def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
- 
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Weights_General_Aviation()
-    weights.vehicle = vehicle
+    weights                 = RCAIDE.Framework.Analyses.Weights.Electric()
+    weights.aircraft_type   = 'General_Aviation'
+    weights.vehicle         = vehicle 
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.vehicle  = vehicle
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
+    aerodynamics.settings.number_of_spanwise_vortices   = 5
+    aerodynamics.settings.number_of_chordwise_vortices  = 2   
     analyses.append(aerodynamics)   
- 
-    #  Noise Analysis   
+
+    # ------------------------------------------------------------------
+    #  Energy
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
+    energy.vehicle  = vehicle 
+    analyses.append(energy)
+
+    # ------------------------------------------------------------------
+    #  Noise 
     noise = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup()   
     noise.vehicle = vehicle
     noise.settings.mean_sea_level_altitude          = False         
@@ -105,13 +136,7 @@ def base_analysis(vehicle):
     noise.settings.noise_times_steps                = 50  
     noise.settings.number_of_microphone_in_stencil  = 25
     noise.settings.topography_file                  = 'LA_Metropolitan_Area.txt' 
-    analyses.append(noise)
-
-    # ------------------------------------------------------------------
-    #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
-    analyses.append(energy)
+    analyses.append(noise)    
 
     # ------------------------------------------------------------------
     #  Planet Analysis
@@ -128,26 +153,34 @@ def base_analysis(vehicle):
     return analyses    
 
 # ----------------------------------------------------------------------
-#  Set Up Mission 
-# ---------------------------------------------------------------------- 
-def mission_setup(analyses):      
+#   Define the Mission
+# ----------------------------------------------------------------------
+def mission_setup(analyses): 
     
     # ------------------------------------------------------------------
     #   Initialize the Mission
     # ------------------------------------------------------------------
-    mission       = RCAIDE.Framework.Mission.Sequential_Segments()
-    mission.tag   = 'mission' 
-    Segments      = RCAIDE.Framework.Mission.Segments  
-    base_segment  = Segments.Segment()   
-    base_segment.state.numerics.number_of_control_points  = 3
-    base_segment.state.numerics.discretization_method     = RCAIDE.Library.Methods.Utilities.Chebyshev.linear_data
-    
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment) 
-    segment.tag = "cruise"   
+
+    mission = RCAIDE.Framework.Mission.Sequential_Segments()
+    mission.tag = 'mission'
+  
+    Segments = RCAIDE.Framework.Mission.Segments 
+    base_segment = Segments.Segment()
+    base_segment.state.numerics.number_of_control_points  = 3   
+    base_segment.state.numerics.discretization_method     = RCAIDE.Library.Methods.Utilities.Chebyshev.linear_data 
+
+    # ------------------------------------------------------------------    
+    #   Cruise Segment 
+    # ------------------------------------------------------------------    
+
+    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag = "cruise" 
     segment.analyses.extend( analyses.base ) 
-    segment.initial_battery_state_of_charge              = 1.0       
+    segment.initial_battery_state_of_charge               = 1.0
+     
     segment.altitude                                     = 30
-    segment.air_speed                                    = 100
+    segment.air_speed                                    = 175.*Units['mph']   
+    segment.distance                                     = 1 * Units.mile
     segment.distance                                     = 1 * Units.miles
     segment.true_course                                  = 130 *Units.degrees 
     
@@ -157,23 +190,21 @@ def mission_setup(analyses):
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                
-       
-    mission.append_segment(segment)      
-     
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]  
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.5]]  
+    segment.assigned_control_variables.body_angle.active             = True               
+    segment.assigned_control_variables.body_angle.initial_guess_values     = [[8.15*Units.degrees]]        
+    
+    mission.append_segment(segment)  
     return mission
 
-# ----------------------------------------------------------------------
-#  Set Up Missions 
-# ---------------------------------------------------------------------- 
 def missions_setup(mission): 
  
     missions     = RCAIDE.Framework.Mission.Missions() 
     mission.tag  = 'base_mission'
     missions.append(mission)
  
-    return missions  
+    return missions   
 
 
 # ----------------------------------------------------------------------

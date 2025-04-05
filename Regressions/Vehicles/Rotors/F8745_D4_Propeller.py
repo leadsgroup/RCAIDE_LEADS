@@ -13,9 +13,9 @@ import numpy as np
 
 # design propeller                                       
 def F8745_D4_Propeller():  
-    prop                            = RCAIDE.Library.Components.Propulsors.Converters.Propeller()
+    prop                            = RCAIDE.Library.Components.Powertrain.Converters.Propeller()
     prop.inputs                     = Data()
-    prop.inputs.pitch_command       = 0 
+    prop.inputs.blade_pitch_command = 0 
     prop.inputs.y_axis_rotation     = 0.
     prop.tag                        = 'F8745_D4_Propeller'  
     prop.tip_radius                 = 2.03/2

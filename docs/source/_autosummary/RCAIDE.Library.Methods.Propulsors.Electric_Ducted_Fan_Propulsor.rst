@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Electric_Ducted_Fan_Propulsor
+RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor
 
 Electric\_Ducted\_Fan\_Propulsor
 ================================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Electric_Ducted_Fan_Propulsor
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor
 
    
    

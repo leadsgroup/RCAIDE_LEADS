@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Design
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design
 
 Design
 ======
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Rotor.Design
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design
 
    
    

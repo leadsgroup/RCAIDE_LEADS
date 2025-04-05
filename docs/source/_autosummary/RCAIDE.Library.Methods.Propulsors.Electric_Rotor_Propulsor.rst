@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Electric_Rotor_Propulsor
+RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor
 
 Electric\_Rotor\_Propulsor
 ==========================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Electric_Rotor_Propulsor
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor
 
    
    

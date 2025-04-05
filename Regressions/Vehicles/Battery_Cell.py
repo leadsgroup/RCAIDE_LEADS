@@ -30,13 +30,13 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                                       = RCAIDE.Library.Components.Energy.Distributors.Electrical_Bus() 
+    bus                                       = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
     
     bus.battery_module_electric_configuration = electrical_config
     if cell_chemistry == 'lithium_ion_nmc': 
-        battery = RCAIDE.Library.Components.Energy.Sources.Battery_Modules.Lithium_Ion_NMC()
+        battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
     elif cell_chemistry == 'lithium_ion_lfp': 
-        battery = RCAIDE.Library.Components.Energy.Sources.Battery_Modules.Lithium_Ion_LFP()    
+        battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP()    
     bus.battery_modules.append(battery)  
     bus.initialize_bus_properties()
     

@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Energy.Sources
+RCAIDE.Library.Components.Powertrain.Sources
 
 Sources
 =======
 
-.. automodule:: RCAIDE.Library.Components.Energy.Sources
+.. automodule:: RCAIDE.Library.Components.Powertrain.Sources
 
    
    

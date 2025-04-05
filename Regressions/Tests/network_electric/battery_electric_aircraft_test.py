@@ -29,8 +29,8 @@ def main():
          
     battery_types = ['lithium_ion_nmc', 'lithium_ion_lfp']
     btms_types    = ['Liquid_Cooled_Wavy_Channel', 'Air_Cooled', None] 
-    CL_true       = [[0.8025301499309839,0.8025301499333614,0.8025301499333614],
-                     [0.8025301499284809,0.802530149928007,0.802530149928007]] 
+    CL_true       = [[0.8034875995182394,0.8034875995182279,0.8034875995182279],
+                     [0.8034875995182321,0.8034875995182257,0.8034875995182257]] 
     # vehicle data
     for i , battery_type in enumerate(battery_types):
         for j , btms_type in enumerate(btms_types):
@@ -76,32 +76,11 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
- 
-    # ------------------------------------------------------------------
-    #  Weights
-    weights          = RCAIDE.Framework.Analyses.Weights.Weights_EVTOL()
-    weights.vehicle  = vehicle
-    analyses.append(weights)
 
     # ------------------------------------------------------------------
-    #  Aerodynamics Analysis 
-    # Calculate extra drag from landing gear: 
-    main_wheel_width       = 4. * Units.inches
-    main_wheel_height      = 12. * Units.inches
-    nose_gear_height       = 10. * Units.inches
-    nose_gear_width        = 4. * Units.inches 
-    total_wheel            = 2*main_wheel_width*main_wheel_height + nose_gear_width*nose_gear_height 
-    main_gear_strut_height = 2. * Units.inches
-    main_gear_strut_length = 24. * Units.inches
-    nose_gear_strut_height = 12. * Units.inches
-    nose_gear_strut_width  = 2. * Units.inches 
-    total_strut            = 2*main_gear_strut_height*main_gear_strut_length + nose_gear_strut_height*nose_gear_strut_width 
-    drag_area              = 1.4*( total_wheel + total_strut)
-    
-    
-    aerodynamics                                     = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                             = vehicle
-    aerodynamics.settings.drag_coefficient_increment = drag_area/vehicle.reference_area
+    #  Aerodynamics Analysis  
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics.vehicle  = vehicle 
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------

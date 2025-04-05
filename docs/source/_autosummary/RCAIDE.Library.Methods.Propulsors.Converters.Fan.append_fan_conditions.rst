@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Fan.append_fan_conditions
+RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions
 
 append\_fan\_conditions
 =======================
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Fan.append_fan_conditions
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions
 
    
    

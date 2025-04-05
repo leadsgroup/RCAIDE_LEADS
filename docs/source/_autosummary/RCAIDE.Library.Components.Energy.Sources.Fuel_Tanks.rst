@@ -1,9 +1,9 @@
-RCAIDE.Library.Components.Energy.Sources.Fuel_Tanks
+RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks
 
 Fuel\_Tanks
 ===========
 
-.. automodule:: RCAIDE.Library.Components.Energy.Sources.Fuel_Tanks
+.. automodule:: RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks
 
    
    

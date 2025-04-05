@@ -32,5 +32,6 @@ from .plot_3d_nacelle                  import generate_3d_stack_nacelle_points
 from .plot_3d_wing                     import plot_3d_wing
 from .plot_3d_wing                     import generate_3d_wing_points
 from .plot_3d_vehicle_vlm_panelization import plot_3d_vehicle_vlm_panelization
+from .plot_layout_of_passenger_accommodations import plot_layout_of_passenger_accommodations
 from .plot_airfoil                     import plot_airfoil
 from .plot_rotor                       import plot_rotor 

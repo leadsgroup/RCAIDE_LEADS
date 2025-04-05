@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Propulsors.Converters.Combustor
+RCAIDE.Library.Methods.Powertrain.Converters.Combustor
 
 Combustor
 =========
 
-.. automodule:: RCAIDE.Library.Methods.Propulsors.Converters.Combustor
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Combustor
 
    
    

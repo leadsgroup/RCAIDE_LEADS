@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_airfoil_aerodynamics
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_airfoil_aerodynamics(beta,c,r,R,B,Wa,Wt,a,nu,airfoils,a_loc,ctrl_pts,Nr,Na,tc,use_2d_analysis):
+def compute_airfoil_aerodynamics(beta,c,r,R,B,Wa,Wt,a,nu,airfoils,airfoil_locations,ctrl_pts,Nr,Na,tc,use_2d_analysis):
     """
     Cl, Cdval = compute_airfoil_aerodynamics( beta,c,r,R,B,
                                               Wa,Wt,a,nu,
@@ -65,8 +65,8 @@ def compute_airfoil_aerodynamics(beta,c,r,R,B,Wa,Wt,a,nu,airfoils,a_loc,ctrl_pts
     Re       = (W*c)/nu
 
     # If rotor airfoils are defined, use airfoil surrogate
-    a_loc = np.array(a_loc)
-    if np.any(a_loc) != None:  
+    if len(airfoil_locations) != 0:
+        a_loc = np.array(airfoil_locations)
         # Compute blade Cl and Cd distribution from the airfoil data 
         if use_2d_analysis:
             # return the 2D Cl and CDval of shape (ctrl_pts, Nr, Na)
