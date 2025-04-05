@@ -61,7 +61,7 @@ def generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA):
     # Unpack
     # ---------------------------------------------- 
     FAR_part_number = vehicle.flight_envelope.FAR_part_number
-    atmo            = analyses.atmosphere
+    atmo            = analyses.base.atmosphere
     Mc              = vehicle.flight_envelope.design_mach_number
 
     for wing in vehicle.wings: 
@@ -76,8 +76,7 @@ def generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA):
     # Computing atmospheric conditions
     # ----------------------------------------------
     atmo_values       = atmo.compute_values(altitude,delta_ISA)
-    SL_atmo_values    = atmo.compute_values(0,delta_ISA)
-    conditions        = Results()
+    SL_atmo_values    = atmo.compute_values(0,delta_ISA) 
 
     rho               = atmo_values.density
     sea_level_rho     = SL_atmo_values.density
@@ -87,7 +86,7 @@ def generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA):
     # ------------------------------
     # Computing lift-curve slope
     # ------------------------------ 
-    results =  evalaute_aircraft(vehicle,altitude,Vc) 
+    results =  evalaute_aircraft(vehicle,analyses,altitude,Vc) 
     CLa     =  results.segments.cruise.conditions.static_stability.derivatives.Clift_alpha[0, 0] 
 
     # -----------------------------------------------------------
@@ -366,13 +365,7 @@ def generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA):
     return V_n_data
 
       
-def evalaute_aircraft(vehicle,altitude,Vc): 
-    
-    # Set up vehicle configs
-    configs  = configs_setup(vehicle)
-
-    # create analyses
-    analyses = analyses_setup(configs)
+def evalaute_aircraft(vehicle,analyses,altitude,Vc):  
 
     # mission analyses
     mission  = base_mission_setup(analyses,altitude,Vc) 
@@ -383,77 +376,7 @@ def evalaute_aircraft(vehicle,altitude,Vc):
     # mission analysis 
     results = missions.base_mission.evaluate() 
 
-    return results
- 
-def analyses_setup(configs):
-
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # build a base analysis for each config
-    for tag,config in configs.items():
-        analysis = base_analysis(config)
-        analyses[tag] = analysis
-
-    return analyses
-
-def base_analysis(vehicle):
-
-       # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses        = RCAIDE.Framework.Analyses.Vehicle() 
-
-    # ------------------------------------------------------------------
-    #  Weights
-    # ------------------------------------------------------------------
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.aircraft_type = 'General_Aviation'
-    weights.vehicle = vehicle
-    analyses.append(weights)
-
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    # ------------------------------------------------------------------
-    aerodynamics                                      = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                              = vehicle  
-    aerodynamics.settings.use_surrogate               = False 
-    aerodynamics.settings.trim_aircraft               = False 
-    analyses.append(aerodynamics)
-    
-    
-    # ------------------------------------------------------------------
-    #  Energy
-    # ------------------------------------------------------------------
-    energy     = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle = vehicle  
-    analyses.append(energy)
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    # ------------------------------------------------------------------
-    planet     = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    # ------------------------------------------------------------------
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
-    analyses.append(atmosphere)   
-
-    # done!
-    return analyses
-
-  
-def configs_setup(vehicle): 
-    # ------------------------------------------------------------------
-    #   Initialize Configurations
-    # ------------------------------------------------------------------ 
-    configs = RCAIDE.Library.Components.Configs.Config.Container() 
-    base_config                                                       = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag                                                   = 'base'     
-    configs.append(base_config)  
-    return configs
+    return results 
  
 def base_mission_setup(analyses,altitude,Vc):   
     '''

@@ -18,13 +18,15 @@ import numpy as np
 # aircraft_aerodynamic_analysis
 #------------------------------------------------------------------------------  
 def aircraft_aerodynamic_analysis(vehicle,
-                                  angle_of_attack_range,
-                                  Mach_number_range,
+                                  angle_of_attack_range = None,
+                                  Mach_number_range= None,
+                                  aerodynamics_analysis_routine = None,
                                   control_surface_deflection_range = np.array([[0]]),
                                   altitude = 0,
-                                  delta_ISA=0,
-                                  use_surrogate = True,
-                                  model_fuselage = True):  
+                                  delta_ISA=0):
+    
+    if aerodynamics_analysis_routine == None:
+        raise Exception('Aerodynamics analysis routine must be prescribed')
 
     #------------------------------------------------------------------------
     # setup flight conditions
@@ -58,16 +60,11 @@ def aircraft_aerodynamic_analysis(vehicle,
     state.conditions.expand_rows(ctrl_pts)
  
     CL_vals    = np.zeros((len(angle_of_attack_range),len(Mach_number_range)))  
-    CD_vals    = np.zeros((len(angle_of_attack_range),len(Mach_number_range)))
-    
+    CD_vals    = np.zeros((len(angle_of_attack_range),len(Mach_number_range))) 
  
     state.analyses                                  =  Data()
-    aerodynamics                                    = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.use_surrogate             = use_surrogate 
-    aerodynamics.vehicle                            = vehicle
-    aerodynamics.settings.model_fuselage            = model_fuselage   
-    aerodynamics.initialize()
-    state.analyses.aerodynamics = aerodynamics 
+    aerodynamics_analysis_routine.initialize()            
+    state.analyses.aerodynamics = aerodynamics_analysis_routine 
     
     for i in range (len(Mach_number_range)):  
         state.conditions.freestream.mach_number                 = Mach_number_range[i, 0] * np.ones_like(angle_of_attack_range)
@@ -90,25 +87,5 @@ def aircraft_aerodynamic_analysis(vehicle,
         lift_coefficient  = CL_vals, 
         drag_coefficient  = CD_vals, 
     )  
-         
-    # FUTURE WORK          
-    #control_surfaces_aerodynamics = Data()
-    #num_defl =  len(control_surface_deflection_range)
-    #for wing in vehicle.wings:
-        #for control_surface in  wing.control_surfaces: 
-            #CL_cs = np.zeros((num_defl,1))
-            #CD_cs = np.zeros((num_defl,1))
-            #for cs_i in  range(num_defl):
-                #control_surface.deflection = control_surface_deflection_range[i]
-                
-                #_        = state.analyses.aerodynamics.evaluate(state)     
-                #CL_cs[:,cs_i]    = state.conditions.aerodynamics.coefficients.lift.total
-                #CD_cs[:,cs_i]    = state.conditions.aerodynamics.coefficients.drag.total 
-                
-            #control_surfaces_aerodynamics[control_surface.tag].lift_coefficient =  CL_cs
-            #control_surfaces_aerodynamics[control_surface.tag].drag_coefficient =  CD_cs
-            
-            #control_surface.deflection =  0
-    #results.control_surfaces_aerodynamics    = control_surfaces_aerodynamics
-    #results.control_surface_deflection_range = control_surface_deflection_range 
+          
     return results  
