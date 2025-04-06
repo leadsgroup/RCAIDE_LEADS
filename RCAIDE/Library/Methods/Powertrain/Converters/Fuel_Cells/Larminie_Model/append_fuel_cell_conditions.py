@@ -34,12 +34,12 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
     Notes
     -----
     The function appends various fuel cell conditions in the `state` object, including: 
-    - power                                      
-    - voltage_under_load                         
-    - voltage_open_circuit             
-    - current_density                  
-    - current                          
-    - H2_mass_flow_rate
+        - power                                      
+        - voltage_under_load                         
+        - voltage_open_circuit             
+        - current_density                  
+        - current                          
+        - H2_mass_flow_rate
  
     References
     ---------- 

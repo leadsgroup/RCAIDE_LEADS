@@ -274,7 +274,7 @@ def compute_lfp_cell_state(battery_module, battery_module_data, SOC, T, I):
     
     See Also
     --------
-    compute_lfp_cell_performance : Function to compute overall cell performance
+    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP
     """
 
     # Make sure things do not break by limiting current, temperature and current 

@@ -60,7 +60,6 @@ def append_electric_rotor_conditions(propulsor, segment, energy_conditions, nois
     
     **Major Assumptions**
         * All arrays are initialized with zeros
-        * Each component has an append_operating_conditions method
     
     See Also
     --------

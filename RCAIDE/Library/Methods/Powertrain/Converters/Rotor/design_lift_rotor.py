@@ -80,10 +80,9 @@ def design_lift_rotor(rotor, number_of_stations=20, solver_name='SLSQP', iterati
     
     The optimization process follows these steps:
         1. Set up the optimization problem using the optimization_setup function
-        2. Suppress console output during optimization (if not printing iterations)
-        3. Solve the optimization problem using the specified solver
-        4. Restore console output and report optimization results
-        5. Update the rotor with the optimized parameters
+        2. Solve the optimization problem using the specified solver
+        3. Report optimization results
+        4. Update the rotor with the optimized parameters
     
     The objective function is formulated as an aeroacoustic function that considers
     both efficiency and radiated noise, with the balance controlled by the
