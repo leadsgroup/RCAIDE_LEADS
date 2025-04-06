@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
- # RCAIDE imports   
+ # RCAIDE imports
+ from RCAIDE.Framework.Core     import Data
 from .                          import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .append_turbofan_conditions     import append_turbofan_conditions 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
@@ -174,8 +175,7 @@ class Turbofan(Propulsor):
         self.emission_indices.CO                        = None
         self.emission_indices.H2O                       = None
         self.emission_indices.SO2                       = None
-        self.emission_indices.Soot                      = None 
-        
+        self.emission_indices.Soot                      = None  
         
         self.OpenVSP_flow_through                       = False
     
