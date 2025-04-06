@@ -123,46 +123,71 @@ def plot_flight_conditions(results,
      
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height) 
+    axis_1 = fig.add_subplot(2,2,1) 
+    axis_2 = fig.add_subplot(2,2,2)
+    axis_3 = fig.add_subplot(2,2,3)
+    axis_4 = fig.add_subplot(2,2,4)
+    
     for i in range(len(results.segments)): 
         time     = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-        airspeed = results.segments[i].conditions.freestream.velocity[:,0] /   Units['mph']
-        theta    = results.segments[i].conditions.frames.body.inertial_rotations[:,1,None] / Units.deg
+        airspeed = results.segments[i].conditions.freestream.velocity[:,0] /   Units['mph'] 
         Range    = results.segments[i].conditions.frames.inertial.aircraft_range[:,0]/ Units.nmi
         altitude = results.segments[i].conditions.freestream.altitude[:,0]/Units.feet
+        
+        elevator_deflection =  results.segments[i].conditions.control_surfaces.elevator.deflection[:,0] / Units.deg
+        flap_deflection     =  results.segments[i].conditions.control_surfaces.flap.deflection[:,0] / Units.deg
+        slat_deflection     =  results.segments[i].conditions.control_surfaces.slat.deflection[:,0] / Units.deg
+        aileron_deflection  =  results.segments[i].conditions.control_surfaces.aileron.deflection[:,0] / Units.deg
+        rudder_deflection   =  results.segments[i].conditions.control_surfaces.rudder.deflection[:,0] / Units.deg
+        spoiler_deflection   =  results.segments[i].conditions.control_surfaces.spoiler.deflection[:,0] / Units.deg
               
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')
         
-        axis_1 = plt.subplot(2,2,1)
         axis_1.plot(time, altitude, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name)
-        axis_1.set_ylabel(r'Altitude (ft)')
-        set_axes(axis_1)    
         
-        axis_2 = plt.subplot(2,2,2)
         axis_2.plot(time, airspeed, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width) 
-        axis_2.set_ylabel(r'Airspeed (mph)')
-        set_axes(axis_2) 
-        
-        axis_3 = plt.subplot(2,2,3)
+       
         axis_3.plot(time, Range, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
-        axis_3.set_xlabel('Time (mins)')
-        axis_3.set_ylabel(r'Range (nmi)')
-        set_axes(axis_3) 
-         
-        axis_4 = plt.subplot(2,2,4)
-        axis_4.plot(time, theta, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
-        axis_4.set_xlabel('Time (mins)')
-        axis_4.set_ylabel(r'Pitch Angle (deg)')
-        set_axes(axis_4) 
-         
+        
+        if i == 0: 
+            axis_4.plot(time, elevator_deflection, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = ' elevator ' )
+            axis_4.plot(time, flap_deflection    , color = line_colors[i], marker = ps.markers[2], linewidth = ps.line_width, label = ' flap' )
+            axis_4.plot(time, slat_deflection    , color = line_colors[i], marker = ps.markers[3], linewidth = ps.line_width, label = ' slat' )
+            axis_4.plot(time, aileron_deflection , color = line_colors[i], marker = ps.markers[4], linewidth = ps.line_width, label = ' aileron' )
+            axis_4.plot(time, rudder_deflection  , color = line_colors[i], marker = ps.markers[5], linewidth = ps.line_width, label = ' rudder' ) 
+            axis_4.plot(time, spoiler_deflection  , color = line_colors[i], marker = ps.markers[6], linewidth = ps.line_width, label = ' spoiler' ) 
+        else:
+            axis_4.plot(time, elevator_deflection, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
+            axis_4.plot(time, flap_deflection    , color = line_colors[i], marker = ps.markers[2], linewidth = ps.line_width)
+            axis_4.plot(time, slat_deflection    , color = line_colors[i], marker = ps.markers[3], linewidth = ps.line_width)
+            axis_4.plot(time, aileron_deflection , color = line_colors[i], marker = ps.markers[4], linewidth = ps.line_width)
+            axis_4.plot(time, rudder_deflection  , color = line_colors[i], marker = ps.markers[5], linewidth = ps.line_width)  
+            axis_4.plot(time, spoiler_deflection  , color = line_colors[i], marker = ps.markers[6], linewidth = ps.line_width)             
+        
+     
+    axis_1.set_ylabel(r'Altitude (ft)')
+    set_axes(axis_1)
+
+    axis_2.set_ylabel(r'Airspeed (mph)')
+    set_axes(axis_2) 
+
+    axis_3.set_xlabel('Time (mins)')
+    axis_3.set_ylabel(r'Range (nmi)')
+    set_axes(axis_3)
+    
+    axis_4.set_xlabel('Time (mins)')
+    axis_4.set_ylabel(r'Control Surface Deflection (deg)')
+    set_axes(axis_4)
     
     if show_legend:        
         leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
-        leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})    
+        leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})
+        axis_4.legend(loc='upper center')
     
     # Adjusting the sub-plots for legend 
     fig.tight_layout()
-    fig.subplots_adjust(top=0.8)
+    fig.subplots_adjust(top=0.75)
     
     # set title of plot 
     title_text    = 'Flight Conditions'      

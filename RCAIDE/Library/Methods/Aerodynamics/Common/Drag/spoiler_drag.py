@@ -8,6 +8,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Spolier Drag 
@@ -42,7 +43,7 @@ def spoiler_drag(state,settings,geometry):
     # untrimmed drag 
     drag  =  parasite_total + induced_total  + compressibility_total + miscellaneous_drag + cooling_drag 
     
-    spoiler_drag_coef =  0
+    spoiler_drag_coef =  np.zeros_like(drag)
     for wing in geometry.wings: 
         for cs in wing.control_surfaces:
             if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler:
