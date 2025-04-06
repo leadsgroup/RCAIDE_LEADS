@@ -98,10 +98,6 @@ def design_turboprop(turboprop):
     is based on achieving the required power output while maintaining component
     matching throughout the engine.
 
-    **Extra modules required**
-        * RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976
-        * RCAIDE.Library.Attributes.Planets.Earth
-
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Ram.compute_ram_performance

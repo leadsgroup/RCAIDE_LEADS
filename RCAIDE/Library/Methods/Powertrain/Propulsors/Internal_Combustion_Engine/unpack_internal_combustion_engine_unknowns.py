@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Internal_Combustion_Engine/unpack_internal_combustion_engine_unknowns.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke   
 

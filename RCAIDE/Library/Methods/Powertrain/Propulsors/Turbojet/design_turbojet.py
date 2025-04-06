@@ -100,9 +100,6 @@ def design_turbojet(turbojet):
         - :math:`F_{sp}` is the specific thrust
         - :math:`a_0` is the freestream speed of sound
     
-    **Extra modules required**
-        * numpy
-    
     References
     ----------
     [1] Mattingly, J. D., "Elements of Gas Turbine Propulsion", McGraw-Hill, 1996

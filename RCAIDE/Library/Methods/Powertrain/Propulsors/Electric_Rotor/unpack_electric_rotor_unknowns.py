@@ -1,6 +1,5 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Electric_Rotor_Propulsor/unpack_electric_rotor_unknowns.py
-# (c) Copyright 2023 Aerospace Research Community LLC
-# 
+
 # Created:  Jun 2024, M. Clarke   
 
 # ---------------------------------------------------------------------------------------------------------------------- 

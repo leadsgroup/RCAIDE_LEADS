@@ -15,22 +15,134 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_thrust
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_thrust(turboprop,conditions):
+def compute_thrust(turboprop, conditions):
+    """
+    Computes thrust and other performance metrics for a turboprop engine.
     
-    """Computes thrust and other properties as below.
-
-    Assumptions:
-    Perfect gas
-
-    Source:
-    Mattingly, Jack D.. “Elements of Gas Turbine Propulsion.” (1996).
-
-    Inputs:
+    Parameters
+    ----------
+    turboprop : RCAIDE.Library.Components.Propulsors.Turboprop
+        Turboprop engine component with the following attributes:
+            - tag : str
+                Identifier for the turboprop
+            - compressor : Data
+                Compressor component
+            - combustor : Data
+                Combustor component
+                - turbine_inlet_temperature : float
+                    Combustor exit/turbine inlet temperature [K]
+                - fuel_data : Data
+                    Fuel properties
+                    - lower_heating_value : float
+                        Fuel lower heating value [J/kg]
+            - high_pressure_turbine : Data
+                High pressure turbine component
+            - low_pressure_turbine : Data
+                Low pressure turbine component
+                - mechanical_efficiency : float
+                    Mechanical efficiency of the turbine
+            - core_nozzle : Data
+                Core nozzle component
+            - propeller_efficiency : float
+                Efficiency of the propeller
+            - gearbox : Data
+                Gearbox component
+                - efficiency : float
+                    Gearbox efficiency
+            - reference_temperature : float
+                Reference temperature for mass flow scaling [K]
+            - reference_pressure : float
+                Reference pressure for mass flow scaling [Pa]
+            - compressor_nondimensional_massflow : float
+                Non-dimensional mass flow parameter [kg·√K/(s·Pa)]
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions with:
+            - freestream : Data
+                Freestream properties
+                - gravity : numpy.ndarray
+                    Gravitational acceleration [m/s²]
+                - temperature : numpy.ndarray
+                    Freestream temperature [K]
+                - pressure : numpy.ndarray
+                    Freestream pressure [Pa]
+                - mach_number : numpy.ndarray
+                    Freestream Mach number
+                - speed_of_sound : numpy.ndarray
+                    Speed of sound [m/s]
+            - energy : Data
+                Energy conditions
+                - propulsors[turboprop.tag] : Data
+                    Turboprop-specific conditions
+                    - throttle : numpy.ndarray
+                        Throttle setting [0-1]
+                    - total_temperature_reference : numpy.ndarray
+                        Reference total temperature [K]
+                    - total_pressure_reference : numpy.ndarray
+                        Reference total pressure [Pa]
+                - converters : dict
+                    Converter energy conditions indexed by tag
     
+    Returns
+    -------
+    None
+        Results are stored in conditions.energy.propulsors[turboprop.tag]:
+            - thrust : numpy.ndarray
+                Thrust force [N]
+            - thrust_specific_fuel_consumption : numpy.ndarray
+                Thrust specific fuel consumption [kg/(N·hr)]
+            - non_dimensional_thrust : numpy.ndarray
+                Non-dimensional thrust
+            - core_mass_flow_rate : numpy.ndarray
+                Core mass flow rate [kg/s]
+            - fuel_flow_rate : numpy.ndarray
+                Fuel flow rate [kg/s]
+            - power : numpy.ndarray
+                Shaft power output [W]
+            - specific_power : numpy.ndarray
+                Specific power [W·s/kg]
+            - power_specific_fuel_consumption : numpy.ndarray
+                Power specific fuel consumption [kg/(W·hr)]
+            - thermal_efficiency : numpy.ndarray
+                Thermal efficiency
+            - propulsive_efficiency : numpy.ndarray
+                Propulsive efficiency
     
-    Outputs:
-    turboprop_conditions.thrust                                  
-    """       
+    Notes
+    -----
+    This function implements a thermodynamic model for a turboprop engine to calculate
+    thrust, fuel consumption, and efficiencies. It uses the outputs from each component
+    in the engine cycle to determine overall performance.
+    
+    **Major Assumptions**
+        * Perfect gas behavior
+        * Constant component efficiencies
+        * Propeller efficiency is constant
+    
+    **Theory**
+    The turboprop performance is calculated using gas turbine cycle analysis. The thrust
+    is determined by the power output of the low pressure turbine, the propeller efficiency,
+    and the core exhaust momentum.
+    
+    The specific thrust is calculated as:
+    
+    .. math::
+        F_{sp} = \\frac{W_{total} \\cdot c_p \\cdot T_0}{V_0}
+    
+    where:
+        - W_total is the total work output coefficient
+        - c_p is the specific heat at constant pressure
+        - T_0 is the freestream temperature
+        - V_0 is the freestream velocity
+    
+    References
+    ----------
+    [1] Mattingly, J.D., "Elements of Gas Turbine Propulsion", AIAA Education Series, 1996.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_turboprop_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.size_core
+    """
     
     g                                              = conditions.freestream.gravity                      
     T0                                             = conditions.freestream.temperature                  

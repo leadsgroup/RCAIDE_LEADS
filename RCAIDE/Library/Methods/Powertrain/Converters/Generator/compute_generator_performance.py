@@ -35,11 +35,10 @@ def compute_generator_performance(generator,conditions):
     Notes
     -----
     This function handles both PMSM and DC generator types with different computation approaches:
-     
-    - Uses speed-torque relationships
-    - Accounts for gearbox effects
-    - Computes electrical parameters (current, voltage)
-    - Determines overall efficiency
+        - Uses speed-torque relationships
+        - Accounts for gearbox effects
+        - Computes electrical parameters (current, voltage)
+        - Determines overall efficiency
 
     **Major Assumptions**
         * Steady state operation

@@ -31,9 +31,6 @@ def append_engine_conditions(engine,segment,energy_conditions,noise_conditions=N
     This function creates a nested structure of Conditions objects to store engine
     inputs and outputs during mission analysis. The conditions are stored under
     the engine's unique tag identifier.
-    
-    **Major Assumptions**
-        * Each engine has a unique tag identifier
     """
     # unpack 
     ones_row          = segment.state.ones_row

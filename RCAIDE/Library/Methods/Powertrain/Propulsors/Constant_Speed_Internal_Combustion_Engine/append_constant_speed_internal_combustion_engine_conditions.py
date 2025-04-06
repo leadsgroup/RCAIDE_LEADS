@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Constant_Speed_ICE_Propulsor/append_constant_speed_internal_combustion_engine_conditions.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke
 
@@ -13,7 +12,58 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_constant_speed_internal_combustion_engine_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_constant_speed_internal_combustion_engine_conditions(propulsor,segment,energy_conditions,noise_conditions):
+def append_constant_speed_internal_combustion_engine_conditions(propulsor, segment, energy_conditions, noise_conditions):
+    """
+    Initializes constant speed internal combustion engine operating conditions for a mission segment.
+    
+    Parameters
+    ----------
+    propulsor : RCAIDE.Library.Components.Propulsors.Constant_Speed_Internal_Combustion_Engine
+        Constant speed internal combustion engine propulsor component with the following attributes:
+            - tag : str
+                Identifier for the engine
+            - items : dict
+                Dictionary of subcomponents
+    segment : RCAIDE.Framework.Mission.Segments.Segment
+        Mission segment with the following attributes:
+            - state : Data
+                Segment state
+                - ones_row : function
+                    Function to create array of ones with specified length
+    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Energy conditions container where engine conditions will be stored
+    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Noise conditions container where engine noise conditions will be stored
+    
+    Returns
+    -------
+    None
+        Results are stored in energy_conditions.propulsors[propulsor.tag] and
+        segment.state.conditions.noise[propulsor.tag]
+    
+    Notes
+    -----
+    This function initializes the necessary data structures for storing constant speed
+    internal combustion engine operating conditions during a mission segment. It creates 
+    zero-filled arrays for various performance parameters and recursively calls the 
+    append_operating_conditions method for each subcomponent of the engine.
+    
+    The function initializes the following parameters in energy_conditions:
+        - throttle
+        - commanded_thrust_vector_angle
+        - thrust
+        - power
+        - moment
+        - fuel_flow_rate
+        - inputs and outputs containers
+    
+    It also creates a noise conditions container for the engine.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.compute_power
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.compute_thrust
+    """
     # unpack 
     ones_row          = segment.state.ones_row 
     

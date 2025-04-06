@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Engine/__init__.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 
 """
 Collection of methods for engine performance calculations and condition management. This module provides utilities for 

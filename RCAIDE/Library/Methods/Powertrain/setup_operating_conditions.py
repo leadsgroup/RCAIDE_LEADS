@@ -18,17 +18,97 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Operating Test Conditions Set-up
 # ---------------------------------------------------------------------------------------------------------------------- 
-def setup_operating_conditions(compoment, altitude = 0,velocity_range = np.array([10]), angle_of_attack = 0):
-    '''
-    Sets up operating conditions for single component analysis 
-    '''
+def setup_operating_conditions(component, altitude=0, velocity_range=np.array([10]), angle_of_attack=0):
+    """
+    Sets up operating conditions for single component analysis.
     
-        
+    Parameters
+    ----------
+    component : RCAIDE.Library.Components.Component
+        Component to set up operating conditions for
+            - working_fluid : Data
+                Working fluid properties object (will be set by this function)
+    altitude : float, optional
+        Altitude for analysis [m]
+        Default: 0 (sea level)
+    velocity_range : numpy.ndarray, optional
+        Array of velocities to analyze [m/s]
+        Default: np.array([10])
+    angle_of_attack : float, optional
+        Angle of attack for analysis [deg]Default: 0
+    
+    Returns
+    -------
+    state : RCAIDE.Framework.Mission.Common.State
+        State object containing:
+            - conditions : Data
+                Flight conditions
+                - freestream : Data
+                    Freestream properties
+                    - altitude : numpy.ndarray
+                        Altitude [m]
+                    - mach_number : numpy.ndarray
+                        Mach number
+                    - pressure : numpy.ndarray
+                        Atmospheric pressure [Pa]
+                    - temperature : numpy.ndarray
+                        Atmospheric temperature [K]
+                    - density : numpy.ndarray
+                        Air density [kg/m³]
+                    - dynamic_viscosity : numpy.ndarray
+                        Air dynamic viscosity [kg/(m·s)]
+                    - gravity : numpy.ndarray
+                        Gravitational acceleration [m/s²]
+                    - isentropic_expansion_factor : numpy.ndarray
+                        Ratio of specific heats (gamma)
+                    - Cp : numpy.ndarray
+                        Specific heat at constant pressure [J/(kg·K)]
+                    - R : numpy.ndarray
+                        Gas constant [J/(kg·K)]
+                    - speed_of_sound : numpy.ndarray
+                        Speed of sound [m/s]
+                    - velocity : numpy.ndarray
+                        Freestream velocity [m/s]
+                - frames : Data
+                    Reference frames
+                    - body : Data
+                        Body-fixed frame
+                        - inertial_rotations : numpy.ndarray
+                            Rotation angles [rad]
+                    - inertial : Data
+                        Inertial frame
+                        - velocity_vector : numpy.ndarray
+                            Velocity vector [m/s]
+    
+    Notes
+    -----
+    This function creates a standardized set of operating conditions for component analysis.
+    It sets up atmospheric conditions based on the US Standard Atmosphere 1976 model and
+    initializes all necessary parameters for component performance evaluation.
+    
+    The function:
+        1. Sets up Earth as the planet and air as the working fluid
+        2. Computes atmospheric properties at the specified altitude
+        3. Creates a conditions data structure with all necessary parameters
+        4. Sets up reference frames and orientations
+        5. Appends component-specific operating conditions
+    
+    **Major Assumptions**
+        * US Standard Atmosphere 1976
+        * Earth gravity
+        * Air as working fluid
+    
+    See Also
+    --------
+    RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976
+    RCAIDE.Library.Mission.Common.Update.orientations
+    """
+    
     planet                                            = RCAIDE.Library.Attributes.Planets.Earth()
     working_fluid                                     = RCAIDE.Library.Attributes.Gases.Air() 
     
     # append working fluid properties 
-    compoment.working_fluid                           = working_fluid     
+    component.working_fluid                           = working_fluid     
     
     atmosphere_sls                                    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data                                         = atmosphere_sls.compute_values(altitude,0.0) 
@@ -66,7 +146,7 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_range = np.array
     segment.state.residuals.network                  = Residuals()
     
     # append component-specific operating conditions 
-    compoment.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)    
+    component.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)    
     segment.state.conditions.expand_rows(num_ctrl_pts)              
     return segment.state
  

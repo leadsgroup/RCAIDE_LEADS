@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Compressor/__init__.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 
 """
 Collection of methods for computing compressor performance and conditions in propulsion systems. 

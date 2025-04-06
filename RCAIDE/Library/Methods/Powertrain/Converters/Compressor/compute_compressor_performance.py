@@ -49,26 +49,26 @@ def compute_compressor_performance(compressor, conditions):
     -------
     None
         Results are stored in conditions.energy.converters[compressor.tag].outputs:
-        - work_done : numpy.ndarray
-            Specific work done by compressor [J/kg]
-        - stagnation_temperature : numpy.ndarray
-            Exit stagnation temperature [K]
-        - stagnation_pressure : numpy.ndarray
-            Exit stagnation pressure [Pa]
-        - stagnation_enthalpy : numpy.ndarray
-            Exit stagnation enthalpy [J/kg]
-        - static_temperature : numpy.ndarray
-            Exit static temperature [K]
-        - static_pressure : numpy.ndarray
-            Exit static pressure [Pa]
-        - mach_number : numpy.ndarray
-            Exit Mach number
-        - gas_constant : numpy.ndarray
-            Gas constant [J/(kg·K)]
-        - gamma : numpy.ndarray
-            Ratio of specific heats
-        - cp : numpy.ndarray
-            Specific heat at constant pressure [J/(kg·K)]
+            - work_done : numpy.ndarray
+                Specific work done by compressor [J/kg]
+            - stagnation_temperature : numpy.ndarray
+                Exit stagnation temperature [K]
+            - stagnation_pressure : numpy.ndarray
+                Exit stagnation pressure [Pa]
+            - stagnation_enthalpy : numpy.ndarray
+                Exit stagnation enthalpy [J/kg]
+            - static_temperature : numpy.ndarray
+                Exit static temperature [K]
+            - static_pressure : numpy.ndarray
+                Exit static pressure [Pa]
+            - mach_number : numpy.ndarray
+                Exit Mach number
+            - gas_constant : numpy.ndarray
+                Gas constant [J/(kg·K)]
+            - gamma : numpy.ndarray
+                Ratio of specific heats
+            - cp : numpy.ndarray
+                Specific heat at constant pressure [J/(kg·K)]
 
     Notes
     -----

@@ -12,10 +12,65 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_propulsor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turbofan_conditions(propulsor,segment,energy_conditions,noise_conditions):
-    '''
-    Appends data structures arrays for storing turbofan conditions  
-    '''
+def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_conditions):
+    """
+    Initializes turbofan operating conditions for a mission segment.
+    
+    Parameters
+    ----------
+    propulsor : RCAIDE.Library.Components.Propulsors.Turbofan
+        Turbofan propulsor component with the following attributes:
+            - tag : str
+                Identifier for the turbofan
+            - items : dict
+                Dictionary of subcomponents
+    segment : RCAIDE.Framework.Mission.Segments.Segment
+        Mission segment with the following attributes:
+            - state : Data
+                Segment state
+                - ones_row : function
+                    Function to create array of ones with specified length
+    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Energy conditions container where turbofan conditions will be stored
+    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Noise conditions container where turbofan noise conditions will be stored
+    
+    Returns
+    -------
+    None
+        Results are stored in energy_conditions.propulsors[propulsor.tag] and
+        noise_conditions.propulsors[propulsor.tag]
+    
+    Notes
+    -----
+    This function initializes the necessary data structures for storing turbofan
+    operating conditions during a mission segment. It creates zero-filled arrays
+    for various performance parameters and recursively calls the append_operating_conditions
+    method for each subcomponent of the turbofan.
+    
+    The function initializes the following parameters in energy_conditions:
+        - throttle
+        - commanded_thrust_vector_angle
+        - thrust
+        - power
+        - moment
+        - fuel_flow_rate
+        - inputs and outputs containers
+    
+    It also creates the following containers in noise_conditions:
+        - core_nozzle
+        - fan_nozzle
+        - fan
+    
+    **Major Assumptions**
+        * All arrays are initialized with zeros
+        * Each component has an append_operating_conditions method
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thrust
+    """
     # unpack 
     ones_row          = segment.state.ones_row 
     

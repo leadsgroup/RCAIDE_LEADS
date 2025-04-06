@@ -14,95 +14,143 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_nmc_cell_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_nmc_cell_performance(battery_module,state,bus,coolant_lines,t_idx, delta_t): 
+def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_idx, delta_t):
     """
-    Compute the performance of a lithium-nickel-manganese-cobalt-oxide (NMC) battery_module cell.
-
-    This function models the electrical and thermal behavior of an 18650 NMC battery_module cell
-    based on experimental data from the Automotive Industrial Systems Company of Panasonic Group.
+    Computes the performance of a lithium-nickel-manganese-cobalt-oxide (NMC) battery cell.
 
     Parameters
     ----------
-    battery_module : battery_module
-        The battery_module object containing cell properties and configuration.
-    state : MissionState
-        The current state of the mission.
-    bus : ElectricBus
-        The electric bus to which the battery_module is connected.
+    battery_module : RCAIDE.Library.Components.Sources.Battery_Modules.Lithium_Ion_NMC
+        Battery module component with the following attributes:
+            - tag : str
+                Identifier for the battery module
+            - cell : Data
+                Cell properties
+                - electrode_area : float
+                    Area of the electrode [m²]
+                - surface_area : float
+                    Surface area of the cell [m²]
+                - mass : float
+                    Mass of a single cell [kg]
+                - specific_heat_capacity : float
+                    Specific heat capacity of the cell [J/(kg·K)]
+                - discharge_performance_map : function
+                    Function that maps state of charge, temperature, and current to voltage
+            - maximum_energy : float
+                Maximum energy capacity of the module [J]
+            - electrical_configuration : Data
+                Electrical configuration
+                - series : int
+                    Number of cells in series
+                - parallel : int
+                    Number of cells in parallel
+    state : RCAIDE.Framework.Mission.Common.State
+        State object containing:
+            - conditions : Data
+                Flight conditions
+                - energy : dict
+                    Energy conditions indexed by component tag
+                    - [bus.tag] : Data
+                        Bus-specific conditions
+                        - energy : numpy.ndarray
+                            Energy stored in the bus [J]
+                        - power_draw : numpy.ndarray
+                            Power draw on the bus [W]
+                        - current_draw : numpy.ndarray
+                            Current draw on the bus [A]
+                        - battery_modules : dict
+                            Battery module conditions indexed by tag
+                            - [battery_module.tag] : Data
+                                Battery module conditions
+                                - energy : numpy.ndarray
+                                    Energy stored in the module [J]
+                                - voltage_open_circuit : numpy.ndarray
+                                    Open-circuit voltage [V]
+                                - power : numpy.ndarray
+                                    Power output [W]
+                                - internal_resistance : numpy.ndarray
+                                    Internal resistance [Ω]
+                                - heat_energy_generated : numpy.ndarray
+                                    Heat energy generated [W]
+                                - voltage_under_load : numpy.ndarray
+                                    Voltage under load [V]
+                                - current : numpy.ndarray
+                                    Current [A]
+                                - temperature : numpy.ndarray
+                                    Temperature [K]
+                                - state_of_charge : numpy.ndarray
+                                    State of charge [0-1]
+                                - cell : Data
+                                    Cell-specific conditions with same properties as module
+            - numerics : Data
+                Numerical properties
+                - number_of_control_points : int
+                    Number of control points in the mission
+    bus : RCAIDE.Library.Components.Systems.Electrical_Bus
+        Electrical bus component with the following attributes:
+            - tag : str
+                Identifier for the electrical bus
+            - battery_module_electric_configuration : str
+                Configuration of battery modules ("Series" or "Parallel")
+            - battery_modules : list
+                List of battery modules connected to the bus
     coolant_lines : list
-        List of coolant lines for thermal management.
+        List of coolant lines for thermal management
     t_idx : int
-        Current time index in the simulation.
-    delta_t : float
-        Time step size.
+        Current time index in the simulation
+    delta_t : numpy.ndarray
+        Time step size [s]
 
     Returns
     -------
-    tuple
-        A tuple containing:
-        - stored_results_flag (bool): Flag indicating if results were stored.
-        - stored_battery_module_tag (str): Tag of the battery_module for which results were stored.
+    stored_results_flag : bool
+        Flag indicating if results were stored
+    stored_battery_module_tag : str
+        Tag of the battery module for which results were stored
 
     Notes
     -----
-    The function updates various battery_module conditions in the `state` object, including:
-    - Current energy
-    - Temperature
-    - Heat energy generated
-    - Load power
-    - Current
-    - Open-circuit voltage
-    - Charge throughput
-    - Internal resistance
-    - State of charge
-    - Depth of discharge
-    - Voltage under load
+    This function models the electrical and thermal behavior of an NMC battery cell
+    based on experimental data. It updates various battery conditions in the `state` object,
+    including: current energy, temperature, heat energy generated, load power, current,
+    open-circuit voltage, charge throughput, internal resistance, state of charge,
+    depth of discharge, and voltage under load.
 
     The model includes:
-    - Internal resistance calculation
-    - Thermal modeling (heat generation and temperature change)
-    - Electrical performance (voltage and current calculations)
-    - State of charge and depth of discharge updates
+        - Internal resistance calculation
+        - Thermal modeling (heat generation and temperature change)
+        - Electrical performance (voltage and current calculations)
+        - State of charge and depth of discharge updates
 
-    Arrays accessed from objects:
-    - From bus_conditions:
-        - power_draw
-        - current_draw
-    - From battery_module_conditions:
-        - energy
-        - voltage_open_circuit
-        - cell.voltage_open_circuit
-        - power
-        - cell.power
-        - internal_resistance
-        - cell.internal_resistance
-        - heat_energy_generated
-        - cell.heat_energy_generated
-        - voltage_under_load
-        - cell.voltage_under_load
-        - current
-        - cell.current
-        - temperature
-        - cell.temperature
-        - cell.state_of_charge
-        - cell.energy
-        - cell.charge_throughput
-        - cell.depth_of_discharge
+    **Major Assumptions**
+        * All battery modules exhibit the same thermal behavior
+        * The cell temperature is assumed to be the temperature of the entire module
+        * Battery performance follows empirical models based on experimental data
+
+    **Theory**
+    The internal resistance is modeled as a function of state of charge:
+    
+    .. math::
+        R_0 = 0.01483 \\cdot SOC^2 - 0.02518 \\cdot SOC + 0.1036
+    
+    Heat generation includes both Joule heating and entropy effects:
+    
+    .. math::
+        \\dot{q}_{entropy} = -T \\cdot \\Delta S \\cdot i / (nF)
+        
+        \\dot{q}_{joule} = i^2 / \\sigma
+        
+        Q_{heat} = (\\dot{q}_{joule} + \\dot{q}_{entropy}) \\cdot A_s
 
     References
     ----------
-    .. [1] Zou, Y., Hu, X., Ma, H., and Li, S. E., "Combined State of Charge and State of
-           Health estimation over lithium-ion battery_module cell cycle lifespan for electric 
-           vehicles," Journal of Power Sources, Vol. 273, 2015, pp. 793-803.
-           doi:10.1016/j.jpowsour.2014.09.146
-    .. [2] Jeon, Dong Hyup, and Seung Man Baek. "Thermal modeling of cylindrical lithium ion 
-           battery_module during discharge cycle." Energy Conversion and Management 52.8-9 (2011): 
-           2973-2981.
+    [1] Zou, Y., Hu, X., Ma, H., and Li, S. E., "Combined State of Charge and State of Health estimation over lithium-ion battery cell cycle lifespan for electric vehicles," Journal of Power Sources, Vol. 273, 2015, pp. 793-803. doi:10.1016/j.jpowsour.2014.09.146
+    [2] Jeon, D. H., and Baek, S. M., "Thermal modeling of cylindrical lithium ion battery during discharge cycle," Energy Conversion and Management, Vol. 52, No. 8-9, 2011, pp. 2973-2981. doi:10.1016/j.enconman.2011.04.013
 
-    Assumptions
-    -----------
-    - All battery_module modules exhibit the same thermal behavior.
-    - The cell temperature is assumed to be the temperature of the entire module.
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_state
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.reuse_stored_nmc_cell_data
     """
 
     # ---------------------------------------------------------------------------------    
