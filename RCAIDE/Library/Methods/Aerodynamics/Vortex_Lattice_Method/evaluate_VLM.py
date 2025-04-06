@@ -6,9 +6,9 @@
 
 # RCAIDE imports  
 import RCAIDE 
-from RCAIDE.Framework.Core                                       import Units, Data, orientation_product 
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method   import VLM
-from RCAIDE.Library.Methods.Utilities                            import Cubic_Spline_Blender  
+from RCAIDE.Framework.Core                                         import Units, Data, orientation_product 
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import VLM
+from RCAIDE.Library.Methods.Utilities                              import Cubic_Spline_Blender  
 from RCAIDE.Library.Mission.Common.Update  import orientations
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns import orientation
 
@@ -1414,8 +1414,7 @@ def call_VLM(conditions,settings,vehicle):
     CX                  = results.CX       
     CY                  = results.CY       
     CZ                  = results.CZ       
-    CL                  = results.CL_mom
-    alpha_i             = results.alpha_i 
+    CL                  = results.CL_mom 
     cl_y                = results.cl_y     
     cdi_y               = results.cdi_y 
     CPi                 = results.CP 
@@ -1439,13 +1438,11 @@ def call_VLM(conditions,settings,vehicle):
         ref = wing.areas.reference
         if wing.symmetric:
             Clift_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_lifts[:,i:(i+2)],axis=1)).T/ref
-            Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref
-            AoA_wing_induced[wing.tag] = np.concatenate((alpha_i[i],alpha_i[i+1]),axis=1)
+            Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref 
             i+=1
         else:
             Clift_wings[wing.tag]      = np.atleast_2d(dim_wing_lifts[:,i]).T/ref
-            Cdrag_wings[wing.tag]      = np.atleast_2d(dim_wing_drags[:,i]).T/ref
-            AoA_wing_induced[wing.tag] = alpha_i[i]
+            Cdrag_wings[wing.tag]      = np.atleast_2d(dim_wing_drags[:,i]).T/ref 
         i+=1
 
     return Clift,Cdrag,CX,CY,CZ,CL,CM,CN, S_ref,b_ref,c_ref,X_ref,Y_ref ,Z_ref, Clift_wings,Cdrag_wings,AoA_wing_induced,cl_y,cdi_y,CPi  

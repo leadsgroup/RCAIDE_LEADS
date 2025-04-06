@@ -622,22 +622,18 @@ def strip_cumsum(arr, chord_breaks, strip_lengths):
     return cumsum - offsets
     
     
-def compute_induced_drag(cl_dist, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_sw,SREF, v_inf=1):
+def compute_induced_drag(cl, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_sw,SREF, v_inf=1):
       
     n_cases = len(alpha) 
     n_wings = len(n_sw)
     rho = 1    
 
     # Initialize results storage
-    CDi_total = np.zeros(n_cases)
-    CDi_wing = np.zeros((n_cases, n_wings))
-    D_induced = np.zeros((n_cases, n_wings))
-    Cd_i_distribution = np.zeros_like(cl_dist)
-    alpha_i = np.zeros_like(cl_dist)
-
-    # Loop over all alpha cases 
-    # Get data for this alpha case
-    cl = cl_dist  
+    CDi_total         = np.zeros(n_cases)
+    CDi_wing          = np.zeros((n_cases, n_wings))
+    D_induced         = np.zeros((n_cases, n_wings))
+    Cd_i_distribution = np.zeros_like(cl)
+    alpha_i           = np.zeros_like(cl) 
 
     # Calculate circulation for this case
     circulation_dist = 0.5 * chord_dist * v_inf * cl 
