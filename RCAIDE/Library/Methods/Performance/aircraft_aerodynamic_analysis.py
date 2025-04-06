@@ -17,10 +17,9 @@ import numpy as np
 #------------------------------------------------------------------------------
 # aircraft_aerodynamic_analysis
 #------------------------------------------------------------------------------  
-def aircraft_aerodynamic_analysis(vehicle,
+def aircraft_aerodynamic_analysis(aerodynamics_analysis_routine = None,
                                   angle_of_attack_range = None,
                                   Mach_number_range= None,
-                                  aerodynamics_analysis_routine = None,
                                   control_surface_deflection_range = np.array([[0]]),
                                   altitude = 0,
                                   delta_ISA=0):
