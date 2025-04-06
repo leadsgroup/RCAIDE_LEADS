@@ -477,8 +477,7 @@ def VLM(conditions,settings,geometry):
 
     ES     = 2*s[0,LE_ind]
     STRIP  = ES *CHORD_strip
-    LIFT   = (BFZ *COSALF - (BFX *COPSI + BFY *SINPSI) *SINALF)*STRIP   
-    DRAG   = CDC*ES 
+    LIFT   = (BFZ *COSALF - (BFX *COPSI + BFY *SINPSI) *SINALF)*STRIP    
     MOMENT = STRIP * (BMY *COPSI - BMX *SINPSI)  
     FY     = (BFY *COPSI - BFX *SINPSI) *STRIP
     RM     = STRIP *(BMX *COSALF *COPSI + BMY *COSALF *SINPSI + BMZ *SINALF)
@@ -486,19 +485,18 @@ def VLM(conditions,settings,geometry):
 
     # Now calculate the coefficients for each wing
     Clift_y             = LIFT/CHORD_strip/ES
-    
-    results   = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw,SREF) 
-    
-    CDi_y = results.Cdi_distribution
-    CDi_wing = results.CD_i_wing
-    CDi = results.induced_drag_coefficient 
-    CL_wing            = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
-    alpha_i             = results.induced_AoA_distribution
+
+    results   = Data()        
+    res       = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw,SREF)  
+    CDi_y     = results.Cdi_distribution
+    CDi_wing  = results.CD_i_wing 
+    CL_wing   = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
+    alpha_i   = res.induced_AoA_distribution
     
     # Now calculate total coefficients
     CL       = np.atleast_2d(np.sum(LIFT,axis=1)/SREF).T          # CLTOT in VORLAX
-    CX       = (TANALF * CL - CDi)/(COSALF - SINALF*TANALF)
-    CZ       = (CDi+ CX*COSALF)/SINALF 
+    CX       = (TANALF * CL -  res.CDi)/(COSALF - SINALF*TANALF)
+    CZ       = ( res.CDi+ CX*COSALF)/SINALF 
     CM       = np.atleast_2d(np.sum(MOMENT,axis=1)/SREF).T/c_bar  # CMTOT in VORLAX 1. check deflection is accounted for correctly. 2. check this is right
     CY       = np.atleast_2d(np.sum(FY,axis=1)/SREF).T   # total y force coeff
     CRTOT    = np.atleast_2d(np.sum(RM,axis=1)/SREF).T   # rolling moment coeff (unscaled)
@@ -510,9 +508,8 @@ def VLM(conditions,settings,geometry):
     # STEP 13: Pack outputs
     # ------------------ --------------------------------------------------------------------     
     precision      = settings.floating_point_precision
-    
+
     #VORLAX _TOT outputs
-    results = Data()
     # force coefficients
     results.S_ref      = Sref
     results.b_ref      = b_ref
@@ -521,8 +518,7 @@ def VLM(conditions,settings,geometry):
     results.Y_ref      = 0
     results.Z_ref      = z_m
     
-    results.CL         =  CL
-    results.CDi        =  CDi
+    results.CL         =  CL 
     
     results.CX         =  CX
     results.CY         =  CY 
@@ -716,7 +712,7 @@ def compute_induced_drag(cl, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_
     # Package results
     results = Data()
     results.induced_drag_coefficient = CDi_total[:, np.newaxis]
-    results.Cdi_distribution = Cd_i_distribution
+    results.CDi       = Cd_i_distribution
     results.CD_i_wing = CDi_wing
     results.induced_AoA_distribution = alpha_i
     return results
