@@ -7,7 +7,6 @@
 # RCAIDE imports  
 import RCAIDE 
 from RCAIDE.Framework.Core import  Data 
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import  VLM
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM import call_VLM
 from copy import deepcopy
 
