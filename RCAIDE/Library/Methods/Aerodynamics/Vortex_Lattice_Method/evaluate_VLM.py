@@ -730,8 +730,8 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
         conditions.aerodynamics.coefficients.lift.induced.inviscid_wings  = VLM_results.CLift_wings
         conditions.aerodynamics.coefficients.lift.compressible_wings      = VLM_results.CLift_wings        
         conditions.aerodynamics.coefficients.drag.induced.inviscid_wings  = VLM_results.CDrag_induced_wings
-        conditions.aerodynamics.coefficients.lift.induced.spanwise        = VLM_results.sectional_Cl
-        conditions.aerodynamics.coefficients.drag.induced.spanwise        = VLM_results.sectional_Cdi
+        conditions.aerodynamics.coefficients.lift.induced.spanwise        = VLM_results.sectional_CLift
+        conditions.aerodynamics.coefficients.drag.induced.spanwise        = VLM_results.sectional_CDrag_induced
         conditions.aerodynamics.coefficients.surface_pressure             = VLM_results.CP
         conditions.aerodynamics.coefficients.lift.total                   = Clift
         conditions.aerodynamics.coefficients.drag.induced.inviscid        = Cdrag
@@ -1293,7 +1293,7 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
             for control_surface in wing.control_surfaces:  
                 if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:  
                     vehicle.wings[wing.tag].control_surfaces.rudder.deflection =  delta_ctrl_surf 
-                    VLM_results,_,_ = (pertubation_conditions,settings,vehicle)
+                    VLM_results = VLM(pertubation_conditions,settings,vehicle)
                     Clift_res = VLM_results.CLift
                     Cdrag_res = VLM_results.CDrag_induced
                     CX_res    = VLM_results.CX
