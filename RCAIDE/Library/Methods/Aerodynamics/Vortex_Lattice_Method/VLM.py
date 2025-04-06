@@ -484,19 +484,14 @@ def VLM(conditions,settings,geometry):
     YM     = STRIP *(BMZ *COSALF - (BMX *COPSI + BMY *SINPSI) *SINALF)
 
     # Now calculate the coefficients for each wing
-    Clift_y             = LIFT/CHORD_strip/ES
-
-    results   = Data()        
-    res       = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw,SREF)  
-    CDi_y     = results.Cdi_distribution
-    CDi_wing  = results.CD_i_wing 
-    CL_wing   = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF
-    alpha_i   = res.induced_AoA_distribution
+    Clift_y   = LIFT/CHORD_strip/ES 
+    results   = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw,SREF)    
+    CL_wing   = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF 
     
     # Now calculate total coefficients
     CL       = np.atleast_2d(np.sum(LIFT,axis=1)/SREF).T          # CLTOT in VORLAX
-    CX       = (TANALF * CL -  res.CDi)/(COSALF - SINALF*TANALF)
-    CZ       = ( res.CDi+ CX*COSALF)/SINALF 
+    CX       = (TANALF * CL -  results.CDrag_induced)/(COSALF - SINALF*TANALF)
+    CZ       = (results.CDrag_induced+ CX*COSALF)/SINALF 
     CM       = np.atleast_2d(np.sum(MOMENT,axis=1)/SREF).T/c_bar  # CMTOT in VORLAX 1. check deflection is accounted for correctly. 2. check this is right
     CY       = np.atleast_2d(np.sum(FY,axis=1)/SREF).T   # total y force coeff
     CRTOT    = np.atleast_2d(np.sum(RM,axis=1)/SREF).T   # rolling moment coeff (unscaled)
@@ -511,39 +506,50 @@ def VLM(conditions,settings,geometry):
 
     #VORLAX _TOT outputs
     # force coefficients
-    results.S_ref      = Sref
-    results.b_ref      = b_ref
-    results.c_ref      = c_bar  
-    results.X_ref      = x_m
-    results.Y_ref      = 0
-    results.Z_ref      = z_m
-    
-    results.CL         =  CL 
-    
-    results.CX         =  CX
-    results.CY         =  CY 
-    results.CZ         = -CZ
-    
-    results.CL_mom     =  CL_mom 
-    results.CM         =  CM  
-    results.CN         =  CN
-
+    results.S_ref             = Sref
+    results.b_ref             = b_ref
+    results.c_ref             = c_bar  
+    results.X_ref             = x_m
+    results.Y_ref             = 0
+    results.Z_ref             = z_m 
+    results.CLift             = CL  
+    results.CX                = CX
+    results.CY                = CY 
+    results.CZ                = -CZ 
+    results.CL                = CL_mom 
+    results.CM                = CM  
+    results.CN                = CN 
     results.chord_sections    = n_cp
-    results.spanwise_stations = Y
-    
-    #other RCAIDE outputs
-    results.CL_wing        = CL_wing   
-    results.CDi_wing       = CDi_wing
-    results.cl_y           = Clift_y   
-    results.cdi_y          = CDi_y       
-    results.alpha_i        = alpha_i  
-    results.CP             = np.array(CP    , dtype=precision)
-    results.gamma          = np.array(GAMMA , dtype=precision)
-    results.VD             = VD
-    results.V_distribution = rhs.V_distribution
-    results.V_x            = rhs.Vx_ind_total
-    results.V_z            = rhs.Vz_ind_total
-    
+    results.spanwise_stations = Y 
+    results.CLift_wing        = CL_wing   
+    results.sectional_CLift   = Clift_y     
+    results.CP                = np.array(CP    , dtype=precision)
+    results.gamma             = np.array(GAMMA , dtype=precision)
+    results.VD                = VD
+    results.V_distribution    = rhs.V_distribution
+    results.V_x               = rhs.Vx_ind_total
+    results.V_z               = rhs.Vz_ind_total 
+
+    # Dimensionalize the lift and drag for each wing 
+    i = 0 
+    dim_wing_lifts      = results.CLift_wing * VD.wing_areas
+    dim_wing_drags      = results.CDrag_induced_wing * VD.wing_areas
+    Clift_wings         = Data()
+    Cdrag_wings         = Data()
+    # Assign the lift and drag and non-dimensionalize
+    for wing in geometry.wings.values():
+        ref = wing.areas.reference
+        if wing.symmetric:
+            Clift_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_lifts[:,i:(i+2)],axis=1)).T/ref
+            Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref
+            i+=1
+        else:
+            Clift_wings[wing.tag]      = np.atleast_2d(dim_wing_lifts[:,i]).T/ref
+            Cdrag_wings[wing.tag]      = np.atleast_2d(dim_wing_drags[:,i]).T/ref
+        i+=1
+        
+    results.CLift_wings         = Clift_wings
+    results.CDrag_induced_wings = Cdrag_wings
     return results
 
 # ----------------------------------------------------------------------
@@ -710,9 +716,9 @@ def compute_induced_drag(cl, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_
     CDi_total = np.sum(D_induced, axis=1) / (0.5 * rho * v_inf**2 * SREF)
 
     # Package results
-    results = Data()
-    results.induced_drag_coefficient = CDi_total[:, np.newaxis]
-    results.CDi       = Cd_i_distribution
-    results.CD_i_wing = CDi_wing
-    results.induced_AoA_distribution = alpha_i
+    results                          = Data()
+    results.CDrag_induced            = CDi_total[:, np.newaxis]
+    results.sectional_CDrag_induced  = Cd_i_distribution
+    results.CDrag_induced_wing       = CDi_wing
+    results.alpha_induced            = alpha_i
     return results
