@@ -15,44 +15,156 @@ import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Actuator_Disk_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def Actuator_Disk_performance(rotor,conditions):
-    """Analyzes a general rotor given geometry and operating conditions using
-    Actuator Disc Theory  
+def Actuator_Disk_performance(rotor, conditions):
+    """
+    Analyzes a general rotor given geometry and operating conditions using
+    Actuator Disc Theory.
     
     Parameters
     ----------
     rotor : Data
-        Rotor compoment
-        
-        - number_of_blades : int  
-        - tip_radius: float  
-        - twist_distribution : array_like  [radians]
-        - chord_distribution : array_like  [m]
-        - orientation_euler_angles: list   [rad, rad, rad]
-        
+        Rotor component with the following attributes:
+            - number_of_blades : int
+                Number of blades on the rotor
+            - tip_radius : float
+                Tip radius of the rotor [m]
+            - hub_radius : float
+                Hub radius of the rotor [m]
+            - cruise : Data
+                Cruise conditions
+                - design_efficiency : float
+                    Design efficiency at cruise
+                - design_torque_coefficient : float
+                    Design torque coefficient at cruise
+            - body_to_prop_vel : function
+                Function to transform velocity from body to propeller frame
+            - orientation_euler_angles : list
+                Orientation of the rotor [rad, rad, rad]
     conditions : Data
-        State conditions within segment 
-
-         - energy.converters[rotor.tag]: Data
-         - freestream.density :  array_like                 [kg/m^3]
-         - freestream.dynamic_viscosity :  array_like       [kg/(m-s)]
-         - freestream.speed_of_sound :  array_like          [m/s]
-         - freestream.temperature :  array_like             [K]
-         - frames.body.transform_to_inertial :  array_like  (rotation matrix)
-         - frames.inertial.velocity_vector :  array_like    [m/s] 
-
+        Flight conditions with:
+            - freestream : Data
+                Freestream properties
+                - density : numpy.ndarray
+                    Air density [kg/m³]
+                - speed_of_sound : numpy.ndarray
+                    Speed of sound [m/s]
+            - frames : Data
+                Reference frames
+                - body : Data
+                    Body frame
+                    - transform_to_inertial : numpy.ndarray
+                        Rotation matrix from body to inertial frame
+                - inertial : Data
+                    Inertial frame
+                    - velocity_vector : numpy.ndarray
+                        Velocity vector in inertial frame [m/s]
+            - energy : Data
+                Energy conditions
+                - converters : dict
+                    Converter energy conditions indexed by tag
+                    - commanded_thrust_vector_angle : numpy.ndarray
+                        Commanded thrust vector angle [rad]
+                    - blade_pitch_command : numpy.ndarray
+                        Blade pitch command [rad]
+                    - omega : numpy.ndarray
+                        Angular velocity [rad/s]
+    
+    Returns
+    -------
+    None
+        Results are stored in conditions.energy.converters[rotor.tag]:
+            - thrust : numpy.ndarray
+                Thrust vector [N]
+            - power : numpy.ndarray
+                Power [W]
+            - rpm : numpy.ndarray
+                Rotational speed [RPM]
+            - omega : numpy.ndarray
+                Angular velocity [rad/s]
+            - power_coefficient : numpy.ndarray
+                Power coefficient
+            - thrust_coefficient : numpy.ndarray
+                Thrust coefficient
+            - torque_coefficient : numpy.ndarray
+                Torque coefficient
+            - speed_of_sound : numpy.ndarray
+                Speed of sound [m/s]
+            - density : numpy.ndarray
+                Air density [kg/m³]
+            - tip_mach : numpy.ndarray
+                Tip Mach number
+            - efficiency : numpy.ndarray
+                Efficiency
+            - torque : numpy.ndarray
+                Torque [N·m]
+            - orientation : numpy.ndarray
+                Orientation matrix
+            - advance_ratio : numpy.ndarray
+                Advance ratio
+            - velocity : numpy.ndarray
+                Velocity vector [m/s]
+            - disc_loading : numpy.ndarray
+                Disc loading [N/m²]
+            - power_loading : numpy.ndarray
+                Power loading [N/W]
+            - thrust_per_blade : numpy.ndarray
+                Thrust per blade [N]
+            - torque_per_blade : numpy.ndarray
+                Torque per blade [N·m]
+            - blade_pitch_command : numpy.ndarray
+                Blade pitch command [rad]
+            - commanded_thrust_vector_angle : numpy.ndarray
+                Commanded thrust vector angle [rad]
+            - figure_of_merit : numpy.ndarray
+                Figure of merit
+    
     Notes
     -----
-    The following perperties are computed in the conditions.energy[rotor.tag] 
-       - speed_of_sound :  array_like                    [m/s]
-       - density :  array_like                           [kg/m-3]
-       - velocity :  array_like                          [m/s] 
-       - omega :  array_like                             [rad/s] 
-       - torque_per_blade  :  array_like                 [Nm]
-       - torque_coefficient  :  array_like               [-]
-       - power  :  array_like                            [W]
-       - power_coefficient  :  array_like                [-] 
-
+    This function implements the Actuator Disc Theory to analyze rotor performance.
+    It calculates thrust, torque, power, and efficiency based on the rotor geometry
+    and operating conditions.
+    
+    The computation follows these steps:
+        1. Extract rotor parameters and operating conditions
+        2. Transform velocity from inertial to rotor frame
+        3. Calculate rotational speed and diameter
+        4. Compute torque using the design torque coefficient
+        5. Calculate power and thrust
+        6. Compute performance metrics (thrust coefficient, power coefficient, etc.)
+        7. Store results in the conditions data structure
+    
+    **Major Assumptions**
+        * Actuator disc theory assumes a uniform pressure jump across the rotor disc
+        * The rotor is modeled as an infinitely thin disc
+        * The flow is steady, incompressible, and inviscid
+        * The rotor efficiency is constant and equal to the design value
+    
+    **Theory**
+    Actuator Disc Theory models the rotor as an infinitely thin disc that creates
+    a pressure jump in the flow. The theory relates thrust, power, and induced velocity
+    through momentum and energy conservation principles.
+    
+    Key relationships include:
+        - Thrust: T = η·P/V
+        - Torque coefficient: Cq = Q/(ρ·n²·D⁵)
+        - Thrust coefficient: Ct = T/(ρ·n²·D⁴)
+        - Power coefficient: Cp = P/(ρ·n³·D⁵)
+        - Figure of Merit: FM = T·√(T/(2·ρ·A))/P
+    
+    where:
+        - T is thrust
+        - P is power
+        - V is velocity
+        - η is efficiency
+        - Q is torque
+        - ρ is density
+        - n is rotational speed
+        - D is diameter
+        - A is disc area
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.BEMT.compute_rotor_performance
     """
     rho                   = conditions.freestream.density     
     commanded_TV          = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle   

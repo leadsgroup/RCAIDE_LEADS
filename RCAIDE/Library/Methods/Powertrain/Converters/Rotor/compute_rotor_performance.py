@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Rotor/compute_rotor_performance.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jul 2024, RCAIDE Team 
 
@@ -13,72 +12,96 @@ import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Elem
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_rotor_performance(rotor,conditions):
-    """Analyzes a general rotor given geometry and operating conditions.
-
-    Assumptions:
-    per source
-
-    Source:
-    Drela, M. "Qprop Formulation", MIT AeroAstro, June 2006
-    http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
-
-    Leishman, Gordon J. Principles of helicopter aerodynamics
-    Cambridge university press, 2006.
-
-    Inputs:
-    rotor.inputs.omega                    [radian/s]
-    conditions.freestream.
-      density                            [kg/m^3]
-      dynamic_viscosity                  [kg/(m-s)]
-      speed_of_sound                     [m/s]
-      temperature                        [K]
-    conditions.frames.
-      body.transform_to_inertial         (rotation matrix)
-      inertial.velocity_vector           [m/s]
-    conditions.energy.
-      throttle                           [-]
-
-    Outputs:
-    conditions.energy.outputs.
-       number_radial_stations            [-]
-       number_azimuthal_stations         [-]
-       disc_radial_distribution          [m]
-       speed_of_sound                    [m/s]
-       density                           [kg/m-3]
-       velocity                          [m/s]
-       disc_tangential_induced_velocity  [m/s]
-       disc_axial_induced_velocity       [m/s]
-       disc_tangential_velocity          [m/s]
-       disc_axial_velocity               [m/s]
-       drag_coefficient                  [-]
-       lift_coefficient                  [-]
-       omega                             [rad/s]
-       disc_circulation                  [-]
-       blade_dQ_dR                       [N/m]
-       blade_dT_dr                       [N]
-       blade_thrust_distribution         [N]
-       disc_thrust_distribution          [N]
-       thrust_per_blade                  [N]
-       thrust_coefficient                [-]
-       azimuthal_distribution            [rad]
-       disc_azimuthal_distribution       [rad]
-       blade_dQ_dR                       [N]
-       blade_dQ_dr                       [Nm]
-       blade_torque_distribution         [Nm]
-       disc_torque_distribution          [Nm]
-       torque_per_blade                  [Nm]
-       torque_coefficient                [-]
-       power                             [W]
-       power_coefficient                 [-]
-
-    Properties Used:
-    rotor.
-      number_of_blades                   [-]
-      tip_radius                         [m]
-      twist_distribution                 [radians]
-      chord_distribution                 [m]
-      orientation_euler_angles           [rad, rad, rad]
+def compute_rotor_performance(rotor, conditions):
+    """
+    Analyzes a general rotor given geometry and operating conditions.
+    
+    Parameters
+    ----------
+    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Rotor component with the following attributes:
+            - fidelity : str
+                Analysis fidelity level ('Actuator_Disk_Theory' or 'Blade_Element_Momentum_Theory_Helmholtz_Wake')
+            - tag : str
+                Identifier for the rotor
+            - number_of_blades : int
+                Number of blades on the rotor
+            - tip_radius : float
+                Tip radius of the rotor [m]
+            - hub_radius : float
+                Hub radius of the rotor [m]
+            - twist_distribution : array_like
+                Blade twist distribution [radians]
+            - chord_distribution : array_like
+                Blade chord distribution [m]
+            - orientation_euler_angles : list
+                Orientation of the rotor [rad, rad, rad]
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions with:
+            - freestream : Data
+                Freestream properties
+                - density : array_like
+                    Air density [kg/m³]
+                - dynamic_viscosity : array_like
+                    Dynamic viscosity [kg/(m·s)]
+                - speed_of_sound : array_like
+                    Speed of sound [m/s]
+                - temperature : array_like
+                    Temperature [K]
+            - frames : Data
+                Reference frames
+                - body : Data
+                    Body frame
+                    - transform_to_inertial : array_like
+                        Rotation matrix from body to inertial frame
+                - inertial : Data
+                    Inertial frame
+                    - velocity_vector : array_like
+                        Velocity vector in inertial frame [m/s]
+            - energy : Data
+                Energy conditions
+                - converters : dict
+                    Converter energy conditions indexed by tag
+                    - throttle : array_like
+                        Throttle setting [0-1]
+    
+    Returns
+    -------
+    None
+        Results are stored in conditions.energy.converters[rotor.tag] with attributes
+        depending on the fidelity level used. See the documentation for the specific
+        analysis method for details on the outputs.
+    
+    Notes
+    -----
+    This function serves as a dispatcher that calls the appropriate rotor analysis method
+    based on the specified fidelity level. It supports two fidelity levels:
+    
+        1. Actuator_Disk_Theory: A simplified model that treats the rotor as an actuator
+           disk, suitable for preliminary design and analysis.
+        
+        2. Blade_Element_Momentum_Theory_Helmholtz_Wake: A higher-fidelity model that
+           combines blade element theory with a Helmholtz wake model, providing more
+           accurate predictions of rotor performance.
+    
+    The function simply checks the fidelity level and calls the corresponding analysis
+    function, passing the rotor and conditions as arguments.
+    
+    **Major Assumptions**
+        * The assumptions depend on the specific analysis method used
+        * See the documentation for Actuator_Disk_performance or BEMT_Helmholtz_performance
+          for details on the assumptions made by each method
+    
+    References
+    ----------
+    [1] Drela, M. "Qprop Formulation", MIT AeroAstro, June 2006 http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
+    
+    [2] Leishman, Gordon J. Principles of helicopter aerodynamics Cambridge university press, 2006.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance
     """
     
     if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 

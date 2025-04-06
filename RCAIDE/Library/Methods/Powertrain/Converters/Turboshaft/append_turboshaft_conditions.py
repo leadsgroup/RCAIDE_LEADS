@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Turboshaft/append_turboshaft_conditions.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke  
 # ----------------------------------------------------------------------------------------------------------------------

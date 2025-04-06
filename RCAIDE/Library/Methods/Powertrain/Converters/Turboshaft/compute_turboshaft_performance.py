@@ -22,7 +22,8 @@ from copy import deepcopy
 # compute_turboshaft_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None): 
-    """ Computes the perfomrance of a turboshaft
+    """ 
+    Computes the perfomrance of a turboshaft
     
     Parameters
     ----------

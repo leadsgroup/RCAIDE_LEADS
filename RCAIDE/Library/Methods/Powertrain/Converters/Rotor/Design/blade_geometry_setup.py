@@ -18,20 +18,84 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Blade Geometry Setup 
 # ----------------------------------------------------------------------------------------------------------------------    
-def blade_geometry_setup(rotor,number_of_stations): 
-    """ Defines a dummy vehicle for prop-rotor blade optimization.
-          
-          Inputs:  
-             rotor   - rotor data structure             [None] 
-              
-          Outputs:  
-             configs - configuration used in optimization    [None]
-              
-          Assumptions: 
-             N/A 
-        
-          Source:
-             None
+def blade_geometry_setup(rotor, number_of_stations):
+    """
+    Defines a configuration for prop-rotor blade optimization.
+    
+    Parameters
+    ----------
+    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Rotor component with the following attributes:
+            - number_of_blades : int
+                Number of blades on the rotor
+            - tip_radius : float
+                Tip radius of the rotor [m]
+            - hub_radius : float
+                Hub radius of the rotor [m]
+            - hover : Data
+                Hover conditions
+                - design_thrust : float, optional
+                    Design thrust at hover [N]
+                - design_power : float, optional
+                    Design power at hover [W]
+                - design_freestream_velocity : float
+                    Freestream velocity at hover [m/s]
+                - design_altitude : float
+                    Altitude at hover [m]
+            - oei : Data
+                One engine inoperative conditions
+                - design_freestream_velocity : float, optional
+                    Freestream velocity at OEI [m/s]
+                - design_altitude : float, optional
+                    Altitude at OEI [m]
+                - design_thrust : float, optional
+                    Design thrust at OEI [N]
+                - design_power : float, optional
+                    Design power at OEI [W]
+            - airfoils : dict
+                Dictionary of airfoil objects
+            - airfoil_polar_stations : list
+                List of airfoil section indices for each station
+    number_of_stations : int
+        Number of radial stations for blade discretization
+    
+    Returns
+    -------
+    configs : RCAIDE.Library.Components.Configs.Config.Container
+        Configuration container with the following configs:
+            - hover : Config
+                Hover configuration
+            - oei : Config
+                One engine inoperative configuration
+            - cruise : Config (only for prop-rotors)
+                Cruise configuration
+    
+    Notes
+    -----
+    This function prepares the necessary configurations for rotor blade optimization by:
+        1. Unpacking rotor geometry parameters
+        2. Validating design requirements (thrust or power must be specified)
+        3. Processing airfoil data (importing geometry and computing polars if needed)
+        4. Setting up the radial distribution of stations
+        5. Extracting thickness-to-chord ratios from airfoils
+        6. Setting default OEI conditions if not specified
+        7. Creating vehicle and network configurations for analysis
+    
+    The function creates separate configurations for hover, OEI, and cruise (for prop-rotors)
+    conditions, which are used during the optimization process to evaluate the rotor
+    performance at different operating points.
+    
+    **Major Assumptions**
+        * Either design thrust or design power must be specified (not both)
+        * If OEI conditions are not specified, they default to hover conditions with 10% increase
+        * Rotor orientation is set to [0.0, π/2, 0.0] (horizontal rotor)
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup
+    RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties
+    RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series
+    RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry
     """    
     
     # Unpack prop-rotor geometry  

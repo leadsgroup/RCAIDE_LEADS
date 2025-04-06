@@ -17,7 +17,7 @@ def append_supersonic_nozzle_conditions(supersonic_nozzle, segment, energy_condi
         The supersonic nozzle component for which conditions are being initialized.
     segment : Segment
         The mission segment in which the supersonic nozzle is operating.
-    propulsor_conditions : dict
+    energy_conditions : dict
         Dictionary containing conditions for all propulsion components.
     
     Returns

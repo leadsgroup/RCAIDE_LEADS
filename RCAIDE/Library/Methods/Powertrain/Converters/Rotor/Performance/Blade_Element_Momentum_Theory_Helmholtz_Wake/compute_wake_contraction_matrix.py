@@ -14,28 +14,90 @@ import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  compute_wake_contraction_matrix
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_wake_contraction_matrix(prop,Nr,m,nts,X_pts,prop_outputs):
-    """ This computes slipstream development factor for all points 
-    along slipstream
-
-    Assumptions: 
-    Fixed wake with helical shape  
-
-    Source:  
-    Stone, R. Hugh. "Aerodynamic modeling of the wing-propeller 
-    interaction for a tail-sitter unmanned air vehicle." Journal 
-    of Aircraft 45.1 (2008): 198-210.
+def compute_wake_contraction_matrix(prop, Nr, m, nts, X_pts, prop_outputs):
+    """
+    Computes slipstream development factor for all points along the wake slipstream.
     
-    Inputs: 
-    prop     - propeller/rotor data structure       
-    Nr       - discretization on propeller/rotor [Unitless] 
-    m        - control points in segemnt         [Unitless] 
-    nts      - number of timesteps               [Unitless] 
-    X_pts    - location of wake points           [meters] 
-
-    Properties Used:
-    N/A
-    """    
+    Parameters
+    ----------
+    prop : Data
+        Propeller/rotor data structure with the following attributes:
+            - radius_distribution : array_like
+                Radial station positions [m]
+            - number_of_blades : int
+                Number of blades on the rotor
+            - hub_radius : float
+                Hub radius of the rotor [m]
+            - tip_radius : float
+                Tip radius of the rotor [m]
+            - origin : array_like
+                Origin coordinates of the rotor [m]
+    Nr : int
+        Number of radial stations on the propeller/rotor
+    m : int
+        Number of control points in segment
+    nts : int
+        Number of timesteps
+    X_pts : array_like
+        Location of wake points [m], shape (m, B, Nr, nts, 3)
+        where B is number of blades
+    prop_outputs : Data
+        Propeller/rotor outputs with the following attributes:
+            - disc_axial_induced_velocity : array_like
+                Axial induced velocity on the disc [m/s]
+            - velocity : array_like
+                Velocity vector [m/s]
+    
+    Returns
+    -------
+    wake_contraction : array_like
+        Wake contraction matrix, shape (m, B, Nr, nts)
+        Ratio of contracted radius to original radius at each wake point
+    
+    Notes
+    -----
+    This function calculates the wake contraction factor for all points along the
+    slipstream of a propeller or rotor. The wake contraction is a key factor in
+    determining the induced velocities in the wake and the overall performance of
+    the rotor.
+    
+    The computation follows these steps:
+        1. Extract rotor geometry parameters (radius distribution, hub/tip radius)
+        2. Calculate the distance of wake points from the rotor plane
+        3. Compute the slipstream development factor based on distance
+        4. Calculate the velocity ratio factor
+        5. Compute the contracted radius at each wake point
+        6. Calculate the wake contraction ratio (contracted radius / original radius)
+    
+    **Major Assumptions**
+        * Fixed wake with helical shape
+        * Wake contraction is primarily influenced by the axial induced velocity
+        * The wake contraction model is based on momentum conservation
+    
+    **Theory**
+    The wake contraction is modeled using a combination of distance-based and
+    velocity-based factors. The slipstream development factor (s2) increases with
+    distance from the rotor plane, while the velocity ratio factor (Kv) accounts
+    for the effect of induced velocities on the wake contraction.
+    
+    The contracted radius at each wake point is calculated as:
+    
+    .. math::
+        r'_{j+1} = \\sqrt{r'_j^2 + (r_{j+1}^2 - r_j^2) \\cdot K_v}
+    
+    where:
+        - r'_j is the contracted radius at station j
+        - r_j is the original radius at station j
+        - K_v is the velocity ratio factor
+    
+    References
+    ----------
+    [1] Stone, R. Hugh. "Aerodynamic modeling of the wing-propeller interaction for a tail-sitter unmanned air vehicle." Journal of Aircraft 45.1 (2008): 198-210.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model
+    """
     r                 = prop.radius_distribution  
     rdim              = Nr-1
     B                 = prop.number_of_blades

@@ -22,7 +22,61 @@ import scipy as sp
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Procedure Setup 
 # ----------------------------------------------------------------------------------------------------------------------    
-def procedure_setup(): 
+def procedure_setup():
+    """
+    Creates a procedure for rotor blade optimization that defines the sequence of analysis steps.
+    
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    procedure : RCAIDE.Framework.Analyses.Process
+        Process object containing the following methods:
+            - modify_rotor : function
+                Updates blade geometry based on optimization variables
+            - hover : function
+                Analyzes rotor performance in hover conditions
+            - oei : function
+                Analyzes rotor performance in one-engine-inoperative conditions
+            - cruise : function
+                Analyzes rotor performance in cruise conditions (for prop-rotors)
+            - post_process : function
+                Processes results and computes objective function
+    
+    Notes
+    -----
+    This function defines the sequence of analysis steps that are executed during each
+    iteration of the rotor blade optimization process. The procedure follows a logical
+    flow from geometry modification to performance analysis in different flight conditions,
+    and finally to post-processing of results.
+    
+    The procedure includes the following steps:
+        1. modify_blade_geometry: Updates the blade chord and twist distributions based on
+           the current optimization variables
+        2. run_rotor_hover: Analyzes the rotor performance in hover conditions, computing
+           thrust, power, figure of merit, and noise
+        3. run_rotor_OEI: Analyzes the rotor performance in one-engine-inoperative conditions
+        4. run_rotor_cruise: Analyzes the rotor performance in cruise conditions (for prop-rotors)
+        5. post_process: Computes the objective function based on performance metrics and
+           checks constraint violations
+    
+    Each step in the procedure accesses the Nexus object that contains the current state
+    of the optimization, including the vehicle configurations, design variables, and
+    previously computed results.
+    
+    **Major Assumptions**
+        * The procedure assumes that the blade geometry is parameterized using the
+          hyperparameter approach defined in the updated_blade_geometry function
+        * Performance analysis includes both aerodynamic and acoustic metrics
+        * The objective function balances performance and noise based on user-defined weights
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance
+    """
     
     # size the base config
     procedure = Process()

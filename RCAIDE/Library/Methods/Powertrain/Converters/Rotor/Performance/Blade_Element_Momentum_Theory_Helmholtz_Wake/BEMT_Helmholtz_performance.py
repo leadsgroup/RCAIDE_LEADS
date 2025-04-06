@@ -15,74 +15,144 @@ import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  BEMT_Helmholtz_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def BEMT_Helmholtz_performance(rotor,conditions):
-    """Analyzes a general rotor given geometry and operating conditions using
-    Blade Element Momentum Theory with a Helmholts Vortex Wake Prescription 
+def BEMT_Helmholtz_performance(rotor, conditions):
+    """
+    Analyzes a general rotor given geometry and operating conditions using
+    Blade Element Momentum Theory with a Helmholtz Vortex Wake Prescription.
     
     Parameters
     ----------
     rotor : Data
-        Rotor compoment
-        
-        - number_of_blades : int  
-        - tip_radius: float  
-        - twist_distribution : array_like  [radians]
-        - chord_distribution : array_like  [m]
-        - orientation_euler_angles: list   [rad, rad, rad]
-        
+        Rotor component with the following attributes:
+            - number_of_blades : int
+                Number of blades on the rotor
+            - tip_radius : float
+                Tip radius of the rotor [m]
+            - hub_radius : float
+                Hub radius of the rotor [m]
+            - twist_distribution : array_like
+                Blade twist distribution [radians]
+            - chord_distribution : array_like
+                Blade chord distribution [m]
+            - sweep_distribution : array_like
+                Blade sweep distribution [m]
+            - radius_distribution : array_like
+                Radial station positions [m]
+            - thickness_to_chord : array_like
+                Thickness-to-chord ratio at each radial station
+            - airfoil_polar_stations : array_like
+                Indices of airfoil polars for each radial station
+            - airfoils : dict
+                Dictionary of airfoil objects
+            - number_azimuthal_stations : int
+                Number of azimuthal stations for 2D analysis
+            - nonuniform_freestream : bool
+                Flag for nonuniform freestream velocity
+            - use_2d_analysis : bool
+                Flag to use 2D (azimuthal) analysis
+            - body_to_prop_vel : function
+                Function to transform velocity from body to propeller frame
+            - orientation_euler_angles : list
+                Orientation of the rotor [rad, rad, rad]
     conditions : Data
-        State conditions within segment 
-
-         - energy.converters[rotor.tag]: Data
-         - freestream.density :  array_like                 [kg/m^3]
-         - freestream.dynamic_viscosity :  array_like       [kg/(m-s)]
-         - freestream.speed_of_sound :  array_like          [m/s]
-         - freestream.temperature :  array_like             [K]
-         - frames.body.transform_to_inertial :  array_like  (rotation matrix)
-         - frames.inertial.velocity_vector :  array_like    [m/s] 
+        Flight conditions with:
+            - freestream : Data
+                Freestream properties
+                - density : array_like
+                    Air density [kg/m³]
+                - dynamic_viscosity : array_like
+                    Dynamic viscosity [kg/(m·s)]
+                - speed_of_sound : array_like
+                    Speed of sound [m/s]
+                - temperature : array_like
+                    Temperature [K]
+            - frames : Data
+                Reference frames
+                - body : Data
+                    Body frame
+                    - transform_to_inertial : array_like
+                        Rotation matrix from body to inertial frame
+                - inertial : Data
+                    Inertial frame
+                    - velocity_vector : array_like
+                        Velocity vector in inertial frame [m/s]
+            - energy : Data
+                Energy conditions
+                - converters : dict
+                    Converter energy conditions indexed by tag
+                    - commanded_thrust_vector_angle : array_like
+                        Commanded thrust vector angle [rad]
+                    - blade_pitch_command : array_like
+                        Blade pitch command [rad]
+                    - omega : array_like
+                        Angular velocity [rad/s]
+                    - throttle : array_like
+                        Throttle setting [0-1]
+                    - design_flag : bool
+                        Flag indicating design condition
+    
+    Returns
+    -------
+    None
+        Results are stored in conditions.energy.converters[rotor.tag] 
 
     Notes
     -----
-    The following perperties are computed in the conditions.energy[rotor.tag]
-       - number_radial_stations :  array_like            [-]
-       - number_azimuthal_stations :  array_like         [-]
-       - disc_radial_distribution :  array_like          [m]
-       - speed_of_sound :  array_like                    [m/s]
-       - density :  array_like                           [kg/m-3]
-       - velocity :  array_like                          [m/s]
-       - disc_tangential_induced_velocity :  array_like  [m/s]
-       - disc_axial_induced_velocity  :  array_like      [m/s]
-       - disc_tangential_velocity :  array_like          [m/s]
-       - disc_axial_velocity  :  array_like              [m/s]
-       - drag_coefficient  :  array_like                 [-]
-       - lift_coefficient  :  array_like                 [-]
-       - omega :  array_like                             [rad/s]
-       - disc_circulation  :  array_like                 [-]
-       - blade_dQ_dR  :  array_like                      [N/m]
-       - blade_dT_dr  :  array_like                      [N]
-       - blade_thrust_distribution :  array_like         [N]
-       - disc_thrust_distribution  :  array_like         [N]
-       - thrust_per_blade  :  array_like                 [N]
-       - thrust_coefficient :  array_like                [-]
-       - azimuthal_distribution  :  array_like           [rad]
-       - disc_azimuthal_distribution :  array_like       [rad]
-       - blade_dQ_dR  :  array_like                      [N]
-       - blade_dQ_dr  :  array_like                      [Nm]
-       - blade_torque_distribution :  array_like         [Nm]
-       - disc_torque_distribution  :  array_like         [Nm]
-       - torque_per_blade  :  array_like                 [Nm]
-       - torque_coefficient  :  array_like               [-]
-       - power  :  array_like                            [W]
-       - power_coefficient  :  array_like                [-]
-       
+    This function implements the Blade Element Momentum Theory (BEMT) with a Helmholtz
+    Vortex Wake model to analyze rotor performance. It calculates detailed aerodynamic
+    properties at each blade element and azimuthal position, accounting for 3D wake effects.
+    
+    The computation follows these steps:
+        1. Extract rotor parameters and operating conditions
+        2. Transform velocity from inertial to rotor frame
+        3. Set up the blade geometry (radial and azimuthal distributions)
+        4. Initialize induced velocities
+        5. Include effects of rotor incidence and external velocity fields if specified
+        6. Compute wake-induced inflow velocities using the Helmholtz wake model
+        7. Calculate aerodynamic forces (lift, drag) at each blade element
+        8. Compute circulation, thrust, and torque distributions
+        9. Apply tip loss corrections
+        10. Calculate integrated performance metrics (thrust, power, efficiency)
+        11. Store results in the conditions data structure
+    
+    **Major Assumptions**
+        * The wake is modeled using Helmholtz vortex filaments
+        * Blade element theory is used to compute local aerodynamic forces
+        * Tip losses are modeled using the Prandtl tip loss function
+        * Compressibility effects are accounted for through Mach number corrections
+        * Reynolds number effects on airfoil performance are included
+    
+    **Theory**
+    The Helmholtz wake model represents the wake as a system of vortex filaments that
+    satisfy Helmholtz's vortex theorems. The induced velocities at each blade element
+    are computed by applying the Biot-Savart law to these vortex filaments.
+    
+    The blade forces are calculated using:
+        - Lift: L = 0.5·ρ·W²·c·Cl
+        - Drag: D = 0.5·ρ·W²·c·Cd
+        - Circulation: Γ = 0.5·W·c·Cl
+    
+    where:
+        - ρ is density
+        - W is relative velocity
+        - c is chord
+        - Cl is lift coefficient
+        - Cd is drag coefficient
+        - Γ is circulation
+    
+    The thrust and torque are then computed by resolving these forces perpendicular
+    and parallel to the rotor plane, respectively.
+    
     References
     ----------
-    [1] Drela, M. "Qprop Formulation", MIT AeroAstro, June 2006
-        http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
-
-    [2] Leishman, Gordon J. Principles of helicopter aerodynamics
-        Cambridge university press, 2006.
-
+    [1] Drela, M. "Qprop Formulation", MIT AeroAstro, June 2006 http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
+    [2] Leishman, Gordon J. Principles of helicopter aerodynamicsCambridge university press, 2006.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model
+    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_airfoil_aerodynamics
+    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_inflow_and_tip_loss
     """
     commanded_TV          = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
     pitch_c               = conditions.energy.converters[rotor.tag].blade_pitch_command
