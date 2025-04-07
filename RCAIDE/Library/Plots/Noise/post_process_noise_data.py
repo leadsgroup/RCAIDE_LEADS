@@ -30,7 +30,7 @@ def post_process_noise_data(results,
                                                    '12:00:00','12:30:00','13:00:00','13:30:00',
                                                    '14:00:00','14:30:00','15:00:00']),
                             time_period = ['06:00:00','20:00:00'], 
-                            evalaute_noise_metrics = True):
+                            evalaute_noise_metrics = False):
     """
     Processes raw noise simulation results into formatted data for visualization.
 

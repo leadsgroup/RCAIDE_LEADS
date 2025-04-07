@@ -44,7 +44,7 @@ def main():
     basline_missions  = baseline_missions_setup(mission)     
     baseline_results  = basline_missions.base_mission.evaluate()
      
-    _   = post_process_noise_data(baseline_results)      
+    _   = post_process_noise_data(baseline_results,evalaute_noise_metrics=True )      
      
     # SPL of rotor check during hover 
     B737_SPL        = np.max(baseline_results.segments.takeoff.conditions.noise.hemisphere_SPL_dBA)
