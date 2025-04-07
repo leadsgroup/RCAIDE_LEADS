@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE
 from RCAIDE.Framework.Core                                 import orientation_product, orientation_transpose      
-from RCAIDE.Library.Methods.Noise.Common                         import convert_to_third_octave_band 
+from RCAIDE.Library.Methods.Noise.Common                   import convert_to_third_octave_band 
 
 # Python Package imports  
 import numpy as np
@@ -90,24 +90,12 @@ def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,coordinates,r
     # ----------------------------------------------------------------------------------
     # Rotational Noise  Thickness and Loading Noise
     # ----------------------------------------------------------------------------------  
-    # [control point, microphones, radial distribution, blade harmonics, load harmonics]
-
+    # [control point, microphones, radial distribution, blade harmonics, load harmonics]  
+    
     # freestream density and speed of sound
     rho_3          = np.tile(freestream.density[cpt,:,None],(1,num_mic,num_h_b))
     a_3            = np.tile(freestream.speed_of_sound[cpt,:,None],(1,num_mic,num_h_b))
     B              = rotor.number_of_blades
-
-    # Velocity in the rotor frame
-    T_body2inertial = conditions.frames.body.transform_to_inertial[cpt][None,:, :]
-    T_inertial2body = orientation_transpose(T_body2inertial)
-    V_body          = orientation_product(T_inertial2body,velocity_vector)
-    body2thrust,_   = rotor.body_to_prop_vel(commanded_thrust_vector)
-    T_body2thrust   = orientation_transpose(body2thrust)
-    V_thrust        = orientation_product(T_body2thrust,V_body)
-    V_thrust_perp   = V_thrust[:,0,None]
-    V_thrust_perp_3 = np.tile(V_thrust_perp[:,:,None],(1,num_mic,num_h_b))
-    M_thrust_3      = V_thrust_perp_3/a_3
-    M_thrust_5      = np.tile(M_thrust_3[:,:,None,:,None],(1,1,num_sec,1,num_h_l)) 
     
     # blade harmonics
     m_3            = np.tile(harmonics_blade[None,None,:],(num_cpt,num_mic,1))
@@ -122,9 +110,7 @@ def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,coordinates,r
     p_ref          = 2E-5
     
     # net angle of inclination of propeller wrt inertial axis
-    # alpha_4        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None],(1,num_mic,num_h_b,num_h_l))
-    alpha          = np.arccos(np.dot(V_thrust[0,:], velocity_vector[0,:])/(np.linalg.norm(V_thrust)*np.linalg.norm(velocity_vector)))
-    alpha_4        = np.tile(alpha, (1,num_mic,num_h_b,num_h_l))
+    alpha_4        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None],(1,num_mic,num_h_b,num_h_l))      
     
     # rotor angular speed
     omega_3        = np.tile(aeroacoustic_data.omega[cpt,:,None],(1,num_mic,num_h_b))
@@ -202,6 +188,17 @@ def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,coordinates,r
     
     phi_prime_4    = np.arccos((np.sin(theta_r_4)*np.cos(phi_4))/np.sin(theta_r_prime_4))
     
+    # Velocity in the rotor frame
+    T_body2inertial = conditions.frames.body.transform_to_inertial[cpt][None,:, :]
+    T_inertial2body = orientation_transpose(T_body2inertial)
+    V_body          = orientation_product(T_inertial2body,velocity_vector)
+    body2thrust,_   = rotor.body_to_prop_vel(commanded_thrust_vector)
+    T_body2thrust   = orientation_transpose(body2thrust)
+    V_thrust        = orientation_product(T_body2thrust,V_body)
+    V_thrust_perp   = V_thrust[:,0,None]
+    V_thrust_perp_3 = np.tile(V_thrust_perp[:,:,None],(1,num_mic,num_h_b))
+    M_thrust_3      = V_thrust_perp_3/a_3
+    M_thrust_5      = np.tile(M_thrust_3[:,:,None,:,None],(1,1,num_sec,1,num_h_l))
     
     # helicoid angle
     zeta_5          = np.arctan(M_thrust_5/(z_5*M_t_5))
