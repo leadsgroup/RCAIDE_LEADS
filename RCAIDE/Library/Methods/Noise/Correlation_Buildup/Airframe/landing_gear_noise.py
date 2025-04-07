@@ -44,14 +44,11 @@ def landing_gear_noise(D,H,wheels,M,velocity,phi,theta,distance,frequency):
 
     if (wheels==1 or wheels==2):
         G1 =  130
-        G2 = 10 *np.log10(4.5* ((frequency*D/velocity)**2) * (12.5 + ((frequency*D/velocity)**2) )**(-2.25) )  
-        G2_alt = 10 *np.log10(0.3)* ((frequency*D/velocity)**2) * (1  + 0.25*((frequency*D/velocity)**2) )**(-1.5)  
+        G2 = 10 *np.log10(4.5* ((frequency*D/velocity)**2) * (12.5 + ((frequency*D/velocity)**2) )**(-2.25) )   
     else:
         G1 = 123
-        G2 = 10 *np.log10(0.3* ((frequency*D/velocity)**2) * (1  + 0.25*((frequency*D/velocity)**2) )**(-1.5) )   
-        G2_alt = 10 *np.log10(0.3)* ((frequency*D/velocity)**2) * (1  + 0.25*((frequency*D/velocity)**2) )**(-1.5)   
+        G2 = 10 *np.log10(0.3* ((frequency*D/velocity)**2) * (1  + 0.25*((frequency*D/velocity)**2) )**(-1.5) )    
  
-    SPL   = 60.*np.log10(velocity_kts/194.0)+20.*np.log10(D/distance)+ G1 + G2
-    SPL_alt   = 60.*np.log10(velocity_kts/194.0)+20.*np.log10(D/distance)+ G1 + G2_alt
+    SPL   = 60.*np.log10(velocity_kts/194.0)+20.*np.log10(D/distance)+ G1 + G2 
 
     return SPL

@@ -615,6 +615,8 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      =  315.
     config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  =  415.
     config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       =  415. 
+    config.landing_gears.main_gear.gear_extended    = True
+    config.landing_gears.nose_gear.gear_extended    = True  
     configs.append(config)
 
     
@@ -632,6 +634,8 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      =  210.
     config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  =  360.
     config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       =  360. 
+    config.landing_gears.main_gear.gear_extended    = False
+    config.landing_gears.nose_gear.gear_extended    = False 
     configs.append(config)   
     
         

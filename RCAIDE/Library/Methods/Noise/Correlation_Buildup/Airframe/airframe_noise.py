@@ -81,16 +81,13 @@ def airframe_noise(microphone_locations,segment,config,settings):
     n_mic     = len(microphone_locations)
     
     # Unpack Geometry  
-    slots      = 0
-    deltas     = 0
+    slots      = 0 
     for wing in config.wings:
         if type(wing) == RCAIDE.Library.Components.Wings.Main_Wing:
             taper = wing.taper 
             Sw    = wing.areas.reference                
             bw    = wing.spans.projected               
-            for cs in  wing.control_surfaces: 
-                if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
-                    deltas                  = cs.deflection  
+            for cs in  wing.control_surfaces:  
                 if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap: 
                     deltaf                  = cs.deflection
                     flap_span               = (cs.span_fraction_end - cs.span_fraction_start) * bw
@@ -147,17 +144,13 @@ def airframe_noise(microphone_locations,segment,config,settings):
     viscosity           = segment.conditions.freestream.kinematic_viscosity[:,0] 
     M                   = segment.conditions.freestream.mach_number 
     SPL_total_history   = np.zeros((n_cpts,n_mic,num_f)) 
-    SPLt_dBA_history    = np.zeros((n_cpts,n_mic,num_f))  
-    SPLt_dBA_max        = np.zeros((n_cpts,n_mic))    
-    
-
+    SPLt_dBA_history    = np.zeros((n_cpts,n_mic,num_f))   
 
     # Distance vector from the aircraft position in relation to the microphone coordinates [meters]
     distance          = np.linalg.norm(microphone_locations,axis = 1)
     
     altitude          = abs(microphone_locations[:,2])
-    sideline_distance =  microphone_locations[:,1]
-    x_dist            =  microphone_locations[:,0]
+    sideline_distance =  microphone_locations[:,1] 
     
     # Polar angle emission vector relatively to the aircraft to the microphone coordinates, [rad] 
 
@@ -171,12 +164,6 @@ def airframe_noise(microphone_locations,segment,config,settings):
     theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
     theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
     theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4]
-
-
-    #if x_dist< 0.:
-        #theta = np.arctan(np.abs(altitude/x_dist))
-    #else:
-        #theta = np.pi - np.arctan(np.abs(altitude/x_dist))
     
      # Azimuthal (sideline) angle emission vector relatively to the aircraft to the microphone coordinates, [rad] 
     phi   = np.arctan(sideline_distance/altitude)
