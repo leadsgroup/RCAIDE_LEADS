@@ -7,8 +7,8 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
- from RCAIDE.Framework.Core     import Data
-from .                          import Propulsor
+from RCAIDE.Framework.Core     import Data
+from .                         import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .append_turbofan_conditions     import append_turbofan_conditions 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
  
