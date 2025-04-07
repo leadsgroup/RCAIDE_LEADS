@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Noise/Metrics/compute_noise_metrics.py
+# RCAIDE/Methods/Noise/Metrics/Equivalent_SENEL_SEL_noise_metrics.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke  
@@ -9,16 +9,14 @@
 # RCAIDE imports 
 from RCAIDE.Framework.Core import Units 
 from RCAIDE.Library.Methods.Noise.Common.background_noise   import background_noise
-from RCAIDE.Library.Methods.Noise.Metrics.PNL_noise_metric  import PNL_noise_metric 
-from RCAIDE.Library.Methods.Noise.Metrics.EPNL_noise_metric import EPNL_noise_metric 
 
 # Python package imports   
 import numpy as np  
     
 # ----------------------------------------------------------------------------------------------------------------------  
-#  compute_noise_metrics
+#  Equivalent_SENEL_SEL_noise_metrics
 # ----------------------------------------------------------------------------------------------------------------------       
-def compute_noise_metrics(noise_data, flight_times = ['12:00:00'],time_period = ['06:00:00','20:00:00']):   
+def Equivalent_SENEL_SEL_noise_metrics(noise_data, flight_times = ['12:00:00'],time_period = ['06:00:00','20:00:00']):   
     """This method calculates the Average A-weighted Sound Level (LAeqT), the Day-Night Average Sound Level and the
     Single Event Noise Exposure Level (SENEL) or Sound Exposure Level (SEL)
     
@@ -107,8 +105,5 @@ def compute_noise_metrics(noise_data, flight_times = ['12:00:00'],time_period = 
     P0                = np.ma.masked_array(p_sq_ref_flight_sq_SEL, SPL >SPL_max_min10)
     P0_tot            = np.nansum((1/(t_interval))*P0, axis=0)
     SENEL             = 10*np.log10(P0_tot)
-    noise_data.SENEL  = SENEL
-    
-    noise_data.PLN  = PNL_noise_metric(noise_data.SPL_dBA_1_3_spectrum)
-    noise_data.EPNL = EPNL_noise_metric(noise_data.PLN) 
+    noise_data.SENEL  = SENEL 
     return  

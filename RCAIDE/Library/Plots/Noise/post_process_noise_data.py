@@ -10,6 +10,9 @@
 from RCAIDE.Framework.Core import  Data
 from RCAIDE.Library.Methods.Noise.Common.background_noise     import background_noise
 from RCAIDE.Library.Methods.Noise.Metrics import * 
+from RCAIDE.Library.Methods.Noise.Metrics.PNL_noise_metric                            import PNL_noise_metric 
+from RCAIDE.Library.Methods.Noise.Metrics.EPNL_noise_metric                           import EPNL_noise_metric 
+from RCAIDE.Library.Methods.Noise.Metrics.Equivalent_SENEL_SEL_noise_metrics          import Equivalent_SENEL_SEL_noise_metrics
 from RCAIDE.Library.Methods.Noise.Common.generate_zero_elevation_microphone_locations import generate_zero_elevation_microphone_locations 
 from RCAIDE.Library.Methods.Noise.Common.generate_terrain_microphone_locations        import generate_terrain_microphone_locations     
 from RCAIDE.Library.Methods.Noise.Common.compute_relative_noise_evaluation_locations  import compute_relative_noise_evaluation_locations
@@ -30,7 +33,11 @@ def post_process_noise_data(results,
                                                    '12:00:00','12:30:00','13:00:00','13:30:00',
                                                    '14:00:00','14:30:00','15:00:00']),
                             time_period = ['06:00:00','20:00:00'], 
-                            evalaute_noise_metrics = False):
+                            compute_SENEL = False, 
+                            compute_SEL  = False, 
+                            compute_eqivalent_noise= False, 
+                            compute_PNL  = False, 
+                            compute_EPNL = False, ):
     """
     Processes raw noise simulation results into formatted data for visualization.
 
@@ -226,8 +233,12 @@ def post_process_noise_data(results,
     noise_data.aircraft_position     = Aircraft_pos
     noise_data.microhpone_locations  = mic_locs
     
-    # Step 8: Perform noise metric calculations
-    if evalaute_noise_metrics:
-        compute_noise_metrics(noise_data, flight_times)
+    # Step 8: Perform noise metric calculations 
+    if (compute_SENEL or compute_SEL) or compute_eqivalent_noise:
+        Equivalent_SENEL_SEL_noise_metrics(noise_data, flight_times) 
+    
+    if compute_PNL or compute_EPNL:
+        noise_data.PLN  = PNL_noise_metric(noise_data.SPL_dBA_1_3_spectrum)
+        noise_data.EPNL = EPNL_noise_metric(noise_data.PLN) 
     
     return noise_data

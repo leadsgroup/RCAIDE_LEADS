@@ -51,7 +51,8 @@ def main():
 
     noise_data   = post_process_noise_data(results,
                                            flight_times = flight_times,  
-                                           time_period  = ['06:00:00','09:00:00'] )  
+                                           time_period  = ['06:00:00','09:00:00'],
+                                           compute_eqivalent_noise=True)  
 
     
     plot_results(results,noise_data,regression_plotting_flag) 
