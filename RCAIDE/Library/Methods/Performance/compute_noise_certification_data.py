@@ -167,8 +167,8 @@ def compute_noise_certification_data(approach_mission  = None,
     
 def post_process_certification_noise_data(approach_results,takeoff_results): 
    
-    approach_noise_data   = post_process_noise_data(approach_results,evalaute_noise_metrics=False)
-    takeoff_noise_data    = post_process_noise_data(takeoff_results,evalaute_noise_metrics=False) 
+    approach_noise_data   = post_process_noise_data(approach_results)
+    takeoff_noise_data    = post_process_noise_data(takeoff_results) 
     
     # append approach noise                                
     approach_pos         = approach_noise_data.aircraft_position

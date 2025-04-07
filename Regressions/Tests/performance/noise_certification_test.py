@@ -33,7 +33,7 @@ def main():
 
     truth_approach_noise_2000m  = 86.52580828939912
     truth_flyover_noise_6000m   = 83.31032509607778
-    truth_sideline_noise_450m   = 95.256447368798
+    truth_sideline_noise_450m   = 95.26568362374601
     truth_area_65_dbA           = 98.58686616791356
     truth_area_65_dbA           = 98.58686616791356 
 
