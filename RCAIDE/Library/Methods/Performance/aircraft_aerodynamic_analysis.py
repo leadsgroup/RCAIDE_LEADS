@@ -17,15 +17,12 @@ import numpy as np
 #------------------------------------------------------------------------------
 # aircraft_aerodynamic_analysis
 #------------------------------------------------------------------------------  
-def aircraft_aerodynamic_analysis(aerodynamics_analysis_routine = None,
+def aircraft_aerodynamic_analysis(aerodynamics_analysis = None,
                                   angle_of_attack_range = None,
                                   Mach_number_range= None,
                                   control_surface_deflection_range = np.array([[0]]),
                                   altitude = 0,
                                   delta_ISA=0):
-    
-    if aerodynamics_analysis_routine == None:
-        raise Exception('Aerodynamics analysis routine must be prescribed')
 
     #------------------------------------------------------------------------
     # setup flight conditions
@@ -62,8 +59,8 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis_routine = None,
     CD_vals    = np.zeros((len(angle_of_attack_range),len(Mach_number_range))) 
  
     state.analyses                                  =  Data()
-    aerodynamics_analysis_routine.initialize()            
-    state.analyses.aerodynamics = aerodynamics_analysis_routine 
+    aerodynamics_analysis.initialize()            
+    state.analyses.aerodynamics = aerodynamics_analysis 
     
     for i in range (len(Mach_number_range)):  
         state.conditions.freestream.mach_number                 = Mach_number_range[i, 0] * np.ones_like(angle_of_attack_range)
