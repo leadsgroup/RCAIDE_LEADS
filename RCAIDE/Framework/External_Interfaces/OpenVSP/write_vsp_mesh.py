@@ -280,7 +280,25 @@ def set_sources(geometry):
             vsp.AddCFDSource(vsp.POINT_SOURCE,comp,0,len1,rad1,uloc,wloc) 
             uloc = 1.0
             vsp.AddCFDSource(vsp.POINT_SOURCE,comp,0,len1,rad1,uloc,wloc) 
-            pass 
+            pass
+        
+        # This is a stub for the nacelle implementation. It will create sources
+        # as is but they will not be appropriate for the nacelle shape.
+        
+        #elif comp_type == 'turbofan':
+            #network = comp_dict[comp_name[0:8]]
+            #if network.has_key('vsp_mesh'):
+                #len1 = network.vsp_mesh.length
+                #rad1 = network.vsp_mesh.radius
+            #else:
+                #len1 = 0.1 * 0.5 # not sure where VSP is getting this value
+            #uloc = 0.0
+            #wloc = 0.0
+            #vsp.AddCFDSource(vsp.POINT_SOURCE,comp,0,len1,rad1,uloc,wloc) 
+            #uloc = 1.0
+            #vsp.AddCFDSource(vsp.POINT_SOURCE,comp,0,len1,rad1,uloc,wloc) 
+            #pass        
+    
             
 # ----------------------------------------------------------------------------------------------------------------------         
 # add_segment_sources
@@ -350,6 +368,7 @@ def add_segment_sources(comp,cr,ct,ii,u_start,num_secs,custom_flag,wingtip_flag,
         if TE_match == False: # to match not custom TE if indicated
             len1 = 0.01 * ct
             rad1 = 0.2 * ct
-        vsp.AddCFDSource(vsp.LINE_SOURCE,comp,0,len1,rad1,uloc1,wloc1,len2,rad2,uloc2,wloc2)
+        vsp.AddCFDSource(vsp.LINE_SOURCE,comp,0,len1,rad1,uloc1,wloc1,len2,rad2,uloc2,wloc2)    
     
-    return 
+if __name__ == '__main__':
+    write_vsp_mesh(tag,True)
