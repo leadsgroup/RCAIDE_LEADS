@@ -446,6 +446,7 @@ class Results(Conditions):
         self.energy.fuel_consumption                          = ones_1col * 0
         self.energy.cumulative_fuel_consumption               = ones_1col * 0
         self.energy.hybrid_power_split_ratio                  = ones_1col * 0 
+        self.energy.battery_fuel_cell_power_split_ratio       = ones_1col * 0 
         
         # ----------------------------------------------------------------------------------------------------------------------         
         # Weights 

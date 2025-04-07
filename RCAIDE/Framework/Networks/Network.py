@@ -59,6 +59,8 @@ class Network(Component):
     --------
     RCAIDE.Library.Framework.Networks.Fuel
         Fuel network class 
+    RCAIDE.Library.Framework.Networks.Fuel_Cell
+        Fuel_Cell network class 
     RCAIDE.Library.Framework.Networks.Electric
         All-Electric network class  
     """      
