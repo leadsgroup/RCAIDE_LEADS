@@ -32,7 +32,7 @@ def main():
     aerodynamics_analysis_routine     = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
     aerodynamics_analysis_routine.vehicle = vehicle
     
-    results                           = aircraft_aerodynamic_analysis(aerodynamics_analysis_routine = aerodynamics_analysis_routine,
+    results                           = aircraft_aerodynamic_analysis(aerodynamics_analysis = aerodynamics_analysis_routine,
                                                                       angle_of_attack_range = angle_of_attack_range,
                                                                       Mach_number_range = Mach_number_range,
                                                                       control_surface_deflection_range= control_surface_deflection_range)
