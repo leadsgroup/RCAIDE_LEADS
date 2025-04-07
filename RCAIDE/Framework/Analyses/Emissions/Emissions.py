@@ -28,25 +28,4 @@ class Emissions(Analysis):
             """                   
         self.tag      = 'Emissions'    
         self.vehicle  = Data()
-        self.settings = Data() 
-    
-        
-    def evaluate(self,state):
-        """The default evaluate function.
-
-        Assumptions:
-        None
-
-        Source:
-        None 
-
-        Inputs:
-        self   - emissions analyses 
-        state  - flight conditions 
-
-        Outputs:
-        results  
-        """         
-        results = Data()
-        
-        return results 
+        self.settings = Data()
