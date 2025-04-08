@@ -65,6 +65,7 @@ class Evaluate(Segment):
         self.angle_of_attack                      = 1.0 *  Units.degree
         self.bank_angle                           = 0.0
         self.hybrid_power_split_ratio             = None
+        self.battery_fuel_cell_power_split_ratio  = None
         self.trim_lift_coefficient                = None
         self.state.conditions.update(Results())       
         

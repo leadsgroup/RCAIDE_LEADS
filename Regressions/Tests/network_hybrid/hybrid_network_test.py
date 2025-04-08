@@ -224,7 +224,8 @@ def mission_setup(analyses,solver_type,solver_objective):
     segment.air_speed                                     = 270    * Units.kts
     segment.distance                                      = 100.   * Units.nautical_mile    
     segment.hybrid_power_split_ratio                      = 0.5 
-    segment.initial_battery_state_of_charge                  = 1.0 
+    segment.battery_fuel_cell_power_split_ratio           = 1.0
+    segment.initial_battery_state_of_charge               = 1.0 
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  

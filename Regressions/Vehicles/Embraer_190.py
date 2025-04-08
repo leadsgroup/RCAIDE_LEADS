@@ -607,10 +607,16 @@ def configs_setup(vehicle):
 
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'takeoff'
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg 
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity =  3470. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity      =  3470. * Units.rpm 
+    config.wings['main_wing'].control_surfaces.flap.deflection                     = 20. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection                     = 25. * Units.deg 
+    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    =  3470. * Units.rpm
+    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         =  3470. * Units.rpm 
+    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity =  315.
+    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      =  315.
+    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  =  415.
+    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       =  415. 
+    config.landing_gears.main_gear.gear_extended    = True
+    config.landing_gears.nose_gear.gear_extended    = True  
     configs.append(config)
 
     
@@ -624,6 +630,12 @@ def configs_setup(vehicle):
     config.wings['main_wing'].control_surfaces.slat.deflection  = 20. * Units.deg
     config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity =  2780. * Units.rpm
     config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity      =  2780. * Units.rpm 
+    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity =  210.
+    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      =  210.
+    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  =  360.
+    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       =  360. 
+    config.landing_gears.main_gear.gear_extended    = False
+    config.landing_gears.nose_gear.gear_extended    = False 
     configs.append(config)   
     
         
@@ -636,8 +648,12 @@ def configs_setup(vehicle):
     config.tag = 'landing'
     config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity =  2030. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity      =  2030. * Units.rpm
+    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    =  2030. * Units.rpm
+    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         =  2030. * Units.rpm
+    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 92.
+    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 92.
+    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 109.3
+    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 109.3 
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
     configs.append(config)   

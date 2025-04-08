@@ -44,11 +44,11 @@ def main():
     basline_missions  = baseline_missions_setup(mission)     
     baseline_results  = basline_missions.base_mission.evaluate()
      
-    _   = post_process_noise_data(baseline_results)      
+    _   = post_process_noise_data(baseline_results,compute_PNL=True )      
      
     # SPL of rotor check during hover 
     B737_SPL        = np.max(baseline_results.segments.takeoff.conditions.noise.hemisphere_SPL_dBA)
-    B737_SPL_true   = 126.84954900920607 # this value is high because its of a hemisphere of radius 20
+    B737_SPL_true   = 115.45538618245106 # this value is high because its of a hemisphere of radius 20
     B737_diff_SPL   = np.abs(B737_SPL - B737_SPL_true)
     print('SPL difference: ',B737_diff_SPL)
     assert np.abs((B737_SPL - B737_SPL_true)/B737_SPL_true) < 1e-3

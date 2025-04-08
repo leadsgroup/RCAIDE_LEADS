@@ -128,7 +128,7 @@ def plot_aircraft_aerodynamics(results,
     surf = axis_2.plot_surface(X, Y/Units.degree, results.drag_coefficient   , cmap=cm.jet,linewidth=0, antialiased=False) 
 
     axis_1.set_title('$C_L$') 
-    axis_2.set_title('$C_L$')            
+    axis_2.set_title('$C_D$')            
     axis_1.set_ylabel('AoA') 
     axis_2.set_ylabel('AoA')  
     axis_1.set_xlabel('Mach') 

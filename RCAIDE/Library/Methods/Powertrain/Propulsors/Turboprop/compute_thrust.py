@@ -49,6 +49,7 @@ def compute_thrust(turboprop,conditions):
     gearbox_efficiency                             = turboprop.gearbox.efficiency                                                                        
     low_pressure_turbine_mechanical_efficiency     = turboprop.low_pressure_turbine.mechanical_efficiency                                                       
     lower_heating_value                            = turboprop.combustor.fuel_data.lower_heating_value 
+    SFC_adjustment                                 = turboprop.specific_fuel_consumption_reduction_factor 
 
     # unpack component conditions
     turboprop_conditions                           = conditions.energy.propulsors[turboprop.tag] 
@@ -79,12 +80,12 @@ def compute_thrust(turboprop,conditions):
     Fsp                                            = (total_work_output_coefficient*compressor_cp*T0)/(V0)     # [(N*s)/kg] 
     
     # Computing the TSFC
-    TSFC                                           = (fuel_to_air_ratio/(Fsp)) * Units.hour    # [kg/(N*hr)] 
+    TSFC                                           = (1 - SFC_adjustment) * (fuel_to_air_ratio/(Fsp)) * Units.hour    # [kg/(N*hr)] 
     
     W_dot_mdot0                                    = total_work_output_coefficient*compressor_cp*T0     # [(W*s)/kg] 
     
     # Computing the Power Specific Fuel Consumption
-    PSFC                                           = (fuel_to_air_ratio/(total_work_output_coefficient*compressor_cp*T0)) * Units.hour      # [kg/(W*hr)]
+    PSFC                                           = (1 - SFC_adjustment) * (fuel_to_air_ratio/(total_work_output_coefficient*compressor_cp*T0)) * Units.hour      # [kg/(W*hr)]
     
     # Computing the Thermal Efficiency
     eta_T                                          = total_work_output_coefficient/((fuel_to_air_ratio*lower_heating_value)/(compressor_cp*T0))   # [-]

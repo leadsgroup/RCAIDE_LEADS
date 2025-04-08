@@ -10,5 +10,5 @@
 from .Network       import Network
 from .Fuel          import Fuel
 from .Electric      import Electric
-from .Solar         import Solar
+from .Fuel_Cell     import Fuel_Cell
 from .Hybrid        import Hybrid   
