@@ -722,432 +722,15 @@ def calculate_emission_indices(reactor,  mdot_total, mdot_fuel, mdot_soot):
     }
     return EI                                                            # [-] Return emission indices dictionary
 
-## ----------------------------------------------------------------------
-##  NUCLEATION
-## ----------------------------------------------------------------------
+import numpy as np
 
-
-# Equation 2.7
-# Sticking coefficient scales down number of soot particles formed
-def sticking_coeff(m_i):
-    '''
-    C_N = literature value, found within MIT thesis
-    m_i = PAH Mass [kg/kmol]
-    '''
-
-    C_N = 1.48e-11
-    gamma_i = C_N * (m_i**4)
-    
-    return gamma_i
-
-# Equation 2.6
-# Nucleation rate from collisions of PAH species i and j
-def nucleation_rate(r_i, r_j, mu_ij, M_i, M_j, PAH_i, PAH_j, T):
-    '''
-    r_i, r_j = radii of PAH species [m]
-    M_i, M_j = molar masses of PAH species [kg/kmol]
-    mu_ij    = reduced mass of PAH species i and j [kg]
-    PAH_i    = concentration of PAH species i [kmol/m^3]
-    PAH_j    = concentration of PAH species j [kmol/m^3]
-    T        = Temperature [K]
-    epsilon  = Van der Waals enhancement factor
-    k_B      = Boltzman constant [J/K]
-    N_A      = Avogadro's constant [kmol^-1]
-    '''
-    
-    epsilon = 2.2
-    k_B = 1.380649e-23
-    N_A = 6.02214076e26
-    
-    gamma_i = sticking_coeff(M_i)
-    gamma_j = sticking_coeff(M_j)
-    
-    dN_dt_nuc = (((gamma_i+gamma_j)/2)*epsilon)*np.sqrt((8*np.pi*k_B*T)/mu_ij)*(N_A**2)*((r_i+r_j)**2)*PAH_i*PAH_j
-    
-    return dN_dt_nuc
-
-# Equation 2.8
-# Summing over all PAH species to find the total nucleation rate (based on number)
-def total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc):
-    '''
-    L           = Number of PAH species
-    PAH_species = Masses of PAH species [kg/kmol] --- LIST                   # might be kg?
-    radii       = Radii of PAH species [m] ---------- LIST
-    mu_matrix   = Reduced masses for PAH species pairs [kg] --- 2D Array
-    T           = Temperature [K]
-    '''
-    
-    dN_dt_nuc_total = 0.0
-
-    for i in range(L):
-        for j in range(i+1):
-            dN_dt_nuc_total += nucleation_rate(radii[i], radii[j], mu_matrix[i, j], PAH_species[i], PAH_species[j], PAH_conc[i], PAH_conc[j], T)
-    
-    return dN_dt_nuc_total
-
-# Equation 2.9
-# Summing over all PAH species to find the total nucleation rate (based on mass)
-def total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc):
-    '''
-    L           = Number of PAH species ------------------------------------ INT
-    PAH_species = Masses of PAH species [kg/kmol] ----------------- -------- LIST       # might be kg?
-    radii       = Radii of PAH species [m] --------------------------------- LIST
-    mu_matrix   = Reduced masses for PAH species pairs [kg] ---------------- 2D Array
-    T           = Temperature [K]------------------------------------------- FLOAT
-    n_C_matrix  = Combined number of carbon atoms in PAH species i and j --- 2D Array
-    W_C         = Atomic weight of carbon [AMU] ---------------------------- FLOAT
-    N_A         = Avogadro's constant [kmol^-1] ---------------------------- FLOAT
-    '''
-    
-    W_C = 12.011 
-    N_A = 6.02214076e26
-    
-    dM_dt_nuc_total = 0.0
-    
-    for i in range(L):
-        for j in range(i+1):
-            dM_dt_nuc_total += ((n_C_matrix[i,j]*W_C)/N_A)*\
-            (nucleation_rate(radii[i], radii[j], mu_matrix[i,j], PAH_species[i], PAH_species[j], PAH_conc[i], PAH_conc[j], T))
-    
-    return dM_dt_nuc_total
-
-
-## ----------------------------------------------------------------------
-##  SURFACE GROWTH (Acetylene Only)
-## ----------------------------------------------------------------------
-
-
-# Equations 2.12 and 2.13
-# Finding available soot area for additional surface growth
-def soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc):
-    '''
-    rho_soot    = density of soot [kg/m^3] --------------------------------- FLOAT
-    dp          = soot mean particle diameter [m] -------------------------- FLOAT
-    As          = total available soot surface area [m^2/m^3] -------------- FLOAT
-    L           = Number of PAH species ------------------------------------ INT
-    PAH_species = Masses of PAH species [kg] ------------------------------- LIST
-    radii       = Radii of PAH species [m] --------------------------------- LIST
-    mu_matrix   = Reduced masses for PAH species pairs [kg] ---------------- 2D Array
-    n_C_matrix  = Combined number of carbon atoms in PAH species i and j --- 2D Array
-    T           = Temperature [K]
-    '''
-    # rho_soot assumption in thesis
-    rho_soot = 2000.0
-    
-    # Calculate dp
-    numerator = 6 * total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-    denominator = np.pi * rho_soot * total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc)
-    dp = (numerator / denominator)**(1/3)
-    
-    # Calculate soot surface area
-    As = np.pi * dp**2 * total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc)
-    
-    return As
-
-# Equation 2.14
-# Calculating surface growth reaction rate constant k_G(T)
-def surface_growth_rxn_rate_const_unscaled(T):
-    '''
-    A_k_G     = Arbitrary pre-exponential constant [m/s]
-    E_A       = Activation energy [J/kmol]
-    R_u       = Universal gas constant [J/(kmol*K)]
-    T         = Temperature [K]
-    '''
-
-    # Values used within MIT thesis
-    A_k_G = 7.50e2
-    EARu_ratio = 12100.0 # [K]
-    
-    k_G_T = A_k_G * np.exp(EARu_ratio / T)
-    
-    return k_G_T
-
-# Equation 2.11
-# Calculating surface growth rate for surface growth solely by acetylene
-def total_surface_growth_rate_acetylene(L, PAH_species, radii, mu_matrix, n_C_matrix, C2H2_conc, T, PAH_conc):
-    '''
-    W_C         = Atomic weight of Carbon [kg/kmol] ------------------------ FLOAT
-    k_G_T       = Surface growth reaction rate constant [m/s] -------------- FLOAT
-    As          = Total available soot surface area, commonly shown as a function f(As) [m^2/m^3]
-    T           = Temperature [K] ------------------------------------------ FLOAT
-    L           = Number of PAH species ------------------------------------ INT
-    PAH_species = Masses of PAH species [kg] ------------------------------- LIST
-    radii       = Radii of PAH species [m] --------------------------------- LIST
-    mu_matrix   = Reduced masses for PAH species pairs [kg] ---------------- 2D Array
-    n_C_matrix  = Combined number of carbon atoms in PAH species i and j --- 2D Array
-    C2H2_conc   = Contration of acetylene (C2H2) [kmol/m^3] ---------------- FLOAT
-    '''
-    
-    W_C = 12.011
-    
-    dM_dt_sg_acetylene = 2 * W_C * surface_growth_rxn_rate_const_unscaled(T) * C2H2_conc * \
-    soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-    
-    return dM_dt_sg_acetylene
-
-
-## ----------------------------------------------------------------------
-##  SURFACE GROWTH (PAH Species Only)
-## ----------------------------------------------------------------------
-
-
-# Equation 2.16
-# Computes the soot mass growth rate due to PAH adsorption
-def surface_growth_rate_PAH(n_C_i, m_i, mu_soot, L, PAH_species, radii, mu_matrix, T, n_C_matrix, r_i, PAH_i, PAH_conc):
-    '''
-    n_C_i        = Number of carbon atoms in PAH species i --------------- INT
-    m_i          = Mass of PAH species [kg/kmol] ------------------------- FLOAT
-    mu_soot      = Reduced mass between soot and PAH species i [kg] ------ FLOAT
-    L            = Number of PAH species --------------------------------- INT
-    PAH_species  = Masses of PAH species [kg/kmol] ----------------------- LIST
-    radii        = Radii of PAH species [m] ------------------------------ LIST
-    mu_matrix    = Reduced masses for PAH species pairs [kg] ------------- 2D ARRAY
-    T            = Temperature [K] --------------------------------------- FLOAT
-    n_C_matrix   = Combined number of carbon atoms in PAH species pairs -- 2D ARRAY
-    r_i          = Radius of PAH species i [m] --------------------------- FLOAT
-    PAH_i        = Concentration of PAH species i [kmol/m^3] ------------- FLOAT
-    dM_dt_sg_PAH = Soot surface growth rate due to PAH [kg/m^3/s]
-    '''
-
-    # Constants
-    gamma_soot = 0.3
-    W_C = 12.011        # Atomic weight of carbon [kg/kmol]
-    epsilon = 2.2       # Van der Waals enhancement factor
-    k_B = 1.380649e-23  # Boltzmann constant [J/K]
-    rho_soot = 2000.0   # Soot density [kg/m³]
-
-    # Compute mean soot particle diameter (dp)
-    N_total = total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc)              # Added PAH_conc
-    M_total = total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)    # Added PAH_conc
-    dp = (6 * M_total / (np.pi * rho_soot * N_total)) ** (1/3)
-
-    dM_dt_sg_PAH = (
-        n_C_i * W_C * ((gamma_soot + sticking_coeff(m_i)) / 2) * epsilon *
-        np.sqrt((8 * np.pi * k_B * T) / mu_soot) * ((dp / 2) + r_i) ** 2 *
-        N_total * PAH_i
-    )
-
-    return dM_dt_sg_PAH
-
-# Equation 2.17
-# Summing surface growth rate for PAH pairs
-def total_surface_growth_rate_PAH(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc):
-    '''
-    L                  = Number of PAH species -------------------------------- INT
-    PAH_species        = Masses of PAH species [kg/kmol] ---------------------- LIST
-    radii              = Radii of PAH species [m] ----------------------------- LIST
-    mu_matrix          = Reduced masses for PAH species pairs [kg] ------------ 2D Array
-    T                  = Temperature [K] -------------------------------------- FLOAT
-    n_C_matrix         = Combined number of carbon atoms in PAH species pairs - 2D Array
-    PAH_conc           = PAH concentrations [kmol/m³] ------------------------- LIST
-    dM_dt_sg_PAH_total = Total soot surface growth rate [kg/m³/s]
-    '''
-
-    dM_dt_sg_PAH_total = 0.0
-
-    for i in range(L):
-        n_C_i = n_C_matrix[i, i]  # I think I did the indexing correctly??
-        m_i = PAH_species[i]
-        r_i = radii[i]
-        mu_soot_i = mu_matrix[i, i]
-        PAH_i = PAH_conc[i]
-
-        dM_dt_sg_PAH_total += surface_growth_rate_PAH(n_C_i, m_i, mu_soot_i, L, PAH_species, radii, mu_matrix, T, n_C_matrix, r_i, PAH_i, PAH_conc)
-
-    return dM_dt_sg_PAH_total
-
-
-## ----------------------------------------------------------------------
-##  COAGULATION
-## ----------------------------------------------------------------------
-
-
-# Equation 2.18
-# Modeling coagulation, the reduction in number of soot particles after collisions
-def coagulation_rate(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc):
-    '''
-    L           = Number of PAH species ----------------------------------- INT
-    PAH_species = Masses of PAH species [kg/kmol] ------------------------- LIST
-    radii       = Radii of PAH species [m] -------------------------------- LIST
-    mu_matrix   = Reduced masses for PAH species pairs [kg] --------------- 2D Array
-    T           = Temperature [K] ----------------------------------------- FLOAT
-    n_C_matrix  = Combined number of carbon atoms in PAH species pairs ---- 2D Array
-    dN_dt_coag  = Coagulation rate of soot number density [particles/m³/s]
-    '''
-
-    # Constants
-    C_coag = 5           # Literature value: range 1 - 9
-    rho_soot = 2000.0
-    R_u = 8314.4621      # Universal gas constant [J/(kmol·K)]
-    N_A = 6.02214076e26
-
-    N_total = total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc)
-    M_total = total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-    dp = (6 * M_total / (np.pi * rho_soot * N_total)) ** (1/3)
-
-    dN_dt_coag = (
-        -C_coag * np.sqrt((24 * R_u * T) / (rho_soot * N_A)) *
-        (dp**(1/2)) * (N_total**2)
-    )
-
-    return dN_dt_coag
-
-
-## ----------------------------------------------------------------------
-##  OXIDATION
-## ----------------------------------------------------------------------
-
-
-# Equation 2.22
-# Generalized oxidation rate due to oxidizing species i
-def general_oxidation_rate(eta_i, OX_i, W_i, E_A_i, L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc):
-    '''
-    eta_i             = Collision efficiency of oxidizing species i ------------- LIST   # Check data structure (LIST?)
-    OX_i              = Concentration of oxidizing species i [kmol/m³] ---------- LIST   # Check data structure
-    W_i               = Molecular weight of oxidizing species i [kg/kmol] ------- LIST   # Check data structure
-    E_A_i             = Activation energy for oxidation by species i [J/kmol] --- LIST   # Check data structure
-    L                 = Number of PAH species ----------------------------------- INT
-    PAH_species       = Masses of PAH species [kg/kmol] ------------------------- LIST
-    radii             = Radii of PAH species [m] -------------------------------- LIST
-    mu_matrix         = Reduced masses for PAH species pairs [kg] --------------- 2D Array
-    T                 = Temperature [K] ----------------------------------------- FLOAT
-    n_C_matrix        = Combined number of carbon atoms in PAH species pairs ---- 2D Array
-    dM_dt_oxi_general = Soot oxidation rate due to species i [kg/m³/s]
-    '''
-
-    # Constants
-    W_C = 12.011 
-    R_u = 8314.4621 
-
-    A_s = soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-    exponent = np.exp(-E_A_i / (R_u * T))
-
-    dM_dt_oxi_general = -0.25 * W_C * eta_i * OX_i * np.sqrt((8 * R_u * T) / (np.pi * W_i)) * exponent * A_s
-
-    return dM_dt_oxi_general
-
-# Equation 2.23
-# Calculating oxidation rate based on hydroxide (OH, AKA hydroxyl radical)
-def hydroxyl_oxidation_rate(T, OH_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc):
-    '''
-    T           = Temperature [K] ---------------------------------------- FLOAT
-    OH_i        = Hydroxyl radical concentration [kmol/m³] --------------- FLOAT
-    L           = Number of PAH species ---------------------------------- INT
-    PAH_species = Masses of PAH species [kg/kmol] ------------------------ LIST
-    radii       = Radii of PAH species [m] ------------------------------- LIST
-    mu_matrix   = Reduced masses for PAH species pairs [kg] -------------- 2D Array
-    n_C_matrix  = Combined number of carbon atoms in PAH species pairs --- 2D Array
-    dM_dt_OH    = Soot oxidation rate due to OH [kg/m³/s] ---------------- FLOAT
-    '''
-    
-    # Constants
-    eta_OH = 0.13 # Collision efficiency of OH, varies in literature
-    W_C = 12.011
-
-    A_s = soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-    dM_dt_OH = -8.82 * eta_OH * W_C * np.sqrt(T) * OH_i * A_s
-
-    return dM_dt_OH
-
-# Equation 2.24
-# Calculating oxidation rate based on O2
-def O2_oxidation_rate(T, O2_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc):
-    '''
-    T           = Temperature [K] ---------------------------------------- FLOAT
-    O2_i        = Oxygen concentration [kmol/m³] ------------------------- FLOAT
-    L           = Number of PAH species ---------------------------------- INT
-    PAH_species = Masses of PAH species [kg/kmol] ------------------------ LIST
-    radii       = Radii of PAH species [m] ------------------------------- LIST
-    mu_matrix   = Reduced masses for PAH species pairs [kg] -------------- 2D Array
-    n_C_matrix  = Combined number of carbon atoms in PAH species pairs --- 2D Array
-    dM_dt_O2    = Soot oxidation rate due to O2 [kg/m³/s]
-    '''
-
-    # Constants
-    eta_O2 = 1.0  # Assumed to be unity in thesis
-    W_C = 12.011
-
-    # Compute oxidation rate constant k_O2(T)
-    k_func = 745.88 * np.sqrt(T) * np.exp(-19680.0 / T)
-
-    dM_dt_O2 = -eta_O2 * W_C * k_func * O2_i * soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-
-    return dM_dt_O2
-
-# Equation 2.25
-# Calculating oxidation rate based on atomic O
-def O_oxidation_rate(T, O_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc):
-    """
-    T           = Temperature [K] ---------------------------------------- FLOAT
-    O_i         = Atomic Oxygen concentration [kmol/m³] ------------------ FLOAT
-    L           = Number of PAH species ---------------------------------- INT
-    PAH_species = Masses of PAH species [kg/kmol] ------------------------ LIST
-    radii       = Radii of PAH species [m] ------------------------------- LIST
-    mu_matrix   = Reduced masses for PAH species pairs [kg] -------------- 2D Array
-    n_C_matrix  = Combined number of carbon atoms in PAH species pairs --- 2D Array
-    dM_dt_O     = Soot oxidation rate due to O [kg/m³/s]
-    """
-    
-    eta_O = 1.0   # Assumed to be unity in thesis
-    W_C = 12.011
-    
-    k_func = 1.82 * np.sqrt(T)
-    
-    dM_dt_O = -eta_O * W_C * k_func * O_i * soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-    
-    return dM_dt_O
-
-
-## ----------------------------------------------------------------------
-##  OVERARCHING FUNCTIONS
-## ----------------------------------------------------------------------
-
-
-# Equation 2.3
-# Calculating total mechanism soot particle density
-def total_mech_number(nuc_fac, coag_fac, ox_num_fac, ox_fac, L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, OH_i, O2_i, O_i):
-    """
-    nuc_fac     = Empirical scaling factor for nucleation
-    coag_fac    = Empirical scaling factor for coagulation
-    ox_num_fac  = Empirical scaling factor for oxidation number effects
-    ox_fac      = Empirical scaling factor for oxidation
-    L           = Number of PAH species
-    PAH_species = Masses of PAH species [kg/kmol] (used for soot surface area)
-    radii       = Radii of PAH species [m]
-    mu_matrix   = Reduced masses for PAH species pairs [kg] (2D array)
-    T           = Temperature [K]
-    n_C_matrix  = Combined number of carbon atoms in PAH species pairs (2D array)
-    dN_dt_mech  = Total rate of change of soot number density [particles/m³/s]
-    """
-
-    # Compute total nucleation rates
-    N_total = total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T)
-    M_total = total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix)
-
-    # Compute individual contributions
-    dN_dt_nuc = total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc)
-    dN_dt_coag = coagulation_rate(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-    dM_dt_ox = (hydroxyl_oxidation_rate(T, OH_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc) +
-                O2_oxidation_rate(T, O2_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc) +
-                O_oxidation_rate(T, O_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc))
-
-    # Compute total rate of change of soot number density
-    dN_dt_mech = (
-        nuc_fac * dN_dt_nuc +
-        coag_fac * dN_dt_coag +
-        ox_num_fac * (N_total / M_total) * ox_fac * dM_dt_ox
-    )
-
-    return dN_dt_mech
-
-
-# Equation 2.4
-# Calculating total mechanism soot mass density
-def total_mech_mass(nuc_fac, sg_fac, ox_fac, L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, C2H2_conc, OH_i, O2_i, O_i):
+def compute_soot_formation(nuc_fac, sg_fac, coag_fac, ox_fac, ox_num_fac, L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, C2H2_conc, OH_i, O2_i, O_i, combustor, t_res):
     """
     nuc_fac     = Empirical scaling factor for nucleation
     sg_fac      = Empirical scaling factor for surface growth
+    coag_fac    = Empirical scaling factor for coagulation
     ox_fac      = Empirical scaling factor for oxidation
+    ox_num_fac  = Empirical scaling factor for oxidation number effects
     L           = Number of PAH species
     PAH_species = Masses of PAH species [kg/kmol] (used for soot surface area)
     radii       = Radii of PAH species [m]
@@ -1155,48 +738,594 @@ def total_mech_mass(nuc_fac, sg_fac, ox_fac, L, PAH_species, radii, mu_matrix, T
     T           = Temperature [K]
     n_C_matrix  = Combined number of carbon atoms in PAH species pairs (2D array)
     PAH_conc    = PAH concentration [kmol/m³] (for surface growth)
-    ox_species  = List of oxidizing species
-    ox_conc     = List of oxidizing species concentrations [kmol/m³]
-    dM_dt_mech  = Total rate of change of soot mass density [kg/m³/s]
+    C2H2_conc   = Concentration of acetylene (C2H2) [kmol/m^3]
+    OH_i        = Hydroxyl radical concentration [kmol/m³]
+    O2_i        = Oxygen concentration [kmol/m³]
+    O_i         = Atomic Oxygen concentration [kmol/m³]
+    combustor   = Object containing fuel data and constants
+    t_res       = Residence time [s]
+    Returns: (dN_dt_mech, dM_dt_mech)
+        dN_dt_mech = Total rate of change of soot number density [particles/m³/s]
+        dM_dt_mech = Total rate of change of soot mass density [kg/m³/s]
     """
 
-    # Compute individual mass contribution rates
-    dM_dt_nuc = total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+    # ----------------------------------------------------------------------
+    # NUCLEATION
+    # ----------------------------------------------------------------------
     
-    print(f"[DEBUG] T = {T:.1f} K, [OH] = {OH_i:.3e}, [O2] = {O2_i:.3e}, [O] = {O_i:.3e}")
-    print(f"[DEBUG] Total nucleation rate = {dM_dt_nuc:.3e} kg/m^3/s")
+    # Compute total nucleation rate (number) - Equation 2.8
+    dN_dt_nuc_total = 0.0
+    for i in range(L):
+        for j in range(i+1):
+            # Equation 2.6: Nucleation rate for pair (i,j)
+            # First, compute sticking coefficients (Equation 2.7)
+            gamma_i = combustor.fuel_data.C_N * (PAH_species[i]**4)
+            gamma_j = combustor.fuel_data.C_N * (PAH_species[j]**4)
+            # Then compute nucleation rate
+            dN_dt_nuc = (((gamma_i + gamma_j) / 2) * combustor.fuel_data.epsilon) * \
+                        np.sqrt((8 * np.pi * combustor.fuel_data.k_B * T) / mu_matrix[i, j]) * \
+                        (combustor.fuel_data.N_A**2) * ((radii[i] + radii[j])**2) * \
+                        PAH_conc[i] * PAH_conc[j]
+            dN_dt_nuc_total += dN_dt_nuc
     
-    dM_dt_sg_PAH  = total_surface_growth_rate_PAH(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-    dM_dt_sg_C2H2 = total_surface_growth_rate_acetylene(L, PAH_species, radii, mu_matrix, n_C_matrix, C2H2_conc, T, PAH_conc)
-    dM_dt_sg = dM_dt_sg_PAH + dM_dt_sg_C2H2
+    # Compute total nucleation rate (mass) - Equation 2.9
+    dM_dt_nuc_total = 0.0
+    for i in range(L):
+        for j in range(i+1):
+            # Equation 2.6: Nucleation rate for pair (i,j)
+            gamma_i = combustor.fuel_data.C_N * (PAH_species[i]**4)
+            gamma_j = combustor.fuel_data.C_N * (PAH_species[j]**4)
+            dN_dt_nuc = (((gamma_i + gamma_j) / 2) * combustor.fuel_data.epsilon) * \
+                        np.sqrt((8 * np.pi * combustor.fuel_data.k_B * T) / mu_matrix[i, j]) * \
+                        (combustor.fuel_data.N_A**2) * ((radii[i] + radii[j])**2) * \
+                        PAH_conc[i] * PAH_conc[j]
+            dM_dt_nuc_total += ((n_C_matrix[i, j] * combustor.fuel_data.W_C) / combustor.fuel_data.N_A) * dN_dt_nuc
     
-    print(f"[DEBUG] Surface growth rate PAH = {dM_dt_sg:.3e} kg/m^3/s")
-    print(f"[DEBUG] Surface growth rate C2H2 = {dM_dt_sg:.3e} kg/m^3/s")
-    print(f"[DEBUG] Total surface growth rate = {dM_dt_sg:.3e} kg/m^3/s")
+    # Store for later use
+    N_total = dN_dt_nuc_total
+    M_total = dM_dt_nuc_total
     
-    print(f"[DEBUG] [PAH] = {np.array2string(np.array(PAH_conc), precision=3, separator=', ')} kmol/m^3")
-    print(f"[DEBUG] [C2H2] = {np.array2string(np.array(C2H2_conc), precision=3, separator=', ')} kmol/m^3")
-
-    ##### RECOMPUTED #####
-    As = soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
-    print(f"[DEBUG] Soot surface area = {As:.3e} m^2/m^3")    
-    ##### RECOMPUTED #####
-                
-    # Compute individual oxidation rates
-    dM_dt_OH = hydroxyl_oxidation_rate(T, OH_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc)
-    dM_dt_O2 = O2_oxidation_rate(T, O2_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc)
-    dM_dt_O  = O_oxidation_rate(T, O_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc)
+    # ----------------------------------------------------------------------
+    # SURFACE GROWTH (Acetylene Only)
+    # ----------------------------------------------------------------------
     
-    print(f"[DEBUG] OH oxidation rate = {dM_dt_OH:.3e} kg/m^3/s")
-    print(f"[DEBUG] O2 oxidation rate = {dM_dt_O2:.3e} kg/m^3/s")
-    print(f"[DEBUG] O oxidation rate = {dM_dt_O:.3e} kg/m^3/s")
+    # Compute soot surface area - Equations 2.12 and 2.13
+    numerator = 6 * dM_dt_nuc_total
+    denominator = np.pi * combustor.fuel_data.rho_soot * dN_dt_nuc_total
+    dp = (numerator / denominator)**(1/3)
+    As = np.pi * dp**2 * dN_dt_nuc_total * t_res
+    
+    # Compute surface growth reaction rate constant - Equation 2.14
+    k_G_T = combustor.fuel_data.A_k_G * np.exp(combustor.fuel_data.EARu_ratio / T)
+    
+    # Compute surface growth rate by acetylene - Equation 2.11
+    dM_dt_sg_acetylene = 2 * combustor.fuel_data.W_C * k_G_T * C2H2_conc * As
+    
+    # ----------------------------------------------------------------------
+    # SURFACE GROWTH (PAH Species Only)
+    # ----------------------------------------------------------------------
+    
+    # Compute total surface growth rate by PAH - Equation 2.17
+    dM_dt_sg_PAH_total = 0.0
+    for i in range(L):
+        n_C_i = n_C_matrix[i, i]  # I think I did the indexing correctly??
+        m_i = PAH_species[i]
+        r_i = radii[i]
+        mu_soot_i = mu_matrix[i, i]
+        PAH_i = PAH_conc[i]
+        
+        # Equation 2.16: Surface growth rate for PAH species i
+        # Compute mean soot particle diameter (dp)
+        dp = (6 * M_total / (np.pi * combustor.fuel_data.rho_soot * N_total)) ** (1/3)
+        # Compute sticking coefficient for this species
+        gamma_i = combustor.fuel_data.C_N * (m_i**4)
+        dM_dt_sg_PAH = (
+            n_C_i * combustor.fuel_data.W_C * ((combustor.fuel_data.gamma_soot + gamma_i) / 2) * combustor.fuel_data.epsilon *
+            np.sqrt((8 * np.pi * combustor.fuel_data.k_B * T) / mu_soot_i) * ((dp / 2) + r_i) ** 2 *
+            N_total * PAH_i
+        )
+        dM_dt_sg_PAH_total += dM_dt_sg_PAH
+    
+    # Total surface growth rate
+    dM_dt_sg = dM_dt_sg_PAH_total + dM_dt_sg_acetylene
+    
+    # ----------------------------------------------------------------------
+    # COAGULATION
+    # ----------------------------------------------------------------------
+    
+    # Compute coagulation rate - Equation 2.18
+    dp = (6 * M_total / (np.pi * combustor.fuel_data.rho_soot * N_total)) ** (1/3)
+    dN_dt_coag = (
+        -combustor.fuel_data.C_coag * np.sqrt((24 * combustor.fuel_data.R_u * T) / (combustor.fuel_data.rho_soot * combustor.fuel_data.N_A)) *
+        (dp**(1/2)) * (N_total**2)
+    )
+    
+    # ----------------------------------------------------------------------
+    # OXIDATION
+    # ----------------------------------------------------------------------
+    
+    # Compute oxidation rate by OH - Equation 2.23
+    A_s = As  # Use the previously computed soot surface area
+    dM_dt_OH = -8.82 * combustor.fuel_data.eta_OH * combustor.fuel_data.W_C * np.sqrt(T) * OH_i * A_s
+    
+    # Compute oxidation rate by O2 - Equation 2.24
+    k_func_O2 = 745.88 * np.sqrt(T) * np.exp(-19680.0 / T)
+    dM_dt_O2 = -combustor.fuel_data.eta_O2 * combustor.fuel_data.W_C * k_func_O2 * O2_i * A_s
+    
+    # Compute oxidation rate by O - Equation 2.25
+    k_func_O = 1.82 * np.sqrt(T)
+    dM_dt_O = -combustor.fuel_data.eta_O * combustor.fuel_data.W_C * k_func_O * O_i * A_s
     
     # Combine oxidation terms
     dM_dt_ox = dM_dt_OH + dM_dt_O2 + dM_dt_O
     
+    # ----------------------------------------------------------------------
+    # OVERARCHING CALCULATIONS
+    # ----------------------------------------------------------------------
+    
+    # Debug prints from total_mech_mass
+    print(f"[DEBUG] T = {T:.1f} K, [OH] = {OH_i:.3e}, [O2] = {O2_i:.3e}, [O] = {O_i:.3e}")
+    print(f"[DEBUG] Total nucleation rate = {dM_dt_nuc_total:.3e} kg/m^3/s")
+    print(f"[DEBUG] Surface growth rate PAH = {dM_dt_sg_PAH_total:.3e} kg/m^3/s")
+    print(f"[DEBUG] Surface growth rate C2H2 = {dM_dt_sg_acetylene:.3e} kg/m^3/s")
+    print(f"[DEBUG] Total surface growth rate = {dM_dt_sg:.3e} kg/m^3/s")
+    print(f"[DEBUG] [PAH] = {np.array2string(np.array(PAH_conc), precision=3, separator=', ')} kmol/m^3")
+    print(f"[DEBUG] [C2H2] = {np.array2string(np.array(C2H2_conc), precision=3, separator=', ')} kmol/m^3")
+    print(f"[DEBUG] Soot surface area = {As:.3e} m^2/m^3")
+    print(f"[DEBUG] OH oxidation rate = {dM_dt_OH:.3e} kg/m^3/s")
+    print(f"[DEBUG] O2 oxidation rate = {dM_dt_O2:.3e} kg/m^3/s")
+    print(f"[DEBUG] O oxidation rate = {dM_dt_O:.3e} kg/m^3/s")
     print(f"[DEBUG] Total oxidation rate = {dM_dt_ox:.3e} kg/m^3/s")
     
-    # Compute total rate of change of soot mass density
-    dM_dt_mech = (nuc_fac * dM_dt_nuc) + (sg_fac * dM_dt_sg) + (ox_fac * dM_dt_ox)
+    # Compute total mechanism soot particle density - Equation 2.3
+    dN_dt_mech = (
+        nuc_fac * dN_dt_nuc_total +
+        coag_fac * dN_dt_coag +
+        ox_num_fac * (N_total / M_total) * ox_fac * dM_dt_ox
+    )
+    
+    # Compute total mechanism soot mass density - Equation 2.4
+    dM_dt_mech = (nuc_fac * dM_dt_nuc_total) + (sg_fac * dM_dt_sg) + (ox_fac * dM_dt_ox)
+    
+    return dN_dt_mech, dM_dt_mech
 
-    return dM_dt_mech
+# ## ----------------------------------------------------------------------
+# ##  NUCLEATION
+# ## ----------------------------------------------------------------------
+
+# # Equation 2.7
+# # Sticking coefficient scales down number of soot particles formed
+# def sticking_coeff(m_i, combustor):
+#     '''
+#     C_N = literature value, found within MIT thesis
+#     m_i = PAH Mass [kg/kmol]
+#     '''
+
+#     gamma_i = combustor.fuel_data.C_N * (m_i**4)
+    
+#     return gamma_i
+
+# # Equation 2.6
+# # Nucleation rate from collisions of PAH species i and j
+# def nucleation_rate(r_i, r_j, mu_ij, M_i, M_j, PAH_i, PAH_j, T, combustor):
+#     '''
+#     r_i, r_j = radii of PAH species [m]
+#     M_i, M_j = molar masses of PAH species [kg/kmol]
+#     mu_ij    = reduced mass of PAH species i and j [kg]
+#     PAH_i    = concentration of PAH species i [kmol/m^3]
+#     PAH_j    = concentration of PAH species j [kmol/m^3]
+#     T        = Temperature [K]
+#     epsilon  = Van der Waals enhancement factor
+#     k_B      = Boltzman constant [J/K]
+#     N_A      = Avogadro's constant [kmol^-1]
+#     '''
+    
+#     gamma_i = sticking_coeff(M_i)
+#     gamma_j = sticking_coeff(M_j)
+    
+#     dN_dt_nuc = (((gamma_i+gamma_j)/2)*combustor.fuel_data.epsilon)*np.sqrt((8*np.pi*combustor.fuel_data.k_B*T)/mu_ij)*(combustor.fuel_data.N_A**2)*((r_i+r_j)**2)*PAH_i*PAH_j
+    
+#     return dN_dt_nuc
+
+# # Equation 2.8
+# # Summing over all PAH species to find the total nucleation rate (based on number)
+# def total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc):
+#     '''
+#     L           = Number of PAH species
+#     PAH_species = Masses of PAH species [kg/kmol] --- LIST                   # might be kg?
+#     radii       = Radii of PAH species [m] ---------- LIST
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] --- 2D Array
+#     T           = Temperature [K]
+#     '''
+    
+#     dN_dt_nuc_total = 0.0
+
+#     for i in range(L):
+#         for j in range(i+1):
+#             dN_dt_nuc_total += nucleation_rate(radii[i], radii[j], mu_matrix[i, j], PAH_species[i], PAH_species[j], PAH_conc[i], PAH_conc[j], T)
+    
+#     return dN_dt_nuc_total
+
+# # Equation 2.9
+# # Summing over all PAH species to find the total nucleation rate (based on mass)
+# def total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, combustor):
+#     '''
+#     L           = Number of PAH species ------------------------------------ INT
+#     PAH_species = Masses of PAH species [kg/kmol] ----------------- -------- LIST       # might be kg?
+#     radii       = Radii of PAH species [m] --------------------------------- LIST
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] ---------------- 2D Array
+#     T           = Temperature [K]------------------------------------------- FLOAT
+#     n_C_matrix  = Combined number of carbon atoms in PAH species i and j --- 2D Array
+#     W_C         = Atomic weight of carbon [AMU] ---------------------------- FLOAT
+#     N_A         = Avogadro's constant [kmol^-1] ---------------------------- FLOAT
+#     '''
+    
+#     dM_dt_nuc_total = 0.0
+    
+#     for i in range(L):
+#         for j in range(i+1):
+#             dM_dt_nuc_total += ((n_C_matrix[i,j]*combustor.fuel_data.W_C)/combustor.fuel_data.N_A)*\
+#             (nucleation_rate(radii[i], radii[j], mu_matrix[i,j], PAH_species[i], PAH_species[j], PAH_conc[i], PAH_conc[j], T))
+    
+#     return dM_dt_nuc_total
+
+
+# ## ----------------------------------------------------------------------
+# ##  SURFACE GROWTH (Acetylene Only)
+# ## ----------------------------------------------------------------------
+
+
+# # Equations 2.12 and 2.13
+# # Finding available soot area for additional surface growth
+# def soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, combustor, t_res):
+#     '''
+#     rho_soot    = density of soot [kg/m^3] --------------------------------- FLOAT
+#     dp          = soot mean particle diameter [m] -------------------------- FLOAT
+#     As          = total available soot surface area [m^2/m^3] -------------- FLOAT
+#     L           = Number of PAH species ------------------------------------ INT
+#     PAH_species = Masses of PAH species [kg] ------------------------------- LIST
+#     radii       = Radii of PAH species [m] --------------------------------- LIST
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] ---------------- 2D Array
+#     n_C_matrix  = Combined number of carbon atoms in PAH species i and j --- 2D Array
+#     T           = Temperature [K]
+#     '''
+    
+#     # Calculate dp
+#     numerator = 6 * total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+#     denominator = np.pi * combustor.fuel_data.rho_soot * total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc)
+#     dp = (numerator / denominator)**(1/3)
+    
+#     # Calculate soot surface area
+#     As = np.pi * dp**2 * total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc) * t_res
+    
+#     return As
+
+# # Equation 2.14
+# # Calculating surface growth reaction rate constant k_G(T)
+# def surface_growth_rxn_rate_const_unscaled(T, combustor):
+#     '''
+#     A_k_G     = Arbitrary pre-exponential constant [m/s]
+#     E_A       = Activation energy [J/kmol]
+#     R_u       = Universal gas constant [J/(kmol*K)]
+#     T         = Temperature [K]
+#     '''
+    
+#     k_G_T = combustor.fuel_data.A_k_G * np.exp(combustor.fuel_data.EARu_ratio / T)
+    
+#     return k_G_T
+
+# # Equation 2.11
+# # Calculating surface growth rate for surface growth solely by acetylene
+# def total_surface_growth_rate_acetylene(L, PAH_species, radii, mu_matrix, n_C_matrix, C2H2_conc, T, PAH_conc, combustor):
+#     '''
+#     W_C         = Atomic weight of Carbon [kg/kmol] ------------------------ FLOAT
+#     k_G_T       = Surface growth reaction rate constant [m/s] -------------- FLOAT
+#     As          = Total available soot surface area, commonly shown as a function f(As) [m^2/m^3]
+#     T           = Temperature [K] ------------------------------------------ FLOAT
+#     L           = Number of PAH species ------------------------------------ INT
+#     PAH_species = Masses of PAH species [kg] ------------------------------- LIST
+#     radii       = Radii of PAH species [m] --------------------------------- LIST
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] ---------------- 2D Array
+#     n_C_matrix  = Combined number of carbon atoms in PAH species i and j --- 2D Array
+#     C2H2_conc   = Contration of acetylene (C2H2) [kmol/m^3] ---------------- FLOAT
+#     '''
+    
+#     dM_dt_sg_acetylene = 2 * combustor.fuel_data.W_C * surface_growth_rxn_rate_const_unscaled(T, combustor) * C2H2_conc * \
+#     soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, combustor, t_res)
+    
+#     return dM_dt_sg_acetylene
+
+
+# ## ----------------------------------------------------------------------
+# ##  SURFACE GROWTH (PAH Species Only)
+# ## ----------------------------------------------------------------------
+
+
+# # Equation 2.16
+# # Computes the soot mass growth rate due to PAH adsorption
+# def surface_growth_rate_PAH(n_C_i, m_i, mu_soot, L, PAH_species, radii, mu_matrix, T, n_C_matrix, r_i, PAH_i, PAH_conc, combustor):
+#     '''
+#     n_C_i        = Number of carbon atoms in PAH species i --------------- INT
+#     m_i          = Mass of PAH species [kg/kmol] ------------------------- FLOAT
+#     mu_soot      = Reduced mass between soot and PAH species i [kg] ------ FLOAT
+#     L            = Number of PAH species --------------------------------- INT
+#     PAH_species  = Masses of PAH species [kg/kmol] ----------------------- LIST
+#     radii        = Radii of PAH species [m] ------------------------------ LIST
+#     mu_matrix    = Reduced masses for PAH species pairs [kg] ------------- 2D ARRAY
+#     T            = Temperature [K] --------------------------------------- FLOAT
+#     n_C_matrix   = Combined number of carbon atoms in PAH species pairs -- 2D ARRAY
+#     r_i          = Radius of PAH species i [m] --------------------------- FLOAT
+#     PAH_i        = Concentration of PAH species i [kmol/m^3] ------------- FLOAT
+#     dM_dt_sg_PAH = Soot surface growth rate due to PAH [kg/m^3/s]
+#     '''
+
+#     # Const
+#     # Compute mean soot particle diameter (dp)
+#     N_total = total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc)              # Added PAH_conc
+#     M_total = total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)    # Added PAH_conc
+#     dp = (6 * M_total / (np.pi * combustor.fuel_data.rho_soot * N_total)) ** (1/3)
+
+#     dM_dt_sg_PAH = (
+#         n_C_i * combustor.fuel_data.W_C * ((combustor.fuel_data.gamma_soot + sticking_coeff(m_i)) / 2) * combustor.fuel_data.epsilon *
+#         np.sqrt((8 * np.pi * combustor.fuel_data.k_B * T) / mu_soot) * ((dp / 2) + r_i) ** 2 *
+#         N_total * PAH_i
+#     )
+
+#     return dM_dt_sg_PAH
+
+# # Equation 2.17
+# # Summing surface growth rate for PAH pairs
+# def total_surface_growth_rate_PAH(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc):
+#     '''
+#     L                  = Number of PAH species -------------------------------- INT
+#     PAH_species        = Masses of PAH species [kg/kmol] ---------------------- LIST
+#     radii              = Radii of PAH species [m] ----------------------------- LIST
+#     mu_matrix          = Reduced masses for PAH species pairs [kg] ------------ 2D Array
+#     T                  = Temperature [K] -------------------------------------- FLOAT
+#     n_C_matrix         = Combined number of carbon atoms in PAH species pairs - 2D Array
+#     PAH_conc           = PAH concentrations [kmol/m³] ------------------------- LIST
+#     dM_dt_sg_PAH_total = Total soot surface growth rate [kg/m³/s]
+#     '''
+
+#     dM_dt_sg_PAH_total = 0.0
+
+#     for i in range(L):
+#         n_C_i = n_C_matrix[i, i]  # I think I did the indexing correctly??
+#         m_i = PAH_species[i]
+#         r_i = radii[i]
+#         mu_soot_i = mu_matrix[i, i]
+#         PAH_i = PAH_conc[i]
+
+#         dM_dt_sg_PAH_total += surface_growth_rate_PAH(n_C_i, m_i, mu_soot_i, L, PAH_species, radii, mu_matrix, T, n_C_matrix, r_i, PAH_i, PAH_conc)
+
+#     return dM_dt_sg_PAH_total
+
+
+# ## ----------------------------------------------------------------------
+# ##  COAGULATION
+# ## ----------------------------------------------------------------------
+
+
+# # Equation 2.18
+# # Modeling coagulation, the reduction in number of soot particles after collisions
+# def coagulation_rate(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, combustor):
+#     '''
+#     L           = Number of PAH species ----------------------------------- INT
+#     PAH_species = Masses of PAH species [kg/kmol] ------------------------- LIST
+#     radii       = Radii of PAH species [m] -------------------------------- LIST
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] --------------- 2D Array
+#     T           = Temperature [K] ----------------------------------------- FLOAT
+#     n_C_matrix  = Combined number of carbon atoms in PAH species pairs ---- 2D Array
+#     dN_dt_coag  = Coagulation rate of soot number density [particles/m³/s]
+#     '''
+
+
+
+#     N_total = total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc)
+#     M_total = total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+#     dp = (6 * M_total / (np.pi * combustor.fuel_data.rho_soot * N_total)) ** (1/3)
+
+#     dN_dt_coag = (
+#         -combustor.fuel_data.C_coag * np.sqrt((24 * combustor.fuel_data.R_u * T) / (combustor.fuel_data.rho_soot * combustor.fuel_data.N_A)) *
+#         (dp**(1/2)) * (N_total**2)
+#     )
+
+#     return dN_dt_coag
+
+
+# ## ----------------------------------------------------------------------
+# ##  OXIDATION
+# ## ----------------------------------------------------------------------
+
+
+# # Equation 2.22
+# # Generalized oxidation rate due to oxidizing species i
+# def general_oxidation_rate(eta_i, OX_i, W_i, E_A_i, L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, combustor):
+#     '''
+#     eta_i             = Collision efficiency of oxidizing species i ------------- LIST   # Check data structure (LIST?)
+#     OX_i              = Concentration of oxidizing species i [kmol/m³] ---------- LIST   # Check data structure
+#     W_i               = Molecular weight of oxidizing species i [kg/kmol] ------- LIST   # Check data structure
+#     E_A_i             = Activation energy for oxidation by species i [J/kmol] --- LIST   # Check data structure
+#     L                 = Number of PAH species ----------------------------------- INT
+#     PAH_species       = Masses of PAH species [kg/kmol] ------------------------- LIST
+#     radii             = Radii of PAH species [m] -------------------------------- LIST
+#     mu_matrix         = Reduced masses for PAH species pairs [kg] --------------- 2D Array
+#     T                 = Temperature [K] ----------------------------------------- FLOAT
+#     n_C_matrix        = Combined number of carbon atoms in PAH species pairs ---- 2D Array
+#     dM_dt_oxi_general = Soot oxidation rate due to species i [kg/m³/s]
+#     '''
+
+#     A_s = soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+#     exponent = np.exp(-E_A_i / (combustor.fuel_data.R_u * T))
+
+#     dM_dt_oxi_general = -0.25 * combustor.fuel_data.W_C * eta_i * OX_i * np.sqrt((8 * combustor.fuel_data.R_u * T) / (np.pi * W_i)) * exponent * A_s
+
+#     return dM_dt_oxi_general
+
+# # Equation 2.23
+# # Calculating oxidation rate based on hydroxide (OH, AKA hydroxyl radical)
+# def hydroxyl_oxidation_rate(T, OH_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc, combustor):
+#     '''
+#     T           = Temperature [K] ---------------------------------------- FLOAT
+#     OH_i        = Hydroxyl radical concentration [kmol/m³] --------------- FLOAT
+#     L           = Number of PAH species ---------------------------------- INT
+#     PAH_species = Masses of PAH species [kg/kmol] ------------------------ LIST
+#     radii       = Radii of PAH species [m] ------------------------------- LIST
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] -------------- 2D Array
+#     n_C_matrix  = Combined number of carbon atoms in PAH species pairs --- 2D Array
+#     dM_dt_OH    = Soot oxidation rate due to OH [kg/m³/s] ---------------- FLOAT
+#     '''
+    
+
+
+#     A_s = soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+#     dM_dt_OH = -8.82 * combustor.fuel_data.eta_OH * combustor.fuel_data.W_C * np.sqrt(T) * OH_i * A_s
+
+#     return dM_dt_OH
+
+# # Equation 2.24
+# # Calculating oxidation rate based on O2
+# def O2_oxidation_rate(T, O2_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc, combustor):
+#     '''
+#     T           = Temperature [K] ---------------------------------------- FLOAT
+#     O2_i        = Oxygen concentration [kmol/m³] ------------------------- FLOAT
+#     L           = Number of PAH species ---------------------------------- INT
+#     PAH_species = Masses of PAH species [kg/kmol] ------------------------ LIST
+#     radii       = Radii of PAH species [m] ------------------------------- LIST
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] -------------- 2D Array
+#     n_C_matrix  = Combined number of carbon atoms in PAH species pairs --- 2D Array
+#     dM_dt_O2    = Soot oxidation rate due to O2 [kg/m³/s]
+#     '''
+
+
+
+#     # Compute oxidation rate constant k_O2(T)
+#     k_func = 745.88 * np.sqrt(T) * np.exp(-19680.0 / T)
+
+#     dM_dt_O2 = -combustor.fuel_data.eta_O2 * combustor.fuel_data.W_C * k_func * O2_i * soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+
+#     return dM_dt_O2
+
+# # Equation 2.25
+# # Calculating oxidation rate based on atomic O
+# def O_oxidation_rate(T, O_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc, combustor):
+#     """
+#     T           = Temperature [K] ---------------------------------------- FLOAT
+#     O_i         = Atomic Oxygen concentration [kmol/m³] ------------------ FLOAT
+#     L           = Number of PAH species ---------------------------------- INT
+#     PAH_species = Masses of PAH species [kg/kmol] ------------------------ LIST
+#     radii       = Radii of PAH species [m] ------------------------------- LIST
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] -------------- 2D Array
+#     n_C_matrix  = Combined number of carbon atoms in PAH species pairs --- 2D Array
+#     dM_dt_O     = Soot oxidation rate due to O [kg/m³/s]
+#     """
+    
+#     k_func = 1.82 * np.sqrt(T)
+    
+#     dM_dt_O = -combustor.fuel_data.eta_O * combustor.fuel_data.W_C * k_func * O_i * soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+    
+#     return dM_dt_O
+
+
+# ## ----------------------------------------------------------------------
+# ##  OVERARCHING FUNCTIONS
+# ## ----------------------------------------------------------------------
+
+
+# # Equation 2.3
+# # Calculating total mechanism soot particle density
+# def total_mech_number(nuc_fac, coag_fac, ox_num_fac, ox_fac, L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, OH_i, O2_i, O_i):
+#     """
+#     nuc_fac     = Empirical scaling factor for nucleation
+#     coag_fac    = Empirical scaling factor for coagulation
+#     ox_num_fac  = Empirical scaling factor for oxidation number effects
+#     ox_fac      = Empirical scaling factor for oxidation
+#     L           = Number of PAH species
+#     PAH_species = Masses of PAH species [kg/kmol] (used for soot surface area)
+#     radii       = Radii of PAH species [m]
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] (2D array)
+#     T           = Temperature [K]
+#     n_C_matrix  = Combined number of carbon atoms in PAH species pairs (2D array)
+#     dN_dt_mech  = Total rate of change of soot number density [particles/m³/s]
+#     """
+
+#     # Compute total nucleation rates
+#     N_total = total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T)
+#     M_total = total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix)
+
+#     # Compute individual contributions
+#     dN_dt_nuc = total_nucleation_rate_number(L, PAH_species, radii, mu_matrix, T, PAH_conc)
+#     dN_dt_coag = coagulation_rate(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+#     dM_dt_ox = (hydroxyl_oxidation_rate(T, OH_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc) +
+#                 O2_oxidation_rate(T, O2_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc) +
+#                 O_oxidation_rate(T, O_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc))
+
+#     # Compute total rate of change of soot number density
+#     dN_dt_mech = (
+#         nuc_fac * dN_dt_nuc +
+#         coag_fac * dN_dt_coag +
+#         ox_num_fac * (N_total / M_total) * ox_fac * dM_dt_ox
+#     )
+
+#     return dN_dt_mech
+
+
+# # Equation 2.4
+# # Calculating total mechanism soot mass density
+# def total_mech_mass(nuc_fac, sg_fac, ox_fac, L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc, C2H2_conc, OH_i, O2_i, O_i):
+#     """
+#     nuc_fac     = Empirical scaling factor for nucleation
+#     sg_fac      = Empirical scaling factor for surface growth
+#     ox_fac      = Empirical scaling factor for oxidation
+#     L           = Number of PAH species
+#     PAH_species = Masses of PAH species [kg/kmol] (used for soot surface area)
+#     radii       = Radii of PAH species [m]
+#     mu_matrix   = Reduced masses for PAH species pairs [kg] (2D array)
+#     T           = Temperature [K]
+#     n_C_matrix  = Combined number of carbon atoms in PAH species pairs (2D array)
+#     PAH_conc    = PAH concentration [kmol/m³] (for surface growth)
+#     ox_species  = List of oxidizing species
+#     ox_conc     = List of oxidizing species concentrations [kmol/m³]
+#     dM_dt_mech  = Total rate of change of soot mass density [kg/m³/s]
+#     """
+
+#     # Compute individual mass contribution rates
+#     dM_dt_nuc = total_nucleation_rate_mass(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+    
+#     print(f"[DEBUG] T = {T:.1f} K, [OH] = {OH_i:.3e}, [O2] = {O2_i:.3e}, [O] = {O_i:.3e}")
+#     print(f"[DEBUG] Total nucleation rate = {dM_dt_nuc:.3e} kg/m^3/s")
+    
+#     dM_dt_sg_PAH  = total_surface_growth_rate_PAH(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+#     dM_dt_sg_C2H2 = total_surface_growth_rate_acetylene(L, PAH_species, radii, mu_matrix, n_C_matrix, C2H2_conc, T, PAH_conc)
+#     dM_dt_sg = dM_dt_sg_PAH + dM_dt_sg_C2H2
+    
+#     print(f"[DEBUG] Surface growth rate PAH = {dM_dt_sg:.3e} kg/m^3/s")
+#     print(f"[DEBUG] Surface growth rate C2H2 = {dM_dt_sg:.3e} kg/m^3/s")
+#     print(f"[DEBUG] Total surface growth rate = {dM_dt_sg:.3e} kg/m^3/s")
+    
+#     print(f"[DEBUG] [PAH] = {np.array2string(np.array(PAH_conc), precision=3, separator=', ')} kmol/m^3")
+#     print(f"[DEBUG] [C2H2] = {np.array2string(np.array(C2H2_conc), precision=3, separator=', ')} kmol/m^3")
+
+#     ##### RECOMPUTED #####
+#     As = soot_surface_area(L, PAH_species, radii, mu_matrix, T, n_C_matrix, PAH_conc)
+#     print(f"[DEBUG] Soot surface area = {As:.3e} m^2/m^3")    
+#     ##### RECOMPUTED #####
+                
+#     # Compute individual oxidation rates
+#     dM_dt_OH = hydroxyl_oxidation_rate(T, OH_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc)
+#     dM_dt_O2 = O2_oxidation_rate(T, O2_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc)
+#     dM_dt_O  = O_oxidation_rate(T, O_i, L, PAH_species, radii, mu_matrix, n_C_matrix, PAH_conc)
+    
+#     print(f"[DEBUG] OH oxidation rate = {dM_dt_OH:.3e} kg/m^3/s")
+#     print(f"[DEBUG] O2 oxidation rate = {dM_dt_O2:.3e} kg/m^3/s")
+#     print(f"[DEBUG] O oxidation rate = {dM_dt_O:.3e} kg/m^3/s")
+    
+#     # Combine oxidation terms
+#     dM_dt_ox = dM_dt_OH + dM_dt_O2 + dM_dt_O
+    
+#     print(f"[DEBUG] Total oxidation rate = {dM_dt_ox:.3e} kg/m^3/s")
+    
+#     # Compute total rate of change of soot mass density
+#     dM_dt_mech = (nuc_fac * dM_dt_nuc) + (sg_fac * dM_dt_sg) + (ox_fac * dM_dt_ox)
+
+#     return dM_dt_mech
