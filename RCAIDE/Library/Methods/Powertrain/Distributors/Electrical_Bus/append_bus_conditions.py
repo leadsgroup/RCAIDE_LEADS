@@ -12,21 +12,45 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 #  METHODS
 # ---------------------------------------------------------------------------------------------------------------------- 
 def append_bus_conditions(bus,segment): 
-    """ Appends the initial bus conditions
-        
-        Assumptions:
-        N/A
+    """
+    Appends conditions for the electrical bus to the segment's energy conditions dictionary.
+
+    Parameters
+    ----------
+    bus : RCAIDE.Library.Components.Distributors.ElectricalBus
     
-        Source:
-        N/A
+    Returns
+    -------
+    None
+        This function modifies the segment.state.conditions.energy dictionary in-place.
     
-        Inputs:  
-       
-        Outputs:
-           
-        Properties Used:
-        None
-        """
+    Notes
+    -----
+    This function creates a Conditions object for the electrical bus within the segment's
+    energy conditions dictionary, indexed by the bus tag. It initializes various bus
+    properties as zero arrays with the same length as the segment's state vector.
+    
+    The initialized properties include:
+        - Battery module conditions
+        - Fuel cell stack conditions
+        - Power draw
+        - State of charge and depth of discharge
+        - Current draw and charging current
+        - Voltage (open circuit and under load)
+        - Heat energy generated
+        - Efficiency
+        - Temperature
+        - Energy
+        - Regenerative power
+    
+    For segments with an initial battery state of charge specified, the function also
+    sets the initial energy and state of charge values accordingly.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
+    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_segment_conditions
+    """
     ones_row                                                                     = segment.state.ones_row
                
     segment.state.conditions.energy[bus.tag]                                     = Conditions()
