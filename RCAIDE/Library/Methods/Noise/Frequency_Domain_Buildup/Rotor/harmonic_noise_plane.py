@@ -88,6 +88,8 @@ def harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,coordinates,r
     for jj,airfoil in enumerate(airfoils):
         airfoil_points      = airfoil.number_of_points
     chord_coord             = int(np.floor(airfoil_points/2))
+
+    thrust_vec         = aeroacoustic_data.thrust
  
     # Lift and Drag - coefficients and distributions 
     fL      = aeroacoustic_data.disc_lift_distribution[cpt][None,:, :]
@@ -130,9 +132,10 @@ def harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,coordinates,r
     p_ref          = 2E-5
     
     # net angle of inclination of propeller axis wrt inertial axis
-    alpha_4        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None],(1,num_mic,num_h_b,num_h_l))
-    alpha_5        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None,None],(1,num_mic,num_sec,num_h_b,num_h_l))
-    alpha_6        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None,None,None],(1,num_mic,num_sec,num_h_b,num_h_l,chord_coord))
+    alpha          = np.arccos(np.dot(velocity_vector[0,:], thrust_vec[cpt,:])/(np.linalg.norm(velocity_vector)*np.linalg.norm(thrust_vec[cpt,:])))
+    alpha_4        = alpha*np.ones_like(k_4)
+    alpha_5        = alpha*np.ones_like(k_5)
+    alpha_6        = alpha*np.ones_like(k_6)
     
     # rotor angular speed
     omega_3        = np.tile(aeroacoustic_data.omega[cpt,:,None],(1,num_mic,num_h_b))   

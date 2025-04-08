@@ -149,7 +149,7 @@ def Harmonic_Noise_Validation(PP):
         F8745D4_SPL_broadband                                  = conditions.noise.converters[rotor.tag].SPL_broadband  
         F8745D4_SPL_harmonic_bpf_spectrum                      = conditions.noise.converters[rotor.tag].SPL_harmonic_bpf_spectrum     
         
-        Cp =  segment.state.conditions.energy.converters[rotor.tag]  .power_coefficient
+        Cp =  segment.state.conditions.energy.converters[rotor.tag].power_coefficient
 
         
         # plot results 
