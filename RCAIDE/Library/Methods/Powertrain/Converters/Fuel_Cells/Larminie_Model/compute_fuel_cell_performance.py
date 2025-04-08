@@ -42,7 +42,7 @@ def compute_fuel_cell_performance(fuel_cell_stack,state,bus,coolant_lines,t_idx,
     """
     # ---------------------------------------------------------------------------------    
     # fuel cell stack properties 
-    # ---------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------- 
     fuel_cell         = fuel_cell_stack.fuel_cell 
     n_series          = fuel_cell_stack.electrical_configuration.series
     n_parallel        = fuel_cell_stack.electrical_configuration.parallel 
@@ -55,7 +55,8 @@ def compute_fuel_cell_performance(fuel_cell_stack,state,bus,coolant_lines,t_idx,
     bus_conditions              = state.conditions.energy[bus.tag]
     fuel_cell_stack_conditions  = bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag]
     phi                         = state.conditions.energy.hybrid_power_split_ratio 
-    P_bus                       = bus_conditions.power_draw*phi     
+    psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio 
+    P_bus                       = bus_conditions.power_draw*phi *(1 - psi)    
     P_stack                     = P_bus[t_idx] /len(bus.fuel_cell_stacks) 
     P_cell                      = P_stack/ n_total  
 

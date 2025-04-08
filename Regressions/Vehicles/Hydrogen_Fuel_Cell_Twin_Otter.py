@@ -427,7 +427,7 @@ def vehicle_setup(fuel_cell_model):
     vehicle.append_component(nose_gear) 
  
     # ########################################################  Energy Network  #########################################################  
-    net                              = RCAIDE.Framework.Networks.Electric()   
+    net                              = RCAIDE.Framework.Networks.Fuel_Cell()   
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus and Crogenic Line 

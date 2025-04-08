@@ -18,12 +18,21 @@ def energy(mission):
             if type(network) == RCAIDE.Framework.Networks.Hybrid:
                 if segment.hybrid_power_split_ratio == None:
                     raise AssertionError('Hybridization power split ratio not set! Specify in mission segment') 
+                if segment.battery_fuel_cell_power_split_ratio == None:
+                    raise AssertionError('Battery/Fuel cell power split ratio not set! Specify in mission segment')                 
             elif type(network) == RCAIDE.Framework.Networks.Fuel: 
                 if segment.hybrid_power_split_ratio == None:                
-                    segment.hybrid_power_split_ratio = 0.0 
+                    segment.hybrid_power_split_ratio = 0.0
+                    segment.battery_fuel_cell_power_split_ratio = 0.0
             elif type(network) == RCAIDE.Framework.Networks.Electric: 
                 if segment.hybrid_power_split_ratio == None:                
                     segment.hybrid_power_split_ratio = 1.0  
-            segment.state.conditions.energy.hybrid_power_split_ratio = segment.hybrid_power_split_ratio * segment.state.ones_row(1)                    
+                    segment.battery_fuel_cell_power_split_ratio = 1.0
+            elif type(network) == RCAIDE.Framework.Networks.Fuel_Cell: 
+                if segment.hybrid_power_split_ratio == None:                
+                    segment.hybrid_power_split_ratio = 1.0  
+                    segment.battery_fuel_cell_power_split_ratio = 0.0
+            segment.state.conditions.energy.hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * segment.state.ones_row(1)  
+            segment.state.conditions.energy.battery_fuel_cell_power_split_ratio = segment.battery_fuel_cell_power_split_ratio * segment.state.ones_row(1)                    
             network.add_unknowns_and_residuals_to_segment(segment) 
     return 

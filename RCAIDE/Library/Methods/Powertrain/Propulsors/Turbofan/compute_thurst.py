@@ -72,7 +72,7 @@ def compute_thrust(turbofan,conditions):
     Tref                        = turbofan.reference_temperature
     Pref                        = turbofan.reference_pressure
     mdhc                        = turbofan.compressor_nondimensional_massflow
-    SFC_adjustment              = turbofan.SFC_adjustment
+    SFC_adjustment              = turbofan.specific_fuel_consumption_reduction_factor 
     turbofan_conditions         = conditions.energy.propulsors[turbofan.tag]
     f                           = turbofan_conditions.fuel_to_air_ratio
     total_temperature_reference = turbofan_conditions.total_temperature_reference
