@@ -89,18 +89,10 @@ def compute_operating_empty_weight(vehicle,settings=None):
     TOW         = vehicle.mass_properties.max_takeoff
     
     for fuselage in vehicle.fuselages:
-        if type(fuselage) ==  RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage: 
-            bwb_aft_centerbody_area       = fuselage.aft_centerbody_area
-            bwb_aft_centerbody_taper      = fuselage.aft_centerbody_taper 
-            W_cabin                       = compute_cabin_weight(fuselage.cabin_area, TOW)
+            W_cabin                       = compute_cabin_weight(vehicle,settings)
             fuselage.mass_properties.mass = W_cabin
-        else:
-            print('No BWB Fuselage is defined!') 
-            bwb_aft_centerbody_area       = 0
-            bwb_aft_centerbody_taper      = 0
-            W_cabin                       = 0
-            fuselage.mass_properties.mass = 0      
-    
+
+
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------

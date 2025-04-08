@@ -57,6 +57,7 @@ class Conventional(Weights):
                  
         self.settings.use_max_fuel_weight                  = True 
         self.settings.advanced_composites                  = False
+        self.settings.PRSEUS                               = True
         self.settings.fuselage_mounted_landing_gear_factor = 1.12 # assumes fuselage mounted landing gear. Change to 1 if False
         self.settings.cargo_doors_number                   = 1 # 0 if no cargo doors, 1 if 1 cargo door, 2 if 2 cargo doors
         self.settings.cargo_doors_clamshell                = False # True if clamshell cargo doors, False if not

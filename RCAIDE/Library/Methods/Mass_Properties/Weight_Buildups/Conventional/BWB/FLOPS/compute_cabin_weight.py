@@ -5,13 +5,15 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Imports
 # ---------------------------------------------------------------------------------------------------------------------- 
-
+import RCAIDE
 from RCAIDE.Framework.Core import Units
+from copy import deepcopy
+from RCAIDE.Library.Methods.Geometry.Planform                          import segment_properties  
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Cabin Weight 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_cabin_weight(cabin_area, TOGW):
+def compute_cabin_weight(vehicle,settings):
     """ Weight estimate for the cabin (forward section of centerbody) of a BWB.
     Regression from FEA by K. Bradley (George Washington University).
     
@@ -32,13 +34,32 @@ def compute_cabin_weight(cabin_area, TOGW):
             
     Properties Used:
     N/A
-    """       
+    """
+    bwb_vehicle = deepcopy(vehicle)
+    bwb_vehicle.wings.main_wing.segments.clear()
     
-    # convert to imperial units
-    S_cab    = cabin_area / Units.feet ** 2.0
-    W        = TOGW       / Units.pounds
-    
-    W_cabin = 5.698865 * 0.316422 * (W ** 0.166552) * S_cab ** 1.061158
+    for segment in vehicle.wings.main_wing.segments:
+        if isinstance(segment, RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
+            bwb_vehicle.wings.main_wing.segments.append(segment)
+            #bwb_vehicle.wings.main_wing.spans.projected =  vehicle.wings.main_wing.spans.projected * segment.percent_span_location  
+
+    bwb_vehicle.wings.main_wing = segment_properties(bwb_vehicle.wings.main_wing,update_ref_areas=True)  
+     # convert to imperial units
+    A_CB    =  bwb_vehicle.wings.main_wing.areas.reference / Units['feet^2']
+    TOGW       =  bwb_vehicle.mass_properties.max_takeoff*9.81/ Units.lbf
+
+    if settings.PRSEUS:
+        SR     = bwb_vehicle.wings.main_wing.spans.projected / vehicle.wings.main_wing.spans.projected
+        FR = bwb_vehicle.wings.main_wing.spans.projected / bwb_vehicle.wings.main_wing.chords.root
+        segments = bwb_vehicle.wings.main_wing.segments
+        THETA_CB = (
+            sum(segment.sweeps.leading_edge for segment in segments) / len(segments)
+            if segments else 0.0
+                )/Units.degree
+        W_cabin = 1.06 * 1.20 * 105.95 * (A_CB**0.97) * (TOGW**0.0021) * (FR**-0.75) * (THETA_CB**-0.62) * (SR**-0.0008)
+
+    else: 
+        W_cabin = 5.698865 * 0.316422 * (TOGW ** 0.166552) * A_CB ** 1.061158
     
     # convert to SI units
     W_cabin = W_cabin * Units.pounds
