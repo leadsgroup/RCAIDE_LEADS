@@ -49,10 +49,16 @@ def train_VLM_surrogates(aerodynamics):
     sub_len       = int(sum(Mach<1.))  
     sub_Mach      = Mach[:sub_len] 
     sup_Mach      = Mach[sub_len:] 
+
+    training.subsonic    =  train_model(aerodynamics, sub_Mach)
     
-    training.subsonic    =  train_model(aerodynamics, sub_Mach)  
-    training.supersonic  =  train_model(aerodynamics, sup_Mach)
-    training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach) 
+    # only build supersonic surrogates if necessary
+    if len(sup_Mach) > 2: 
+        training.supersonic  =  train_model(aerodynamics, sup_Mach)
+        training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach)
+    else:
+        training.supersonic  = None
+        training.transonic   = None
     return 
     
 def train_model(aerodynamics, Mach): 
@@ -70,7 +76,7 @@ def train_model(aerodynamics, Mach):
     Returns: 
         None    
     """    
-
+    
     vehicle        = deepcopy(aerodynamics.vehicle)
     settings       = aerodynamics.settings
     AoA            = aerodynamics.training.angle_of_attack                  

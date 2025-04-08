@@ -1435,6 +1435,10 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     return
 
 def compute_stability_derivative(sub_sur,trans_sur,sup_sur,h_sub,h_sup,Mach):
+    if trans_sur ==  None and  sup_sur == None:
+        derivative = h_sub(Mach)*sub_sur(Mach) 
+        return derivative
+        
     derivative = h_sub(Mach)*sub_sur(Mach) +   (1 - (h_sup(Mach) + h_sub(Mach)))*trans_sur(Mach)  + h_sup(Mach)*sup_sur(Mach) 
     return derivative
 
@@ -1442,7 +1446,8 @@ def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_s
                          trans_sur_Clift,trans_sur_Cdrag,trans_sur_CX,trans_sur_CY,trans_sur_CZ,trans_sur_CL,trans_sur_CM,trans_sur_CN,
                          sup_sur_Clift,sup_sur_Cdrag,sup_sur_CX,sup_sur_CY,sup_sur_CZ,sup_sur_CL,sup_sur_CM,sup_sur_CN,
                          h_sub,h_sup,Mach, pts): 
- 
+    
+
      #  subsonic 
     sub_Clift     = np.atleast_2d(sub_sur_Clift(pts)).T  
     sub_Cdrag     = np.atleast_2d(sub_sur_Cdrag(pts)).T  
@@ -1452,7 +1457,23 @@ def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_s
     sub_CL        = np.atleast_2d(sub_sur_CL(pts)).T     
     sub_CM        = np.atleast_2d(sub_sur_CM(pts)).T     
     sub_CN        = np.atleast_2d(sub_sur_CN(pts)).T
-
+    
+    
+    if trans_sur_Clift ==  None and  sup_sur_Clift == None:
+    
+        results       = Data() 
+        results.Clift = h_sub(Mach) 
+        results.Cdrag = h_sub(Mach) 
+        results.CX    = h_sub(Mach) 
+        results.CY    = h_sub(Mach) 
+        results.CZ    = h_sub(Mach) 
+        results.CL    = h_sub(Mach) 
+        results.CM    = h_sub(Mach) 
+        results.CN    = h_sub(Mach) 
+        
+        return results
+   
+    
     # transonic   
     trans_Clift   = np.atleast_2d(trans_sur_Clift(pts)).T  
     trans_Cdrag   = np.atleast_2d(trans_sur_Cdrag(pts)).T  
@@ -1491,7 +1512,11 @@ def compute_coefficient(sub_sur_coef,trans_sur_coef, sup_sur_coef, h_sub,h_sup,M
 
     #  subsonic 
     sub_coef  = np.atleast_2d(sub_sur_coef(pts)).T     
-
+   
+    if trans_sur_coef == None and sup_sur_coef == None:
+        coef = h_sub(Mach) 
+        return  coef
+    
     # transonic 
     trans_coef  = np.atleast_2d(trans_sur_coef(pts)).T    
 

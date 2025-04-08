@@ -154,7 +154,8 @@ def fuel_aircraft_base_analysis(vehicle):
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.vehicle  = vehicle
     aerodynamics.settings.number_of_spanwise_vortices   = 5
-    aerodynamics.settings.number_of_chordwise_vortices  = 2     
+    aerodynamics.settings.number_of_chordwise_vortices  = 2 
+    aerodynamics.training.Mach                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85])        
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
