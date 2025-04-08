@@ -31,5 +31,12 @@ class Liquid_Hydrogen(Propellant):
         self.density                    = 70.85                            # [kg/m^3]
         self.specific_energy            = 141.86e6                         # [J/kg] 
         self.energy_density             = 8491.0e6                         # [J/m^3] 
-        self.stoichiometric_fuel_to_air = 0.029411
         self.temperatures.autoignition  = 845.15                           # [K]
+
+        self.stoichiometric_fuel_air_ratio = 0.029411         # [-] Stoichiometric Fuel to Air ratio
+        self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
+        self.temperature                   = 0         # [K] Temperature of fuel
+        self.pressure                      = 0         # [Pa] Pressure of fuel
+        self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
+        self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
+        self.oxidizer                      = ''

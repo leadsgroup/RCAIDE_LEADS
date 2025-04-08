@@ -87,8 +87,6 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
             H2O emission index [kg_H2O/kg_fuel]
         - EI_NOx : float
             NOx emission index [kg_NOx/kg_fuel]
-        - EI_soot : float
-            Soot emission index [kg_soot/kg_fuel]
         - final_phi : float
             Final equivalence ratio [-]
         - final_T : float
@@ -107,8 +105,6 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
             H2O emission index in the Primary Zone [kg_H2O/kg_fuel]
         - PZ_EI_NOx : list
             NOx emission index in the Primary Zone [kg_NOx/kg_fuel]
-        - PZ_EI_soot : list
-            Soot emission index in the Primary Zone [kg_soot/kg_fuel]
         - SZ_sm_z : list
             Positions in the Secondary Zone slow mode [-]
         - SZ_sm_phi : list
@@ -123,8 +119,6 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
             H2O emission index in the Secondary Zone slow mode [kg_H2O/kg_fuel]
         - SZ_sm_EI_NOx : list
             NOx emission index in the Secondary Zone slow mode [kg_NOx/kg_fuel]
-        - SZ_sm_EI_soot : list
-            Soot emission index in the Secondary Zone slow mode [kg_soot/kg_fuel]
         - SZ_fm_z : list
             Positions in the Secondary Zone fast mode [-]
         - SZ_fm_phi : list
@@ -139,8 +133,6 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
             H2O emission index in the Secondary Zone fast mode [kg_H2O/kg_fuel]
         - SZ_fm_EI_NOx : list
             NOx emission index in the Secondary Zone fast mode [kg_NOx/kg_fuel]
-        - SZ_fm_EI_soot : list
-            Soot emission index in the Secondary Zone fast mode [kg_soot/kg_fuel]
         - SZ_joint_z : list
             Positions in the Secondary Zone joint mode [-]
         - SZ_joint_phi : list
@@ -155,8 +147,6 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
             H2O emission index in the Secondary Zone joint mode [kg_H2O/kg_fuel]
         - SZ_joint_EI_NOx : list
             NOx emission index in the Secondary Zone joint mode [kg_NOx/kg_fuel]
-        - SZ_joint_EI_soot : list
-            Soot emission index in the Secondary Zone joint mode [kg_soot/kg_fuel]
     
     Notes
     -----
@@ -195,70 +185,69 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
     mechanism_path = os.path.join(rcaide_root, 'Emissions', 'Chemical_Reactor_Network_Method', 'Data')
     gas            = mechanism_path + '/' + combustor.fuel_data.kinetic_mechanism
 
-    results                  = Data()         
-    results.final            = Data()
-    results.final.EI         = Data()
-    results.final.EI.CO2     = 0                               
-    results.final.EI.CO      = 0                               
-    results.final.EI.H2O     = 0                               
-    results.final.EI.NOx     = 0                                                    
-    results.final.EI.soot    = 0  
-    results.final.phi        = 0 # [-] 
-    results.final.T          = 0 # [K] 
-    results.PZ               = Data()
-    results.PZ.psr           = Data()
-    results.PZ.psr.phi       = [] # [-] 
-    results.PZ.psr.T         = [] # [K] 
-    results.PZ.psr.f_psr     = [] # [-] 
-    results.PZ.psr.EI        = Data()
-    results.PZ.psr.EI.CO2    = [] # [kg/kg_fuel] 
-    results.PZ.psr.EI.CO     = [] # [kg/kg_fuel] 
-    results.PZ.psr.EI.H2O    = [] # [kg/kg_fuel] 
-    results.PZ.psr.EI.NOx    = [] # [kg/kg_fuel] 
-    results.PZ.phi           = 0 # [-] 
-    results.PZ.T             = 0 # [K] 
-    results.PZ.f_psr         = 0 # [-] 
-    results.PZ.EI            = Data()
-    results.PZ.EI.CO2        = 0 # [kg/kg_fuel] 
-    results.PZ.EI.CO         = 0 # [kg/kg_fuel] 
-    results.PZ.EI.H2O        = 0 # [kg/kg_fuel] 
-    results.PZ.EI.NOx        = 0 # [kg/kg_fuel] 
-    results.SZ               = Data()
-    results.SZ.sm            = Data()
-    results.SZ.sm.z          = [] # [-] 
-    results.SZ.sm.phi        = [] # [-] 
-    results.SZ.sm.T          = [] # [K] 
-    results.SZ.sm.EI         = Data()
-    results.SZ.sm.EI.CO2     = [] # [kg/kg_fuel] 
-    results.SZ.sm.EI.CO      = [] # [kg/kg_fuel] 
-    results.SZ.sm.EI.H2O     = [] # [kg/kg_fuel] 
-    results.SZ.sm.EI.NOx     = [] # [kg/kg_fuel] 
-    results.SZ.fm            = Data()
-    results.SZ.fm.z          = [] # [-] 
-    results.SZ.fm.phi        = [] # [-] 
-    results.SZ.fm.T          = [] # [K] 
-    results.SZ.fm.EI         = Data()
-    results.SZ.fm.EI.CO2     = [] # [kg/kg_fuel] 
-    results.SZ.fm.EI.CO      = [] # [kg/kg_fuel] 
-    results.SZ.fm.EI.H2O     = [] # [kg/kg_fuel] 
-    results.SZ.fm.EI.NOx     = [] # [kg/kg_fuel] 
-    results.SZ.joint         = Data()
-    results.SZ.joint.z       = [] # [-] 
-    results.SZ.joint.phi     = [] # [-] 
-    results.SZ.joint.T       = [] # [K] 
-    results.SZ.joint.EI      = Data()
-    results.SZ.joint.EI.CO2  = [] # [kg/kg_fuel] 
-    results.SZ.joint.EI.CO   = [] # [kg/kg_fuel] 
-    results.SZ.joint.EI.H2O  = [] # [kg/kg_fuel] 
-    results.SZ.joint.EI.NOx  = [] # [kg/kg_fuel]  
+    data                  = Data()         
+    data.final            = Data()
+    data.final.EI         = Data()
+    data.final.EI.CO2     = 0 # [kg/kg_fuel]                             
+    data.final.EI.CO      = 0 # [kg/kg_fuel]                               
+    data.final.EI.H2O     = 0 # [kg/kg_fuel]                               
+    data.final.EI.NOx     = 0 # [kg/kg_fuel]  
+    data.final.phi        = 0 # [-] 
+    data.final.T          = 0 # [K] 
+    data.PZ               = Data()
+    data.PZ.psr           = Data()
+    data.PZ.psr.phi       = [] # [-] 
+    data.PZ.psr.T         = [] # [K] 
+    data.PZ.psr.f_psr     = [] # [-] 
+    data.PZ.psr.EI        = Data()
+    data.PZ.psr.EI.CO2    = [] # [kg/kg_fuel] 
+    data.PZ.psr.EI.CO     = [] # [kg/kg_fuel] 
+    data.PZ.psr.EI.H2O    = [] # [kg/kg_fuel] 
+    data.PZ.psr.EI.NOx    = [] # [kg/kg_fuel] 
+    data.PZ.phi           = 0 # [-] 
+    data.PZ.T             = 0 # [K] 
+    data.PZ.f_psr         = 0 # [-] 
+    data.PZ.EI            = Data()
+    data.PZ.EI.CO2        = 0 # [kg/kg_fuel] 
+    data.PZ.EI.CO         = 0 # [kg/kg_fuel] 
+    data.PZ.EI.H2O        = 0 # [kg/kg_fuel] 
+    data.PZ.EI.NOx        = 0 # [kg/kg_fuel] 
+    data.SZ               = Data()
+    data.SZ.sm            = Data()
+    data.SZ.sm.z          = [] # [-] 
+    data.SZ.sm.phi        = [] # [-] 
+    data.SZ.sm.T          = [] # [K] 
+    data.SZ.sm.EI         = Data()
+    data.SZ.sm.EI.CO2     = [] # [kg/kg_fuel] 
+    data.SZ.sm.EI.CO      = [] # [kg/kg_fuel] 
+    data.SZ.sm.EI.H2O     = [] # [kg/kg_fuel] 
+    data.SZ.sm.EI.NOx     = [] # [kg/kg_fuel] 
+    data.SZ.fm            = Data()
+    data.SZ.fm.z          = [] # [-] 
+    data.SZ.fm.phi        = [] # [-] 
+    data.SZ.fm.T          = [] # [K] 
+    data.SZ.fm.EI         = Data()
+    data.SZ.fm.EI.CO2     = [] # [kg/kg_fuel] 
+    data.SZ.fm.EI.CO      = [] # [kg/kg_fuel] 
+    data.SZ.fm.EI.H2O     = [] # [kg/kg_fuel] 
+    data.SZ.fm.EI.NOx     = [] # [kg/kg_fuel] 
+    data.SZ.joint         = Data()
+    data.SZ.joint.z       = [] # [-] 
+    data.SZ.joint.phi     = [] # [-] 
+    data.SZ.joint.T       = [] # [K] 
+    data.SZ.joint.EI      = Data()
+    data.SZ.joint.EI.CO2  = [] # [kg/kg_fuel] 
+    data.SZ.joint.EI.CO   = [] # [kg/kg_fuel] 
+    data.SZ.joint.EI.H2O  = [] # [kg/kg_fuel] 
+    data.SZ.joint.EI.NOx  = [] # [kg/kg_fuel]  
 
     try: 
-        results = compute_combustor_performance(results, combustor, T, P, mdot_air, FAR, gas) # [-]       Run combustor function
+        compute_combustor_performance(data, combustor, T, P, mdot_air, FAR, gas) # [-] Run combustor function
 
     except ImportError:
         print('cantera required: run pip install cantera')                                                                
      
-    return results
+    return data
 
 # ----------------------------------------------------------------------
 #  RQL Burner Model
@@ -335,8 +324,6 @@ def compute_combustor_performance(results, combustor, Temp_air, Pres_air, mdot_a
         mfc_out_PZ_i       = ct.MassFlowController(psr_PZ_i, mixer, name=f'PSRToMixer_{i+1}', mdot = mdot_total_PZ_i) # [-] PSR to mixer mass flow controller
         PZ_Structures["MFC_PSRToMixer"][f'PSRToMixer_{i+1}'] = mfc_out_PZ_i # [-] Store PSR to mixer mass flow controller
         
-        total_moles_PZ_i   = (rho_PZ_i * V_PZ_PSR) / psr_gas_PZ_i.mean_molecular_weight # [kmol] ???
-        
         EI = calculate_emission_indices(psr_PZ_i, mdot_total_PZ_i, mdot_fuel_PZ_i) # [-] Emission indices computation
 
         results.PZ.psr.phi.append(phi_PSR[i])                 # [-] Store Equivalence ratio
@@ -363,11 +350,7 @@ def compute_combustor_performance(results, combustor, Temp_air, Pres_air, mdot_a
     
     for mixture in mixture_list[1:]: 
         mixture_sum  += mixture                                        # [-] Add all into a Mixture sum
- 
-    rho_PZ = mixture_sum.density                                       # [kg/m**3] Mixture density
-
-    total_moles_PZ = (rho_PZ * V_PZ) / mixture_sum.mean_molecular_weight # [kmol] Mixture moles
-     
+  
     EI_mixer_initial = calculate_emission_indices(mixture_sum, mdot_tot_PZ, mdot_fuel) # [-] Emission indices computation
 
     results.PZ.phi = mixture_sum.equivalence_ratio()    # [-] Store Equivalence ratio
@@ -421,9 +404,6 @@ def compute_combustor_performance(results, combustor, Temp_air, Pres_air, mdot_a
         sim_sm                          = ct.ReactorNet([reactor_sm])  # [-] Reactor setup
         sim_sm.advance(residence_time)                                 # [-] Advance simulation
 
-        rho_SZ_sm_i                     = mixed_gas_sm.density         # [kg/m^3] Density in slow mode
-        V_SZ_sm_i                       = dz * A_SZ                    # [m^3] Volume of SZ segment
-        
         EI_sm                           = calculate_emission_indices(mixed_gas_sm, mdot_total_sm, combustor.f_SM * mdot_fuel) # [-] Emission indices    
 
         results.SZ.sm.phi.append(mixed_gas_sm.equivalence_ratio()) # [-] Store equivalence ratio
@@ -461,9 +441,6 @@ def compute_combustor_performance(results, combustor, Temp_air, Pres_air, mdot_a
         sim_fm                          = ct.ReactorNet([reactor_fm])  # [-] Reactor setup
         sim_fm.advance(residence_time)                                 # [-] Advance simulation
 
-        rho_SZ_fm_i                     = mixed_gas_fm.density         # [kg/m^3] Density in fast mode
-        V_SZ_fm_i                       = dz * A_SZ                    # [m^3] Volume of SZ segment
-        
         EI_fm                           = calculate_emission_indices(mixed_gas_fm, mdot_total_fm, f_FM * mdot_fuel) # [-] Emission indices
         
         results.SZ.fm.phi.append(mixed_gas_fm.equivalence_ratio()) # [-] Store equivalence ratio
@@ -507,9 +484,6 @@ def compute_combustor_performance(results, combustor, Temp_air, Pres_air, mdot_a
         sim_joint                       = ct.ReactorNet([reactor_joint]) # [-] Reactor setup
         sim_joint.advance(residence_time)                              # [-] Advance simulation
 
-        rho_SZ_joint_i                  = mixed_gas_joint.density      # [kg/m^3] Density in joint mode
-        V_SZ_joint_i                    = dz * A_SZ                    # [m^3] Volume of SZ segment
-        
         EI_joint                        = calculate_emission_indices(mixed_gas_joint, mdot_total_joint, mdot_fuel) # [-] Emission indices
         
         results.SZ.joint.phi.append(mixed_gas_joint.equivalence_ratio()) # [-] Store equivalence ratio
@@ -545,6 +519,5 @@ def calculate_emission_indices(reactor,  mdot_total, mdot_fuel):
         'CO': gas.Y[gas.species_index('CO')] * mdot_total / mdot_fuel,   # [kg/kg_fuel] CO emission index
         'H2O': gas.Y[gas.species_index('H2O')] * mdot_total / mdot_fuel, # [kg/kg_fuel] H2O emission index
         'NOx': EI_NOx,                                                   # [kg/kg_fuel] NOx emission index
-        # 'soot': gas.Y[gas.species_index('CSOLID')] * mdot_total / mdot_fuel # [kg/kg_fuel] Soot emission index
     }
     return EI                                                            # [-] Return emission indices dictionary

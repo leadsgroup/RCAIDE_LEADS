@@ -31,15 +31,13 @@ class Liquid_Natural_Gas(Propellant):
         self.specific_energy = 53.6e6                           # J/kg
         self.energy_density  = 22200.0e6                        # J/m^3
         
-        self.use_high_fidelity_kinetics_model      =  False 
-        self.fuel_surrogate_chemical_properties    = {'CH4':0.85, 'C2H6':0.1, 'C3H8':0.05}
-        self.fuel_chemical_properties              = {'CH4':0.83, 'C2H6':0.1, 'C3H8':0.05, 'C4H10':0.02}           
-        self.air_chemical_properties               = {'O2':0.2095, 'N2':0.7809, 'AR':0.0096}
-        self.surrogate_species_list                = ['CO', 'CO2', 'H2O']
-        self.species_list                          = ['CO', 'CO2', 'H2O', 'NO', 'NO2', 'CSOLID']
-        self.surrogate_chemical_kinetics           = 'Fuel_Surrogate.yaml'
-        self.chemical_kinetics                     = 'Fuel.yaml'
-        self.oxidizer                              = 'Air.yaml' 
+        self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
+        self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
+        self.temperature                   = 0         # [K] Temperature of fuel
+        self.pressure                      = 0         # [Pa] Pressure of fuel
+        self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
+        self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
+        self.oxidizer                      = ''
         
         self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
         self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  
