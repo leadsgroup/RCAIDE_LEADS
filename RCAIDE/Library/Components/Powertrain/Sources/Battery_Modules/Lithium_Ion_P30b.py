@@ -9,127 +9,23 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core                                            import Units , Data
-from .Generic_Battery_Module                                          import Generic_Battery_Module   
+from RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module  import Generic_Battery_Module   
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_P30b import *
 # package imports 
 import numpy as np
 import os 
 from scipy.interpolate  import RegularGridInterpolator 
+import pybamm as pb
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Lithium_Ion_NMC
 # ----------------------------------------------------------------------------------------------------------------------  
 class Lithium_Ion_P30b(Generic_Battery_Module):
     """
-    Class for modeling 18650-format lithium nickel manganese cobalt oxide batteries
-    
-    Attributes
-    ----------
-    tag : str
-        Identifier for the battery module (default: 'lithium_ion_nmc')
-        
-    maximum_energy : float
-        Maximum energy storage capacity [J] (default: 0.0)
-        
-    maximum_power : float
-        Maximum power output [W] (default: 0.0)
-        
-    maximum_voltage : float
-        Maximum voltage output [V] (default: 0.0)
-        
-    cell : Data
-        Cell-specific properties
-        
-        - chemistry : str
-            Battery chemistry type (default: 'LiNiMnCoO2')
-        - diameter : float
-            Cell diameter [m] (default: 0.0185)
-        - height : float
-            Cell height [m] (default: 0.0653)
-        - mass : float
-            Cell mass [kg] (default: 0.048)
-        - surface_area : float
-            Total cell surface area [m^2]
-        - volume : float
-            Cell volume [m^3]
-        - density : float
-            Cell density [kg/m^3]
-        - electrode_area : float
-            Active electrode area [m^2] (default: 0.0342)
-        - maximum_voltage : float
-            Maximum cell voltage [V] (default: 4.2)
-        - nominal_capacity : float
-            Rated capacity [Ah] (default: 3.8)
-        - nominal_voltage : float
-            Nominal operating voltage [V] (default: 3.6)
-        - charging_voltage : float
-            Charging voltage [V] (default: nominal_voltage)
-        - resistance : float
-            Internal resistance [Ohms] (default: 0.025)
-        - specific_heat_capacity : float
-            Cell specific heat [J/kgK] (default: 1108)
-        - radial_thermal_conductivity : float
-            Radial thermal conductivity [W/mK] (default: 0.4)
-        - axial_thermal_conductivity : float
-            Axial thermal conductivity [W/mK] (default: 32.2)
-        - discharge_performance_map : RegularGridInterpolator
-            Interpolator for voltage vs discharge characteristics
-
-    Notes
-    -----
-    The NMC cell model includes detailed thermal and electrical characteristics
-    based on 18650-format cells. The model includes forced air cooling assumptions
-    with a convective heat transfer coefficient for 35 m/s airflow.
-
-    References
-    ----------
-    [1] Jeon, D. H., & Baek, S. M. (2011). Thermal modeling of cylindrical 
-        lithium ion battery during discharge cycle. Energy Conversion and Management,
-        52(8-9), 2973-2981.
-        
-    [2] Yang, S., et al. (2019). A Review of Lithium-Ion Battery Thermal Management 
-        System Strategies and the Evaluate Criteria. Int. J. Electrochem. Sci, 14,
-        6077-6107.
-        
-    [3] Muenzel, V., et al. (2015). A comparative testing study of commercial
-        18650-format lithium-ion battery cells. Journal of The Electrochemical
-        Society, 162(8), A1592.
-
-    See Also
-    --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module
-        Base battery module class
     """       
     
     def __defaults__(self):   
-        """This sets the default values.
-    
-        Assumptions:
-            Convective Thermal Conductivity Coefficient corresponds to forced
-            air cooling in 35 m/s air 
-        
-        Source: 
-            convective  heat transfer coefficient, h 
-            Jeon, Dong Hyup, and Seung Man Baek. "Thermal modeling of cylindrical 
-            lithium ion battery during discharge cycle." Energy Conversion and Management
-            52.8-9 (2011): 2973-2981.
-            
-            thermal conductivity, k 
-            Yang, Shuting, et al. "A Review of Lithium-Ion Battery Thermal Management 
-            System Strategies and the Evaluate Criteria." Int. J. Electrochem. Sci 14
-            (2019): 6077-6107.
-            
-            specific heat capacity, Cp
-            (axial and radial)
-            Yang, Shuting, et al. "A Review of Lithium-Ion Battery Thermal Management 
-            System Strategies and the Evaluate Criteria." Int. J. Electrochem. Sci 14
-            (2019): 6077-6107.
-            
-            # Electrode Area
-            Muenzel, Valentin, et al. "A comparative testing study of commercial
-            18650-format lithium-ion battery cells." Journal of The Electrochemical
-            Society 162.8 (2015): A1592.
-        
+        """
         """
         # ----------------------------------------------------------------------------------------------------------------------
         #  Module Level Properties
@@ -143,10 +39,9 @@ class Lithium_Ion_P30b(Generic_Battery_Module):
         # ----------------------------------------------------------------------------------------------------------------------
         #  Cell Level Properties
         # ----------------------------------------------------------------------------------------------------------------------        
-        self.cell.chemistry                   = ''
-        self.cell.diameter                    = 0.0185                                                                            # [m]
-        self.cell.height                      = 0.0653                                                                            # [m]
-        self.cell.mass                        = 100* Units.kg                                                                  # [kg]
+        self.cell.diameter                    = 0.0186                                                                            # [m]
+        self.cell.height                      = 0.0652                                                                            # [m]
+        self.cell.mass                        = 0.047 * Units.kg                                                                  # [kg]
         self.cell.surface_area                = (np.pi*self.cell.height*self.cell.diameter) + (0.5*np.pi*self.cell.diameter**2)  # [m^2]
         self.cell.volume                      = np.pi*(0.5*self.cell.diameter)**2*self.cell.height 
         self.cell.density                     = self.cell.mass/self.cell.volume                                                  # [kg/m^3]  
@@ -154,68 +49,22 @@ class Lithium_Ion_P30b(Generic_Battery_Module):
         self.cell.maximum_voltage             = 4.2                                                                              # [V]
         self.cell.nominal_capacity            = 3                                                                                 # [Amp-Hrs]
         self.cell.nominal_voltage             = 3.6                                                                              # [V] 
-        self.cell.charging_voltage            = self.cell.nominal_voltage                                                        # [V] 
+        self.cell.charging_voltage            = self.cell.nominal_voltage                                                    # [V] 
+        self.cell.maximum_discharge_current   = 30                                                                               # [Amps] 
+        self.cell.nominal_charging_current    = 3                                                                                # [Amps]  
+        self.cell.maximum_charging_current    = 9                                                                                 # [Amps]    
+
+
         
         self.cell.watt_hour_rating            = self.cell.nominal_capacity  * self.cell.nominal_voltage                          # [Watt-hours]      
         self.cell.specific_energy             = self.cell.watt_hour_rating*Units.Wh/self.cell.mass                               # [J/kg]
-        self.cell.specific_power              = self.cell.specific_energy/self.cell.nominal_capacity                             # [W/kg]   
-                                                            
- 
-    
-                                              
-   
-
+        #self.cell.specific_power              = self.cell.specific_energy/self.cell.nominal_capacity                             # [W/kg]   
+        
+        self.cell.specific_power              = self.cell.maximum_discharge_current * self.cell.maximum_voltage / self.cell.mass # [W/kg]                                             
         return  
     
     def energy_calc(self,state,bus,coolant_lines, t_idx, delta_t): 
         """
-        Computes the state of the NMC battery cell
-        
-        This method calculates the battery's electrical performance and thermal
-        behavior during operation, including voltage, current, power, and 
-        temperature distributions.
-
-        Parameters
-        ----------
-        state : Data
-            Current system state containing:
-            - Temperature distributions
-            - Power demands
-            - Operating conditions
-            
-        bus : Component
-            Connected electrical bus containing:
-            - Voltage requirements
-            - Power requirements
-            - Load characteristics
-            
-        coolant_lines : Component
-            Thermal management system containing:
-            - Coolant properties
-            - Flow conditions
-            - Heat exchanger parameters
-            
-        t_idx : int
-            Current time index in the simulation
-            
-        delta_t : float
-            Time step size [s]
-
-        Returns
-        -------
-        stored_results_flag : bool
-            Flag indicating if results were stored for future reuse
-            
-        stored_battery_tag : str
-            Identifier for stored battery state data
-
-        Notes
-        -----
-        The calculation includes:
-        - Voltage and current based on load demand
-        - Heat generation from internal resistance
-        - Thermal distribution with cooling effects
-        - State of charge tracking
         """        
         stored_results_flag, stored_battery_tag =  compute_p30b_cell_performance(self,state,bus,coolant_lines, t_idx,delta_t) 
         
@@ -227,35 +76,6 @@ class Lithium_Ion_P30b(Generic_Battery_Module):
     
     def update_battery_age(self,segment,battery_conditions,increment_battery_age_by_one_day = False):  
         """
-        Updates battery aging parameters based on usage and environmental conditions
-        
-        This method tracks battery degradation by considering factors such as:
-        cycle count, depth of discharge, temperature exposure, and calendar aging.
-
-        Parameters
-        ----------
-        segment : Segment
-            Flight segment containing:
-            - Duration
-            - Operating conditions
-            - Power profile
-            
-        battery_conditions : Data
-            Battery state data including:
-            - Temperature history
-            - Current rates
-            - State of charge history
-            
-        increment_battery_age_by_one_day : bool, optional
-            Flag to increment calendar age (default: False)
-
-        Notes
-        -----
-        The aging model accounts for:
-        - Capacity fade from cycling
-        - Calendar aging effects
-        - Temperature-dependent degradation
-        - Current rate impacts
         """        
         update_p30b_cell_age(self,segment,battery_conditions,increment_battery_age_by_one_day) 
         

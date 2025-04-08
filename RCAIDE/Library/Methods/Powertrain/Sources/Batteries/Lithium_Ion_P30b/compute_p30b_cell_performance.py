@@ -1,6 +1,6 @@
 # RCAIDE/Methods/Powertrain/Sources/Batteries/Lithium_Ion_P30b/compute_p30b_cell_performance.py
-# 
-# 
+# need to apply current electrical demand and store impact from previous time steps
+# pybamm does cell level calculations. could I treat each module as a cell?
 # Created:  Mar 2025, C. Boggan
 #
 # ----------------------------------------------------------------------------------------------------------------------
@@ -10,17 +10,32 @@ from RCAIDE.Framework.Core                       import Units
 import numpy as np
 from copy import  deepcopy
 import pybamm
- 
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Create battery model
+# ---------------------------------------------------------------------------------------------------------------------- 
+model  = pybamm.lithium_ion.SPM()
+params = pybamm.ParameterValues("Chen2020")
+params.update({"Electrode width [m]": 9.06108669e-01,
+                "Negative electrode density [kg.m-3]": 2.23367642e+03,
+                "Positive electrode density [kg.m-3]": 3.35604961e+03,
+                'Bulk solvent concentration [mol.m-3]': 9.04026059e+02,
+                'Cation transference number': 1.00108959e+00,
+                'Nominal cell capacity [A.h]': 3.43328039e+00,
+                'Negative electrode porosity': 9.85780579e-01,
+                'Separator porosity':1.01419255e+00, 
+                "Ambient temperature [K]": 296.15,
+                'Reference temperature [K]': 296.15
+                })
+
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_nmc_cell_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
+
 def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, delta_t): 
     """
-    Compute the performance of a lithium-nickel-manganese-cobalt-oxide (NMC) battery_module cell.
-
-    This function models the electrical and thermal behavior of an 18650 NMC battery_module cell
-    based on experimental data from the Automotive Industrial Systems Company of Panasonic Group.
-
     Parameters
     ----------
     battery_module : battery_module
@@ -122,6 +137,23 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     P_bus                       = bus_conditions.power_draw
     I_bus                       = bus_conditions.current_draw
     
+
+    # ---------------------------------------------------------------------------------
+    # PyBaMM analysis for a single cell
+    # ---------------------------------------------------------------------------------
+ 
+    experiment = pybamm.Experiment(
+        ["Discharge at "+ str(bus_conditions.current_draw[t_idx]) + "A for " + str(delta_t[t_idx]) + " seconds"]
+    ) #can change to step format 
+    simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = params) #setup simulation
+    simulation_solved = simulation.solve(initial_soc = state.SOC) #solving for time segment
+
+    simulation_solved['Discharge capacity [A.h]'].data[-1] #gives the charge throughput
+    simulation_solved['Voltage [V]'].data[-1] #gives the final voltage of the time segment
+    simulation_solved['Current [A]'].data[-1] #gives the final current of the time segment, same as bus current
+    simulation_solved['Resistance [Ohm]'].data[-1] #gives the final resistance of the time segment. not to be used for heat, just used pybamm
+    simulation_solved['Total heating [W.m-3]'].data[-1] #gives the heat generated during the time segment. 
+
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions
     # -------------------------------------------------------------------------    
@@ -271,7 +303,7 @@ def reuse_stored_p30b_cell_data(battery_module,state,bus,stored_results_flag, st
     
     Properties Used: 
     N.A.        
-    '''
+    ''' #should not have to moddify
    
     state.conditions.energy[bus.tag].battery_modules[battery_module.tag] = deepcopy(state.conditions.energy[bus.tag].battery_modules[stored_battery_module_tag])
     
@@ -280,7 +312,7 @@ def reuse_stored_p30b_cell_data(battery_module,state,bus,stored_results_flag, st
  
 def compute_p30b_cell_state(battery_module_data,SOC,T,I):
     """This computes the electrical state variables of a lithium ion 
-    battery_module cell with a  lithium-nickel-cobalt-aluminum oxide cathode 
+    battery_module cell with a lithium-nickel-cobalt-aluminum oxide cathode 
     chemistry from look-up tables 
      
     Assumtions: 
@@ -290,7 +322,7 @@ def compute_p30b_cell_state(battery_module_data,SOC,T,I):
     N/A 
      
     Inputs:
-        SOC           - state of charge of cell     [unitless]
+        SOC                  - state of charge of cell     [unitless]
         battery_module_data  - look-up data structure      [unitless]
         T             - battery_module cell temperature    [Kelvin]
         I             - battery_module cell current        [Amperes]
@@ -298,7 +330,7 @@ def compute_p30b_cell_state(battery_module_data,SOC,T,I):
     Outputs:  
         V_ul          - under-load voltage          [Volts] 
         
-    """ 
+    """ #should let 
 
     # Make sure things do not break by limiting current, temperature and current 
     SOC[SOC < 0.]   = 0.  
