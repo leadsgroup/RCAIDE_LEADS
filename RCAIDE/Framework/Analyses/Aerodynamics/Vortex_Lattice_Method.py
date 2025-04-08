@@ -57,59 +57,61 @@ class Vortex_Lattice_Method(Aerodynamics):
         Properties Used:
         N/A
         """          
-        self.tag                                                         = 'Vortex_Lattice_Method'  
-        self.vehicle                                                     = Data()  
-        self.process                                                     = Process()
-        self.process.initialize                                          = Process()  
-                   
-        # correction factors            
-        self.settings.fuselage_lift_correction                           = 1.14
-        self.settings.trim_drag_correction_factor                        = 1.0
-        self.settings.wing_parasite_drag_form_factor                     = 1.1
-        self.settings.fuselage_parasite_drag_form_factor                 = 2.3
-        self.settings.maximum_lift_coefficient_factor                    = 1.0        
-        self.settings.lift_to_drag_adjustment                            = 0.0  
-        self.settings.oswald_efficiency_factor                           = None
-        self.settings.span_efficiency                                    = None
-        self.settings.viscous_lift_dependent_drag_factor                 = 0.38
-        self.settings.drag_coefficient_increment                         = 0.0
-        self.settings.spoiler_drag_increment                             = 0.0
-        self.settings.maximum_lift_coefficient                           = np.inf 
-        self.settings.use_surrogate                                      = True
-        self.settings.recalculate_total_wetted_area                      = False
-        self.settings.propeller_wake_model                               = False 
-        self.settings.discretize_control_surfaces                        = True
-        self.settings.model_fuselage                                     = False
-        self.settings.trim_aircraft                                      = True
-        self.settings.aileron_flag                                       = False
-        self.settings.rudder_flag                                        = False
-        self.settings.flap_flag                                          = False
-        self.settings.elevator_flag                                      = False
-        self.settings.slat_flag                                          = False             
-
-        # correction factors
-        self.settings.supersonic                                         = Data()
-        self.settings.supersonic.peak_mach_number                        = 1.04  
-        self.settings.supersonic.begin_drag_rise_mach_number             = 0.95
-        self.settings.supersonic.end_drag_rise_mach_number               = 1.2
-        self.settings.supersonic.transonic_drag_multiplier               = 1.25  
-        self.settings.supersonic.volume_wave_drag_scaling                = 3.2  
-        self.settings.supersonic.fuselage_parasite_drag_begin_blend_mach = 0.91
-        self.settings.supersonic.fuselage_parasite_drag_end_blend_mach   = 0.99    
-        self.settings.supersonic.cross_sectional_area_calculation_type   = 'Fixed'     
-        self.settings.supersonic.wave_drag_type                          = 'Raymer'    
-    
-        self.settings.number_of_spanwise_vortices                        = 15
-        self.settings.number_of_chordwise_vortices                       = 5
-        self.settings.wing_spanwise_vortices                             = None
-        self.settings.wing_chordwise_vortices                            = None
-        self.settings.fuselage_spanwise_vortices                         = None
-        self.settings.fuselage_chordwise_vortices                        = None  
-        self.settings.spanwise_cosine_spacing                            = True
-        self.settings.vortex_distribution                                = Data()  
-        self.settings.leading_edge_suction_multiplier                    = 1.0  
-        self.settings.use_VORLAX_matrix_calculation                      = False
-        self.settings.floating_point_precision                           = np.float32     
+        self.tag                                                          = 'Vortex_Lattice_Method'  
+        self.vehicle                                                      = Data()  
+        self.process                                                      = Process()
+        self.process.initialize                                           = Process()  
+                    
+        # correction factors             
+        self.settings.fuselage_lift_correction                            = 1.14
+        self.settings.trim_drag_correction_factor                         = 1.1
+        self.settings.wing_parasite_drag_form_factor                      = 1.1
+        self.settings.fuselage_parasite_drag_form_factor                  = 2.3
+        self.settings.drag_reduction_factors                              = Data()
+        self.settings.drag_reduction_factors.parasite_drag                = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
+        self.settings.drag_reduction_factors.induced_drag                 = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
+        self.settings.drag_reduction_factors.compressibility_drag         = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
+        self.settings.maximum_lift_coefficient_factor                     = 1.0 
+        self.settings.oswald_efficiency_factor                            = None
+        self.settings.span_efficiency                                     = None
+        self.settings.viscous_lift_dependent_drag_factor                  = 0.38
+        self.settings.drag_coefficient_increment                          = 0.0 
+        self.settings.maximum_lift_coefficient                            = np.inf 
+        self.settings.use_surrogate                                       = True
+        self.settings.recalculate_total_wetted_area                       = False
+        self.settings.propeller_wake_model                                = False 
+        self.settings.discretize_control_surfaces                         = True
+        self.settings.model_fuselage                                      = False
+        self.settings.trim_aircraft                                       = True
+        self.settings.aileron_flag                                        = False
+        self.settings.rudder_flag                                         = False
+        self.settings.flap_flag                                           = False
+        self.settings.elevator_flag                                       = False
+        self.settings.slat_flag                                           = False             
+ 
+        # correction factors 
+        self.settings.supersonic                                          = Data()
+        self.settings.supersonic.peak_mach_number                         = 1.04  
+        self.settings.supersonic.begin_drag_rise_mach_number              = 0.95
+        self.settings.supersonic.end_drag_rise_mach_number                = 1.2
+        self.settings.supersonic.transonic_drag_multiplier                = 1.25  
+        self.settings.supersonic.volume_wave_drag_scaling                 = 3.2  
+        self.settings.supersonic.fuselage_parasite_drag_begin_blend_mach  = 0.91
+        self.settings.supersonic.fuselage_parasite_drag_end_blend_mach    = 0.99    
+        self.settings.supersonic.cross_sectional_area_calculation_type    = 'Fixed'     
+        self.settings.supersonic.wave_drag_type                           = 'Raymer'    
+     
+        self.settings.number_of_spanwise_vortices                         = 15
+        self.settings.number_of_chordwise_vortices                        = 5
+        self.settings.wing_spanwise_vortices                              = None
+        self.settings.wing_chordwise_vortices                             = None
+        self.settings.fuselage_spanwise_vortices                          = None
+        self.settings.fuselage_chordwise_vortices                         = None  
+        self.settings.spanwise_cosine_spacing                             = True
+        self.settings.vortex_distribution                                 = Data()  
+        self.settings.leading_edge_suction_multiplier                     = 1.0  
+        self.settings.use_VORLAX_matrix_calculation                       = False
+        self.settings.floating_point_precision                            = np.float32     
     
         # conditions table, used for surrogate model training
         self.training                                               = Data()
@@ -168,6 +170,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         compute.lift                               = Process() 
         compute.lift.inviscid_wings                = None 
         compute.lift.fuselage                      = Common.Lift.fuselage_correction 
+        #compute.LIFT.spoiler
         compute.drag                               = Process()
         compute.drag.parasite                      = Process()
         compute.drag.parasite.wings                = Process_Geometry('wings')
