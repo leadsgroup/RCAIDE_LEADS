@@ -88,11 +88,13 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     # ---------------------------------------------------------------------------------
     # Unpack flight conditions 
     # ---------------------------------------------------------------------------------
-    M0 = state.conditions.freestream.mach_number
-    P0 = state.conditions.freestream.pressure
-    T0 = state.conditions.freestream.temperature
-    a  = state.conditions.freestream.speed_of_sound
-    R  = 287
+    M0  = state.conditions.freestream.mach_number
+    P0  = state.conditions.freestream.pressure
+    T0  = state.conditions.freestream.temperature
+    a   = state.conditions.freestream.speed_of_sound
+    phi = state.conditions.energy.hybrid_power_split_ratio
+    psi = state.conditions.energy.battery_fuel_cell_power_split_ratio 
+    R   = 287
  
     # Compute the working fluid properties 
     gamma    =  (a ** 2) /( T0 * R)
@@ -109,7 +111,7 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
      
     # Compute Bus electrical properties  
     bus_conditions              = state.conditions.energy[bus.tag] 
-    P_bus                       = bus_conditions.power_draw
+    P_bus                       = bus_conditions.power_draw * phi *(1 - psi)   
     bus_config                  = bus.fuel_cell_stack_electric_configuration 
     P_module                    = P_bus  /len(bus.fuel_cell_stacks)
     P_cell                      = P_module[t_idx]/n_total 

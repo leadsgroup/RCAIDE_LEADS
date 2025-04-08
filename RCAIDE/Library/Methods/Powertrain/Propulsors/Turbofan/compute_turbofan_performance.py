@@ -422,11 +422,15 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
                 exit_stagnation_temperature         = fan_nozzle_conditions.outputs.stagnation_temperature,
                 exit_stagnation_pressure            = fan_nozzle_conditions.outputs.static_pressure,
                 exit_velocity                       = fan_nozzle_conditions.outputs.velocity
+                )
+                
+    lpc_res = Data(
+                angular_velocity    = fan_conditions.omega, 
             )
 
     noise_conditions.fan_nozzle             = fan_nozzle_res
     noise_conditions.core_nozzle            = core_nozzle_res  
-    noise_conditions.fan                    = None
+    noise_conditions.low_pressure_spool     = lpc_res
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbofan.tag 
     

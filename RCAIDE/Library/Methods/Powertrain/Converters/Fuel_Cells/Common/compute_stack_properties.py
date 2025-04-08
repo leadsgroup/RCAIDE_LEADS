@@ -153,10 +153,11 @@ def compute_stack_properties(fuel_cell_stack):
         atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
         atmo_data  = atmosphere.compute_values(design_altitude) 
          
-        segment                          = RCAIDE.Framework.Mission.Segments.Segment()
-        segment.hybrid_power_split_ratio = 1.0
-        segment.state.conditions         = RCAIDE.Framework.Mission.Common.Results()   
-        bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
+        segment                                     = RCAIDE.Framework.Mission.Segments.Segment()
+        segment.hybrid_power_split_ratio            = 1.0
+        segment.battery_fuel_cell_power_split_ratio = 0.1
+        segment.state.conditions                    = RCAIDE.Framework.Mission.Common.Results()   
+        bus                                         = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
         bus.fuel_cell_stacks.append(fuel_cell_stack)   
         
         bus.append_operating_conditions(segment)
