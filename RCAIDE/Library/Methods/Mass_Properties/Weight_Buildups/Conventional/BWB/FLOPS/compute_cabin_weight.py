@@ -7,9 +7,9 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Framework.Core import Units
-from copy import deepcopy
 from RCAIDE.Library.Methods.Geometry.Planform                          import segment_properties  
 
+from copy import deepcopy
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Cabin Weight 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -38,10 +38,14 @@ def compute_cabin_weight(vehicle,settings):
     bwb_vehicle = deepcopy(vehicle)
     bwb_vehicle.wings.main_wing.segments.clear()
     
-    for segment in vehicle.wings.main_wing.segments:
-        if isinstance(segment, RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
-            bwb_vehicle.wings.main_wing.segments.append(segment)
-            #bwb_vehicle.wings.main_wing.spans.projected =  vehicle.wings.main_wing.spans.projected * segment.percent_span_location  
+    for fus_segment in vehicle.wings.main_wing.segments:
+        if isinstance(fus_segment, RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
+            bwb_fuselage_seg = deepcopy(fus_segment)
+            bwb_vehicle.wings.main_wing.segments.append(bwb_fuselage_seg)
+            bwb_vehicle.wings.main_wing.spans.projected =  vehicle.wings.main_wing.spans.projected * bwb_fuselage_seg.percent_span_location  
+    
+    for segment in bwb_vehicle.wings.main_wing.segments:
+        segment.percent_span_location  = segment.percent_span_location * (vehicle.wings.main_wing.spans.projected / bwb_vehicle.wings.main_wing.spans.projected )
 
     bwb_vehicle.wings.main_wing = segment_properties(bwb_vehicle.wings.main_wing,update_ref_areas=True)  
      # convert to imperial units
@@ -57,11 +61,11 @@ def compute_cabin_weight(vehicle,settings):
             if segments else 0.0
                 )/Units.degree
         W_cabin = 1.06 * 1.20 * 105.95 * (A_CB**0.97) * (TOGW**0.0021) * (FR**-0.75) * (THETA_CB**-0.62) * (SR**-0.0008)
-
+        W_cabin = W_cabin * Units.lbf / 9.81
     else: 
         W_cabin = 5.698865 * 0.316422 * (TOGW ** 0.166552) * A_CB ** 1.061158
     
     # convert to SI units
     W_cabin = W_cabin * Units.pounds
     
-    return W_cabin
+    return W_cabin 
