@@ -26,66 +26,66 @@ def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_id
                 Identifier for the battery module
             - cell : Data
                 Cell properties
-                - electrode_area : float
-                    Area of the electrode [m²]
-                - surface_area : float
-                    Surface area of the cell [m²]
-                - mass : float
-                    Mass of a single cell [kg]
-                - specific_heat_capacity : float
-                    Specific heat capacity of the cell [J/(kg·K)]
-                - discharge_performance_map : function
-                    Function that maps state of charge, temperature, and current to voltage
+                    - electrode_area : float
+                        Area of the electrode [m²]
+                    - surface_area : float
+                        Surface area of the cell [m²]
+                    - mass : float
+                        Mass of a single cell [kg]
+                    - specific_heat_capacity : float
+                        Specific heat capacity of the cell [J/(kg·K)]
+                    - discharge_performance_map : function
+                        Function that maps state of charge, temperature, and current to voltage
             - maximum_energy : float
                 Maximum energy capacity of the module [J]
             - electrical_configuration : Data
                 Electrical configuration
-                - series : int
-                    Number of cells in series
-                - parallel : int
-                    Number of cells in parallel
+                    - series : int
+                        Number of cells in series
+                    - parallel : int
+                        Number of cells in parallel
     state : RCAIDE.Framework.Mission.Common.State
         State object containing:
             - conditions : Data
                 Flight conditions
-                - energy : dict
-                    Energy conditions indexed by component tag
-                    - [bus.tag] : Data
-                        Bus-specific conditions
-                        - energy : numpy.ndarray
-                            Energy stored in the bus [J]
-                        - power_draw : numpy.ndarray
-                            Power draw on the bus [W]
-                        - current_draw : numpy.ndarray
-                            Current draw on the bus [A]
-                        - battery_modules : dict
-                            Battery module conditions indexed by tag
-                            - [battery_module.tag] : Data
-                                Battery module conditions
-                                - energy : numpy.ndarray
-                                    Energy stored in the module [J]
-                                - voltage_open_circuit : numpy.ndarray
-                                    Open-circuit voltage [V]
-                                - power : numpy.ndarray
-                                    Power output [W]
-                                - internal_resistance : numpy.ndarray
-                                    Internal resistance [Ω]
-                                - heat_energy_generated : numpy.ndarray
-                                    Heat energy generated [W]
-                                - voltage_under_load : numpy.ndarray
-                                    Voltage under load [V]
-                                - current : numpy.ndarray
-                                    Current [A]
-                                - temperature : numpy.ndarray
-                                    Temperature [K]
-                                - state_of_charge : numpy.ndarray
-                                    State of charge [0-1]
-                                - cell : Data
-                                    Cell-specific conditions with same properties as module
+                    - energy : dict
+                        Energy conditions indexed by component tag
+                            - [bus.tag] : Data
+                                Bus-specific conditions
+                                    - energy : numpy.ndarray
+                                        Energy stored in the bus [J]
+                                    - power_draw : numpy.ndarray
+                                        Power draw on the bus [W]
+                                    - current_draw : numpy.ndarray
+                                        Current draw on the bus [A]
+                                    - battery_modules : dict
+                                        Battery module conditions indexed by tag
+                                            - [battery_module.tag] : Data
+                                                Battery module conditions
+                                                    - energy : numpy.ndarray
+                                                        Energy stored in the module [J]
+                                                    - voltage_open_circuit : numpy.ndarray
+                                                        Open-circuit voltage [V]
+                                                    - power : numpy.ndarray
+                                                        Power output [W]
+                                                    - internal_resistance : numpy.ndarray
+                                                        Internal resistance [Ω]
+                                                    - heat_energy_generated : numpy.ndarray
+                                                        Heat energy generated [W]
+                                                    - voltage_under_load : numpy.ndarray
+                                                        Voltage under load [V]
+                                                    - current : numpy.ndarray
+                                                        Current [A]
+                                                    - temperature : numpy.ndarray
+                                                        Temperature [K]
+                                                    - state_of_charge : numpy.ndarray
+                                                        State of charge [0-1]
+                                                    - cell : Data
+                                                        Cell-specific conditions with same properties as module
             - numerics : Data
                 Numerical properties
-                - number_of_control_points : int
-                    Number of control points in the mission
+                    - number_of_control_points : int
+                        Number of control points in the mission
     bus : RCAIDE.Library.Components.Systems.Electrical_Bus
         Electrical bus component with the following attributes:
             - tag : str
@@ -149,8 +149,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_id
 
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_state
-    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.reuse_stored_nmc_cell_data
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP
     """
 
     # ---------------------------------------------------------------------------------    

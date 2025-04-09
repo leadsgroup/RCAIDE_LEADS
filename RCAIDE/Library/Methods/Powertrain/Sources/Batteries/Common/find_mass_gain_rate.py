@@ -37,10 +37,6 @@ def find_mass_gain_rate(battery, power):
     **Major Assumptions**
         * Earth atmospheric composition
         * Linear relationship between power output and mass gain rate
-    
-    See Also
-    --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Battery_Modules.Common.find_total_mass_gain
     """
     #weight gain of battery (positive means mass gain)
     mdot = -(power) * (battery.mass_gain_factor)  

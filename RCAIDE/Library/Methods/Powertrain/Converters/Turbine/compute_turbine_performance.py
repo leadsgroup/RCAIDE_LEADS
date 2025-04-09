@@ -17,12 +17,12 @@ def compute_turbine_performance(turbine,conditions):
                 Identifier for the turbine
             - working_fluid : Data
                 Working fluid object with methods to compute properties
-                - compute_gamma : function
-                    Computes ratio of specific heats
-                - compute_cp : function
-                    Computes specific heat at constant pressure
-                - compute_R : function
-                    Computes gas constant
+                    - compute_gamma : function
+                        Computes ratio of specific heats
+                    - compute_cp : function
+                        Computes specific heat at constant pressure
+                    - compute_R : function
+                        Computes gas constant
             - mechanical_efficiency : float
                 Mechanical efficiency [unitless]
             - polytropic_efficiency : float
@@ -31,34 +31,34 @@ def compute_turbine_performance(turbine,conditions):
         Flight conditions with:
             - energy : Data
                 Energy conditions
-                - converters : dict
-                    Converter energy conditions indexed by tag
-                    - inputs : Data
-                        Input conditions
-                        - static_temperature : array_like
-                            Static temperature [K]
-                        - static_pressure : array_like
-                            Static pressure [Pa]
-                        - mach_number : array_like
-                            Mach number [unitless]
-                        - stagnation_temperature : array_like
-                            Entering stagnation temperature [K]
-                        - stagnation_pressure : array_like
-                            Entering stagnation pressure [Pa]
-                        - bypass_ratio : array_like
-                            Bypass ratio [unitless]
-                        - fuel_to_air_ratio : array_like
-                            Fuel-to-air ratio [unitless]
-                        - compressor : Data
-                            Compressor data
-                            - work_done : array_like
-                                Compressor work [J/(kg/s)]
-                            - external_shaft_work_done : array_like
-                                Shaft power off take [J/(kg/s)]
-                        - fan : Data
-                            Fan data
-                            - work_done : array_like
-                                Fan work done [J/(kg/s)]
+                    - converters : dict
+                        Converter energy conditions indexed by tag
+                            - inputs : Data
+                                Input conditions
+                                    - static_temperature : array_like
+                                        Static temperature [K]
+                                    - static_pressure : array_like
+                                        Static pressure [Pa]
+                                    - mach_number : array_like
+                                        Mach number [unitless]
+                                    - stagnation_temperature : array_like
+                                        Entering stagnation temperature [K]
+                                    - stagnation_pressure : array_like
+                                        Entering stagnation pressure [Pa]
+                                    - bypass_ratio : array_like
+                                        Bypass ratio [unitless]
+                                    - fuel_to_air_ratio : array_like
+                                        Fuel-to-air ratio [unitless]
+                                    - compressor : Data
+                                        Compressor data
+                                            - work_done : array_like
+                                                Compressor work [J/(kg/s)]
+                                            - external_shaft_work_done : array_like
+                                                Shaft power off take [J/(kg/s)]
+                                    - fan : Data
+                                        Fan data
+                                            - work_done : array_like
+                                                Fan work done [J/(kg/s)]
     
     Returns
     -------
@@ -116,13 +116,13 @@ def compute_turbine_performance(turbine,conditions):
         \\Delta h_t = -\\frac{1}{1+f} \\cdot \\frac{W_{comp} + W_{ext} + \\alpha W_{fan}}{\\eta_{mech}}
     
     where:
-        - Δh_t is the enthalpy drop across the turbine
-        - f is the fuel-to-air ratio
-        - W_comp is the compressor work
-        - W_ext is the external shaft work
-        - W_fan is the fan work
-        - α is the bypass ratio
-        - η_mech is the mechanical efficiency
+        - :math:`\\Delta h_t` is the enthalpy drop across the turbine
+        - :math:`f` is the fuel-to-air ratio
+        - :math:`W_{comp}` is the compressor work
+        - :math:`W_{ext}` is the external shaft work
+        - :math:`W_{fan}` is the fan work
+        - :math:`\\alpha` is the bypass ratio
+        - :math:`\\eta_{mech}` is the mechanical efficiency
     
     The exit stagnation temperature is:
     

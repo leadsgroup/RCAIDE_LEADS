@@ -22,63 +22,63 @@ def compute_compression_nozzle_performance(compression_nozzle, conditions):
     ----------
     compression_nozzle : Data
         Data dictionary with compression nozzle properties
-        - tag : str
-            Identifier for the compression nozzle
-        - pressure_ratio : float
-            Pressure ratio across the nozzle [unitless]
-        - polytropic_efficiency : float
-            Polytropic efficiency of the nozzle [unitless]
-        - pressure_recovery : float
-            Pressure recovery factor [unitless]
-        - compressibility_effects : bool
-            Flag to include compressibility effects
-        - working_fluid : Data
-            Working fluid object with methods to compute properties
+            - tag : str
+                Identifier for the compression nozzle
+            - pressure_ratio : float
+                Pressure ratio across the nozzle [unitless]
+            - polytropic_efficiency : float
+                Polytropic efficiency of the nozzle [unitless]
+            - pressure_recovery : float
+                Pressure recovery factor [unitless]
+            - compressibility_effects : bool
+                Flag to include compressibility effects
+            - working_fluid : Data
+                Working fluid object with methods to compute properties
     conditions : Data
         Data dictionary with flow conditions
-        - freestream : Data
-            Freestream flow properties
-            - pressure : ndarray
-                Freestream pressure [Pa]
-            - mach_number : ndarray
-                Freestream Mach number [unitless]
-        - energy : Data
-            Energy conditions
-            - converters : dict
-                Dictionary of converter conditions indexed by tag
-                - inputs : Data
-                    Input conditions
-                    - stagnation_temperature : ndarray
-                        Entering stagnation temperature [K]
-                    - stagnation_pressure : ndarray
-                        Entering stagnation pressure [Pa]
-                    - static_temperature : ndarray
-                        Entering static temperature [K]
-                    - static_pressure : ndarray
-                        Entering static pressure [Pa]
-                    - mach_number : ndarray
-                        Entering Mach number [unitless]
+            - freestream : Data
+                Freestream flow properties
+                - pressure : ndarray
+                    Freestream pressure [Pa]
+                - mach_number : ndarray
+                    Freestream Mach number [unitless]
+            - energy : Data
+                Energy conditions
+                    - converters : dict
+                        Dictionary of converter conditions indexed by tag
+                        - inputs : Data
+                            Input conditions
+                            - stagnation_temperature : ndarray
+                                Entering stagnation temperature [K]
+                            - stagnation_pressure : ndarray
+                                Entering stagnation pressure [Pa]
+                            - static_temperature : ndarray
+                                Entering static temperature [K]
+                            - static_pressure : ndarray
+                                Entering static pressure [Pa]
+                            - mach_number : ndarray
+                                Entering Mach number [unitless]
     
     Returns
     -------
     None
         Results are stored in conditions.energy.converters[compression_nozzle.tag].outputs:
-        - stagnation_temperature : ndarray
-            Exit stagnation temperature [K]
-        - stagnation_pressure : ndarray
-            Exit stagnation pressure [Pa]
-        - stagnation_enthalpy : ndarray
-            Exit stagnation enthalpy [J/kg]
-        - mach_number : ndarray
-            Exit Mach number [unitless]
-        - static_temperature : ndarray
-            Exit static temperature [K]
-        - static_enthalpy : ndarray
-            Exit static enthalpy [J/kg]
-        - velocity : ndarray
-            Exit nozzle velocity [m/s]
-        - static_pressure : ndarray
-            Exit static pressure [Pa]
+            - stagnation_temperature : ndarray
+                Exit stagnation temperature [K]
+            - stagnation_pressure : ndarray
+                Exit stagnation pressure [Pa]
+            - stagnation_enthalpy : ndarray
+                Exit stagnation enthalpy [J/kg]
+            - mach_number : ndarray
+                Exit Mach number [unitless]
+            - static_temperature : ndarray
+                Exit static temperature [K]
+            - static_enthalpy : ndarray
+                Exit static enthalpy [J/kg]
+            - velocity : ndarray
+                Exit nozzle velocity [m/s]
+            - static_pressure : ndarray
+                Exit static pressure [Pa]
     
     Notes
     -----

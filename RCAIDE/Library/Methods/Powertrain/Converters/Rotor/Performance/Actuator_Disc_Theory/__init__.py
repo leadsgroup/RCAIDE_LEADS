@@ -8,8 +8,7 @@ propellers, and other rotating aerodynamic devices.
 
 See Also
 --------
-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum
-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Vortex_Lattice
+RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

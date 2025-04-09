@@ -37,7 +37,6 @@ def append_payload_conditions(payload, segment, bus):
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions
-    RCAIDE.Library.Methods.Powertrain.Systems.setup_operating_conditions
     """
     ones_row    = segment.state.ones_row 
     segment.state.conditions.energy[bus.tag][payload.tag]       = Conditions()

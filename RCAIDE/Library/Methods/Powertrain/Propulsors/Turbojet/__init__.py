@@ -7,11 +7,11 @@ sizing engine cores, and evaluating turbojet performance characteristics.
 
 See Also
 --------
-RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Ram
-RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Combustor
-RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Compressor
-RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Turbine
-RCAIDE.Library.Components.Powertrain.Propulsors.Converters.Expansion_Nozzle
+RCAIDE.Library.Components.Powertrain.Converters.Ram
+RCAIDE.Library.Components.Powertrain.Converters.Combustor
+RCAIDE.Library.Components.Powertrain.Converters.Compressor
+RCAIDE.Library.Components.Powertrain.Converters.Turbine
+RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

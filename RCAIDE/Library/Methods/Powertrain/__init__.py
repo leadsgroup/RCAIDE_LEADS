@@ -13,8 +13,8 @@ See Also
 --------
 RCAIDE.Library.Components.Powertrain
 RCAIDE.Library.Methods.Aerodynamics
-RCAIDE.Library.Methods.Propulsion
-RCAIDE.Library.Methods.Weights
+RCAIDE.Library.Methods.Powertrain
+RCAIDE.Library.Methods.Mass_Properties
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

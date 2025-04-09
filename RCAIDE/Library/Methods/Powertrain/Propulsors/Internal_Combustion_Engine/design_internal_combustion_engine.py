@@ -68,10 +68,10 @@ def design_internal_combustion_engine(ICE, number_of_stations=20, solver_name='S
            combination at full throttle
     
     The sea level static performance is calculated by:
-        - Setting up atmospheric conditions at sea level
-        - Creating a low-speed operating state (1% of sea level speed of sound)
-        - Setting the throttle to maximum (1.0)
-        - Computing the performance at these conditions
+        * Setting up atmospheric conditions at sea level
+        * Creating a low-speed operating state (1% of sea level speed of sound)
+        * Setting the throttle to maximum (1.0)
+        * Computing the performance at these conditions
     
     **Major Assumptions**
         * US Standard Atmosphere 1976 is used for atmospheric properties
@@ -82,7 +82,6 @@ def design_internal_combustion_engine(ICE, number_of_stations=20, solver_name='S
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller
     RCAIDE.Library.Methods.Powertrain.setup_operating_conditions
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.compute_performance
     """
     
     # Step 1 Design the Propeller  

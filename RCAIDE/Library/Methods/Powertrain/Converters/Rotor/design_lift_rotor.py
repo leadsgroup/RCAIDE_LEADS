@@ -47,12 +47,12 @@ def design_lift_rotor(rotor, number_of_stations=20, solver_name='SLSQP', iterati
                 Dictionary of airfoil data
             - optimization_parameters : Data
                 Optimization parameters
-                - slack_constraint : float
-                    Slack constraint value
-                - ideal_SPL_dbA : float
-                    Ideal sound pressure level [dBA]
-                - multiobjective_aeroacoustic_weight : float
-                    Weight for multiobjective aeroacoustic optimization
+                    - slack_constraint : float
+                        Slack constraint value
+                    - ideal_SPL_dbA : float
+                        Ideal sound pressure level [dBA]
+                    - multiobjective_aeroacoustic_weight : float
+                        Weight for multiobjective aeroacoustic optimization
     number_of_stations : int, optional
         Number of radial stations for blade discretization, default 20
     solver_name : str, optional

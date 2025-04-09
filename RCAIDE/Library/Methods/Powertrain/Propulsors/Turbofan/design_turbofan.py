@@ -52,53 +52,48 @@ def design_turbofan(turbofan):
                 Bypass ratio of the turbofan
             - ram : Data
                 Ram component
-                - tag : str
-                    Identifier for the ram
+                    - tag : str
+                        Identifier for the ram
             - inlet_nozzle : Data
                 Inlet nozzle component
-                - tag : str
-                    Identifier for the inlet nozzle
+                    - tag : str
+                        Identifier for the inlet nozzle
             - fan : Data
                 Fan component
-                - tag : str
-                    Identifier for the fan
+                    - tag : str
+                        Identifier for the fan
             - low_pressure_compressor : Data
                 Low pressure compressor component
-                - tag : str
-                    Identifier for the low pressure compressor
+                    - tag : str
+                        Identifier for the low pressure compressor
             - high_pressure_compressor : Data
                 High pressure compressor component
-                - tag : str
-                    Identifier for the high pressure compressor
+                    - tag : str
+                        Identifier for the high pressure compressor
             - combustor : Data
                 Combustor component
-                - tag : str
-                    Identifier for the combustor
+                    - tag : str
+                        Identifier for the combustor
             - high_pressure_turbine : Data
                 High pressure turbine component
-                - tag : str
-                    Identifier for the high pressure turbine
+                    - tag : str
+                        Identifier for the high pressure turbine
             - low_pressure_turbine : Data
                 Low pressure turbine component
-                - tag : str
-                    Identifier for the low pressure turbine
+                    - tag : str
+                        Identifier for the low pressure turbine
             - core_nozzle : Data
                 Core nozzle component
-                - tag : str
-                    Identifier for the core nozzle
+                    - tag : str
+                        Identifier for the core nozzle
             - fan_nozzle : Data
                 Fan nozzle component
-                - tag : str
-                    Identifier for the fan nozzle
+                    - tag : str
+                        Identifier for the fan nozzle
     
     Returns
     -------
     None
-        Results are stored in the turbofan object:
-            - sealevel_static_thrust : float
-                Sea level static thrust [N]
-            - sealevel_static_power : float
-                Sea level static power [W]
     
     Notes
     -----

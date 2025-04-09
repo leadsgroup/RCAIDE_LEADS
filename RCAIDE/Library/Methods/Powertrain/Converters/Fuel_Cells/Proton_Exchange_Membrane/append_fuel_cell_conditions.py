@@ -39,12 +39,6 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
         - current_density                  
         - current                          
         - H2_mass_flow_rate
- 
-    References
-    ---------- 
-
-    Assumptions
-    ----------- 
     """      
     
     ones_row                                                                                       = segment.state.ones_row    

@@ -10,7 +10,7 @@ variables throughout mission analysis.
 
 See Also
 --------
-RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.DC_Motor
+RCAIDE.Library.Components.Powertrain.Converters.DC_Motor
 RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller
 """
 

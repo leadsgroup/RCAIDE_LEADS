@@ -26,8 +26,8 @@ def compute_power(turboshaft,conditions):
                 Identifier for the turboshaft
             - fuel_type : Data
                 Fuel properties object
-                - lower_heating_value : float
-                    Fuel lower heating value [J/kg]
+                    - lower_heating_value : float
+                        Fuel lower heating value [J/kg]
             - working_fluid : Data
                 Working fluid properties object
             - reference_temperature : float
@@ -36,10 +36,10 @@ def compute_power(turboshaft,conditions):
                 Reference pressure for mass flow scaling [Pa]
             - compressor : Data
                 Compressor component
-                - pressure_ratio : float
-                    Compressor pressure ratio
-                - mass_flow_rate : float
-                    Design mass flow rate [kg/s]
+                    - pressure_ratio : float
+                        Compressor pressure ratio
+                    - mass_flow_rate : float
+                        Design mass flow rate [kg/s]
             - conversion_efficiency : float
                 Efficiency of converting thermal energy to shaft power
             - inverse_calculation : bool
@@ -48,43 +48,30 @@ def compute_power(turboshaft,conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - isentropic_expansion_factor : numpy.ndarray
-                    Ratio of specific heats (gamma)
-                - speed_of_sound : numpy.ndarray
-                    Speed of sound [m/s]
-                - mach_number : numpy.ndarray
-                    Flight Mach number
-                - gravity : numpy.ndarray
-                    Gravitational acceleration [m/s²]
+                    - isentropic_expansion_factor : numpy.ndarray
+                        Ratio of specific heats (gamma)
+                    - speed_of_sound : numpy.ndarray
+                        Speed of sound [m/s]
+                    - mach_number : numpy.ndarray
+                        Flight Mach number
+                    - gravity : numpy.ndarray
+                        Gravitational acceleration [m/s²]
             - energy.converters[turboshaft.tag] : Data
                 Turboshaft operating conditions
-                - throttle : numpy.ndarray
-                    Throttle setting [0-1]
-                - total_temperature_reference : numpy.ndarray
-                    Reference total temperature [K]
-                - total_pressure_reference : numpy.ndarray
-                    Reference total pressure [Pa]
-                - combustor_stagnation_temperature : numpy.ndarray
-                    Combustor exit stagnation temperature [K]
-                - power : numpy.ndarray
-                    Required power output (for inverse calculation) [W]
+                    - throttle : numpy.ndarray
+                        Throttle setting [0-1]
+                    - total_temperature_reference : numpy.ndarray
+                        Reference total temperature [K]
+                    - total_pressure_reference : numpy.ndarray
+                        Reference total pressure [Pa]
+                    - combustor_stagnation_temperature : numpy.ndarray
+                        Combustor exit stagnation temperature [K]
+                    - power : numpy.ndarray
+                        Required power output (for inverse calculation) [W]
 
     Returns
     -------
     None
-        Results are stored in conditions.energy.converters[turboshaft.tag]:
-        - power_specific_fuel_consumption : numpy.ndarray
-            Power specific fuel consumption [kg/(W*s)]
-        - fuel_flow_rate : numpy.ndarray
-            Fuel flow rate [kg/s]
-        - power : numpy.ndarray
-            Shaft power output [W]
-        - non_dimensional_power : numpy.ndarray
-            Non-dimensional power
-        - non_dimensional_thrust : numpy.ndarray
-            Non-dimensional thrust
-        - thermal_efficiency : numpy.ndarray
-            Thermal efficiency of the engine
 
     Notes
     -----
@@ -108,8 +95,7 @@ def compute_power(turboshaft,conditions):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Converters.Turbofan.compute_thrust
-    RCAIDE.Library.Methods.Powertrain.Converters.Turbojet.compute_thrust
+    RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance
     """           
     #unpack the values 
     working_fluid                              = turboshaft.working_fluid                                                                

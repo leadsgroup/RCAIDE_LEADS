@@ -30,24 +30,24 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor, sta
                 Identifier for the propulsor
             - engine : Data
                 Engine component
-                - tag : str
-                    Identifier for the engine
+                    - tag : str
+                        Identifier for the engine
             - propeller : Data
                 Propeller component
-                - tag : str
-                    Identifier for the propeller
-                - origin : list of lists
-                    Origin coordinates [[x, y, z]] [m]
+                    - tag : str
+                        Identifier for the propeller
+                    - origin : list of lists
+                        Origin coordinates [[x, y, z]] [m]
     state : RCAIDE.Framework.Mission.Common.State
         State object containing:
             - conditions : Data
                 Flight conditions
-                - energy : Data
-                    Energy conditions
-                    - propulsors : dict
-                        Propulsor energy conditions indexed by tag
-                    - converters : dict
-                        Converter energy conditions indexed by tag
+                    - energy : Data
+                        Energy conditions
+                        - propulsors : dict
+                            Propulsor energy conditions indexed by tag
+                        - converters : dict
+                            Converter energy conditions indexed by tag
             - ones_row : function
                 Function to create array of ones with specified length
     center_of_gravity : list of lists, optional
@@ -97,7 +97,6 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor, sta
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.reuse_stored_constant_speed_internal_combustion_engine_data
     """
     conditions              = state.conditions  
     ice_cs_conditions       = conditions.energy.propulsors[propulsor.tag] 

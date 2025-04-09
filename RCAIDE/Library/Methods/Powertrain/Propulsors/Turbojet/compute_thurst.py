@@ -37,36 +37,36 @@ def compute_thrust(turbojet,conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - isentropic_expansion_factor : numpy.ndarray
-                    Ratio of specific heats (gamma)
-                - velocity : numpy.ndarray
-                    Freestream velocity [m/s]
-                - speed_of_sound : numpy.ndarray
-                    Speed of sound [m/s]
-                - mach_number : numpy.ndarray
-                    Freestream Mach number
-                - pressure : numpy.ndarray
-                    Freestream pressure [Pa]
-                - gravity : numpy.ndarray
-                    Gravitational acceleration [m/s²]
+                    - isentropic_expansion_factor : numpy.ndarray
+                        Ratio of specific heats (gamma)
+                    - velocity : numpy.ndarray
+                        Freestream velocity [m/s]
+                    - speed_of_sound : numpy.ndarray
+                        Speed of sound [m/s]
+                    - mach_number : numpy.ndarray
+                        Freestream Mach number
+                    - pressure : numpy.ndarray
+                        Freestream pressure [Pa]
+                    - gravity : numpy.ndarray
+                        Gravitational acceleration [m/s²]
             - energy.propulsors[turbojet.tag] : Data
                 Turbojet-specific conditions
-                - fuel_to_air_ratio : numpy.ndarray
-                    Fuel-to-air ratio
-                - total_temperature_reference : numpy.ndarray
-                    Reference total temperature [K]
-                - total_pressure_reference : numpy.ndarray
-                    Reference total pressure [Pa]
-                - core_nozzle_exit_velocity : numpy.ndarray
-                    Core nozzle exit velocity [m/s]
-                - core_nozzle_static_pressure : numpy.ndarray
-                    Core nozzle static pressure [Pa]
-                - core_nozzle_area_ratio : numpy.ndarray
-                    Core nozzle area ratio
-                - flow_through_core : numpy.ndarray
-                    Fraction of flow through core
-                - throttle : numpy.ndarray
-                    Throttle setting [0-1]
+                    - fuel_to_air_ratio : numpy.ndarray
+                        Fuel-to-air ratio
+                    - total_temperature_reference : numpy.ndarray
+                        Reference total temperature [K]
+                    - total_pressure_reference : numpy.ndarray
+                        Reference total pressure [Pa]
+                    - core_nozzle_exit_velocity : numpy.ndarray
+                        Core nozzle exit velocity [m/s]
+                    - core_nozzle_static_pressure : numpy.ndarray
+                        Core nozzle static pressure [Pa]
+                    - core_nozzle_area_ratio : numpy.ndarray
+                        Core nozzle area ratio
+                    - flow_through_core : numpy.ndarray
+                        Fraction of flow through core
+                    - throttle : numpy.ndarray
+                        Throttle setting [0-1]
     
     Returns
     -------
@@ -104,14 +104,14 @@ def compute_thrust(turbojet,conditions):
         F_{nd} = \\phi_{core} \\cdot (\\gamma \\cdot M_0^2 \\cdot (V_{core}/V_0 - 1) + A_{core} \\cdot (P_{core}/P_0 - 1))
     
     where:
-      - φ_core is the flow through core fraction
-      - γ is the ratio of specific heats
-      - M_0 is the freestream Mach number
-      - V_core is the core nozzle exit velocity
-      - V_0 is the freestream velocity
-      - A_core is the core nozzle area ratio
-      - P_core is the core nozzle static pressure
-      - P_0 is the freestream pressure
+      - :math:`\\phi_{core}` is the flow through core fraction
+      - :math:`\\gamma` is the ratio of specific heats
+      - :math:`M_0` is the freestream Mach number
+      - :math:`V_{core}` is the core nozzle exit velocity
+      - :math:`V_0` is the freestream velocity
+      - :math:`A_{core}` is the core nozzle area ratio
+      - :math:`P_{core}` is the core nozzle static pressure
+      - :math:`P_0` is the freestream pressure
     
     The specific thrust is then:
     

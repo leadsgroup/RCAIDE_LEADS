@@ -34,14 +34,14 @@ def compute_combustor_performance(combustor, conditions):
                 Exit to inlet area ratio
             - fuel_data : Data
                 Fuel properties
-                - specific_energy : float
-                    Fuel specific energy [J/kg]
+                    - specific_energy : float
+                        Fuel specific energy [J/kg]
     conditions : RCAIDE.Framework.Mission.Common.Conditions
         Flight conditions with:
             - energy : Data
                 Energy conditions
-                - converters : dict
-                    Converter energy conditions indexed by tag
+                    - converters : dict
+                        Converter energy conditions indexed by tag
     
     Returns
     -------

@@ -22,8 +22,8 @@ def append_combustor_conditions(combustor, segment, energy_conditions):
         Mission segment with the following attributes:
             - state : Data
                 Segment state
-                - ones_row : function
-                    Function to create array of ones with specified length
+                    - ones_row : function
+                        Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where combustor conditions will be stored
     
@@ -42,8 +42,8 @@ def append_combustor_conditions(combustor, segment, energy_conditions):
     The function initializes the following in energy_conditions.converters[combustor.tag]:
         - inputs : Conditions
             Input conditions container
-            - nondim_mass_ratio : numpy.ndarray
-                Non-dimensional mass ratio, initialized with ones
+                - nondim_mass_ratio : numpy.ndarray
+                    Non-dimensional mass ratio, initialized with ones
         - outputs : Conditions
             Output conditions container (empty)
     

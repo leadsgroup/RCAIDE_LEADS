@@ -34,16 +34,16 @@ def size_core(turbojet, conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - speed_of_sound : numpy.ndarray
-                    Speed of sound [m/s]
+                    - speed_of_sound : numpy.ndarray
+                        Speed of sound [m/s]
             - energy.propulsors[turbojet.tag] : Data
                 Turbojet-specific conditions
-                - total_temperature_reference : numpy.ndarray
-                    Reference total temperature [K]
-                - total_pressure_reference : numpy.ndarray
-                    Reference total pressure [Pa]
-                - non_dimensional_thrust : numpy.ndarray
-                    Non-dimensional thrust
+                    - total_temperature_reference : numpy.ndarray
+                        Reference total temperature [K]
+                    - total_pressure_reference : numpy.ndarray
+                        Reference total pressure [Pa]
+                    - non_dimensional_thrust : numpy.ndarray
+                        Non-dimensional thrust
     
     Returns
     -------
@@ -81,7 +81,7 @@ def size_core(turbojet, conditions):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_thrust
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_thurst
     """
     #unpack inputs
     a0                   = conditions.freestream.speed_of_sound

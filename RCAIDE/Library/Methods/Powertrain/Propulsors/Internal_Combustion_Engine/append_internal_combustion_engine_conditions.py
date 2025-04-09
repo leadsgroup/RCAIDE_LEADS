@@ -28,8 +28,8 @@ def append_internal_combustion_engine_conditions(propulsor, segment, energy_cond
         Mission segment with the following attributes:
             - state : Data
                 Segment state
-                - ones_row : function
-                    Function to create array of ones with specified length
+                    - ones_row : function
+                        Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where engine conditions will be stored
     noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
@@ -49,13 +49,13 @@ def append_internal_combustion_engine_conditions(propulsor, segment, energy_cond
     method for each subcomponent of the engine.
     
     The function initializes the following parameters in energy_conditions:
-        - throttle
-        - commanded_thrust_vector_angle
-        - thrust
-        - power
-        - moment
-        - fuel_flow_rate
-        - inputs and outputs containers
+        * throttle
+        * commanded_thrust_vector_angle
+        * thrust
+        * power
+        * moment
+        * fuel_flow_rate
+        * inputs and outputs containers
     
     It also creates a noise conditions container for the engine.
     
@@ -65,8 +65,7 @@ def append_internal_combustion_engine_conditions(propulsor, segment, energy_cond
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.compute_power
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.compute_thrust
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.compute_internal_combustion_engine_performance
     """
     # unpack 
     ones_row          = segment.state.ones_row 

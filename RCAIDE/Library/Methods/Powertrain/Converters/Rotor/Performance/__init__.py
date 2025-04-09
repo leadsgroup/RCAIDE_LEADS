@@ -16,8 +16,6 @@ flight regimes, from hover to forward flight.
 See Also
 --------
 RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design
-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Geometry
-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Noise
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

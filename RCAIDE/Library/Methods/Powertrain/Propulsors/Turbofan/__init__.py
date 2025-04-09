@@ -6,7 +6,7 @@ Collection of methods for modeling and analyzing turbofan propulsion systems. Th
 sizing, and computing performance characteristics of turbofan engines including thrust calculations and core sizing.
  
 See Also
- --------
+--------
 RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan
 RCAIDE.Framework.Analysis.Propulsion
 """

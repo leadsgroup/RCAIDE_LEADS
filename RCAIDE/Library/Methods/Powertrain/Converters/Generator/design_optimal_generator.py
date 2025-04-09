@@ -34,8 +34,8 @@ def design_optimal_generator(generator):
                 Design torque [N·m]
             - gearbox : Data
                 Gearbox component
-                - gear_ratio : float
-                    Gear ratio [unitless]
+                    - gear_ratio : float
+                        Gear ratio [unitless]
             - design_angular_velocity : float
                 Design angular velocity [radians/s]
             - design_power : float
@@ -74,9 +74,9 @@ def design_optimal_generator(generator):
     
     **Theory**
     The generator model uses the following relationships:
-        - Current: I = (V - ω/Kv)/R - I₀
-        - Efficiency: η = (1 - (I₀·R)/(V - ω/Kv))·(ω/(V·Kv))
-        - Power: P = ω·I/Kv
+        - Current: :math:`I = (V - \\omega/Kv)/R - I₀`
+        - Efficiency: :math:`\\eta = (1 - (I₀\\cdot R)/(V - \\omega/Kv))\\cdot(\\omega/(V\\cdot Kv))`
+        - Power: :math:`P = \\omega\\cdot I/Kv`
     
     where:
         - V is the nominal voltage

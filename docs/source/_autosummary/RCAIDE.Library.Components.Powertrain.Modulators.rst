@@ -32,5 +32,4 @@ Modulators
 
    Electronic_Speed_Controller
    Fuel_Selector
-   Solar_Logic
 

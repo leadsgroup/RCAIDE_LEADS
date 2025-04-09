@@ -36,18 +36,18 @@ def design_propeller(prop, number_of_stations=20):
                 Hub radius of the propeller [m]
             - cruise : Data
                 Cruise conditions
-                - design_angular_velocity : float
-                    Rotation rate [rad/s]
-                - design_freestream_velocity : float
-                    Freestream velocity [m/s]
-                - design_Cl : float
-                    Design lift coefficient
-                - design_altitude : float
-                    Design altitude [m]
-                - design_thrust : float, optional
-                    Design thrust [N] (specify either thrust or power)
-                - design_power : float, optional
-                    Design power [W] (specify either thrust or power)
+                    - design_angular_velocity : float
+                        Rotation rate [rad/s]
+                    - design_freestream_velocity : float
+                        Freestream velocity [m/s]
+                    - design_Cl : float
+                        Design lift coefficient
+                    - design_altitude : float
+                        Design altitude [m]
+                    - design_thrust : float, optional
+                        Design thrust [N] (specify either thrust or power)
+                    - design_power : float, optional
+                        Design power [W] (specify either thrust or power)
             - airfoils : dict
                 Dictionary of airfoil objects
             - airfoil_polar_stations : list

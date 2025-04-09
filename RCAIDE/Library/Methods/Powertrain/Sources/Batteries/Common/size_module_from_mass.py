@@ -66,7 +66,7 @@ def size_module_from_mass(battery_module):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Battery_Modules.Common.compute_module_properties
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties
     """
     mass = battery_module.mass_properties.mass/battery_module.BMS_additional_weight_factor
     

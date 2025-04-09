@@ -43,42 +43,42 @@ def setup_operating_conditions(component, altitude=0, velocity_range=np.array([1
         State object containing:
             - conditions : Data
                 Flight conditions
-                - freestream : Data
-                    Freestream properties
-                    - altitude : numpy.ndarray
-                        Altitude [m]
-                    - mach_number : numpy.ndarray
-                        Mach number
-                    - pressure : numpy.ndarray
-                        Atmospheric pressure [Pa]
-                    - temperature : numpy.ndarray
-                        Atmospheric temperature [K]
-                    - density : numpy.ndarray
-                        Air density [kg/m³]
-                    - dynamic_viscosity : numpy.ndarray
-                        Air dynamic viscosity [kg/(m·s)]
-                    - gravity : numpy.ndarray
-                        Gravitational acceleration [m/s²]
-                    - isentropic_expansion_factor : numpy.ndarray
-                        Ratio of specific heats (gamma)
-                    - Cp : numpy.ndarray
-                        Specific heat at constant pressure [J/(kg·K)]
-                    - R : numpy.ndarray
-                        Gas constant [J/(kg·K)]
-                    - speed_of_sound : numpy.ndarray
-                        Speed of sound [m/s]
-                    - velocity : numpy.ndarray
-                        Freestream velocity [m/s]
-                - frames : Data
-                    Reference frames
-                    - body : Data
-                        Body-fixed frame
-                        - inertial_rotations : numpy.ndarray
-                            Rotation angles [rad]
-                    - inertial : Data
-                        Inertial frame
-                        - velocity_vector : numpy.ndarray
-                            Velocity vector [m/s]
+                    - freestream : Data
+                        Freestream properties
+                            - altitude : numpy.ndarray
+                                Altitude [m]
+                            - mach_number : numpy.ndarray
+                                Mach number
+                            - pressure : numpy.ndarray
+                                Atmospheric pressure [Pa]
+                            - temperature : numpy.ndarray
+                                Atmospheric temperature [K]
+                            - density : numpy.ndarray
+                                Air density [kg/m³]
+                            - dynamic_viscosity : numpy.ndarray
+                                Air dynamic viscosity [kg/(m·s)]
+                            - gravity : numpy.ndarray
+                                Gravitational acceleration [m/s²]
+                            - isentropic_expansion_factor : numpy.ndarray
+                                Ratio of specific heats (gamma)
+                            - Cp : numpy.ndarray
+                                Specific heat at constant pressure [J/(kg·K)]
+                            - R : numpy.ndarray
+                                Gas constant [J/(kg·K)]
+                            - speed_of_sound : numpy.ndarray
+                                Speed of sound [m/s]
+                            - velocity : numpy.ndarray
+                                Freestream velocity [m/s]
+                    - frames : Data
+                        Reference frames
+                            - body : Data
+                                Body-fixed frame
+                                    - inertial_rotations : numpy.ndarray
+                                        Rotation angles [rad]
+                            - inertial : Data
+                                Inertial frame
+                                    - velocity_vector : numpy.ndarray
+                                        Velocity vector [m/s]
     
     Notes
     -----

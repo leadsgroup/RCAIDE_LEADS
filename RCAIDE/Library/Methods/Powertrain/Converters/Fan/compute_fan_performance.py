@@ -31,20 +31,20 @@ def compute_fan_performance(fan, conditions):
         Flight conditions with:
             - energy : Data
                 Energy conditions
-                - converters : dict
-                    Converter energy conditions indexed by tag
-                    - inputs : Data
-                        Input conditions
-                        - stagnation_temperature : numpy.ndarray
-                            Stagnation temperature at fan inlet [K]
-                        - stagnation_pressure : numpy.ndarray
-                            Stagnation pressure at fan inlet [Pa]
-                        - static_pressure : numpy.ndarray
-                            Static pressure at fan inlet [Pa]
-                        - static_temperature : numpy.ndarray
-                            Static temperature at fan inlet [K]
-                        - mach_number : numpy.ndarray
-                            Mach number at fan inlet
+                    - converters : dict
+                        Converter energy conditions indexed by tag
+                        - inputs : Data
+                            Input conditions
+                            - stagnation_temperature : numpy.ndarray
+                                Stagnation temperature at fan inlet [K]
+                            - stagnation_pressure : numpy.ndarray
+                                Stagnation pressure at fan inlet [Pa]
+                            - static_pressure : numpy.ndarray
+                                Static pressure at fan inlet [Pa]
+                            - static_temperature : numpy.ndarray
+                                Static temperature at fan inlet [K]
+                            - mach_number : numpy.ndarray
+                                Mach number at fan inlet
     
     Returns
     -------
@@ -92,12 +92,12 @@ def compute_fan_performance(fan, conditions):
         \\frac{T_{t,out}}{T_{t,in}} = \\left(\\frac{P_{t,out}}{P_{t,in}}\\right)^{\\frac{\\gamma-1}{\\gamma \\eta_{p}}}
     
     where:
-      - T_{t,out} is the exit stagnation temperature
-      - T_{t,in} is the inlet stagnation temperature
-      - P_{t,out} is the exit stagnation pressure
-      - P_{t,in} is the inlet stagnation pressure
-      - γ is the ratio of specific heats
-      - η_{p} is the polytropic efficiency
+      - :math:`T_{t,out}` is the exit stagnation temperature
+      - :math:`T_{t,in}` is the inlet stagnation temperature
+      - :math:`P_{t,out}` is the exit stagnation pressure
+      - :math:`P_{t,in}` is the inlet stagnation pressure
+      - :math:`\\gamma` is the ratio of specific heats
+      - :math:`\\eta_{p}` is the polytropic efficiency
     
     References
     ----------

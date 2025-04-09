@@ -39,43 +39,42 @@ def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None):
                     Identifier for the ram
             - inlet_nozzle : Data
                 Inlet nozzle component
-                - tag : str
-                    Identifier for the inlet nozzle
+                    - tag : str
+                        Identifier for the inlet nozzle
             - compressor : Data
                 Compressor component
-                - tag : str
-                    Identifier for the compressor
+                    - tag : str
+                        Identifier for the compressor
             - combustor : Data
                 Combustor component
-                - tag : str
-                    Identifier for the combustor
+                    - tag : str
+                        Identifier for the combustor
             - high_pressure_turbine : Data
                 High pressure turbine component
-                - tag : str
-                    Identifier for the high pressure turbine
+                    - tag : str
+                        Identifier for the high pressure turbine
             - low_pressure_turbine : Data
                 Low pressure turbine component
-                - tag : str
-                    Identifier for the low pressure turbine
+                    - tag : str
+                        Identifier for the low pressure turbine
             - core_nozzle : Data
                 Core nozzle component
-                - tag : str
-                    Identifier for the core nozzle
+                    - tag : str
+                        Identifier for the core nozzle
     state : RCAIDE.Framework.Mission.Common.State
         State object containing:
             - conditions : Data
                 Flight conditions
-                - freestream : Data
-                    Freestream properties
-                    - density : numpy.ndarray
-                        Air density [kg/m³]
-                - noise : dict
-                    Noise conditions indexed by component tag
-                - energy : dict
-                    Energy conditions indexed by component tag
+                    - freestream : Data
+                        Freestream properties
+                            - density : numpy.ndarray
+                                Air density [kg/m³]
+                    - noise : dict
+                        Noise conditions indexed by component tag
+                    - energy : dict
+                        Energy conditions indexed by component tag
     center_of_gravity : list of lists, optional
-        Center of gravity coordinates [[x, y, z]] [m]
-        Default: [[0.0, 0.0, 0.0]]
+        Center of gravity coordinates [[x, y, z]] [m]. Default: [[0.0, 0.0, 0.0]]
     
     Returns
     -------
@@ -120,7 +119,6 @@ def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None):
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.compute_power
-    RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.reuse_stored_turboshaft_data
     """
     conditions                = state.conditions  
     ram                       = turboshaft.ram

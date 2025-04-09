@@ -40,7 +40,7 @@ def find_total_mass_gain(battery):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Battery_Modules.Aluminum_Air.compute_al_air_cell_performance
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance
     """
     mgain = battery.maximum_energy * battery.mass_gain_factor
     

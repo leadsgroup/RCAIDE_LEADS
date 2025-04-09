@@ -75,7 +75,7 @@ def compute_power_from_throttle(engine,conditions):
 
     See Also
     --------
-    RCAIDE.Library.Methods.Propulsors.Converters.Engine.compute_throttle_from_power
+    RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power
     """
 
     # Unpack

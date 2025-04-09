@@ -34,18 +34,18 @@ def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SL
                 Identifier for the propulsor
             - electronic_speed_controller : Data
                 ESC component
-                - bus_voltage : float
-                    Bus voltage [V]
+                    - bus_voltage : float
+                        Bus voltage [V]
             - rotor : Data
                 Rotor component (Propeller, Lift_Rotor, or Prop_Rotor)
             - motor : Data
                 Electric motor component
-                - design_torque : float
-                    Design torque [N·m]
-                - design_angular_velocity : float
-                    Design angular velocity [rad/s]
-                - design_current : float
-                    Design current [A]
+                    - design_torque : float
+                        Design torque [N·m]
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
+                    - design_current : float
+                        Design current [A]
     number_of_stations : int, optional
         Number of radial stations for rotor blade discretization
         Default: 20
@@ -84,11 +84,11 @@ def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SL
         5. Calculates the sea level static performance (thrust and power)
     
     The function handles different types of rotors:
-        - For propellers, it uses the design_propeller function and sets the motor design
+        * For propellers, it uses the design_propeller function and sets the motor design
           parameters based on cruise conditions
-        - For prop rotors, it uses the design_prop_rotor function and sets the motor design
+        * For prop rotors, it uses the design_prop_rotor function and sets the motor design
           parameters based on hover conditions
-        - For lift rotors, it uses the design_lift_rotor function and sets the motor design
+        * For lift rotors, it uses the design_lift_rotor function and sets the motor design
           parameters based on hover conditions
     
     **Major Assumptions**

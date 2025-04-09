@@ -71,7 +71,6 @@ def design_constant_speed_internal_combustion_engine(ICE_CS, number_of_stations=
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller
     RCAIDE.Library.Methods.Powertrain.setup_operating_conditions
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.compute_performance
     """
     
     # Step 1 Design the Propeller  

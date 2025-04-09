@@ -52,8 +52,8 @@ def compute_expansion_nozzle_performance(expansion_nozzle, conditions):
                     Freestream Mach number
             - energy : Data
                 Energy conditions
-                - converters : dict
-                    Converter energy conditions indexed by tag
+                    - converters : dict
+                        Converter energy conditions indexed by tag
     
     Returns
     -------

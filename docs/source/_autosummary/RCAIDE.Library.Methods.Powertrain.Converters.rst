@@ -38,11 +38,13 @@ Converters
    Expansion_Nozzle
    Fan
    Fuel_Cells
+   Generator
    Motor
-   Offtake_Shaft
    Ram
    Reformer
    Rotor
    Supersonic_Nozzle
    Turbine
+   Turboelectric_Generator
+   Turboshaft
 

@@ -29,26 +29,26 @@ def compute_thrust(turboprop, conditions):
                 Compressor component
             - combustor : Data
                 Combustor component
-                - turbine_inlet_temperature : float
-                    Combustor exit/turbine inlet temperature [K]
-                - fuel_data : Data
-                    Fuel properties
-                    - lower_heating_value : float
-                        Fuel lower heating value [J/kg]
+                    - turbine_inlet_temperature : float
+                        Combustor exit/turbine inlet temperature [K]
+                    - fuel_data : Data
+                        Fuel properties
+                            - lower_heating_value : float
+                                Fuel lower heating value [J/kg]
             - high_pressure_turbine : Data
                 High pressure turbine component
             - low_pressure_turbine : Data
                 Low pressure turbine component
-                - mechanical_efficiency : float
-                    Mechanical efficiency of the turbine
+                    - mechanical_efficiency : float
+                        Mechanical efficiency of the turbine
             - core_nozzle : Data
                 Core nozzle component
             - propeller_efficiency : float
                 Efficiency of the propeller
             - gearbox : Data
                 Gearbox component
-                - efficiency : float
-                    Gearbox efficiency
+                    - efficiency : float
+                        Gearbox efficiency
             - reference_temperature : float
                 Reference temperature for mass flow scaling [K]
             - reference_pressure : float
@@ -59,28 +59,28 @@ def compute_thrust(turboprop, conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - gravity : numpy.ndarray
-                    Gravitational acceleration [m/s²]
-                - temperature : numpy.ndarray
-                    Freestream temperature [K]
-                - pressure : numpy.ndarray
-                    Freestream pressure [Pa]
-                - mach_number : numpy.ndarray
-                    Freestream Mach number
-                - speed_of_sound : numpy.ndarray
-                    Speed of sound [m/s]
+                    - gravity : numpy.ndarray
+                        Gravitational acceleration [m/s²]
+                    - temperature : numpy.ndarray
+                        Freestream temperature [K]
+                    - pressure : numpy.ndarray
+                        Freestream pressure [Pa]
+                    - mach_number : numpy.ndarray
+                        Freestream Mach number
+                    - speed_of_sound : numpy.ndarray
+                        Speed of sound [m/s]
             - energy : Data
                 Energy conditions
-                - propulsors[turboprop.tag] : Data
-                    Turboprop-specific conditions
-                    - throttle : numpy.ndarray
-                        Throttle setting [0-1]
-                    - total_temperature_reference : numpy.ndarray
-                        Reference total temperature [K]
-                    - total_pressure_reference : numpy.ndarray
-                        Reference total pressure [Pa]
-                - converters : dict
-                    Converter energy conditions indexed by tag
+                    - propulsors[turboprop.tag] : Data
+                        Turboprop-specific conditions
+                            - throttle : numpy.ndarray
+                                Throttle setting [0-1]
+                            - total_temperature_reference : numpy.ndarray
+                                Reference total temperature [K]
+                            - total_pressure_reference : numpy.ndarray
+                                Reference total pressure [Pa]
+                    - converters : dict
+                        Converter energy conditions indexed by tag
     
     Returns
     -------
@@ -129,10 +129,10 @@ def compute_thrust(turboprop, conditions):
         F_{sp} = \\frac{W_{total} \\cdot c_p \\cdot T_0}{V_0}
     
     where:
-        - W_total is the total work output coefficient
-        - c_p is the specific heat at constant pressure
-        - T_0 is the freestream temperature
-        - V_0 is the freestream velocity
+        * :math:`W_{total}` is the total work output coefficient
+        * :math:`c_p` is the specific heat at constant pressure
+        * :math:`T_0` is the freestream temperature
+        * :math:`V_0` is the freestream velocity
     
     References
     ----------

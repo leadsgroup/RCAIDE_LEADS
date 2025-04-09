@@ -32,10 +32,10 @@ def Actuator_Disk_performance(rotor, conditions):
                 Hub radius of the rotor [m]
             - cruise : Data
                 Cruise conditions
-                - design_efficiency : float
-                    Design efficiency at cruise
-                - design_torque_coefficient : float
-                    Design torque coefficient at cruise
+                    - design_efficiency : float
+                        Design efficiency at cruise
+                    - design_torque_coefficient : float
+                        Design torque coefficient at cruise
             - body_to_prop_vel : function
                 Function to transform velocity from body to propeller frame
             - orientation_euler_angles : list
@@ -44,30 +44,30 @@ def Actuator_Disk_performance(rotor, conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - density : numpy.ndarray
-                    Air density [kg/m³]
-                - speed_of_sound : numpy.ndarray
-                    Speed of sound [m/s]
+                    - density : numpy.ndarray
+                        Air density [kg/m³]
+                    - speed_of_sound : numpy.ndarray
+                        Speed of sound [m/s]
             - frames : Data
                 Reference frames
                 - body : Data
                     Body frame
-                    - transform_to_inertial : numpy.ndarray
-                        Rotation matrix from body to inertial frame
+                        - transform_to_inertial : numpy.ndarray
+                            Rotation matrix from body to inertial frame
                 - inertial : Data
                     Inertial frame
-                    - velocity_vector : numpy.ndarray
-                        Velocity vector in inertial frame [m/s]
+                        - velocity_vector : numpy.ndarray
+                            Velocity vector in inertial frame [m/s]
             - energy : Data
                 Energy conditions
-                - converters : dict
-                    Converter energy conditions indexed by tag
-                    - commanded_thrust_vector_angle : numpy.ndarray
-                        Commanded thrust vector angle [rad]
-                    - blade_pitch_command : numpy.ndarray
-                        Blade pitch command [rad]
-                    - omega : numpy.ndarray
-                        Angular velocity [rad/s]
+                    - converters : dict
+                        Converter energy conditions indexed by tag
+                        - commanded_thrust_vector_angle : numpy.ndarray
+                            Commanded thrust vector angle [rad]
+                        - blade_pitch_command : numpy.ndarray
+                            Blade pitch command [rad]
+                        - omega : numpy.ndarray
+                            Angular velocity [rad/s]
     
     Returns
     -------
@@ -145,11 +145,11 @@ def Actuator_Disk_performance(rotor, conditions):
     through momentum and energy conservation principles.
     
     Key relationships include:
-        - Thrust: T = η·P/V
-        - Torque coefficient: Cq = Q/(ρ·n²·D⁵)
-        - Thrust coefficient: Ct = T/(ρ·n²·D⁴)
-        - Power coefficient: Cp = P/(ρ·n³·D⁵)
-        - Figure of Merit: FM = T·√(T/(2·ρ·A))/P
+        - Thrust: :math:`T = \\eta\\cdot P/V`
+        - Torque coefficient: :math:`Cq = Q/(ρ·n²·D⁵)`
+        - Thrust coefficient: :math:`Ct = T/(ρ·n²·D⁴)`
+        - Power coefficient: :math:`Cp = P/(ρ·n³·D⁵)`
+        - Figure of Merit: :math:`FM = T·√(T/(2·ρ·A))/P`
     
     where:
         - T is thrust
@@ -164,7 +164,7 @@ def Actuator_Disk_performance(rotor, conditions):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.BEMT.compute_rotor_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake
     """
     rho                   = conditions.freestream.density     
     commanded_TV          = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle   

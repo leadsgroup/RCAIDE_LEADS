@@ -27,8 +27,8 @@ def append_turboprop_conditions(propulsor, segment, energy_conditions, noise_con
         Mission segment with the following attributes:
             - state : Data
                 Segment state
-                - ones_row : function
-                    Function to create array of ones with specified length
+                    - ones_row : function
+                        Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where turboprop conditions will be stored
     noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
@@ -48,11 +48,11 @@ def append_turboprop_conditions(propulsor, segment, energy_conditions, noise_con
     method for each subcomponent of the turboprop.
     
     The function initializes the following parameters:
-        - throttle
-        - commanded_thrust_vector_angle
-        - power
-        - fuel_flow_rate
-        - inputs and outputs containers
+        * throttle
+        * commanded_thrust_vector_angle
+        * power
+        * fuel_flow_rate
+        * inputs and outputs containers
     
     It also creates a core_nozzle container in the noise conditions.
     

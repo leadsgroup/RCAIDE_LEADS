@@ -15,7 +15,7 @@ See Also
 --------
 RCAIDE.Library.Methods.Powertrain.Converters.Turbine
 RCAIDE.Library.Methods.Powertrain.Converters.Compressor
-RCAIDE.Library.Methods.Powertrain.Converters.Nozzle
+RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle
 """ 
 
 # ----------------------------------------------------------------------------------------------------------------------

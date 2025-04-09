@@ -34,6 +34,7 @@ Converters
    Compression_Nozzle
    Compressor
    Converter
+   DC_Generator
    DC_Motor
    Ducted_Fan
    Engine
@@ -42,6 +43,7 @@ Converters
    Generic_Fuel_Cell_Stack
    Lift_Rotor
    Offtake_Shaft
+   PMSM_Generator
    PMSM_Motor
    Prop_Rotor
    Propeller
@@ -49,7 +51,8 @@ Converters
    Ram
    Reformer
    Rotor
-   Solar_Panel
    Supersonic_Nozzle
    Turbine
+   Turboelectric_Generator
+   Turboshaft
 

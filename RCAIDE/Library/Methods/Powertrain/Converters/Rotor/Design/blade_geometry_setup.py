@@ -34,24 +34,24 @@ def blade_geometry_setup(rotor, number_of_stations):
                 Hub radius of the rotor [m]
             - hover : Data
                 Hover conditions
-                - design_thrust : float, optional
-                    Design thrust at hover [N]
-                - design_power : float, optional
-                    Design power at hover [W]
-                - design_freestream_velocity : float
-                    Freestream velocity at hover [m/s]
-                - design_altitude : float
-                    Altitude at hover [m]
+                    - design_thrust : float, optional
+                        Design thrust at hover [N]
+                    - design_power : float, optional
+                        Design power at hover [W]
+                    - design_freestream_velocity : float
+                        Freestream velocity at hover [m/s]
+                    - design_altitude : float
+                        Altitude at hover [m]
             - oei : Data
                 One engine inoperative conditions
-                - design_freestream_velocity : float, optional
-                    Freestream velocity at OEI [m/s]
-                - design_altitude : float, optional
-                    Altitude at OEI [m]
-                - design_thrust : float, optional
-                    Design thrust at OEI [N]
-                - design_power : float, optional
-                    Design power at OEI [W]
+                    - design_freestream_velocity : float, optional
+                        Freestream velocity at OEI [m/s]
+                    - design_altitude : float, optional
+                        Altitude at OEI [m]
+                    - design_thrust : float, optional
+                        Design thrust at OEI [N]
+                    - design_power : float, optional
+                        Design power at OEI [W]
             - airfoils : dict
                 Dictionary of airfoil objects
             - airfoil_polar_stations : list

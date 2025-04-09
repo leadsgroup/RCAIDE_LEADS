@@ -38,42 +38,42 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
                 Working fluid properties object
             - ram : Data
                 Ram component
-                - tag : str
-                    Identifier for the ram
+                    - tag : str
+                        Identifier for the ram
             - inlet_nozzle : Data
                 Inlet nozzle component
-                - tag : str
-                    Identifier for the inlet nozzle
+                    - tag : str
+                        Identifier for the inlet nozzle
             - compressor : Data
                 Compressor component
-                - tag : str
-                    Identifier for the compressor
-                - motor : Data, optional
-                    Electric motor component
-                - generator : Data, optional
-                    Electric generator component
-                - design_angular_velocity : float
-                    Design angular velocity [rad/s]
+                    - tag : str
+                        Identifier for the compressor
+                    - motor : Data, optional
+                        Electric motor component
+                    - generator : Data, optional
+                        Electric generator component
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
             - combustor : Data
                 Combustor component
-                - tag : str
-                    Identifier for the combustor
-                - fuel_data : Data
-                    Fuel properties
-                    - specific_energy : float
-                        Fuel specific energy [J/kg]
+                    - tag : str
+                        Identifier for the combustor
+                    - fuel_data : Data
+                        Fuel properties
+                        - specific_energy : float
+                            Fuel specific energy [J/kg]
             - high_pressure_turbine : Data
                 High pressure turbine component
-                - tag : str
-                    Identifier for the high pressure turbine
+                    - tag : str
+                        Identifier for the high pressure turbine
             - low_pressure_turbine : Data
                 Low pressure turbine component
-                - tag : str
-                    Identifier for the low pressure turbine
+                    - tag : str
+                        Identifier for the low pressure turbine
             - core_nozzle : Data
                 Core nozzle component
-                - tag : str
-                    Identifier for the core nozzle
+                    - tag : str
+                        Identifier for the core nozzle
             - reference_temperature : float
                 Reference temperature for mass flow scaling [K]
             - reference_pressure : float
@@ -86,32 +86,32 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
         State object containing:
             - conditions : Data
                 Flight conditions
-                - freestream : Data
-                    Freestream properties
-                    - velocity : numpy.ndarray
-                        Freestream velocity [m/s]
-                    - temperature : numpy.ndarray
-                        Freestream temperature [K]
-                    - pressure : numpy.ndarray
-                        Freestream pressure [Pa]
-                - noise : Data
-                    Noise conditions
-                    - propulsors : dict
-                        Propulsor noise conditions indexed by tag
-                - energy : Data
-                    Energy conditions
-                    - propulsors : dict
-                        Propulsor energy conditions indexed by tag
-                    - converters : dict
-                        Converter energy conditions indexed by tag
-                    - hybrid_power_split_ratio : float
-                        Ratio of power split for hybrid systems
+                    - freestream : Data
+                        Freestream properties
+                            - velocity : numpy.ndarray
+                                Freestream velocity [m/s]
+                            - temperature : numpy.ndarray
+                                Freestream temperature [K]
+                            - pressure : numpy.ndarray
+                                Freestream pressure [Pa]
+                    - noise : Data
+                        Noise conditions
+                            - propulsors : dict
+                                Propulsor noise conditions indexed by tag
+                    - energy : Data
+                        Energy conditions
+                            - propulsors : dict
+                                Propulsor energy conditions indexed by tag
+                            - converters : dict
+                                Converter energy conditions indexed by tag
+                            - hybrid_power_split_ratio : float
+                                Ratio of power split for hybrid systems
             - numerics : Data
                 Numerical properties
-                - time : Data
-                    Time properties
-                    - differentiate : list
-                        List of differentiation methods
+                    - time : Data
+                        Time properties
+                            - differentiate : list
+                                List of differentiation methods
     center_of_gravity : list of lists, optional
         Center of gravity coordinates [[x, y, z]] [m]
         Default: [[0.0, 0.0, 0.0]]
@@ -163,7 +163,6 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_thrust
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.reuse_stored_turboprop_data
     """ 
     conditions               = state.conditions 
     noise_conditions         = conditions.noise.propulsors[turboprop.tag]  

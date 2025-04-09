@@ -40,30 +40,30 @@ def compute_rotor_performance(rotor, conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - density : array_like
-                    Air density [kg/m³]
-                - dynamic_viscosity : array_like
-                    Dynamic viscosity [kg/(m·s)]
-                - speed_of_sound : array_like
-                    Speed of sound [m/s]
-                - temperature : array_like
-                    Temperature [K]
+                    - density : array_like
+                        Air density [kg/m³]
+                    - dynamic_viscosity : array_like
+                        Dynamic viscosity [kg/(m·s)]
+                    - speed_of_sound : array_like
+                        Speed of sound [m/s]
+                    - temperature : array_like
+                        Temperature [K]
             - frames : Data
                 Reference frames
-                - body : Data
-                    Body frame
-                    - transform_to_inertial : array_like
-                        Rotation matrix from body to inertial frame
-                - inertial : Data
-                    Inertial frame
-                    - velocity_vector : array_like
-                        Velocity vector in inertial frame [m/s]
+                    - body : Data
+                        Body frame
+                            - transform_to_inertial : array_like
+                                Rotation matrix from body to inertial frame
+                    - inertial : Data
+                        Inertial frame
+                            - velocity_vector : array_like
+                                Velocity vector in inertial frame [m/s]
             - energy : Data
                 Energy conditions
-                - converters : dict
-                    Converter energy conditions indexed by tag
-                    - throttle : array_like
-                        Throttle setting [0-1]
+                    - converters : dict
+                        Converter energy conditions indexed by tag
+                            - throttle : array_like
+                                Throttle setting [0-1]
     
     Returns
     -------
@@ -76,10 +76,8 @@ def compute_rotor_performance(rotor, conditions):
     -----
     This function serves as a dispatcher that calls the appropriate rotor analysis method
     based on the specified fidelity level. It supports two fidelity levels:
-    
         1. Actuator_Disk_Theory: A simplified model that treats the rotor as an actuator
            disk, suitable for preliminary design and analysis.
-        
         2. Blade_Element_Momentum_Theory_Helmholtz_Wake: A higher-fidelity model that
            combines blade element theory with a Helmholtz wake model, providing more
            accurate predictions of rotor performance.
@@ -95,7 +93,6 @@ def compute_rotor_performance(rotor, conditions):
     References
     ----------
     [1] Drela, M. "Qprop Formulation", MIT AeroAstro, June 2006 http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
-    
     [2] Leishman, Gordon J. Principles of helicopter aerodynamics Cambridge university press, 2006.
     
     See Also

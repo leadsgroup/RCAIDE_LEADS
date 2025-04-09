@@ -34,5 +34,4 @@ Systems
    append_payload_conditions
    compute_avionics_power_draw
    compute_payload_power_draw
-   setup_operating_conditions
 

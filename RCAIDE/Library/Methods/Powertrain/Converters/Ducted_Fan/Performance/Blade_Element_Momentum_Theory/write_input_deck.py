@@ -85,9 +85,9 @@ def write_input_deck(dfdc_object):
         
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.purge_files
-    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.write_geometry
-    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.run_dfdc_analysis
+    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Blade_Element_Momentum_Theory.purge_files
+    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Blade_Element_Momentum_Theory.write_geometry
+    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Blade_Element_Momentum_Theory.run_dfdc_analysis
     """
     # unpack 
     deck_filename = dfdc_object.current_status.deck_file 

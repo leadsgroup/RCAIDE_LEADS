@@ -47,8 +47,8 @@ def size_module_from_energy_and_power(battery, energy, power):
     -----
     This function determines the battery mass needed to meet both energy and power
     requirements. It calculates two potential masses:
-      1. Energy-limited mass: The mass required to meet the energy requirement
-      2. Power-limited mass: The mass required to meet the power requirement
+        1. Energy-limited mass: The mass required to meet the energy requirement
+        2. Power-limited mass: The mass required to meet the power requirement
       
     The function then selects the larger of these two masses to ensure that both
     requirements are satisfied. The maximum energy and power capabilities are then
@@ -61,7 +61,7 @@ def size_module_from_energy_and_power(battery, energy, power):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Battery_Modules.Common.size_module_from_mass
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass
     """
     
     energy_mass = energy/battery.cell.specific_energy

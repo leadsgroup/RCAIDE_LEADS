@@ -52,7 +52,7 @@ def find_specific_power(battery, specific_energy):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Battery_Modules.Common.find_specific_energy
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_energy
     """
     
     const_1                 = battery.cell.ragone.const_1

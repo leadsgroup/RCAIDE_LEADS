@@ -49,7 +49,6 @@ def append_bus_conditions(bus,segment):
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
-    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_segment_conditions
     """
     ones_row                                                                     = segment.state.ones_row
                

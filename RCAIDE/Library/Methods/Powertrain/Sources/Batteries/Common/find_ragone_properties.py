@@ -40,8 +40,7 @@ def find_ragone_properties(specific_energy, battery, energy, power):
     determined from a Ragone curve.
     
     The function performs the following steps:
-      1. Calculates the specific power corresponding to the given specific energy using
-        the Ragone curve correlation
+      1. Calculates the specific power corresponding to the given specific energy using the Ragone curve correlation
       2. Sizes the battery module based on the energy and power requirements
     
     The Ragone curve describes the trade-off between specific energy and specific power
@@ -54,8 +53,8 @@ def find_ragone_properties(specific_energy, battery, energy, power):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Battery_Modules.Common.find_specific_power
-    RCAIDE.Library.Methods.Powertrain.Sources.Battery_Modules.Common.size_module_from_energy_and_power
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_energy_and_power
     """
     
     find_specific_power(battery, specific_energy)

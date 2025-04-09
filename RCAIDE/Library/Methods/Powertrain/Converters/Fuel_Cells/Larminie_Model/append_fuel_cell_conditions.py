@@ -43,9 +43,6 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
  
     References
     ---------- 
-
-    Assumptions
-    ----------- 
     """      
     
     ones_row = segment.state.ones_row  

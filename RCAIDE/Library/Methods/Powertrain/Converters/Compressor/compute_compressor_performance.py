@@ -32,16 +32,16 @@ def compute_compressor_performance(compressor, conditions):
         Flight conditions with:
             - energy.converters[compressor.tag].inputs : Data
                 Input conditions
-                - stagnation_temperature : numpy.ndarray
-                    Inlet stagnation temperature [K]
-                - stagnation_pressure : numpy.ndarray
-                    Inlet stagnation pressure [Pa]
-                - static_temperature : numpy.ndarray
-                    Inlet static temperature [K]
-                - static_pressure : numpy.ndarray
-                    Inlet static pressure [Pa]
-                - mach_number : numpy.ndarray
-                    Inlet Mach number
+                    - stagnation_temperature : numpy.ndarray
+                        Inlet stagnation temperature [K]
+                    - stagnation_pressure : numpy.ndarray
+                        Inlet stagnation pressure [Pa]
+                    - static_temperature : numpy.ndarray
+                        Inlet static temperature [K]
+                    - static_pressure : numpy.ndarray
+                        Inlet static pressure [Pa]
+                    - mach_number : numpy.ndarray
+                        Inlet Mach number
             - energy.hybrid_power_split_ratio : float
                 Ratio of power split for hybrid systems
 
@@ -101,7 +101,7 @@ def compute_compressor_performance(compressor, conditions):
 
     See Also
     --------
-    RCAIDE.Library.Methods.Propulsors.Converters.Compressor.append_compressor_conditions
+    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions
     """          
     
     # Unpack component inputs

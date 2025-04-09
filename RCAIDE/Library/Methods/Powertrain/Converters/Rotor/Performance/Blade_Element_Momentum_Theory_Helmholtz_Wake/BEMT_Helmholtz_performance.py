@@ -58,43 +58,42 @@ def BEMT_Helmholtz_performance(rotor, conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - density : array_like
-                    Air density [kg/m³]
-                - dynamic_viscosity : array_like
-                    Dynamic viscosity [kg/(m·s)]
-                - speed_of_sound : array_like
-                    Speed of sound [m/s]
-                - temperature : array_like
-                    Temperature [K]
+                    - density : array_like
+                        Air density [kg/m³]
+                    - dynamic_viscosity : array_like
+                        Dynamic viscosity [kg/(m·s)]
+                    - speed_of_sound : array_like
+                        Speed of sound [m/s]
+                    - temperature : array_like
+                        Temperature [K]
             - frames : Data
                 Reference frames
-                - body : Data
-                    Body frame
-                    - transform_to_inertial : array_like
-                        Rotation matrix from body to inertial frame
-                - inertial : Data
-                    Inertial frame
-                    - velocity_vector : array_like
-                        Velocity vector in inertial frame [m/s]
+                    - body : Data
+                        Body frame
+                        - transform_to_inertial : array_like
+                            Rotation matrix from body to inertial frame
+                    - inertial : Data
+                        Inertial frame
+                        - velocity_vector : array_like
+                            Velocity vector in inertial frame [m/s]
             - energy : Data
                 Energy conditions
-                - converters : dict
-                    Converter energy conditions indexed by tag
-                    - commanded_thrust_vector_angle : array_like
-                        Commanded thrust vector angle [rad]
-                    - blade_pitch_command : array_like
-                        Blade pitch command [rad]
-                    - omega : array_like
-                        Angular velocity [rad/s]
-                    - throttle : array_like
-                        Throttle setting [0-1]
-                    - design_flag : bool
-                        Flag indicating design condition
+                    - converters : dict
+                        Converter energy conditions indexed by tag
+                        - commanded_thrust_vector_angle : array_like
+                            Commanded thrust vector angle [rad]
+                        - blade_pitch_command : array_like
+                            Blade pitch command [rad]
+                        - omega : array_like
+                            Angular velocity [rad/s]
+                        - throttle : array_like
+                            Throttle setting [0-1]
+                        - design_flag : bool
+                            Flag indicating design condition
     
     Returns
     -------
     None
-        Results are stored in conditions.energy.converters[rotor.tag] 
 
     Notes
     -----
@@ -128,9 +127,9 @@ def BEMT_Helmholtz_performance(rotor, conditions):
     are computed by applying the Biot-Savart law to these vortex filaments.
     
     The blade forces are calculated using:
-        - Lift: L = 0.5·ρ·W²·c·Cl
-        - Drag: D = 0.5·ρ·W²·c·Cd
-        - Circulation: Γ = 0.5·W·c·Cl
+        - Lift: :math:`L = 0.5\\cdot\\rho\\cdot W^2\\cdot c\\cdot Cl`
+        - Drag: :math:`D = 0.5\\cdot\\rho\\cdot W^2\\cdot c\\cdot Cd`
+        - Circulation: :math:`\\Gamma = 0.5\\cdot W\\cdot c\\cdot Cl`
     
     where:
         - ρ is density
@@ -151,8 +150,6 @@ def BEMT_Helmholtz_performance(rotor, conditions):
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model
-    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_airfoil_aerodynamics
-    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_inflow_and_tip_loss
     """
     commanded_TV          = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
     pitch_c               = conditions.energy.converters[rotor.tag].blade_pitch_command

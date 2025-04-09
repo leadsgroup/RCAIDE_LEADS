@@ -37,58 +37,58 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
                 Working fluid properties object
             - ram : Data
                 Ram component
-                - tag : str
-                    Identifier for the ram
+                    - tag : str
+                        Identifier for the ram
             - inlet_nozzle : Data
                 Inlet nozzle component
-                - tag : str
-                    Identifier for the inlet nozzle
+                    - tag : str
+                        Identifier for the inlet nozzle
             - fan : Data
                 Fan component
-                - tag : str
-                    Identifier for the fan
-                - design_angular_velocity : float
-                    Design angular velocity [rad/s]
+                    - tag : str
+                        Identifier for the fan
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
             - low_pressure_compressor : Data
                 Low pressure compressor component
-                - tag : str
-                    Identifier for the low pressure compressor
-                - motor : Data, optional
-                    Electric motor component
-                - generator : Data, optional
-                    Electric generator component
-                - design_angular_velocity : float
-                    Design angular velocity [rad/s]
+                    - tag : str
+                        Identifier for the low pressure compressor
+                    - motor : Data, optional
+                        Electric motor component
+                    - generator : Data, optional
+                        Electric generator component
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
             - high_pressure_compressor : Data
                 High pressure compressor component
-                - tag : str
-                    Identifier for the high pressure compressor
-                - design_angular_velocity : float
-                    Design angular velocity [rad/s]
+                    - tag : str
+                        Identifier for the high pressure compressor
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
             - combustor : Data
                 Combustor component
-                - tag : str
-                    Identifier for the combustor
-                - fuel_data : Data
-                    Fuel properties
-                    - specific_energy : float
-                        Fuel specific energy [J/kg]
+                    - tag : str
+                        Identifier for the combustor
+                    - fuel_data : Data
+                        Fuel properties
+                        - specific_energy : float
+                            Fuel specific energy [J/kg]
             - high_pressure_turbine : Data
                 High pressure turbine component
-                - tag : str
-                    Identifier for the high pressure turbine
+                    - tag : str
+                        Identifier for the high pressure turbine
             - low_pressure_turbine : Data
                 Low pressure turbine component
-                - tag : str
-                    Identifier for the low pressure turbine
+                    - tag : str
+                        Identifier for the low pressure turbine
             - core_nozzle : Data
                 Core nozzle component
-                - tag : str
-                    Identifier for the core nozzle
+                    - tag : str
+                        Identifier for the core nozzle
             - fan_nozzle : Data
                 Fan nozzle component
-                - tag : str
-                    Identifier for the fan nozzle
+                    - tag : str
+                        Identifier for the fan nozzle
             - bypass_ratio : float
                 Bypass ratio of the turbofan
             - reference_temperature : float
@@ -103,32 +103,32 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
         State object containing:
             - conditions : Data
                 Flight conditions
-                - freestream : Data
-                    Freestream properties
-                    - velocity : numpy.ndarray
-                        Freestream velocity [m/s]
-                    - temperature : numpy.ndarray
-                        Freestream temperature [K]
-                    - pressure : numpy.ndarray
-                        Freestream pressure [Pa]
+                    - freestream : Data
+                        Freestream properties
+                        - velocity : numpy.ndarray
+                            Freestream velocity [m/s]
+                        - temperature : numpy.ndarray
+                            Freestream temperature [K]
+                        - pressure : numpy.ndarray
+                            Freestream pressure [Pa]
                 - noise : Data
                     Noise conditions
-                    - propulsors : dict
-                        Propulsor noise conditions indexed by tag
+                        - propulsors : dict
+                            Propulsor noise conditions indexed by tag
                 - energy : Data
                     Energy conditions
-                    - propulsors : dict
-                        Propulsor energy conditions indexed by tag
-                    - converters : dict
-                        Converter energy conditions indexed by tag
-                    - hybrid_power_split_ratio : float
-                        Ratio of power split for hybrid systems
+                        - propulsors : dict
+                            Propulsor energy conditions indexed by tag
+                        - converters : dict
+                            Converter energy conditions indexed by tag
+                        - hybrid_power_split_ratio : float
+                            Ratio of power split for hybrid systems
             - numerics : Data
                 Numerical properties
-                - time : Data
-                    Time properties
-                    - differentiate : list
-                        List of differentiation methods
+                    - time : Data
+                        Time properties
+                        - differentiate : list
+                            List of differentiation methods
             - ones_row : function
                 Function to create array of ones with specified length
     center_of_gravity : list of lists, optional
@@ -185,8 +185,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thrust
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.reuse_stored_turbofan_data
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """ 
     conditions                = state.conditions   
     noise_conditions          = conditions.noise.propulsors[turbofan.tag] 

@@ -80,8 +80,8 @@ def compute_throttle_from_power(engine,conditions):
 
     See Also
     --------
-    RCAIDE.Library.Methods.Propulsors.Converters.Engine.compute_power_from_throttle
-    RCAIDE.Library.Attributes.Atmospheric.Earth.US_Standard_1976
+    RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_power_from_throttle
+    RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976
     """
 
     # Unpack atmospheric conditions 

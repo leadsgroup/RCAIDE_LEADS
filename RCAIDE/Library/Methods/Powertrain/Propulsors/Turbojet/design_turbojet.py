@@ -107,8 +107,8 @@ def design_turbojet(turbojet):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor.compute_turbojet_performance
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor.size_core
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_turbojet_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.size_core
     RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_static_sea_level_performance
     """
     #check if mach number and temperature are passed

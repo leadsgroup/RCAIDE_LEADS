@@ -58,9 +58,6 @@ def append_electric_rotor_conditions(propulsor, segment, energy_conditions, nois
     
     It also creates a noise conditions container for the electric rotor.
     
-    **Major Assumptions**
-        * All arrays are initialized with zeros
-    
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.compute_electric_rotor_performance

@@ -28,8 +28,8 @@ def append_constant_speed_internal_combustion_engine_conditions(propulsor, segme
         Mission segment with the following attributes:
             - state : Data
                 Segment state
-                - ones_row : function
-                    Function to create array of ones with specified length
+                    - ones_row : function
+                        Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where engine conditions will be stored
     noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
@@ -61,8 +61,7 @@ def append_constant_speed_internal_combustion_engine_conditions(propulsor, segme
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.compute_power
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.compute_thrust
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.compute_constant_speed_internal_combustion_engine_performance
     """
     # unpack 
     ones_row          = segment.state.ones_row 

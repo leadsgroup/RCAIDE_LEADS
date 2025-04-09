@@ -8,7 +8,7 @@ performance computation, state management, and solver integration for electric m
 See Also
 --------
 RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor
-RCAIDE.Library.Methods.Powertrain.Propulsors.ICE_Propulsor
+RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

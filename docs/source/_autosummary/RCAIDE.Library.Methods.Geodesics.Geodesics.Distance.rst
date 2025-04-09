@@ -1,4 +1,4 @@
-﻿RCAIDE.Library.Methods.Geodesics.Geodesics.distance
+RCAIDE.Library.Methods.Geodesics.Geodesics.distance
 ===================================================
 
 .. currentmodule:: RCAIDE.Library.Methods.Geodesics.Geodesics

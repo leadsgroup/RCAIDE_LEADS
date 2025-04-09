@@ -30,36 +30,36 @@ def compute_electric_ducted_fan_performance(propulsor, state, center_of_gravity=
                 Identifier for the propulsor
             - motor : Data
                 Electric motor component
-                - tag : str
-                    Identifier for the motor
+                    - tag : str
+                        Identifier for the motor
             - ducted_fan : Data
                 Ducted fan component
-                - tag : str
-                    Identifier for the ducted fan
-                - origin : list of lists
-                    Origin coordinates [[x, y, z]] [m]
-                - tip_radius : float
-                    Tip radius of the ducted fan [m]
+                    - tag : str
+                        Identifier for the ducted fan
+                    - origin : list of lists
+                        Origin coordinates [[x, y, z]] [m]
+                    - tip_radius : float
+                        Tip radius of the ducted fan [m]
             - electronic_speed_controller : Data
                 ESC component
-                - tag : str
-                    Identifier for the ESC
+                    - tag : str
+                        Identifier for the ESC
     state : RCAIDE.Framework.Mission.Common.State
         State object containing:
             - conditions : Data
                 Flight conditions
-                - freestream : Data
-                    Freestream properties
-                    - speed_of_sound : numpy.ndarray
-                        Speed of sound [m/s]
-                - energy : Data
-                    Energy conditions
-                    - propulsors : dict
-                        Propulsor energy conditions indexed by tag
-                    - converters : dict
-                        Converter energy conditions indexed by tag
-                    - modulators : dict
-                        Modulator energy conditions indexed by tag
+                    - freestream : Data
+                        Freestream properties
+                            - speed_of_sound : numpy.ndarray
+                                Speed of sound [m/s]
+                    - energy : Data
+                        Energy conditions
+                            - propulsors : dict
+                                Propulsor energy conditions indexed by tag
+                            - converters : dict
+                                Converter energy conditions indexed by tag
+                            - modulators : dict
+                                Modulator energy conditions indexed by tag
             - ones_row : function
                 Function to create array of ones with specified length
     center_of_gravity : list of lists, optional
@@ -105,11 +105,9 @@ def compute_electric_ducted_fan_performance(propulsor, state, center_of_gravity=
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_voltage_out_from_throttle
     RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance
     RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance
-    RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_current_in_from_throttle
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.reuse_stored_electric_ducted_fan_data
+    RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller
     """
     conditions                 = state.conditions     
     EDF_conditions             = conditions.energy.propulsors[propulsor.tag] 

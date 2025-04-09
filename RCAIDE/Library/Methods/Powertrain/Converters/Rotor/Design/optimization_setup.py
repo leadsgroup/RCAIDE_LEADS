@@ -40,12 +40,12 @@ def optimization_setup(rotor, number_of_stations, print_iterations):
         RCAIDE's optimization framework object with the following attributes:
             - optimization_problem : Data
                 Optimization problem definition
-                - inputs : numpy.ndarray
-                    Design variables
-                - objective : numpy.ndarray
-                    Objective function
-                - constraints : numpy.ndarray
-                    Constraints
+                    - inputs : numpy.ndarray
+                        Design variables
+                    - objective : numpy.ndarray
+                        Objective function
+                    - constraints : numpy.ndarray
+                        Constraints
             - vehicle_configurations : list
                 List of vehicle configurations for analysis
             - procedure : Data

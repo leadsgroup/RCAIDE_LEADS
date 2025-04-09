@@ -34,16 +34,16 @@ def size_core(turboprop, conditions):
         Flight conditions with:
             - energy.propulsors[turboprop.tag] : Data
                 Turboprop-specific conditions
-                - total_temperature_reference : numpy.ndarray
-                    Reference total temperature [K]
-                - total_pressure_reference : numpy.ndarray
-                    Reference total pressure [Pa]
-                - throttle : float
-                    Throttle setting [0-1]
-                - thrust_specific_fuel_consumption : numpy.ndarray
-                    Thrust specific fuel consumption [kg/(N·s)]
-                - non_dimensional_thrust : numpy.ndarray
-                    Non-dimensional thrust
+                    - total_temperature_reference : numpy.ndarray
+                        Reference total temperature [K]
+                    - total_pressure_reference : numpy.ndarray
+                        Reference total pressure [Pa]
+                    - throttle : float
+                        Throttle setting [0-1]
+                    - thrust_specific_fuel_consumption : numpy.ndarray
+                        Thrust specific fuel consumption [kg/(N·s)]
+                    - non_dimensional_thrust : numpy.ndarray
+                        Non-dimensional thrust
     
     Returns
     -------

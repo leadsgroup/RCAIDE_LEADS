@@ -28,8 +28,8 @@ def append_turbojet_conditions(propulsor, segment, energy_conditions, noise_cond
         Mission segment with the following attributes:
             - state : Data
                 Segment state
-                - ones_row : function
-                    Function to create array of ones with specified length
+                    - ones_row : function
+                        Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where turbojet conditions will be stored
     noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
@@ -38,8 +38,6 @@ def append_turbojet_conditions(propulsor, segment, energy_conditions, noise_cond
     Returns
     -------
     None
-        Results are stored in energy_conditions.propulsors[propulsor.tag] and
-        noise_conditions.propulsors[propulsor.tag]
     
     Notes
     -----
@@ -60,7 +58,7 @@ def append_turbojet_conditions(propulsor, segment, energy_conditions, noise_cond
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_turbojet_performance
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_thrust
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_thurst
     """
     # unpack 
     ones_row          = segment.state.ones_row 

@@ -28,8 +28,8 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
         Mission segment with the following attributes:
             - state : Data
                 Segment state
-                - ones_row : function
-                    Function to create array of ones with specified length
+                    - ones_row : function
+                        Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where turbofan conditions will be stored
     noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
@@ -49,18 +49,18 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
     method for each subcomponent of the turbofan.
     
     The function initializes the following parameters in energy_conditions:
-        - throttle
-        - commanded_thrust_vector_angle
-        - thrust
-        - power
-        - moment
-        - fuel_flow_rate
-        - inputs and outputs containers
+        * throttle
+        * commanded_thrust_vector_angle
+        * thrust
+        * power
+        * moment
+        * fuel_flow_rate
+        * inputs and outputs containers
     
     It also creates the following containers in noise_conditions:
-        - core_nozzle
-        - fan_nozzle
-        - fan
+        * core_nozzle
+        * fan_nozzle
+        * fan
     
     **Major Assumptions**
         * All arrays are initialized with zeros
@@ -69,7 +69,7 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thrust
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """
     # unpack 
     ones_row          = segment.state.ones_row 

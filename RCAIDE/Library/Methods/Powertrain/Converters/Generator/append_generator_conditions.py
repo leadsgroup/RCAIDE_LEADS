@@ -20,8 +20,8 @@ def append_generator_conditions(generator, segment, conditions):
         Mission segment with the following attributes:
             - state : Data
                 Segment state
-                - ones_row : function
-                    Function to create array of ones with specified length
+                    - ones_row : function
+                        Function to create array of ones with specified length
     conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where generator conditions will be stored
     
@@ -39,24 +39,21 @@ def append_generator_conditions(generator, segment, conditions):
     The function initializes the following in conditions.converters[generator.tag]:
         - inputs : Conditions
             Input conditions container
-            - torque : numpy.ndarray
-                Input torque [N·m], initialized with zeros
-            - power : numpy.ndarray
-                Input mechanical power [W], initialized with zeros
-            - omega : numpy.ndarray
-                Angular velocity [rad/s], initialized with zeros
+                - torque : numpy.ndarray
+                    Input torque [N·m], initialized with zeros
+                - power : numpy.ndarray
+                    Input mechanical power [W], initialized with zeros
+                - omega : numpy.ndarray
+                    Angular velocity [rad/s], initialized with zeros
         - outputs : Conditions
             Output conditions container
-            - current : numpy.ndarray
-                Output current [A], initialized with zeros
-            - voltage : numpy.ndarray
-                Output voltage [V], initialized with zeros
-    
+                - current : numpy.ndarray
+                    Output current [A], initialized with zeros
+                - voltage : numpy.ndarray
+                    Output voltage [V], initialized with zeros
+        
     These parameters will be populated during the mission analysis to track the
     generator's performance as it converts mechanical power to electrical power.
-    
-    **Major Assumptions**
-        * All arrays are initialized with zeros
     
     See Also
     --------

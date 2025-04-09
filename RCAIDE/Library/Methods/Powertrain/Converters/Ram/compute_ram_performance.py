@@ -21,53 +21,51 @@ def compute_ram_performance(ram, conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - pressure : numpy.ndarray
-                    Freestream static pressure [Pa]
-                - temperature : numpy.ndarray
-                    Freestream static temperature [K]
-                - mach_number : numpy.ndarray
-                    Freestream Mach number
+                    - pressure : numpy.ndarray
+                        Freestream static pressure [Pa]
+                    - temperature : numpy.ndarray
+                        Freestream static temperature [K]
+                    - mach_number : numpy.ndarray
+                        Freestream Mach number
     
     Returns
     -------
     None
         Results are stored in:
-        
-        conditions.freestream:
-            - stagnation_temperature : numpy.ndarray
-                Freestream stagnation temperature [K]
-            - stagnation_pressure : numpy.ndarray
-                Freestream stagnation pressure [Pa]
-            - isentropic_expansion_factor : numpy.ndarray
-                Ratio of specific heats (gamma) [unitless]
-            - specific_heat_at_constant_pressure : numpy.ndarray
-                Specific heat at constant pressure [J/(kg·K)]
-            - gas_specific_constant : numpy.ndarray
-                Gas specific constant [J/(kg·K)]
-            - speed_of_sound : numpy.ndarray
-                Speed of sound [m/s]
-        
-        conditions.energy.converters[ram.tag].outputs:
-            - stagnation_temperature : numpy.ndarray
-                Stagnation temperature [K]
-            - stagnation_pressure : numpy.ndarray
-                Stagnation pressure [Pa]
-            - isentropic_expansion_factor : numpy.ndarray
-                Ratio of specific heats (gamma) [unitless]
-            - specific_heat_at_constant_pressure : numpy.ndarray
-                Specific heat at constant pressure [J/(kg·K)]
-            - gas_specific_constant : numpy.ndarray
-                Gas specific constant [J/(kg·K)]
-            - static_temperature : numpy.ndarray
-                Static temperature [K]
-            - static_pressure : numpy.ndarray
-                Static pressure [Pa]
-            - mach_number : numpy.ndarray
-                Mach number
-            - velocity : numpy.ndarray
-                Velocity [m/s]
-            - speed_of_sound : numpy.ndarray
-                Speed of sound [m/s]
+            conditions.freestream:
+                - stagnation_temperature : numpy.ndarray
+                    Freestream stagnation temperature [K]
+                - stagnation_pressure : numpy.ndarray
+                    Freestream stagnation pressure [Pa]
+                - isentropic_expansion_factor : numpy.ndarray
+                    Ratio of specific heats (gamma) [unitless]
+                - specific_heat_at_constant_pressure : numpy.ndarray
+                    Specific heat at constant pressure [J/(kg·K)]
+                - gas_specific_constant : numpy.ndarray
+                    Gas specific constant [J/(kg·K)]
+                - speed_of_sound : numpy.ndarray
+                    Speed of sound [m/s]
+            conditions.energy.converters[ram.tag].outputs:
+                - stagnation_temperature : numpy.ndarray
+                    Stagnation temperature [K]
+                - stagnation_pressure : numpy.ndarray
+                    Stagnation pressure [Pa]
+                - isentropic_expansion_factor : numpy.ndarray
+                    Ratio of specific heats (gamma) [unitless]
+                - specific_heat_at_constant_pressure : numpy.ndarray
+                    Specific heat at constant pressure [J/(kg·K)]
+                - gas_specific_constant : numpy.ndarray
+                    Gas specific constant [J/(kg·K)]
+                - static_temperature : numpy.ndarray
+                    Static temperature [K]
+                - static_pressure : numpy.ndarray
+                    Static pressure [Pa]
+                - mach_number : numpy.ndarray
+                    Mach number
+                - velocity : numpy.ndarray
+                    Velocity [m/s]
+                - speed_of_sound : numpy.ndarray
+                    Speed of sound [m/s]
     
     Notes
     -----
@@ -98,12 +96,12 @@ def compute_ram_performance(ram, conditions):
         P_0 = P \\left(1 + \\frac{\\gamma - 1}{2} M^2 \\right)^{\\gamma/(\\gamma-1)}
     
     where:
-    - T_0 is the stagnation temperature
-    - T is the static temperature
-    - P_0 is the stagnation pressure
-    - P is the static pressure
-    - γ is the ratio of specific heats
-    - M is the Mach number
+        - :math:`T_0` is the stagnation temperature
+        - :math:`T` is the static temperature
+        - :math:`P_0` is the stagnation pressure
+        - :math:`P` is the static pressure
+        - :math:`\\gamma` is the ratio of specific heats
+        - :math:`M` is the Mach number
     
     References
     ----------

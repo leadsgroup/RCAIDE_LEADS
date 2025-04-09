@@ -30,14 +30,14 @@ def compute_payload_power_draw(payload, bus, conditions):
         Flight conditions with:
             - energy : dict
                 Energy conditions indexed by component tag
-                - [bus.tag] : Data
-                    Bus-specific conditions
-                    - [payload.tag] : Data
-                        Payload-specific conditions
-                        - power : numpy.ndarray
-                            Power draw of the payload [W]
-                    - power_draw : numpy.ndarray
-                        Total power draw on the bus [W]
+                    - [bus.tag] : Data
+                        Bus-specific conditions
+                            - [payload.tag] : Data
+                                Payload-specific conditions
+                                - power : numpy.ndarray
+                                    Power draw of the payload [W]
+                            - power_draw : numpy.ndarray
+                                Total power draw on the bus [W]
     
     Returns
     -------
@@ -56,8 +56,7 @@ def compute_payload_power_draw(payload, bus, conditions):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Systems.compute_bus_power_draw
-    RCAIDE.Library.Methods.Powertrain.Systems.compute_system_power_draw
+    RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw
     """
     bus_conditions                = conditions.energy[bus.tag]
     payload_conditions            = bus_conditions[payload.tag]    

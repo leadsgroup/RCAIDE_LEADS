@@ -13,7 +13,7 @@ of PEM fuel cells.
 
 See Also
 --------
-RCAIDE.Library.Components.Energy.Converters.Fuel_Cell_Stack
+RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack
 RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common
 """
 

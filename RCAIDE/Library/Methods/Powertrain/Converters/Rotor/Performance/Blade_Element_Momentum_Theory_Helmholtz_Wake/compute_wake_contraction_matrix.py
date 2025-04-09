@@ -83,12 +83,12 @@ def compute_wake_contraction_matrix(prop, Nr, m, nts, X_pts, prop_outputs):
     The contracted radius at each wake point is calculated as:
     
     .. math::
-        r'_{j+1} = \\sqrt{r'_j^2 + (r_{j+1}^2 - r_j^2) \\cdot K_v}
+        r'_{j+1} = \\sqrt{{r'_j}^2 + ({r_{j+1}}^2 - {r_j}^2) \\cdot K_v}
     
     where:
-        - r'_j is the contracted radius at station j
-        - r_j is the original radius at station j
-        - K_v is the velocity ratio factor
+        - :math:`r'_j` is the contracted radius at station j
+        - :math:`r_j` is the original radius at station j
+        - :math:`K_v` is the velocity ratio factor
     
     References
     ----------

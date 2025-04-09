@@ -15,8 +15,7 @@ The module provides functions for:
 
 See Also
 --------
-RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor
-RCAIDE.Library.Methods.Powertrain.Propulsors.Common
+RCAIDE.Library.Components.Powertrain.Converters.Turboshaft_Propulsor
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

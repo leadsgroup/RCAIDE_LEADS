@@ -19,8 +19,6 @@ The design process typically involves:
 See Also
 --------
 RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance
-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Geometry
-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Noise
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

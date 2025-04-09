@@ -6,7 +6,7 @@ This module provides methods for modeling and analyzing turboelectric generator 
 
 See Also
 --------
-RCAIDE.Library.Components.Energy.Converters.Turboelectric_Generator
+RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

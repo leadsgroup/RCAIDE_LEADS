@@ -52,10 +52,8 @@ def compute_motor_performance(motor,conditions):
         
     For Both Motors:
         - motor.inverse_calculation arg is used to determine parameters that are solved.
-        - motor.inverse_calculation == False calculates electrical properties
-        (electrical power and voltage) from mechnical properties (rpm and torque)
-        - motor.inverse_calculation == True calculates mechanial properties
-         mechnical properties (rpm and torque) from electrical properties (rpm and torque)
+        - motor.inverse_calculation == False calculates electrical properties (electrical power and voltage) from mechnical properties (rpm and torque)
+        - motor.inverse_calculation == True calculates mechanial properties (rpm and torque) from electrical properties (electrical power and voltage)
 
     **Major Assumptions**
         * Steady state operation

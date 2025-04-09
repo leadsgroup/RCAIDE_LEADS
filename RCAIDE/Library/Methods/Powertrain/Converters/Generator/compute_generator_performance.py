@@ -49,8 +49,8 @@ def compute_generator_performance(generator,conditions):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Converters.DC_generator
-    RCAIDE.Library.Components.Powertrain.Converters.PMSM_generator
+    RCAIDE.Library.Components.Powertrain.Converters.DC_Generator
+    RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator
     """
     
     # unpack generator conditions 

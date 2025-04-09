@@ -64,10 +64,6 @@ def find_water_mass(battery, energy):
     
     In aluminum-air batteries, the electrochemical reaction produces aluminum hydroxide,
     which contains water molecules, resulting in a net gain of water mass in the system.
-    
-    See Also
-    --------
-    find_aluminum_mass : Function to calculate aluminum mass consumption
     """
     water_mass = energy*battery.cell.water_mass_gain_factor
     return water_mass

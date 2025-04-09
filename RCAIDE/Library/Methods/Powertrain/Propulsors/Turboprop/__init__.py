@@ -16,10 +16,10 @@ The module includes functionality for:
 
 See Also
 --------
-RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Ram
-RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Combustor
-RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Compressor
-RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Turbine
+RCAIDE.Library.Methods.Powertrain.Converters.Ram
+RCAIDE.Library.Methods.Powertrain.Converters.Combustor
+RCAIDE.Library.Methods.Powertrain.Converters.Compressor
+RCAIDE.Library.Methods.Powertrain.Converters.Turbine
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

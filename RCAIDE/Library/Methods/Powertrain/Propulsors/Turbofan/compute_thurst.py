@@ -37,48 +37,48 @@ def compute_thrust(turbofan,conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - isentropic_expansion_factor : numpy.ndarray
-                    Ratio of specific heats (gamma)
-                - velocity : numpy.ndarray
-                    Freestream velocity [m/s]
-                - speed_of_sound : numpy.ndarray
-                    Speed of sound [m/s]
-                - mach_number : numpy.ndarray
-                    Freestream Mach number
-                - pressure : numpy.ndarray
-                    Freestream pressure [Pa]
-                - gravity : numpy.ndarray
-                    Gravitational acceleration [m/s²]
-                - specific_heat_at_constant_pressure : numpy.ndarray
-                    Specific heat at constant pressure [J/(kg·K)]
+                    - isentropic_expansion_factor : numpy.ndarray
+                        Ratio of specific heats (gamma)
+                    - velocity : numpy.ndarray
+                        Freestream velocity [m/s]
+                    - speed_of_sound : numpy.ndarray
+                        Speed of sound [m/s]
+                    - mach_number : numpy.ndarray
+                        Freestream Mach number
+                    - pressure : numpy.ndarray
+                        Freestream pressure [Pa]
+                    - gravity : numpy.ndarray
+                        Gravitational acceleration [m/s²]
+                    - specific_heat_at_constant_pressure : numpy.ndarray
+                        Specific heat at constant pressure [J/(kg·K)]
             - energy.propulsors[turbofan.tag] : Data
                 Turbofan-specific conditions
-                - fuel_to_air_ratio : numpy.ndarray
-                    Fuel-to-air ratio
-                - total_temperature_reference : numpy.ndarray
-                    Reference total temperature [K]
-                - total_pressure_reference : numpy.ndarray
-                    Reference total pressure [Pa]
-                - fan_nozzle_exit_velocity : numpy.ndarray
-                    Fan nozzle exit velocity [m/s]
-                - fan_nozzle_static_pressure : numpy.ndarray
-                    Fan nozzle static pressure [Pa]
-                - fan_nozzle_area_ratio : numpy.ndarray
-                    Fan nozzle area ratio
-                - core_nozzle_exit_velocity : numpy.ndarray
-                    Core nozzle exit velocity [m/s]
-                - core_nozzle_static_pressure : numpy.ndarray
-                    Core nozzle static pressure [Pa]
-                - core_nozzle_area_ratio : numpy.ndarray
-                    Core nozzle area ratio
-                - flow_through_core : numpy.ndarray
-                    Fraction of flow through core
-                - flow_through_fan : numpy.ndarray
-                    Fraction of flow through fan
-                - bypass_ratio : numpy.ndarray
-                    Bypass ratio
-                - throttle : numpy.ndarray
-                    Throttle setting [0-1]
+                    - fuel_to_air_ratio : numpy.ndarray
+                        Fuel-to-air ratio
+                    - total_temperature_reference : numpy.ndarray
+                        Reference total temperature [K]
+                    - total_pressure_reference : numpy.ndarray
+                        Reference total pressure [Pa]
+                    - fan_nozzle_exit_velocity : numpy.ndarray
+                        Fan nozzle exit velocity [m/s]
+                    - fan_nozzle_static_pressure : numpy.ndarray
+                        Fan nozzle static pressure [Pa]
+                    - fan_nozzle_area_ratio : numpy.ndarray
+                        Fan nozzle area ratio
+                    - core_nozzle_exit_velocity : numpy.ndarray
+                        Core nozzle exit velocity [m/s]
+                    - core_nozzle_static_pressure : numpy.ndarray
+                        Core nozzle static pressure [Pa]
+                    - core_nozzle_area_ratio : numpy.ndarray
+                        Core nozzle area ratio
+                    - flow_through_core : numpy.ndarray
+                        Fraction of flow through core
+                    - flow_through_fan : numpy.ndarray
+                        Fraction of flow through fan
+                    - bypass_ratio : numpy.ndarray
+                        Bypass ratio
+                    - throttle : numpy.ndarray
+                        Throttle setting [0-1]
     
     Returns
     -------
@@ -122,18 +122,18 @@ def compute_thrust(turbofan,conditions):
         F_{nd,core} = \\phi_{core} \\cdot (\\gamma \\cdot M_0^2 \\cdot (V_{core}/V_0 - 1) + A_{core} \\cdot (P_{core}/P_0 - 1))
     
     where:
-        - φ_fan is the flow through fan fraction
-        - φ_core is the flow through core fraction
-        - γ is the ratio of specific heats
-        - M_0 is the freestream Mach number
-        - V_fan is the fan nozzle exit velocity
-        - V_core is the core nozzle exit velocity
-        - V_0 is the freestream velocity
-        - A_fan is the fan nozzle area ratio
-        - A_core is the core nozzle area ratio
-        - P_fan is the fan nozzle static pressure
-        - P_core is the core nozzle static pressure
-        - P_0 is the freestream pressure
+        * :math:`\\phi_{fan}` is the flow through fan fraction
+        * :math:`\\phi_{core}` is the flow through core fraction
+        * :math:`\\gamma` is the ratio of specific heats
+        * :math:`M_0` is the freestream Mach number
+        * :math:`V_{fan}` is the fan nozzle exit velocity
+        * :math:`V_{core}` is the core nozzle exit velocity
+        * :math:`V_0` is the freestream velocity
+        * :math:`A_{fan}` is the fan nozzle area ratio
+        * :math:`A_{core}` is the core nozzle area ratio
+        * :math:`P_{fan}` is the fan nozzle static pressure
+        * :math:`P_{core}` is the core nozzle static pressure
+        * :math:`P_0` is the freestream pressure
     
     The specific thrust is then:
     

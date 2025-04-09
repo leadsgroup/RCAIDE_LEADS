@@ -37,33 +37,26 @@ def size_core(turbofan, conditions):
         Flight conditions with:
             - freestream : Data
                 Freestream properties
-                - speed_of_sound : numpy.ndarray
-                    Speed of sound [m/s]
+                    - speed_of_sound : numpy.ndarray
+                        Speed of sound [m/s]
             - energy.propulsors[turbofan.tag] : Data
                 Turbofan-specific conditions
-                - bypass_ratio : numpy.ndarray
-                    Bypass ratio
-                - total_temperature_reference : numpy.ndarray
-                    Reference total temperature [K]
-                - total_pressure_reference : numpy.ndarray
-                    Reference total pressure [Pa]
-                - throttle : float
-                    Throttle setting [0-1]
-                - thrust_specific_fuel_consumption : numpy.ndarray
-                    Thrust specific fuel consumption [kg/(N·s)]
-                - non_dimensional_thrust : numpy.ndarray
-                    Non-dimensional thrust
+                    - bypass_ratio : numpy.ndarray
+                        Bypass ratio
+                    - total_temperature_reference : numpy.ndarray
+                        Reference total temperature [K]
+                    - total_pressure_reference : numpy.ndarray
+                        Reference total pressure [Pa]
+                    - throttle : float
+                        Throttle setting [0-1]
+                    - thrust_specific_fuel_consumption : numpy.ndarray
+                        Thrust specific fuel consumption [kg/(N·s)]
+                    - non_dimensional_thrust : numpy.ndarray
+                        Non-dimensional thrust
     
     Returns
     -------
     None
-        Results are stored in the turbofan object:
-            - TSFC : float
-                Thrust specific fuel consumption [kg/(N·s)]
-            - design_mass_flow_rate : float
-                Core mass flow rate at design point [kg/s]
-            - compressor_nondimensional_massflow : float
-                Non-dimensional mass flow parameter [kg·√K/(s·Pa)]
         
     Notes
     -----
@@ -93,7 +86,7 @@ def size_core(turbofan, conditions):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thrust
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """
     # Unpack flight conditions 
     a0                  = conditions.freestream.speed_of_sound

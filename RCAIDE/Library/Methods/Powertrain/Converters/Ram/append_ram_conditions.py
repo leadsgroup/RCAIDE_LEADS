@@ -21,15 +21,14 @@ def append_ram_conditions(ram, segment, energy_conditions):
         Mission segment with the following attributes:
             - state : Data
                 Segment state
-                - ones_row : function
-                    Function to create array of ones with specified length
+                    - ones_row : function
+                        Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where ram air converter conditions will be stored
     
     Returns
     -------
     None
-        Results are stored in energy_conditions.converters[ram.tag]
     
     Notes
     -----

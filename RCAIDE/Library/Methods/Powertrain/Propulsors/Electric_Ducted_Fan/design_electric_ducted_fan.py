@@ -31,22 +31,22 @@ def design_electric_ducted_fan(EDF, new_regression_results=False, keep_files=Tru
                 Identifier for the propulsor
             - electronic_speed_controller : Data
                 ESC component
-                - bus_voltage : float
-                    Bus voltage [V]
+                    - bus_voltage : float
+                        Bus voltage [V]
             - ducted_fan : Data
                 Ducted fan component
-                - cruise : Data
-                    Cruise conditions
+                    - cruise : Data
+                        Cruise conditions
+                            - design_torque : float
+                                Design torque [N·m]
+                            - design_angular_velocity : float
+                                Design angular velocity [rad/s]
+            - motor : Data
+                Electric motor component
                     - design_torque : float
                         Design torque [N·m]
                     - design_angular_velocity : float
                         Design angular velocity [rad/s]
-            - motor : Data
-                Electric motor component
-                - design_torque : float
-                    Design torque [N·m]
-                - design_angular_velocity : float
-                    Design angular velocity [rad/s]
     new_regression_results : bool, optional
         Flag to generate new regression results for the ducted fan
         Default: False

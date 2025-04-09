@@ -6,7 +6,7 @@ This module provides a common method for modeling and analyzing fuel cell stacks
 
 See Also
 --------
-RCAIDE.Library.Components.Energy.Converters.Fuel_Cell_Stack
+RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack
 RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane
 """
 

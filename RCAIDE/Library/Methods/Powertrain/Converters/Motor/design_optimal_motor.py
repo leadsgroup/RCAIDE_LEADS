@@ -35,8 +35,8 @@ def design_optimal_motor(motor):
                 Design torque [N·m]
             - gearbox : Data
                 Gearbox component
-                - gear_ratio : float
-                    Gear ratio [unitless]
+                    - gear_ratio : float
+                        Gear ratio [unitless]
     
     Returns
     -------
@@ -74,9 +74,9 @@ def design_optimal_motor(motor):
     
     **Theory**
     The motor model uses the following relationships:
-        - Current: I = (V - ω/Kv)/R
-        - Torque: T = (I - I₀)/Kv
-        - Efficiency: η = (1 - (I₀·R)/(V - ω/Kv))·(ω/(V·Kv))
+        - Current: :math:`I = (V - \\omega/Kv)/R`
+        - Torque: :math:`T = (I - I₀)/Kv`
+        - Efficiency: :math:`\\eta = (1 - (I₀\\cdot R)/(V - \\omega/Kv))\\cdot(\\omega/(V\\cdot Kv))`
     
     where:
         - V is the nominal voltage

@@ -33,22 +33,22 @@ def size_core(turboshaft, conditions):
                 Design power output [W]
             - compressor : Data
                 Compressor component
-                - mass_flow_rate : float
-                    Mass flow rate through the compressor [kg/s]
+                    - mass_flow_rate : float
+                        Mass flow rate through the compressor [kg/s]
             - mass_flow_rate : float
                 Mass flow rate through the turboshaft [kg/s]
     conditions : RCAIDE.Framework.Mission.Common.Conditions
         Flight conditions with:
             - energy : Data
                 Energy conditions
-                - converters : dict
-                    Converter energy conditions indexed by tag
-                    - total_temperature_reference : float
-                        Reference total temperature [K]
-                    - total_pressure_reference : float
-                        Reference total pressure [Pa]
-                    - non_dimensional_power : float
-                        Non-dimensional power
+                    - converters : dict
+                        Converter energy conditions indexed by tag
+                            - total_temperature_reference : float
+                                Reference total temperature [K]
+                            - total_pressure_reference : float
+                                Reference total pressure [Pa]
+                            - non_dimensional_power : float
+                                Non-dimensional power
     
     Returns
     -------
@@ -89,12 +89,12 @@ def size_core(turboshaft, conditions):
         \\dot{m}_{compressor} = \\frac{\\dot{m}_{air}}{\\sqrt{\\frac{T_{ref}}{T_{t,ref}}}\\frac{P_{t,ref}}{P_{ref}}}
     
     where:
-      - P_{design} is the design power
-      - P_{sp} is the non-dimensional power
-      - T_{ref} is the reference temperature
-      - T_{t,ref} is the reference total temperature
-      - P_{ref} is the reference pressure
-      - P_{t,ref} is the reference total pressure
+      - :math:`P_{design}` is the design power
+      - :math:`P_{sp}` is the non-dimensional power
+      - :math:`T_{ref}` is the reference temperature
+      - :math:`T_{t,ref}` is the reference total temperature
+      - :math:`P_{ref}` is the reference pressure
+      - :math:`P_{t,ref}` is the reference total pressure
       
     References
     ----------

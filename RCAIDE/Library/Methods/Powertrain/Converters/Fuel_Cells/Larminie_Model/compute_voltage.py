@@ -18,16 +18,16 @@ def compute_voltage(fuel_cell, current_density):
     ----------
     fuel_cell : RCAIDE.Components.Energy.Converters.Fuel_Cell
         The fuel cell component containing electrochemical parameters
-        - r : float
-            Area-specific resistance [Ohms*cm²]
-        - A1 : float
-            Tafel slope [V]
-        - m : float
-            Mass transport loss coefficient [V]
-        - n : float
-            Mass transport loss exponential coefficient [cm²/A]
-        - Eoc : float
-            Open circuit voltage [V]
+            - r : float
+                Area-specific resistance [Ohms*cm²]
+            - A1 : float
+                Tafel slope [V]
+            - m : float
+                Mass transport loss coefficient [V]
+            - n : float
+                Mass transport loss exponential coefficient [cm²/A]
+            - Eoc : float
+                Open circuit voltage [V]
     current_density : float or array
         Current density [A/m²]
         
@@ -53,10 +53,10 @@ def compute_voltage(fuel_cell, current_density):
     The Larminie-Dicks model calculates cell voltage as:
     
     .. math::
-        V = E_{oc} - r \cdot i - A_1 \ln(i) - m \exp(n \cdot i)
+        V = E_{oc} - r \\cdot i - A_1 \\ln(i) - m \\exp(n \\cdot i)
     
     where:
-        - E_{oc} is the open circuit voltage
+        - :math:`E_{oc}` is the open circuit voltage
         - r is the area-specific resistance
         - A_1 is the Tafel slope for activation losses
         - m and n are parameters for mass transport losses

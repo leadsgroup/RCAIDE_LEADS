@@ -13,9 +13,7 @@ wake contraction, and overall rotor performance metrics such as thrust, torque, 
 
 See Also
 --------
-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory
 RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory
-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Geometry
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -110,10 +110,10 @@ def design_turboshaft(turboshaft):
 
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Ram.compute_ram_performance
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Combustor.compute_combustor_performance
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Compressor.compute_compressor_performance
-    RCAIDE.Library.Methods.Powertrain.Propulsors.Converters.Turbine.compute_turbine_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance
     """
     
     #check if mach number and temperature are passed

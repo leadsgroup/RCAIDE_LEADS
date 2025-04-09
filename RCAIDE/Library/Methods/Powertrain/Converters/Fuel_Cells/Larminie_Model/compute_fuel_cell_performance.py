@@ -61,7 +61,7 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     The Larminie-Dicks model calculates cell voltage as:
     
     .. math::
-        V = E_0 - A\ln(j) - Rj - m\exp(nj)
+        V = E_0 - A\\ln(j) - Rj - m\\exp(nj)
     
     where:
         - E₀ is the open circuit voltage
@@ -73,7 +73,7 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     The efficiency is calculated as:
     
     .. math::
-        \eta = \frac{V}{E_{ideal}}
+        \\eta = \\frac{V}{E_{ideal}}
     
     References
     ----------
@@ -99,8 +99,7 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     bus_conditions              = state.conditions.energy[bus.tag]
     fuel_cell_stack_conditions  = bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag]
     phi                         = state.conditions.energy.hybrid_power_split_ratio 
-    psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio 
-    P_bus                       = bus_conditions.power_draw*phi *(1 - psi)    
+    P_bus                       = bus_conditions.power_draw*phi     
     P_stack                     = P_bus[t_idx] /len(bus.fuel_cell_stacks) 
     P_cell                      = P_stack/ n_total  
 
