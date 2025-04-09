@@ -48,6 +48,9 @@ class Turboprop(Propulsor):
     design_isa_deviation : float
         ISA temperature deviation at design point [K]. Default is 0.0.
         
+    specific_fuel_consumption_reduction_factor : float
+        Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
+        
     design_altitude : float
         Design altitude of the engine [m]. Default is 0.0.
         
@@ -92,26 +95,27 @@ class Turboprop(Propulsor):
     """ 
     def __defaults__(self):    
         # setting the default values
-        self.tag                                      = 'turboprop'   
-        self.nacelle                                  = None 
-        self.compressor                               = None  
-        self.turbine                                  = None  
-        self.combustor                                = None       
-        self.diameter                                 = 0.0      
-        self.length                                   = 0.0
-        self.height                                   = 0.5      
-        self.design_isa_deviation                     = 0.0
-        self.design_altitude                          = 0.0
-        self.propeller_efficiency                     = 0.0
-        self.gearbox                                  = Data()
-        self.gearbox.gear_ratio                       = 1.0
-        self.gearbox.efficiency                       = 0.0 
-        self.design_angular_velocity                  = 0.0
-        self.design_mach_number                       = None 
-        self.design_freestream_velocity               = None
-        self.compressor_nondimensional_massflow       = 0.0 
-        self.reference_temperature                    = 288.15
-        self.reference_pressure                       = 1.01325*10**5  
+        self.tag                                        = 'turboprop'   
+        self.nacelle                                    = None 
+        self.compressor                                 = None  
+        self.turbine                                    = None  
+        self.combustor                                  = None       
+        self.diameter                                   = 0.0      
+        self.length                                     = 0.0
+        self.height                                     = 0.0      
+        self.design_isa_deviation                       = 0.0
+        self.design_altitude                            = 0.0
+        self.propeller_efficiency                       = 0.0
+        self.gearbox                                    = Data()
+        self.specific_fuel_consumption_reduction_factor =  0.0
+        self.gearbox.gear_ratio                         = 1.0
+        self.gearbox.efficiency                         = 0.0 
+        self.design_angular_velocity                    = 0.0
+        self.design_mach_number                         = None 
+        self.design_freestream_velocity                 = None
+        self.compressor_nondimensional_massflow         = 0.0 
+        self.reference_temperature                      = 288.15
+        self.reference_pressure                         = 1.01325*10**5  
     
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """

@@ -54,7 +54,7 @@ def fuel_aircraft_payload_range():
     payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission)
                                 
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 6612805.196821039  
+    fuel_r_true            = 5361598.851769192 # Spot on with Airport planning manual! " https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf"
     print('Fuel Range: ' + str(fuel_r))
     fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
     assert(abs(fuel_error)<1e-6)
@@ -154,7 +154,7 @@ def fuel_aircraft_base_analysis(vehicle):
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.vehicle  = vehicle
     aerodynamics.settings.number_of_spanwise_vortices   = 5
-    aerodynamics.settings.number_of_chordwise_vortices  = 2     
+    aerodynamics.settings.number_of_chordwise_vortices  = 2       
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
@@ -200,6 +200,7 @@ def electric_aircraft_base_analysis(vehicle):
     aerodynamics.vehicle  = vehicle
     aerodynamics.settings.number_of_spanwise_vortices   = 5
     aerodynamics.settings.number_of_chordwise_vortices  = 2     
+    aerodynamics.training.Mach                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.95])  
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------

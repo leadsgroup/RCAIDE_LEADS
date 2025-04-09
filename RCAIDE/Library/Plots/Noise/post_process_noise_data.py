@@ -10,6 +10,9 @@
 from RCAIDE.Framework.Core import  Data
 from RCAIDE.Library.Methods.Noise.Common.background_noise     import background_noise
 from RCAIDE.Library.Methods.Noise.Metrics import * 
+from RCAIDE.Library.Methods.Noise.Metrics.PNL_noise_metric                            import PNL_noise_metric 
+from RCAIDE.Library.Methods.Noise.Metrics.EPNL_noise_metric                           import EPNL_noise_metric 
+from RCAIDE.Library.Methods.Noise.Metrics.Equivalent_SENEL_SEL_noise_metrics          import Equivalent_SENEL_SEL_noise_metrics
 from RCAIDE.Library.Methods.Noise.Common.generate_zero_elevation_microphone_locations import generate_zero_elevation_microphone_locations 
 from RCAIDE.Library.Methods.Noise.Common.generate_terrain_microphone_locations        import generate_terrain_microphone_locations     
 from RCAIDE.Library.Methods.Noise.Common.compute_relative_noise_evaluation_locations  import compute_relative_noise_evaluation_locations
@@ -30,7 +33,11 @@ def post_process_noise_data(results,
                                                    '12:00:00','12:30:00','13:00:00','13:30:00',
                                                    '14:00:00','14:30:00','15:00:00']),
                             time_period = ['06:00:00','20:00:00'], 
-                            evalaute_noise_metrics = True):
+                            compute_SENEL = False, 
+                            compute_SEL  = False, 
+                            compute_eqivalent_noise= False, 
+                            compute_PNL  = False, 
+                            compute_EPNL = False, ):
     """
     Processes raw noise simulation results into formatted data for visualization.
 
@@ -131,11 +138,13 @@ def post_process_noise_data(results,
     # Step 3: Create empty arrays to store noise data 
     N_segs = len(results.segments)
     num_gm_mic      = len(microphone_locations)
-    num_noise_time  = settings.noise_times_steps 
+    num_noise_time  = settings.noise_times_steps
+    num_f           = len(settings.center_frequencies)
     
     # Step 4: Initalize Arrays 
     N_ctrl_pts            = ( N_segs-1) * (num_noise_time -1) + num_noise_time # ensures that noise is computed continuously across segments 
     SPL_dBA               = np.ones((N_ctrl_pts,N_gm_x,N_gm_y))*background_noise()  
+    SPL_dBA_1_3_spectrum  = np.ones((N_ctrl_pts,N_gm_x,N_gm_y,num_f))*background_noise()  
     Aircraft_pos          = np.empty((0,3))
     Time                  = np.empty((0))
     mic_locs              = np.zeros((N_ctrl_pts,n))   
@@ -171,23 +180,39 @@ def post_process_noise_data(results,
             SPL_uppper      = conditions.noise.hemisphere_SPL_dBA[cpt+1].reshape(len(phi),len(theta))
             SPL_gradient    = SPL_uppper -  SPL_lower
             SPL_interp      = SPL_lower + SPL_gradient *delta_t
+            
+
+            SPL_lower_1_3_spectrum       = conditions.noise.hemisphere_SPL_1_3_spectrum_dBA[cpt].reshape(len(phi),len(theta),num_f)
+            SPL_uppper_1_3_spectrum      = conditions.noise.hemisphere_SPL_1_3_spectrum_dBA[cpt+1].reshape(len(phi),len(theta),num_f)
+            SPL_gradient_1_3_spectrum    = SPL_uppper_1_3_spectrum -  SPL_lower_1_3_spectrum
+            SPL_interp_1_3_spectrum      = SPL_lower_1_3_spectrum + SPL_gradient_1_3_spectrum *delta_t
+            
      
             #  Step 5.2.2 Create surrogate   
-            SPL_dBA_surrogate = RegularGridInterpolator((phi, theta),SPL_interp  ,method = 'linear',   bounds_error=False, fill_value=None)       
+            SPL_dBA_surrogate              = RegularGridInterpolator((phi, theta),SPL_interp  ,method = 'linear',   bounds_error=False, fill_value=None) 
+            SPL_dBA_1_3_spectrum_surrogate = RegularGridInterpolator((phi, theta),SPL_interp_1_3_spectrum  ,method = 'linear',   bounds_error=False, fill_value=None)       
             
             #  Step 5.2.3 Query surrogate
-            R                 = np.linalg.norm(RML[i], axis=1) 
-            locs              = np.argsort(R)[:n]
-            pts               = (PHI[i][locs],THETA[i][locs]) 
-            SPL_dBA_unscaled  = SPL_dBA_surrogate(pts) 
+            R                              = np.linalg.norm(RML[i], axis=1) 
+            locs                           = np.argsort(R)[:n]
+            pts                            = (PHI[i][locs],THETA[i][locs]) 
+            SPL_dBA_unscaled               = SPL_dBA_surrogate(pts) 
+            SPL_dBA_1_3_spectrum_unscaled  = SPL_dBA_1_3_spectrum_surrogate(pts) 
             
             #  Step 5.2.4 Scale data using radius  
-            R_ref                = settings.noise_hemisphere_radius  
-            SPL_dBA_scaled       = SPL_dBA_unscaled - 20*np.log10(R[locs]/R_ref)
+            R_ref                          = settings.noise_hemisphere_radius  
+            SPL_dBA_scaled                 = SPL_dBA_unscaled - 20*np.log10(R[locs]/R_ref)
+            SPL_dBA_1_3_spectrum_scaled    = SPL_dBA_1_3_spectrum_unscaled -  np.tile(20*np.log10(R[locs]/R_ref)[:, None], (1, num_f))
             
+            # insert noise incorrect mic locations 
             SPL_dBA_temp         = SPL_dBA[idx].flatten()
             SPL_dBA_temp[locs]   = SPL_dBA_scaled
             SPL_dBA[idx]         = SPL_dBA_temp.reshape(N_gm_x,N_gm_y) 
+
+            SPL_dBA_1_3_spectrum_temp         = SPL_dBA_1_3_spectrum[idx].reshape(N_gm_x*N_gm_y,num_f)
+            SPL_dBA_1_3_spectrum_temp[locs]   = SPL_dBA_1_3_spectrum_scaled
+            SPL_dBA_1_3_spectrum[idx]         = SPL_dBA_1_3_spectrum_temp.reshape(N_gm_x,N_gm_y,num_f) 
+
             mic_locs[idx]        = locs 
             idx += 1
             
@@ -196,16 +221,24 @@ def post_process_noise_data(results,
                 
     # Step 6: Make any readings less that background noise equal to background noise
     SPL_dBA                             = np.nan_to_num(SPL_dBA) 
-    SPL_dBA[SPL_dBA<background_noise()] = background_noise()  
+    SPL_dBA[SPL_dBA<background_noise()] = background_noise() 
+    SPL_dBA_1_3_spectrum                             = np.nan_to_num(SPL_dBA_1_3_spectrum) 
+    SPL_dBA_1_3_spectrum[SPL_dBA_1_3_spectrum<background_noise()] = background_noise()
+    
      
     # Step 7: Store data 
     noise_data.SPL_dBA               = SPL_dBA
+    noise_data.SPL_dBA_1_3_spectrum  = SPL_dBA_1_3_spectrum
     noise_data.time                  = Time 
     noise_data.aircraft_position     = Aircraft_pos
     noise_data.microhpone_locations  = mic_locs
     
-    # Step 8: Perform noise metric calculations
-    if evalaute_noise_metrics:
-        compute_noise_metrics(noise_data, flight_times)
+    # Step 8: Perform noise metric calculations 
+    if (compute_SENEL or compute_SEL) or compute_eqivalent_noise:
+        Equivalent_SENEL_SEL_noise_metrics(noise_data, flight_times) 
+    
+    if compute_PNL or compute_EPNL:
+        noise_data.PLN  = PNL_noise_metric(noise_data.SPL_dBA_1_3_spectrum)
+        noise_data.EPNL = EPNL_noise_metric(noise_data.PLN) 
     
     return noise_data

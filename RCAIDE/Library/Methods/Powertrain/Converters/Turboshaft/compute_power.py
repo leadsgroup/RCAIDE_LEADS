@@ -15,83 +15,108 @@ import numpy                               as np
 #  compute_power
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_power(turboshaft,conditions):
-    """Computes power and other properties as below.
+    """
+    Computes power and other performance properties for a turboshaft engine.
 
-    Assumptions:
-    Perfect gas
-    Turboshaft engine with free power turbine
+    Parameters
+    ----------
+    turboshaft : RCAIDE.Library.Components.Converters.Turboshaft
+        Turboshaft engine component with the following attributes:
+            - tag : str
+                Identifier for the turboshaft
+            - fuel_type : Data
+                Fuel properties object
+                    - lower_heating_value : float
+                        Fuel lower heating value [J/kg]
+            - working_fluid : Data
+                Working fluid properties object
+            - reference_temperature : float
+                Reference temperature for mass flow scaling [K]
+            - reference_pressure : float
+                Reference pressure for mass flow scaling [Pa]
+            - compressor : Data
+                Compressor component
+                    - pressure_ratio : float
+                        Compressor pressure ratio
+                    - mass_flow_rate : float
+                        Design mass flow rate [kg/s]
+            - conversion_efficiency : float
+                Efficiency of converting thermal energy to shaft power
+            - inverse_calculation : bool
+                Flag for inverse calculation mode (power to throttle)
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions with:
+            - freestream : Data
+                Freestream properties
+                    - isentropic_expansion_factor : numpy.ndarray
+                        Ratio of specific heats (gamma)
+                    - speed_of_sound : numpy.ndarray
+                        Speed of sound [m/s]
+                    - mach_number : numpy.ndarray
+                        Flight Mach number
+                    - gravity : numpy.ndarray
+                        Gravitational acceleration [m/s²]
+            - energy.converters[turboshaft.tag] : Data
+                Turboshaft operating conditions
+                    - throttle : numpy.ndarray
+                        Throttle setting [0-1]
+                    - total_temperature_reference : numpy.ndarray
+                        Reference total temperature [K]
+                    - total_pressure_reference : numpy.ndarray
+                        Reference total pressure [Pa]
+                    - combustor_stagnation_temperature : numpy.ndarray
+                        Combustor exit stagnation temperature [K]
+                    - power : numpy.ndarray
+                        Required power output (for inverse calculation) [W]
 
-    Sources:
-    [1] https://soaneemrana.org/onewebmedia/ELEMENTS%20OF%20GAS%20TURBINE%20PROPULTION2.pdf - Page 332 - 336
-    [2] https://www.colorado.edu/faculty/kantha/sites/default/files/attached-files/70652-116619_-_luke_stuyvenberg_-_dec_17_2015_1258_pm_-_stuyvenberg_helicopterturboshafts.pdf
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    This function implements a thermodynamic model for a turboshaft engine with a free power turbine.
+    It can operate in two modes: direct (throttle to power) or inverse (power to throttle).
     
-    Inputs:
-    conditions.freestream.
-      isentropic_expansion_factor              [-] (gamma)
-      specific_heat_at_constant_pressure       [J/(kg K)]
-      velocity                                 [m/s]
-      speed_of_sound                           [m/s]
-      mach_number                              [-]
-      pressure                                 [Pa]
-      gravity                                  [m/s^2]
-    conditions.throttle                        [-] (.1 is 10%)
-    turboshaft.inputs.                         
-      fuel_to_air_ratio                        [-]
-      total_temperature_reference              [K]
-      total_pressure_reference                 [Pa]
-      core_nozzle.                             
-        velocity                               [m/s]
-        static_pressure                        [Pa]
-        area_ratio                             [-]
-      fan_nozzle.                              
-        velocity                               [m/s]
-        static_pressure                        [Pa]
-        area_ratio                             [-]
-      number_of_engines                        [-]
-      bypass_ratio                             [-]
-      flow_through_core                        [-] percentage of total flow (.1 is 10%)
-      flow_through_fan                         [-] percentage of total flow (.1 is 10
-    combustor.outputs.stagnation_temperature   [K]
-    compressor.pressure_ratio                  [-]
-    turboshaft.conversion_efficiency           [-]
-                                               
-    Outputs:                                   
-    turboshaft.outputs.                        
-      thrust                                   [N]
-      non_dimensional_thrust                   [-]
-      core_mass_flow_rate                      [kg/s]
-      fuel_flow_rate                           [kg/s]
-      power                                    [W]
-      power_specific_fuel_consumption          [kg/(W*s)]
-      Specific Impulse                         [s]
-                                               
-    Properties Used:                           
-    turboshaft.                                
-      reference_temperature                    [K]
-      reference_pressure                       [Pa]
-      compressor_nondimensional_massflow       [-]
-      SFC_adjustment                           [-]
+    **Major Assumptions**
+        * Perfect gas behavior
+        * Turboshaft engine with free power turbine
+        * Constant component efficiencies
+    
+    **Theory**
+    The turboshaft performance is calculated using gas turbine cycle analysis. The power output
+    is determined by the temperature rise in the combustor, the compressor pressure ratio, and
+    the component efficiencies.
+    
+    References
+    ----------
+    [1] Mattingly, J.D., "Elements of Gas Turbine Propulsion", 2nd Edition, AIAA Education Series, 2005. https://soaneemrana.org/onewebmedia/ELEMENTS%20OF%20GAS%20TURBINE%20PROPULTION2.pdf
+    [2] Stuyvenberg, L., "Helicopter Turboshafts", University of Colorado, 2015. https://www.colorado.edu/faculty/kantha/sites/default/files/attached-files/70652-116619_-_luke_stuyvenberg_-_dec_17_2015_1258_pm_-_stuyvenberg_helicopterturboshafts.pdf
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance
     """           
-    #unpack the values
-    fuel_type                                  = turboshaft.fuel_type
-    working_fluid                              = turboshaft.working_fluid
-    LHV                                        = fuel_type.lower_heating_value                                                                        
+    #unpack the values 
+    working_fluid                              = turboshaft.working_fluid                                                                
+    Tref                                       = turboshaft.reference_temperature                                                                   
+    Pref                                       = turboshaft.reference_pressure                                  
+    eta_c                                      = turboshaft.conversion_efficiency 
+    SFC_adjustment                             = turboshaft.specific_fuel_consumption_reduction_factor                                                     
+    pi_c                                       = turboshaft.compressor.pressure_ratio                                                                   
+    m_dot_compressor                           = turboshaft.compressor.mass_flow_rate  
+    LHV                                        = turboshaft.fuel_type.lower_heating_value                                                                        
     gamma                                      = conditions.freestream.isentropic_expansion_factor                                                      
     a0                                         = conditions.freestream.speed_of_sound                                                                   
     M0                                         = conditions.freestream.mach_number
-    turboshaft_conditions                      = conditions.energy.converters[turboshaft.tag]  
+    turboshaft_conditions                      = conditions.energy.converters[turboshaft.tag]                                                                                     
+    Tt4                                        = turboshaft_conditions.combustor_stagnation_temperature  
     total_temperature_reference                = turboshaft_conditions.total_temperature_reference                                                          
-    total_pressure_reference                   = turboshaft_conditions.total_pressure_reference                                                            
-    Power                                      = turboshaft_conditions.power                                                           
-    eta_c                                      = turboshaft.conversion_efficiency 
+    total_pressure_reference                   = turboshaft_conditions.total_pressure_reference                                                                                           
+    Power                                      = turboshaft_conditions.power                              
+    Cp                                         = working_fluid.compute_cp(total_temperature_reference,total_pressure_reference)
                                                                                                                                                         
-    #unpacking from turboshaft                                                                                                                          
-    Tref                                       = turboshaft.reference_temperature                                                                   
-    Pref                                       = turboshaft.reference_pressure                                                            
-    Cp                                         = working_fluid.compute_cp(total_temperature_reference,total_pressure_reference)                                                             
-    Tt4                                        = turboshaft_conditions.combustor_stagnation_temperature                                                    
-    pi_c                                       = turboshaft.compressor.pressure_ratio                                                                   
-    m_dot_compressor                           = turboshaft.compressor.mass_flow_rate                                                                 
+    #unpacking from turboshaft                                                                                                                         
                                                                                                                                                         
     tau_lambda                                 = Tt4/total_temperature_reference                                                                        
     tau_r                                      = 1 + ((gamma - 1)/2)*M0**2                                                                              
@@ -114,7 +139,7 @@ def compute_power(turboshaft,conditions):
          
     #fuel to air ratio
     f                                          = (Cp*total_temperature_reference/LHV)*(tau_lambda - tau_r*tau_c)                                                                              
-    fuel_flow_rate                             = f*m_dot_air
+    fuel_flow_rate                             = (1 - SFC_adjustment) *f*m_dot_air
     
     #Computing the PSFC                        
     PSFC                                       = f/Psp                                                                                                

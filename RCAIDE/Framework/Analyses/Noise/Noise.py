@@ -60,6 +60,8 @@ class Noise(Analysis):
         self.settings.aircraft_destination_location          = np.array([0,0,0])
         self.settings.aircraft_origin_coordinates            = np.array([0.0,0.0])
         self.settings.aircraft_destination_coordinates       = np.array([0.0,0.0])
+        self.settings.noise_reduction_factors                = Data()
+        self.settings.noise_reduction_factors.SPL_dbA        = 0.0     # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.topography_file                        = None
         self.settings.microphone_locations                   = None   
         self.settings.microphone_coordinates                 = None
@@ -74,7 +76,7 @@ class Noise(Analysis):
         
         self.settings.noise_hemisphere                       = False 
         self.settings.noise_hemisphere_radius                = 20  
-        epsilon =  1E-5
+        epsilon                                              = 1E-5
         self.settings.noise_hemisphere_phi_angles            = np.linspace(epsilon + (np.pi/2),   np.pi-epsilon,6)   
         self.settings.noise_hemisphere_theta_angles          = np.linspace(epsilon + 0        ,   2*np.pi-epsilon,12)  
                 

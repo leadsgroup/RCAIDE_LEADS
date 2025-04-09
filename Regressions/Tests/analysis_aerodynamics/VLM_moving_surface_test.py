@@ -56,12 +56,12 @@ def main():
         plot_title  = "Deflection Configuration #{}".format(i+1)
         plot_3d_vehicle_vlm_panelization(geometry, show_wing_control_points=False, save_filename=plot_title, show_figure=False)        
         
-        results.CL         = np.vstack((results.CL     , data.CL.flatten()    ))
-        results.CDi        = np.vstack((results.CDi    , data.CDi.flatten()   ))
+        results.CL         = np.vstack((results.CL     , data.CLift.flatten()    ))
+        results.CDi        = np.vstack((results.CDi    , data.CDrag_induced.flatten()   ))
         results.CM         = np.vstack((results.CM     , data.CM.flatten()    ))
-        results.CY         = np.vstack((results.CY  , data.CY.flatten() ))
-        results.CL_mom     = np.vstack((results.CL_mom , data.CL_mom.flatten()))
-        results.CM         = np.vstack((results.CM , data.CM.flatten()))      
+        results.CY         = np.vstack((results.CY     , data.CY.flatten() ))
+        results.CL_mom     = np.vstack((results.CL_mom , data.CL.flatten()))
+        results.CM         = np.vstack((results.CM     , data.CM.flatten()))      
         
     # save/load results
     if update_regression_values:

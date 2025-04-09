@@ -19,28 +19,59 @@ import matplotlib.cm as cm
 # ----------------------------------------------------------------------------------------------------------------------
 #  Compute Stack Properties
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_stack_properties(fuel_cell_stack):  
-    """Calculate fuel_cell_stack level properties of battery module using cell 
-    properties and module configuraton
+def compute_stack_properties(fuel_cell_stack):
+    """
+    Calculates fuel cell stack properties based on individual cell characteristics and stack configuration.
     
-    Assumptions: 
-    Inputs:
-    mass              
-    fuel_cell_stack.cell
-      nominal_capacity        [amp-hours]            
-      nominal_voltage         [volts]
-      pack_config             [unitless]
-      mass                    [kilograms]
-                          
-    Outputs:              
-     fuel_cell_stack.             
-       maximum_energy         [watt-hours]
-       maximum_power              [watts]
-       initial_maximum_energy [watt-hours]
-       specific_energy        [watt-hours/kilogram]
-       charging_voltage       [volts]
-       mass_properties.    
-        mass                  [kilograms] 
+    Parameters
+    ----------
+    fuel_cell_stack : RCAIDE.Components.Powertrain.Converters.Fuel_Cell_Stack
+        The fuel cell stack component for which properties are being computed
+        
+    Returns
+    -------
+    None
+    
+    Notes
+    -----
+    This function computes geometric, electrical, and performance properties of a fuel cell stack
+    based on individual cell properties and stack configuration. It handles both generic fuel cell
+    stacks and proton exchange membrane (PEM) fuel cell stacks with different calculation methods.
+    
+    For generic fuel cells, optimization is used to find the maximum power point.
+    For PEM fuel cells, specialized performance models are used that account for
+    operating conditions like temperature and pressure.
+    
+    The function calculates:
+        - Physical dimensions (length, width, height) based on cell arrangement
+        - Maximum power, voltage, and current
+        - Fuel consumption rates
+        - Mass properties
+    
+    **Major Assumptions**
+        * Cell properties are uniform across the stack
+        * Cells are arranged in a regular geometric pattern
+        * For PEM cells, standard atmospheric conditions are used if not specified
+        * Thermal effects within the stack are simplified
+    
+    **Theory**
+    
+    For generic fuel cells, the maximum power point is found by optimizing:
+    
+    .. math::
+        P_{max} = \\max_{j \\in [j_{min}, j_{max}]} P(j)
+    
+    where j is the current density and P is the power function.
+    
+    For PEM fuel cells, detailed electrochemical models account for:
+        - Activation losses
+        - Ohmic losses
+        - Concentration losses
+        
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power
+    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance
     """
      
     
@@ -122,10 +153,11 @@ def compute_stack_properties(fuel_cell_stack):
         atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
         atmo_data  = atmosphere.compute_values(design_altitude) 
          
-        segment                          = RCAIDE.Framework.Mission.Segments.Segment()
-        segment.hybrid_power_split_ratio = 1.0
-        segment.state.conditions         = RCAIDE.Framework.Mission.Common.Results()   
-        bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
+        segment                                     = RCAIDE.Framework.Mission.Segments.Segment()
+        segment.hybrid_power_split_ratio            = 1.0
+        segment.battery_fuel_cell_power_split_ratio = 0.1
+        segment.state.conditions                    = RCAIDE.Framework.Mission.Common.Results()   
+        bus                                         = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
         bus.fuel_cell_stacks.append(fuel_cell_stack)   
         
         bus.append_operating_conditions(segment)

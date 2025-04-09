@@ -134,7 +134,8 @@ def Harmonic_Noise_Validation(PP):
         
         noise                                                  = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup() 
         settings                                               = noise.settings
-        settings.fidelity                                      = fidelities[fid]  
+        settings.fidelity                                      = fidelities[fid]
+        settings.use_plane_loading_surrogate                   = False  
         conditions.noise.number_of_microphones                 = len(theta)
         
         # time
@@ -148,7 +149,7 @@ def Harmonic_Noise_Validation(PP):
         F8745D4_SPL_broadband                                  = conditions.noise.converters[rotor.tag].SPL_broadband  
         F8745D4_SPL_harmonic_bpf_spectrum                      = conditions.noise.converters[rotor.tag].SPL_harmonic_bpf_spectrum     
         
-        Cp =  segment.state.conditions.energy.converters[rotor.tag]  .power_coefficient
+        Cp =  segment.state.conditions.energy.converters[rotor.tag].power_coefficient
 
         
         # plot results 

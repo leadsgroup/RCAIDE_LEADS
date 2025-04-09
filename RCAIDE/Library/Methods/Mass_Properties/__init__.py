@@ -1,7 +1,7 @@
 # RCAIDE/Library/Methods/Weights/__init__.py
 # 
 
-"""RCAIDE Package Setup
+""" Documentation to come!
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

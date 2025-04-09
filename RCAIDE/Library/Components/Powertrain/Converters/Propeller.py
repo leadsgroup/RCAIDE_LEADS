@@ -31,20 +31,18 @@ class Propeller(Rotor):
     -----
     The Propeller class models fixed or variable pitch propellers for aircraft
     propulsion. It includes capabilities for:
-
-    * Forward flight performance analysis
-    * Fixed and variable pitch operation
-    * Blade element momentum theory calculations
-    * Efficiency optimization
-    * Acoustic analysis
+        * Forward flight performance analysis
+        * Fixed and variable pitch operation
+        * Blade element momentum theory calculations
+        * Efficiency optimization
+        * Acoustic analysis
 
     The model assumes:
-
-    * Axial inflow (unless modified by orientation angles)
-    * Rigid blades
-    * Quasi-steady aerodynamics
-    * No blade-to-blade aerodynamic interference
-    * No compressibility effects (unless explicitly modeled)
+        * Axial inflow (unless modified by orientation angles)
+        * Rigid blades
+        * Quasi-steady aerodynamics
+        * No blade-to-blade aerodynamic interference
+        * No compressibility effects (unless explicitly modeled)
 
     **Definitions**
     

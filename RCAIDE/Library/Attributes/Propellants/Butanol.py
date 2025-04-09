@@ -12,7 +12,70 @@ from .Propellant import Propellant
 #  Propanol Propellant Class
 # ----------------------------------------------------------------------------------------------------------------------   
 class Butanol(Propellant):
-    """Butanol class propellant  
+    """
+    A class representing butanol (C4H9OH) fuel properties for propulsion applications.
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the propellant ('Butanol')
+    reactant : str
+        Oxidizer used for combustion ('O2')
+    density : float
+        Fuel density in kg/m³ (809.56)
+    specific_energy : float
+        Specific energy content in J/kg (3.61e7)
+    energy_density : float
+        Energy density in J/m³ (2.92e10)
+    lower_heating_value : float
+        Lower heating value in J/kg (3.44e7)
+    use_high_fidelity_kinetics_model : bool
+        Flag for using detailed chemical kinetics (False)
+    fuel_surrogate_chemical_properties : dict
+        Simplified chemical composition for surrogate model {'N1C4H9OH': 1.0}
+    fuel_chemical_properties : dict
+        Detailed chemical composition for high-fidelity model
+    air_chemical_properties : dict
+        Air composition for combustion calculations
+    surrogate_species_list : list
+        Species considered in surrogate model ['CO', 'CO2', 'H2O']
+    species_list : list
+        Species considered in detailed model ['CO', 'CO2', 'H2O', 'NO', 'NO2', 'CSOLID']
+    global_warming_potential_100 : Data
+        100-year global warming potential for emissions
+            - CO2 : float
+                GWP for carbon dioxide (1)
+            - H2O : float
+                GWP for water vapor (0.06)
+            - SO2 : float
+                GWP for sulfur dioxide (-226)
+            - NOx : float
+                GWP for nitrogen oxides (52)
+            - Soot : float
+                GWP for particulate matter (1166)
+            - Contrails : float
+                GWP for contrail formation (11)
+
+    Notes
+    -----
+    This class implements properties for butanol fuel, including options forboth simplified and 
+    detailed chemical kinetics. Properties are specified at standard conditions 
+    (15°C, 1 atm).
+
+    **Definitions**
+    
+    'Lower Heating Value'
+        Heat of combustion excluding latent heat of water vapor
+    
+    'Global Warming Potential'
+        Relative measure of heat trapped in atmosphere compared to CO2
+
+    **Major Assumptions**
+        * Properties are for standard temperature and pressure conditions (20C, 1atm)
+
+    References
+    ----------
+    [1] IEA. (n.d.). Properties. AMF. https://www.iea-amf.org/content/fuel_information/butanol/properties#:~:text=Isobutanol%20or%20n%2Dbutanol%20are,from%20gasoline%20in%20normal%20conditions.&text=Viscosities%20of%20butanol%20isomers%20are,to%20viscosities%20of%20diesel%20fuel. 
     """
 
     def __defaults__(self):

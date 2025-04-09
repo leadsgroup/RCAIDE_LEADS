@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
- # RCAIDE imports   
-from .                          import Propulsor
+ # RCAIDE imports
+from RCAIDE.Framework.Core     import Data
+from .                         import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .append_turbofan_conditions     import append_turbofan_conditions 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
  
@@ -92,7 +93,7 @@ class Turbofan(Propulsor):
     design_altitude : float
         Design altitude of the engine [m]. Default is 0.0.
         
-    SFC_adjustment : float
+    specific_fuel_consumption_reduction_factor : float
         Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
         
     compressor_nondimensional_massflow : float
@@ -139,36 +140,44 @@ class Turbofan(Propulsor):
     """
     def __defaults__(self):    
         # setting the default values
-        self.tag                                      = 'Turbofan'  
-        self.nacelle                                  = None 
-        self.fan                                      = None 
-        self.ram                                      = None 
-        self.inlet_nozzle                             = None 
-        self.low_pressure_compressor                  = None 
-        self.high_pressure_compressor                 = None 
-        self.low_pressure_turbine                     = None 
-        self.high_pressure_turbine                    = None 
-        self.combustor                                = None 
-        self.core_nozzle                              = None 
-        self.fan_nozzle                               = None       
-        self.diameter                                 = 0.0      
-        self.length                                   = 0.0
-        self.height                                   = 0.5     # Engine centerline heigh above the ground plane
-        self.exa                                      = 1       # distance from fan face to fan exit/ fan diameter)
-        self.plug_diameter                            = 0.1     # dimater of the engine plug
-        self.geometry_xe                              = 1.      # Geometry information for the installation effects function
-        self.geometry_ye                              = 1.      # Geometry information for the installation effects function
-        self.geometry_Ce                              = 2.      # Geometry information for the installation effects function
-        self.bypass_ratio                             = 0.0 
-        self.design_isa_deviation                     = 0.0
-        self.design_altitude                          = 0.0
-        self.SFC_adjustment                           = 0.0 # Less than 1 is a reduction
-        self.compressor_nondimensional_massflow       = 0.0
-        self.reference_temperature                    = 288.15
-        self.reference_pressure                       = 1.01325*10**5 
-        self.design_thrust                            = 0.0
-        self.design_mass_flow_rate                    = 0.0 
-        self.OpenVSP_flow_through                     = False
+        self.tag                                        = 'Turbofan'  
+        self.nacelle                                    = None 
+        self.fan                                        = None 
+        self.ram                                        = None 
+        self.inlet_nozzle                               = None 
+        self.low_pressure_compressor                    = None 
+        self.high_pressure_compressor                   = None 
+        self.low_pressure_turbine                       = None 
+        self.high_pressure_turbine                      = None 
+        self.combustor                                  = None 
+        self.core_nozzle                                = None 
+        self.fan_nozzle                                 = None       
+        self.diameter                                   = 0.0      
+        self.length                                     = 0.0
+        self.height                                     = 0.0     # Engine centerline heigh above the ground plane 
+        self.plug_diameter                              = 0.1     # dimater of the engine plug
+        self.geometry_xe                                = 1.      # Geometry information for the installation effects function
+        self.geometry_ye                                = 1.      # Geometry information for the installation effects function
+        self.geometry_Ce                                = 2.      # Geometry information for the installation effects function
+        self.bypass_ratio                               = 0.0 
+        self.design_isa_deviation                       = 0.0
+        self.design_altitude                            = 0.0
+        self.specific_fuel_consumption_reduction_factor = 0.0 # Less than 1 is a reduction
+        self.compressor_nondimensional_massflow         = 0.0
+        self.reference_temperature                      = 288.15
+        self.reference_pressure                         = 1.01325*10**5 
+        self.design_thrust                              = 0.0
+        self.mass_flow_rate_design                      = 0.0
+
+        self.emission_indices                           = Data()  
+        self.emission_indices.NOx                       = None
+        self.emission_indices.CO2                       = None
+        self.emission_indices.CO                        = None
+        self.emission_indices.H2O                       = None
+        self.emission_indices.SO2                       = None
+        self.emission_indices.Soot                      = None  
+        
+        self.OpenVSP_flow_through                       = False
     
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """

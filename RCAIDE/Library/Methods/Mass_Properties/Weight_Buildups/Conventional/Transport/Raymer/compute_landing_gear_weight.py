@@ -15,38 +15,72 @@ from RCAIDE.Framework.Core    import Units ,  Data
 #  Horizontal Tail Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_landing_gear_weight(vehicle):
-    """ Calculate the weight of the landing gear of a transport aircraft based on the Raymer method
+    """
+    Calculates the weight of main and nose landing gear for transport aircraft using Raymer's method.
 
-        Assumptions:
-            No fuselage mounted landing gear
-            1 cargo door
-            gear load factor = 3
-            number of main gear shock struts = 2
-            stall speed is estimated with a Cl max of 2.5 and at sea level
-            Not a reciprocating engine
+    Parameters
+    ----------
+    vehicle : RCAIDE.Vehicle()
+        Vehicle data structure containing:
+            - design_range : float
+                Design range of aircraft [m]
+            - mass_properties.max_takeoff : float
+                Maximum takeoff weight [kg]
+            - systems.accessories : str
+                Aircraft type ('short-range', 'commuter', 'medium-range',
+                'long-range', 'sst', 'cargo')
+            - landing_gears : list
+                List of landing gear components containing:
+                    - strut_length : float
+                        Length of strut [m]
+                    - wheels : int
+                        Number of wheels per strut
 
-        Source:
-            Aircraft Design: A Conceptual Approach (2nd edition)
+    Returns
+    -------
+    output : Data()
+        Landing gear weights:
+            - main : float
+                Weight of main landing gear [kg]
+            - nose : float
+                Weight of nose landing gear [kg]
 
-        Inputs:
-            vehicle - data dictionary with vehicle properties                   [dimensionless]
-                -.design_range: design range of aircraft                        [m]
-                -.mass_properties.max_takeoff: MTOW                             [kg]
-                -.systems.accessories: type of aircraft (short-range, commuter
-                                                        medium-range, long-range,
-                                                        sst, cargo)
-                -.landing_gear.main_strut_length: main strut length              [m]
-                -.landing_gear.main_wheels: number of wheels on main landing gear
-                -.landing_gear.nose_strut_length: nose strut length              [m]
-                -.landing_gear.nose_wheels: number of wheels on nose landing gear
+    Notes
+    -----
+    This method implements Raymer's empirical correlations for transport aircraft
+    landing gear weight estimation. Separate correlations are used for main and
+    nose gear.
 
-            fuse - data dictionary with specific fuselage properties            [dimensionless]
+    **Major Assumptions**
+        * Gear load factor = 3
+        * Number of main gear shock struts = 2
+        * Stall speed assumes max Cl of 2.5, density of 1.225 kg/m^3
+        * All main landing gear is assumed to be of the same type
+        * All nose landing gear is assumed to be of the same type
 
-        Outputs:
-            weight_fuse - weight of the fuselage                                [kilograms]
+    **Theory**
+    The landing gear weights are calculated using:
+    .. math::
+        W_{main} = 0.0106K_{mp}W_{l}^{0.888}N_l^{0.25}L_m^{0.4}N_{mw}^{0.321}N_{mss}^{-0.5}V_{stall}^{0.1}
 
-        Properties Used:
-            N/A
+    .. math::
+        W_{nose} = 0.032K_{np}W_{l}^{0.646}N_l^{0.2}L_n^{0.5}N_{nw}^{0.45}
+
+    where:
+        * :math:`W_l` is landing weight
+        * :math:`N_l` is ultimate landing load factor
+        * :math:`L_m, L_n` are strut lengths
+        * :math:`N_{mw}, N_{nw}` are number of wheels
+        * :math:`N_{mss}` is number of main gear shock struts
+
+    References
+    ----------
+    [1] Raymer, D., "Aircraft Design: A Conceptual Approach", AIAA 
+        Education Series, 2018. 
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight
     """
     Kmp         = 1  # assuming not a kneeling gear
     if vehicle.systems.accessories == "sst":

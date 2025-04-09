@@ -1,7 +1,18 @@
 # RCAIDE/Methods/Performance/__init__.py
 # 
 
-"""RCAIDE Package Setup
+"""
+Methods for analyzing vehicle performance characteristics including aerodynamics, propulsion, 
+and flight mechanics. 
+ 
+This module provides functions for estimating key performance metrics 
+such as take-off and landing distances, stall speeds, payload-range capabilities, and flight 
+envelope characteristics.
+ 
+See Also
+--------
+RCAIDE.Library.Mission
+RCAIDE.Library.Methods.Aerodynamics
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

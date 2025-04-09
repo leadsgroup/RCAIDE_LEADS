@@ -23,38 +23,157 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turbojet_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_turbojet_performance(turbojet,state,center_of_gravity= [[0.0, 0.0,0.0]]):  
-    ''' Computes the perfomrance of a turbojet
+def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+    """
+    Computes the performance of a turbojet engine by analyzing the thermodynamic cycle.
     
     Parameters
     ----------
-    turbojet : dict
-        turbojet compoment   
-    state : dict
-        operating conditions data structure   
-    fuel_line : dict
-        fuel line component (default: None)
-    bus : dict
-        electrical bus compoment (default: None)
-    center_of_gravity : list
-        aircraft center of gravity [m]
+    turbojet : RCAIDE.Library.Components.Propulsors.Turbojet
+        Turbojet engine component with the following attributes:
+            - tag : str
+                Identifier for the turbojet
+            - working_fluid : Data
+                Working fluid properties object
+            - ram : Data
+                Ram component
+                    - tag : str
+                        Identifier for the ram
+            - inlet_nozzle : Data
+                Inlet nozzle component
+                    - tag : str
+                        Identifier for the inlet nozzle
+            - low_pressure_compressor : Data
+                Low pressure compressor component
+                    - tag : str
+                        Identifier for the low pressure compressor
+                    - motor : Data, optional
+                        Electric motor component
+                    - generator : Data, optional
+                        Electric generator component
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
+            - high_pressure_compressor : Data
+                High pressure compressor component
+                    - tag : str
+                        Identifier for the high pressure compressor
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
+            - combustor : Data
+                Combustor component
+                    - tag : str
+                        Identifier for the combustor
+                    - fuel_data : Data
+                        Fuel properties
+                        - specific_energy : float
+                            Fuel specific energy [J/kg]
+            - high_pressure_turbine : Data
+                High pressure turbine component
+                    - tag : str
+                        Identifier for the high pressure turbine
+            - low_pressure_turbine : Data
+                Low pressure turbine component
+                    - tag : str
+                        Identifier for the low pressure turbine
+            - afterburner : Data
+                Afterburner component
+                    - tag : str
+                        Identifier for the afterburner
+            - core_nozzle : Data
+                Core nozzle component
+                    - tag : str
+                        Identifier for the core nozzle
+            - afterburner_active : bool
+                Flag indicating if afterburner is active
+            - origin : list of lists
+                Origin coordinates [[x, y, z]] [m]
+    state : RCAIDE.Framework.Mission.Common.State
+        State object containing:
+            - conditions : Data
+                Flight conditions
+                    - freestream : Data
+                        Freestream properties
+                            - velocity : numpy.ndarray
+                                Freestream velocity [m/s]
+                            - temperature : numpy.ndarray
+                                Freestream temperature [K]
+                            - pressure : numpy.ndarray
+                                Freestream pressure [Pa]
+                    - noise : Data
+                        Noise conditions
+                            - propulsors : dict
+                                Propulsor noise conditions indexed by tag
+                    - energy : Data
+                        Energy conditions
+                            - propulsors : dict
+                                Propulsor energy conditions indexed by tag
+                            - converters : dict
+                                Converter energy conditions indexed by tag
+                            - hybrid_power_split_ratio : float
+                                Ratio of power split for hybrid systems
+            - numerics : Data
+                Numerical properties
+                    - time : Data
+                        Time properties
+                            - differentiate : list
+                                List of differentiation methods
+            - ones_row : function
+                Function to create array of ones with specified length
+    center_of_gravity : list of lists, optional
+        Center of gravity coordinates [[x, y, z]] [m]. Default: [[0.0, 0.0, 0.0]]
     
-    Returns: 
+    Returns
+    -------
+    thrust_vector : numpy.ndarray
+        Thrust force vector [N]
+    moment : numpy.ndarray
+        Moment vector [N·m]
+    power : numpy.ndarray
+        Shaft power output [W]
+    power_elec : numpy.ndarray
+        Electrical power input/output [W]
+    stored_results_flag : bool
+        Flag indicating if results are stored
+    stored_propulsor_tag : str
+        Tag of the turbojet with stored results
+    
+    Notes
+    -----
+    This function computes the performance of a turbojet engine by sequentially analyzing
+    each component in the engine's thermodynamic cycle. It links the output conditions of
+    each component to the input conditions of the next component in the flow path.
+    
+    The function follows this sequence:
+        1. Set working fluid properties
+        2. Compute ram performance
+        3. Compute inlet nozzle performance
+        4. Compute low pressure compressor performance
+        5. Compute high pressure compressor performance
+        6. Compute combustor performance
+        7. Compute high pressure turbine performance
+        8. Compute low pressure turbine performance
+        9. Compute afterburner performance (if active)
+        10. Compute core nozzle performance
+        11. Compute thrust and power output
+        12. Calculate efficiencies
+        13. Handle electrical power generation/consumption if applicable
+    
+    **Major Assumptions**
+        * Steady state operation
+        * One-dimensional flow through components
+        * Adiabatic components except for the combustor and afterburner
+        * Perfect gas behavior with variable properties
+    
+    References
     ----------
-    Outputs:  
-    total_thrust: array_like
-        thrust of turbojet [N]
-    total_momnet: array_like
-        moment of turbojet  [Nm]
-    total_mechanical_power: array_like
-        mechanical power generated by turbojet [W] 
-    total_electrical_power: array_like
-        electrical power generated by turbojet [W] 
-    stored_results_flag: boolean
-        boolean for stored results [-]     
-    stored_propulsor_tag; string
-        name of turbojet with stored results [-] 
-    ''' 
+    [1] Mattingly, J.D., "Elements of Gas Turbine Propulsion", 2nd Edition, AIAA Education Series, 2005. https://soaneemrana.org/onewebmedia/ELEMENTS%20OF%20GAS%20TURBINE%20PROPULTION2.pdf
+    [2] Cantwell, B., "AA283 Course Notes", Stanford University. https://web.stanford.edu/~cantwell/AA283_Course_Material/
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_thrust
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.reuse_stored_turbojet_data
+    """
     conditions                = state.conditions
     noise_conditions          = conditions.noise.propulsors[turbojet.tag]  
     turbojet_conditions       = conditions.energy.propulsors[turbojet.tag] 
@@ -129,7 +248,7 @@ def compute_turbojet_performance(turbojet,state,center_of_gravity= [[0.0, 0.0,0.
     combustor_conditions.inputs.mach_number              = hpc_conditions.outputs.mach_number  
     combustor.working_fluid                              = high_pressure_compressor.working_fluid  
 
-    # Flow through the high pressor compressor 
+    # Flow through the combustor
     compute_combustor_performance(combustor,conditions)
 
     # Link the high pressure turbine to the combustor
@@ -265,11 +384,15 @@ def compute_turbojet_performance(turbojet,state,center_of_gravity= [[0.0, 0.0,0.
                 exit_stagnation_temperature         = core_nozzle_conditions.outputs.stagnation_temperature,
                 exit_stagnation_pressure            = core_nozzle_conditions.outputs.static_pressure,
                 exit_velocity                       = core_nozzle_conditions.outputs.velocity
-            ) 
+            )
+
+    lpc_res = Data(
+                angular_velocity    =  lpc_conditions.omega, 
+            )    
 
     noise_conditions.fan_nozzle             = None 
     noise_conditions.core_nozzle            = core_nozzle_res
-    noise_conditions.fan                    = None   
+    noise_conditions.fan                    = lpc_res   
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbojet.tag
     

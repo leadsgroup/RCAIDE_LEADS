@@ -51,8 +51,8 @@ def main():
         plot_title  = "{}, deflection = {} degrees".format(geometry.tag, round(deflection/Units.degrees))
         plot_3d_vehicle_vlm_panelization(geometry, show_wing_control_points=False, save_filename=plot_title, show_figure=False)        
         
-        results.CL  = np.append(results.CL , data.CL.flatten() )
-        results.CDi = np.append(results.CDi, data.CDi.flatten())
+        results.CL  = np.append(results.CL , data.CLift.flatten() )
+        results.CDi = np.append(results.CDi, data.CDrag_induced.flatten())
         results.CM  = np.append(results.CM , data.CM.flatten() )
         
     # save/load results

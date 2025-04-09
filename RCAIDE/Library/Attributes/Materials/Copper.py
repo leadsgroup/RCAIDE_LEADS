@@ -18,23 +18,40 @@ import numpy as np
 #------------------------------------------------------------------------------- 
 class Copper(Solid):
 
-    """ Physical Constants Specific to copper RRR=50 OFHC
-    
-    Assumptions:
-    None
-    
-    Source:
-    "PROPERTIES OF SELECTED MATERIALS AT CRYOGENIC TEMPERATURES" Peter E. Bradley and Ray Radebaugh
-    "A copper resistance temperature scale" Dauphinee, TM and Preston-Thomas, H
-    
-    Inputs:
-    N/A
-    
-    Outputs:
-    N/A
-    
-    Properties Used:
-    None
+    """ 
+    A class representing copper material properties.
+
+    Attributes
+    ----------
+    density : float
+        Material density in kg/m³ (8960.0)
+    conductivity_electrical : float
+        Electrical conductivity in mhos/m (58391886.09)
+    conductivity_thermal : float
+        Thermal conductivity at room temperature in W/(m·K) (392.4)
+    interpolate : bool
+        Flag to enable interpolation of temperature-dependent properties
+    c_thermal : function
+        Interpolation function for temperature-dependent thermal conductivity
+            - Input: Temperature in K
+            - Output: Thermal conductivity in W/(m·K)
+            - Valid range: 4K to 300K
+    c_electrical : function
+        Interpolation function for temperature-dependent electrical conductivity
+            - Input: Temperature in K
+            - Output: Electrical conductivity in mhos/m
+            - Valid range: 4.2K to 320K
+
+    Notes
+    -----
+    This class implements temperature-dependent properties for copper,
+    particularly focused on cryogenic applications.
+
+    References
+    ----------
+    [1] Bradley, P. and Radebaugh, R. (2013), Properties of Selected Materials at Cryogenic Temperatures, CRC Press, Boca Raton, FL, [online], https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=913059 (Accessed January 8, 2025)
+    [2] T. M. Dauphinee, H. Preston‐Thomas; A Copper Resistance Temperature Scale. Rev. Sci. Instrum. 1 September 1954; 25 (9): 884–886. https://doi.org/10.1063/1.1771200
+
     """
 
     def __defaults__(self):

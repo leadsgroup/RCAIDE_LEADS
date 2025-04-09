@@ -33,6 +33,5 @@ Airframe
    airframe_noise
    clean_wing_noise
    landing_gear_noise
-   leading_edge_slat_noise
    trailing_edge_flap_noise
 

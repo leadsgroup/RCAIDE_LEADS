@@ -1,7 +1,12 @@
 # RCAIDE/Methods/Energy/Propulsors/Converters/Turboelectric_Generator/__init__.py
 # 
 
-""" RCAIDE Package Setup
+"""
+This module provides methods for modeling and analyzing turboelectric generator systems in aircraft powertrains. It includes functionality for design, performance computation, and condition management of turboelectric generators.
+
+See Also
+--------
+RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

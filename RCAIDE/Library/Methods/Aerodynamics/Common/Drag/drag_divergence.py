@@ -55,7 +55,7 @@ def drag_divergence(Mach,geometry, Cl):
         # Divergence Mach number, fit to Concorde data 
         Mcc    =  0.95 * np.ones_like(Mach)  
     else:  
-        # Get effective Cl_wings and sweep 
+        # Get effective CLift_wings and sweep
         tc = t_c_w / np.cos(sweep_w)
         cl = Cl/ (np.cos(sweep_w) ** 2)
 

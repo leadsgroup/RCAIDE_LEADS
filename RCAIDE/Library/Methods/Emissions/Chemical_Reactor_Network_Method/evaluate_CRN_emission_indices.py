@@ -24,59 +24,51 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     ----------
     segment : Data
         Mission segment data container
-        
-        - state : Data
-            Current state 
-
-            - numerics : Data
-                Numerical integration parameters
-
-                - time : Data
-                    Time integration settings
-            - conditions : Data
-                Flight conditions and component states
-            - ones_row : function
-                Creates array of ones with specified size
+            - state : Data
+                Current state 
+                    - numerics : Data
+                        Numerical integration parameters
+                            - time : Data
+                                Time integration settings
+                    - conditions : Data
+                        Flight conditions and component states
+                    - ones_row : function
+                        Creates array of ones with specified size
                 
     settings : Data
         Configuration settings for the simulation
         
     vehicle : Data
         Vehicle configuration data
-
-        - networks : list
-            List of propulsion system networks
-
-            - fuel_lines : list
-                Fuel distribution systems
-            - propulsors : list
-                Propulsion units 
+            - networks : list
+                List of propulsion system networks
+                    - fuel_lines : list
+                        Fuel distribution systems
+                    - propulsors : list
+                        Propulsion units 
     Returns
     -------
         Updates segment.state.conditions.emissions with:
-        
-        total : Data
-            Total emissions over segment
-
-            - CO2 : float
-                Total CO2 emissions [kg]
-            - H2O : float
-                Total H2O emissions [kg]
-            - NOx : float
-                Total NOx emissions [kg]
-        index : Data
-            Emission indices
-
-            - CO2 : ndarray
-                CO2 emission index [kg_CO2/kg_fuel]
-            - CO : ndarray
-                CO emission index [kg_CO/kg_fuel]
-            - H2O : ndarray
-                H2O emission index [kg_H2O/kg_fuel]
-            - NO : ndarray
-                NO emission index [kg_NO/kg_fuel]
-            - NO2 : ndarray
-                NO2 emission index [kg_NO2/kg_fuel]
+            total : Data
+                Total emissions over segment
+                    - CO2 : float
+                        Total CO2 emissions [kg]
+                    - H2O : float
+                        Total H2O emissions [kg]
+                    - NOx : float
+                        Total NOx emissions [kg]
+            index : Data
+                Emission indices
+                    - CO2 : ndarray
+                        CO2 emission index [kg_CO2/kg_fuel]
+                    - CO : ndarray
+                        CO emission index [kg_CO/kg_fuel]
+                    - H2O : ndarray
+                        H2O emission index [kg_H2O/kg_fuel]
+                    - NO : ndarray
+                        NO emission index [kg_NO/kg_fuel]
+                    - NO2 : ndarray
+                        NO2 emission index [kg_NO2/kg_fuel]
 
     Notes
     -----
@@ -84,9 +76,8 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     using Cantera. 
 
     **Extra modules required**
-
-    * numpy
-    * Cantera (through evaluate_cantera function)
+        * numpy
+        * Cantera (through evaluate_cantera function)
 
     See Also
     --------

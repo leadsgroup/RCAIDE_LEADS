@@ -41,10 +41,10 @@ class Internal_Combustion_Engine(Propulsor):
     on throttle setting and flight conditions.
     
     Key characteristics:
-    - Simpler mechanical design than constant-speed systems
-    - RPM varies with airspeed and power setting
-    - Optimized for a specific flight condition
-    - Lower cost and maintenance requirements
+        * Simpler mechanical design than constant-speed systems
+        * RPM varies with airspeed and power setting
+        * Optimized for a specific flight condition
+        * Lower cost and maintenance requirements
     
     **Definitions**
 

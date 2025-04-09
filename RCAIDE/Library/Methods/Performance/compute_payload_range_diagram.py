@@ -20,22 +20,76 @@ from matplotlib import pyplot as plt
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
 def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0., plot_diagram = True, fuel_name=None):  
-    """Calculates and plots the payload range diagram for an aircraft by modifying the cruise segment and weights of the aicraft .
+    """
+    Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.
+    
+    Parameters
+    ----------
+    mission : Data
+        Data structure containing the mission to be analyzed
+    cruise_segment_tag : str, optional
+        String identifier for the cruise segment in the mission
+        Default: "cruise"
+    fuel_reserve_percentage : float, optional
+        Fraction of maximum fuel to be reserved (not used for range)
+        Default: 0.0
+    plot_diagram : bool, optional
+        Flag to generate payload-range plots
+        Default: True
+    fuel_name : str, optional
+        Name of fuel for plot title
+        Default: None
+    
+    Returns
+    -------
+    payload_range : Data
+        Data structure containing payload range properties
+        - range : ndarray
+            Range values for each point [m]
+        - payload : ndarray
+            Payload values for each point [kg]
+        - oew_plus_payload : ndarray
+            Operating empty weight plus payload for each point [kg]
+        - fuel : ndarray
+            Fuel weight for each point [kg]
+        - takeoff_weight : ndarray
+            Takeoff weight for each point [kg]
+        - fuel_reserve_percentage : float
+            Fraction of fuel reserved
+    
+    Notes
+    -----
+    Computes three key points for conventional aircraft:
+        1. Maximum payload at maximum takeoff weight
+        2. Maximum fuel with maximum takeoff weight
+        3. Maximum fuel with zero payload (ferry range)
+    
+    For electric aircraft computes:
+        1. Maximum payload range
+        2. Ferry range (zero payload)
 
-        Sources:
-        N/A
-
-        Assumptions:
-        None 
-
-        Inputs:
-            vehicle             data structure for aircraft                  [-]
-            mission             data structure for mission                   [-] 
-            cruise_segment_tag  string of cruise segment                     [string]
-            fuel_reserve_percentage            reserve fuel                                 [unitless] 
-            
-        Outputs: 
-            payload_range       data structure of payload range properties   [m/s]
+    **Major Assumptions**
+        * Constant cruise speed and altitude
+        * Fixed reserve fuel fraction
+        * Linear interpolation between payload-range points
+        * Battery energy content remains constant (electric aircraft)
+    
+    **Theory**
+    The payload-range diagram shows the trade-off between how much payload an aircraft
+    can carry versus how far it can fly. For conventional aircraft, the diagram typically
+    has three segments:
+    
+    1. Maximum payload segment: Range increases by burning fuel initially loaded
+    2. Maximum fuel segment: Range increases by trading payload for fuel
+    3. Ferry range segment: Maximum range with zero payload
+    
+    For electric aircraft, the diagram is simpler with just two points connected by
+    a straight line, as there is no fuel weight to trade for payload.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Performance.conventional_payload_range_diagram
+    RCAIDE.Library.Methods.Performance.electric_payload_range_diagram
     """ 
             
     if mission == None:

@@ -12,19 +12,60 @@ from RCAIDE.Framework.Core import Data ,Units
 # Translate Conditions to DFDC Cases 
 # ----------------------------------------------------------------------------------------------------------------------    
 def translate_conditions_to_dfdc_cases(dfdc_analysis):
-    """ Translate fligth conditions to DFDC Cases 
-
-    Assumptions:
-        N.A.
-
-    Source:
-        N.A.
+    """
+    Translates flight conditions to DFDC case definitions for analysis.
     
-    Inputs:
-        dfdc_analysis (dict): DFDC analysis data structure  
-
-    Outputs:
-        None
+    Parameters
+    ----------
+    dfdc_analysis : DFDCAnalysis
+        Analysis object containing the following attributes:
+            - settings.filenames.results_template : str
+                Template string for naming result files
+            - training : Data
+                Training data parameters
+                    - mach : array
+                        Array of freestream Mach numbers
+                    - altitude : array
+                        Array of altitudes [m]
+                    - tip_mach : array
+                        Array of tip Mach numbers
+            - geometry : DuctedFan
+                Ducted fan geometry with the following attributes:
+                    - cruise : Data
+                        Design cruise conditions
+                            - design_altitude : float
+                                Design altitude [m]
+                            - design_angular_velocity : float
+                                Design angular velocity [rad/s]
+                            - design_freestream_velocity : float
+                                Design freestream velocity [m/s]
+                            - design_freestream_mach : float
+                                Design freestream Mach number
+                    - tip_radius : float
+                        Tip radius of the ducted fan [m]
+    
+    Returns
+    -------
+    None
+    
+    Notes
+    -----
+    This function creates DFDC case definitions for:
+        1. The design case (using design parameters from the geometry)
+        2. All combinations of Mach number, tip Mach number, and altitude specified
+        in the training data
+    
+    For each case, it calculates:
+        - Velocity based on Mach number and atmospheric conditions
+        - RPM based on tip Mach number and tip radius
+        - Altitude (converted to kilometers for DFDC)
+    
+    The US Standard Atmosphere 1976 model is used to compute atmospheric
+    properties at each altitude.
+    
+    See Also
+    --------
+    RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976
     """
     # set up aerodynamic Conditions object
     template   = dfdc_analysis.settings.filenames.results_template 

@@ -13,26 +13,82 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_lfp_cell_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_lfp_cell_performance(battery_module,state,bus,coolant_lines,t_idx, delta_t): 
+def compute_lfp_cell_performance(battery_module, state, bus, coolant_lines, t_idx, delta_t):
     """
-       Assumptions: 
-        - All battery_module modules exhibit the same thermal behavior.
-        - The cell temperature is assumed to be the temperature of the entire module.
-       
-       Source:
-       Internal Resistance:
-       
-       Inputs:
-         battery. 
-                *** will be done in sphinx format.
-           
-         inputs.
-        
-       
-       Outputs:
-         battery.          
-   
-        
+    Computes the performance of lithium iron phosphate (LFP) battery cells.
+    
+    Parameters
+    ----------
+    battery_module : BatteryModule
+        The battery module containing LFP cells with the following attributes:
+            - cell.electrode_area : float
+                Area of the cell electrode [m²]
+            - cell.surface_area : float
+                Surface area of the cell [m²]
+            - cell.mass : float
+                Mass of the cell [kg]
+            - cell.specific_heat_capacity : float
+                Specific heat capacity of the cell [J/(kg·K)]
+            - cell.discharge_performance_map : function
+                Function that maps C-rate, temperature, and discharge capacity to voltage
+            - electrical_configuration.series : int
+                Number of cells in series
+            - electrical_configuration.parallel : int
+                Number of cells in parallel
+    state : State
+        Current system state containing conditions for all components
+    bus : ElectricalBus
+        The electrical bus connected to the battery module
+    coolant_lines : list
+        List of coolant lines that may be connected to the battery module
+    t_idx : int
+        Current time index in the simulation
+    delta_t : numpy.ndarray
+        Time step array [s]
+    
+    Returns
+    -------
+    stored_results_flag : bool
+        Flag indicating if results were stored
+    stored_battery_tag : str
+        Tag of the battery module for which results were stored
+    
+    Notes
+    -----
+    This function computes the electrical and thermal performance of LFP battery cells
+    within a battery module. It calculates:
+        1. Current flow through the module and individual cells
+        2. Heat generation due to joule heating and entropy changes
+        3. Cell voltage under load based on state of charge, temperature, and current
+        4. Power flow through the module
+        5. Temperature changes based on heat generation and cooling (if present)
+        6. State of charge and depth of discharge updates
+        7. Charge throughput tracking
+    
+    **Major Assumptions**
+        * All battery cells in a module exhibit the same thermal behavior
+        * The cell temperature is assumed to be the temperature of the entire module
+    
+    **Theory**
+    
+    Heat generation in the cell includes both joule heating and entropic effects:
+    
+    .. math::
+        \\dot{Q}_{joule} = \\frac{i_{cell}^2}{\sigma}
+    
+    .. math::
+        \\dot{Q}_{entropy} = f(SOC) \\cdot T \\cdot \\frac{dU}{dT}
+    
+    where:
+        - :math:`i_{cell}` is the current density [A/m²]
+        - :math:`\\sigma` is the electrical conductivity [S/m]
+        - :math:`SOC` is the state of charge
+        - :math:`T` is the temperature [K]
+        - :math:`\\frac{dU}{dT}` is the entropic coefficient
+    
+    See Also
+    --------
+    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP
     """ 
     # ---------------------------------------------------------------------------------    
     # battery cell properties
@@ -49,9 +105,10 @@ def compute_lfp_cell_performance(battery_module,state,bus,coolant_lines,t_idx, d
     bus_conditions              = state.conditions.energy[bus.tag]
     bus_config                  = bus.battery_module_electric_configuration 
     phi                         = state.conditions.energy.hybrid_power_split_ratio 
+    psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio
     E_bus                       = bus_conditions.energy
-    P_bus                       = bus_conditions.power_draw*phi
-    I_bus                       = bus_conditions.current_draw*phi    
+    P_bus                       = bus_conditions.power_draw*phi * psi
+    I_bus                       = bus_conditions.current_draw*phi *psi   
     
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions
@@ -169,48 +226,57 @@ def compute_lfp_cell_performance(battery_module,state,bus,coolant_lines,t_idx, d
         
     return stored_results_flag, stored_battery_tag
 def reuse_stored_lfp_cell_data(battery_module,state,bus,stored_results_flag, stored_battery_tag):
-    '''Reuses results from one propulsor for identical batteries
-    
-    Assumptions: 
-    N/A
-
-    Source:
-    N/A
-
-    Inputs:  
-    
-
-    Outputs:  
-    
-    Properties Used: 
-    N.A.        
-    '''
+    """Reuses results from one propulsor for identical batteries       
+    """
    
     state.conditions.energy[bus.tag].battery_modules[battery_module.tag] = deepcopy(state.conditions.energy[bus.tag].battery_modules[stored_battery_tag])      
     return
 
 
-def compute_lfp_cell_state(battery_module,battery_module_data,SOC,T,I):
-    """This computes the electrical state variables of a lithium ion 
-    battery_module cell with a  lithium-nickel-cobalt-aluminum oxide cathode 
-    chemistry from look-up tables 
-     
-    Assumtions: 
-    N/A
+def compute_lfp_cell_state(battery_module, battery_module_data, SOC, T, I):
+    """
+    Computes the electrical state variables of a lithium iron phosphate (LFP) battery cell using look-up tables.
     
-    Source:  
-    N/A 
-     
-    Inputs:
-        SOC           - state of charge of cell     [unitless]
-        battery_module_data  - look-up data structure      [unitless]
-        T             - battery_module cell temperature    [Kelvin]
-        I             - battery_module cell current        [Amperes]
+    Parameters
+    ----------
+    battery_module : BatteryModule
+        The battery module containing LFP cells with the following attributes:
+            - cell.nominal_capacity : float
+                Nominal capacity of the cell [Ah]
+    battery_module_data : function
+        Look-up function that maps C-rate, temperature, and discharge capacity to voltage
+    SOC : numpy.ndarray
+        State of charge of the cell [unitless, 0-1]
+    T : numpy.ndarray
+        Battery cell temperature [K]
+    I : numpy.ndarray
+        Battery cell current [A]
     
-    Outputs:  
-        V_ul          - under-load voltage          [Volts] 
-        
-    """ 
+    Returns
+    -------
+    V_ul : numpy.ndarray
+        Under-load voltage [V]
+    
+    Notes
+    -----
+    This function computes the voltage of an LFP battery cell under load conditions
+    by using a look-up table approach. It converts the state of charge to discharge
+    capacity, calculates the C-rate, and then uses these values along with temperature
+    to determine the cell voltage.
+    
+    The function applies limits to ensure the inputs are within the valid range of the
+    look-up data:
+        - SOC is limited to [0, 1]
+        - Temperature is limited to [-10°C, 60°C]
+        - Current is limited to [0A, 52A]
+    
+    **Major Assumptions**
+        * The model is valid only within the specified temperature and current ranges
+    
+    See Also
+    --------
+    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP
+    """
 
     # Make sure things do not break by limiting current, temperature and current 
     capacity      = battery_module.cell.nominal_capacity

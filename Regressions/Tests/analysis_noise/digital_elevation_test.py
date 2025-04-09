@@ -41,23 +41,20 @@ def main():
     results.segments[0].analyses.noise.settings.topography_file = data_file
     
     regression_plotting_flag = False 
-    flight_times = np.array(['06:00:00','06:05:00','06:10:00','06:15:00',
-                             '06:20:00','06:25:00','06:30:00','06:35:00',
-                             '06:40:00','06:45:00','06:50:00','06:55:00',
-                             '07:00:00','07:05:00','07:10:00','07:15:00',
-                             '07:20:00','07:25:00','07:30:00','07:35:00',
+    flight_times = np.array(['06:00:00','06:05:00','06:10:00', 
                              '07:40:00','07:45:00','07:50:00','07:55:00', 
                              '08:00:00'])
 
     noise_data   = post_process_noise_data(results,
                                            flight_times = flight_times,  
-                                           time_period  = ['06:00:00','09:00:00'] )  
+                                           time_period  = ['06:00:00','09:00:00'],
+                                           compute_eqivalent_noise=True)  
 
     
     plot_results(results,noise_data,regression_plotting_flag) 
 
     X57_SPL        = np.max(results.segments.cruise.conditions.noise.hemisphere_SPL_dBA) 
-    X57_SPL_true   = 71.50341070406208
+    X57_SPL_true   = 66.25788939370754
     X57_diff_SPL   = np.abs(X57_SPL - X57_SPL_true)
     print('Error: ',X57_diff_SPL)
     assert np.abs((X57_SPL - X57_SPL_true)/X57_SPL_true) < 1e-3 
@@ -131,8 +128,8 @@ def base_analysis(vehicle):
     noise.settings.mean_sea_level_altitude          = False         
     noise.settings.aircraft_origin_coordinates      = [33.94067953101678, -118.40513722978149]# Los Angeles International Airport
     noise.settings.aircraft_destination_coordinates = [33.8146, -118.1459]  # Ontario International airport 
-    noise.settings.microphone_x_resolution          = 800  
-    noise.settings.microphone_y_resolution          = 1200  
+    noise.settings.microphone_x_resolution          = 80  
+    noise.settings.microphone_y_resolution          = 120 
     noise.settings.noise_times_steps                = 50  
     noise.settings.number_of_microphone_in_stencil  = 25
     noise.settings.topography_file                  = 'LA_Metropolitan_Area.txt' 

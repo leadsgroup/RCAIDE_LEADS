@@ -14,7 +14,110 @@ from RCAIDE.Framework.Core import Data
 #  Jet_A1 Propellant Class
 # ----------------------------------------------------------------------------------------------------------------------  
 class Jet_A1(Propellant):
-    """Jet A1 class propellant  
+    """
+    A class representing Jet A-1 aviation kerosene fuel properties and emissions characteristics.
+    Similar to Jet A but with a lower freezing point for international operations.
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the propellant ('Jet_A1')
+    
+    reactant : str
+        Oxidizer used for combustion ('O2')
+    
+    density : float
+        Fuel density in kg/m³ (804.0)
+    
+    specific_energy : float
+        Specific energy content in J/kg (43.15e6)
+    
+    energy_density : float
+        Energy density in J/m³ (34692.6e6)
+    
+    lower_heating_value : float
+        Lower heating value in J/kg (43.24e6)
+    
+    max_mass_fraction : Data
+        Maximum fuel-to-oxidizer mass ratios
+        
+        - Air : float
+            Maximum mass fraction with air (0.0633)
+        - O2 : float
+            Maximum mass fraction with pure oxygen (0.3022)
+    
+    temperatures : Data
+        Critical temperatures in K
+        
+        - flash : float
+            Flash point (311.15)
+        - autoignition : float
+            Autoignition temperature (483.15)
+        - freeze : float
+            Freezing point (226.15)
+        - boiling : float
+            Boiling point (0.0)
+    
+    emission_indices : Data
+        Emission indices in kg/kg fuel
+        
+        - Production : float
+            CO2 production rate (0.4656)
+        - CO2 : float
+            Carbon dioxide (3.16)
+        - H2O : float
+            Water vapor (1.34)
+        - SO2 : float
+            Sulfur dioxide (0.0012)
+        - NOx : float
+            Nitrogen oxides (0.01514)
+        - Soot : float
+            Particulate matter (0.0012)
+    
+    global_warming_potential_100 : Data
+        100-year global warming potentials
+        
+        - CO2 : float
+            Carbon dioxide (1)
+        - H2O : float
+            Water vapor (0.06)
+        - SO2 : float
+            Sulfur dioxide (-226)
+        - NOx : float
+            Nitrogen oxides (52)
+        - Soot : float
+            Particulate matter (1166)
+        - Contrails : float
+            Contrail formation (11)
+
+    Notes
+    -----
+    This class implements properties for Jet A-1 aviation kerosene, the international 
+    variant of Jet A with enhanced cold-weather performance. Properties are specified 
+    at standard conditions (15°C, 1 atm).
+
+    **Definitions**
+    
+    'Flash Point'
+        Lowest temperature at which fuel vapors will ignite
+    
+    'Autoignition Temperature'
+        Temperature at which fuel will ignite without external ignition source
+    
+    'Freeze Point'
+        Temperature at which fuel begins to form solid crystals
+
+    **Major Assumptions**
+    
+    * Properties are for standard temperature and pressure conditions
+    * Surrogate model uses three-component representation
+    * Detailed model includes complex hydrocarbon mixture
+    * Emission indices are for typical aircraft cruise conditions
+
+    References
+    ----------
+    [1] Randall C. Boehm, Zhibin Yang, David C. Bell, John Feldhausen, Joshua S. Heyne, "Lower heating value of jet fuel from hydrocarbon class concentration data and thermo-chemical reference data: An uncertainty quantification," Fuel, Volume 311, 2022, 122542, ISSN 0016-2361, https://doi.org/10.1016/j.fuel.2021.122542.
+    [2] NASA's Engine Performance Program (NEPP) 
     """
 
     def __defaults__(self):

@@ -35,11 +35,10 @@ def compute_generator_performance(generator,conditions):
     Notes
     -----
     This function handles both PMSM and DC generator types with different computation approaches:
-     
-    - Uses speed-torque relationships
-    - Accounts for gearbox effects
-    - Computes electrical parameters (current, voltage)
-    - Determines overall efficiency
+        - Uses speed-torque relationships
+        - Accounts for gearbox effects
+        - Computes electrical parameters (current, voltage)
+        - Determines overall efficiency
 
     **Major Assumptions**
         * Steady state operation
@@ -50,8 +49,8 @@ def compute_generator_performance(generator,conditions):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Converters.DC_generator
-    RCAIDE.Library.Components.Powertrain.Converters.PMSM_generator
+    RCAIDE.Library.Components.Powertrain.Converters.DC_Generator
+    RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator
     """
     
     # unpack generator conditions 

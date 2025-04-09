@@ -452,7 +452,7 @@ def vehicle_setup(rotor_type):
         propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
         propeller.cruise.design_Cl                       = 0.7 
         propeller.cruise.design_altitude                 = 30. * Units.feet 
-        propeller.cruise.design_thrust                   = 4000   
+        propeller.cruise.design_thrust                   = 6000   
         propeller.clockwise_rotation                     = False
         propeller.variable_pitch                         = True  
         propeller.origin                                 = [[2.,2.5,0.95]]   
@@ -488,7 +488,7 @@ def vehicle_setup(rotor_type):
         propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
         propeller.cruise.design_altitude                 = 30. * Units.feet
         propeller.cruise.design_power_coefficient        = 0.11404579
-        propeller.cruise.design_thrust                   = 4000 
+        propeller.cruise.design_thrust                   = 6000 
         starboard_propulsor.rotor                        = propeller
     
         # DC_Motor       

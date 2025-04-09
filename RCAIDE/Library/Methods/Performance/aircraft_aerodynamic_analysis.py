@@ -17,14 +17,66 @@ import numpy as np
 #------------------------------------------------------------------------------
 # aircraft_aerodynamic_analysis
 #------------------------------------------------------------------------------  
-def aircraft_aerodynamic_analysis(vehicle,
-                                  angle_of_attack_range,
-                                  Mach_number_range,
+def aircraft_aerodynamic_analysis(aerodynamics_analysis = None,
+                                  angle_of_attack_range = None,
+                                  Mach_number_range= None,
                                   control_surface_deflection_range = np.array([[0]]),
                                   altitude = 0,
-                                  delta_ISA=0,
-                                  use_surrogate = True,
-                                  model_fuselage = True):  
+                                  delta_ISA=0):
+    """
+    Computes aerodynamic coefficients across ranges of angle of attack and Mach numbers using vortex lattice methods.
+ 
+ 
+    Parameters
+    --------
+    vehicle : Vehicle
+        The vehicle instance to be analyzed
+    angle_of_attack_range : ndarray
+        Array of angle of attack values to evaluate [radians]
+    Mach_number_range : ndarray
+        Array of Mach numbers to evaluate
+    control_surface_deflection_range : ndarray, optional
+        Array of control surface deflection angles [radians], default [[0]]
+    altitude : float, optional
+        Altitude for atmospheric properties [m], default 0
+    delta_ISA : float, optional
+        Temperature offset from ISA conditions [K], default 0
+    use_surrogate : bool, optional
+        Flag for using surrogate model in analysis, default True
+    model_fuselage : bool, optional
+        Flag for including fuselage effects, default True. Of note, fuselage modeling can 
+        sometimes be difficult for VLM solvers.
+ 
+    Returns
+    --------
+    results : Data
+        Container of analysis results including:
+            * Mach : ndarray
+                Evaluated Mach numbers
+            * alpha : ndarray
+                Evaluated angles of attack [rad]
+            * lift_coefficient : ndarray
+                Computed lift coefficients
+            * drag_coefficient : ndarray
+                Computed drag coefficients
+ 
+    Notes
+    -----
+    The function uses the US Standard Atmosphere 1976 model for atmospheric properties
+    and evaluates aerodynamic coefficients using vortex lattice methods. Can use a surrogate model
+    for faster evaluation or just direct evaluation of the aerodynamics. 
+ 
+    **Major Assumptions**
+        * Flow is steady and inviscid
+        * Small angle approximations apply
+        * Linear aerodynamics
+        * Atmospheric properties follow US Standard Atmosphere 1976
+ 
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method
+    RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976
+    """
 
     #------------------------------------------------------------------------
     # setup flight conditions
@@ -58,16 +110,11 @@ def aircraft_aerodynamic_analysis(vehicle,
     state.conditions.expand_rows(ctrl_pts)
  
     CL_vals    = np.zeros((len(angle_of_attack_range),len(Mach_number_range)))  
-    CD_vals    = np.zeros((len(angle_of_attack_range),len(Mach_number_range)))
-    
+    CD_vals    = np.zeros((len(angle_of_attack_range),len(Mach_number_range))) 
  
     state.analyses                                  =  Data()
-    aerodynamics                                    = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.use_surrogate             = use_surrogate 
-    aerodynamics.vehicle                            = vehicle
-    aerodynamics.settings.model_fuselage            = model_fuselage   
-    aerodynamics.initialize()
-    state.analyses.aerodynamics = aerodynamics 
+    aerodynamics_analysis.initialize()            
+    state.analyses.aerodynamics = aerodynamics_analysis 
     
     for i in range (len(Mach_number_range)):  
         state.conditions.freestream.mach_number                 = Mach_number_range[i, 0] * np.ones_like(angle_of_attack_range)
@@ -90,25 +137,5 @@ def aircraft_aerodynamic_analysis(vehicle,
         lift_coefficient  = CL_vals, 
         drag_coefficient  = CD_vals, 
     )  
-         
-    # FUTURE WORK          
-    #control_surfaces_aerodynamics = Data()
-    #num_defl =  len(control_surface_deflection_range)
-    #for wing in vehicle.wings:
-        #for control_surface in  wing.control_surfaces: 
-            #CL_cs = np.zeros((num_defl,1))
-            #CD_cs = np.zeros((num_defl,1))
-            #for cs_i in  range(num_defl):
-                #control_surface.deflection = control_surface_deflection_range[i]
-                
-                #_        = state.analyses.aerodynamics.evaluate(state)     
-                #CL_cs[:,cs_i]    = state.conditions.aerodynamics.coefficients.lift.total
-                #CD_cs[:,cs_i]    = state.conditions.aerodynamics.coefficients.drag.total 
-                
-            #control_surfaces_aerodynamics[control_surface.tag].lift_coefficient =  CL_cs
-            #control_surfaces_aerodynamics[control_surface.tag].drag_coefficient =  CD_cs
-            
-            #control_surface.deflection =  0
-    #results.control_surfaces_aerodynamics    = control_surfaces_aerodynamics
-    #results.control_surface_deflection_range = control_surface_deflection_range 
+          
     return results  

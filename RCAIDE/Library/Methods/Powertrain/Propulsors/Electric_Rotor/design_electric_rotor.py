@@ -21,21 +21,89 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Electric Rotor 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_electric_rotor(electric_rotor,number_of_stations = 20,solver_name= 'SLSQP',iterations = 200,
-                      solver_sense_step = 1E-6,solver_tolerance = 1E-5,print_iterations = False):
-    """Compute perfomance properties of an electrically powered rotor, which is driven by an electric machine
+def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SLSQP', iterations=200,
+                         solver_sense_step=1E-6, solver_tolerance=1E-5, print_iterations=False):
+    """
+    Computes performance properties of an electrically powered rotor.
     
-    Assumtions:
-       None 
+    Parameters
+    ----------
+    electric_rotor : RCAIDE.Library.Components.Propulsors.Electric_Rotor
+        Electric rotor propulsor component with the following attributes:
+            - tag : str
+                Identifier for the propulsor
+            - electronic_speed_controller : Data
+                ESC component
+                    - bus_voltage : float
+                        Bus voltage [V]
+            - rotor : Data
+                Rotor component (Propeller, Lift_Rotor, or Prop_Rotor)
+            - motor : Data
+                Electric motor component
+                    - design_torque : float
+                        Design torque [N·m]
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
+                    - design_current : float
+                        Design current [A]
+    number_of_stations : int, optional
+        Number of radial stations for rotor blade discretization
+        Default: 20
+    solver_name : str, optional
+        Name of the numerical solver to use for rotor design
+        Default: 'SLSQP'
+    iterations : int, optional
+        Maximum number of iterations for the solver
+        Default: 200
+    solver_sense_step : float, optional
+        Step size for finite difference approximations in the solver
+        Default: 1E-6
+    solver_tolerance : float, optional
+        Convergence tolerance for the solver
+        Default: 1E-5
+    print_iterations : bool, optional
+        Flag to print solver iterations
+        Default: False
     
-    Source:
+    Returns
+    -------
+    None
+        Results are stored in the electric_rotor object:
+            - sealevel_static_thrust : float
+                Sea level static thrust [N]
+            - sealevel_static_power : float
+                Sea level static power [W]
     
-    Args:
-        electric_rotor (dict):  electric rotor [-]
+    Notes
+    -----
+    This function performs several tasks:
+        1. Designs the rotor based on its type (propeller, lift rotor, or prop rotor)
+        2. Sets the motor design parameters based on the rotor requirements
+        3. Designs the motor for optimal performance
+        4. Computes the motor weight
+        5. Calculates the sea level static performance (thrust and power)
     
-    Returns:
-        None 
+    The function handles different types of rotors:
+        * For propellers, it uses the design_propeller function and sets the motor design
+          parameters based on cruise conditions
+        * For prop rotors, it uses the design_prop_rotor function and sets the motor design
+          parameters based on hover conditions
+        * For lift rotors, it uses the design_lift_rotor function and sets the motor design
+          parameters based on hover conditions
     
+    **Major Assumptions**
+        * US Standard Atmosphere 1976 is used for atmospheric properties
+        * Sea level static conditions are approximated with a very low velocity (1% of speed of sound)
+        * Full throttle (throttle = 1.0) is used for sea level static performance
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_lift_rotor
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_prop_rotor
+    RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common.compute_motor_weight
+    RCAIDE.Library.Methods.Powertrain.setup_operating_conditions
     """
 
     if electric_rotor.electronic_speed_controller == None: 

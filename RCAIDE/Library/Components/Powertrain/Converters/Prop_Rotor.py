@@ -31,61 +31,59 @@ class Prop_Rotor(Rotor):
         
     hover : Data
         Hover mode performance parameters
-        
-        - design_thrust : float
-            Design point thrust [N]. Default is None.
-        - design_torque : float
-            Design point torque [N·m]. Default is None.
-        - design_power : float
-            Design point power [W]. Default is None.
-        - design_angular_velocity : float
-            Design point rotational speed [rad/s]. Default is None.
-        - design_tip_mach : float
-            Design point blade tip Mach number. Default is None.
-        - design_acoustics : Data
-            Acoustic characteristics at design point. Default is None.
-        - design_performance : Data
-            Performance metrics at design point. Default is None.
-        - design_freestream_velocity : float
-            Design point forward velocity [m/s]. Default is None.
-        - design_SPL_dBA : float
-            Design point sound pressure level [dBA]. Default is None.
-        - design_blade_pitch_command : float
-            Design point blade pitch command [rad]. Default is 0.0.
-        - design_Cl : float
-            Design point lift coefficient. Default is None.
-        - design_thrust_coefficient : float
-            Design point thrust coefficient. Default is None.
-        - design_power_coefficient : float
-            Design point power coefficient. Default is None.
+            - design_thrust : float
+                Design point thrust [N]. Default is None.
+            - design_torque : float
+                Design point torque [N·m]. Default is None.
+            - design_power : float
+                Design point power [W]. Default is None.
+            - design_angular_velocity : float
+                Design point rotational speed [rad/s]. Default is None.
+            - design_tip_mach : float
+                Design point blade tip Mach number. Default is None.
+            - design_acoustics : Data
+                Acoustic characteristics at design point. Default is None.
+            - design_performance : Data
+                Performance metrics at design point. Default is None.
+            - design_freestream_velocity : float
+                Design point forward velocity [m/s]. Default is None.
+            - design_SPL_dBA : float
+                Design point sound pressure level [dBA]. Default is None.
+            - design_blade_pitch_command : float
+                Design point blade pitch command [rad]. Default is 0.0.
+            - design_Cl : float
+                Design point lift coefficient. Default is None.
+            - design_thrust_coefficient : float
+                Design point thrust coefficient. Default is None.
+            - design_power_coefficient : float
+                Design point power coefficient. Default is None.
             
     cruise : Data
         Cruise mode performance parameters
-        
-        - design_thrust : float
-            Design point thrust [N]. Default is None.
-        - design_torque : float
-            Design point torque [N·m]. Default is None.
-        - design_power : float
-            Design point power [W]. Default is None.
-        - design_angular_velocity : float
-            Design point rotational speed [rad/s]. Default is None.
-        - design_tip_mach : float
-            Design point blade tip Mach number. Default is None.
-        - design_acoustics : Data
-            Acoustic characteristics at design point. Default is None.
-        - design_performance : Data
-            Performance metrics at design point. Default is None.
-        - design_SPL_dBA : float
-            Design point sound pressure level [dBA]. Default is None.
-        - design_blade_pitch_command : float
-            Design point blade pitch command [rad]. Default is 0.0.
-        - design_Cl : float
-            Design point lift coefficient. Default is None.
-        - design_thrust_coefficient : float
-            Design point thrust coefficient. Default is None.
-        - design_power_coefficient : float
-            Design point power coefficient. Default is None.
+            - design_thrust : float
+                Design point thrust [N]. Default is None.
+            - design_torque : float
+                Design point torque [N·m]. Default is None.
+            - design_power : float
+                Design point power [W]. Default is None.
+            - design_angular_velocity : float
+                Design point rotational speed [rad/s]. Default is None.
+            - design_tip_mach : float
+                Design point blade tip Mach number. Default is None.
+            - design_acoustics : Data
+                Acoustic characteristics at design point. Default is None.
+            - design_performance : Data
+                Performance metrics at design point. Default is None.
+            - design_SPL_dBA : float
+                Design point sound pressure level [dBA]. Default is None.
+            - design_blade_pitch_command : float
+                Design point blade pitch command [rad]. Default is 0.0.
+            - design_Cl : float
+                Design point lift coefficient. Default is None.
+            - design_thrust_coefficient : float
+                Design point thrust coefficient. Default is None.
+            - design_power_coefficient : float
+                Design point power coefficient. Default is None.
             
     oei : Data
         One engine inoperative performance parameters
@@ -99,13 +97,12 @@ class Prop_Rotor(Rotor):
     -----
     The Prop_Rotor class models rotors designed for both hover and forward flight,
     typical of tiltrotor aircraft. It includes capabilities for:
-
-    * Hover and cruise performance analysis
-    * One engine inoperative (OEI) conditions
-    * Variable pitch operation
-    * Acoustic analysis
-    * Performance optimization
-    * Multi-mode operation
+        * Hover and cruise performance analysis
+        * One engine inoperative (OEI) conditions
+        * Variable pitch operation
+        * Acoustic analysis
+        * Performance optimization
+        * Multi-mode operation
 
     **Definitions**
     

@@ -39,10 +39,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6873040861531932
-    electric_cruise_CL_truth         = 0.6933626967980595
-    series_hybrid_cruise_CL_truth    = 0.6933629570853922
-    parallel_hybrid_cruise_CL_truth  = 0.6932926812157448
+    convetional_cruise_CL_truth      = 0.6881157129805212
+    electric_cruise_CL_truth         = 0.6940128366994059
+    series_hybrid_cruise_CL_truth    = 0.6940130981166039
+    parallel_hybrid_cruise_CL_truth  = 0.6939609375214035
 
     error = Data()
     
@@ -224,7 +224,8 @@ def mission_setup(analyses,solver_type,solver_objective):
     segment.air_speed                                     = 270    * Units.kts
     segment.distance                                      = 100.   * Units.nautical_mile    
     segment.hybrid_power_split_ratio                      = 0.5 
-    segment.initial_battery_state_of_charge                  = 1.0 
+    segment.battery_fuel_cell_power_split_ratio           = 1.0
+    segment.initial_battery_state_of_charge               = 1.0 
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  
