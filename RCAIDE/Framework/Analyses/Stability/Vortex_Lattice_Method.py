@@ -169,6 +169,25 @@ class Vortex_Lattice_Method(Stability):
         # surrogoate models                 
         self.surrogates                                             = Data() 
 
+        # Stability derivatives. If these are not user defined, then they will be calculated.
+        self.stability_derivatives = Data()
+        self.stability_derivatives.dCX_dalpha   = None
+        self.stability_derivatives.dCX_du       = None
+        self.stability_derivatives.dCY_dbeta    = None
+        self.stability_derivatives.dCY_dr       = None
+        self.stability_derivatives.dCZ_dalpha   = None
+        self.stability_derivatives.dCZ_du       = None
+        self.stability_derivatives.dCZ_dq       = None
+        self.stability_derivatives.dCL_dbeta    = None
+        self.stability_derivatives.dCL_dp       = None
+        self.stability_derivatives.dCL_dr       = None
+        self.stability_derivatives.dCM_dalpha   = None
+        self.stability_derivatives.dCM_du       = None
+        self.stability_derivatives.dCM_dq       = None
+        self.stability_derivatives.dCN_dbeta    = None
+        self.stability_derivatives.dCN_dp       = None
+        self.stability_derivatives.dCN_dr       = None
+
         # build the evaluation process
         compute                                    = Process() 
         compute.lift                               = Process() 
