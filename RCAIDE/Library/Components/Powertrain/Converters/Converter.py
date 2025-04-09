@@ -14,7 +14,7 @@ from RCAIDE.Library.Components                      import Component
 # ----------------------------------------------------------------------------------------------------------------------
 class Converter(Component):
     """
-    A generatic converter class opject used to build all converters 
+    A generatic converter class object used to build all converters. Inherits from the Component class.
     """
 
     def __defaults__(self):

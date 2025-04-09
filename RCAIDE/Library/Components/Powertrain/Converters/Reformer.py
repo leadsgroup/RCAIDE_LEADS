@@ -68,10 +68,10 @@ class Reformer(Converter):
     Notes
     -----
     The reformer model includes parameters for:
-    - Fuel composition and properties
-    - Reformate composition
-    - Reformer geometry and performance characteristics
-    - Thermodynamic properties of reactants/products
+        * Fuel composition and properties
+        * Reformate composition
+        * Reformer geometry and performance characteristics
+        * Thermodynamic properties of reactants/products
 
     """
     

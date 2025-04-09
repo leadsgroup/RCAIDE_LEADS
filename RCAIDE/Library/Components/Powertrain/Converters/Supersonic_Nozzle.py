@@ -41,21 +41,19 @@ class Supersonic_Nozzle(Converter):
     -----
     The Supersonic_Nozzle class models a convergent-divergent nozzle that can 
     achieve supersonic exit flow. The model includes:
-    
-    * Isentropic flow relations
-    * Shock wave effects
-    * Variable area ratio capabilities
-    * Real gas effects through efficiency terms
-    * Pressure recovery modeling
+        * Isentropic flow relations
+        * Shock wave effects
+        * Variable area ratio capabilities
+        * Real gas effects through efficiency terms
+        * Pressure recovery modeling
 
     **Major Assumptions**
-
-    * Pressure ratio and efficiency do not change with varying conditions
-    * One-dimensional flow
-    * Perfect gas behavior
-    * Adiabatic process
-    * No boundary layer separation
-    * Steady flow conditions
+        * Pressure ratio and efficiency do not change with varying conditions
+        * One-dimensional flow
+        * Perfect gas behavior
+        * Adiabatic process
+        * No boundary layer separation
+        * Steady flow conditions
 
     **Definitions**
 

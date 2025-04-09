@@ -34,18 +34,16 @@ class System(Component):
     Notes
     -----
     The system class serves as the foundation for modeling various aircraft systems:
-    
-    * Avionics and electronics
-    * Environmental control systems
-    * Hydraulic systems
-    * Fuel systems
-    * Auxiliary power units
+        * Avionics and electronics
+        * Environmental control systems
+        * Hydraulic systems
+        * Fuel systems
+        * Auxiliary power units
     
     **Major Assumptions**
-    
-    * Systems are treated as point masses at their origin
-    * Control interfaces are simplified
-    * No dynamic response modeling
+        * Systems are treated as point masses at their origin
+        * Control interfaces are simplified
+        * No dynamic response modeling
     
     **Definitions**
 

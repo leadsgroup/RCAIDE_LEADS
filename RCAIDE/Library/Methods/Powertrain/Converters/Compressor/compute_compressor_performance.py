@@ -12,33 +12,96 @@ from copy import  deepcopy
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_compressor_performance(compressor,conditions):
-    """ Computes the performance of a compressor bases on its polytropic efficiency.
-        The following properties are computed: 
-       compressor.outputs.
-         stagnation_temperature  (numpy.ndarray): exit stagnation_temperature   [K]  
-         stagnation_pressure     (numpy.ndarray): exit stagnation_pressure      [Pa]
-         stagnation_enthalpy     (numpy.ndarray): exit stagnation_enthalpy      [J/kg]
-         work_done               (numpy.ndarray): work done                     [J/kg] 
+def compute_compressor_performance(compressor, conditions):
+    """
+    Computes the performance of a compressor based on its polytropic efficiency.
 
-    Assumptions:
-        Constant polytropic efficiency and pressure ratio
+    Parameters
+    ----------
+    compressor : RCAIDE.Library.Components.Converters.Compressor
+        Compressor component with the following attributes:
+            - tag : str
+                Identifier for the compressor
+            - pressure_ratio : float
+                Pressure ratio across compressor
+            - polytropic_efficiency : float
+                Polytropic efficiency of compression
+            - working_fluid : Data
+                Working fluid properties object
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions with:
+            - energy.converters[compressor.tag].inputs : Data
+                Input conditions
+                    - stagnation_temperature : numpy.ndarray
+                        Inlet stagnation temperature [K]
+                    - stagnation_pressure : numpy.ndarray
+                        Inlet stagnation pressure [Pa]
+                    - static_temperature : numpy.ndarray
+                        Inlet static temperature [K]
+                    - static_pressure : numpy.ndarray
+                        Inlet static pressure [Pa]
+                    - mach_number : numpy.ndarray
+                        Inlet Mach number
+            - energy.hybrid_power_split_ratio : float
+                Ratio of power split for hybrid systems
 
-    Source:
-        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+    Returns
+    -------
+    None
+        Results are stored in conditions.energy.converters[compressor.tag].outputs:
+            - work_done : numpy.ndarray
+                Specific work done by compressor [J/kg]
+            - stagnation_temperature : numpy.ndarray
+                Exit stagnation temperature [K]
+            - stagnation_pressure : numpy.ndarray
+                Exit stagnation pressure [Pa]
+            - stagnation_enthalpy : numpy.ndarray
+                Exit stagnation enthalpy [J/kg]
+            - static_temperature : numpy.ndarray
+                Exit static temperature [K]
+            - static_pressure : numpy.ndarray
+                Exit static pressure [Pa]
+            - mach_number : numpy.ndarray
+                Exit Mach number
+            - gas_constant : numpy.ndarray
+                Gas constant [J/(kg·K)]
+            - gamma : numpy.ndarray
+                Ratio of specific heats
+            - cp : numpy.ndarray
+                Specific heat at constant pressure [J/(kg·K)]
 
-    Args:
-        conditions.freestream.
-          isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor        [unitless]
-          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]
-        compressor.
-           inputs.stagnation_temperature      (numpy.ndarray): entering stagnation temperature [K]
-           inputs.stagnation_pressure         (numpy.ndarray): entering stagnation pressure    [Pa] 
-           pressure_ratio                             (float): pressure ratio                  [unitless]
-           polytropic_efficiency                      (float): polytropic efficiency           [unitless]
+    Notes
+    -----
+    This function implements the thermodynamic calculations for a compressor with
+    a specified pressure ratio and polytropic efficiency. The work done is adjusted
+    by the hybrid power split ratio if applicable.
+    
+    **Major Assumptions**
+        * Constant polytropic efficiency
+        * Constant pressure ratio
+        * Ideal gas behavior
+        * Adiabatic process
 
-    Returns:
-        None 
+    **Theory**
+    The compression process follows the polytropic relation:
+
+    .. math::
+        T_{t,out}/T_{t,in} = (P_{t,out}/P_{t,in})^{(\\gamma-1)/(\\gamma \\eta_{p})}
+
+    where :math:`\\eta_{p}` is the polytropic efficiency.
+
+    Enthalpy is calculated using the specific heat at constant pressure and the stagnation temperature.
+
+    .. math::
+        h_{t} = C_{p} T_{t}
+
+    References
+    ----------
+    [1] Cantwell, B., "AA283 Course Notes", Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions
     """          
     
     # Unpack component inputs

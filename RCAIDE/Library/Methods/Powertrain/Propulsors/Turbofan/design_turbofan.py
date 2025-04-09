@@ -26,21 +26,113 @@ import numpy as np
 #  Design Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
 def design_turbofan(turbofan):
-    """Compute perfomance properties of a turbofan based on polytropic ratio and combustor properties.
-    Turbofan is created by manually linking the different components
+    """
+    Computes performance properties of a turbofan engine at the design point by linking
+    and analyzing the thermodynamic cycle of its components.
     
+    Parameters
+    ----------
+    turbofan : RCAIDE.Library.Components.Propulsors.Turbofan
+        Turbofan engine component with the following attributes:
+            - tag : str
+                Identifier for the turbofan
+            - design_mach_number : float
+                Design Mach number
+            - design_altitude : float
+                Design altitude [m]
+            - design_isa_deviation : float
+                ISA temperature deviation at design point [K]
+            - working_fluid : Data
+                Working fluid properties object
+            - reference_temperature : float
+                Reference temperature for mass flow scaling [K]
+            - reference_pressure : float
+                Reference pressure for mass flow scaling [Pa]
+            - bypass_ratio : float
+                Bypass ratio of the turbofan
+            - ram : Data
+                Ram component
+                    - tag : str
+                        Identifier for the ram
+            - inlet_nozzle : Data
+                Inlet nozzle component
+                    - tag : str
+                        Identifier for the inlet nozzle
+            - fan : Data
+                Fan component
+                    - tag : str
+                        Identifier for the fan
+            - low_pressure_compressor : Data
+                Low pressure compressor component
+                    - tag : str
+                        Identifier for the low pressure compressor
+            - high_pressure_compressor : Data
+                High pressure compressor component
+                    - tag : str
+                        Identifier for the high pressure compressor
+            - combustor : Data
+                Combustor component
+                    - tag : str
+                        Identifier for the combustor
+            - high_pressure_turbine : Data
+                High pressure turbine component
+                    - tag : str
+                        Identifier for the high pressure turbine
+            - low_pressure_turbine : Data
+                Low pressure turbine component
+                    - tag : str
+                        Identifier for the low pressure turbine
+            - core_nozzle : Data
+                Core nozzle component
+                    - tag : str
+                        Identifier for the core nozzle
+            - fan_nozzle : Data
+                Fan nozzle component
+                    - tag : str
+                        Identifier for the fan nozzle
     
-    Assumtions:
-       None 
+    Returns
+    -------
+    None
     
-    Source:
+    Notes
+    -----
+    This function performs a complete design analysis of a turbofan engine by:
+        1. Setting up atmospheric conditions at the design point
+        2. Creating a mission segment for the design point
+        3. Sequentially analyzing each component in the engine's thermodynamic cycle
+        4. Linking the output conditions of each component to the input conditions of the next
+        5. Sizing the core flow to meet the design requirements
+        6. Computing sea level static performance
     
-    Args:
-        turbofan (dict): turbofan data structure [-]
+    The function follows this sequence for component analysis:
+        1. Ram (inlet)
+        2. Inlet nozzle
+        3. Fan
+        4. Low pressure compressor
+        5. High pressure compressor
+        6. Combustor
+        7. High pressure turbine
+        8. Low pressure turbine
+        9. Core nozzle
+        10. Fan nozzle
     
-    Returns:
-        None 
+    **Major Assumptions**
+        * US Standard Atmosphere 1976
+        * Steady state operation
+        * One-dimensional flow through components
+        * Adiabatic components except for the combustor
+        * Perfect gas behavior with variable properties
     
+    References
+    ----------
+    [1] Mattingly, J.D., "Elements of Gas Turbine Propulsion", 2nd Edition, AIAA Education Series, 2005. https://soaneemrana.org/onewebmedia/ELEMENTS%20OF%20GAS%20TURBINE%20PROPULTION2.pdf
+    [2] Cantwell, B., "AA283 Course Notes", Stanford University. https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.size_core
     """
     # check if mach number and temperature are passed
     if(turbofan.design_mach_number==None) and (turbofan.design_altitude==None): 

@@ -28,17 +28,15 @@ class Avionics(Component):
     -----
     The avionics class models the electrical power requirements of aircraft 
     electronics and instruments. This includes:
-    
-    * Flight management systems
-    * Navigation equipment
-    * Communication systems
-    * Display systems
+        * Flight management systems
+        * Navigation equipment
+        * Communication systems
+        * Display systems
     
     **Major Assumptions**
-    
-    * Constant power draw during operation
-    * Instantaneous power availability
-    * No thermal management considerations
+        * Constant power draw during operation
+        * Instantaneous power availability
+        * No thermal management considerations
     
     **Definitions**
 

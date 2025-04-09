@@ -17,29 +17,53 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turboelectric_generator_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_turboelectric_generator_performance(turboelectric_generator,state,fuel_line=None,bus=None): 
-    ''' Computes the perfomrance of one turboelectric_generator
+def compute_turboelectric_generator_performance(turboelectric_generator, state, fuel_line=None, bus=None):
+    """
+    Computes the performance of a turboelectric generator system.
     
-    Assumptions: 
-    N/A
-
-    Source:
-    N/A
-
-    Inputs:  
-    conditions               - operating conditions data structure                  [-]  
-    fuel_line                - fuel+line                                            [-] 
-    turboelectric_generator  - turboelectric_generator data structure               [-] 
-    total_power              - power of turboelectric_generator group               [W] 
-
-    Outputs:  
-    total_power              - power of turboelectric_generator group               [W] 
-    stored_results_flag      - boolean for stored results                           [-]     
-    stored_propulsor_tag     - name of turboelectric_generator with stored results  [-]
+    Parameters
+    ----------
+    turboelectric_generator : RCAIDE.Components.Energy.Converters.Turboelectric_Generator
+        The turboelectric generator component for which performance is being computed
+    state : RCAIDE.Framework.Mission.Common.State
+        Container for mission segment conditions
+    fuel_line : RCAIDE.Components.Energy.Distribution.Fuel_Line, optional
+        Fuel distribution system connected to the turboelectric generator
+    bus : RCAIDE.Components.Energy.Distribution.Bus, optional
+        Electrical bus connected to the generator output
+        
+    Returns
+    -------
+    P_mech : float
+        Mechanical power produced by the turboshaft engine [W]
+    P_elec : float
+        Electrical power produced by the generator [W]
+    stored_results_flag : bool
+        Flag indicating that results have been stored for potential reuse
+    stored_propulsor_tag : str
+        Tag identifier of the turboelectric generator with stored results
+        
+    Notes
+    -----
+    This function handles both direct and inverse calculations for the turboelectric generator:
+        - Direct calculation (inverse_calculation=False): Computes generator output based on 
+        turboshaft throttle setting
+        - Inverse calculation (inverse_calculation=True): Determines turboshaft fuel consumption 
+        based on required generator output power
     
-    Properties Used: 
-    N.A.        
-    '''
+    The function coordinates the operation of the turboshaft engine and generator components,
+    ensuring proper power flow and electrical characteristics.
+    
+    **Major Assumptions**
+        * The turboshaft and generator are properly connected and compatible
+        * Bus voltage is constant across all operating conditions
+        * Mechanical power from turboshaft is directly coupled to generator input
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.compute_turboshaft_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance
+    """
 
     conditions                         = state.conditions
     generator                          = turboelectric_generator.generator

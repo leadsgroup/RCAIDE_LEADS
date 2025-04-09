@@ -15,29 +15,82 @@ from scipy.optimize import minimize
 #  design motor 
 # ----------------------------------------------------------------------------------------------------------------------     
 def design_optimal_motor(motor):
-    ''' Sizes a DC motor to obtain the best combination of speed constant and resistance values
-    by sizing the motor for a design RPM value. Note that this design RPM value can be compute
-    from design tip mach. The following properties are computed.  
-      motor.speed_constant  (float): speed-constant [untiless] 
-      motor.resistance      (float): resistance     [ohms]        
+    """
+    Sizes a DC motor to obtain the best combination of speed constant and resistance values
+    by sizing the motor for a design RPM value.
     
-    Assumptions:
-        None 
+    Parameters
+    ----------
+    motor : RCAIDE.Library.Components.Powertrain.Converters.DC_Motor
+        Motor component with the following attributes:
+            - no_load_current : float
+                No-load current [A]
+            - nominal_voltage : float
+                Nominal voltage [V]
+            - design_angular_velocity : float
+                Angular velocity [radians/s]
+            - efficiency : float
+                Efficiency [unitless]
+            - design_torque : float
+                Design torque [N·m]
+            - gearbox : Data
+                Gearbox component
+                    - gear_ratio : float
+                        Gear ratio [unitless]
     
-    Source:
-        None
+    Returns
+    -------
+    motor : RCAIDE.Library.Components.Powertrain.Converters.DC_Motor
+        Motor with updated attributes:
+            - speed_constant : float
+                Speed constant [unitless]
+            - resistance : float
+                Resistance [ohms]
+            - design_current : float
+                Design current [A]
     
-    Args:
-        motor.no_load_current         (float): no-load current  [A]
-        motor.nominal_voltage         (float): nominal voltage  [V]
-        motor.design_angular_velocity (float): angular velocity [radians/s]    
-        motor.efficiency              (float): efficiency       [unitless]
-        motor.design_torque           (float): design torque    [Nm]
-       
-    Returns:
-       None 
+    Notes
+    -----
+    This function uses numerical optimization to find the optimal values of speed constant
+    and resistance that satisfy the motor's design requirements. It attempts to solve
+    the optimization problem with hard constraints first, and if that fails, it uses slack
+    constraints.
     
-    '''
+    The optimization process follows these steps:
+        1. Extract motor design parameters (voltage, angular velocity, efficiency, torque)
+        2. Define optimization bounds for speed constant and resistance
+        3. Set up hard constraints for efficiency and torque
+        4. Attempt optimization with hard constraints
+        5. If optimization fails, retry with slack constraints
+        6. Update the motor with the optimized parameters
+    
+    The objective function minimizes the current draw for a given voltage, angular velocity,
+    and torque requirement.
+    
+    **Major Assumptions**
+        * The motor follows a DC motor model
+        * The optimization bounds are appropriate for the motor size
+        * If hard constraints cannot be satisfied, slack constraints are acceptable
+    
+    **Theory**
+    The motor model uses the following relationships:
+        - Current: :math:`I = (V - \\omega/Kv)/R`
+        - Torque: :math:`T = (I - I₀)/Kv`
+        - Efficiency: :math:`\\eta = (1 - (I₀\\cdot R)/(V - \\omega/Kv))\\cdot(\\omega/(V\\cdot Kv))`
+    
+    where:
+        - V is the nominal voltage
+        - ω is the angular velocity
+        - Kv is the speed constant
+        - R is the resistance
+        - I₀ is the no-load current
+        - T is the torque
+        - η is the efficiency
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance
+    """
 
     if type(motor) != RCAIDE.Library.Components.Powertrain.Converters.DC_Motor:
         raise Exception('function only supports low-fidelity (DC) motor')

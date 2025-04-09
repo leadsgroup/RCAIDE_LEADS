@@ -14,31 +14,75 @@ import scipy as sp
 # ----------------------------------------------------------------------
 #  Larminie Model to Compute Fuel Cell Performance
 # ---------------------------------------------------------------------- 
-def compute_fuel_cell_performance(fuel_cell_stack,state,bus,coolant_lines,t_idx,delta_t): 
+def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_idx, delta_t):
     """
-    Computes the performance of a fuel cell using Larminie model
+    Computes the performance of a fuel cell stack using the Larminie-Dicks model.
     
-     Parameters
+    Parameters
     ----------
-    fuel_cell_stack : fuel_cell_stack
-        The fuel_cell_stack object containing cell properties and configuration.
-    state : MissionState
-        The current state of the mission.
-    bus : ElectricBus
-        The electric bus to which the battery_module is connected.
+    fuel_cell_stack : RCAIDE.Components.Energy.Converters.Fuel_Cell_Stack
+        The fuel cell stack component containing cell properties and electrical configuration
+    state : RCAIDE.Framework.Mission.Common.State
+        Container for mission segment conditions
+    bus : RCAIDE.Components.Energy.Distribution.Electric_Bus
+        The electric bus to which the fuel cell stack is connected
     coolant_lines : list
-        List of coolant lines for thermal management.
+        List of coolant line components for thermal management
     t_idx : int
-        Current time index in the simulation.
+        Current time index in the simulation
     delta_t : float
-        Time step size.
+        Time step size [s]
          
-    Returns: 
+    Returns
+    -------
+    stored_results_flag : bool
+        Flag indicating that results have been stored for potential reuse
+    stored_fuel_cell_stack_tag : str
+        Tag identifier of the fuel cell stack with stored results
+    
+    Notes
+    -----
+    This function implements the Larminie-Dicks model to calculate fuel cell performance
+    based on current operating conditions. It determines the optimal current density
+    that matches the required power output, then calculates voltage, efficiency,
+    and fuel consumption.
+    
+    The function handles both series and parallel electrical configurations for
+    connecting the fuel cell stack to the electric bus.
+    
+    **Major Assumptions**
+        * Uniform temperature distribution across all cells
+        * No transient effects (steady-state operation at each time step)
+        * Hydrogen is the only fuel considered
+        * Ideal gas behavior
+    
+    **Theory**
+    
+    The Larminie-Dicks model calculates cell voltage as:
+    
+    .. math::
+        V = E_0 - A\\ln(j) - Rj - m\\exp(nj)
+    
+    where:
+        - E₀ is the open circuit voltage
+        - A is the activation loss coefficient
+        - R is the ohmic resistance
+        - m and n are mass transport loss coefficients
+        - j is the current density
+    
+    The efficiency is calculated as:
+    
+    .. math::
+        \\eta = \\frac{V}{E_{ideal}}
+    
+    References
     ----------
-    stored_results_flag: bool
-        Stored results boolean
-    stored_fuel_cell_stack_tag: string 
-        Tag of fuel cell
+    [1] Larminie, J., & Dicks, A. (2003). Fuel Cell Systems Explained (2nd ed.). John Wiley & Sons Ltd.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage
+    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power_difference
     """
     # ---------------------------------------------------------------------------------    
     # fuel cell stack properties 
@@ -55,8 +99,7 @@ def compute_fuel_cell_performance(fuel_cell_stack,state,bus,coolant_lines,t_idx,
     bus_conditions              = state.conditions.energy[bus.tag]
     fuel_cell_stack_conditions  = bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag]
     phi                         = state.conditions.energy.hybrid_power_split_ratio 
-    psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio 
-    P_bus                       = bus_conditions.power_draw*phi *(1 - psi)    
+    P_bus                       = bus_conditions.power_draw*phi     
     P_stack                     = P_bus[t_idx] /len(bus.fuel_cell_stacks) 
     P_cell                      = P_stack/ n_total  
 

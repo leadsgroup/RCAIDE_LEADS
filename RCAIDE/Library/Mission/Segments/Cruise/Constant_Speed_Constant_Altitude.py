@@ -13,27 +13,63 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for constant speed cruise at fixed altitude
 
-    Assumptions:
-    Constant speed and constant altitude
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - altitude : float
+                Cruise altitude [m]
+            - distance : float
+                Ground distance to cover [m]
+            - air_speed : float
+                True airspeed to maintain [m/s]
+            - sideslip_angle : float
+                Aircraft sideslip angle [rad]
+            - state:
+                numerics.dimensionless.control_points : array
+                    Discretization points [-]
+                conditions : Data
+                    State conditions container
+                initials : Data, optional
+                    Initial conditions from previous segment
+    
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+            - conditions.frames.inertial.velocity_vector [m/s]
+            - conditions.frames.inertial.position_vector [m]
+            - conditions.freestream.altitude [m]
+            - conditions.frames.inertial.time [s]
 
-    Source:
-    N/A
+    Notes
+    -----
+    This function sets up the initial conditions for a cruise segment with constant
+    true airspeed and constant altitude. The segment duration is determined by the
+    specified ground distance to cover.
 
-    Inputs:
-    segment.altitude                [meters]
-    segment.distance                [meters]
-    segment.speed                   [meters/second]
+    **Calculation Process**
+        1. Check for initial conditions
+        2. Calculate time required based on distance and speed:
+            t = x/V where:
+                - x is ground distance
+                - V is true airspeed
+        3. Discretize time points
+        4. Decompose velocity into components using sideslip angle
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
-    conditions.frames.inertial.time             [seconds]
+    **Major Assumptions**
+        * Constant true airspeed
+        * Constant altitude
+        * Small angle approximations
+        * Quasi-steady flight
+        * No wind effects
 
-    Properties Used:
-    N/A
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """        
     
     # unpack 

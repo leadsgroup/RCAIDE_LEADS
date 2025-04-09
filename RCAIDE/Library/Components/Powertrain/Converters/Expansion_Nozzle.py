@@ -32,14 +32,14 @@ class Expansion_Nozzle(Converter):
     -----
     The Expansion_Nozzle class models a nozzle that converts pressure energy into 
     kinetic energy through an expansion process. The model:
-    * Handles subsonic and choked flow conditions
-    * Accounts for losses through polytropic efficiency
-    * Maintains constant pressure ratio at design conditions
-    * Assumes quasi-one-dimensional flow
+        * Handles subsonic and choked flow conditions
+        * Accounts for losses through polytropic efficiency
+        * Maintains constant pressure ratio at design conditions
+        * Assumes quasi-one-dimensional flow
 
     **Major Assumptions**
-    * Pressure ratio and efficiency do not change with varying conditions
-    * Flow can be subsonic or choked (but not supersonic)
+        * Pressure ratio and efficiency do not change with varying conditions
+        * Flow can be subsonic or choked (but not supersonic)
 
     **Definitions**
 

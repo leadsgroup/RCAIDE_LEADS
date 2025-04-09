@@ -19,33 +19,104 @@ import scipy as sp
 # ---------------------------------------------------------------------------------------------------------------------- 
 def evaluate_wake(rotor,wake_inputs,conditions):
     """
+    Evaluates the rotor wake using Helmholtz vortex theory.
     
-    Wake evaluation is performed using Helmholtz vortex theory.
+    Parameters
+    ----------
+    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Rotor component with the following attributes:
+            - number_of_blades : int
+                Number of blades on the rotor
+            - tip_radius : float
+                Tip radius of the rotor [m]
+            - hub_radius : float
+                Hub radius of the rotor [m]
+            - sol_tolerance : float
+                Solution tolerance for wake convergence
+    wake_inputs : Data
+        Wake input parameters with:
+            - ctrl_pts : int
+                Number of control points
+            - Nr : int
+                Number of radial stations
+            - Na : int
+                Number of azimuthal stations
+            - use_2d_analysis : bool
+                Flag for 2D (azimuthal) analysis
+            - velocity_total : array_like
+                Total velocity magnitude [m/s]
+            - velocity_axial : array_like
+                Axial velocity component [m/s]
+            - velocity_tangential : array_like
+                Tangential velocity component [m/s]
+            - twist_distribution : array_like
+                Blade twist distribution [rad]
+            - chord_distribution : array_like
+                Blade chord distribution [m]
+            - radius_distribution : array_like
+                Radial station positions [m]
+            - speed_of_sounds : array_like
+                Speed of sound [m/s]
+            - dynamic_viscosities : array_like
+                Dynamic viscosity [kg/(m·s)]
+    conditions : Data
+        Flight conditions
     
-    Assumptions:
-    None
-
-    Source:
-    Drela, M. "Qprop Formulation", MIT AeroAstro, June 2006
-    http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
-
-    Inputs:
-        rotor        - RCAIDE rotor
-       wake_inputs.
-          Ua        - Axial velocity
-          Ut        - Tangential velocity
-          r         - radius distribution
-       conditions   - conditions
-       
-       
-    Outputs:
-       va  - axially-induced velocity from rotor wake
-       vt  - tangentially-induced velocity from rotor wake
+    Returns
+    -------
+    va : array_like
+        Axially-induced velocity from rotor wake [m/s]
+    vt : array_like
+        Tangentially-induced velocity from rotor wake [m/s]
     
-    Properties Used:
-    None
+    Notes
+    -----
+    This function evaluates the rotor wake using Helmholtz vortex theory to calculate
+    the induced velocities. It solves for the inflow angle (PSI) that satisfies the
+    circulation equation, then computes the axial and tangential induced velocities.
     
+    The computation follows these steps:
+        1. Initialize the inflow angle (PSI) array
+        2. Solve for the inflow angle using a nonlinear equation solver
+        3. Calculate the axial and tangential induced velocities from the converged solution
     
+    **Major Assumptions**
+        * The wake is modeled using Helmholtz vortex theory
+        * The solution converges to a steady state
+        * The inflow angle (PSI) is the primary variable being solved for
+    
+    **Theory**
+    The wake model is based on Helmholtz vortex theory, which relates the circulation
+    around the blade to the induced velocities in the wake. The key equation being solved is:
+    
+    .. math::
+        R = \\Gamma - \\frac{1}{2}W \\cdot c \\cdot C_l = 0
+    
+    where:
+        - Γ is the circulation
+        - W is the relative velocity
+        - c is the chord
+        - Cl is the lift coefficient
+    
+    The circulation is related to the tangential induced velocity by:
+    
+    .. math::
+        \\Gamma = v_t \\cdot \\frac{4\\pi r}{B} \\cdot F \\cdot \\sqrt{1 + \\left(\\frac{4\\lambda_w R}{\\pi B r}\\right)^2}
+    
+    where:
+        - vt is the tangential induced velocity
+        - r is the radial position
+        - B is the number of blades
+        - F is the tip loss factor
+        - λw is the inflow ratio
+    
+    References
+    ----------
+    [1] Drela, M. "Qprop Formulation", MIT AeroAstro, June 2006 http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance
     """
     
     va, vt = wake_convergence(rotor, wake_inputs)

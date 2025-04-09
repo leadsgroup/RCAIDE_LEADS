@@ -110,29 +110,27 @@ class Rotor(Component):
     -----
     The Rotor class provides a comprehensive framework for modeling rotary
     propulsion devices including:
-
-    * Geometric definition of rotor and blades
-    * Aerodynamic performance calculation
-    * Wake modeling capabilities
-    * Blade element analysis
-    * Performance optimization
-    * Acoustic analysis
+        * Geometric definition of rotor and blades
+        * Aerodynamic performance calculation
+        * Wake modeling capabilities
+        * Blade element analysis
+        * Performance optimization
+        * Acoustic analysis
 
     **Major Assumptions**
-
-    * Rigid blade structure
-    * Quasi-steady aerodynamics
-    * Small angle approximations for flapping
-    * Linear blade twist and taper
-    * Uniform inflow (unless nonuniform_freestream is True)
+        * Rigid blade structure
+        * Quasi-steady aerodynamics
+        * Small angle approximations for flapping
+        * Linear blade twist and taper
+        * Uniform inflow (unless nonuniform_freestream is True)
 
     **Theory**
 
     The rotor model combines:
-    * Blade Element Momentum Theory
-    * Prescribed/Free Wake Analysis
-    * Acoustic Propagation Models
-    * Performance Optimization Methods
+        * Blade Element Momentum Theory
+        * Prescribed/Free Wake Analysis
+        * Acoustic Propagation Models
+        * Performance Optimization Methods
 
     **Definitions**
 

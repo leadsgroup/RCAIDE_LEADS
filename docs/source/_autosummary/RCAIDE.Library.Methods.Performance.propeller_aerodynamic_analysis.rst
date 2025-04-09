@@ -11,6 +11,13 @@ propeller\_aerodynamic\_analysis
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      propeller_aerodynamic_analysis
+   
    
 
    

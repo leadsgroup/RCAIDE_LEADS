@@ -14,9 +14,77 @@ import numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Write Geometry 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def write_geometry(dfdc_object,run_script_path):
-    """This function writes the translated aircraft geometry into text file read 
-    by DFDC when it is called 
+def write_geometry(dfdc_object, run_script_path):
+    """
+    Writes the ducted fan geometry to a case file for DFDC analysis.
+    
+    Parameters
+    ----------
+    dfdc_object : DFDCAnalysis
+        Analysis object containing the following attributes:
+            - geometry : DuctedFan
+                Ducted fan geometry with the following attributes:
+                    - tag : str
+                        Identifier for the ducted fan
+                    - length : float
+                        Length of the ducted fan [m]
+                    - hub_radius : float
+                        Radius of the hub [m]
+                    - tip_radius : float
+                        Radius of the blade tip [m]
+                    - blade_clearance : float
+                        Clearance between blade tip and duct [m]
+                    - number_of_rotor_blades : int
+                        Number of blades on the rotor
+                    - number_of_radial_stations : int
+                        Number of radial stations for blade definition
+                    - rotor : Data
+                        Rotor properties
+                            - percent_x_location : float
+                                Axial location of rotor as fraction of length
+                    - stator : Data
+                        Stator properties
+                            - percent_x_location : float
+                                Axial location of stator as fraction of length
+                    - cruise : Data
+                        Cruise conditions
+                            - design_angular_velocity : float
+                                Design angular velocity [rad/s]
+                            - design_freestream_velocity : float
+                                Design freestream velocity [m/s]
+                            - design_reference_velocity : float
+                                Design reference velocity [m/s]
+                    - hub_airfoil : Airfoil
+                        Airfoil definition for hub
+                    - duct_airfoil : Airfoil
+                        Airfoil definition for duct
+    run_script_path : str
+        Path to the directory where the case file will be written
+    
+    Returns
+    -------
+    None
+    
+    Notes
+    -----
+    This function generates a DFDC case file with the following sections:
+      1. Header information including operating conditions
+      2. Hub geometry definition
+      3. Separator between geometry components
+      4. Duct geometry definition
+    
+    The function handles both NACA 4-series airfoils and custom airfoil
+    definitions for the hub and duct. If no airfoil is specified, default
+    NACA airfoils are used (0015 for hub, 2208 for duct).
+    
+    The blade geometry is defined with linearly varying chord and twist
+    distributions from hub to tip.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.purge_files
+    RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry
+    RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series
     """     
     # unpack inputs
     case_file   = dfdc_object.geometry.tag + '.case' 

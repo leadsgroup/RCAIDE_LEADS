@@ -12,19 +12,70 @@ from RCAIDE.Framework.Core import Units
 #  set_residuals_and_unknowns
 # ----------------------------------------------------------------------------------------------------------------------  
 def set_residuals_and_unknowns(mission):
-    """ Sets the flight dynamics residuals and fligth controls of the aircraft   
+    """
+    Sets up flight dynamics residuals and control variables for mission segments
 
-        Assumptions:
-        N/A
+    Parameters
+    ----------
+    mission : Mission
+        The mission containing segments to be analyzed
+            - state.ones_row : function
+                Creates array of ones
+            - assigned_control_variables : Data
+                Control variable configurations
+            - flight_dynamics : Data
+                Force/moment flags
+            - state.residuals : Data
+                Storage for residuals
+            - state.unknowns : Data
+                Storage for unknowns
 
-        Inputs: 
-            mission     - data structure of mission  [-]
- 
-        Outputs:  
+    Returns
+    -------
+    None
+        Updates mission segment states directly
+    
+    Notes
+    -----
+    This function configures the flight dynamics problem for each segment by
+    setting up force/moment residuals and initializing control variables.
+    It handles a comprehensive set of flight controls and dynamics states.
 
-        Properties Used:
-        N/A
+    The function processes:
+    1. Force and moment residuals (degrees of freedom)
+    2. Control variable initialization including:
+        - Body angles
+        - Bank angles
+        - Wind angles
+        - Throttle settings
+        - Velocity and acceleration
+        - Time parameters
+        - Control surface deflections
+            * Elevator
+            * Rudder
+            * Flaps
+            * Slats
+            * Ailerons
+        - Thrust vectoring
 
+    **Control Variable Initialization**
+    
+    For each control:
+        1. Check if active
+        2. Use provided initial values if available
+        3. Apply default values if needed
+        4. Track number of controls
+
+    **Major Assumptions**
+        * Valid control configurations
+        * Proper degrees of freedom setup
+        * Compatible control assignments
+        * Valid initial guess values
+        * Units in standard format
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """     
     for segment in mission.segments:  
         ones_row    = segment.state.ones_row 

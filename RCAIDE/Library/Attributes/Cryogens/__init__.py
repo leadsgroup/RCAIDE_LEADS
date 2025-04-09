@@ -1,7 +1,12 @@
 # RCAIDE/Library/Attributes/Cryogens/__init__.py
 # 
 
-"""RCAIDE Package Setup
+"""
+This module provides cryogenic fuel handling capabilities for RCAIDE. It includes classes for managing different types of cryogenic fuels and their properties, with specific implementations for liquid hydrogen and general cryogenic substances.
+
+See Also
+--------
+RCAIDE.Library.Attributes.Propellants : Related module for conventional fuel handling
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

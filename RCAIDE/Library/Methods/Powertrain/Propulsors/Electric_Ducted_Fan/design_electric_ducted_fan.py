@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Propulsors/Electric_Ducted_Fan/design_electric_rotor.py
+# RCAIDE/Library/Methods/Powertrain/Propulsors/Electric_Ducted_Fan/design_electric_ducted_fan.py
 # 
 # Created:  Mar 2025, M. Clarke
 
@@ -19,20 +19,77 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Electric Ducted Fan 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_electric_ducted_fan(EDF, new_regression_results = False, keep_files = True):
-    """Compute perfomance properties of an electrically powered ducted fan, which is driven by an electric machine
+def design_electric_ducted_fan(EDF, new_regression_results=False, keep_files=True):
+    """
+    Compute performance properties of an electrically powered ducted fan, which is driven by an electric machine.
     
-    Assumtions:
-       None 
+    Parameters
+    ----------
+    EDF : RCAIDE.Library.Components.Propulsors.Electric_Ducted_Fan
+        Electric ducted fan propulsor component with the following attributes:
+            - tag : str
+                Identifier for the propulsor
+            - electronic_speed_controller : Data
+                ESC component
+                    - bus_voltage : float
+                        Bus voltage [V]
+            - ducted_fan : Data
+                Ducted fan component
+                    - cruise : Data
+                        Cruise conditions
+                            - design_torque : float
+                                Design torque [N·m]
+                            - design_angular_velocity : float
+                                Design angular velocity [rad/s]
+            - motor : Data
+                Electric motor component
+                    - design_torque : float
+                        Design torque [N·m]
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
+    new_regression_results : bool, optional
+        Flag to generate new regression results for the ducted fan
+        Default: False
+    keep_files : bool, optional
+        Flag to keep temporary files generated during ducted fan design
+        Default: True
     
-    Source:
+    Returns
+    -------
+    None
+        Results are stored in the EDF object:
+            - sealevel_static_thrust : float
+                Sea level static thrust [N]
+            - sealevel_static_power : float
+                Sea level static power [W]
     
-    Args:
-        electric_rotor (dict):  electric ducted_fan [-]
+    Notes
+    -----
+    This function performs several tasks:
+        1. Validates that all required components are defined
+        2. Designs the ducted fan using the design_ducted_fan function
+        3. Sets the motor design parameters based on the ducted fan requirements
+        4. Designs the motor for optimal performance
+        5. Computes the motor weight
+        6. Calculates the sea level static performance (thrust and power)
     
-    Returns:
-        None 
+    The sea level static performance is calculated by:
+        - Setting up atmospheric conditions at sea level
+        - Creating a low-speed operating state (1% of sea level speed of sound)
+        - Setting the throttle to maximum (1.0)
+        - Computing the performance at these conditions
     
+    **Major Assumptions**
+        * US Standard Atmosphere 1976 is used for atmospheric properties
+        * Sea level static conditions are approximated with a very low velocity (1% of speed of sound)
+        * Full throttle (throttle = 1.0) is used for sea level static performance
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.design_ducted_fan
+    RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common.compute_motor_weight
+    RCAIDE.Library.Methods.Powertrain.setup_operating_conditions
     """
     if EDF.electronic_speed_controller == None: 
         raise AssertionError("electric speed controller not defined on propulsor")

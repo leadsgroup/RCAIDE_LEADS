@@ -23,38 +23,170 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_performance
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_turbofan_performance(turbofan,state,center_of_gravity= [[0.0, 0.0,0.0]]):
-    ''' Computes the perfomrance of a turbofan
+def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+    """
+    Computes the performance of a turbofan engine by analyzing the thermodynamic cycle.
     
     Parameters
     ----------
-    turbofan : dict
-        turbofan compoment   
-    state : dict
-        operating conditions data structure   
-    fuel_line : dict
-        fuel line component (default: None)
-    bus : dict
-        electrical bus compoment (default: None)
-    center_of_gravity : list
-        aircraft center of gravity [m]
+    turbofan : RCAIDE.Library.Components.Propulsors.Turbofan
+        Turbofan engine component with the following attributes:
+            - tag : str
+                Identifier for the turbofan
+            - working_fluid : Data
+                Working fluid properties object
+            - ram : Data
+                Ram component
+                    - tag : str
+                        Identifier for the ram
+            - inlet_nozzle : Data
+                Inlet nozzle component
+                    - tag : str
+                        Identifier for the inlet nozzle
+            - fan : Data
+                Fan component
+                    - tag : str
+                        Identifier for the fan
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
+            - low_pressure_compressor : Data
+                Low pressure compressor component
+                    - tag : str
+                        Identifier for the low pressure compressor
+                    - motor : Data, optional
+                        Electric motor component
+                    - generator : Data, optional
+                        Electric generator component
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
+            - high_pressure_compressor : Data
+                High pressure compressor component
+                    - tag : str
+                        Identifier for the high pressure compressor
+                    - design_angular_velocity : float
+                        Design angular velocity [rad/s]
+            - combustor : Data
+                Combustor component
+                    - tag : str
+                        Identifier for the combustor
+                    - fuel_data : Data
+                        Fuel properties
+                        - specific_energy : float
+                            Fuel specific energy [J/kg]
+            - high_pressure_turbine : Data
+                High pressure turbine component
+                    - tag : str
+                        Identifier for the high pressure turbine
+            - low_pressure_turbine : Data
+                Low pressure turbine component
+                    - tag : str
+                        Identifier for the low pressure turbine
+            - core_nozzle : Data
+                Core nozzle component
+                    - tag : str
+                        Identifier for the core nozzle
+            - fan_nozzle : Data
+                Fan nozzle component
+                    - tag : str
+                        Identifier for the fan nozzle
+            - bypass_ratio : float
+                Bypass ratio of the turbofan
+            - reference_temperature : float
+                Reference temperature for mass flow scaling [K]
+            - reference_pressure : float
+                Reference pressure for mass flow scaling [Pa]
+            - compressor_nondimensional_massflow : float
+                Non-dimensional mass flow parameter [kg·√K/(s·Pa)]
+            - origin : list of lists
+                Origin coordinates [[x, y, z]] [m]
+    state : RCAIDE.Framework.Mission.Common.State
+        State object containing:
+            - conditions : Data
+                Flight conditions
+                    - freestream : Data
+                        Freestream properties
+                        - velocity : numpy.ndarray
+                            Freestream velocity [m/s]
+                        - temperature : numpy.ndarray
+                            Freestream temperature [K]
+                        - pressure : numpy.ndarray
+                            Freestream pressure [Pa]
+                - noise : Data
+                    Noise conditions
+                        - propulsors : dict
+                            Propulsor noise conditions indexed by tag
+                - energy : Data
+                    Energy conditions
+                        - propulsors : dict
+                            Propulsor energy conditions indexed by tag
+                        - converters : dict
+                            Converter energy conditions indexed by tag
+                        - hybrid_power_split_ratio : float
+                            Ratio of power split for hybrid systems
+            - numerics : Data
+                Numerical properties
+                    - time : Data
+                        Time properties
+                        - differentiate : list
+                            List of differentiation methods
+            - ones_row : function
+                Function to create array of ones with specified length
+    center_of_gravity : list of lists, optional
+        Center of gravity coordinates [[x, y, z]] [m]
+        Default: [[0.0, 0.0, 0.0]]
     
-    Returns: 
+    Returns
+    -------
+    thrust_vector : numpy.ndarray
+        Thrust force vector [N]
+    moment : numpy.ndarray
+        Moment vector [N·m]
+    power : numpy.ndarray
+        Shaft power output [W]
+    power_elec : numpy.ndarray
+        Electrical power input/output [W]
+    stored_results_flag : bool
+        Flag indicating if results are stored
+    stored_propulsor_tag : str
+        Tag of the turbofan with stored results
+    
+    Notes
+    -----
+    This function computes the performance of a turbofan engine by sequentially analyzing
+    each component in the engine's thermodynamic cycle. It links the output conditions of
+    each component to the input conditions of the next component in the flow path.
+    
+    The function follows this sequence:
+        1. Set working fluid properties
+        2. Compute ram performance
+        3. Compute inlet nozzle performance
+        4. Compute fan performance
+        5. Compute low pressure compressor performance
+        6. Compute high pressure compressor performance
+        7. Compute combustor performance
+        8. Compute high pressure turbine performance
+        9. Compute low pressure turbine performance
+        10. Compute core nozzle performance
+        11. Compute fan nozzle performance
+        12. Compute thrust and power output
+        13. Calculate efficiencies
+        14. Handle electrical power generation/consumption if applicable
+    
+    **Major Assumptions**
+        * Steady state operation
+        * One-dimensional flow through components
+        * Adiabatic components except for the combustor
+        * Perfect gas behavior with variable properties
+    
+    References
     ----------
-    Outputs:  
-    total_thrust: array_like
-        thrust of turbofan [N]
-    total_momnet: array_like
-        moment of turbofan  [Nm]
-    total_mechanical_power: array_like
-        mechanical power generated by turbofan [W] 
-    total_electrical_power: array_like
-        electrical power generated by turbofan [W] 
-    stored_results_flag: boolean
-        boolean for stored results [-]     
-    stored_propulsor_tag; string
-        name of turbojet with stored results [-] 
-    ''' 
+    [1] Mattingly, J.D., "Elements of Gas Turbine Propulsion", 2nd Edition, AIAA Education Series, 2005. https://soaneemrana.org/onewebmedia/ELEMENTS%20OF%20GAS%20TURBINE%20PROPULTION2.pdf
+    [2] Cantwell, B., "AA283 Course Notes", Stanford University. https://web.stanford.edu/~cantwell/AA283_Course_Material/
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
+    """ 
     conditions                = state.conditions   
     noise_conditions          = conditions.noise.propulsors[turbofan.tag] 
     turbofan_conditions       = conditions.energy.propulsors[turbofan.tag] 

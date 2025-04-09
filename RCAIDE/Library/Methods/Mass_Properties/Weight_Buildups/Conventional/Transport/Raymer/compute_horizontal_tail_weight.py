@@ -17,36 +17,80 @@ import  numpy as  np
 #  Horizontal Tail Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_horizontal_tail_weight(vehicle, wing, settings,elevator_fraction=0.4):
-    """ Calculates horizontal tail weight based on Raymer method
+    """
+    Calculates horizontal tail weight based on Raymer's empirical method.
 
-        Assumptions:
-            If all-moving horizontal tail, change Kuht to 1.143
-        Source:
-            Aircraft Design: A Conceptual Approach
+    Parameters
+    ----------
+    vehicle : RCAIDE.Vehicle()
+        Vehicle data structure containing:
+            - mass_properties.max_takeoff : float
+                Maximum takeoff weight [kg]
+            - flight_envelope.ultimate_load : float
+                Ultimate load factor
+            - wings['main_wing'] : Data()
+                Main wing properties including origin and aerodynamic center
+            - fuselages['fuselage'].width : float
+                Width of the fuselage [m]
+    wing : RCAIDE.Component()
+        Horizontal tail component containing:
+            - areas.reference : float
+                Tail surface area [m^2]
+            - origin : array
+                Location of tail measured from nose [m]
+            - aerodynamic_center : array
+                Location of ac measured from leading edge [m]
+            - sweeps.quarter_chord : float
+                Quarter chord sweep angle [rad]
+            - thickness_to_chord : float
+                Thickness-to-chord ratio
+            - spans.projected : float
+                Projected span [m]
+            - aspect_ratio : float
+                Aspect ratio
+    elevator_fraction : float, optional
+        Fraction of horizontal tail area that is elevator, defaults to 0.4
+    settings.advanced_composites : bool, optional
+        True if advanced composites are used, False otherwise
 
-        Inputs:
-            vehicle - data dictionary with vehicle properties                    [dimensionless]
-                -.mass_properties.max_takeoff: MTOW                             [kilograms]
-                -.flight_envelope.ultimate_load: ultimate load factor (default: 3.75)
-                -.wings['main_wing']: data dictionary with properties of main wing
-                    -.aerodynamic_center: aerodynamic center as measured from root leading edge
-                    -.origin: root of main wing as measured from nose of aircraft
-                -.fuselages['fuselage'].width: width of the fuselage
-            wing    - data dictionary with specific tail properties              [dimensionless]
-                -.areas.reference: tail surface area                            [m^2}
-                -.origin: location of tail measured from nose
-                -.aerodynamic_center: location of ac measured from leading edge
-                -.sweeps.quarter_chord: quarter chord sweep of tail             [rad]
-                -.thickness_to_chord: t/c of tail
-                -.span.projected: project span of tail                          [m]
-                -.aspect_ratio: aspect ratio of wing
-            elevator_fraction - fraction of horizontal tail for elevator = 0.4
+    Returns
+    -------
+    tail_weight : float
+        Weight of the horizontal tail [kg]
 
-        Outputs:
-            tail_weight: horizontal tail weight                                [kilograms]
+    Notes
+    -----
+    This method implements Raymer's correlation for horizontal tail weight estimation,
+    accounting for geometry, loads, and configuration effects.
 
-        Properties Used:
-            N/A
+    **Major Assumptions**
+        * Not an all-moving horizontal tail (Kuht = 1.0)
+        * Elevator comprises 40% of tail area by default
+        * Correlation based on transport category aircraft data
+        * If advanced composites are used, the tail weight is reduced by 15%
+
+    **Theory**
+    The horizontal tail weight is calculated using:
+    .. math::
+        W_{ht} = 0.0379K_{uht}(1 + \frac{F_w}{B_h})^{-0.25}W_{dg}^{0.639}N_{ult}^{0.1}S_{ht}^{0.75}L_t^{-1}K_y^{0.704}\cos(\Lambda)^{-1}AR^{0.166}(1 + \frac{S_e}{S_{ht}})^{0.1}
+
+    where:
+        * :math:`K_{uht}` is 1.0 for fixed tails, 1.143 for all-moving
+        * :math:`F_w` is fuselage width
+        * :math:`B_h` is horizontal tail span
+        * :math:`L_t` is tail arm length
+        * :math:`K_y` is a function of tail arm length
+        * :math:`\Lambda` is quarter-chord sweep angle
+
+    References
+    ----------
+    [1] Raymer, D., "Aircraft Design: A Conceptual Approach", AIAA 
+        Education Series, 2018. 
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Weights.Correlation_Buildups.Raymer.compute_vertical_tail_weight
+    RCAIDE.Library.Methods.Weights.Correlation_Buildups.Raymer.compute_operating_empty_weight
     """
 
     ref_wing = None 
@@ -75,7 +119,7 @@ def compute_horizontal_tail_weight(vehicle, wing, settings,elevator_fraction=0.4
     min_value = min(diff)
     min_index = diff.index(min_value)
             
-    Kuht    = 1 # not a all-moving unit horizontal tail
+    Kuht    = 1 # not an all-moving unit horizontal tail
     Fw      = ref_fuselage.segments[names[min_index]].width / Units.ft
     Bh      = wing.spans.projected / Units.ft
     DG      = vehicle.mass_properties.max_takeoff / Units.lbs

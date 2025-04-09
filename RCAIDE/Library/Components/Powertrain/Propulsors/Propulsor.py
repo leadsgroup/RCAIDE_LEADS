@@ -34,9 +34,9 @@ class Propulsor(Component):
     -----
     This class serves as the foundation for all propulsion system implementations 
     in RCAIDE. It provides the basic structure and common attributes needed for:
-    - Electric propulsion systems (rotors, ducted fans)
-    - Internal combustion engine systems (fixed and constant-speed propellers)
-    - Gas turbine systems (turbofans, turbojets, turboprops)
+        * Electric propulsion systems (rotors, ducted fans)
+        * Internal combustion engine systems (fixed and constant-speed propellers)
+        * Gas turbine systems (turbofans, turbojets, turboprops)
     
     The class inherits from Component, providing basic component functionality
     while adding propulsion-specific features. Derived classes must implement

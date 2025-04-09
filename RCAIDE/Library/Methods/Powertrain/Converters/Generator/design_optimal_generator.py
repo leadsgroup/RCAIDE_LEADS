@@ -14,29 +14,83 @@ from scipy.optimize import minimize
 #  design generator 
 # ----------------------------------------------------------------------------------------------------------------------     
 def design_optimal_generator(generator):
-    ''' Sizes a generator to obtain the best combination of speed constant and resistance values
-    by sizing the generator for a design RPM value. Note that this design RPM value can be compute
-    from design tip mach. The following properties are computed.  
-      generator.speed_constant  (float): speed-constant [untiless] 
-      generator.resistance      (float): resistance     [ohms]        
+    """
+    Sizes a generator to obtain the best combination of speed constant and resistance values
+    by sizing the generator for a design RPM value.
     
-    Assumptions:
-        None 
+    Parameters
+    ----------
+    generator : RCAIDE.Library.Components.Powertrain.Converters.DC_Generator
+        Generator component with the following attributes:
+            - no_load_current : float
+                No-load current [A]
+            - nominal_voltage : float
+                Nominal voltage [V]
+            - angular_velocity : float
+                Angular velocity [radians/s]
+            - efficiency : float
+                Efficiency [unitless]
+            - design_torque : float
+                Design torque [N·m]
+            - gearbox : Data
+                Gearbox component
+                    - gear_ratio : float
+                        Gear ratio [unitless]
+            - design_angular_velocity : float
+                Design angular velocity [radians/s]
+            - design_power : float
+                Design power [W]
     
-    Source:
-        None
+    Returns
+    -------
+    generator : RCAIDE.Library.Components.Powertrain.Converters.DC_Generator
+        Generator with updated attributes:
+            - speed_constant : float
+                Speed constant [unitless]
+            - resistance : float
+                Resistance [ohms]
     
-    Args:
-        generator.no_load_current  (float): no-load current  [A]
-        generator.nominal_voltage  (float): nominal voltage  [V]
-        generator.angular_velocity (float): angular velocity [radians/s]    
-        generator.efficiency       (float): efficiency       [unitless]
-        generator.design_torque    (float): design torque    [Nm]
-       
-    Returns:
-       None 
+    Notes
+    -----
+    This function uses numerical optimization to find the optimal values of speed constant
+    and resistance that satisfy the generator's design requirements. It attempts to solve
+    the optimization problem with hard constraints first, and if that fails, it uses slack
+    constraints.
     
-    '''
+    The optimization process follows these steps:
+        1. Extract generator design parameters (voltage, angular velocity, efficiency, power)
+        2. Define optimization bounds for speed constant and resistance
+        3. Set up hard constraints for efficiency and power
+        4. Attempt optimization with hard constraints
+        5. If optimization fails, retry with slack constraints
+        6. Update the generator with the optimized parameters
+    
+    The objective function maximizes the current output for a given voltage and angular velocity.
+    
+    **Major Assumptions**
+        * The generator follows a DC generator model
+        * The optimization bounds are appropriate for the generator size
+        * If hard constraints cannot be satisfied, slack constraints are acceptable
+    
+    **Theory**
+    The generator model uses the following relationships:
+        - Current: :math:`I = (V - \\omega/Kv)/R - I₀`
+        - Efficiency: :math:`\\eta = (1 - (I₀\\cdot R)/(V - \\omega/Kv))\\cdot(\\omega/(V\\cdot Kv))`
+        - Power: :math:`P = \\omega\\cdot I/Kv`
+    
+    where:
+        - V is the nominal voltage
+        - ω is the angular velocity
+        - Kv is the speed constant
+        - R is the resistance
+        - I₀ is the no-load current
+        - η is the efficiency
+        - P is the power
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance
+    """
     
     if type(generator) != RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:
         raise Exception('function only supports low-fidelity (DC) generator')

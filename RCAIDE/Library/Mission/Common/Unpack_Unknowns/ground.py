@@ -7,24 +7,55 @@
 #  Unpack Unknowns
 # ---------------------------------------------------------------------------------------------------------------------- 
 def ground(segment):
-    """ Unpacks the times and velocities from the solver to the mission
-    
-        Assumptions:
-        Overrides the velocities if they go to zero
-        
-        Inputs:
-            segment.state.unknowns:
-                ground_velocity         [meters/second]
-                time               [second]
-            segment.velocity_start [meters/second]
-            
-        Outputs:
-            segment.state.conditions:
-                frames.inertial.velocity_vector [meters/second]
-                frames.inertial.time            [second]
-        Properties Used:
-        N/A
-                                
+    """
+    Updates ground segment states from solver unknowns
+
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - state:
+                - unknowns:
+                    - ground_velocity : array
+                        Solved ground velocity [m/s]
+                    - elapsed_time : float
+                        Segment duration [s]
+                - conditions.frames.inertial:
+                    - velocity_vector : array
+                        Vehicle velocity [m/s]
+                    - time : array
+                        Segment time points [s]
+                - numerics.dimensionless:
+                    - control_points : array
+                        Normalized time points [-]
+            - air_speed_start : float
+                Initial airspeed [m/s]
+
+    Returns
+    -------
+    None
+        Updates segment conditions directly
+
+    Notes
+    -----
+    This function applies ground-specific solver values to the segment state,
+    handling velocity and time variables for ground operations. It ensures
+    proper velocity transitions and time scaling.
+
+    The function processes:
+        1. Ground velocity application
+        2. Time vector computation
+        3. Initial velocity preservation
+
+    **Major Assumptions**
+        * Continuous velocity transitions
+        * Valid time scaling
+        * Non-negative velocities
+        * Well-defined initial conditions
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments.Ground
     """       
     
     # unpack unknowns 

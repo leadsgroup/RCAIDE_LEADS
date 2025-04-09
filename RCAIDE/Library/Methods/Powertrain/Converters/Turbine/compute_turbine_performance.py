@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Turbine/compute_turbine_performance.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke    
 
@@ -7,36 +6,142 @@
 #  compute_turbine_performance
 # ----------------------------------------------------------------------------------------------------------------------     
 def compute_turbine_performance(turbine,conditions):
-    """This computes the output values from the input values according to
-    equations from the source. The following properties are computed: 
-    turbine.outputs.
-      stagnation_temperature   (numpy.ndarray): exiting stagnation_temperature [K]  
-      stagnation_pressure      (numpy.ndarray): exiting stagnation_pressure    [Pa]
-      stagnation_enthalpy      (numpy.ndarray): exiting stagnation_enthalpy    [J/kg]
-
-    Assumptions:
-    Constant polytropic efficiency and pressure ratio
-
-    Source:
-    https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
-
-    Args:
-        conditions.freestream.
-          isentropic_expansion_factor             (numpy.ndarray): isentropic_expansion_factor         [unitless]
-          specific_heat_at_constant_pressure      (numpy.ndarray): specific_heat_at_constant_pressure  [J/(kg K)]
-        turbine
-          .inputs.stagnation_temperature          (numpy.ndarray): entering stagnation_temperature     [K]
-          .inputs.stagnation_pressure             (numpy.ndarray): entering stagnation_pressure        [Pa]
-          .inputs.bypass_ratio                    (numpy.ndarray): bypass_ratio                        [unitless]
-          .inputs.fuel_to_air_ratio               (numpy.ndarray): fuel-to-air ratio                   [unitless]
-          .inputs.compressor.work_done            (numpy.ndarray): compressor work                     [J/(kg/s)]
-          .inputs.fan.work_done                   (numpy.ndarray): fan work done                       [J/(kg/s)]
-          .inputs.power_off_take.work_done  (numpy.ndarray): shaft power off take                [J/(kg/s)] 
-          .mechanical_efficiency                          (float): mechanical efficiency               [unitless]
-          .polytropic_efficiency                          (float): polytropic efficiency               [unitless]
-
-    Returns:
-        None 
+    """
+    Computes turbine performance parameters based on input conditions and component characteristics.
+    
+    Parameters
+    ----------
+    turbine : RCAIDE.Library.Components.Powertrain.Converters.Turbine
+        Turbine component with the following attributes:
+            - tag : str
+                Identifier for the turbine
+            - working_fluid : Data
+                Working fluid object with methods to compute properties
+                    - compute_gamma : function
+                        Computes ratio of specific heats
+                    - compute_cp : function
+                        Computes specific heat at constant pressure
+                    - compute_R : function
+                        Computes gas constant
+            - mechanical_efficiency : float
+                Mechanical efficiency [unitless]
+            - polytropic_efficiency : float
+                Polytropic efficiency [unitless]
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions with:
+            - energy : Data
+                Energy conditions
+                    - converters : dict
+                        Converter energy conditions indexed by tag
+                            - inputs : Data
+                                Input conditions
+                                    - static_temperature : array_like
+                                        Static temperature [K]
+                                    - static_pressure : array_like
+                                        Static pressure [Pa]
+                                    - mach_number : array_like
+                                        Mach number [unitless]
+                                    - stagnation_temperature : array_like
+                                        Entering stagnation temperature [K]
+                                    - stagnation_pressure : array_like
+                                        Entering stagnation pressure [Pa]
+                                    - bypass_ratio : array_like
+                                        Bypass ratio [unitless]
+                                    - fuel_to_air_ratio : array_like
+                                        Fuel-to-air ratio [unitless]
+                                    - compressor : Data
+                                        Compressor data
+                                            - work_done : array_like
+                                                Compressor work [J/(kg/s)]
+                                            - external_shaft_work_done : array_like
+                                                Shaft power off take [J/(kg/s)]
+                                    - fan : Data
+                                        Fan data
+                                            - work_done : array_like
+                                                Fan work done [J/(kg/s)]
+    
+    Returns
+    -------
+    None
+        Results are stored in conditions.energy.converters[turbine.tag].outputs:
+            - stagnation_pressure : array_like
+                Exiting stagnation pressure [Pa]
+            - stagnation_temperature : array_like
+                Exiting stagnation temperature [K]
+            - stagnation_enthalpy : array_like
+                Exiting stagnation enthalpy [J/kg]
+            - static_temperature : array_like
+                Exiting static temperature [K]
+            - static_pressure : array_like
+                Exiting static pressure [Pa]
+            - mach_number : array_like
+                Exiting Mach number [unitless]
+            - gas_constant : array_like
+                Gas constant [J/(kg·K)]
+            - pressure_ratio : array_like
+                Pressure ratio across turbine [unitless]
+            - temperature_ratio : array_like
+                Temperature ratio across turbine [unitless]
+            - gamma : array_like
+                Ratio of specific heats [unitless]
+            - cp : array_like
+                Specific heat at constant pressure [J/(kg·K)]
+    
+    Notes
+    -----
+    This function calculates the performance of a turbine by computing the energy
+    extraction required to drive the compressor, fan, and any external power loads.
+    It then determines the resulting thermodynamic properties at the turbine exit.
+    
+    The computation follows these steps:
+        1. Extract turbine parameters and working fluid properties
+        2. Compute the working fluid properties (gamma, Cp, R) at inlet conditions
+        3. Calculate the energy drop across the turbine based on compressor/fan work
+           and mechanical efficiency
+        4. Compute the exit stagnation temperature, enthalpy, and pressure
+        5. Calculate the exit static temperature and pressure
+        6. Compute performance ratios (pressure ratio, temperature ratio)
+        7. Store all results in the conditions data structure
+    
+    **Major Assumptions**
+        * Constant polytropic efficiency throughout the turbine
+        * Constant pressure ratio across the turbine
+        * The working fluid behaves as a perfect gas
+        * Mechanical losses are accounted for through a constant efficiency factor
+    
+    **Theory**
+    The energy balance across the turbine is:
+    
+    .. math::
+        \\Delta h_t = -\\frac{1}{1+f} \\cdot \\frac{W_{comp} + W_{ext} + \\alpha W_{fan}}{\\eta_{mech}}
+    
+    where:
+        - :math:`\\Delta h_t` is the enthalpy drop across the turbine
+        - :math:`f` is the fuel-to-air ratio
+        - :math:`W_{comp}` is the compressor work
+        - :math:`W_{ext}` is the external shaft work
+        - :math:`W_{fan}` is the fan work
+        - :math:`\\alpha` is the bypass ratio
+        - :math:`\\eta_{mech}` is the mechanical efficiency
+    
+    The exit stagnation temperature is:
+    
+    .. math::
+        T_{t,out} = T_{t,in} + \\frac{\\Delta h_t}{C_p}
+    
+    The exit stagnation pressure is calculated using the polytropic efficiency:
+    
+    .. math::
+        P_{t,out} = P_{t,in} \\cdot \\left(\\frac{T_{t,out}}{T_{t,in}}\\right)^{\\frac{\\gamma}{(\\gamma-1)\\eta_{poly}}}
+    
+    References
+    ----------
+    [1] Mattingly, J.D., "Elements of Gas Turbine Propulsion", AIAA Education Series, 2005
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance
     """              
                              
     # Unpack ram inputs       

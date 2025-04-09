@@ -12,21 +12,44 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 #  METHODS
 # ---------------------------------------------------------------------------------------------------------------------- 
 def append_bus_conditions(bus,segment): 
-    """ Appends the initial bus conditions
-        
-        Assumptions:
-        N/A
+    """
+    Appends conditions for the electrical bus to the segment's energy conditions dictionary.
+
+    Parameters
+    ----------
+    bus : RCAIDE.Library.Components.Distributors.ElectricalBus
     
-        Source:
-        N/A
+    Returns
+    -------
+    None
+        This function modifies the segment.state.conditions.energy dictionary in-place.
     
-        Inputs:  
-       
-        Outputs:
-           
-        Properties Used:
-        None
-        """
+    Notes
+    -----
+    This function creates a Conditions object for the electrical bus within the segment's
+    energy conditions dictionary, indexed by the bus tag. It initializes various bus
+    properties as zero arrays with the same length as the segment's state vector.
+    
+    The initialized properties include:
+        - Battery module conditions
+        - Fuel cell stack conditions
+        - Power draw
+        - State of charge and depth of discharge
+        - Current draw and charging current
+        - Voltage (open circuit and under load)
+        - Heat energy generated
+        - Efficiency
+        - Temperature
+        - Energy
+        - Regenerative power
+    
+    For segments with an initial battery state of charge specified, the function also
+    sets the initial energy and state of charge values accordingly.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
+    """
     ones_row                                                                     = segment.state.ones_row
                
     segment.state.conditions.energy[bus.tag]                                     = Conditions()
@@ -59,22 +82,42 @@ def append_bus_conditions(bus,segment):
 
 
 def append_bus_segment_conditions(bus,conditions,segment):
-    """Sets the initial bus properties at the start of each segment as the last point from the previous segment 
+    """
+    Sets the initial bus properties at the start of each segment based on the last point from the previous segment.
     
-        Assumptions:
-        None
+    Parameters
+    ----------
+    bus : ElectricalBus
+        The electrical bus component for which conditions are being initialized.
+    conditions : dict
+        Dictionary containing conditions from the previous segment.
+    segment : Segment
+        The current mission segment in which the bus is operating.
     
-        Source:
-        N/A
+    Returns
+    -------
+    None
     
-        Inputs:  
-         cross_flow_hex            (data structure)              [None]
-               
-        Outputs:
-        None
+    Notes
+    -----
+    This function initializes the power draw for the electrical bus at the start of a new segment
+    by transferring thermal power draw information from the previous segment. It handles power
+    requirements from battery thermal management systems (BTMS) and heat exchangers.
     
-        Properties Used:
-        None
+    For segments with initial conditions from a previous segment, the function also:
+        1. Sets the battery discharge flag based on the segment type (false for recharge segments)
+        2. Transfers the final energy state from the previous segment to the initial state of the current segment
+    
+    This ensures continuity of energy states between mission segments.
+    
+    **Major Assumptions**
+        * Battery recharge segments are identified by their class type
+        * Power draw is initialized from thermal management components
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
+    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
     """    
     bus_conditions             = conditions[bus.tag]
     ones_row                   = segment.state.ones_row
