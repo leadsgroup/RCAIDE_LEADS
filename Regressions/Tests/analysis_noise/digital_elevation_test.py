@@ -54,7 +54,7 @@ def main():
     plot_results(results,noise_data,regression_plotting_flag) 
 
     X57_SPL        = np.max(results.segments.cruise.conditions.noise.hemisphere_SPL_dBA) 
-    X57_SPL_true   = 69.86388929632554
+    X57_SPL_true   = 66.25788939370754
     X57_diff_SPL   = np.abs(X57_SPL - X57_SPL_true)
     print('Error: ',X57_diff_SPL)
     assert np.abs((X57_SPL - X57_SPL_true)/X57_SPL_true) < 1e-3 
