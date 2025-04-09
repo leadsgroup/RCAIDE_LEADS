@@ -146,77 +146,27 @@ def build_surrogate(aerodynamics, training):
     surrogates.CN_p           = RegularGridInterpolator((p_data,mach_data),training.CN_p           ,method = 'linear',   bounds_error=False, fill_value=None)      
     surrogates.CN_q           = RegularGridInterpolator((q_data,mach_data),training.CN_q           ,method = 'linear',   bounds_error=False, fill_value=None)      
     surrogates.CN_r           = RegularGridInterpolator((r_data,mach_data),training.CN_r           ,method = 'linear',   bounds_error=False, fill_value=None)
-    
-    surrogates.dClift_dalpha    = interpolate.interp1d(mach_data,training.dClift_dalpha    ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dClift_dbeta     = interpolate.interp1d(mach_data,training.dClift_dbeta     ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate") 
-    surrogates.dClift_du        = interpolate.interp1d(mach_data,training.dClift_du        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dClift_dv        = interpolate.interp1d(mach_data,training.dClift_dv        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dClift_dw        = interpolate.interp1d(mach_data,training.dClift_dw        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dClift_dp        = interpolate.interp1d(mach_data,training.dClift_dp        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dClift_dq        = interpolate.interp1d(mach_data,training.dClift_dq        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dClift_dr        = interpolate.interp1d(mach_data,training.dClift_dr        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    
-    surrogates.dCdrag_dalpha    = interpolate.interp1d(mach_data,training.dCdrag_dalpha    ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCdrag_dbeta     = interpolate.interp1d(mach_data,training.dCdrag_dbeta     ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")   
-    surrogates.dCdrag_du        = interpolate.interp1d(mach_data,training.dCdrag_du        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCdrag_dv        = interpolate.interp1d(mach_data,training.dCdrag_dv        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCdrag_dw        = interpolate.interp1d(mach_data,training.dCdrag_dw        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCdrag_dp        = interpolate.interp1d(mach_data,training.dCdrag_dp        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCdrag_dq        = interpolate.interp1d(mach_data,training.dCdrag_dq        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCdrag_dr        = interpolate.interp1d(mach_data,training.dCdrag_dr        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    
+      
     surrogates.dCX_dalpha       = interpolate.interp1d(mach_data,training.dCX_dalpha       ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCX_dbeta        = interpolate.interp1d(mach_data,training.dCX_dbeta        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")  
     surrogates.dCX_du           = interpolate.interp1d(mach_data,training.dCX_du           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCX_dv           = interpolate.interp1d(mach_data,training.dCX_dv           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCX_dw           = interpolate.interp1d(mach_data,training.dCX_dw           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCX_dp           = interpolate.interp1d(mach_data,training.dCX_dp           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCX_dq           = interpolate.interp1d(mach_data,training.dCX_dq           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCX_dr           = interpolate.interp1d(mach_data,training.dCX_dr           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     
-    surrogates.dCY_dalpha       = interpolate.interp1d(mach_data,training.dCY_dalpha       ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCY_dbeta        = interpolate.interp1d(mach_data,training.dCY_dbeta        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")  
-    surrogates.dCY_du           = interpolate.interp1d(mach_data,training.dCY_du           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCY_dv           = interpolate.interp1d(mach_data,training.dCY_dv           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCY_dw           = interpolate.interp1d(mach_data,training.dCY_dw           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCY_dp           = interpolate.interp1d(mach_data,training.dCY_dp           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCY_dq           = interpolate.interp1d(mach_data,training.dCY_dq           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCY_dr           = interpolate.interp1d(mach_data,training.dCY_dr           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     
     surrogates.dCZ_dalpha       = interpolate.interp1d(mach_data,training.dCZ_dalpha       ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCZ_dbeta        = interpolate.interp1d(mach_data,training.dCZ_dbeta        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")  
     surrogates.dCZ_du           = interpolate.interp1d(mach_data,training.dCZ_du           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCZ_dv           = interpolate.interp1d(mach_data,training.dCZ_dv           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCZ_dw           = interpolate.interp1d(mach_data,training.dCZ_dw           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCZ_dp           = interpolate.interp1d(mach_data,training.dCZ_dp           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCZ_dq           = interpolate.interp1d(mach_data,training.dCZ_dq           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCZ_dr           = interpolate.interp1d(mach_data,training.dCZ_dr           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     
-    surrogates.dCL_dalpha       = interpolate.interp1d(mach_data,training.dCL_dalpha       ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCL_dbeta        = interpolate.interp1d(mach_data,training.dCL_dbeta        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")  
-    surrogates.dCL_du           = interpolate.interp1d(mach_data,training.dCL_du           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCL_dv           = interpolate.interp1d(mach_data,training.dCL_dv           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCL_dw           = interpolate.interp1d(mach_data,training.dCL_dw           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCL_dp           = interpolate.interp1d(mach_data,training.dCL_dp           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCL_dq           = interpolate.interp1d(mach_data,training.dCL_dq           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCL_dr           = interpolate.interp1d(mach_data,training.dCL_dr           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     
     surrogates.dCM_dalpha       = interpolate.interp1d(mach_data,training.dCM_dalpha       ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCM_dbeta        = interpolate.interp1d(mach_data,training.dCM_dbeta        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")  
     surrogates.dCM_du           = interpolate.interp1d(mach_data,training.dCM_du           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCM_dv           = interpolate.interp1d(mach_data,training.dCM_dv           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCM_dw           = interpolate.interp1d(mach_data,training.dCM_dw           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCM_dp           = interpolate.interp1d(mach_data,training.dCM_dp           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCM_dq           = interpolate.interp1d(mach_data,training.dCM_dq           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCM_dr           = interpolate.interp1d(mach_data,training.dCM_dr           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     
-    surrogates.dCN_dalpha       = interpolate.interp1d(mach_data,training.dCN_dalpha       ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCN_dbeta        = interpolate.interp1d(mach_data,training.dCN_dbeta        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")  
-    surrogates.dCN_du           = interpolate.interp1d(mach_data,training.dCN_du           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCN_dv           = interpolate.interp1d(mach_data,training.dCN_dv           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCN_dw           = interpolate.interp1d(mach_data,training.dCN_dw           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCN_dp           = interpolate.interp1d(mach_data,training.dCN_dp           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
-    surrogates.dCN_dq           = interpolate.interp1d(mach_data,training.dCN_dq           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCN_dr           = interpolate.interp1d(mach_data,training.dCN_dr           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")
    
 
@@ -392,69 +342,21 @@ def no_surrogate(aerodynamics, training):
     surrogates.CN_q           = None    
     surrogates.CN_r           = None
     
-    surrogates.dClift_dalpha    = None      
-    surrogates.dClift_dbeta     = None 
-    surrogates.dClift_du        = None      
-    surrogates.dClift_dv        = None      
-    surrogates.dClift_dw        = None      
-    surrogates.dClift_dp        = None      
-    surrogates.dClift_dq        = None      
-    surrogates.dClift_dr        = None  
-    surrogates.dCdrag_dalpha    = None      
-    surrogates.dCdrag_dbeta     = None   
-    surrogates.dCdrag_du        = None      
-    surrogates.dCdrag_dv        = None      
-    surrogates.dCdrag_dw        = None      
-    surrogates.dCdrag_dp        = None      
-    surrogates.dCdrag_dq        = None      
-    surrogates.dCdrag_dr        = None   
     surrogates.dCX_dalpha       = None      
-    surrogates.dCX_dbeta        = None  
     surrogates.dCX_du           = None      
-    surrogates.dCX_dv           = None      
-    surrogates.dCX_dw           = None      
-    surrogates.dCX_dp           = None      
-    surrogates.dCX_dq           = None      
-    surrogates.dCX_dr           = None   
-    surrogates.dCY_dalpha       = None      
     surrogates.dCY_dbeta        = None  
-    surrogates.dCY_du           = None      
-    surrogates.dCY_dv           = None      
-    surrogates.dCY_dw           = None      
-    surrogates.dCY_dp           = None      
-    surrogates.dCY_dq           = None      
     surrogates.dCY_dr           = None  
     surrogates.dCZ_dalpha       = None      
-    surrogates.dCZ_dbeta        = None  
     surrogates.dCZ_du           = None      
-    surrogates.dCZ_dv           = None      
-    surrogates.dCZ_dw           = None      
-    surrogates.dCZ_dp           = None      
     surrogates.dCZ_dq           = None      
-    surrogates.dCZ_dr           = None    
-    surrogates.dCL_dalpha       = None      
     surrogates.dCL_dbeta        = None  
-    surrogates.dCL_du           = None      
-    surrogates.dCL_dv           = None      
-    surrogates.dCL_dw           = None      
     surrogates.dCL_dp           = None      
-    surrogates.dCL_dq           = None      
     surrogates.dCL_dr           = None  
     surrogates.dCM_dalpha       = None      
-    surrogates.dCM_dbeta        = None  
     surrogates.dCM_du           = None      
-    surrogates.dCM_dv           = None      
-    surrogates.dCM_dw           = None      
-    surrogates.dCM_dp           = None      
     surrogates.dCM_dq           = None      
-    surrogates.dCM_dr           = None  
-    surrogates.dCN_dalpha       = None      
     surrogates.dCN_dbeta        = None  
-    surrogates.dCN_du           = None      
-    surrogates.dCN_dv           = None      
-    surrogates.dCN_dw           = None      
     surrogates.dCN_dp           = None      
-    surrogates.dCN_dq           = None      
     surrogates.dCN_dr           = None
    
 

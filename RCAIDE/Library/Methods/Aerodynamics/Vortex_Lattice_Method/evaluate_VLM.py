@@ -104,11 +104,11 @@ def evaluate_surrogate(state,settings,vehicle):
 
     Clift_alpha             = results_alpha.Clift   
     Cdrag_alpha             = results_alpha.Cdrag   
-    CX_alpha                = results_alpha.CX      
+    CX_alpha                = results_alpha.CX      # Needed
     CY_alpha                = results_alpha.CY      
-    CZ_alpha                = results_alpha.CZ      
+    CZ_alpha                = results_alpha.CZ      # Needed
     CL_alpha                = results_alpha.CL      
-    CM_alpha                = results_alpha.CM      
+    CM_alpha                = results_alpha.CM      # Needed
     CN_alpha                = results_alpha.CN 
     Clift_alpha[AoA==0.0]   = 0   
     Cdrag_alpha[AoA==0.0]   = 0   
@@ -128,11 +128,11 @@ def evaluate_surrogate(state,settings,vehicle):
     Clift_beta              = results_beta.Clift   
     Cdrag_beta              = results_beta.Cdrag 
     CX_beta                 = results_beta.CX     
-    CY_beta                 = results_beta.CY     
+    CY_beta                 = results_beta.CY      # Needed
     CZ_beta                 = results_beta.CZ     
-    CL_beta                 = results_beta.CL     
+    CL_beta                 = results_beta.CL      # Needed
     CM_beta                 = results_beta.CM     
-    CN_beta                 = results_beta.CN 
+    CN_beta                 = results_beta.CN      # Needed
     Clift_beta[Beta==0.0]   = 0   
     Cdrag_beta[Beta==0.0]   = 0
     CX_beta[Beta==0.0]      = 0 
@@ -150,11 +150,11 @@ def evaluate_surrogate(state,settings,vehicle):
                   
     Clift_u           = results_u.Clift   
     Cdrag_u           = results_u.Cdrag   
-    CX_u              = results_u.CX      
+    CX_u              = results_u.CX      # Needed
     CY_u              = results_u.CY      
-    CZ_u              = results_u.CZ      
+    CZ_u              = results_u.CZ      # Needed
     CL_u              = results_u.CL      
-    CM_u              = results_u.CM      
+    CM_u              = results_u.CM      # Needed
     CN_u              = results_u.CN  
     Clift_u[u==0.0]   = 0   
     Cdrag_u[u==0.0]   = 0   
@@ -170,7 +170,7 @@ def evaluate_surrogate(state,settings,vehicle):
                                           trans_sur.Clift_v,trans_sur.Cdrag_v,trans_sur.CX_v,trans_sur.CY_v,trans_sur.CZ_v,trans_sur.CL_v,trans_sur.CM_v, trans_sur.CN_v,
                                           sup_sur.Clift_v,  sup_sur.Cdrag_v,  sup_sur.CX_v,  sup_sur.CY_v,  sup_sur.CZ_v,  sup_sur.CL_v,  sup_sur.CM_v,   sup_sur.CN_v,
                                           h_sub,h_sup,Mach, pts_v)
-     
+    
     Clift_v           = results_v.Clift   
     Cdrag_v           = results_v.Cdrag   
     CX_v              = results_v.CX      
@@ -193,7 +193,7 @@ def evaluate_surrogate(state,settings,vehicle):
                                          trans_sur.Clift_w,trans_sur.Cdrag_w,trans_sur.CX_w,trans_sur.CY_w,trans_sur.CZ_w,trans_sur.CL_w,trans_sur.CM_w, trans_sur.CN_w,
                                          sup_sur.Clift_w,  sup_sur.Cdrag_w,  sup_sur.CX_w,  sup_sur.CY_w,  sup_sur.CZ_w,  sup_sur.CL_w,  sup_sur.CM_w,   sup_sur.CN_w,
                                          h_sub,h_sup,Mach, pts_w)
-     
+    
     Clift_w           = results_w.Clift   
     Cdrag_w           = results_w.Cdrag   
     CX_w              = results_w.CX      
@@ -210,7 +210,7 @@ def evaluate_surrogate(state,settings,vehicle):
     CL_w[w==0.0]      = 0
     CM_w[w==0.0]      = 0
     CN_w[w==0.0]      = 0
-                        
+                       
     # p  
     results_p    =  compute_coefficients(sub_sur.Clift_p,  sub_sur.Cdrag_p,  sub_sur.CX_p,  sub_sur.CY_p,  sub_sur.CZ_p,  sub_sur.CL_p,  sub_sur.CM_p,   sub_sur.CN_p,
                                          trans_sur.Clift_p,trans_sur.Cdrag_p,trans_sur.CX_p,trans_sur.CY_p,trans_sur.CZ_p,trans_sur.CL_p,trans_sur.CM_p, trans_sur.CN_p,
@@ -222,9 +222,9 @@ def evaluate_surrogate(state,settings,vehicle):
     CX_p              = results_p.CX      
     CY_p              = results_p.CY      
     CZ_p              = results_p.CZ      
-    CL_p              = results_p.CL      
+    CL_p              = results_p.CL      # Needed
     CM_p              = results_p.CM      
-    CN_p              = results_p.CN
+    CN_p              = results_p.CN      # Needed
     Clift_p[p==0.0]   = 0   
     Cdrag_p[p==0.0]   = 0   
     CX_p[p==0.0]      = 0   
@@ -244,9 +244,9 @@ def evaluate_surrogate(state,settings,vehicle):
     Cdrag_q           = results_q.Cdrag   
     CX_q              = results_q.CX      
     CY_q              = results_q.CY      
-    CZ_q              = results_q.CZ      
+    CZ_q              = results_q.CZ    # Needed   
     CL_q              = results_q.CL      
-    CM_q              = results_q.CM      
+    CM_q              = results_q.CM    # Needed
     CN_q              = results_q.CN
     Clift_q[q==0.0]   = 0
     Cdrag_q[q==0.0]   = 0
@@ -266,11 +266,11 @@ def evaluate_surrogate(state,settings,vehicle):
     Clift_r           = results_r.Clift   
     Cdrag_r           = results_r.Cdrag   
     CX_r              = results_r.CX      
-    CY_r              = results_r.CY      
+    CY_r              = results_r.CY      # Needed
     CZ_r              = results_r.CZ      
-    CL_r              = results_r.CL      
+    CL_r              = results_r.CL       # Needed
     CM_r              = results_r.CM      
-    CN_r              = results_r.CN 
+    CN_r              = results_r.CN      # Needed
     Clift_r[r==0.0]   = 0  
     Cdrag_r[r==0.0]   = 0  
     CX_r[r==0.0]      = 0  
@@ -293,11 +293,11 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.coefficients.lift   = Clift_alpha + Clift_u + Clift_w + Clift_q 
     conditions.static_stability.coefficients.drag   = Cdrag_alpha + Cdrag_u + Cdrag_w + Cdrag_q 
     conditions.static_stability.coefficients.X      = CX_alpha + CX_u + CX_w + CX_q
-    conditions.static_stability.coefficients.Y      = CY_beta + CY_v + CY_p + CY_r
-    conditions.static_stability.coefficients.Z      = CZ_alpha + CZ_u + CZ_w + CZ_q 
-    conditions.static_stability.coefficients.L      = CL_beta + CL_v + CL_p +CL_r
-    conditions.static_stability.coefficients.M      = CM_alpha + CM_u + CM_w + CM_q 
-    conditions.static_stability.coefficients.N      = CN_beta + CN_v + CN_p + CN_r    
+    conditions.static_stability.coefficients.Y      = CY_beta + CY_r + CY_v + CY_p
+    conditions.static_stability.coefficients.Z      = CZ_alpha + CZ_u + CZ_q + CZ_w 
+    conditions.static_stability.coefficients.L      = CL_beta + CL_r + CL_p + CL_v
+    conditions.static_stability.coefficients.M      = CM_alpha + CM_u + CM_q + CM_w 
+    conditions.static_stability.coefficients.N      = CN_beta + CN_r + CN_p + CN_v    
     
 
     # -----------------------------------------------------------------------------------------------------------------------
@@ -519,60 +519,50 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.slat.static_stability.coefficients.N             = CN_delta_s                     
      
     
-    conditions.static_stability.derivatives.Clift_alpha = compute_stability_derivative(sub_sur.dClift_dalpha ,trans_sur.dClift_dalpha ,sup_sur.dClift_dalpha ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.Clift_alpha = compute_stability_derivative(sub_sur.dClift_dalpha ,trans_sur.dClift_dalpha ,sup_sur.dClift_dalpha ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CX_alpha    = compute_stability_derivative(sub_sur.dCX_dalpha    ,trans_sur.dCX_dalpha    ,sup_sur.dCX_dalpha    ,h_sub,h_sup,Mach)  
-    conditions.static_stability.derivatives.CY_alpha    = compute_stability_derivative(sub_sur.dCY_dalpha    ,trans_sur.dCY_dalpha    ,sup_sur.dCY_dalpha    ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CY_alpha    = compute_stability_derivative(sub_sur.dCY_dalpha    ,trans_sur.dCY_dalpha    ,sup_sur.dCY_dalpha    ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CZ_alpha    = compute_stability_derivative(sub_sur.dCZ_dalpha    ,trans_sur.dCZ_dalpha    ,sup_sur.dCZ_dalpha    ,h_sub,h_sup,Mach) 
-    conditions.static_stability.derivatives.CL_alpha    = compute_stability_derivative(sub_sur.dCL_dalpha    ,trans_sur.dCL_dalpha    ,sup_sur.dCL_dalpha    ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CL_alpha    = compute_stability_derivative(sub_sur.dCL_dalpha    ,trans_sur.dCL_dalpha    ,sup_sur.dCL_dalpha    ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CM_alpha    = compute_stability_derivative(sub_sur.dCM_dalpha    ,trans_sur.dCM_dalpha    ,sup_sur.dCM_dalpha    ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CN_alpha    = compute_stability_derivative(sub_sur.dCN_dalpha    ,trans_sur.dCN_dalpha    ,sup_sur.dCN_dalpha    ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CN_alpha    = compute_stability_derivative(sub_sur.dCN_dalpha    ,trans_sur.dCN_dalpha    ,sup_sur.dCN_dalpha    ,h_sub,h_sup,Mach)
 
-    conditions.static_stability.derivatives.Clift_beta  = compute_stability_derivative(sub_sur.dClift_dbeta  ,trans_sur.dClift_dbeta  ,sup_sur.dClift_dbeta  ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CX_beta     = compute_stability_derivative(sub_sur.dCX_dbeta     ,trans_sur.dCX_dbeta     ,sup_sur.dCX_dbeta     ,h_sub,h_sup,Mach)  
+    #conditions.static_stability.derivatives.Clift_beta  = compute_stability_derivative(sub_sur.dClift_dbeta  ,trans_sur.dClift_dbeta  ,sup_sur.dClift_dbeta  ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CX_beta     = compute_stability_derivative(sub_sur.dCX_dbeta     ,trans_sur.dCX_dbeta     ,sup_sur.dCX_dbeta     ,h_sub,h_sup,Mach)  
     conditions.static_stability.derivatives.CY_beta     = compute_stability_derivative(sub_sur.dCY_dbeta     ,trans_sur.dCY_dbeta     ,sup_sur.dCY_dbeta     ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CZ_beta     = compute_stability_derivative(sub_sur.dCZ_dbeta     ,trans_sur.dCZ_dbeta     ,sup_sur.dCZ_dbeta     ,h_sub,h_sup,Mach) 
+    #conditions.static_stability.derivatives.CZ_beta     = compute_stability_derivative(sub_sur.dCZ_dbeta     ,trans_sur.dCZ_dbeta     ,sup_sur.dCZ_dbeta     ,h_sub,h_sup,Mach) 
     conditions.static_stability.derivatives.CL_beta     = compute_stability_derivative(sub_sur.dCL_dbeta     ,trans_sur.dCL_dbeta     ,sup_sur.dCL_dbeta     ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CM_beta     = compute_stability_derivative(sub_sur.dCM_dbeta     ,trans_sur.dCM_dbeta     ,sup_sur.dCM_dbeta     ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CM_beta     = compute_stability_derivative(sub_sur.dCM_dbeta     ,trans_sur.dCM_dbeta     ,sup_sur.dCM_dbeta     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_beta     = compute_stability_derivative(sub_sur.dCN_dbeta     ,trans_sur.dCN_dbeta     ,sup_sur.dCN_dbeta     ,h_sub,h_sup,Mach)
 
-    conditions.static_stability.derivatives.Clift_p     = compute_stability_derivative(sub_sur.dClift_dp     ,trans_sur.dClift_dp     ,sup_sur.dClift_dp     ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.Clift_q     = compute_stability_derivative(sub_sur.dClift_dq     ,trans_sur.dClift_dq     ,sup_sur.dClift_dq     ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.Clift_r     = compute_stability_derivative(sub_sur.dClift_dr     ,trans_sur.dClift_dr     ,sup_sur.dClift_dr     ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.Clift_p     = compute_stability_derivative(sub_sur.dClift_dp     ,trans_sur.dClift_dp     ,sup_sur.dClift_dp     ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.Clift_q     = compute_stability_derivative(sub_sur.dClift_dq     ,trans_sur.dClift_dq     ,sup_sur.dClift_dq     ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.Clift_r     = compute_stability_derivative(sub_sur.dClift_dr     ,trans_sur.dClift_dr     ,sup_sur.dClift_dr     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CX_u        = compute_stability_derivative(sub_sur.dCX_du        ,trans_sur.dCX_du        ,sup_sur.dCX_du        ,h_sub,h_sup,Mach)   
-    conditions.static_stability.derivatives.CX_v        = compute_stability_derivative(sub_sur.dCX_dv        ,trans_sur.dCX_dv        ,sup_sur.dCX_dv        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CX_w        = compute_stability_derivative(sub_sur.dCX_dw        ,trans_sur.dCX_dw        ,sup_sur.dCX_dw        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CY_u        = compute_stability_derivative(sub_sur.dCY_du        ,trans_sur.dCY_du        ,sup_sur.dCY_du        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CY_v        = compute_stability_derivative(sub_sur.dCY_dv        ,trans_sur.dCY_dv        ,sup_sur.dCY_dv        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CY_w        = compute_stability_derivative(sub_sur.dCY_dw        ,trans_sur.dCY_dw        ,sup_sur.dCY_dw        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CX_v        = compute_stability_derivative(sub_sur.dCX_dv        ,trans_sur.dCX_dv        ,sup_sur.dCX_dv        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CX_w        = compute_stability_derivative(sub_sur.dCX_dw        ,trans_sur.dCX_dw        ,sup_sur.dCX_dw        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CY_u        = compute_stability_derivative(sub_sur.dCY_du        ,trans_sur.dCY_du        ,sup_sur.dCY_du        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CY_v        = compute_stability_derivative(sub_sur.dCY_dv        ,trans_sur.dCY_dv        ,sup_sur.dCY_dv        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CY_w        = compute_stability_derivative(sub_sur.dCY_dw        ,trans_sur.dCY_dw        ,sup_sur.dCY_dw        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CZ_u        = compute_stability_derivative(sub_sur.dCZ_du        ,trans_sur.dCZ_du        ,sup_sur.dCZ_du        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CZ_v        = compute_stability_derivative(sub_sur.dCZ_dv        ,trans_sur.dCZ_dv        ,sup_sur.dCZ_dv        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CZ_w        = compute_stability_derivative(sub_sur.dCZ_dw        ,trans_sur.dCZ_dw        ,sup_sur.dCZ_dw        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CL_u        = compute_stability_derivative(sub_sur.dCL_du        ,trans_sur.dCL_du        ,sup_sur.dCL_du        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CL_v        = compute_stability_derivative(sub_sur.dCL_dv        ,trans_sur.dCL_dv        ,sup_sur.dCL_dv        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CL_w        = compute_stability_derivative(sub_sur.dCL_dw        ,trans_sur.dCL_dw        ,sup_sur.dCL_dw        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CZ_v        = compute_stability_derivative(sub_sur.dCZ_dv        ,trans_sur.dCZ_dv        ,sup_sur.dCZ_dv        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CZ_w        = compute_stability_derivative(sub_sur.dCZ_dw        ,trans_sur.dCZ_dw        ,sup_sur.dCZ_dw        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CL_u        = compute_stability_derivative(sub_sur.dCL_du        ,trans_sur.dCL_du        ,sup_sur.dCL_du        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CL_v        = compute_stability_derivative(sub_sur.dCL_dv        ,trans_sur.dCL_dv        ,sup_sur.dCL_dv        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CL_w        = compute_stability_derivative(sub_sur.dCL_dw        ,trans_sur.dCL_dw        ,sup_sur.dCL_dw        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CM_u        = compute_stability_derivative(sub_sur.dCM_du        ,trans_sur.dCM_du        ,sup_sur.dCM_du        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CM_v        = compute_stability_derivative(sub_sur.dCM_dv        ,trans_sur.dCM_dv        ,sup_sur.dCM_dv        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CM_w        = compute_stability_derivative(sub_sur.dCM_dw        ,trans_sur.dCM_dw        ,sup_sur.dCM_dw        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CN_u        = compute_stability_derivative(sub_sur.dCN_du        ,trans_sur.dCN_du        ,sup_sur.dCN_du        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CN_v        = compute_stability_derivative(sub_sur.dCN_dv        ,trans_sur.dCN_dv        ,sup_sur.dCN_dv        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CN_w        = compute_stability_derivative(sub_sur.dCN_dw        ,trans_sur.dCN_dw        ,sup_sur.dCN_dw        ,h_sub,h_sup,Mach) 
-    conditions.static_stability.derivatives.CX_p        = compute_stability_derivative(sub_sur.dCX_dp        ,trans_sur.dCX_dp        ,sup_sur.dCX_dp        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CX_q        = compute_stability_derivative(sub_sur.dCX_dq        ,trans_sur.dCX_dq        ,sup_sur.dCX_dq        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CX_r        = compute_stability_derivative(sub_sur.dCX_dr        ,trans_sur.dCX_dr        ,sup_sur.dCX_dr        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CY_p        = compute_stability_derivative(sub_sur.dCY_dp        ,trans_sur.dCY_dp        ,sup_sur.dCY_dp        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CY_q        = compute_stability_derivative(sub_sur.dCY_dq        ,trans_sur.dCY_dq        ,sup_sur.dCY_dq        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CY_r        = compute_stability_derivative(sub_sur.dCY_dr        ,trans_sur.dCY_dr        ,sup_sur.dCY_dr        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CZ_p        = compute_stability_derivative(sub_sur.dCZ_dp        ,trans_sur.dCZ_dp        ,sup_sur.dCZ_dp        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CZ_p        = compute_stability_derivative(sub_sur.dCZ_dp        ,trans_sur.dCZ_dp        ,sup_sur.dCZ_dp        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CZ_q        = compute_stability_derivative(sub_sur.dCZ_dq        ,trans_sur.dCZ_dq        ,sup_sur.dCZ_dq        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CZ_r        = compute_stability_derivative(sub_sur.dCZ_dr        ,trans_sur.dCZ_dr        ,sup_sur.dCZ_dr        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CZ_r        = compute_stability_derivative(sub_sur.dCZ_dr        ,trans_sur.dCZ_dr        ,sup_sur.dCZ_dr        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CL_p        = compute_stability_derivative(sub_sur.dCL_dp        ,trans_sur.dCL_dp        ,sup_sur.dCL_dp        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CL_q        = compute_stability_derivative(sub_sur.dCL_dq        ,trans_sur.dCL_dq        ,sup_sur.dCL_dq        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CL_q        = compute_stability_derivative(sub_sur.dCL_dq        ,trans_sur.dCL_dq        ,sup_sur.dCL_dq        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CL_r        = compute_stability_derivative(sub_sur.dCL_dr        ,trans_sur.dCL_dr        ,sup_sur.dCL_dr        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CM_p        = compute_stability_derivative(sub_sur.dCM_dp        ,trans_sur.dCM_dp        ,sup_sur.dCM_dp        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CM_p        = compute_stability_derivative(sub_sur.dCM_dp        ,trans_sur.dCM_dp        ,sup_sur.dCM_dp        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CM_q        = compute_stability_derivative(sub_sur.dCM_dq        ,trans_sur.dCM_dq        ,sup_sur.dCM_dq        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CM_r        = compute_stability_derivative(sub_sur.dCM_dr        ,trans_sur.dCM_dr        ,sup_sur.dCM_dr        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CM_r        = compute_stability_derivative(sub_sur.dCM_dr        ,trans_sur.dCM_dr        ,sup_sur.dCM_dr        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_p        = compute_stability_derivative(sub_sur.dCN_dp        ,trans_sur.dCN_dp        ,sup_sur.dCN_dp        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CN_q        = compute_stability_derivative(sub_sur.dCN_dq        ,trans_sur.dCN_dq        ,sup_sur.dCN_dq        ,h_sub,h_sup,Mach)
+    #conditions.static_stability.derivatives.CN_q        = compute_stability_derivative(sub_sur.dCN_dq        ,trans_sur.dCN_dq        ,sup_sur.dCN_dq        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_r        = compute_stability_derivative(sub_sur.dCN_dr        ,trans_sur.dCN_dr        ,sup_sur.dCN_dr        ,h_sub,h_sup,Mach)
 
     if aerodynamics.elevator_flag: 
