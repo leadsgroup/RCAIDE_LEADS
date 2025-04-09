@@ -149,9 +149,6 @@ def main():
                 fuel_flow_rate[i,j]                               = turbojet_conditions.propulsors[turbojet.tag].fuel_flow_rate
                 TSFC[i,j]                                         = turbojet_conditions.propulsors[turbojet.tag].thrust_specific_fuel_consumption 
       
-        if plot_results:
-            plot_results(altitude,mach_number,thrust,overall_efficiency,thermal_efficiency,Tt_3,Pt_3,Tt_4,Pt_4,m_dot_core,fuel_flow_rate)
-    
         rcaide_values = {
             "Compressor Exit Temperature [K]": Tt_3[0,0],                      # [K]
             "Compressor Exit Pressure [MPa]":  Pt_3[0,0]/1e6,                  # [MPa]

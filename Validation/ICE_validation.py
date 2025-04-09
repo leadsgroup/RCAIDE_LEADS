@@ -160,8 +160,8 @@ def main():
 def ICE_CS():
 
     current_path = os.path.dirname(os.path.abspath(__file__))
-    target_path = os.path.join(current_path, '..', '..', '..')
-    target_path = os.path.join(os.path.normpath(target_path), 'Aircraft', 'Airfoils')
+    target_path = os.path.join(current_path,'..')
+    target_path = os.path.join(os.path.normpath(target_path),'Verification', 'Vehicles', 'Airfoils')
 
     ice_cs                                 = RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine()
     ice_cs.tag                             = 'ICE_CS' 
