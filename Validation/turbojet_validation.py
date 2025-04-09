@@ -16,9 +16,7 @@ from   RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.design_turbojet imp
 from   RCAIDE.Framework.Mission.Common import Conditions
 
 # Python imports 
-import numpy             as np                                             
-import matplotlib.pyplot as plt 
-import matplotlib.cm     as cm
+import numpy             as np           
 import pandas as pd
 
 # ----------------------------------------------------------------------
@@ -32,15 +30,6 @@ def main():
                         
     turbojets           = [Olympus_593()]
 
-    gsp_values_Olympus_593 = {
-            "Compressor Exit Temperature [K]":0,  # [K]
-            "Compressor Exit Pressure [MPa]": 0,  # [MPa]
-            "Turbine Inlet Temperature [K]":  0,  # [K]
-            "Turbine Inlet Pressure [MPa]":   0,  # [MPa]
-            "Fuel Mass Flow Rate [kg/s]":     0,  # [kg/s]
-            "TSFC [mg/(N s)]":                0  # [mg/(N s)]
-        }
-
     literature_values_Olympus_593 = {
             "Compressor Exit Temperature [K]":0, # [K]
             "Compressor Exit Pressure [MPa]": 0, # [MPa]
@@ -49,10 +38,6 @@ def main():
             "Fuel Mass Flow Rate [kg/s]":     0, # [kg/s]
             "TSFC [mg/(N s)]":                0  # [mg/(N s)]
         }
-
-    gsp_values = {
-        "Olympus_593": gsp_values_Olympus_593,
-    }
 
     literature_values = {
         "Olympus_593": literature_values_Olympus_593,
@@ -128,16 +113,6 @@ def main():
                 hpt_conditions                                    = turbojet_conditions.converters[high_pressure_turbine.tag]
                 core_nozzle_conditions                            = turbojet_conditions.converters[core_nozzle.tag]
 
-                # extract properties
-                mdot_air_core                                     = turbojet_conditions.propulsors[turbojet.tag].core_mass_flow_rate
-                fuel_enthalpy                                     = combustor.fuel_data.specific_energy 
-                mdot_fuel                                         = turbojet_conditions.propulsors[turbojet.tag].fuel_flow_rate 
-                U_0                                               = a*mach_number[j] 
-                h_e_c                                             = core_nozzle_conditions.outputs.static_enthalpy
-                h_0                                               = turbojet.working_fluid.compute_cp(T,p) * T 
-                h_t4                                              = combustor_conditions.outputs.stagnation_enthalpy
-                h_t3                                              = hpc_conditions.outputs.stagnation_enthalpy     
-
                 thrust[i,j]                                       = np.linalg.norm(thrust_vector)
                 overall_efficiency[i,j]                           = turbojet_conditions.propulsors[turbojet.tag].overall_efficiency[0,0]
                 thermal_efficiency[i,j]                           = turbojet_conditions.propulsors[turbojet.tag].thermal_efficiency[0,0]
@@ -162,10 +137,9 @@ def main():
             return f"{simulated} ({((simulated - reference) / reference) * 100:+.2f}%)"
         
         data = {
-            "Parameter [Unit]": list(gsp_values[turbojet.tag].keys()),
-            "GSP (real data)": list(gsp_values[turbojet.tag].values()),
+            "Parameter [Unit]": list(rcaide_values.keys()),
             "Literature": list(literature_values[turbojet.tag].values()),
-            "RCAIDE": [calculate_percentage_difference(rcaide_values[key], gsp_values[turbojet.tag][key]) for key in gsp_values[turbojet.tag]]
+            "RCAIDE": [calculate_percentage_difference(rcaide_values[key], literature_values[turbojet.tag][key]) for key in literature_values[turbojet.tag]]
         }
 
         df = pd.DataFrame(data)

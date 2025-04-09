@@ -31,15 +31,6 @@ def main():
                         
     ice_css              = [ICE_CS()]
 
-    gsp_values_ICE_CS = {
-            "Thrust [N]":          0,                     
-            "Power [W]":           0,                 
-            "Thrust Coefficient":  0,                   
-            "Torque Coefficient":  0,             
-            "Power Coefficient":   0,           
-            "PSFC [kg/(kW hr)]":   0 
-        }
-
     literature_ICE_CS = {
             "Thrust [N]":          0, 
             "Power [W]":           0, 
@@ -48,10 +39,6 @@ def main():
             "Power Coefficient":   0, 
             "PSFC [kg/(kW hr)]":   0  
         }
-
-    gsp_values = {
-        "ICE_CS": gsp_values_ICE_CS,
-    }
 
     literature_values = {
         "ICE_CS": literature_ICE_CS,
@@ -141,10 +128,9 @@ def main():
             return f"{simulated} ({((simulated - reference) / reference) * 100:+.2f}%)"
         
         data = {
-            "Parameter [Unit]": list(gsp_values[ice_cs.tag].keys()),
-            "GSP (real data)": list(gsp_values[ice_cs.tag].values()),
+            "Parameter [Unit]": list(rcaide_values.keys()),
             "Literature": list(literature_values[ice_cs.tag].values()),
-            "RCAIDE": [calculate_percentage_difference(rcaide_values[key], gsp_values[ice_cs.tag][key]) for key in gsp_values[ice_cs.tag]]
+            "RCAIDE": [calculate_percentage_difference(rcaide_values[key], literature_values[ice_cs.tag][key]) for key in literature_values[ice_cs.tag]]
         }
 
         df = pd.DataFrame(data)

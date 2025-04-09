@@ -32,15 +32,6 @@ def main():
                         
     turboprops          = [PW127XT()]
 
-    gsp_values_PW127XT = {
-            "Compressor Exit Temperature [K]":0,  # [K]
-            "Compressor Exit Pressure [MPa]": 0,  # [MPa]
-            "Turbine Inlet Temperature [K]":  0,  # [K]
-            "Turbine Inlet Pressure [MPa]":   0,  # [MPa]
-            "Fuel Mass Flow Rate [kg/s]":     0,  # [kg/s]
-            "TSFC [mg/(N s)]":                0  # [mg/(N s)]
-        }
-
     literature_PW127XT = {
             "Compressor Exit Temperature [K]":0, # [K]
             "Compressor Exit Pressure [MPa]": 0, # [MPa]
@@ -49,11 +40,7 @@ def main():
             "Fuel Mass Flow Rate [kg/s]":     0, # [kg/s]
             "TSFC [mg/(N s)]":                0  # [mg/(N s)]
         }
-
-    gsp_values = {
-        "PW127XT": gsp_values_PW127XT,
-    }
-
+    
     literature_values = {
         "PW127XT": literature_PW127XT,
     }
@@ -161,10 +148,9 @@ def main():
             return f"{simulated} ({((simulated - reference) / reference) * 100:+.2f}%)"
         
         data = {
-            "Parameter [Unit]": list(gsp_values[turboprop.tag].keys()),
-            "GSP (real data)": list(gsp_values[turboprop.tag].values()),
+            "Parameter [Unit]": list(rcaide_values.keys()),
             "Literature": list(literature_values[turboprop.tag].values()),
-            "RCAIDE": [calculate_percentage_difference(rcaide_values[key], gsp_values[turboprop.tag][key]) for key in gsp_values[turboprop.tag]]
+            "RCAIDE": [calculate_percentage_difference(rcaide_values[key], literature_values[turboprop.tag][key]) for key in literature_values[turboprop.tag]]
         }
 
         df = pd.DataFrame(data)

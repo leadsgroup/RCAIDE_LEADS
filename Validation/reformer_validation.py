@@ -7,39 +7,31 @@
 # ----------------------------------------------------------------------
 
 import RCAIDE
-from RCAIDE.Framework.Core                        import Units, Data
-from RCAIDE.Library.Plots                         import *     
-from RCAIDE.Framework.Mission.Common              import Conditions, Results, Residuals
 from RCAIDE.Library.Methods.Powertrain.Converters import Reformer
 from RCAIDE.Library.Methods.Powertrain.Converters.Reformer.compute_reformer_performance import compute_reformer_performance
 
-import os
-import numpy as np 
-import matplotlib.pyplot as plt
-
 # python imports 
-import numpy as np
-import os
 import pandas as pd
 
 def main(): 
 
     literature_reformer = {
-            "effluent_gas_flow_rate  [m**3/s]":   541.1430179999999, 
-            "reformer_efficiency [-]":            84.71907896694455, 
-            "hydrogen_conversion_efficiency [-]": 34.39020112581373, 
-            "space_velocity [1/s]":               7188.869229234659, 
-            "liquid_space_velocity [1/s]":        1.5104112711074276, 
-            "steam_to_carbon_feed_ratio [-]":     3.5173918343579538, 
-            "oxygen_to_carbon_feed_ratio [-]":    0.011870136164444744, 
-            "fuel_to_air_ratio [-]":              4.13667981438515
+            "effluent_gas_flow_rate  [m**3/s]":   541, 
+            "reformer_efficiency [-]":            84, 
+            "hydrogen_conversion_efficiency [-]": 34, 
+            "space_velocity [1/s]":               7188, 
+            "liquid_space_velocity [1/s]":        1, 
+            "steam_to_carbon_feed_ratio [-]":     3, 
+            "oxygen_to_carbon_feed_ratio [-]":    1, 
+            "fuel_to_air_ratio [-]":              4
         }
 
     literature_values = {
-        "reformer": literature_reformer,
+        "Test_reformer": literature_reformer,
     }
 
     reformer = RCAIDE.Library.Components.Powertrain.Converters.Reformer()
+    reformer.tag = 'Test_reformer'
 
     reformer_conditions = RCAIDE.Framework.Mission.Common.Conditions()
 

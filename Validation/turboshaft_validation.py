@@ -32,21 +32,11 @@ def main():
                         
     turboshafts         = [Boeing_502_14()]
 
-    gsp_values_Boeing_502_14 = {
-            "Power [W]":0,  # [W]
-            "Thermal Efficiency": 0,  # [K]
-            "PSFC [kg/(kW hr)]":  0,  # [mg/(N s)]
-        }
-
     literature_Boeing_502_14 = {
             "Power [W]":0, # [W]
             "Thermal Efficiency": 0, # [K]
             "PSFC [kg/(kW hr)]":  0, # [mg/(N s)]
         }
-
-    gsp_values = {
-        "Boeing_502_14": gsp_values_Boeing_502_14,
-    }
 
     literature_values = {
         "Boeing_502_14": literature_Boeing_502_14,
@@ -142,10 +132,9 @@ def main():
             return f"{simulated} ({((simulated - reference) / reference) * 100:+.2f}%)"
         
         data = {
-            "Parameter [Unit]": list(gsp_values[turboshaft.tag].keys()),
-            "GSP (real data)": list(gsp_values[turboshaft.tag].values()),
+            "Parameter [Unit]": list(rcaide_values.keys()),
             "Literature": list(literature_values[turboshaft.tag].values()),
-            "RCAIDE": [calculate_percentage_difference(rcaide_values[key], gsp_values[turboshaft.tag][key]) for key in gsp_values[turboshaft.tag]]
+            "RCAIDE": [calculate_percentage_difference(rcaide_values[key], literature_values[turboshaft.tag][key]) for key in literature_values[turboshaft.tag]]
         }
 
         df = pd.DataFrame(data)
