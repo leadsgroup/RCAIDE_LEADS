@@ -9,7 +9,7 @@ import  RCAIDE
 from RCAIDE.Framework.Core import Data 
 from .compute_cabin_weight          import compute_cabin_weight
 from .compute_aft_centerbody_weight import compute_aft_centerbody_weight
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional import Common     as Common
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport import FLOPS
 from RCAIDE.Library.Attributes.Materials.Aluminum import Aluminum
 from RCAIDE.Library.Methods.Geometry.Planform                          import segment_properties  
@@ -178,7 +178,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     systems_weights     = FLOPS.compute_systems_weight(vehicle) 
 
     # Compute Payload Weight     
-    payload = Common.compute_payload_weight(vehicle) 
+    payload = compute_payload_weight(vehicle) 
     vehicle.payload.passengers = RCAIDE.Library.Components.Component()
     vehicle.payload.baggage    = RCAIDE.Library.Components.Component()
     vehicle.payload.cargo      = RCAIDE.Library.Components.Component()
@@ -198,9 +198,9 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.structural.landing_gear       = landing_gear.main +  landing_gear.nose 
     output.empty.structural.nacelle            = 0
     output.empty.structural.paint              = 0   
-    output.empty.structural.total              = output.empty.structural.wings + output.empty.structural.afterbody \
+    output.empty.structural.total              = output.empty.structural.wings  \
                                                       + output.empty.structural.fuselage + output.empty.structural.landing_gear \
-                                                      + output.empty.structural.paint + output.empty.structural.nacelle
+                                                      + output.empty.structural.paint + output.empty.structural.nacelle #+ output.empty.structural.afterbody
 
     output.empty.propulsion                     = Data()
     output.empty.propulsion.total               = W_energy_network_cumulative
