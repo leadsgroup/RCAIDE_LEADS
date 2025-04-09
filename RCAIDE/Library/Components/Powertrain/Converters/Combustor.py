@@ -144,8 +144,8 @@ class Combustor(Converter):
         self.fuel_velocity_ratio                     = 0.0
         self.burner_drag_coefficient                 = 0.0
         self.absolute_sensible_enthalpy              = 0.0 
-        self.diameter                                = 0.437          # [m] Combustor Diameter
-        self.length                                  = 0.0903         # [m] Combustor Length
+        self.volume                                  = 0.0023         # [m**3] Combustor volume
+        self.length                                  = 0.2            # [m] Combustor Length
         self.number_of_combustors                    = 1              # [-] Number of Combustors for one engine
         self.F_SC                                    = 1              # [-] Fuel scale factor
         self.N_PZ                                    = 21             # [-] Number of PSR in the Primary Zone

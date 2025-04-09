@@ -263,8 +263,7 @@ def compute_combustor_performance(results, combustor, Temp_air, Pres_air, mdot_a
     f_air_PZ          = mdot_fuel_TakeOff * combustor.F_SC / (combustor.design_equivalence_ratio_PZ * combustor.air_mass_flow_rate_take_off * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [-] Air mass flow rate fraction in Primary Zone
     phi_sign          = (mdot_fuel * combustor.F_SC) / (mdot_air * f_air_PZ * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [-] Mean equivalence ratio in the Primary Zone
     sigma_phi         = phi_sign * combustor.S_PZ                      # [-] Standard deviation of the Equivalence Ratio in the Primary Zone
-    A_PZ              = np.pi * (combustor.diameter / 2) ** 2          # [m^2] Cross-sectional area of the Primary Zone
-    V_PZ              = A_PZ * combustor.L_PZ                          # [m^3] Volume of the Primary Zone
+    V_PZ              = (combustor.volume/combustor.length) * combustor.L_PZ # [m^3] Volume of the Primary Zone
     V_PZ_PSR          = V_PZ / combustor.N_PZ                          # [m^3] Volume of each PSR
     mdot_air_PZ       = f_air_PZ * mdot_air                            # [kg/s] Air mass flow rate in the Primary Zone
     phi_PSR           = np.linspace(phi_sign - 2 * sigma_phi, phi_sign + 2 * sigma_phi, combustor.N_PZ) # [-] Equivalence ratio in each PSR 
@@ -365,7 +364,7 @@ def compute_combustor_performance(results, combustor, Temp_air, Pres_air, mdot_a
     # ----------------------------------------------------------------------
 
     combustor.L_SZ                      = combustor.length - combustor.L_PZ # [m] Secondary Zone length
-    A_SZ                                = np.pi * (combustor.diameter / 2) ** 2 # [m^2] Cross-sectional area of Secondary Zone
+    A_SZ                                = (combustor.volume/combustor.length)  # [m^2] Cross-sectional area of Secondary Zone
     f_air_SA                            = mdot_fuel_TakeOff / (combustor.design_equivalence_ratio_SZ * combustor.fuel_data.stoichiometric_fuel_air_ratio * combustor.air_mass_flow_rate_take_off) # [-] Secondary air mass flow fraction
     f_air_DA                            = 1 - f_air_PZ - f_air_SA      # [-] Dilution air mass flow fraction
     f_FM                                = 1 - combustor.f_SM           # [-] Fast mode fraction
