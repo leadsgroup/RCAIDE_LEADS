@@ -443,7 +443,7 @@ def vehicle_setup():
     propeller.cruise.design_freestream_velocity      = 270 * Units.kts  
     propeller.cruise.design_angular_velocity         = 1200 *  Units.rpm 
     propeller.cruise.design_altitude                 = 25000. * Units.feet 
-    propeller.cruise.design_thrust                   = 10000 * Units.N  
+    propeller.cruise.design_thrust                   = 15000 * Units.N  
     
     propeller.origin                                 = [[ 9.559106394 ,4.219315295, 1.616135105]] 
     ospath                                           = os.path.abspath(__file__)
