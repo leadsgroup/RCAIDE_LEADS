@@ -181,6 +181,8 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag.induced.inviscid_wings             = Conditions()
         self.aerodynamics.coefficients.drag.cooling                            = Conditions()
         self.aerodynamics.coefficients.drag.cooling.total                      = ones_1col * 0
+        self.aerodynamics.coefficients.drag.spoiler                            = Conditions()
+        self.aerodynamics.coefficients.drag.spoiler.total                      = ones_1col * 0
         self.aerodynamics.coefficients.drag.windmilling                        = Conditions()
         self.aerodynamics.coefficients.drag.windmilling.total                  = ones_1col * 0
         self.aerodynamics.coefficients.drag.asymmetry_trim                     = Conditions()
@@ -262,7 +264,10 @@ class Results(Conditions):
         self.control_surfaces.slat.static_stability.coefficients.L             = ones_1col * 0         
         self.control_surfaces.slat.static_stability.coefficients.M             = ones_1col * 0         
         self.control_surfaces.slat.static_stability.coefficients.N             = ones_1col * 0           
-        self.control_surfaces.slat.static_stability.coefficients.e             = ones_1col * 0
+        self.control_surfaces.slat.static_stability.coefficients.e             = ones_1col * 0 
+
+        self.control_surfaces.spoiler                                          = Conditions()
+        self.control_surfaces.spoiler.deflection                               = ones_1col * 0         
 
         # ----------------------------------------------------------------------------------------------------------------------
         # Stability 
@@ -446,6 +451,7 @@ class Results(Conditions):
         self.energy.fuel_consumption                          = ones_1col * 0
         self.energy.cumulative_fuel_consumption               = ones_1col * 0
         self.energy.hybrid_power_split_ratio                  = ones_1col * 0 
+        self.energy.battery_fuel_cell_power_split_ratio       = ones_1col * 0 
         
         # ----------------------------------------------------------------------------------------------------------------------         
         # Weights 

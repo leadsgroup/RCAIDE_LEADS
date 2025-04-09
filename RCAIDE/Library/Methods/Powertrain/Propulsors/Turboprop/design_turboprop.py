@@ -28,6 +28,83 @@ import numpy                                                                as n
 #  Design Turboshaft
 # ----------------------------------------------------------------------------------------------------------------------   
 def design_turboprop(turboprop):  
+    """
+    Sizes a turboprop engine based on design point conditions and computes its performance characteristics.
+
+    Parameters
+    ----------
+    turboprop : Turboprop
+        Turboprop engine object containing all component definitions and design parameters
+            - design_mach_number : float
+                Design point Mach number
+            - design_altitude : float
+                Design point altitude [m]
+            - design_isa_deviation : float
+                ISA temperature deviation [K]
+            - working_fluid : FluidProperties
+                Working fluid properties object
+            - Components:
+                - ram : Ram
+                - inlet_nozzle : Compression_Nozzle
+                - compressor : Compressor
+                - combustor : Combustor
+                - high_pressure_turbine : Turbine
+                - low_pressure_turbine : Turbine
+                - core_nozzle : Expansion_Nozzle
+
+    Returns
+    -------
+    None
+        Results are stored in the turboprop object attributes:
+            - design_thrust_specific_fuel_consumption : float
+                TSFC at design point [kg/N/s]
+            - design_non_dimensional_thrust : float
+                Non-dimensional thrust at design point [-]
+            - design_core_mass_flow_rate : float
+                Core mass flow rate at design point [kg/s]
+            - design_fuel_flow_rate : float
+                Fuel flow rate at design point [kg/s]
+            - design_power : float
+                Power output at design point [W]
+            - design_specific_power : float
+                Specific power at design point [W/kg]
+            - design_power_specific_fuel_consumption : float
+                Power specific fuel consumption [kg/W/s]
+            - design_thermal_efficiency : float
+                Thermal efficiency at design point [-]
+            - design_propulsive_efficiency : float
+                Propulsive efficiency at design point [-]
+
+    Notes
+    -----
+    The function performs the following steps:
+        1. Computes atmospheric conditions at design altitude
+        2. Sets up freestream conditions
+        3. Analyzes flow through each component sequentially
+        4. Sizes the core based on design point requirements
+        5. Computes sea level static performance
+
+    **Major Assumptions**
+        * Standard atmospheric conditions (with possible ISA deviation)
+        * Steady state operation
+        * Perfect gas behavior
+        * Adiabatic component processes except combustor
+        * No bleed air extraction
+
+    **Theory**
+
+    The design process follows standard gas turbine cycle analysis, with each
+    component modeled using appropriate thermodynamic relations. The core sizing
+    is based on achieving the required power output while maintaining component
+    matching throughout the engine.
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance
+    """
     #check if mach number and temperature are passed
     if turboprop.design_altitude==None:
         if turboprop.design_mach_number==None and turboprop.design_freestream_velocity ==None:  

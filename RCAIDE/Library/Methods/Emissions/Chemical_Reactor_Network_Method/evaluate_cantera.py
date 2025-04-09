@@ -24,37 +24,36 @@ def evaluate_cantera(combustor,T,P,mdot,FAR):
     ----------
     combustor : Data
         Combustor configuration data
-        
-        - f_air_PZ : float
-            Fraction of total air entering Primary Zone [-]
-        - FAR_st : float
-            Stoichiometric Fuel to Air ratio [-]
-        - N_comb : int
-            Number of can-annular combustors [-]
-        - N_PZ : int
-            Number of PSR (Perfectly Stirred Reactors) [-]
-        - A_PZ : float
-            Primary Zone cross-sectional area [m^2]
-        - L_PZ : float
-            Primary Zone length [m]
-        - N_SZ : int
-            Number of dilution air inlets [-]
-        - A_SZ : float
-            Secondary Zone cross-sectional area [m^2]
-        - L_SZ : float
-            Secondary Zone length [m]
-        - phi_SZ : float
-            Equivalence Ratio in the Secondary Zone [-]
-        - S_PZ : float
-            Mixing parameter for Primary Zone [-]
-        - F_SC : float
-            Fuel scaler [-]
-        - number_of_assigned_PSR_1st_mixers : int
-            Number of PSR assigned to first row of mixers [-]
-        - number_of_assigned_PSR_2nd_mixers : int
-            Number of PSR assigned to second row of mixers [-]
-        - fuel_data : Data
-            Fuel chemical properties and kinetics data
+            - f_air_PZ : float
+                Fraction of total air entering Primary Zone [-]
+            - FAR_st : float
+                Stoichiometric Fuel to Air ratio [-]
+            - N_comb : int
+                Number of can-annular combustors [-]
+            - N_PZ : int
+                Number of PSR (Perfectly Stirred Reactors) [-]
+            - A_PZ : float
+                Primary Zone cross-sectional area [m^2]
+            - L_PZ : float
+                Primary Zone length [m]
+            - N_SZ : int
+                Number of dilution air inlets [-]
+            - A_SZ : float
+                Secondary Zone cross-sectional area [m^2]
+            - L_SZ : float
+                Secondary Zone length [m]
+            - phi_SZ : float
+                Equivalence Ratio in the Secondary Zone [-]
+            - S_PZ : float
+                Mixing parameter for Primary Zone [-]
+            - F_SC : float
+                Fuel scaler [-]
+            - number_of_assigned_PSR_1st_mixers : int
+                Number of PSR assigned to first row of mixers [-]
+            - number_of_assigned_PSR_2nd_mixers : int
+                Number of PSR assigned to second row of mixers [-]
+            - fuel_data : Data
+                Fuel chemical properties and kinetics data
 
     T : float
         Stagnation Temperature entering combustors [K]

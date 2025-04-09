@@ -13,28 +13,64 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for constant pitch rate maneuver at fixed altitude
 
-    Assumptions:
-    Constant acceleration and constant altitude
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - altitude : float
+                Cruise altitude [m]
+            - pitch_initial : float
+                Initial pitch angle [rad]
+            - pitch_final : float
+                Final pitch angle [rad]
+            - pitch_rate : float
+                Constant pitch rate [rad/s]
+            - state:
+                numerics.dimensionless.control_points : array
+                    Discretization points [-]
+                conditions : Data
+                    State conditions container
+                initials : Data, optional
+                    Initial conditions from previous segment
 
-    Source:
-    N/A
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+            - conditions.frames.body.inertial_rotations [rad]
+            - conditions.frames.inertial.position_vector [m]
+            - conditions.freestream.altitude [m]
+            - conditions.frames.inertial.time [s]
+    
+    Notes
+    -----
+    This function sets up the initial conditions for a cruise segment with constant
+    pitch rate and constant altitude. The pitch angle varies linearly with time
+    between initial and final values.
+        
+    **Calculation Process**
+        1. Calculate time required for pitch change:
+            t = (θf - θ0)/θ_dot where:
+                - θf is final pitch angle
+                - θ0 is initial pitch angle
+                - θ_dot is pitch rate
+        2. Discretize time points
+        3. Calculate pitch angle profile:
+            θ(t) = θ_dot * t + θ0
 
-    Inputs:
-    segment.altitude                [meters]
-    segment.pitch_initial           [radians]
-    segment.pitch_final             [radians]
-    segment.pitch_rate              [radians/second]
+    **Major Assumptions**
+        * Constant pitch rate
+        * Constant altitude
+        * Linear pitch angle variation
+        * No coupling with other rotational axes
+        * Quasi-steady flight
 
-    Outputs:
-    conditions.frames.body.inertial_rotations   [radians/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
-    conditions.frames.inertial.time             [seconds]
-
-    Properties Used:
-    N/A
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """       
     
     # unpack

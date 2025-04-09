@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Internal_Combustion_Engine/pack_internal_combustion_engine_residuals.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke   
 

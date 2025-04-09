@@ -6,21 +6,75 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Set Optimized rotor platform paramters
 # ----------------------------------------------------------------------------------------------------------------------   
-def set_optimized_parameters(rotor,optimization_problem):
-    """ Append parameters of optimized prop-rotor to input prop-rotor
-          
-          Inputs:  
-             rotor                - rotor data structure                        [None]
-             optimization_problem      - data struction of optimized parameters [None]
-             
-          Outputs: 
-             rotor                - rotor data structure                        [None]
-              
-          Assumptions: 
-             1) Default noise measurements are taken 135 degrees from prop-rotor plane 
+def set_optimized_parameters(rotor, optimization_problem):
+    """
+    Appends parameters of optimized rotor to input rotor data structure.
+    
+    Parameters
+    ----------
+    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Rotor component to be updated with optimized parameters
+    optimization_problem : RCAIDE.Framework.Optimization.Common.Nexus
+        Optimization problem with results and optimized rotor configurations
+    
+    Returns
+    -------
+    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Updated rotor with optimized parameters
+    
+    Notes
+    -----
+    This function transfers the optimized rotor parameters from the optimization results
+    to the input rotor data structure. It copies geometric properties such as chord and
+    twist distributions, as well as performance metrics for different flight conditions.
+    
+    The function updates the following parameters:
+        - Geometric properties:
+            - chord_distribution
+            - twist_distribution
+            - max_thickness_distribution
+            - radius_distribution
+            - number_of_blades
+            - mid_chord_alignment
+            - thickness_to_chord
+            - blade_solidity
         
-          Source:
-             None
+        - Hover performance metrics:
+            - design_power (if not specified)
+            - design_thrust (if not specified)
+            - design_torque
+            - design_angular_velocity
+            - design_Cl
+            - design_thrust_coefficient
+            - design_power_coefficient
+            - design_SPL_dBA
+            - design_blade_pitch_command
+        
+        - OEI (One Engine Inoperative) performance metrics:
+            - design_thrust
+            - design_power
+            - design_torque
+            - design_angular_velocity
+            - design_blade_pitch_command
+        
+        - Cruise performance metrics (for prop-rotors only):
+            - design_power (if not specified)
+            - design_thrust (if not specified)
+            - design_torque
+            - design_angular_velocity
+            - design_Cl
+            - design_thrust_coefficient
+            - design_power_coefficient
+            - design_SPL_dBA
+            - design_blade_pitch_command
+    
+    **Major Assumptions**
+        * Default noise measurements are taken 135 degrees from rotor plane
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup
     """    
     results                         = optimization_problem.results 
     optimal_hover_rotor             = optimization_problem.vehicle_configurations.hover.networks.electric.propulsors.electric_rotor.rotor     

@@ -13,25 +13,98 @@ from scipy.interpolate import interp1d
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  compute_induced_velocity
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_wake_induced_velocity(rotor,rotor_conditions,evaluation_points,ctrl_pts, identical_flag=False): 
-    """ This computes the velocity induced by the a wake on specified evaluation points.
-
-    Assumptions:  
-       The wake contracts following formulation by McCormick.
+def compute_wake_induced_velocity(rotor, rotor_conditions, evaluation_points, ctrl_pts, identical_flag=False):
+    """
+    Computes the velocity induced by a rotor wake on specified evaluation points.
     
-    Source:   
-       Contraction factor: McCormick 1969, Aerodynamics of V/STOL Flight
-       
-    Inputs: 
-       evaluation_points.
-          XC              - X-location of evaluation points (vehicle frame)             [m] 
-          YC              - Y-location of evaluation points (vehicle frame)             [m] 
-          ZC              - Z-location of evaluation points (vehicle frame)             [m] 
-          
-       geometry    - RCAIDE vehicle                                 [Unitless] 
-       cpts        - control points in segment                     [Unitless]
-    Properties Used:
-       N/A
+    Parameters
+    ----------
+    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Rotor component with the following attributes:
+            - tip_radius : float
+                Tip radius of the rotor [m]
+            - origin : array_like
+                Origin coordinates of the rotor [m, m, m]
+            - rotation : int
+                Rotation direction (1 for CCW, -1 for CW)
+    rotor_conditions : Data
+        Rotor operating conditions with:
+            - disc_radial_distribution : array_like
+                Radial distribution on the disc [m]
+            - blade_axial_induced_velocity : array_like
+                Axial induced velocity at the blade [m/s]
+            - blade_tangential_induced_velocity : array_like
+                Tangential induced velocity at the blade [m/s]
+    evaluation_points : Data
+        Points where induced velocities are to be evaluated:
+            - XC : array_like
+                X-coordinates of evaluation points (vehicle frame) [m]
+            - YC : array_like
+                Y-coordinates of evaluation points (vehicle frame) [m]
+            - ZC : array_like
+                Z-coordinates of evaluation points (vehicle frame) [m]
+    ctrl_pts : int
+        Number of control points in segment
+    identical_flag : bool, optional
+        Flag indicating if evaluation points are identical to rotor points, default False
+    
+    Returns
+    -------
+    rotor_V_wake_ind : array_like
+        Induced velocities at evaluation points, shape (ctrl_pts, n_cp, 3)
+        where n_cp is the number of evaluation points
+    
+    Notes
+    -----
+    This function calculates the velocity induced by a rotor wake at specified evaluation
+    points using a simplified wake contraction model. It is particularly useful for
+    analyzing rotor-rotor interactions and rotor-airframe interactions.
+    
+    The computation follows these steps:
+        1. Extract rotor parameters and induced velocities at the blade
+        2. Identify evaluation points within the rotor's influence range
+        3. Calculate the distance of evaluation points from the rotor plane
+        4. Apply wake contraction model based on McCormick's formulation
+        5. Interpolate axial and tangential induced velocities at evaluation points
+        6. Apply contraction factor to scale induced velocities
+        7. Adjust sign of tangential velocities based on position relative to hub
+    
+    **Major Assumptions**
+        * The wake contracts following McCormick's formulation
+        * Induced velocities are only calculated for points within the rotor's radial range
+        * Inboard and outboard regions of the rotor are treated separately
+        * Tangential induced velocities change sign across the hub center
+    
+    **Theory**
+    The wake contraction factor (kd) is calculated as:
+    
+    .. math::
+        k_d = 1 + \\frac{s}{\\sqrt{s^2 + R^2}}
+    
+    where:
+        - s is the distance from the rotor plane
+        - R is the rotor tip radius
+    
+    The induced velocities at evaluation points are then scaled by this contraction factor:
+    
+    .. math::
+        v_{a,new} = k_d \\cdot v_a(y)
+    
+    .. math::
+        v_{t,new} = k_d \\cdot v_t(y)
+    
+    where:
+        - v_a is the axial induced velocity
+        - v_t is the tangential induced velocity
+        - y is the radial position
+    
+    References
+    ----------
+    [1] McCormick, B.W., "Aerodynamics of V/STOL Flight", Academic Press, 1969
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model
     """
 
     # extract vortex distribution

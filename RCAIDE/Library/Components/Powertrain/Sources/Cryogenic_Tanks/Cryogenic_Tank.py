@@ -22,7 +22,6 @@ class Cryogenic_Tank(Component):
     ----------
     tag : str
         Identifier for the cryogenic tank (default: 'cryogenic_tank')
-        
     cryogenic_selector_ratio : float
         Ratio of cryogenic flow allocation (default: 1.0)
         

@@ -17,32 +17,80 @@ import  numpy as  np
 #  Vertical Tail Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_vertical_tail_weight(vehicle, wing, settings):
-    """ Calculates vertical tail weight based on Raymer method
+    """
+    Calculates vertical tail weight using Raymer's empirical method.
 
-        Assumptions:
+    Parameters
+    ----------
+    vehicle : RCAIDE.Vehicle()
+        Vehicle data structure containing:
+            - mass_properties.max_takeoff : float
+                Maximum takeoff weight [kg]
+            - flight_envelope.ultimate_load : float
+                Ultimate load factor
+            - wings['main_wing'] : Data()
+                Main wing properties:
+                    - origin : array
+                        Root location [m]
+                    - aerodynamic_center : array
+                        Location of aerodynamic center [m]
+    wing : RCAIDE.Component()
+        Vertical tail component containing:
+            - t_tail : bool
+                T-tail configuration flag
+            - areas.reference : float
+                Reference area [m^2]
+            - origin : array
+                Root location [m]
+            - aerodynamic_center : array
+                Location of aerodynamic center [m]
+            - sweeps.quarter_chord : float
+                Quarter chord sweep angle [rad]
+            - aspect_ratio : float
+                Aspect ratio
+            - thickness_to_chord : float
+                Thickness-to-chord ratio
 
-        Source:
-            Aircraft Design: A Conceptual Approach (2nd edition)
+    Returns
+    -------
+    tail_weight : float
+        Weight of the vertical tail [kg]
 
-        Inputs:
-            vehicle - data dictionary with vehicle properties                    [dimensionless]
-                -.mass_properties.max_takeoff: MTOW                             [kilograms]
-                -.flight_envelope.ultimate_load: ultimate load factor (default: 3.75)
-                -.wings['main_wing']: data dictionary with properties of main wing
-                    -.aerodynamic_center: aerodynamic center as measured from root leading edge
-                    -.origin: root of main wing as measured from nose of aircraft
-            wing    - data dictionary with specific tail properties              [dimensionless]
-                -.areas.reference: tail surface area                            [m^2}
-                -.origin: location of tail measured from nose
-                -.aerodynamic_center: location of ac measured from leading edge
-                -.sweeps.quarter_chord: quarter chord sweep of tail             [rad]
-                -.thickness_to_chord: t/c of tail
+    Notes
+    -----
+    This method implements Raymer's correlation for transport aircraft vertical
+    tail weight estimation, accounting for geometry, loads, and configuration effects.
 
-        Outputs:
-              tail_weight: vertical tail weight                                [kilograms]
+    **Major Assumptions**
+        * T-tail configuration handled through multiplier
+        * Correlation based on transport category aircraft data
+        * If advanced composites are used, the vertical tail weight is reduced by 15%
+    **Theory**
+    The vertical tail weight is calculated using:
+    .. math::
+        W_{vt} = 0.0026(1 + H_t)^{0.225}W_{dg}^{0.556}N_{ult}^{0.536}L_t^{-0.5}S_{vt}^{0.5}K_z^{0.875}\cos(\Lambda)^{-1}AR^{0.35}(t/c)^{-0.5}
 
-        Properties Used:
-            N/A
+    where:
+        * :math:`H_t` is T-tail factor (0 or 1)
+        * :math:`W_{dg}` is design gross weight
+        * :math:`N_{ult}` is ultimate load factor
+        * :math:`L_t` is tail arm length
+        * :math:`S_{vt}` is vertical tail area
+        * :math:`K_z` is vertical tail arm
+        * :math:`\Lambda` is quarter-chord sweep
+        * :math:`AR` is aspect ratio
+        * :math:`t/c` is thickness ratio
+
+    References
+    ----------
+    [1] Raymer, D., "Aircraft Design: A Conceptual Approach", AIAA 
+        Education Series, 2018. 
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight
     """
     DG          = vehicle.mass_properties.max_takeoff / Units.lbs
     t_tail_flag = wing.t_tail

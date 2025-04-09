@@ -72,6 +72,7 @@ class Untrimmed(Segment):
         self.roll_rate                               = 0.
         self.pitch_rate                              = 0.
         self.hybrid_power_split_ratio                = None
+        self.battery_fuel_cell_power_split_ratio     = None 
         self.yaw_rate                                = 0.  
         self.state.numerics.number_of_control_points = 2     
         self.trim_lift_coefficient                   = None

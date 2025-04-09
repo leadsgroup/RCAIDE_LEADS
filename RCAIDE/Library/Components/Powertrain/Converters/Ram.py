@@ -30,21 +30,19 @@ class Ram(Converter):
     -----
     The Ram class models the compression of incoming air due to the ram effect
     in high-speed flight. It calculates:
-
-    * Total pressure rise due to flow deceleration
-    * Temperature increase from compression
-    * Changes in fluid properties
-    * Ram recovery efficiency
-    * Compressibility effects
+        * Total pressure rise due to flow deceleration
+        * Temperature increase from compression
+        * Changes in fluid properties
+        * Ram recovery efficiency
+        * Compressibility effects
 
     The model assumes:
-
-    * Quasi-one-dimensional flow
-    * Adiabatic process (no heat transfer)
-    * Perfect gas behavior
-    * Steady flow conditions
-    * No boundary layer effects
-    * No shock waves (unless explicitly modeled)
+        * Quasi-one-dimensional flow
+        * Adiabatic process (no heat transfer)
+        * Perfect gas behavior
+        * Steady flow conditions
+        * No boundary layer effects
+        * No shock waves (unless explicitly modeled)
 
     **Theory**
     The ram compression process follows isentropic flow relations for subsonic flow

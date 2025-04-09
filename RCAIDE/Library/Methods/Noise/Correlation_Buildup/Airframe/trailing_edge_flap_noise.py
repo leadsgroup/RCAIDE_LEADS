@@ -69,7 +69,6 @@ def trailing_edge_flap_noise(Sf,cf,deltaf,slots,velocity,M,phi,theta,distance,fr
     else:     
         directivity = 20.0*np.log10(np.sin(theta)* (np.cos(phi))**2 * np.sin(theta+deltaf))
 
-    SPL = G+10*np.log10(Sf*(np.sin(deltaf))**2/(distance**2))+ \
-        60*np.log10((velocity/Units.kts)/100.0)+directivity
+    SPL = G+10*np.log10(Sf*(np.sin(deltaf))**2/(distance**2))+  60*np.log10((velocity/Units.kts)/100.0)+directivity
 
     return SPL 

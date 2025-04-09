@@ -18,6 +18,7 @@ def append_battery_conditions(battery_module,segment,bus):
     """ Appends the initial battery conditions
     
         Assumptions:
+        ------------
         Battery temperature is set to one degree hotter than ambient 
         temperature for robust convergence. Initial mission energy, maxed aged energy, and 
         initial segment energy are the same. Cycle day is zero unless specified, resistance_growth_factor and

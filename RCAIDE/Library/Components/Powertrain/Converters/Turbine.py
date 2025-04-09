@@ -32,13 +32,12 @@ class Turbine(Converter):
     -----
     The Turbine class models the expansion and work extraction process in a 
     turbine stage. The model includes:
-    
-    * Work extraction calculations
-    * Pressure ratio effects
-    * Temperature changes
-    * Efficiency losses
-    * Mechanical power transmission
-    * Real gas effects
+        * Work extraction calculations
+        * Pressure ratio effects
+        * Temperature changes
+        * Efficiency losses
+        * Mechanical power transmission
+        * Real gas effects
 
     **Major Assumptions**
 

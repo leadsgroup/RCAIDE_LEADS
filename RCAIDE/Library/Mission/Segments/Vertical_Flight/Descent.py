@@ -7,29 +7,69 @@
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------   
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for vertical descent segment
 
-    Assumptions:
-    Descent segment with a constant rate.
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - altitude_start : float
+                Initial altitude [m]
+            - altitude_end : float
+                Final altitude [m]
+            - descent_rate : float
+                Vertical descent rate [m/s]
+            - state:
+                numerics:
+                    dimensionless:
+                        control_points : array
+                            Discretization points [-]
+                conditions:
+                    frames:
+                        inertial:
+                            time : array
+                                Time points [s]
+                initials : Data, optional
+                    Initial conditions from previous segment
 
-    Source:
-    N/A
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+            - conditions.frames.inertial.velocity_vector [m/s]
+            - conditions.frames.inertial.position_vector [m]
+            - conditions.freestream.altitude [m]
+            - conditions.frames.inertial.time [s]
 
-    Inputs:
-    segment.altitude_start                              [meters]
-    segment.altitude_end                                [meters]
-    segment.descent_rate                                [meters/second]
-    segment.state.numerics.dimensionless.control_points [Unitless]
-    segment.state.conditions.frames.inertial.time       [seconds]
+    Notes
+    -----
+    This function sets up the initial conditions for a vertical descent segment with
+    constant descent rate. The segment handles pure vertical motion with no horizontal
+    velocity components.
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
-    conditions.frames.inertial.time             [seconds]
+    **Calculation Process**
+        1. Check initial conditions
+        2. Discretize altitude profile:
+            alt = alt0 + (altf - alt0)*t_norm
+        3. Calculate time required:
+            dt = (alt0 - altf)/descent_rate
+        4. Set velocity components:
+            - v_x = 0
+            - v_z = descent_rate (z points down)
+        5. Scale time points:
+            t = t_norm * dt
 
-    Properties Used:
-    N/A
+    **Major Assumptions**
+        * Constant descent rate
+        * Pure vertical motion
+        * No horizontal velocity
+        * No atmospheric variations
+        * Quasi-steady descent
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """      
     
     # unpack

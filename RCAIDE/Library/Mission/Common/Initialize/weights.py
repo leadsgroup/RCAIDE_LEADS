@@ -8,22 +8,61 @@
 #  Initialize Weights
 # ---------------------------------------------------------------------------------------------------------------------- 
 def weights(segment):
-    """ Initializes weight of vehicle
+    """
+    Initializes vehicle mass properties for mission segment analysis
+
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+
+    Notes
+    -----
+    This function sets up the initial mass values for the vehicle. It determines
+    the initial mass through a priority system and maintains mass continuity
+    between segments.
+
+    The function follows this priority for mass initialization:
+        1. Previous segment final mass (if initials exist)
+        2. Vehicle takeoff mass (if weight analysis exists)
+        3. Network mass properties (fallback option)
+
+    **Required Segment State Variables**
+
+    If segment.state.initials exists:
+        state.initials.conditions.weights:
+            - total_mass : array
+                Previous segment final mass [kg]
+
+    state.conditions.weights:
+        - total_mass : array
+            Current segment mass array [kg]
+
+    **Required Analysis Components**
     
-        Assumptions:   
-            Uses max takeoff weight if no weight analysis is performed 
-            
-        Inputs: 
-            state.
-                initials.conditions.weights.total_mass  [kg]
-            state.conditions:           
-                conditions.weights.total_mass           [kg]
-            
-        Outputs: 
-            state.conditions.weights.total_mass         [kg] 
-           
-        Properties Used:
-        N/A 
+    Either:
+    segment.analyses.weights:
+        - vehicle.mass_properties.takeoff : float
+            Vehicle takeoff mass [kg]
+    Or:
+    segment.analyses.energy.vehicle.networks:
+        - mass_properties.mass : float
+            Network mass properties [kg]
+
+    **Major Assumptions**
+        * Continuous mass tracking when using initials
+        * Valid mass values (positive)
+        * At least one mass property source available
+        * Mass measured in kilograms
+
+    Returns
+    -------
+    None
+        Updates segment conditions directly
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """      
  
     if segment.state.initials:

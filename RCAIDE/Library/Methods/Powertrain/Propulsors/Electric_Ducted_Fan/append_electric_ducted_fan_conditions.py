@@ -1,5 +1,4 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Electric_Rotor_Propulsor/append_electric_ducted_fan_conditions.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Jun 2024, M. Clarke  
 
@@ -13,10 +12,57 @@ from RCAIDE.Framework.Mission.Common                             import Conditio
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append electric ducted fan network conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_electric_ducted_fan_conditions(propulsor,segment,energy_conditions,noise_conditions):
-    '''
-    Appends data structures arrays for storing electric ducted fan conditions  
-    '''
+def append_electric_ducted_fan_conditions(propulsor, segment, energy_conditions, noise_conditions):
+    """
+    Appends data structures arrays for storing electric ducted fan conditions.
+    
+    Parameters
+    ----------
+    propulsor : RCAIDE.Library.Components.Propulsors.Electric_Ducted_Fan
+        Electric ducted fan propulsor component with the following attributes:
+            - tag : str
+                Identifier for the propulsor
+            - items : dict
+                Dictionary of subcomponents
+    segment : RCAIDE.Framework.Mission.Segments.Segment
+        Mission segment with the following attributes:
+            - state : Data
+                Segment state
+                - ones_row : function
+                    Function to create array of ones with specified length
+    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Energy conditions container where electric ducted fan conditions will be stored
+    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Noise conditions container where electric ducted fan noise conditions will be stored
+    
+    Returns
+    -------
+    None
+        Results are stored in energy_conditions.propulsors[propulsor.tag] and
+        noise_conditions.propulsors[propulsor.tag]
+    
+    Notes
+    -----
+    This function initializes the necessary data structures for storing electric ducted fan
+    operating conditions during a mission segment. It creates zero-filled arrays
+    for various performance parameters and recursively calls the append_operating_conditions
+    method for each subcomponent of the electric ducted fan propulsor.
+    
+    The function initializes the following parameters in energy_conditions:
+        - throttle
+        - commanded_thrust_vector_angle
+        - thrust
+        - power
+        - moment
+    
+    After initializing the propulsor-level parameters, the function recursively processes
+    each component and subcomponent of the propulsor, calling their respective
+    append_operating_conditions methods.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.compute_electric_ducted_fan_performance
+    """
     # unpack 
     ones_row          = segment.state.ones_row 
     

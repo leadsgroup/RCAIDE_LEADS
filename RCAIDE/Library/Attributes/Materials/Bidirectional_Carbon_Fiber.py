@@ -15,22 +15,47 @@ from RCAIDE.Framework.Core import Units
 #-------------------------------------------------------------------------------
 
 class Bidirectional_Carbon_Fiber(Solid):
-    """ Physical Constants Specific to Bidirectional Carbon Fiber
+    """ 
+    A class representing bidirectional carbon fiber composite material properties.
+
+    Attributes
+    ----------
+    ultimate_tensile_strength : float
+        Maximum tensile stress before failure in Pa (600e6)
+    ultimate_shear_strength : float
+        Maximum shear stress before failure in Pa (90e6)
+    ultimate_bearing_strength : float
+        Maximum bearing stress before failure in Pa (600e6)
+    yield_tensile_strength : float
+        Stress at which material begins to deform plastically in Pa (600e6)
+    yield_shear_strength : float
+        Shear stress at which material begins to deform plastically in Pa (90e6)
+    yield_bearing_strength : float
+        Bearing stress at which material begins to deform plastically in Pa (600e6)
+    minimum_gage_thickness : float
+        Minimum manufacturable thickness in m (420e-6)
+    density : float
+        Material density in kg/m³ (1600)
+
+    Notes
+    -----
+    This class implements material properties for bidirectional woven carbon fiber composites.
+    Properties are based on median values from manufacturer reported data.
+    The equal ultimate and yield strengths reflect the generally linear elastic behavior 
+    of carbon fiber composites up to failure.
+
+    **Definitions**
     
-    Assumptions:
-    None
+    'Bidirectional Carbon Fiber'
+        A composite material with carbon fibers woven in two perpendicular directions,
+        providing similar properties in both directions
     
-    Source:
-    MatWeb (Median of Mfg. Reported Values)
+    'Ultimate Strength'
+        The maximum stress that a material can withstand before failure
     
-    Inputs:
-    N/A
-    
-    Outputs:
-    N/A
-    
-    Properties Used:
-    None
+    References
+    ----------
+    [1] MatWeb. (n.d.). Overview of materials for Epoxy/Carbon Fiber Composite. Overview of materials for epoxy/carbon fiber composite. https://www.matweb.com/search/datasheet.aspx?matguid=39e40851fc164b6c9bda29d798bf3726 
     """
 
     def __defaults__(self):

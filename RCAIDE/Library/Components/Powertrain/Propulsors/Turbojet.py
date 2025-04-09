@@ -70,7 +70,7 @@ class Turbojet(Propulsor):
     afterburner_active : bool
         Flag indicating if afterburner is in use. Default is False.
         
-    SFC_adjustment : float
+    specific_fuel_consumption_reduction_factor : float
         Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
         
     compressor_nondimensional_massflow : float
@@ -130,36 +130,38 @@ class Turbojet(Propulsor):
     """ 
     def __defaults__(self):
         # setting the default values
-        self.tag                                      = 'Turbojet'  
-        self.nacelle                                  = None  
-        self.ram                                      = None 
-        self.inlet_nozzle                             = None 
-        self.low_pressure_compressor                  = None 
-        self.high_pressure_compressor                 = None 
-        self.low_pressure_turbine                     = None 
-        self.high_pressure_turbine                    = None 
-        self.combustor                                = None 
-        self.afterburner                              = None
-        self.core_nozzle                              = None   
-        self.length                                   = 0.0
-        self.bypass_ratio                             = 0.0 
-        self.design_isa_deviation                     = 0.0
-        self.design_altitude                          = 0.0
-        self.afterburner_active                       = False
-        self.SFC_adjustment                           = 0.0  
-        self.compressor_nondimensional_massflow       = 0.0
-        self.reference_temperature                    = 288.15
-        self.reference_pressure                       = 1.01325*10**5 
-        self.design_thrust                            = 0.0
-        self.design_mass_flow_rate                    = 0.0 
-        self.OpenVSP_flow_through                     = False
-
-        #areas needed for drag; not in there yet
-        self.areas                                    = Data()
-        self.areas.wetted                             = 0.0
-        self.areas.maximum                            = 0.0
-        self.areas.exit                               = 0.0
-        self.areas.inflow                             = 0.0 
+        self.tag                                         = 'Turbojet'  
+        self.nacelle                                     = None  
+        self.ram                                         = None 
+        self.inlet_nozzle                                = None 
+        self.low_pressure_compressor                     = None 
+        self.high_pressure_compressor                    = None 
+        self.low_pressure_turbine                        = None 
+        self.high_pressure_turbine                       = None 
+        self.combustor                                   = None 
+        self.afterburner                                 = None
+        self.core_nozzle                                 = None   
+        self.length                                      = 0.0
+        self.diameter                                    = 0.0  
+        self.height                                      = 0.0   
+        self.bypass_ratio                                = 0.0 
+        self.design_isa_deviation                        = 0.0
+        self.design_altitude                             = 0.0
+        self.afterburner_active                          = False
+        self.specific_fuel_consumption_reduction_factor  = 0.0  
+        self.compressor_nondimensional_massflow          = 0.0
+        self.reference_temperature                       = 288.15
+        self.reference_pressure                          = 1.01325*10**5 
+        self.design_thrust                               = 0.0
+        self.design_mass_flow_rate                       = 0.0 
+        self.OpenVSP_flow_through                        = False
+   
+        #areas needed for drag; not in there yet   
+        self.areas                                       = Data()
+        self.areas.wetted                                = 0.0
+        self.areas.maximum                               = 0.0
+        self.areas.exit                                  = 0.0
+        self.areas.inflow                                = 0.0 
 
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):

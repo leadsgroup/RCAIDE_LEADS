@@ -29,11 +29,23 @@ def build_VLM_surrogates(aerodynamics):
     Returns: 
         None  
     """
-    surrogates =  aerodynamics.surrogates
-    training   =  aerodynamics.training 
-    surrogates.subsonic    =  build_surrogate(aerodynamics, training.subsonic) 
-    surrogates.supersonic  =  build_surrogate(aerodynamics, training.supersonic)
-    surrogates.transonic   =  build_surrogate(aerodynamics, training.transonic)
+    surrogates = aerodynamics.surrogates
+    training   = aerodynamics.training 
+    Mach       = aerodynamics.training.Mach 
+    training   = aerodynamics.training  
+    sub_len    = int(sum(Mach<1.))  
+    sup_Mach   = Mach[sub_len:]
+    
+    surrogates.subsonic    =  build_surrogate(aerodynamics, training.subsonic)
+    
+    # only build supersonic surrogates if necessary
+    if len(sup_Mach) > 2: 
+        surrogates.supersonic  =  build_surrogate(aerodynamics, training.supersonic)
+        surrogates.transonic   =  build_surrogate(aerodynamics, training.transonic)
+    else: 
+        surrogates.supersonic  =  no_surrogate(aerodynamics, training.supersonic)
+        surrogates.transonic   =  no_surrogate(aerodynamics, training.transonic)        
+        
     return
 
 def build_surrogate(aerodynamics, training):
@@ -301,3 +313,240 @@ def build_surrogate(aerodynamics, training):
    
     return surrogates
  
+ 
+def no_surrogate(aerodynamics, training):
+    
+    # unpack data
+    surrogates     = Data() 
+    vehicle        = aerodynamics.vehicle 
+    
+    surrogates.Clift_wing_alpha = Data()
+    surrogates.Cdrag_wing_alpha = Data() 
+    for wing in  vehicle.wings: 
+        surrogates.Clift_wing_alpha[wing.tag] =None 
+        surrogates.Cdrag_wing_alpha[wing.tag] =None 
+     
+    # Pack the outputs     
+    surrogates.Clift_alpha    = None     
+    surrogates.Clift_beta     = None
+    surrogates.Clift_u        = None     
+    surrogates.Clift_v        = None     
+    surrogates.Clift_w        = None     
+    surrogates.Clift_p        = None     
+    surrogates.Clift_q        = None     
+    surrogates.Clift_r        = None    
+    surrogates.Cdrag_alpha    = None     
+    surrogates.Cdrag_beta     = None
+    surrogates.Cdrag_u        = None    
+    surrogates.Cdrag_v        = None    
+    surrogates.Cdrag_w        = None    
+    surrogates.Cdrag_p        = None    
+    surrogates.Cdrag_q        = None    
+    surrogates.Cdrag_r        = None 
+    surrogates.CX_alpha       = None    
+    surrogates.CX_beta        = None
+    surrogates.CX_u           = None    
+    surrogates.CX_v           = None    
+    surrogates.CX_w           = None    
+    surrogates.CX_p           = None    
+    surrogates.CX_q           = None    
+    surrogates.CX_r           = None  
+    surrogates.CY_alpha       = None    
+    surrogates.CY_beta        = None
+    surrogates.CY_u           = None    
+    surrogates.CY_v           = None    
+    surrogates.CY_w           = None    
+    surrogates.CY_p           = None    
+    surrogates.CY_q           = None    
+    surrogates.CY_r           = None   
+    surrogates.CZ_alpha       = None    
+    surrogates.CZ_beta        = None
+    surrogates.CZ_u           = None    
+    surrogates.CZ_v           = None    
+    surrogates.CZ_w           = None    
+    surrogates.CZ_p           = None    
+    surrogates.CZ_q           = None    
+    surrogates.CZ_r           = None
+    surrogates.CL_alpha       = None    
+    surrogates.CL_beta        = None
+    surrogates.CL_u           = None    
+    surrogates.CL_v           = None    
+    surrogates.CL_w           = None    
+    surrogates.CL_p           = None    
+    surrogates.CL_q           = None    
+    surrogates.CL_r           = None  
+    surrogates.CM_alpha       = None    
+    surrogates.CM_beta        = None
+    surrogates.CM_u           = None    
+    surrogates.CM_v           = None    
+    surrogates.CM_w           = None    
+    surrogates.CM_p           = None    
+    surrogates.CM_q           = None    
+    surrogates.CM_r           = None  
+    surrogates.CN_alpha       = None    
+    surrogates.CN_beta        = None
+    surrogates.CN_u           = None    
+    surrogates.CN_v           = None    
+    surrogates.CN_w           = None    
+    surrogates.CN_p           = None    
+    surrogates.CN_q           = None    
+    surrogates.CN_r           = None
+    
+    surrogates.dClift_dalpha    = None      
+    surrogates.dClift_dbeta     = None 
+    surrogates.dClift_du        = None      
+    surrogates.dClift_dv        = None      
+    surrogates.dClift_dw        = None      
+    surrogates.dClift_dp        = None      
+    surrogates.dClift_dq        = None      
+    surrogates.dClift_dr        = None  
+    surrogates.dCdrag_dalpha    = None      
+    surrogates.dCdrag_dbeta     = None   
+    surrogates.dCdrag_du        = None      
+    surrogates.dCdrag_dv        = None      
+    surrogates.dCdrag_dw        = None      
+    surrogates.dCdrag_dp        = None      
+    surrogates.dCdrag_dq        = None      
+    surrogates.dCdrag_dr        = None   
+    surrogates.dCX_dalpha       = None      
+    surrogates.dCX_dbeta        = None  
+    surrogates.dCX_du           = None      
+    surrogates.dCX_dv           = None      
+    surrogates.dCX_dw           = None      
+    surrogates.dCX_dp           = None      
+    surrogates.dCX_dq           = None      
+    surrogates.dCX_dr           = None   
+    surrogates.dCY_dalpha       = None      
+    surrogates.dCY_dbeta        = None  
+    surrogates.dCY_du           = None      
+    surrogates.dCY_dv           = None      
+    surrogates.dCY_dw           = None      
+    surrogates.dCY_dp           = None      
+    surrogates.dCY_dq           = None      
+    surrogates.dCY_dr           = None  
+    surrogates.dCZ_dalpha       = None      
+    surrogates.dCZ_dbeta        = None  
+    surrogates.dCZ_du           = None      
+    surrogates.dCZ_dv           = None      
+    surrogates.dCZ_dw           = None      
+    surrogates.dCZ_dp           = None      
+    surrogates.dCZ_dq           = None      
+    surrogates.dCZ_dr           = None    
+    surrogates.dCL_dalpha       = None      
+    surrogates.dCL_dbeta        = None  
+    surrogates.dCL_du           = None      
+    surrogates.dCL_dv           = None      
+    surrogates.dCL_dw           = None      
+    surrogates.dCL_dp           = None      
+    surrogates.dCL_dq           = None      
+    surrogates.dCL_dr           = None  
+    surrogates.dCM_dalpha       = None      
+    surrogates.dCM_dbeta        = None  
+    surrogates.dCM_du           = None      
+    surrogates.dCM_dv           = None      
+    surrogates.dCM_dw           = None      
+    surrogates.dCM_dp           = None      
+    surrogates.dCM_dq           = None      
+    surrogates.dCM_dr           = None  
+    surrogates.dCN_dalpha       = None      
+    surrogates.dCN_dbeta        = None  
+    surrogates.dCN_du           = None      
+    surrogates.dCN_dv           = None      
+    surrogates.dCN_dw           = None      
+    surrogates.dCN_dp           = None      
+    surrogates.dCN_dq           = None      
+    surrogates.dCN_dr           = None
+   
+
+    if aerodynamics.aileron_flag: 
+        surrogates.Clift_delta_a    = None
+        surrogates.Cdrag_delta_a    = None
+        surrogates.CX_delta_a       = None
+        surrogates.CY_delta_a       = None
+        surrogates.CZ_delta_a       = None
+        surrogates.CL_delta_a       = None
+        surrogates.CM_delta_a       = None
+        surrogates.CN_delta_a       = None
+        surrogates.dClift_ddelta_a  = None
+        surrogates.dCdrag_ddelta_a  = None
+        surrogates.dCX_ddelta_a     = None
+        surrogates.dCY_ddelta_a     = None
+        surrogates.dCZ_ddelta_a     = None
+        surrogates.dCL_ddelta_a     = None
+        surrogates.dCM_ddelta_a     = None
+        surrogates.dCN_ddelta_a     = None        
+    
+    if aerodynamics.elevator_flag: 
+        surrogates.Clift_delta_e    = None
+        surrogates.Cdrag_delta_e    = None
+        surrogates.CX_delta_e       = None
+        surrogates.CY_delta_e       = None
+        surrogates.CZ_delta_e       = None
+        surrogates.CL_delta_e       = None
+        surrogates.CM_delta_e       = None
+        surrogates.CN_delta_e       = None
+        surrogates.dClift_ddelta_e  = None
+        surrogates.dCdrag_ddelta_e  = None
+        surrogates.dCX_ddelta_e     = None
+        surrogates.dCY_ddelta_e     = None
+        surrogates.dCZ_ddelta_e     = None
+        surrogates.dCL_ddelta_e     = None
+        surrogates.dCM_ddelta_e     = None
+        surrogates.dCN_ddelta_e     = None
+    
+    
+    if aerodynamics.rudder_flag: 
+        surrogates.Clift_delta_r    = None  
+        surrogates.Cdrag_delta_r    = None
+        surrogates.CX_delta_r       = None
+        surrogates.CY_delta_r       = None
+        surrogates.CZ_delta_r       = None
+        surrogates.CL_delta_r       = None
+        surrogates.CM_delta_r       = None
+        surrogates.CN_delta_r       = None
+        surrogates.dClift_ddelta_r  = None
+        surrogates.dCdrag_ddelta_r  = None
+        surrogates.dCX_ddelta_r     = None
+        surrogates.dCY_ddelta_r     = None
+        surrogates.dCZ_ddelta_r     = None
+        surrogates.dCL_ddelta_r     = None
+        surrogates.dCM_ddelta_r     = None
+        surrogates.dCN_ddelta_r     = None
+    
+    if aerodynamics.flap_flag:
+        surrogates.Clift_delta_f    = None
+        surrogates.Cdrag_delta_f    = None
+        surrogates.CX_delta_f       = None
+        surrogates.CY_delta_f       = None
+        surrogates.CZ_delta_f       = None
+        surrogates.CL_delta_f       = None
+        surrogates.CM_delta_f       = None
+        surrogates.CN_delta_f       = None
+        surrogates.dClift_ddelta_f  = None
+        surrogates.dCdrag_ddelta_f  = None
+        surrogates.dCX_ddelta_f     = None
+        surrogates.dCY_ddelta_f     = None
+        surrogates.dCZ_ddelta_f     = None
+        surrogates.dCL_ddelta_f     = None
+        surrogates.dCM_ddelta_f     = None
+        surrogates.dCN_ddelta_f     = None
+    
+    if aerodynamics.slat_flag: 
+        surrogates.Clift_delta_s    = None       
+        surrogates.Cdrag_delta_s    = None
+        surrogates.CX_delta_s       = None
+        surrogates.CY_delta_s       = None
+        surrogates.CZ_delta_s       = None
+        surrogates.CL_delta_s       = None
+        surrogates.CM_delta_s       = None
+        surrogates.CN_delta_s       = None
+        surrogates.dClift_ddelta_s  = None
+        surrogates.dCdrag_ddelta_s  = None
+        surrogates.dCX_ddelta_s     = None
+        surrogates.dCY_ddelta_s     = None
+        surrogates.dCZ_ddelta_s     = None
+        surrogates.dCL_ddelta_s     = None
+        surrogates.dCM_ddelta_s     = None
+        surrogates.dCN_ddelta_s     = None
+   
+    return surrogates 

@@ -13,28 +13,63 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for constant speed loiter at fixed altitude
 
-    Assumptions:
-    Constant speed and constant altitude with set loiter time
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - altitude : float
+                Loiter altitude [m]
+            - time : float
+                Loiter duration [s]
+            - air_speed : float
+                True airspeed to maintain [m/s]
+            - sideslip_angle : float
+                Aircraft sideslip angle [rad]
+            - state:
+                numerics.dimensionless.control_points : array
+                    Discretization points [-]
+                conditions : Data
+                    State conditions container
+                initials : Data, optional
+                    Initial conditions from previous segment
+    
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+            - conditions.frames.inertial.velocity_vector [m/s]
+            - conditions.frames.inertial.position_vector [m]
+            - conditions.freestream.altitude [m]
+            - conditions.frames.inertial.time [s]
 
-    Source:
-    N/A
 
-    Inputs:
-    segment.altitude                [meters]
-    segment.time                    [seconds]
-    segment.speed                   [meters/second]
+    Notes
+    -----
+    This function sets up the initial conditions for a loiter segment with constant
+    true airspeed and constant altitude. The segment duration is specified by time
+    rather than distance.
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
-    conditions.frames.inertial.time             [seconds]
+    **Calculation Process**
+        1. Check for initial conditions
+        2. Discretize time points over loiter duration
+        3. Decompose velocity into components using:
+            - Constant airspeed
+            - Sideslip angle
 
-    Properties Used:
-    N/A
-    """     
+    **Major Assumptions**
+        * Constant true airspeed
+        * Constant altitude
+        * Small angle approximations
+        * Quasi-steady flight
+        * No wind effects
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
+    """    
     
     # unpack
     alt        = segment.altitude

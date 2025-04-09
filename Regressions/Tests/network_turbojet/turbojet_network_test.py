@@ -74,9 +74,9 @@ def main():
             print(val)
     
     # Truth values
-    thrust_truth     = 182249.8877230102
-    throttle_truth   = 0.8356192341618192
-    CL_truth         = 0.20942980536787167
+    thrust_truth     = 121267.06978782566
+    throttle_truth   = 0.6540706517481951
+    CL_truth         = 0.18263940868353304
     
     # Store errors 
     error = Data()
@@ -131,9 +131,9 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle                              = vehicle
-    aerodynamics.settings.number_of_spanwise_vortices  = 5
-    aerodynamics.settings.number_of_chordwise_vortices = 2       
+    aerodynamics.vehicle                               = vehicle
+    aerodynamics.settings.number_of_spanwise_vortices  = 25
+    aerodynamics.settings.number_of_chordwise_vortices = 5     
     aerodynamics.settings.model_fuselage               = True 
     analyses.append(aerodynamics)
 
@@ -475,9 +475,9 @@ def mission_setup(analyses):
       
     segment = Segments.Descent.Linear_Mach_Constant_Rate(base_segment)
     segment.tag = "descent_3" 
-    segment.analyses.extend( analyses.cruise )
+    segment.analyses.extend( analyses.descent )
     segment.altitude_end      = 10000. * Units.ft
-    segment.mach_number_end   = 0.15
+    segment.mach_number_end   = 0.4
     segment.descent_rate      = 2000. * Units['ft/min']  
     
     # define flight dynamics to model 
@@ -496,7 +496,7 @@ def mission_setup(analyses):
     # ------------------------------------------------------------------     
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "descent_4" 
-    segment.analyses.extend( analyses.cruise )
+    segment.analyses.extend( analyses.descent )
     segment.altitude_end = 0. * Units.ft
     segment.descent_rate = 1000. * Units['ft/min']    
     

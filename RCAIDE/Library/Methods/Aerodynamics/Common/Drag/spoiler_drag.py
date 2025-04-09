@@ -1,34 +1,55 @@
 # RCAIDE/Library/Methods/Aerodynamics/Common/Drag/spoiler_drag.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 # 
-# Created:  Jun 2024, M. Clarke
+# Created:  Mar 2025, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-
-# python imports 
+# ----------------------------------------------------------------------------------------------------------------------
+# RCAIDE imports 
+import RCAIDE
+from RCAIDE.Framework.Core import Units
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Spolier Drag 
 # ---------------------------------------------------------------------------------------------------------------------- 
 def spoiler_drag(state,settings,geometry):
-    """Adds a spoiler drag increment
+    """Updates the aerodynamic performance of an aircraft given the influence of deflected spoilers
+  
+    Parameters
+    ----------
+    state : Data
+        flight conditions of aircraft
+        
+    settings : dict
+        aerodynamic settings
+        
+    geometry : Data
+        aircraft geometry 
 
-    Assumptions:
-        None
-
-    Source:
-        None
-
-    Args:
-        settings.spoiler_drag_increment (float): spoiler drag increment [Unitless]
-
-    Returns:
-        None 
+    References
+    ----------
+    [1]  Croom, Delwin R. Low-speed wind-tunnel investigation of various segments of flight spoilers
+         as trailing-vortex-alleviation devices on a transport aircraft model. No. NASA-TN-D-8162. 1976.
+      
     """    
-    Mc =  state.conditions.freestream.mach_number
-    state.conditions.aerodynamics.coefficients.drag.spoiler_drag = settings.spoiler_drag_increment * np.ones_like(Mc)
+    # unpack   
+    parasite_total        = state.conditions.aerodynamics.coefficients.drag.parasite.total            
+    induced_total         = state.conditions.aerodynamics.coefficients.drag.induced.total            
+    compressibility_total = state.conditions.aerodynamics.coefficients.drag.compressible.total     
+    miscellaneous_drag    = state.conditions.aerodynamics.coefficients.drag.miscellaneous.total
+    cooling_drag          = state.conditions.aerodynamics.coefficients.drag.cooling.total  
+
+    # untrimmed drag 
+    drag  =  parasite_total + induced_total  + compressibility_total + miscellaneous_drag + cooling_drag 
     
+    spoiler_drag_coef =  np.zeros_like(drag)
+    for wing in geometry.wings: 
+        for cs in wing.control_surfaces:
+            if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler:
+                spoiler_drag_coef += drag * (0.0011 * (cs.deflection / Units.degrees))  
+                state.conditions.aerodynamics.coefficients.lift.total  +=  -0.0075 *(cs.deflection / Units.degrees)  
+                state.conditions.static_stability.coefficients.M       +=  0.0053 *(cs.deflection / Units.degrees)  
+    
+    state.conditions.aerodynamics.coefficients.drag.spoiler.total =  spoiler_drag_coef 
     return  
