@@ -237,8 +237,7 @@ class Network(Component):
             if bus.active: 
                 for t_idx in range(state.numerics.number_of_control_points):            
                     stored_results_flag       = False
-                    stored_battery_cell_tag   = None 
-                    stored_fuel_cell_tag      = None
+                    stored_battery_cell_tag   = None
                     
                     # ------------------------------------------------------------------------------------------------------------------- 
                     # 3.1 Batteries
@@ -257,7 +256,9 @@ class Network(Component):
                       
                     # ------------------------------------------------------------------------------------------------------------------- 
                     # 3.2 Fuel Cell Stacks
-                    # -------------------------------------------------------------------------------------------------------------------                
+                    # ------------------------------------------------------------------------------------------------------------------- 
+                    stored_results_flag       = False   
+                    stored_fuel_cell_tag      = None                  
                     for fuel_cell_stack in  bus.fuel_cell_stacks:                   
                         if bus.identical_fuel_cell_stacks == False:
                             # run analysis  
