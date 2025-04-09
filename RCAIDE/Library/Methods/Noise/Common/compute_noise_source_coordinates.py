@@ -161,7 +161,7 @@ def compute_rotor_point_source_coordinates(rotor,conditions,mls,settings):
     rev_Translation_mic_loc            = np.linalg.inv(Translation_mic_loc)    
 
     # -----------------------------------------------------------------------------------------------------------------------------
-    # vehicle velocit vector 
+    # vehicle velocity vector 
     # -----------------------------------------------------------------------------------------------------------------------------    
     M_vec                      = np.tile(I[None,None,None,:,:,:],(num_cpt,num_mic,num_blades,num_sec,1,1))     
     M_vec[:,:,:,:,0,3]         = np.tile( (conditions.frames.inertial.velocity_vector[:,0]/conditions.freestream.speed_of_sound[:,0]) [:,None,None,None],(1,num_mic,num_blades,num_sec)) 

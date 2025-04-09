@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE
 from RCAIDE.Framework.Core                                 import orientation_product, orientation_transpose      
-from RCAIDE.Library.Methods.Noise.Common                         import convert_to_third_octave_band 
+from RCAIDE.Library.Methods.Noise.Common                   import convert_to_third_octave_band 
 
 # Python Package imports  
 import numpy as np
@@ -85,7 +85,8 @@ def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,coordinates,r
         y_u_6          = np.tile(airfoil.geometry.y_upper_surface[None,None,None,None,None,:],(num_cpt,num_mic,num_sec,num_h_b,num_h_l,1))
         y_l_6          = np.tile(airfoil.geometry.y_lower_surface[None,None,None,None,None,:],(num_cpt,num_mic,num_sec,num_h_b,num_h_l,1))
     chord_coord             = int(np.floor(airfoil_points/2))
-    
+
+    thrust_vec         = aeroacoustic_data.thrust
     
     # ----------------------------------------------------------------------------------
     # Rotational Noise  Thickness and Loading Noise
@@ -110,7 +111,9 @@ def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,coordinates,r
     p_ref          = 2E-5
     
     # net angle of inclination of propeller wrt inertial axis
-    alpha_4        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None],(1,num_mic,num_h_b,num_h_l))      
+    # alpha_4        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None],(1,num_mic,num_h_b,num_h_l))
+    alpha          = np.arccos(np.dot(velocity_vector[0,:], thrust_vec[cpt,:])/(np.linalg.norm(velocity_vector)*np.linalg.norm(thrust_vec[cpt,:])))
+    alpha_4        = alpha*np.ones_like(k_4)
     
     # rotor angular speed
     omega_3        = np.tile(aeroacoustic_data.omega[cpt,:,None],(1,num_mic,num_h_b))
@@ -187,7 +190,7 @@ def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,coordinates,r
     theta_r_prime_5 = np.tile(theta_r_prime_4[:,:,None,:,:], (1,1,num_sec,1,1))
     
     phi_prime_4    = np.arccos((np.sin(theta_r_4)*np.cos(phi_4))/np.sin(theta_r_prime_4))
-    
+
     # Velocity in the rotor frame
     T_body2inertial = conditions.frames.body.transform_to_inertial[cpt][None,:, :]
     T_inertial2body = orientation_transpose(T_body2inertial)

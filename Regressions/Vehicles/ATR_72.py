@@ -54,7 +54,6 @@ def vehicle_setup():
     vehicle.passengers                                = 78
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "short range"  
-
     # ------------------------------------------------------------------
     #   Main Wing
     # ------------------------------------------------------------------
@@ -65,7 +64,7 @@ def vehicle_setup():
     wing.spans.projected                  = 27.05 
     wing.aspect_ratio                     = (wing.spans.projected**2) /  wing.areas.reference
     wing.sweeps.quarter_chord             = 0.0 
-    wing.thickness_to_chord               = 0.1 
+    wing.thickness_to_chord               = 0.12 
     wing.chords.root                      = 2.7 
     wing.chords.tip                       = 1.35 
     wing.total_length                     = wing.chords.root  
@@ -73,24 +72,30 @@ def vehicle_setup():
     wing.chords.mean_aerodynamic          = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 )/( 1 + wing.taper )) 
     wing.areas.exposed                    = 2 * wing.areas.reference
     wing.areas.wetted                     = 2 * wing.areas.reference 
-    wing.twists.root                      = 4 * Units.degrees  
+    wing.twists.root                      = 0 * Units.degrees  
     wing.twists.tip                       = 0 * Units.degrees   
     wing.origin                           = [[11.52756129,0,2.009316366]]  
     wing.aerodynamic_center               = [11.52756129 + 0.25*wing.chords.root ,0,2.009316366]  
     wing.vertical                         = False   
     wing.symmetric                        = True  
-    wing.dynamic_pressure_ratio           = 1.0 
- 
+    wing.dynamic_pressure_ratio           = 1.0
+
+    ospath                                = os.path.abspath(__file__)
+    separator                             = os.path.sep
+    local_path                            = os.path.dirname(ospath) + separator   
 
     # Wing Segments 
-    segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment                               = RCAIDE.Library.Components.Wings.Segments.Segment() 
     segment.tag                           = 'inboard'
     segment.percent_span_location         = 0.0
     segment.twist                         = 4.0 * Units.deg
     segment.root_chord_percent            = 1. 
     segment.dihedral_outboard             = 0.0  * Units.degrees
     segment.sweeps.quarter_chord          = 0.0 * Units.degrees
-    segment.thickness_to_chord            = .1 
+    segment.thickness_to_chord            = .12 
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = local_path  + 'Airfoils' + separator + 'B737b.txt'
+    segment.append_airfoil(airfoil)
     wing.append_segment(segment)
  
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -100,7 +105,10 @@ def vehicle_setup():
     segment.root_chord_percent            = 1.0
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = 4.7 * Units.degrees
-    segment.thickness_to_chord            = .1 
+    segment.thickness_to_chord            = .12 
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = local_path + 'Airfoils' + separator + 'B737c.txt'
+    segment.append_airfoil(airfoil)
     wing.append_segment(segment) 
  
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -108,9 +116,12 @@ def vehicle_setup():
     segment.percent_span_location         = 1.
     segment.twist                         = 0. * Units.degrees
     segment.root_chord_percent            = wing.taper 
-    segment.thickness_to_chord            = 0.1
+    segment.thickness_to_chord            = 0.12
     segment.dihedral_outboard             = 0.
     segment.sweeps.quarter_chord          = 0.  
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = local_path + 'Airfoils' + separator + 'B737d.txt'
+    segment.append_airfoil(airfoil)
     wing.append_segment(segment)     
     
     # update properties of the wing using segments 
@@ -128,7 +139,7 @@ def vehicle_setup():
     wing.areas.reference         = 15.2 
     wing.aspect_ratio            = (wing.spans.projected**2) /  wing.areas.reference
     wing.sweeps.leading_edge     = 11.56*Units.degrees  
-    wing.thickness_to_chord      = 0.1  
+    wing.thickness_to_chord      = 0.12  
     wing.chords.root             = 2.078645129 
     wing.chords.tip              = 0.953457347 
     wing.total_length            = wing.chords.root  
@@ -155,7 +166,7 @@ def vehicle_setup():
     wing.spans.projected                   = 4.5  
     wing.areas.reference                   = 12.7
     wing.sweeps.quarter_chord              = 54 * Units.degrees  
-    wing.thickness_to_chord                = 0.1  
+    wing.thickness_to_chord                = 0.12  
     wing.aspect_ratio                      = (wing.spans.projected**2) /  wing.areas.reference    
     wing.chords.root                       = 8.75
     wing.chords.tip                        = 1.738510759 
@@ -181,8 +192,8 @@ def vehicle_setup():
     segment.root_chord_percent            = 1.0
     segment.dihedral_outboard             = 0.0
     segment.sweeps.leading_edge           = 75 * Units.degrees  
-    segment.thickness_to_chord            = 0.1
-    wing.append_segment(segment)
+    segment.thickness_to_chord            = 0.12
+    wing.append_segment(segment)   
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'segment_2'
@@ -191,7 +202,7 @@ def vehicle_setup():
     segment.root_chord_percent            = 4.25/wing.chords.root  
     segment.dihedral_outboard             = 0   
     segment.sweeps.leading_edge           = 54 * Units.degrees   
-    segment.thickness_to_chord            = 0.1
+    segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -201,7 +212,7 @@ def vehicle_setup():
     segment.root_chord_percent            = 2.35/wing.chords.root    
     segment.dihedral_outboard             = 0 
     segment.sweeps.leading_edge           = 31 * Units.degrees   
-    segment.thickness_to_chord            = 0.1
+    segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)
     
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -211,7 +222,7 @@ def vehicle_setup():
     segment.root_chord_percent            = 2.190082795/wing.chords.root  
     segment.dihedral_outboard             = 0
     segment.sweeps.leading_edge           = 52 * Units.degrees   
-    segment.thickness_to_chord            = 0.1
+    segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)    
     
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -221,14 +232,14 @@ def vehicle_setup():
     segment.root_chord_percent            = 1.3/wing.chords.root  
     segment.dihedral_outboard             = 0  
     segment.sweeps.leading_edge           = 0 * Units.degrees   
-    segment.thickness_to_chord            = 0.1
+    segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)    
 
     # update properties of the wing using segments 
     wing = segment_properties(wing,update_wet_areas=True,update_ref_areas=True)
     
     # add to vehicle
-    vehicle.append_component(wing)
+    vehicle.append_component(wing)    
 
     # ------------------------------------------------------------------
     #  Fuselage
@@ -412,8 +423,8 @@ def vehicle_setup():
     starboard_propulsor.tag                          = 'starboard_propulsor'  
     starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
     starboard_propulsor.design_altitude              = 25000 * Units.ft                                 # [-]         Design Altitude 
-    starboard_propulsor.design_freestream_velocity   = 141.94 * Units.meter_per_second      
-    starboard_propulsor.design_thrust                = 10000.0 * Units.N                                # [-]         Design Thrust          
+    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts      
+    starboard_propulsor.design_thrust                = 15000.0 * Units.N                                # [-]         Design Thrust          
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()            
     starboard_propulsor.design_propeller_efficiency  = 0.83                                             # [-]         Design Propeller Efficiency
     starboard_propulsor.gearbox.efficiency           = 0.99                                             # [-]         Design Gearbox Efficiency

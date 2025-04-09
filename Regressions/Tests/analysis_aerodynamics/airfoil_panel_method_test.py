@@ -25,6 +25,7 @@ import matplotlib.cm as cm
 def main():   
     single_airfoil()
     multi_airfoil()
+    high_AoA_test()
     
     return 
     
@@ -200,7 +201,35 @@ def multi_airfoil():
     print('\ninvisc CM difference') 
     print(np.sum(np.abs((airfoil_properties_2.cm_invisc[0]  - True_cm_invisc)/True_cm_invisc)))
     assert np.sum(np.abs((airfoil_properties_2.cm_invisc[0]   - True_cm_invisc)/True_cm_invisc)) < 1e-5  
-    return    
+    return
+
+def high_AoA_test():
+    
+    # This test confirms if AoAs above 80 degrees are neglected inside airfoil analysis
+
+    AoA_deg              = np.array([0,20,40,60,85,100])
+    Re_vals              = np.atleast_2d(np.ones(len(AoA_deg)))*1E6 
+    AoA_rad              = np.atleast_2d(AoA_deg*Units.degrees)
+    airfoil_file_1       = '4412'
+    airfoil_geometry_1   = compute_naca_4series(airfoil_file_1,npoints = 201)
+    airfoil_properties_1 = airfoil_analysis(airfoil_geometry_1,AoA_rad,Re_vals)
+    
+    fig_1 = plt.figure()
+    fig_1.set_size_inches(6,6)
+    axis_1 = fig_1.add_subplot(1,1,1)
+    axis_1.plot(AoA_deg,airfoil_properties_1.cl_invisc[0,:],'-ko', label='cl invisc')
+    axis_1.set_ylabel('CL inviscid')
+    axis_1.set_xlabel('AoA')
+
+    fig_2 = plt.figure()
+    fig_2.set_size_inches(6,6)
+    axis_2 = fig_2.add_subplot(1,1,1)
+    axis_2.plot(AoA_deg,airfoil_properties_1.cd_visc[0,:],'-ko', label='cd visc')
+    axis_2.set_ylabel('CD viscous')
+    axis_2.set_xlabel('AoA')
+
+    return
+
 
 if __name__ == '__main__': 
     main() 

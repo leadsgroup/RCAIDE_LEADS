@@ -77,14 +77,16 @@ def initialize_bus_properties(bus):
                 bus.nominal_capacity +=  battery_module.nominal_capacity        
                 bus.maximum_energy  +=  battery_module.initial_maximum_energy
     
+    cumulative_fuel_cell_stack =  0
     if len(bus.fuel_cell_stacks) > 0: 
         if bus.fuel_cell_stack_electric_configuration == 'Series':
             bus.maximum_energy   = 0
             for fuel_cell_stack in  bus.fuel_cell_stacks: 
-                compute_stack_properties(fuel_cell_stack) 
-                bus.voltage         +=  fuel_cell_stack.voltage  
+                compute_stack_properties(fuel_cell_stack)
+                cumulative_fuel_cell_stack += fuel_cell_stack.voltage 
+            bus.voltage  =  min(fuel_cell_stack.voltage, cumulative_fuel_cell_stack) 
         elif bus.fuel_cell_stack_electric_configuration == 'Parallel': 
             for fuel_cell_stack in  bus.fuel_cell_stacks: 
                 compute_stack_properties(fuel_cell_stack)        
-                bus.voltage           =  max(fuel_cell_stack.voltage, bus.voltage)              
+                bus.voltage     =  max(fuel_cell_stack.voltage, bus.voltage)              
     return
