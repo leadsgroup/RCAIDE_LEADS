@@ -23,6 +23,8 @@ import numpy as np
 # ----------------------------------------------------------------------
 def main(): 
 
+    plot_flag = False
+
     motor_current       = np.linspace(0, 48, 20) # [A]
     motor_rpm_vector    = []                     # [rpm]
     motor_torque_vector = []                     # [kgfcm]
