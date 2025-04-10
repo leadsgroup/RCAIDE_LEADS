@@ -60,7 +60,6 @@ modules = [
     # 'Verification/propulsion/generator_test.py',
     # 'Verification/propulsion/motor_test.py',
     # 'Verification/propulsion/reformer_test.py', 
-    'Validation/converters/test_crn_combustor_validation.py',
     # 'Validation/converters/test_dc_motor_validation.py',
     # 'Validation/converters/test_pmsm_motor_validation.py',
     # 'Validation/converters/test_rotor_validation.py',

@@ -27,13 +27,16 @@ from Boeing_737    import configs_setup as configs_setup
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
-    emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
-    use_surrogate     = [True, False]
     
     cantera_installation = False 
+
+    emissions_methods = ['Emission_Index_Correlation_Method']
+
     try: 
         import cantera as ct
         cantera_installation = True 
+        emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
+        use_surrogate     = [True, False]
     except:
         pass 
     
