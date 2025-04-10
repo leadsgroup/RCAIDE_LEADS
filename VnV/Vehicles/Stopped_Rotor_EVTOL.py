@@ -695,7 +695,7 @@ def vehicle_setup(new_regression=True) :
     
 
     
-    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../Tests/analysis_weights')) 
+    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../Verification/analysis_weights')) 
     if new_regression:
         design_electric_rotor(lift_propulsor_1)
         save_propulsor(lift_propulsor_1, os.path.join(test_dir, 'stopped_rotor_lift_rotor.res'))

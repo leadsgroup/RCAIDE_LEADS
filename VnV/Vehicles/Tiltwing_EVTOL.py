@@ -308,7 +308,7 @@ def vehicle_setup(new_regression=True):
     prop_rotor_propulsor.nacelle      =  nacelle       
     
     current_dir = os.path.abspath(os.path.dirname(__file__))
-    test_dir = os.path.abspath(os.path.join(current_dir, '..' + separator + 'Tests' + separator + 'mission_segments'))
+    test_dir = os.path.abspath(os.path.join(current_dir, '..' + separator + 'Verification' + separator + 'mission_segments'))
      
             
     if new_regression:

@@ -51,7 +51,7 @@ def Test_Rotor(new_regression=True):
     lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     
     
-    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..' + separator + '..' + separator + 'Tests' + separator + 'propulsion'))
+    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..' + separator + '..' + separator + 'Verification' + separator + 'propulsion'))
     
     if new_regression:
         design_lift_rotor(lift_rotor)
