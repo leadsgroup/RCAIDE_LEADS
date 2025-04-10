@@ -74,7 +74,7 @@ def write_vsp_nacelle(nacelle, OML_set_ind):
     nac_z_rotation = nacelle.orientation_euler_angles[2]/Units.degrees    
     
     if type(nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle:  
-        num_segs       = len(nacelle.Segments)         
+        num_segs       = len(nacelle.segments)         
         nac_id = vsp.AddGeom( "STACK")
         vsp.SetGeomName(nac_id,nac_tag)  
         
@@ -95,8 +95,8 @@ def write_vsp_nacelle(nacelle, OML_set_ind):
         x_poses = []
         z_delta = []
         
-        segs         = nacelle.Segments
-        segment_list = list(nacelle.Segments.keys())
+        segs         = nacelle.segments
+        segment_list = list(nacelle.segments.keys())
         for seg in range(num_segs):   
             widths.append(segs[segment_list[seg]].width)
             heights.append(segs[segment_list[seg]].height) 
@@ -311,13 +311,13 @@ def read_vsp_nacelle(nacelle_id,vsp_nacelle_type, units_type='SI'):
                     
             diameter = np.max([np.sqrt(segment.height**2 + segment.width**2),diameter])
                 
-            nacelle.Segments.append(segment)
+            nacelle.segments.append(segment)
             
         nacelle.length   = abs_x_location_vec[-1] * units_factor
         nacelle.diameter = diameter
         
-        segs         = nacelle.Segments
-        segment_list = list(nacelle.Segments.keys())
+        segs         = nacelle.segments
+        segment_list = list(nacelle.segments.keys())
         for seg in range(num_segs):    
             segs[segment_list[seg]].percent_x_location = np.array(abs_x_location_vec[seg])/abs_x_location_vec[-1]
             segs[segment_list[seg]].percent_y_location = np.array(abs_y_location_vec[seg])/abs_x_location_vec[-1]

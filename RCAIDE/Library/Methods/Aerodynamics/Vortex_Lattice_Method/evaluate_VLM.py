@@ -6,16 +6,15 @@
 
 # RCAIDE imports  
 import RCAIDE 
-from RCAIDE.Framework.Core                                       import Units, Data, orientation_product 
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method   import VLM
-from RCAIDE.Library.Methods.Utilities                            import Cubic_Spline_Blender  
+from RCAIDE.Framework.Core                                           import Data, orientation_product 
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
+from RCAIDE.Library.Methods.Utilities                                import Cubic_Spline_Blender  
 from RCAIDE.Library.Mission.Common.Update  import orientations
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns import orientation
 
 # package imports
 import numpy   as np
 from copy      import  deepcopy 
-import matplotlib.pyplot as plt
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
@@ -24,7 +23,6 @@ def evaluate_surrogate(state,settings,vehicle):
     """Evaluates surrogates forces and moments using built surrogates 
     
     Assumptions:
-        Aileron deflection is inverted to match convention 
         
     Source:
         None
@@ -49,36 +47,25 @@ def evaluate_surrogate(state,settings,vehicle):
     Beta          = np.atleast_2d(conditions.aerodynamics.angles.beta)    
     Mach          = np.atleast_2d(conditions.freestream.mach_number)  
      
-    # loop through wings to determine what control surfaces are present
-    delta_a       = np.zeros_like(Mach)
-    delta_e       = np.zeros_like(Mach)
-    delta_r       = np.zeros_like(Mach)
-    delta_s       = np.zeros_like(Mach)
-    delta_f       = np.zeros_like(Mach)
-    
+    # loop through wings to determine what control surfaces are present  
     for wing in vehicle.wings: 
         for control_surface in wing.control_surfaces:  
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
-                if trim ==  True: 
-                    delta_a = np.atleast_2d(conditions.control_surfaces.aileron.deflection) 
-                else:
-                    delta_a = np.ones_like(Mach) * control_surface.deflection  
+                if trim !=  True:  
+                    conditions.control_surfaces.aileron.deflection[:, 0] = control_surface.deflection
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator: 
-                if trim ==  True: 
-                    delta_e = np.atleast_2d(conditions.control_surfaces.elevator.deflection)
-                else:  
-                    delta_e = np.ones_like(Mach) * control_surface.deflection
+                if trim !=  True:   
+                    conditions.control_surfaces.elevator.deflection[:, 0] = control_surface.deflection
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder: 
-                if trim ==  True: 
-                    delta_r = np.atleast_2d(conditions.control_surfaces.rudder.deflection)
-                else:  
-                    delta_r = np.ones_like(Mach) * control_surface.deflection
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:  
-                delta_s  = np.ones_like(Mach) * control_surface.deflection
+                if trim !=  True:  
+                    conditions.control_surfaces.rudder.deflection[:, 0] = control_surface.deflection
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat: 
+                conditions.control_surfaces.slat.deflection[:, 0] = control_surface.deflection
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:   
-                delta_f  = np.ones_like(Mach) * control_surface.deflection
- 
-    vehicle          = aerodynamics.vehicle 
+                conditions.control_surfaces.flap.deflection[:, 0] = control_surface.deflection
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler:   
+                conditions.control_surfaces.spoiler.deflection[:, 0] = control_surface.deflection
+  
     hsub_min         = aerodynamics.hsub_min
     hsub_max         = aerodynamics.hsub_max
     hsup_min         = aerodynamics.hsup_min
@@ -317,7 +304,7 @@ def evaluate_surrogate(state,settings,vehicle):
     # Addition of Control Surface Effect 
     # -----------------------------------------------------------------------------------------------------------------------    
     if aerodynamics.aileron_flag: 
-        pts_delta_a     = np.hstack((delta_a,Mach))
+        pts_delta_a     = np.hstack((conditions.control_surfaces.aileron.deflection,Mach))
         
         results_delta_a =  compute_coefficients(sub_sur.Clift_delta_a,sub_sur.Cdrag_delta_a,sub_sur.CX_delta_a,sub_sur.CY_delta_a,sub_sur.CZ_delta_a,sub_sur.CL_delta_a,sub_sur.CM_delta_a, sub_sur.CN_delta_a,
          trans_sur.Clift_delta_a,trans_sur.Cdrag_delta_a,trans_sur.CX_delta_a,trans_sur.CY_delta_a,trans_sur.CZ_delta_a,trans_sur.CL_delta_a,trans_sur.CM_delta_a, trans_sur.CN_delta_a,
@@ -332,14 +319,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_a      = results_delta_a.CL      
         CM_delta_a      = results_delta_a.CM      
         CN_delta_a      = results_delta_a.CN     
-        Clift_delta_a[delta_a==0.0] = 0   
-        Cdrag_delta_a[delta_a==0.0] = 0   
-        CX_delta_a[delta_a==0.0]    = 0        
-        CY_delta_a[delta_a==0.0]    = 0        
-        CZ_delta_a[delta_a==0.0]    = 0        
-        CL_delta_a[delta_a==0.0]    = 0        
-        CM_delta_a[delta_a==0.0]    = 0        
-        CN_delta_a[delta_a==0.0]    = 0
+        Clift_delta_a[conditions.control_surfaces.aileron.deflection==0.0] = 0   
+        Cdrag_delta_a[conditions.control_surfaces.aileron.deflection==0.0] = 0   
+        CX_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CY_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CZ_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CL_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CM_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0        
+        CN_delta_a[conditions.control_surfaces.aileron.deflection==0.0]    = 0
         
         conditions.static_stability.coefficients.lift                                += Clift_delta_a
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_a
@@ -360,7 +347,7 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.aileron.static_stability.coefficients.N          = CN_delta_a             
         
     if aerodynamics.elevator_flag: 
-        pts_delta_e     = np.hstack((delta_e,Mach))
+        pts_delta_e     = np.hstack((conditions.control_surfaces.elevator.deflection,Mach))
 
         results_delta_e =  compute_coefficients(sub_sur.Clift_delta_e,sub_sur.Cdrag_delta_e,sub_sur.CX_delta_e,sub_sur.CY_delta_e,sub_sur.CZ_delta_e,sub_sur.CL_delta_e,sub_sur.CM_delta_e, sub_sur.CN_delta_e,
          trans_sur.Clift_delta_e,trans_sur.Cdrag_delta_e,trans_sur.CX_delta_e,trans_sur.CY_delta_e,trans_sur.CZ_delta_e,trans_sur.CL_delta_e,trans_sur.CM_delta_e, trans_sur.CN_delta_e,
@@ -375,14 +362,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_e      = results_delta_e.CL      
         CM_delta_e      = results_delta_e.CM      
         CN_delta_e      = results_delta_e.CN
-        Clift_delta_e[delta_e==0.0] = 0     
-        Cdrag_delta_e[delta_e==0.0] = 0    
-        CX_delta_e[delta_e==0.0]    = 0          
-        CY_delta_e[delta_e==0.0]    = 0          
-        CZ_delta_e[delta_e==0.0]    = 0          
-        CL_delta_e[delta_e==0.0]    = 0          
-        CM_delta_e[delta_e==0.0]    = 0          
-        CN_delta_e[delta_e==0.0]    = 0
+        Clift_delta_e[conditions.control_surfaces.elevator.deflection==0.0] = 0     
+        Cdrag_delta_e[conditions.control_surfaces.elevator.deflection==0.0] = 0    
+        CX_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CY_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CZ_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CL_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CM_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0          
+        CN_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0
         
         conditions.static_stability.coefficients.lift                                += Clift_delta_e
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_e
@@ -403,12 +390,12 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.elevator.static_stability.coefficients.N         = CN_delta_e            
         
     if aerodynamics.rudder_flag:  
-        pts_delta_r    = np.hstack((delta_r,Mach))
+        pts_delta_r    = np.hstack((conditions.control_surfaces.rudder.deflection,Mach))
         
         results_delta_r =  compute_coefficients(sub_sur.Clift_delta_r,sub_sur.Cdrag_delta_r,sub_sur.CX_delta_r,sub_sur.CY_delta_r,sub_sur.CZ_delta_r,sub_sur.CL_delta_r,sub_sur.CM_delta_r, sub_sur.CN_delta_r,
-         trans_sur.Clift_delta_r,trans_sur.Cdrag_delta_r,trans_sur.CX_delta_r,trans_sur.CY_delta_r,trans_sur.CZ_delta_r,trans_sur.CL_delta_r,trans_sur.CM_delta_r, trans_sur.CN_delta_r,
-         sup_sur.Clift_delta_r,sup_sur.Cdrag_delta_r,sup_sur.CX_delta_r,sup_sur.CY_delta_r,sup_sur.CZ_delta_r,sup_sur.CL_delta_r,sup_sur.CM_delta_r, sup_sur.CN_delta_r,
-        h_sub,h_sup,Mach, pts_delta_r)
+                                                trans_sur.Clift_delta_r,trans_sur.Cdrag_delta_r,trans_sur.CX_delta_r,trans_sur.CY_delta_r,trans_sur.CZ_delta_r,trans_sur.CL_delta_r,trans_sur.CM_delta_r, trans_sur.CN_delta_r,
+                                                sup_sur.Clift_delta_r,sup_sur.Cdrag_delta_r,sup_sur.CX_delta_r,sup_sur.CY_delta_r,sup_sur.CZ_delta_r,sup_sur.CL_delta_r,sup_sur.CM_delta_r, sup_sur.CN_delta_r,
+                                                h_sub,h_sup,Mach, pts_delta_r)
          
         Clift_delta_r   = results_delta_r.Clift   
         Cdrag_delta_r   = results_delta_r.Cdrag   
@@ -418,14 +405,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_r      = results_delta_r.CL      
         CM_delta_r      = results_delta_r.CM      
         CN_delta_r      = results_delta_r.CN 
-        Clift_delta_r[delta_r==0.0] = 0    
-        Cdrag_delta_r[delta_r==0.0] = 0    
-        CX_delta_r[delta_r==0.0]    = 0          
-        CY_delta_r[delta_r==0.0]    = 0          
-        CZ_delta_r[delta_r==0.0]    = 0          
-        CL_delta_r[delta_r==0.0]    = 0          
-        CM_delta_r[delta_r==0.0]    = 0          
-        CN_delta_r[delta_r==0.0]    = 0
+        Clift_delta_r[conditions.control_surfaces.rudder.deflection==0.0] = 0    
+        Cdrag_delta_r[conditions.control_surfaces.rudder.deflection==0.0] = 0    
+        CX_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CY_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CZ_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CL_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CM_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
+        CN_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0
         
         conditions.static_stability.coefficients.lift                                += Clift_delta_r
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_r
@@ -446,7 +433,7 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.rudder.static_stability.coefficients.N           = CN_delta_r         
         
     if aerodynamics.flap_flag:
-        pts_delta_f    = np.hstack((delta_f,Mach))
+        pts_delta_f    = np.hstack((conditions.control_surfaces.flap.deflection,Mach))
         
         results_delta_f =  compute_coefficients(sub_sur.Clift_delta_f,sub_sur.Cdrag_delta_f,sub_sur.CX_delta_f,sub_sur.CY_delta_f,sub_sur.CZ_delta_f,sub_sur.CL_delta_f,sub_sur.CM_delta_f, sub_sur.CN_delta_f,
          trans_sur.Clift_delta_f,trans_sur.Cdrag_delta_f,trans_sur.CX_delta_f,trans_sur.CY_delta_f,trans_sur.CZ_delta_f,trans_sur.CL_delta_f,trans_sur.CM_delta_f, trans_sur.CN_delta_f,
@@ -461,14 +448,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_f      = results_delta_f.CL      
         CM_delta_f      = results_delta_f.CM      
         CN_delta_f      = results_delta_f.CN
-        Clift_delta_f[delta_f==0.0] = 0   
-        Cdrag_delta_f[delta_f==0.0] = 0  
-        CX_delta_f[delta_f==0.0]    = 0        
-        CY_delta_f[delta_f==0.0]    = 0        
-        CZ_delta_f[delta_f==0.0]    = 0        
-        CL_delta_f[delta_f==0.0]    = 0        
-        CM_delta_f[delta_f==0.0]    = 0        
-        CN_delta_f[delta_f==0.0]    = 0
+        Clift_delta_f[conditions.control_surfaces.flap.deflection==0.0] = 0   
+        Cdrag_delta_f[conditions.control_surfaces.flap.deflection==0.0] = 0  
+        CX_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CY_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CZ_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CL_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CM_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
+        CN_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0
         
         conditions.static_stability.coefficients.lift                                += Clift_delta_f
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_f
@@ -489,8 +476,7 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.flap.static_stability.coefficients.N             = CN_delta_f           
         
     if aerodynamics.slat_flag: 
-    
-        pts_delta_s    = np.hstack((delta_s,Mach)) 
+        pts_delta_s    = np.hstack((conditions.control_surfaces.slat.deflection,Mach)) 
         
         results_delta_s =  compute_coefficients(sub_sur.Clift_delta_s,sub_sur.Cdrag_delta_s,sub_sur.CX_delta_s,sub_sur.CY_delta_s,sub_sur.CZ_delta_s,sub_sur.CL_delta_s,sub_sur.CM_delta_s, sub_sur.CN_delta_s,
          trans_sur.Clift_delta_s,trans_sur.Cdrag_delta_s,trans_sur.CX_delta_s,trans_sur.CY_delta_s,trans_sur.CZ_delta_s,trans_sur.CL_delta_s,trans_sur.CM_delta_s, trans_sur.CN_delta_s,
@@ -505,14 +491,14 @@ def evaluate_surrogate(state,settings,vehicle):
         CL_delta_s      = results_delta_s.CL      
         CM_delta_s      = results_delta_s.CM      
         CN_delta_s      = results_delta_s.CN
-        Clift_delta_s[delta_s==0.0] = 0    
-        Cdrag_delta_s[delta_s==0.0] = 0  
-        CX_delta_s[delta_s==0.0]    = 0        
-        CY_delta_s[delta_s==0.0]    = 0        
-        CZ_delta_s[delta_s==0.0]    = 0        
-        CL_delta_s[delta_s==0.0]    = 0        
-        CM_delta_s[delta_s==0.0]    = 0        
-        CN_delta_s[delta_s==0.0]    = 0          
+        Clift_delta_s[conditions.control_surfaces.slat.deflection==0.0] = 0    
+        Cdrag_delta_s[conditions.control_surfaces.slat.deflection==0.0] = 0  
+        CX_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CY_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CZ_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CL_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CM_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0        
+        CN_delta_s[conditions.control_surfaces.slat.deflection==0.0]    = 0          
          
         conditions.static_stability.coefficients.lift                                += Clift_delta_s
         conditions.static_stability.coefficients.drag                                += Cdrag_delta_s
@@ -540,6 +526,7 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.CL_alpha    = compute_stability_derivative(sub_sur.dCL_dalpha    ,trans_sur.dCL_dalpha    ,sup_sur.dCL_dalpha    ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CM_alpha    = compute_stability_derivative(sub_sur.dCM_dalpha    ,trans_sur.dCM_dalpha    ,sup_sur.dCM_dalpha    ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_alpha    = compute_stability_derivative(sub_sur.dCN_dalpha    ,trans_sur.dCN_dalpha    ,sup_sur.dCN_dalpha    ,h_sub,h_sup,Mach)
+
     conditions.static_stability.derivatives.Clift_beta  = compute_stability_derivative(sub_sur.dClift_dbeta  ,trans_sur.dClift_dbeta  ,sup_sur.dClift_dbeta  ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CX_beta     = compute_stability_derivative(sub_sur.dCX_dbeta     ,trans_sur.dCX_dbeta     ,sup_sur.dCX_dbeta     ,h_sub,h_sup,Mach)  
     conditions.static_stability.derivatives.CY_beta     = compute_stability_derivative(sub_sur.dCY_dbeta     ,trans_sur.dCY_dbeta     ,sup_sur.dCY_dbeta     ,h_sub,h_sup,Mach)
@@ -547,6 +534,7 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.CL_beta     = compute_stability_derivative(sub_sur.dCL_dbeta     ,trans_sur.dCL_dbeta     ,sup_sur.dCL_dbeta     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CM_beta     = compute_stability_derivative(sub_sur.dCM_dbeta     ,trans_sur.dCM_dbeta     ,sup_sur.dCM_dbeta     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_beta     = compute_stability_derivative(sub_sur.dCN_dbeta     ,trans_sur.dCN_dbeta     ,sup_sur.dCN_dbeta     ,h_sub,h_sup,Mach)
+
     conditions.static_stability.derivatives.Clift_p     = compute_stability_derivative(sub_sur.dClift_dp     ,trans_sur.dClift_dp     ,sup_sur.dClift_dp     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.Clift_q     = compute_stability_derivative(sub_sur.dClift_dq     ,trans_sur.dClift_dq     ,sup_sur.dClift_dq     ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.Clift_r     = compute_stability_derivative(sub_sur.dClift_dr     ,trans_sur.dClift_dr     ,sup_sur.dClift_dr     ,h_sub,h_sup,Mach)
@@ -585,13 +573,58 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.CM_r        = compute_stability_derivative(sub_sur.dCM_dr        ,trans_sur.dCM_dr        ,sup_sur.dCM_dr        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_p        = compute_stability_derivative(sub_sur.dCN_dp        ,trans_sur.dCN_dp        ,sup_sur.dCN_dp        ,h_sub,h_sup,Mach)
     conditions.static_stability.derivatives.CN_q        = compute_stability_derivative(sub_sur.dCN_dq        ,trans_sur.dCN_dq        ,sup_sur.dCN_dq        ,h_sub,h_sup,Mach)
-    conditions.static_stability.derivatives.CN_r        = compute_stability_derivative(sub_sur.dCN_dr        ,trans_sur.dCN_dr        ,sup_sur.dCN_dr        ,h_sub,h_sup,Mach) 
+    conditions.static_stability.derivatives.CN_r        = compute_stability_derivative(sub_sur.dCN_dr        ,trans_sur.dCN_dr        ,sup_sur.dCN_dr        ,h_sub,h_sup,Mach)
+
+    if aerodynamics.elevator_flag: 
+        conditions.static_stability.derivatives.Clift_delta_e  = compute_stability_derivative(sub_sur.dClift_ddelta_e  ,trans_sur.dClift_ddelta_e  ,sup_sur.dClift_ddelta_e  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_e     = compute_stability_derivative(sub_sur.dCX_ddelta_e     ,trans_sur.dCX_ddelta_e     ,sup_sur.dCX_ddelta_e     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_e     = compute_stability_derivative(sub_sur.dCY_ddelta_e     ,trans_sur.dCY_ddelta_e     ,sup_sur.dCY_ddelta_e     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_e     = compute_stability_derivative(sub_sur.dCZ_ddelta_e     ,trans_sur.dCZ_ddelta_e     ,sup_sur.dCZ_ddelta_e     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_e     = compute_stability_derivative(sub_sur.dCL_ddelta_e     ,trans_sur.dCL_ddelta_e     ,sup_sur.dCL_ddelta_e     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_e     = compute_stability_derivative(sub_sur.dCM_ddelta_e     ,trans_sur.dCM_ddelta_e     ,sup_sur.dCM_ddelta_e     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_e     = compute_stability_derivative(sub_sur.dCN_ddelta_e     ,trans_sur.dCN_ddelta_e     ,sup_sur.dCN_ddelta_e     ,h_sub,h_sup,Mach) 
+
+    if aerodynamics.aileron_flag: 
+        conditions.static_stability.derivatives.Clift_delta_a  = compute_stability_derivative(sub_sur.dClift_ddelta_a  ,trans_sur.dClift_ddelta_a  ,sup_sur.dClift_ddelta_a  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_a     = compute_stability_derivative(sub_sur.dCX_ddelta_a     ,trans_sur.dCX_ddelta_a     ,sup_sur.dCX_ddelta_a     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_a     = compute_stability_derivative(sub_sur.dCY_ddelta_a     ,trans_sur.dCY_ddelta_a     ,sup_sur.dCY_ddelta_a     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_a     = compute_stability_derivative(sub_sur.dCZ_ddelta_a     ,trans_sur.dCZ_ddelta_a     ,sup_sur.dCZ_ddelta_a     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_a     = compute_stability_derivative(sub_sur.dCL_ddelta_a     ,trans_sur.dCL_ddelta_a     ,sup_sur.dCL_ddelta_a     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_a     = compute_stability_derivative(sub_sur.dCM_ddelta_a     ,trans_sur.dCM_ddelta_a     ,sup_sur.dCM_ddelta_a     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_a     = compute_stability_derivative(sub_sur.dCN_ddelta_a     ,trans_sur.dCN_ddelta_a     ,sup_sur.dCN_ddelta_a     ,h_sub,h_sup,Mach) 
+
+    if aerodynamics.rudder_flag: 
+        conditions.static_stability.derivatives.Clift_delta_r  = compute_stability_derivative(sub_sur.dClift_ddelta_r  ,trans_sur.dClift_ddelta_r  ,sup_sur.dClift_ddelta_r  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_r     = compute_stability_derivative(sub_sur.dCX_ddelta_r     ,trans_sur.dCX_ddelta_r     ,sup_sur.dCX_ddelta_r     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_r     = compute_stability_derivative(sub_sur.dCY_ddelta_r     ,trans_sur.dCY_ddelta_r     ,sup_sur.dCY_ddelta_r     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_r     = compute_stability_derivative(sub_sur.dCZ_ddelta_r     ,trans_sur.dCZ_ddelta_r     ,sup_sur.dCZ_ddelta_r     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_r     = compute_stability_derivative(sub_sur.dCL_ddelta_r     ,trans_sur.dCL_ddelta_r     ,sup_sur.dCL_ddelta_r     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_r     = compute_stability_derivative(sub_sur.dCM_ddelta_r     ,trans_sur.dCM_ddelta_r     ,sup_sur.dCM_ddelta_r     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_r     = compute_stability_derivative(sub_sur.dCN_ddelta_r     ,trans_sur.dCN_ddelta_r     ,sup_sur.dCN_ddelta_r     ,h_sub,h_sup,Mach) 
+
+    if aerodynamics.flap_flag: 
+        conditions.static_stability.derivatives.Clift_delta_f  = compute_stability_derivative(sub_sur.dClift_ddelta_f  ,trans_sur.dClift_ddelta_f  ,sup_sur.dClift_ddelta_f  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_f     = compute_stability_derivative(sub_sur.dCX_ddelta_f     ,trans_sur.dCX_ddelta_f     ,sup_sur.dCX_ddelta_f     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_f     = compute_stability_derivative(sub_sur.dCY_ddelta_f     ,trans_sur.dCY_ddelta_f     ,sup_sur.dCY_ddelta_f     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_f     = compute_stability_derivative(sub_sur.dCZ_ddelta_f     ,trans_sur.dCZ_ddelta_f     ,sup_sur.dCZ_ddelta_f     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_f     = compute_stability_derivative(sub_sur.dCL_ddelta_f     ,trans_sur.dCL_ddelta_f     ,sup_sur.dCL_ddelta_f     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_f     = compute_stability_derivative(sub_sur.dCM_ddelta_f     ,trans_sur.dCM_ddelta_f     ,sup_sur.dCM_ddelta_f     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_f     = compute_stability_derivative(sub_sur.dCN_ddelta_f     ,trans_sur.dCN_ddelta_f     ,sup_sur.dCN_ddelta_f     ,h_sub,h_sup,Mach) 
+
+    if aerodynamics.slat_flag: 
+        conditions.static_stability.derivatives.Clift_delta_s  = compute_stability_derivative(sub_sur.dClift_ddelta_s  ,trans_sur.dClift_ddelta_s  ,sup_sur.dClift_ddelta_s  ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CX_delta_s     = compute_stability_derivative(sub_sur.dCX_ddelta_s     ,trans_sur.dCX_ddelta_s     ,sup_sur.dCX_ddelta_s     ,h_sub,h_sup,Mach)  
+        conditions.static_stability.derivatives.CY_delta_s     = compute_stability_derivative(sub_sur.dCY_ddelta_s     ,trans_sur.dCY_ddelta_s     ,sup_sur.dCY_ddelta_s     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CZ_delta_s     = compute_stability_derivative(sub_sur.dCZ_ddelta_s     ,trans_sur.dCZ_ddelta_s     ,sup_sur.dCZ_ddelta_s     ,h_sub,h_sup,Mach) 
+        conditions.static_stability.derivatives.CL_delta_s     = compute_stability_derivative(sub_sur.dCL_ddelta_s     ,trans_sur.dCL_ddelta_s     ,sup_sur.dCL_ddelta_s     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CM_delta_s     = compute_stability_derivative(sub_sur.dCM_ddelta_s     ,trans_sur.dCM_ddelta_s     ,sup_sur.dCM_ddelta_s     ,h_sub,h_sup,Mach)
+        conditions.static_stability.derivatives.CN_delta_s     = compute_stability_derivative(sub_sur.dCN_ddelta_s     ,trans_sur.dCN_ddelta_s     ,sup_sur.dCN_ddelta_s     ,h_sub,h_sup,Mach) 
 
     for wing in vehicle.wings:   
         inviscid_wing_lifts = compute_coefficient(sub_sur.Clift_wing_alpha[wing.tag],trans_sur.Clift_wing_alpha[wing.tag],sup_sur.Cdrag_wing_alpha[wing.tag] ,h_sub,h_sup,Mach,pts_alpha)
         inviscid_wing_drags = compute_coefficient(sub_sur.Cdrag_wing_alpha[wing.tag],trans_sur.Cdrag_wing_alpha[wing.tag],sup_sur.Cdrag_wing_alpha[wing.tag] ,h_sub,h_sup,Mach,pts_alpha)
         # Pack 
-        conditions.aerodynamics.coefficients.lift.induced.inviscid_wings[wing.tag]         =  inviscid_wing_lifts 
+        conditions.aerodynamics.coefficients.lift.induced.inviscid_wings[wing.tag] =  inviscid_wing_lifts 
         conditions.aerodynamics.coefficients.lift.compressible_wings[wing.tag]     =  inviscid_wing_lifts 
         conditions.aerodynamics.coefficients.drag.induced.inviscid_wings[wing.tag] =  inviscid_wing_drags   
     
@@ -677,18 +710,34 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
                 if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:   
                     conditions.control_surfaces.flap.deflection[i, 0] = control_surface.deflection
         
-        Clift,Cdrag,CX,CY,CZ,CL,CM,CN,S_ref,b_ref,c_ref,X_ref,Y_ref ,Z_ref,Clift_wings,Cdrag_wings,AoA_wing_induced, Clift_spanwise,Cdrag_induced_spanwise,pressure_coefficient = call_VLM(conditions,settings,vehicle)
+        VLM_results = VLM(conditions,settings,vehicle)
+        Clift = VLM_results.CLift
+        Cdrag = VLM_results.CDrag_induced
+        CX    = VLM_results.CX
+        CY    = VLM_results.CY
+        CZ    = VLM_results.CZ
+        CL    = VLM_results.CL
+        CM    = VLM_results.CM
+        CN    = VLM_results.CN
+        S_ref = VLM_results.S_ref
+        b_ref = VLM_results.b_ref
+        c_ref = VLM_results.c_ref
+        X_ref = VLM_results.X_ref
+        Y_ref = VLM_results.Y_ref
+        Z_ref = VLM_results.Z_ref
         
-        # Dimensionalize the lift and drag for each wing 
-        for wing in vehicle.wings: 
-            conditions.aerodynamics.coefficients.lift.induced.inviscid_wings[wing.tag] = Clift_wings[wing.tag]
-            conditions.aerodynamics.coefficients.lift.compressible_wings[wing.tag]     = Clift_wings[wing.tag]
-            conditions.aerodynamics.coefficients.drag.induced.inviscid_wings[wing.tag] = Cdrag_wings[wing.tag] 
-        conditions.aerodynamics.coefficients.lift.induced.spanwise     = Clift_spanwise
-        conditions.aerodynamics.coefficients.drag.induced.spanwise     = Cdrag_induced_spanwise
-        conditions.aerodynamics.coefficients.surface_pressure          = pressure_coefficient 
-        conditions.aerodynamics.coefficients.lift.total                = Clift
-        conditions.aerodynamics.coefficients.drag.induced.inviscid     = Cdrag
+        # Dimensionalize the lift and drag for each wing  
+        conditions.aerodynamics.coefficients.lift.induced.inviscid_wings  = VLM_results.CLift_wings
+        conditions.aerodynamics.coefficients.lift.compressible_wings      = VLM_results.CLift_wings        
+        conditions.aerodynamics.coefficients.drag.induced.inviscid_wings  = VLM_results.CDrag_induced_wings
+        conditions.aerodynamics.coefficients.lift.induced.spanwise        = VLM_results.sectional_CLift
+        conditions.aerodynamics.coefficients.drag.induced.spanwise        = VLM_results.sectional_CDrag_induced
+        conditions.aerodynamics.coefficients.surface_pressure             = VLM_results.CP
+        conditions.aerodynamics.coefficients.lift.total                   = Clift
+        conditions.aerodynamics.coefficients.drag.induced.inviscid        = Cdrag
+        conditions.aerodynamics.angles.induced                            = VLM_results.alpha_induced 
+        conditions.aerodynamics.chord_sections                            = VLM_results.chord_sections    
+        conditions.aerodynamics.spanwise_stations                         = VLM_results.spanwise_stations  
         
         for wing in  vehicle.wings: 
             RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_wing(state,settings,wing)
@@ -755,15 +804,22 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     equilibrium_conditions.freestream.dynamic_pressure                 = 0.5 * equilibrium_conditions.freestream.density *  (equilibrium_conditions.freestream.velocity ** 2)
     equilibrium_conditions.freestream.reynolds_number                  = equilibrium_conditions.freestream.density * equilibrium_conditions.freestream.velocity * wing.chords.mean_aerodynamic/ equilibrium_conditions.freestream.dynamic_viscosity  
     
-    Clift_0,Cdrag_0,CX_0,CY_0,CZ_0,CL_0,CM_0,CN_0,_,_,_,_,_ ,_,Clift_0_wings,Cdrag_0_wings,_,_,_, _= call_VLM(equilibrium_conditions,settings,vehicle)
-    
-    # Dimensionalize the lift and drag for each wing 
-    for wing in vehicle.wings: 
-        equilibrium_conditions.aerodynamics.coefficients.lift.induced.inviscid_wings[wing.tag] = Clift_0_wings[wing.tag]
-        equilibrium_conditions.aerodynamics.coefficients.lift.compressible_wings[wing.tag]     = Clift_0_wings[wing.tag]
-        equilibrium_conditions.aerodynamics.coefficients.drag.induced.inviscid_wings[wing.tag] = Cdrag_0_wings[wing.tag] 
-    equilibrium_conditions.aerodynamics.coefficients.lift.total                                = Clift_0
-    equilibrium_conditions.aerodynamics.coefficients.drag.induced.inviscid                     = Cdrag_0     
+    VLM_results = VLM(equilibrium_conditions,settings,vehicle)
+    Clift_0 = VLM_results.CLift
+    Cdrag_0 = VLM_results.CDrag_induced
+    CX_0    = VLM_results.CX
+    CY_0    = VLM_results.CY
+    CZ_0    = VLM_results.CZ
+    CL_0    = VLM_results.CL
+    CM_0    = VLM_results.CM
+    CN_0    = VLM_results.CN
+     
+    # Dimensionalize the lift and drag for each wing  
+    equilibrium_conditions.aerodynamics.coefficients.lift.induced.inviscid_wings      = VLM_results.CLift_wings        
+    equilibrium_conditions.aerodynamics.coefficients.lift.compressible_wings          = VLM_results.CLift_wings        
+    equilibrium_conditions.aerodynamics.coefficients.drag.induced.inviscid_wings      = VLM_results.CDrag_induced_wings
+    equilibrium_conditions.aerodynamics.coefficients.lift.total                       = Clift_0
+    equilibrium_conditions.aerodynamics.coefficients.drag.induced.inviscid            = Cdrag_0     
 
     equilibrium_state                    = RCAIDE.Framework.Mission.Common.State()
     equilibrium_state.conditions         = equilibrium_conditions  
@@ -798,13 +854,20 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     # --------------------------------------------------------------------------------------------    
     perturbation_state                                 = deepcopy(equilibrium_state)
     pertubation_conditions                             = deepcopy(equilibrium_conditions)   
-    pertubation_conditions.aerodynamics.angles.alpha   += delta_angle 
-    Clift_alpha_prime,Cdrag_alpha_prime,CX_alpha_prime,CY_alpha_prime,CZ_alpha_prime,CL_alpha_prime,CM_alpha_prime,CN_alpha_prime,_,_,_,_,_ ,_,Clift_wings_alpha_prime,Cdrag_wings_alpha_prime,_,_, _, _= call_VLM(pertubation_conditions,settings,vehicle)    
+    pertubation_conditions.aerodynamics.angles.alpha   += delta_angle
+    
+    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+    Clift_alpha_prime = VLM_results.CLift
+    Cdrag_alpha_prime = VLM_results.CDrag_induced 
+    CY_alpha_prime    = VLM_results.CY
+    CZ_alpha_prime    = VLM_results.CZ
+    CL_alpha_prime    = VLM_results.CL
+    CM_alpha_prime    = VLM_results.CM
+    CN_alpha_prime    = VLM_results.CN
      
-    for wing in vehicle.wings: 
-        pertubation_conditions.aerodynamics.coefficients.lift.induced.inviscid_wings[wing.tag]         = Clift_wings_alpha_prime[wing.tag]
-        pertubation_conditions.aerodynamics.coefficients.lift.compressible_wings[wing.tag]     = Clift_wings_alpha_prime[wing.tag]
-        pertubation_conditions.aerodynamics.coefficients.drag.induced.inviscid_wings[wing.tag] = Cdrag_wings_alpha_prime[wing.tag] 
+    pertubation_conditions.aerodynamics.coefficients.lift.induced.inviscid_wings  = VLM_results.CLift_wings
+    pertubation_conditions.aerodynamics.coefficients.lift.compressible_wings      = VLM_results.CLift_wings          
+    pertubation_conditions.aerodynamics.coefficients.drag.induced.inviscid_wings  = VLM_results.CDrag_induced_wings  
     pertubation_conditions.aerodynamics.coefficients.lift.total                =  Clift_alpha_prime
     pertubation_conditions.aerodynamics.coefficients.drag.induced.inviscid     =  Cdrag_alpha_prime
      
@@ -839,7 +902,7 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     conditions.static_stability.derivatives.Clift_alpha = (Clift_alpha_prime   - Clift_0) / (delta_angle)
     conditions.static_stability.derivatives.Cdrag_alpha = (Cdrag_alpha_prime   - Cdrag_0) / (delta_angle)  
     conditions.static_stability.derivatives.CX_alpha    = (CX_visc_prime       - CX_0) / (delta_angle)   
-    conditions.static_stability.derivatives.CY_alpha    = (CY_alpha_prime      - CY_0) / (delta_angle) # BUG IN VLM
+    conditions.static_stability.derivatives.CY_alpha    = (CY_alpha_prime      - CY_0) / (delta_angle)  
     conditions.static_stability.derivatives.CZ_alpha    = (CZ_alpha_prime      - CZ_0) / (delta_angle) 
     conditions.static_stability.derivatives.CL_alpha    = (CL_alpha_prime      - CL_0) / (delta_angle)  
     conditions.static_stability.derivatives.CM_alpha    = (CM_alpha_prime      - CM_0) / (delta_angle)  
@@ -854,8 +917,11 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
 
     vehicle_shifted_CG = deepcopy(vehicle)
     delta_cg = 0.1
-    vehicle_shifted_CG.mass_properties.center_of_gravity[0][0] +=delta_cg    
-    _,_,_,_,_,_,CM_alpha_cg_prime,_,_,_,_,_,_ ,_,_,_,_,_, _, _= call_VLM(pertubation_conditions,settings,vehicle_shifted_CG)    
+    vehicle_shifted_CG.mass_properties.center_of_gravity[0][0] +=delta_cg
+    
+    
+    VLM_results = VLM(pertubation_conditions,settings,vehicle_shifted_CG)  
+    CM_alpha_cg_prime  = VLM_results.CM  
   
     dCM_dalpha_cg = (CM_alpha_cg_prime   - CM_0) / (delta_angle)    
     dCM_dalpha    = (CM_alpha_prime   - CM_0) / (delta_angle)    
@@ -872,9 +938,17 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     # --------------------------------------------------------------------------------------------   
     pertubation_conditions                             = deepcopy(equilibrium_conditions)   
     pertubation_conditions.aerodynamics.angles.beta    += delta_angle 
+
+    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+    Clift_beta_prime = VLM_results.CLift
+    Cdrag_beta_prime = VLM_results.CDrag_induced
+    CX_beta_prime    = VLM_results.CX
+    CY_beta_prime    = VLM_results.CY
+    CZ_beta_prime    = VLM_results.CZ
+    CL_beta_prime    = VLM_results.CL
+    CM_beta_prime    = VLM_results.CM
+    CN_beta_prime    = VLM_results.CN
     
-    Clift_beta_prime,Cdrag_beta_prime,CX_beta_prime,CY_beta_prime,CZ_beta_prime,CL_beta_prime,CM_beta_prime,CN_beta_prime ,_,_,_,_,_ ,_,_,_,_,_, _, _= call_VLM(pertubation_conditions,settings,vehicle)   
- 
     conditions.static_stability.derivatives.Clift_beta = (Clift_beta_prime   - Clift_0) / (delta_angle)
     conditions.static_stability.derivatives.Cdrag_beta = (Cdrag_beta_prime   - Cdrag_0) / (delta_angle) 
     conditions.static_stability.derivatives.CX_beta    = (CX_beta_prime      - CX_0) / (delta_angle)  
@@ -894,14 +968,22 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     pertubation_conditions.freestream.mach_number                = np.linalg.norm(pertubation_conditions.frames.inertial.velocity_vector, axis=1)[:,None] /  equilibrium_conditions.freestream.speed_of_sound 
     pertubation_conditions.freestream.reynolds_number            = pertubation_conditions.freestream.density * pertubation_conditions.freestream.velocity * wing.chords.mean_aerodynamic/equilibrium_conditions.freestream.dynamic_viscosity   
     pertubation_conditions.freestream.dynamic_pressure           = 0.5 * pertubation_conditions.freestream.density * np.sum( pertubation_conditions.freestream.velocity**2, axis=1)[:,None] 
-       
-    Clift_u_prime,Cdrag_u_prime,CX_u_prime,CY_u_prime,CZ_u_prime,CL_u_prime,CM_u_prime,CN_u_prime ,_,_,_,_,_,_,Clift_wings_u_prime,Cdrag_wings_u_prime,_,_, _, _= call_VLM(pertubation_conditions,settings,vehicle)
+        
+    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+    Clift_u_prime = VLM_results.CLift
+    Cdrag_u_prime = VLM_results.CDrag_induced
+    CX_u_prime    = VLM_results.CX
+    CY_u_prime    = VLM_results.CY
+    CZ_u_prime    = VLM_results.CZ
+    CL_u_prime    = VLM_results.CL
+    CM_u_prime    = VLM_results.CM
+    CN_u_prime    = VLM_results.CN 
 
     # Dimensionalize the lift and drag for each wing 
     for wing in vehicle.wings: 
-        pertubation_conditions.aerodynamics.coefficients.lift.induced.inviscid_wings[wing.tag]         = Clift_wings_u_prime[wing.tag]
-        pertubation_conditions.aerodynamics.coefficients.lift.compressible_wings[wing.tag]     = Clift_wings_u_prime[wing.tag]
-        pertubation_conditions.aerodynamics.coefficients.drag.induced.inviscid_wings[wing.tag] = Cdrag_wings_u_prime[wing.tag] 
+        pertubation_conditions.aerodynamics.coefficients.lift.induced.inviscid_wings  = VLM_results.CLift_wings   
+        pertubation_conditions.aerodynamics.coefficients.lift.compressible_wings      = VLM_results.CLift_wings        
+        pertubation_conditions.aerodynamics.coefficients.drag.induced.inviscid_wings  = VLM_results.CDrag_induced_wings
     pertubation_conditions.aerodynamics.coefficients.lift.total                =  Clift_u_prime
     pertubation_conditions.aerodynamics.coefficients.drag.induced.inviscid     =  Cdrag_u_prime
 
@@ -952,8 +1034,17 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     pertubation_conditions.freestream.reynolds_number            = pertubation_conditions.freestream.density * pertubation_conditions.freestream.velocity / pertubation_conditions.freestream.dynamic_viscosity   
     pertubation_conditions.freestream.dynamic_pressure           = 0.5 * pertubation_conditions.freestream.density * np.sum( pertubation_conditions.freestream.velocity**2, axis=1)[:,None] 
     
-    Clift_v_prime,Cdrag_v_prime,CX_v_prime,CY_v_prime,CZ_v_prime,CL_v_prime,CM_v_prime,CN_v_prime ,_,_,_,_,_,_,_,_,_,_, _, _= call_VLM(pertubation_conditions,settings,vehicle)   
- 
+
+    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+    Clift_v_prime = VLM_results.CLift
+    Cdrag_v_prime = VLM_results.CDrag_induced
+    CX_v_prime    = VLM_results.CX
+    CY_v_prime    = VLM_results.CY
+    CZ_v_prime    = VLM_results.CZ
+    CL_v_prime    = VLM_results.CL
+    CM_v_prime    = VLM_results.CM
+    CN_v_prime    = VLM_results.CN
+    
     conditions.static_stability.derivatives.Clift_v = (Clift_v_prime   - Clift_0) / (delta_speed)
     conditions.static_stability.derivatives.Cdrag_v = (Cdrag_v_prime   - Cdrag_0) / (delta_speed) 
     conditions.static_stability.derivatives.CX_v    = (CX_v_prime      - CX_0) / (delta_speed)  
@@ -972,9 +1063,17 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     pertubation_conditions.freestream.mach_number                =pertubation_conditions.freestream.velocity / pertubation_conditions.freestream.speed_of_sound   
     pertubation_conditions.freestream.reynolds_number            = pertubation_conditions.freestream.density * pertubation_conditions.freestream.velocity /  pertubation_conditions.freestream.dynamic_viscosity 
     pertubation_conditions.freestream.dynamic_pressure           = 0.5 * pertubation_conditions.freestream.density * np.sum( pertubation_conditions.freestream.velocity**2, axis=1)[:,None] 
+     
+    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+    Clift_w_prime = VLM_results.CLift
+    Cdrag_w_prime = VLM_results.CDrag_induced
+    CX_w_prime    = VLM_results.CX
+    CY_w_prime    = VLM_results.CY
+    CZ_w_prime    = VLM_results.CZ
+    CL_w_prime    = VLM_results.CL
+    CM_w_prime    = VLM_results.CM
+    CN_w_prime    = VLM_results.CN
     
-    Clift_w_prime,Cdrag_w_prime,CX_w_prime,CY_w_prime,CZ_w_prime,CL_w_prime,CM_w_prime,CN_w_prime ,_,_,_,_,_,_,_,_,_,_, _, _= call_VLM(pertubation_conditions,settings,vehicle)   
- 
     conditions.static_stability.derivatives.Clift_w  = (Clift_w_prime   - Clift_0) / (delta_speed)
     conditions.static_stability.derivatives.Cdrag_w  = (Cdrag_w_prime   - Cdrag_0) / (delta_speed) 
     conditions.static_stability.derivatives.CX_w     = (CX_w_prime      - CX_0) / (delta_speed)  
@@ -989,10 +1088,18 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     # Roll Rate (p) Purtubation
     # --------------------------------------------------------------------------------------------  
     pertubation_conditions                                 = deepcopy(equilibrium_conditions)    
-    pertubation_conditions.static_stability.roll_rate[:,0] += delta_rate   
+    pertubation_conditions.static_stability.roll_rate[:,0] += delta_rate
     
-    Clift_p_prime,Cdrag_p_prime,CX_p_prime,CY_p_prime,CZ_p_prime,CL_p_prime,CM_p_prime,CN_p_prime ,_,_,_,_,_,_,_,_,_,_, _, _= call_VLM(pertubation_conditions,settings,vehicle)   
-
+    VLM_results   = VLM(pertubation_conditions,settings,vehicle)
+    Clift_p_prime = VLM_results.CLift
+    Cdrag_p_prime = VLM_results.CDrag_induced
+    CX_p_prime    = VLM_results.CX
+    CY_p_prime    = VLM_results.CY
+    CZ_p_prime    = VLM_results.CZ
+    CL_p_prime    = VLM_results.CL
+    CM_p_prime    = VLM_results.CM
+    CN_p_prime    = VLM_results.CN
+    
     conditions.static_stability.derivatives.Clift_p  = (Clift_p_prime   - Clift_0) / (delta_rate)
     conditions.static_stability.derivatives.Cdrag_p  = (Cdrag_p_prime   - Cdrag_0) / (delta_rate) 
     conditions.static_stability.derivatives.CX_p     = (CX_p_prime      - CX_0) / (delta_rate)  
@@ -1008,14 +1115,21 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     perturbation_state                                      = deepcopy(equilibrium_state)
     pertubation_conditions                                  = deepcopy(equilibrium_conditions)   
     pertubation_conditions.static_stability.pitch_rate[:,0] += delta_rate  
+     
+    VLM_results   = VLM(pertubation_conditions,settings,vehicle)
+    Clift_q_prime = VLM_results.CLift
+    Cdrag_q_prime = VLM_results.CDrag_induced
+    CX_q_prime    = VLM_results.CX
+    CY_q_prime    = VLM_results.CY
+    CZ_q_prime    = VLM_results.CZ
+    CL_q_prime    = VLM_results.CL
+    CM_q_prime    = VLM_results.CM
+    CN_q_prime    = VLM_results.CN
     
-    Clift_q_prime,Cdrag_q_prime,CX_q_prime,CY_q_prime,CZ_q_prime,CL_q_prime,CM_q_prime,CN_q_prime  ,_,_,_,_,_ ,_,Clift_wings_q_prime,Cdrag_wings_q_prime,_,_, _, _= call_VLM(pertubation_conditions,settings,vehicle)
-
-    # Dimensionalize the lift and drag for each wing 
-    for wing in vehicle.wings: 
-        pertubation_conditions.aerodynamics.coefficients.lift.induced.inviscid_wings[wing.tag] = Clift_wings_q_prime[wing.tag]
-        pertubation_conditions.aerodynamics.coefficients.lift.compressible_wings[wing.tag]     = Clift_wings_q_prime[wing.tag]
-        pertubation_conditions.aerodynamics.coefficients.drag.induced.inviscid_wings[wing.tag] = Cdrag_wings_q_prime[wing.tag] 
+    # Dimensionalize the lift and drag for each wing  
+    pertubation_conditions.aerodynamics.coefficients.lift.induced.inviscid_wings   = VLM_results.CLift_wings   
+    pertubation_conditions.aerodynamics.coefficients.lift.compressible_wings       = VLM_results.CLift_wings        
+    pertubation_conditions.aerodynamics.coefficients.drag.induced.inviscid_wings   = VLM_results.CDrag_induced_wings
     pertubation_conditions.aerodynamics.coefficients.lift.total                =  Clift_q_prime
     pertubation_conditions.aerodynamics.coefficients.drag.induced.inviscid     =  Cdrag_q_prime
     
@@ -1062,8 +1176,16 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     pertubation_conditions                                = deepcopy(equilibrium_conditions)   
     pertubation_conditions.static_stability.yaw_rate[:,0] += delta_rate   
     
-    Clift_r_prime,Cdrag_r_prime,CX_r_prime,CY_r_prime,CZ_r_prime,CL_r_prime,CM_r_prime,CN_r_prime ,_,_,_,_,_,_,_,_,_,_,_, _= call_VLM(pertubation_conditions,settings,vehicle)   
-
+    VLM_results   = VLM(pertubation_conditions,settings,vehicle)
+    Clift_r_prime = VLM_results.CLift
+    Cdrag_r_prime = VLM_results.CDrag_induced
+    CX_r_prime    = VLM_results.CX
+    CY_r_prime    = VLM_results.CY
+    CZ_r_prime    = VLM_results.CZ
+    CL_r_prime    = VLM_results.CL
+    CM_r_prime    = VLM_results.CM
+    CN_r_prime    = VLM_results.CN
+     
     conditions.static_stability.derivatives.Clift_r  = (Clift_r_prime   - Clift_0) / (delta_rate)
     conditions.static_stability.derivatives.Cdrag_r  = (Cdrag_r_prime   - Cdrag_0) / (delta_rate) 
     conditions.static_stability.derivatives.CX_r     = (CX_r_prime      - CX_0) / (delta_rate)  
@@ -1079,8 +1201,18 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
         for wing in vehicle.wings: 
             for control_surface in wing.control_surfaces:  
                 if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:  
-                    vehicle.wings[wing.tag].control_surfaces.aileron.deflection =  delta_ctrl_surf   
-                    Clift_res,Cdrag_res,CX_res,CY_res,CZ_res,CL_res,CM_res,CN_res ,_,_,_,_,_,_,_,_,_,_,_,_= call_VLM(pertubation_conditions,settings,vehicle)    
+                    vehicle.wings[wing.tag].control_surfaces.aileron.deflection =  delta_ctrl_surf
+                    
+                    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+                    Clift_res = VLM_results.CLift
+                    Cdrag_res = VLM_results.CDrag_induced
+                    CX_res    = VLM_results.CX
+                    CY_res    = VLM_results.CY
+                    CZ_res    = VLM_results.CZ
+                    CL_res    = VLM_results.CL
+                    CM_res    = VLM_results.CM
+                    CN_res    = VLM_results.CN
+                    
                     vehicle.wings[wing.tag].control_surfaces.aileron.deflection = 0
         Clift_delta_a_prime   = Clift_res
         Cdrag_delta_a_prime   = Cdrag_res
@@ -1114,8 +1246,17 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
         for wing in vehicle.wings: 
             for control_surface in wing.control_surfaces:  
                 if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator:  
-                    vehicle.wings[wing.tag].control_surfaces.elevator.deflection =  delta_ctrl_surf   
-                    Clift_res,Cdrag_res,CX_res,CY_res,CZ_res,CL_res,CM_res,CN_res ,_,_,_,_,_,_,_,_,_,_,_,_= call_VLM(pertubation_conditions,settings,vehicle)    
+                    vehicle.wings[wing.tag].control_surfaces.elevator.deflection =  delta_ctrl_surf
+
+                    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+                    Clift_res = VLM_results.CLift
+                    Cdrag_res = VLM_results.CDrag_induced
+                    CX_res    = VLM_results.CX
+                    CY_res    = VLM_results.CY
+                    CZ_res    = VLM_results.CZ
+                    CL_res    = VLM_results.CL
+                    CM_res    = VLM_results.CM
+                    CN_res    = VLM_results.CN 
                     vehicle.wings[wing.tag].control_surfaces.elevator.deflection = 0  
          
         Clift_delta_e_prime   = Clift_res
@@ -1151,8 +1292,16 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
         for wing in vehicle.wings: 
             for control_surface in wing.control_surfaces:  
                 if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:  
-                    vehicle.wings[wing.tag].control_surfaces.rudder.deflection =  delta_ctrl_surf   
-                    Clift_res,Cdrag_res,CX_res,CY_res,CZ_res,CL_res,CM_res,CN_res ,_,_,_,_,_,_,_,_,_,_,_,_= call_VLM(pertubation_conditions,settings,vehicle)    
+                    vehicle.wings[wing.tag].control_surfaces.rudder.deflection =  delta_ctrl_surf 
+                    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+                    Clift_res = VLM_results.CLift
+                    Cdrag_res = VLM_results.CDrag_induced
+                    CX_res    = VLM_results.CX
+                    CY_res    = VLM_results.CY
+                    CZ_res    = VLM_results.CZ
+                    CL_res    = VLM_results.CL
+                    CM_res    = VLM_results.CM
+                    CN_res    = VLM_results.CN 
                     vehicle.wings[wing.tag].control_surfaces.rudder.deflection = 0
                      
         Clift_delta_r_prime   = Clift_res
@@ -1188,8 +1337,16 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
         for wing in vehicle.wings: 
             for control_surface in wing.control_surfaces:  
                 if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:  
-                    vehicle.wings[wing.tag].control_surfaces.flap.deflection =  delta_ctrl_surf   
-                    Clift_res,Cdrag_res,CX_res,CY_res,CZ_res,CL_res,CM_res,CN_res ,_,_,_,_,_,_,_,_,_,_,_,_ = call_VLM(pertubation_conditions,settings,vehicle)    
+                    vehicle.wings[wing.tag].control_surfaces.flap.deflection =  delta_ctrl_surf 
+                    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+                    Clift_res = VLM_results.CLift
+                    Cdrag_res = VLM_results.CDrag_induced
+                    CX_res    = VLM_results.CX
+                    CY_res    = VLM_results.CY
+                    CZ_res    = VLM_results.CZ
+                    CL_res    = VLM_results.CL
+                    CM_res    = VLM_results.CM
+                    CN_res    = VLM_results.CN
                     vehicle.wings[wing.tag].control_surfaces.flap.deflection = 0
                      
                     
@@ -1227,8 +1384,16 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
         for wing in vehicle.wings: 
             for control_surface in wing.control_surfaces:  
                 if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:  
-                    vehicle.wings[wing.tag].control_surfaces.slat.deflection =  delta_ctrl_surf   
-                    Clift_res,Cdrag_res,CX_res,CY_res,CZ_res,CL_res,CM_res,CN_res ,_,_,_,_,_,_,_,_,_,_,_,_= call_VLM(pertubation_conditions,settings,vehicle)    
+                    vehicle.wings[wing.tag].control_surfaces.slat.deflection =  delta_ctrl_surf 
+                    VLM_results = VLM(pertubation_conditions,settings,vehicle)
+                    Clift_res = VLM_results.CLift
+                    Cdrag_res = VLM_results.CDrag_induced
+                    CX_res    = VLM_results.CX
+                    CY_res    = VLM_results.CY
+                    CZ_res    = VLM_results.CZ
+                    CL_res    = VLM_results.CL
+                    CM_res    = VLM_results.CM
+                    CN_res    = VLM_results.CN  
                     vehicle.wings[wing.tag].control_surfaces.slat.deflection = 0
                      
         Clift_delta_s_prime   = Clift_res
@@ -1270,6 +1435,10 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     return
 
 def compute_stability_derivative(sub_sur,trans_sur,sup_sur,h_sub,h_sup,Mach):
+    if trans_sur ==  None and  sup_sur == None:
+        derivative = h_sub(Mach)*sub_sur(Mach) 
+        return derivative
+        
     derivative = h_sub(Mach)*sub_sur(Mach) +   (1 - (h_sup(Mach) + h_sub(Mach)))*trans_sur(Mach)  + h_sup(Mach)*sup_sur(Mach) 
     return derivative
 
@@ -1277,7 +1446,8 @@ def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_s
                          trans_sur_Clift,trans_sur_Cdrag,trans_sur_CX,trans_sur_CY,trans_sur_CZ,trans_sur_CL,trans_sur_CM,trans_sur_CN,
                          sup_sur_Clift,sup_sur_Cdrag,sup_sur_CX,sup_sur_CY,sup_sur_CZ,sup_sur_CL,sup_sur_CM,sup_sur_CN,
                          h_sub,h_sup,Mach, pts): 
- 
+    
+
      #  subsonic 
     sub_Clift     = np.atleast_2d(sub_sur_Clift(pts)).T  
     sub_Cdrag     = np.atleast_2d(sub_sur_Cdrag(pts)).T  
@@ -1287,7 +1457,23 @@ def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_s
     sub_CL        = np.atleast_2d(sub_sur_CL(pts)).T     
     sub_CM        = np.atleast_2d(sub_sur_CM(pts)).T     
     sub_CN        = np.atleast_2d(sub_sur_CN(pts)).T
-
+    
+    
+    if trans_sur_Clift ==  None and  sup_sur_Clift == None:
+    
+        results       = Data() 
+        results.Clift = h_sub(Mach) 
+        results.Cdrag = h_sub(Mach) 
+        results.CX    = h_sub(Mach) 
+        results.CY    = h_sub(Mach) 
+        results.CZ    = h_sub(Mach) 
+        results.CL    = h_sub(Mach) 
+        results.CM    = h_sub(Mach) 
+        results.CN    = h_sub(Mach) 
+        
+        return results
+   
+    
     # transonic   
     trans_Clift   = np.atleast_2d(trans_sur_Clift(pts)).T  
     trans_Cdrag   = np.atleast_2d(trans_sur_Cdrag(pts)).T  
@@ -1326,7 +1512,11 @@ def compute_coefficient(sub_sur_coef,trans_sur_coef, sup_sur_coef, h_sub,h_sup,M
 
     #  subsonic 
     sub_coef  = np.atleast_2d(sub_sur_coef(pts)).T     
-
+   
+    if trans_sur_coef == None and sup_sur_coef == None:
+        coef = h_sub(Mach) 
+        return  coef
+    
     # transonic 
     trans_coef  = np.atleast_2d(trans_sur_coef(pts)).T    
 
@@ -1336,71 +1526,4 @@ def compute_coefficient(sub_sur_coef,trans_sur_coef, sup_sur_coef, h_sub,h_sup,M
     # apply  
     coef = h_sub(Mach)*sub_coef +   (1 - (h_sup(Mach) + h_sub(Mach)))*trans_coef  + h_sub(Mach)*sup_coef 
 
-  
     return coef
-
-def call_VLM(conditions,settings,vehicle):
-    """Calculate aerodynamics coefficients inluding specific wing coefficients using the VLM
-        
-    Assumptions:
-        None
-        
-    Source:
-        None
-
-    Args: 
-        conditions : flight conditions     [unitless]
-        settings   : VLM analysis settings [unitless]
-        vehicle    : vehicle configuration [unitless] 
-        
-    Returns: 
-        None  
-    """
- 
-    Clift_wings         = Data()
-    Cdrag_wings         = Data()
-    AoA_wing_induced    = Data()
-    
-    results             = VLM(conditions,settings,vehicle)
-    Clift               = results.CL       
-    Cdrag               = results.CDi     
-    Clift_w             = results.CL_wing        
-    Cdrag_w             = results.CDi_wing       
-    CX                  = results.CX       
-    CY                  = results.CY       
-    CZ                  = results.CZ       
-    CL                  = results.CL_mom
-    alpha_i             = results.alpha_i 
-    cl_y                = results.cl_y     
-    cdi_y               = results.cdi_y 
-    CPi                 = results.CP 
-    CM                  = results.CM       
-    CN                  = results.CN  
-    S_ref               = results.S_ref    
-    b_ref               = results.b_ref    
-    c_ref               = results.c_ref    
-    X_ref               = results.X_ref    
-    Y_ref               = results.Y_ref    
-    Z_ref               = results.Z_ref 
-
-    # Dimensionalize the lift and drag for each wing
-    areas               = vehicle.vortex_distribution.wing_areas
-    dim_wing_lifts      = Clift_w  * areas
-    dim_wing_drags      = Cdrag_w * areas
-    
-    i = 0
-    # Assign the lift and drag and non-dimensionalize
-    for wing in vehicle.wings.values():
-        ref = wing.areas.reference
-        if wing.symmetric:
-            Clift_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_lifts[:,i:(i+2)],axis=1)).T/ref
-            Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref
-            AoA_wing_induced[wing.tag] = np.concatenate((alpha_i[i],alpha_i[i+1]),axis=1)
-            i+=1
-        else:
-            Clift_wings[wing.tag]      = np.atleast_2d(dim_wing_lifts[:,i]).T/ref
-            Cdrag_wings[wing.tag]      = np.atleast_2d(dim_wing_drags[:,i]).T/ref
-            AoA_wing_induced[wing.tag] = alpha_i[i]
-        i+=1
-
-    return Clift,Cdrag,CX,CY,CZ,CL,CM,CN, S_ref,b_ref,c_ref,X_ref,Y_ref ,Z_ref, Clift_wings,Cdrag_wings,AoA_wing_induced,cl_y,cdi_y,CPi  

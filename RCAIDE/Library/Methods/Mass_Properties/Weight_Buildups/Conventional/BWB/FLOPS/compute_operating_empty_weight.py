@@ -31,45 +31,62 @@ def compute_operating_empty_weight(vehicle,settings=None):
         engine - a data dictionary with the fields:
             thrust_sls - sea level static thrust of a single engine                                        [Newtons]
 
-        wing - a data dictionary with the fields:
-            gross_area - wing gross area                                                                   [meters**2]
-            span - span of the wing                                                                        [meters]
-            taper - taper ratio of the wing                                                                [dimensionless]
-            t_c - thickness-to-chord ratio of the wing                                                     [dimensionless]
-            sweep - sweep angle of the wing                                                                [radians]
-            mac - mean aerodynamic chord of the wing                                                       [meters]
-            r_c - wing root chord                                                                          [meters]
+    Parameters
+    ----------
+    vehicle : Vehicle
+        The vehicle instance containing:
+            - mass_properties.max_takeoff : float
+                Maximum takeoff weight [kg]
+            - fuselages : list
+                BWB fuselage segments with:
+                    - aft_centerbody_area : float
+                        Planform area of aft section [m²]
+                    - aft_centerbody_taper : float
+                        Taper ratio of aft section
+                    - cabin_area : float
+                        Pressurized cabin area [m²]
+            - wings : list
+                Wing surfaces
+            - networks : list
+                Propulsion systems
+    settings : Data, optional
+        Configuration settings with:
+            - use_max_fuel_weight : bool
+                Flag to use maximum fuel capacity
+    Returns
+    --------
+    output : Data
+        Container with weight breakdowns:
+            - empty : Data
+                Structural, propulsion, and systems weights
+            - payload : Data
+                Passenger, baggage, and cargo weights
+            - fuel : float
+                Total fuel weight [kg]
+            - zero_fuel_weight : float
+                Operating empty weight plus payload [kg]
+            - total : float
+                Total aircraft weight [kg]
+    Notes
+    -----
+    Computes weights for all major aircraft components and systems using methods 
+    specific to BWB configurations.
 
-        aircraft - a data dictionary with the fields:
-            Nult - ultimate load of the aircraft                                                           [dimensionless]
-            Nlim - limit load factor at zero fuel weight of the aircraft                                   [dimensionless]
-            TOW - maximum takeoff weight of the aircraft                                                   [kilograms]
-            zfw - maximum zero fuel weight of the aircraft                                                 [kilograms]
-            num_eng - number of engines on the aircraft                                                    [dimensionless]
-            num_pax - number of passengers on the aircraft                                                 [dimensionless]
-            W_cargo - weight of the bulk cargo being carried on the aircraft                              [kilograms]
-            num_seats - number of seats installed on the aircraft                                          [dimensionless]
-            ctrl - specifies if the control system is "fully powered", "partially powered", or not powered [dimensionless]
-            ac - determines type of instruments, electronics, and operating items based on types:
-                "short-range", "medium-range", "long-range", "business", "cargo", "commuter", "sst"        [dimensionless]
+    **Major Assumptions**
+        * Calculated aircraft weight from correlations created per component of historical aircraft
+        * The wings are made out of aluminum.
+        * A wing with the tag 'main_wing' exists.
 
-         fuselage - a data dictionary with the fields:
-            area - fuselage wetted area                                                                    [meters**2]
-            diff_p - Maximum fuselage pressure differential                                                [Pascal]
-            width - width of the fuselage                                                                  [meters]
-            height - height of the fuselage                                                                [meters]
-            length - length of the fuselage                                                                [meters]
-
-    Outputs:
-        output - a data dictionary with fields:
-            W_payload - weight of the passengers plus baggage and paid cargo                              [kilograms]
-            W_pax - weight of all the passengers                                                          [kilogram]
-            W_bag - weight of all the baggage                                                             [kilogram]
-            W_fuel - weight of the fuel carried                                                           [kilogram]
-            W_empty - operating empty weight of the aircraft                                              [kilograms]
-
-    Properties Used:
-    N/A
+    References
+    ----------
+    [1] Bradley, K. R., "A Sizing Methodology for the Conceptual Design of 
+        Blended-Wing-Body Transports," NASA/CR-2004-213016, 2004.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common
     """
 
     # Unpack inputs
@@ -264,11 +281,11 @@ def compute_operating_empty_weight(vehicle,settings=None):
     if nose_landing_gear == False:
         nose_gear = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()  
         nose_gear.mass_properties.mass = landing_gear.nose    
-        vehicle.append_component(nose_gear) 
+        vehicle.landing_gears.append(nose_gear) 
     if main_landing_gear == False:
         main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
         main_gear.mass_properties.mass = landing_gear.main  
-        vehicle.append_component(main_gear) 
+        vehicle.landing_gears.append(main_gear) 
          
     control_systems.mass_properties.mass             = output.empty.systems.control_systems
     electrical_systems.mass_properties.mass          = output.empty.systems.electrical

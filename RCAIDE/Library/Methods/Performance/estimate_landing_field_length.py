@@ -19,31 +19,65 @@ import numpy as np
 #  Compute field length required for landing
 # ----------------------------------------------------------------------
 def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
-    """ Computes the landing field length for a given vehicle configuration in a given airport.
+    """
+    Computes the landing field length required for a given vehicle configuration at specified airport conditions.
 
-    Assumptions:
-    See source
-    Two wheel trucks (code needed for four wheel trucks also included)
+    Parameters
+    ----------
+    vehicle : Vehicle
+        The vehicle instance containing:
+            - mass_properties.landing : float
+                Landing weight [kg]
+            - reference_area : float
+                Wing reference area [m^2]
+            - maximum_lift_coefficient : float, optional
+                Maximum lift coefficient if pre-computed
+            - Vref_VS_ratio : float, optional
+                Ratio of approach to stall speed, default 1.23
+    analyses : Analyses
+        Container with aerodynamic analyses for computing maximum lift coefficient
+    altitude : float, optional
+        Airport altitude [ft], default 0
+    delta_isa : float, optional
+        Temperature offset from ISA conditions [K], default 0
 
-    Source:
-    Torenbeek, E., "Advanced Aircraft Design", 2013 (equation 9.25)
+    Returns
+    -------
+    landing_field_length : float
+      Required landing field length [m]
 
-    Inputs:
-    airport.
-      atmosphere                           [RCAIDE data type]
-      altitude                             [m]
-      delta_isa                            [K]
-    vehicle.
-      mass_properties.landing              [kg]
-      reference_area                       [m^2]
-      maximum_lift_coefficient (optional)  [Unitless]
+    Notes
+    -----
+    The landing distance is computed using a semi-empirical approach:
 
-    Outputs:
-    landing_field_length                   [m]
+    .. math::
+        LFL = k_1 + k_2 V_{ref}^2
 
-    Properties Used:
-    N/A
-    """       
+    where:
+      * k₁ = 250 (constant)
+      * k₂ = 2.485/g for two-wheel trucks
+      * Vref = 1.23 * Vstall (default)
+
+    **Major Assumptions**
+      * Two-wheel truck landing gear configuration
+      * Sea level standard atmospheric conditions unless specified
+      * Standard approach speed ratio (1.23 × stall speed)
+      * No wind conditions
+
+    **Theory**
+    The stall speed is computed as:
+
+    .. math::
+        V_{stall} = \sqrt{\\frac{2W}{\\rho S C_{L_{max}}}}
+
+    References
+    ----------
+    [1] Torenbeek, E. (2013). Advanced Aircraft Design: Conceptual Design, Analysis and Optimization of Subsonic Civil Airplanes. Equation 9.25.
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff
+    """            
    
     # ==============================================
     # Unpack

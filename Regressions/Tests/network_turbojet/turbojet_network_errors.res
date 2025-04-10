@@ -1,1 +1,0 @@
-{"thrust": 0.0, "throttle": 0.0, "CL": 0.0}

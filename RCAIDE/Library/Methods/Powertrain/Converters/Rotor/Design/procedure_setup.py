@@ -22,7 +22,61 @@ import scipy as sp
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Procedure Setup 
 # ----------------------------------------------------------------------------------------------------------------------    
-def procedure_setup(): 
+def procedure_setup():
+    """
+    Creates a procedure for rotor blade optimization that defines the sequence of analysis steps.
+    
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    procedure : RCAIDE.Framework.Analyses.Process
+        Process object containing the following methods:
+            - modify_rotor : function
+                Updates blade geometry based on optimization variables
+            - hover : function
+                Analyzes rotor performance in hover conditions
+            - oei : function
+                Analyzes rotor performance in one-engine-inoperative conditions
+            - cruise : function
+                Analyzes rotor performance in cruise conditions (for prop-rotors)
+            - post_process : function
+                Processes results and computes objective function
+    
+    Notes
+    -----
+    This function defines the sequence of analysis steps that are executed during each
+    iteration of the rotor blade optimization process. The procedure follows a logical
+    flow from geometry modification to performance analysis in different flight conditions,
+    and finally to post-processing of results.
+    
+    The procedure includes the following steps:
+        1. modify_blade_geometry: Updates the blade chord and twist distributions based on
+           the current optimization variables
+        2. run_rotor_hover: Analyzes the rotor performance in hover conditions, computing
+           thrust, power, figure of merit, and noise
+        3. run_rotor_OEI: Analyzes the rotor performance in one-engine-inoperative conditions
+        4. run_rotor_cruise: Analyzes the rotor performance in cruise conditions (for prop-rotors)
+        5. post_process: Computes the objective function based on performance metrics and
+           checks constraint violations
+    
+    Each step in the procedure accesses the Nexus object that contains the current state
+    of the optimization, including the vehicle configurations, design variables, and
+    previously computed results.
+    
+    **Major Assumptions**
+        * The procedure assumes that the blade geometry is parameterized using the
+          hyperparameter approach defined in the updated_blade_geometry function
+        * Performance analysis includes both aerodynamic and acoustic metrics
+        * The objective function balances performance and noise based on user-defined weights
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance
+    """
     
     # size the base config
     procedure = Process()
@@ -64,8 +118,7 @@ def modify_blade_geometry(nexus):
              None
     """        
  
-    # Pull out the vehicles
-
+    # Pull out the vehicles 
     vehicle_hover     = nexus.vehicle_configurations.hover
     rotor_hover       = vehicle_hover.networks.electric.propulsors.electric_rotor.rotor
     vehicle_oei       = nexus.vehicle_configurations.oei
@@ -166,9 +219,8 @@ def updated_blade_geometry(chi,c_r,p,q,c_t):
 def run_rotor_hover(nexus):
      
     # Unpack    
-    network               = nexus.vehicle_configurations.hover.networks.electric 
-    bus                   = network.busses.bus 
-    electric_rotor        = network.propulsors.electric_rotor
+    network               = nexus.vehicle_configurations.hover.networks.electric
+    electric_rotor        = network.propulsors.electric_rotor  
     rotor                 = electric_rotor.rotor
     
     # Setup Test conditions
@@ -186,31 +238,26 @@ def run_rotor_hover(nexus):
     conditions.frames.wind.transform_to_inertial        = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
     conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]])  
     segment.state.conditions                            = conditions
+     
+    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
     
-    segment.state.conditions.energy[bus.tag] = Conditions()
-    segment.state.conditions.noise[bus.tag]  = Conditions() 
-    electric_rotor.append_operating_conditions(segment) 
-    for tag, item in  electric_rotor.items(): 
-        if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,electric_rotor)
+    rotor_conditions                            = segment.state.conditions.energy.converters[rotor.tag]     
+    rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.hover.design_tip_mach)/rotor.tip_radius 
+    rotor_conditions.blade_pitch_command[:,0]   = rotor.hover.design_blade_pitch_command
     
-    rotor_conditions                      =  segment.state.conditions.energy[electric_rotor.tag][rotor.tag]     
-    rotor_conditions.omega                = (atmosphere_conditions.speed_of_sound*rotor.hover.design_tip_mach)/rotor.tip_radius
-    rotor_conditions.pitch_command[:,0]   = rotor.hover.design_pitch_command
-    
-    compute_rotor_performance(electric_rotor,segment.state)   
+    compute_rotor_performance(rotor,conditions)   
      
     # Pack the results
-    nexus.results.hover.thrust                       = -segment.state.conditions.energy[electric_rotor.tag][rotor.tag].thrust[0,2]  
-    nexus.results.hover.torque                       = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].torque[0][0]
-    nexus.results.hover.power                        = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].power[0][0]
-    nexus.results.hover.power_c                      = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].power_coefficient[0][0]
-    nexus.results.hover.thurst_c                     = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].thrust_coefficient[0][0]
-    nexus.results.hover.omega                        = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].omega[0][0]
-    nexus.results.hover.max_sectional_cl             = np.max(segment.state.conditions.energy[electric_rotor.tag][rotor.tag].lift_coefficient[0]) 
-    nexus.results.hover.mean_CL                      = np.mean(segment.state.conditions.energy[electric_rotor.tag][rotor.tag].lift_coefficient[0]) 
-    nexus.results.hover.figure_of_merit              = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].figure_of_merit[0][0]  
-    nexus.results.hover.efficiency                   = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].efficiency[0][0] 
+    nexus.results.hover.thrust                       = -segment.state.conditions.energy.converters[rotor.tag].thrust[0,2]  
+    nexus.results.hover.torque                       = segment.state.conditions.energy.converters[rotor.tag].torque[0][0]
+    nexus.results.hover.power                        = segment.state.conditions.energy.converters[rotor.tag].power[0][0]
+    nexus.results.hover.power_c                      = segment.state.conditions.energy.converters[rotor.tag].power_coefficient[0][0]
+    nexus.results.hover.thurst_c                     = segment.state.conditions.energy.converters[rotor.tag].thrust_coefficient[0][0]
+    nexus.results.hover.omega                        = segment.state.conditions.energy.converters[rotor.tag].omega[0][0]
+    nexus.results.hover.max_sectional_cl             = np.max(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0]) 
+    nexus.results.hover.mean_CL                      = np.mean(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0]) 
+    nexus.results.hover.figure_of_merit              = segment.state.conditions.energy.converters[rotor.tag].figure_of_merit[0][0]  
+    nexus.results.hover.efficiency                   = segment.state.conditions.energy.converters[rotor.tag].efficiency[0][0] 
     nexus.results.hover.conditions                   = conditions  
                 
     # microphone locations             
@@ -219,9 +266,8 @@ def run_rotor_hover(nexus):
     S_hover                                          = np.maximum(altitude[0],20*Units.feet)  
     mic_positions_hover                              = np.array([[0.0 , S_hover*np.sin(theta)  ,S_hover*np.cos(theta)]])      
     
-    # Run noise model  
-    conditions.noise[bus.tag]                        = RCAIDE.Framework.Mission.Common.Conditions()      
-    conditions.noise[electric_rotor.tag]             = RCAIDE.Framework.Mission.Common.Conditions()  
+ 
+    # Run noise model    
     conditions.noise.relative_microphone_locations   = np.repeat(mic_positions_hover[ np.newaxis,:,: ],1,axis=0)
     conditions.aerodynamics.angles.alpha             = np.ones((ctrl_pts,1))* 0. * Units.degrees 
     segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 
@@ -233,8 +279,8 @@ def run_rotor_hover(nexus):
     conditions.noise.number_of_microphones           = num_mic   
     
     if alpha != 1: 
-        compute_rotor_noise(bus,electric_rotor,segment,settings)    
-        nexus.results.hover.mean_SPL   = np.mean(conditions.noise[electric_rotor.tag][rotor.tag].SPL_dBA) 
+        compute_rotor_noise(conditions.noise.relative_microphone_locations,rotor,segment,settings)    
+        nexus.results.hover.mean_SPL   = np.mean(conditions.noise.converters[rotor.tag].SPL_dBA) 
     else: 
         nexus.results.hover.mean_SPL   = 0  
 
@@ -246,8 +292,7 @@ def run_rotor_hover(nexus):
 def run_rotor_OEI(nexus):
     
     # Unpack   
-    network               = nexus.vehicle_configurations.oei.networks.electric 
-    bus                   = network.busses.bus 
+    network               = nexus.vehicle_configurations.oei.networks.electric  
     electric_rotor        = network.propulsors.electric_rotor    
     rotor                 = electric_rotor.rotor
     
@@ -255,8 +300,7 @@ def run_rotor_OEI(nexus):
     speed                 = rotor.oei.design_freestream_velocity 
     altitude              = np.array([rotor.oei.design_altitude]) 
     atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere_conditions = atmosphere.compute_values(altitude)  
-  
+    atmosphere_conditions = atmosphere.compute_values(altitude)   
   
     segment                                             = RCAIDE.Framework.Mission.Segments.Segment()  
     conditions                                          = RCAIDE.Framework.Mission.Common.Results()
@@ -266,28 +310,23 @@ def run_rotor_OEI(nexus):
     conditions.frames.wind.transform_to_inertial        = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
     conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
     segment.state.conditions                            = conditions
-    
-    segment.state.conditions.energy[bus.tag] = Conditions()
-    segment.state.conditions.noise[bus.tag]  = Conditions()
-    electric_rotor.append_operating_conditions(segment) 
-    for tag, item in  electric_rotor.items(): 
-        if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,electric_rotor) 
+     
+    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
                 
-    rotor_conditions                      =  segment.state.conditions.energy[electric_rotor.tag][rotor.tag]     
-    rotor_conditions.omega                = (atmosphere_conditions.speed_of_sound*rotor.oei.design_tip_mach)/rotor.tip_radius
-    rotor_conditions.pitch_command[:,0]   = rotor.oei.design_pitch_command
+    rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
+    rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.oei.design_tip_mach)/rotor.tip_radius 
+    rotor_conditions.blade_pitch_command[:,0]   = rotor.oei.design_blade_pitch_command
     
-    compute_rotor_performance(electric_rotor,segment.state)   
+    compute_rotor_performance(rotor,conditions)    
             
     # Pack the results
-    nexus.results.oei.thrust       = -segment.state.conditions.energy[electric_rotor.tag][rotor.tag].thrust[0,2]  
-    nexus.results.oei.torque       = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].torque[0][0]
-    nexus.results.oei.power        = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].power[0][0]
-    nexus.results.oei.power_c      = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].power_coefficient[0][0]
-    nexus.results.oei.omega        = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].omega[0][0]
-    nexus.results.oei.thurst_c     = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].thrust_coefficient[0][0]
-    nexus.results.oei.efficiency   = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].efficiency[0][0]
+    nexus.results.oei.thrust       = -segment.state.conditions.energy.converters[rotor.tag].thrust[0,2]  
+    nexus.results.oei.torque       = segment.state.conditions.energy.converters[rotor.tag].torque[0][0]
+    nexus.results.oei.power        = segment.state.conditions.energy.converters[rotor.tag].power[0][0]
+    nexus.results.oei.power_c      = segment.state.conditions.energy.converters[rotor.tag].power_coefficient[0][0]
+    nexus.results.oei.omega        = segment.state.conditions.energy.converters[rotor.tag].omega[0][0]
+    nexus.results.oei.thurst_c     = segment.state.conditions.energy.converters[rotor.tag].thrust_coefficient[0][0]
+    nexus.results.oei.efficiency   = segment.state.conditions.energy.converters[rotor.tag].efficiency[0][0]
     nexus.results.oei.conditions   = conditions 
     
     return nexus
@@ -298,8 +337,7 @@ def run_rotor_OEI(nexus):
 def run_rotor_cruise(nexus):
  
     if nexus.prop_rotor_flag:     
-        network         = nexus.vehicle_configurations.cruise.networks.electric 
-        bus             = network.busses.bus 
+        network         = nexus.vehicle_configurations.cruise.networks.electric  
         electric_rotor  = network.propulsors.electric_rotor
         rotor           = electric_rotor.rotor 
         alpha           = rotor.optimization_parameters.multiobjective_aeroacoustic_weight       
@@ -318,30 +356,25 @@ def run_rotor_cruise(nexus):
         conditions.frames.wind.transform_to_inertial        = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
         conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
         segment.state.conditions                            = conditions
-        
-        segment.state.conditions.energy[bus.tag] = Conditions()
-        segment.state.conditions.noise[bus.tag]  = Conditions()
-        electric_rotor.append_operating_conditions(segment) 
-        for tag, item in  electric_rotor.items(): 
-            if issubclass(type(item), RCAIDE.Library.Components.Component):
-                item.append_operating_conditions(segment,electric_rotor) 
+          
+        rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
             
-        rotor_conditions                      =  segment.state.conditions.energy[electric_rotor.tag][rotor.tag]     
-        rotor_conditions.omega                = (atmosphere_conditions.speed_of_sound*rotor.cruise.design_tip_mach)/rotor.tip_radius
-        rotor_conditions.pitch_command[:,0]   = rotor.cruise.design_pitch_command
+        rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
+        rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.cruise.design_tip_mach)/rotor.tip_radius 
+        rotor_conditions.blade_pitch_command[:,0]   = rotor.cruise.design_blade_pitch_command
         
-        compute_rotor_performance(electric_rotor,segment.state)   
+        compute_rotor_performance(rotor,conditions)   
         
         # Pack the results
-        nexus.results.cruise.thrust                      = -segment.state.conditions.energy[electric_rotor.tag][rotor.tag].thrust[0,2] 
-        nexus.results.cruise.torque                      = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].torque[0][0]
-        nexus.results.cruise.power                       = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].power[0][0]
-        nexus.results.cruise.power_c                     = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].power_coefficient[0][0]
-        nexus.results.cruise.omega                       = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].omega[0][0]
-        nexus.results.cruise.thurst_c                    = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].thrust_coefficient[0][0]
-        nexus.results.cruise.max_sectional_cl            = np.max(segment.state.conditions.energy[electric_rotor.tag][rotor.tag].lift_coefficient[0]) 
-        nexus.results.cruise.mean_CL                     = np.mean(segment.state.conditions.energy[electric_rotor.tag][rotor.tag].lift_coefficient[0])  
-        nexus.results.cruise.efficiency                  = segment.state.conditions.energy[electric_rotor.tag][rotor.tag].efficiency[0][0]
+        nexus.results.cruise.thrust                      = -segment.state.conditions.energy.converters[rotor.tag].thrust[0,2] 
+        nexus.results.cruise.torque                      = segment.state.conditions.energy.converters[rotor.tag].torque[0][0]
+        nexus.results.cruise.power                       = segment.state.conditions.energy.converters[rotor.tag].power[0][0]
+        nexus.results.cruise.power_c                     = segment.state.conditions.energy.converters[rotor.tag].power_coefficient[0][0]
+        nexus.results.cruise.omega                       = segment.state.conditions.energy.converters[rotor.tag].omega[0][0]
+        nexus.results.cruise.thurst_c                    = segment.state.conditions.energy.converters[rotor.tag].thrust_coefficient[0][0]
+        nexus.results.cruise.max_sectional_cl            = np.max(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0]) 
+        nexus.results.cruise.mean_CL                     = np.mean(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0])  
+        nexus.results.cruise.efficiency                  = segment.state.conditions.energy.converters[rotor.tag].efficiency[0][0]
         nexus.results.cruise.conditions                  = conditions  
                     
         # microphone locations            
@@ -351,8 +384,6 @@ def run_rotor_cruise(nexus):
         mic_positions_cruise                             = np.array([[0.0 ,S_cruise*np.sin(theta)  ,S_cruise*np.cos(theta)]])      
         
         # Run noise model  
-        conditions.noise[bus.tag]                        = RCAIDE.Framework.Mission.Common.Conditions()      
-        conditions.noise[electric_rotor.tag]    = RCAIDE.Framework.Mission.Common.Conditions()  
         conditions.noise.relative_microphone_locations   = np.repeat(mic_positions_cruise[ np.newaxis,:,: ],1,axis=0)
         conditions.aerodynamics.angles.alpha             = np.ones((ctrl_pts,1))* 0. * Units.degrees 
         segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 
@@ -364,8 +395,8 @@ def run_rotor_cruise(nexus):
         conditions.noise.number_of_microphones           = num_mic    
         
         if alpha != 1: 
-            compute_rotor_noise(bus,electric_rotor,segment,settings)      
-            nexus.results.cruise.mean_SPL   = np.mean(conditions.noise[electric_rotor.tag][rotor.tag].SPL_dBA)   
+            compute_rotor_noise(conditions.noise.relative_microphone_locations,rotor,segment,settings)  
+            nexus.results.cruise.mean_SPL   = np.mean(conditions.noise.converters[rotor.tag].SPL_dBA)   
         else:
             nexus.results.cruise.mean_SPL   = 0  
             
@@ -471,10 +502,10 @@ def post_process(nexus):
         print("OEI Thrust                   : " + str(nexus.results.oei.thrust)) 
         print("OEI Thrust/Power Residual    : " + str(summary.OEI_hover_thrust_power_residual)) 
         print("OEI Tip Mach                 : " + str(rotor_oei.oei.design_tip_mach))  
-        print("OEI Collective (deg)         : " + str(rotor_oei.design_pitch_command/Units.degrees)) 
+        print("OEI Collective (deg)         : " + str(rotor_oei.design_blade_pitch_command/Units.degrees)) 
         if nexus.prop_rotor_flag:    
             print("Cruise RPM                   : " + str(nexus.results.cruise.omega/Units.rpm))    
-            print("Cruise Collective (deg)      : " + str(rotor_cru.design_pitch_command/Units.degrees)) 
+            print("Cruise Collective (deg)      : " + str(rotor_cru.design_blade_pitch_command/Units.degrees)) 
             if rotor_cru.cruise.design_thrust == None:  
                 print("Cruise Power                 : " + str(nexus.results.cruise.power)) 
             if rotor_cru.cruise.design_power == None:  

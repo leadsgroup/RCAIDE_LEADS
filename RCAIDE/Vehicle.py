@@ -16,7 +16,30 @@ import numpy as np
 #  Vehicle
 # ----------------------------------------------------------------------------------------------------------------------  
 class Vehicle(Data):
-    """RCAIDE Vehicle container class with database + input / output functionality
+    """
+    RCAIDE Vehicle container class with database and input/output functionality.
+    
+    Attributes
+    ----------
+    Data: Data
+        RCAIDE data structure containing the loaded information. See defualts for more information.
+    
+    Notes
+    -----
+    The Vehicle class serves as the top-level container for all aircraft components
+    and systems. It provides methods for adding components to the appropriate containers
+    and maintains the hierarchical structure of the aircraft model.
+    
+    The class uses a component mapping system to automatically place new components
+    in their appropriate containers based on their type.
+    
+    **Definitions**
+    
+    'Component Root Map'
+        Internal mapping that associates component types with their container locations
+    
+    'Energy Network Root Map'
+        Internal mapping that associates energy network types with their container locations
     """    
 
     def __defaults__(self):
@@ -33,8 +56,8 @@ class Vehicle(Data):
         self.fuselages                                                     = Components.Fuselages.Fuselage.Container()
         self.wings                                                         = Components.Wings.Wing.Container()
         self.nacelles                                                      = Components.Nacelles.Nacelle.Container()
-        self.systems                                                       = Components.Powertrain.Systems.System.Container()
-        self.avionics                                                      = Components.Powertrain.Systems.Avionics.Container()
+        self.systems                                                       = Components.Powertrain.Systems.System()
+        self.avionics                                                      = Components.Powertrain.Systems.Avionics()
         self.booms                                                         = Components.Booms.Boom.Container()
         self.mass_properties                                               = Vehicle_Mass_Container()
         self.payload                                                       = Components.Payloads.Payload.Container()

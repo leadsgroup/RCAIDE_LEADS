@@ -13,7 +13,105 @@ from .Cryogen import Cryogen
 #  Liquid Hydrogen Cryogen
 # ----------------------------------------------------------------------------------------------------------------------  
 class Liquid_Hydrogen(Cryogen):
-    """Liquid Hydrogen Cryogen Class 
+    """
+    A class representing liquid hydrogen cryogenic fuel and its thermodynamic properties.
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the cryogen type ('Liquid_Hydrogen')
+    density : float
+        Density of liquid hydrogen in kg/m³
+    specific_energy : float
+        Specific energy content in J/kg
+    energy_density : float
+        Energy density in J/m³
+    temperatures : Container
+        Temperature thresholds for the cryogen
+            - freeze : float
+                Freezing point temperature in Kelvin
+            - boiling : float
+                Boiling point temperature in Kelvin
+    vaporization_enthalpy : float
+        Enthalpy of vaporization in kJ/kg
+    specific_heat : float
+        Specific heat capacity in kJ/kg·K
+    liquid_cp_coefficients : Data
+        Coefficients for liquid specific heat capacity polynomial
+            - LCP_C0 : float
+                Constant term coefficient
+            - LCP_C1 : float
+                Linear term coefficient
+            - LCP_C2 : float
+                Quadratic term coefficient
+            - LCP_C3 : float
+                Cubic term coefficient
+            - LCP_minT : float
+                Minimum valid temperature in Kelvin
+            - LCP_maxT : float
+                Maximum valid temperature in Kelvin
+    
+    gas_cp_coefficients : Data
+        Coefficients for gas specific heat capacity polynomial
+            - GCP_C0 : float
+                Constant term coefficient
+            - GCP_C1 : float
+                Linear term coefficient
+            - GCP_C2 : float
+                Quadratic term coefficient
+            - GCP_C3 : float
+                Cubic term coefficient
+            - GCP_minT : float
+                Minimum valid temperature in Kelvin
+            - GCP_maxT : float
+                Maximum valid temperature in Kelvin
+    
+    antoine_coefficients : Data
+        Antoine equation coefficients for vapor pressure calculation
+            - antoine_A : float
+                A coefficient
+            - antoine_B : float
+                B coefficient
+            - antoine_C : float
+                C coefficient
+            - antoine_minT : float
+                Minimum valid temperature in Kelvin
+            - antoine_maxT : float
+                Maximum valid temperature in Kelvin
+    
+    vaporization_coefficients : Data
+        Coefficients for vaporization enthalpy polynomial
+            - H_C0 : float
+                Constant term coefficient
+            - H_C1 : float
+                Linear term coefficient
+            - H_C2 : float
+                Quadratic term coefficient
+            - H_C3 : float
+                Cubic term coefficient
+            - H_minP : float
+                Minimum valid pressure in Pascal
+            - H_maxP : float
+                Maximum valid pressure in Pascal
+
+    Notes
+    -----
+    The class implements various thermodynamic properties using polynomial fits and the Antoine equation.
+    Specific heat capacity calculations are provided for both liquid and gas phases.
+    Valid temperature and pressure ranges are specified for each correlation.
+    
+    **Definitions**
+    
+    'Antoine Equation'
+        An equation relating vapor pressure to temperature: log10(P) = A - (B/(T+C))
+    
+    'Specific Heat Capacity'
+        The amount of heat required to raise the temperature of 1 kg of the substance by 1 Kelvin
+    
+    References
+    ----------
+    [1] Ekin, J. (2006). Experimental techniques for low-temperature measurements: Cryostat design, material properties and superconductor critical-current testing. Oxford University Press. 
+    [2] National Institute of Standards and Technology. (2023). NIST Chemistry Webbook, SRD 69. Thermophysical Properties of Fluid Systems. https://webbook.nist.gov/chemistry/fluid/ 
     """
 
     def __defaults__(self):

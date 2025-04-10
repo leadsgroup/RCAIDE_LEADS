@@ -19,5 +19,5 @@ RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .compute_motor_performance             import compute_motor_performance
-from .design_DC_motor                       import design_DC_motor
+from .design_optimal_motor                  import design_optimal_motor
 from .append_motor_conditions               import append_motor_conditions 

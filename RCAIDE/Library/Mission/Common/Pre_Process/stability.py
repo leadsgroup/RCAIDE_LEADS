@@ -13,16 +13,59 @@ from RCAIDE.Library.Methods.Geometry.Planform  import wing_segmented_planform, w
 #  stability
 # ----------------------------------------------------------------------------------------------------------------------  
 def stability(mission):
-    """ Runs stability model and build surrogate
-    
-        Assumptions:
-            N/A
+    """
+    Initializes and processes stability models for mission segments
+
+    Parameters
+    ----------
+    mission : Mission
+        The mission containing segments to be analyzed
+            - analyses.stability : Analysis
+                Stability analysis module
+                - vehicle : Vehicle
+                    Aircraft geometry definition
+                    - wings : list
+                        Wing geometry definitions
+                - process.compute.lift.inviscid_wings : Process
+                    Lift computation process
+                - surrogates : Data
+                    Stability surrogate models
+                - reference_values : Data
+                    Reference stability parameters
         
-        Inputs:
-            None
-            
-        Outputs:
-            None             
+    
+    Returns
+    -------
+    None
+        Updates mission segment analyses directly
+    
+    Notes
+    -----
+    This function prepares the stability analysis for each mission segment.
+    It ensures proper wing geometry computation and manages stability
+    surrogate models across segments for computational efficiency.
+
+    The function performs the following steps:
+        1. Computes wing planform properties
+        2. Reuses previous segment's stability data when possible
+        3. Initializes new stability analyses when needed
+
+    **Wing Processing**
+    
+    For each wing:
+        - If multi-segmented: Uses wing_segmented_planform
+        - If single segment: Uses wing_planform
+
+    **Major Assumptions**
+        * Valid wing geometry definitions
+        * Compatible stability models between segments
+        * Proper initialization of first segment
+        * Continuous stability characteristics
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Geometry.Planform
+    RCAIDE.Framework.Mission.Segments
     """
     last_tag = None
     for tag,segment in mission.segments.items(): 

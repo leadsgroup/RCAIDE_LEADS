@@ -30,7 +30,6 @@ Solver
    :template: custom-module-template.rst
    :recursive:
 
-   converge_root
+   converge
    expand_state
-   optimize
 

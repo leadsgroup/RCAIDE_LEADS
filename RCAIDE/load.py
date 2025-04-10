@@ -15,22 +15,40 @@ from collections import OrderedDict
 # ----------------------------------------------------------------------------------------------------------------------
 #  load
 # ----------------------------------------------------------------------------------------------------------------------    
-def load(filename,pickle_format = False):
-    """Converts a JSON file into a RCAIDE data structure. 
+def load(filename, pickle_format=False):
+    """
+    Imports a Pickle or JSON file into a RCAIDE data structure.
     
-        Assumptions:
-            None
-            
-        Source:
-            None
-     
-        Args:
-            filename (string)      : file to be loaded        [unitless] 
-            pickle_format (boolean): pickle file format flag  [unitless]
-            
-        Returns:
-            data  : RCAIDE data structure [unitless]  
-    """ 
+    Parameters
+    ----------
+    filename : str
+        Path to the file to be loaded, without extension for pickle files
+    pickle_format : bool, optional
+        Flag indicating whether to load a pickle file (True) or JSON file (False)
+        Default is False (JSON format)
+        
+    Returns
+    -------
+    data : RCAIDE.Framework.Core.Data
+        RCAIDE data structure containing the loaded information
+    
+    Notes
+    -----
+    This function supports two file formats:
+    
+    1. JSON format (default): Loads a JSON file and converts it to a RCAIDE data structure
+       using the read_RCAIDE_json_dict function.
+    
+    2. Pickle format: Loads a binary pickle file directly into a Python object.
+       The .pkl extension is automatically added to the filename.
+    
+    JSON format is human-readable and more portable across different Python versions,
+    while pickle format is more efficient for large data structures but less portable.
+    
+    See Also
+    --------
+    RCAIDE.save
+    """
     
     if pickle_format:
         load_file = filename + '.pkl' 

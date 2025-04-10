@@ -39,41 +39,40 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         
     cell : Data
         Cell-specific properties
-        
-        - chemistry : str
-            Battery chemistry type (default: 'LiNiMnCoO2')
-        - diameter : float
-            Cell diameter [m] (default: 0.0185)
-        - height : float
-            Cell height [m] (default: 0.0653)
-        - mass : float
-            Cell mass [kg] (default: 0.048)
-        - surface_area : float
-            Total cell surface area [m^2]
-        - volume : float
-            Cell volume [m^3]
-        - density : float
-            Cell density [kg/m^3]
-        - electrode_area : float
-            Active electrode area [m^2] (default: 0.0342)
-        - maximum_voltage : float
-            Maximum cell voltage [V] (default: 4.2)
-        - nominal_capacity : float
-            Rated capacity [Ah] (default: 3.8)
-        - nominal_voltage : float
-            Nominal operating voltage [V] (default: 3.6)
-        - charging_voltage : float
-            Charging voltage [V] (default: nominal_voltage)
-        - resistance : float
-            Internal resistance [Ohms] (default: 0.025)
-        - specific_heat_capacity : float
-            Cell specific heat [J/kgK] (default: 1108)
-        - radial_thermal_conductivity : float
-            Radial thermal conductivity [W/mK] (default: 0.4)
-        - axial_thermal_conductivity : float
-            Axial thermal conductivity [W/mK] (default: 32.2)
-        - discharge_performance_map : RegularGridInterpolator
-            Interpolator for voltage vs discharge characteristics
+            - chemistry : str
+                Battery chemistry type (default: 'LiNiMnCoO2')
+            - diameter : float
+                Cell diameter [m] (default: 0.0185)
+            - height : float
+                Cell height [m] (default: 0.0653)
+            - mass : float
+                Cell mass [kg] (default: 0.048)
+            - surface_area : float
+                Total cell surface area [m^2]
+            - volume : float
+                Cell volume [m^3]
+            - density : float
+                Cell density [kg/m^3]
+            - electrode_area : float
+                Active electrode area [m^2] (default: 0.0342)
+            - maximum_voltage : float
+                Maximum cell voltage [V] (default: 4.2)
+            - nominal_capacity : float
+                Rated capacity [Ah] (default: 3.8)
+            - nominal_voltage : float
+                Nominal operating voltage [V] (default: 3.6)
+            - charging_voltage : float
+                Charging voltage [V] (default: nominal_voltage)
+            - resistance : float
+                Internal resistance [Ohms] (default: 0.025)
+            - specific_heat_capacity : float
+                Cell specific heat [J/kgK] (default: 1108)
+            - radial_thermal_conductivity : float
+                Radial thermal conductivity [W/mK] (default: 0.4)
+            - axial_thermal_conductivity : float
+                Axial thermal conductivity [W/mK] (default: 32.2)
+            - discharge_performance_map : RegularGridInterpolator
+                Interpolator for voltage vs discharge characteristics
 
     Notes
     -----

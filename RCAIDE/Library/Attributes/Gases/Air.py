@@ -14,7 +14,37 @@ import numpy as np
 # Air Class
 # ----------------------------------------------------------------------------------------------------------------------   
 class Air(Gas):
-    """Generic class of air gas. 
+    """
+    A class representing air and its thermodynamic properties. Provides methods for computing various 
+    gas properties including density, speed of sound, specific heat, and transport properties.
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the gas type ('air')
+    molecular_mass : float
+        Molecular mass of air in kg/kmol
+    gas_specific_constant : float
+        Specific gas constant in m²/s²-K
+    specific_heat_capacity : float
+        Specific heat capacity in J/kg·K
+    composition : Data
+        Chemical composition of air
+            - O2 : float
+                Mass fraction of oxygen (0.20946)
+            - Ar : float
+                Mass fraction of argon (0.00934)
+            - CO2 : float
+                Mass fraction of carbon dioxide (0.00036)
+            - N2 : float
+                Mass fraction of nitrogen (0.78084)
+            - other : float
+                Mass fraction of other components (0.00)
+
+    Notes
+    -----
+    This class implements standard atmospheric air properties and various methods
+    for computing thermodynamic and transport properties.
     """
 
     def __defaults__(self):
@@ -35,43 +65,55 @@ class Air(Gas):
         self.composition.CO2        = 0.00036
         self.composition.N2         = 0.78084
         self.composition.other      = 0.00
+        self.air_surrogate          = {'O2':0.2095, 'N2':0.7809, 'AR':0.0096} # [-] Mole fractions of air surrogate species
+        self.kinetic_mechanism      = 'Air.yaml'
 
     def compute_density(self,T=300.,p=101325.):
-        """Computes air density given temperature and pressure
-        
-        Assumptions:
-            Ideal gas
-            
-        Source:
-            None
-    
-        Args:
-            self       : air                   [unitless]
-            T (float)  : temperature           [K]
-            P (float)  : pressure              [Pa]
-            
-        Returns:
-            rho (float): density               [kg/m^3]       
+        """
+        Computes air density using the ideal gas law.
+
+        Parameters
+        ----------
+        T : float
+            Temperature in Kelvin
+        p : float
+            Pressure in Pascal
+
+        Returns
+        -------
+        rho : float
+            Density in kg/m³
+
+        Notes
+        -----
+        **Major Assumptions**
+            * Air behaves as an ideal gas    
         """        
         return p/(self.gas_specific_constant*T)
 
     def compute_speed_of_sound(self,T=300.,p=101325.,variable_gamma=False):
-        """Computes speed of sound given temperature and pressure 
- 
-        Assumptions:
-            Ideal gas with gamma = 1.4 if variable gamma is False
+        """
+        Computes speed of sound in air.
 
-        Source:
-            None 
+        Parameters
+        ----------
+        T : float
+            Temperature in Kelvin
+        p : float
+            Pressure in Pascal
+        variable_gamma : bool
+            If True, uses temperature-dependent specific heat ratio
 
-        Args:
-            self                     : air           [unitless]
-            T (float)                : temperature   [K]    
-            p (float)                : Pressure      [Pa]      
-            variable_gamma (boolean) :               [unitless]
+        Returns
+        -------
+        a : float
+            Speed of sound in m/s
 
-        Returns:
-            a (float)                : speed of sound [m/s] 
+        Notes
+        -----
+        **Major Assumptions**
+            * If variable_gamma is False, assumes γ = 1.4
+            * Air behaves as an ideal gas
         """                  
 
         if variable_gamma:
@@ -82,29 +124,33 @@ class Air(Gas):
         return np.sqrt(g*self.gas_specific_constant*T)
 
     def compute_cp(self,T=300.,p=101325.):
-        """Computes Cp by 3rd-order polynomial data fit:
-        cp(T) = c1*T^3 + c2*T^2 + c3*T + c4
+        """
+        Computes specific heat capacity at constant pressure using a 3rd-order polynomial fit.
 
-        Coefficients (with 95% confidence bounds):
-        c1 = -7.357e-007  (-9.947e-007, -4.766e-007)
-        c2 =    0.001307  (0.0009967, 0.001617)
-        c3 =     -0.5558  (-0.6688, -0.4429)
-        c4 =        1074  (1061, 1086) 
-             
-        Assumptions:
-            123 K < T < 673 K 
-            
-        Source:
-            Unknown, possibly Combustion Technologies for a Clean Environment 
-            (Energy, Combustion and the Environment), Jun 15, 1995, Carvalhoc
-    
-        Args:
-            self      : air               [unitless]
-            T (float) : temperature       [K]
-            P (float) : pressure          [Pa]
-            
-        Returns:
-            cp (float): specfic heat capacity [J/(kg K)]         
+        Parameters
+        ----------
+        T : float
+            Temperature in Kelvin
+        p : float
+            Pressure in Pascal
+
+        Returns
+        -------
+        cp : float
+            Specific heat capacity in J/(kg·K)
+
+        Notes
+        -----
+        **Major Assumptions**
+            * Valid for temperature range: 123 K < T < 673 K
+
+        **Theory**
+        .. math::
+            c_p(T) = c_1T^3 + c_2T^2 + c_3T + c_4
+
+        References
+        ----------
+        [1] Ekin, J. (2006). Experimental techniques for low-temperature measurements: Cryostat design, material properties and superconductor critical-current testing. Oxford University Press.         
         """   
 
         c = [-7.357e-007, 0.001307, -0.5558, 1074.0]
@@ -113,28 +159,25 @@ class Air(Gas):
         return cp
 
     def compute_gamma(self,T=300.,p=101325.):
-        """Computes Cp by 3rd-order polynomial data fit:
-        gamma(T) = c1*T^3 + c2*T^2 + c3*T + c4
+        """
+        Computes specific heat ratio using a 3rd-order polynomial fit.
 
-        Coefficients (with 95% confidence bounds):
-        c1 =  1.629e-010  (1.486e-010, 1.773e-010)
-        c2 = -3.588e-007  (-3.901e-007, -3.274e-007)
-        c3 =   0.0001418  (0.0001221, 0.0001614)
-        c4 =       1.386  (1.382, 1.389) 
- 
-        Assumptions:
-             233 K < T < 1273 K 
-            
-        Source:
-            None
-    
-        Args:
-            self      : air           [unitless]
-            T (float) : temperature   [K]
-            P (float) : pressure      [Pa]
-            
-        Returns: 
-            g  (float): gamma         [unitless] 
+        Parameters
+        ----------
+        T : float
+            Temperature in Kelvin
+        p : float
+            Pressure in Pascal
+
+        Returns
+        -------
+        g : float
+            Specific heat ratio (gamma) [unitless]
+
+        Notes
+        -----
+        **Major Assumptions**
+        * Valid for temperature range: 233 K < T < 1273 K
         """     
 
         c = [1.629e-010, -3.588e-007, 0.0001418, 1.386]
@@ -143,21 +186,29 @@ class Air(Gas):
         return g
 
     def compute_absolute_viscosity(self,T=300.,p=101325.):
-        """Compute the absolute (dynamic) viscosity 
-        
-        Assumptions:
-            Ideal gas
-            
-        Source:
-            https://www.cfd-online.com/Wiki/Sutherland's_law
-    
-        Args:
-            self      : air                   [unitless]
-            T (float) : temperature           [K]
-            P (float) : pressure              [Pa]
-            
-        Returns:
-            mu (float): absolute viscosity    [kg/(m-s)]       
+        """
+        Computes absolute (dynamic) viscosity using Sutherland's law.
+
+        Parameters
+        ----------
+        T : float
+            Temperature in Kelvin
+        p : float
+            Pressure in Pascal
+
+        Returns
+        -------
+        mu : float
+            Absolute viscosity in kg/(m·s)
+
+        Notes
+        -----
+        **Theory**
+        Uses Sutherland's formula with S = 110.4K and C1 = 1.458e-6 kg/m-s-sqrt(K)
+
+        References
+        ----------
+        [1] Sutherland's law   
         """ 
 
         S = 110.4                   # constant in deg K (Sutherland's Formula)
@@ -166,40 +217,52 @@ class Air(Gas):
         return C1*(T**(1.5))/(T + S)
     
     def compute_thermal_conductivity(self,T=300.,p=101325.):
-        """Compute the thermal conductivity of air 
- 
-        Assumptions:
-            Properties computed at 1 bar (14.5 psia)
-            
-        Source:
-            https://www.engineeringtoolbox.com/air-properties-viscosity-conductivity-heat-capacity-d_1509.html 
-    
-        Args:
-            self      : air                   [unitless]
-            T (float) : temperature           [K]
-            P (float) : pressure              [Pa]
-            
-        Returns:
-            k  (float): thermal conductivity  [W/(m-K)]   
+        """
+        Computes thermal conductivity of air.
+
+        Parameters
+        ----------
+        T : float
+            Temperature in Kelvin
+        p : float
+            Pressure in Pascal
+
+        Returns
+        -------
+        k : float
+            Thermal conductivity in W/(m·K)
+
+        Notes
+        -----
+        **Major Assumptions**
+            * Properties computed at 1 bar (14.5 psia)
+
+        References
+        ----------
+        [1] The Engineering ToolBox (2009). Air - Thermal Conductivity vs. Temperature and Pressure. [online] Available at: https://www.engineeringtoolbox.com/air-properties-viscosity-conductivity-heat-capacity-d_1509.html [Accessed 8 January 2025].    
         """ 
         return 3.99E-4 + 9.89E-5*(T) -4.57E-8*(T**2) + 1.4E-11*(T**3)
     
     
     def compute_prandtl_number(self,T=300.):
-        """Compute the prandtl number 
-             
-        Assumptions:
-            None
-            
-        Source:
-            None
-    
-        Args:
-            self      : air                   [unitless]
-            T (float) : temperature           [K] 
-            
-        Returns:
-            Pr  (float): Prandtl Number       [unitless]
+        """
+        Computes Prandtl number.
+
+        Parameters
+        ----------
+        T : float
+            Temperature in Kelvin
+
+        Returns
+        -------
+        Pr : float
+            Prandtl number [unitless]
+
+        Notes
+        -----
+        **Theory**
+        .. math::
+            Pr = \\frac{\\mu C_p}{k}
         """ 
         
         Cp = self.specific_heat_capacity 
@@ -208,20 +271,26 @@ class Air(Gas):
         return  mu*Cp/K      
     
     def compute_R(self,T=300.,p=101325.):
-        """Compute the prandtl number 
-             
-        Assumptions:
-            None
-            
-        Source:
-            None
-    
-        Args:
-            self      : air                   [unitless]
-            T (float) : temperature           [K] 
-            
-        Returns:
-            Pr  (float): Prandtl Number       [unitless]
+        """
+        Computes specific gas constant.
+
+        Parameters
+        ----------
+        T : float
+            Temperature in Kelvin
+        p : float
+            Pressure in Pascal
+
+        Returns
+        -------
+        R : float
+            Specific gas constant in J/(kg·K)
+
+        Notes
+        -----
+        **Theory**
+        .. math::
+            R = \\frac{\\gamma - 1}{\\gamma}c_p
         """ 
         
         gamma = self.compute_gamma(T,p)

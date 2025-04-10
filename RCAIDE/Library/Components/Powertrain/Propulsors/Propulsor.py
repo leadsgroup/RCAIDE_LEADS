@@ -8,7 +8,10 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
-from RCAIDE.Library.Components                   import Component 
+import RCAIDE
+from RCAIDE.Library.Components           import Component 
+from RCAIDE.Framework.Mission.Common     import Conditions
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propusor
@@ -32,9 +35,9 @@ class Propulsor(Component):
     -----
     This class serves as the foundation for all propulsion system implementations 
     in RCAIDE. It provides the basic structure and common attributes needed for:
-    - Electric propulsion systems (rotors, ducted fans)
-    - Internal combustion engine systems (fixed and constant-speed propellers)
-    - Gas turbine systems (turbofans, turbojets, turboprops)
+        * Electric propulsion systems (rotors, ducted fans)
+        * Internal combustion engine systems (fixed and constant-speed propellers)
+        * Gas turbine systems (turbofans, turbojets, turboprops)
     
     The class inherits from Component, providing basic component functionality
     while adding propulsion-specific features. Derived classes must implement
@@ -80,6 +83,6 @@ class Propulsor(Component):
         """          
         self.tag                          = 'propulsor' 
         self.active                       = True 
-        self.wing_mounted                 = True 
-        
-    
+        self.wing_mounted                 = True
+        self.sealevel_static_thrust       = 0.0
+        self.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()

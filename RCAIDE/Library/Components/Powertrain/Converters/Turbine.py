@@ -32,13 +32,12 @@ class Turbine(Converter):
     -----
     The Turbine class models the expansion and work extraction process in a 
     turbine stage. The model includes:
-    
-    * Work extraction calculations
-    * Pressure ratio effects
-    * Temperature changes
-    * Efficiency losses
-    * Mechanical power transmission
-    * Real gas effects
+        * Work extraction calculations
+        * Pressure ratio effects
+        * Temperature changes
+        * Efficiency losses
+        * Mechanical power transmission
+        * Real gas effects
 
     **Major Assumptions**
 
@@ -77,8 +76,7 @@ class Turbine(Converter):
         self.mechanical_efficiency             = 1.0
         self.polytropic_efficiency             = 1.0
 
-    def append_operating_conditions(self,segment,propulsor): 
-        propulsor_conditions =  segment.state.conditions.energy[propulsor.tag]
-        append_turbine_conditions(self,segment,propulsor_conditions)
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
+        append_turbine_conditions(self,segment,energy_conditions)
         return                            
     

@@ -67,9 +67,13 @@ class Athena_Vortex_Lattice(Stability):
         # correction factors           
         settings                                                     = self.settings 
         settings.fuselage_lift_correction                            = 1.14
-        settings.trim_drag_correction_factor                         = 1.0
-        settings.wing_parasite_drag_form_factor                      = 1.1
-        settings.fuselage_parasite_drag_form_factor                  = 2.3
+        settings.trim_drag_correction_factor                         = 1.1
+        settings.wing_parasite_drag_form_factor                      = 1.2
+        settings.fuselage_parasite_drag_form_factor                  = 2.4  
+        settings.drag_reduction_factors                              = Data()
+        settings.drag_reduction_factors.parasite_drag                = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
+        settings.drag_reduction_factors.induced_drag                 = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
+        settings.drag_reduction_factors.compressibility_drag         = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction) 
         settings.maximum_lift_coefficient_factor                     = 1.0        
         settings.lift_to_drag_adjustment                             = 0.0   
         settings.viscous_lift_dependent_drag_factor                  = 0.38

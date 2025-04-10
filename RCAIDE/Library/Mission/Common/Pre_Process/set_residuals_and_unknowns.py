@@ -12,19 +12,70 @@ from RCAIDE.Framework.Core import Units
 #  set_residuals_and_unknowns
 # ----------------------------------------------------------------------------------------------------------------------  
 def set_residuals_and_unknowns(mission):
-    """ Sets the flight dynamics residuals and fligth controls of the aircraft   
+    """
+    Sets up flight dynamics residuals and control variables for mission segments
 
-        Assumptions:
-        N/A
+    Parameters
+    ----------
+    mission : Mission
+        The mission containing segments to be analyzed
+            - state.ones_row : function
+                Creates array of ones
+            - assigned_control_variables : Data
+                Control variable configurations
+            - flight_dynamics : Data
+                Force/moment flags
+            - state.residuals : Data
+                Storage for residuals
+            - state.unknowns : Data
+                Storage for unknowns
 
-        Inputs: 
-            mission     - data structure of mission  [-]
- 
-        Outputs:  
+    Returns
+    -------
+    None
+        Updates mission segment states directly
+    
+    Notes
+    -----
+    This function configures the flight dynamics problem for each segment by
+    setting up force/moment residuals and initializing control variables.
+    It handles a comprehensive set of flight controls and dynamics states.
 
-        Properties Used:
-        N/A
+    The function processes:
+    1. Force and moment residuals (degrees of freedom)
+    2. Control variable initialization including:
+        - Body angles
+        - Bank angles
+        - Wind angles
+        - Throttle settings
+        - Velocity and acceleration
+        - Time parameters
+        - Control surface deflections
+            * Elevator
+            * Rudder
+            * Flaps
+            * Slats
+            * Ailerons
+        - Thrust vectoring
 
+    **Control Variable Initialization**
+    
+    For each control:
+        1. Check if active
+        2. Use provided initial values if available
+        3. Apply default values if needed
+        4. Track number of controls
+
+    **Major Assumptions**
+        * Valid control configurations
+        * Proper degrees of freedom setup
+        * Compatible control assignments
+        * Valid initial guess values
+        * Units in standard format
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """     
     for segment in mission.segments:  
         ones_row    = segment.state.ones_row 
@@ -114,60 +165,61 @@ def set_residuals_and_unknowns(mission):
             num_ctrls += 1                         
                                 
         # Elevator 
-        if ctrls.elevator_deflection.active:     
-            for i in range(len(ctrls.elevator_deflection.assigned_surfaces)): 
-                if ctrls.elevator_deflection.initial_guess_values!= None:  
-                    segment.state.unknowns["elevator_" + str(i)] = ones_row(1) * ctrls.elevator_deflection.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns["elevator_" + str(i)] = ones_row(1) * 0.0 * Units.degrees  
-                num_ctrls += 1   
+        if ctrls.elevator_deflection.active:      
+            if ctrls.elevator_deflection.initial_guess_values!= None:  
+                segment.state.unknowns["elevator"] = ones_row(1) * ctrls.elevator_deflection.initial_guess_values[0][0]
+            else:
+                segment.state.unknowns["elevator" ] = ones_row(1) * 0.0 * Units.degrees  
+            num_ctrls += 1   
                 
         # Elevator 
-        if ctrls.rudder_deflection.active:  
-            for i in range(len(ctrls.rudder_deflection.assigned_surfaces)):   
-                if ctrls.rudder_deflection.initial_guess_values !=  None: 
-                    segment.state.unknowns["rudder_" + str(i)] = ones_row(1) * ctrls.rudder_deflection.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns["rudder_" + str(i)] = ones_row(1) * 0.0 * Units.degrees  
-                num_ctrls += 1    
+        if ctrls.rudder_deflection.active:    
+            if ctrls.rudder_deflection.initial_guess_values !=  None: 
+                segment.state.unknowns["rudder" ] = ones_row(1) * ctrls.rudder_deflection.initial_guess_values[0][0]
+            else:
+                segment.state.unknowns["rudder" ] = ones_row(1) * 0.0 * Units.degrees  
+            num_ctrls += 1    
                     
         # Flap  
-        if ctrls.flap_deflection.active:  
-            for i in range(len(ctrls.flap_deflection.assigned_surfaces)):
-                if ctrls.flap_deflection.initial_guess_values !=  None:
-                    segment.state.unknowns["flap_" + str(i)] = ones_row(1) * ctrls.flap_deflection.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns["flap_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
-                num_ctrls += 1    
+        if ctrls.flap_deflection.active:   
+            if ctrls.flap_deflection.initial_guess_values !=  None:
+                segment.state.unknowns["flap" ] = ones_row(1) * ctrls.flap_deflection.initial_guess_values[0][0]
+            else:
+                segment.state.unknowns["flap" ] = ones_row(1) * 0.0 * Units.degrees 
+            num_ctrls += 1
+            
         # Slat  
-        if ctrls.slat_deflection.active:  
-            for i in range(len(ctrls.slat_deflection.assigned_surfaces)):  
-                if ctrls.slat_deflection.initial_guess_values != None:      
-                    segment.state.unknowns["slat_" + str(i)] = ones_row(1) * ctrls.slat_deflection.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns["slat_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
-                num_ctrls += 1   
+        if ctrls.slat_deflection.active:   
+            if ctrls.slat_deflection.initial_guess_values != None:      
+                segment.state.unknowns["slat" ] = ones_row(1) * ctrls.slat_deflection.initial_guess_values[0][0]
+            else:
+                segment.state.unknowns["slat" ] = ones_row(1) * 0.0 * Units.degrees 
+            num_ctrls += 1   
                 
         # Aileron  
         if ctrls.aileron_deflection.active:  
             for i in range(len(ctrls.aileron_deflection.assigned_surfaces)):   
                 if ctrls.aileron_deflection.initial_guess_values !=  None:
-                    segment.state.unknowns["aileron_" + str(i)] = ones_row(1) * ctrls.aileron_deflection.initial_guess_values[i][0]
+                    segment.state.unknowns["aileron" ] = ones_row(1) * ctrls.aileron_deflection.initial_guess_values[0][0]
                 else: 
-                    segment.state.unknowns["aileron_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
+                    segment.state.unknowns["aileron" ] = ones_row(1) * 0.0 * Units.degrees 
                 num_ctrls += 1       
             
-        #  Thrust Vector Angle
-        if ctrls.thrust_vector_angle.active:  
-            for i in range(len(ctrls.thrust_vector_angle.assigned_propulsors)):  
-                if ctrls.thrust_vector_angle.initial_guess_values != None:  
-                    segment.state.unknowns["thrust_vector_" + str(i)] = ones_row(1) * ctrls.thrust_vector_angle.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns["thrust_vector_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
-                num_ctrls += 1         
-        
-        # TO DO: add pitch command
-        
-        # TO DO: if the degrees of freedom are greater than the number of control inputs, post problem at optimization   
+        ##  Thrust Vector Angle
+        #if ctrls.thrust_vector_angle.active:  
+            #for i in range(len(ctrls.thrust_vector_angle.assigned_propulsors)):  
+                #if ctrls.thrust_vector_angle.initial_guess_values != None:  
+                    #segment.state.unknowns["thrust_vector_" + str(i)] = ones_row(1) * ctrls.thrust_vector_angle.initial_guess_values[i][0]
+                #else:
+                    #segment.state.unknowns["thrust_vector_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
+                #num_ctrls += 1         
+         
+        #if ctrls.rotor_blade_pitch_command.active:  
+            #for i in range(len(ctrls.rotor_blade_pitch_command.assigned_propulsors)):  
+                #if ctrls.rotor_blade_pitch_command.initial_guess_values != None:  
+                    #segment.state.unknowns["blade_pitch_command_" + str(i)] = ones_row(1) * ctrls.rotor_blade_pitch_command.initial_guess_values[i][0]
+                #else:
+                    #segment.state.unknowns["blade_pitch_command_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
+                #num_ctrls += 1
     return 
                                                                                                                                                                 

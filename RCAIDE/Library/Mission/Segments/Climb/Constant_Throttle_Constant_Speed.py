@@ -14,22 +14,37 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def unpack_body_angle(segment):
-    """Unpacks and sets the proper value for body angle
+    """
+    Unpacks and sets the proper value for body angle
 
-    Assumptions:
-    N/A
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
 
-    Source:
-    N/A
+    Notes
+    -----
+    This function handles the initialization of the body angle for a climb segment
+    with constant throttle and constant speed.
 
-    Inputs:
-    state.unknowns.body_angle                      [Radians]
+    **Required Segment Components**
 
-    Outputs:
-    state.conditions.frames.body.inertial_rotation [Radians]
+    segment:
+        state:
+            unknowns:
+                body_angle : array
+                    Aircraft body angle [rad]
+            conditions:
+                frames:
+                    body:
+                        transform_to_inertial : array
+                            Rotation matrix from body to inertial frame
 
-    Properties Used:
-    N/A
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+        - conditions.frames.body.transform_to_inertial
     """          
     
     ctrls    = segment.assigned_control_variables 
@@ -69,7 +84,6 @@ def initialize_conditions(segment):
 
     Outputs:
     conditions.frames.inertial.velocity_vector          [meters/second]
-    conditions.energy.throttle                          [Unitless]
 
     Properties Used:
     N/A

@@ -9,75 +9,118 @@
 
 # RCAIDE Imports
 import RCAIDE   
-from RCAIDE.Framework.Mission.Common import  Conditions, Results, Residuals
+from RCAIDE.Framework.Mission.Common import Results, Residuals
 from RCAIDE.Library.Mission.Common.Update.orientations import orientations
 
 # Python package imports
-import numpy as np
-from copy import deepcopy
+import numpy as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Operating Test Conditions Set-up
 # ---------------------------------------------------------------------------------------------------------------------- 
-def setup_operating_conditions(compoment, altitude = 0,velocity_vector=np.array([[10, 0, 0]])):
-    '''
-    Set up operating conditions 
+def setup_operating_conditions(component, altitude=0, velocity_range=np.array([10]), angle_of_attack=0):
+    """
+    Sets up operating conditions for single component analysis.
     
-    ''' 
+    Parameters
+    ----------
+    component : RCAIDE.Library.Components.Component
+        Component to set up operating conditions for
+            - working_fluid : Data
+                Working fluid properties object (will be set by this function)
+    altitude : float, optional
+        Altitude for analysis [m]
+        Default: 0 (sea level)
+    velocity_range : numpy.ndarray, optional
+        Array of velocities to analyze [m/s]
+        Default: np.array([10])
+    angle_of_attack : float, optional
+        Angle of attack for analysis [deg]Default: 0
     
-    working_fluid = RCAIDE.Library.Attributes.Gases.Air()
+    Returns
+    -------
+    state : RCAIDE.Framework.Mission.Common.State
+        State object containing:
+            - conditions : Data
+                Flight conditions
+                    - freestream : Data
+                        Freestream properties
+                            - altitude : numpy.ndarray
+                                Altitude [m]
+                            - mach_number : numpy.ndarray
+                                Mach number
+                            - pressure : numpy.ndarray
+                                Atmospheric pressure [Pa]
+                            - temperature : numpy.ndarray
+                                Atmospheric temperature [K]
+                            - density : numpy.ndarray
+                                Air density [kg/m³]
+                            - dynamic_viscosity : numpy.ndarray
+                                Air dynamic viscosity [kg/(m·s)]
+                            - gravity : numpy.ndarray
+                                Gravitational acceleration [m/s²]
+                            - isentropic_expansion_factor : numpy.ndarray
+                                Ratio of specific heats (gamma)
+                            - Cp : numpy.ndarray
+                                Specific heat at constant pressure [J/(kg·K)]
+                            - R : numpy.ndarray
+                                Gas constant [J/(kg·K)]
+                            - speed_of_sound : numpy.ndarray
+                                Speed of sound [m/s]
+                            - velocity : numpy.ndarray
+                                Freestream velocity [m/s]
+                    - frames : Data
+                        Reference frames
+                            - body : Data
+                                Body-fixed frame
+                                    - inertial_rotations : numpy.ndarray
+                                        Rotation angles [rad]
+                            - inertial : Data
+                                Inertial frame
+                                    - velocity_vector : numpy.ndarray
+                                        Velocity vector [m/s]
     
-    if isinstance(compoment, RCAIDE.Library.Components.Powertrain.Converters.Converter):
-        # assign generatic propulsor 
-        if type(compoment) == RCAIDE.Library.Components.Powertrain.Converters.DC_Motor:  
-            propulsor         = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()
-            distributor       = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
-            propulsor.motor   = compoment  
-        if type(compoment) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor: 
-            propulsor         = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor() 
-            distributor       = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
-            propulsor.motor   = compoment   
-        if isinstance(compoment,RCAIDE.Library.Components.Powertrain.Converters.Rotor):  
-            propulsor         = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()
-            distributor       = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
-            propulsor.rotor   = compoment   
-            
-    elif isinstance(compoment,RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor): 
-        propulsor = deepcopy(compoment)
-        propulsor.working_fluid =  working_fluid
-        
-        if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    Notes
+    -----
+    This function creates a standardized set of operating conditions for component analysis.
+    It sets up atmospheric conditions based on the US Standard Atmosphere 1976 model and
+    initializes all necessary parameters for component performance evaluation.
     
-        if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    The function:
+        1. Sets up Earth as the planet and air as the working fluid
+        2. Computes atmospheric properties at the specified altitude
+        3. Creates a conditions data structure with all necessary parameters
+        4. Sets up reference frames and orientations
+        5. Appends component-specific operating conditions
     
-        if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    **Major Assumptions**
+        * US Standard Atmosphere 1976
+        * Earth gravity
+        * Air as working fluid
     
-        if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    See Also
+    --------
+    RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976
+    RCAIDE.Library.Mission.Common.Update.orientations
+    """
     
-        if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.ICE_Propeller:
-            distributor = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
-            
-        
     planet                                            = RCAIDE.Library.Attributes.Planets.Earth()
-    working_fluid = RCAIDE.Library.Attributes.Gases.Air()
+    working_fluid                                     = RCAIDE.Library.Attributes.Gases.Air() 
+    
+    # append working fluid properties 
+    component.working_fluid                           = working_fluid     
+    
     atmosphere_sls                                    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmo_data                                         = atmosphere_sls.compute_values(0.0,0.0)
-                                                      
+    atmo_data                                         = atmosphere_sls.compute_values(altitude,0.0) 
     p                                                 = atmo_data.pressure          
     T                                                 = atmo_data.temperature       
     rho                                               = atmo_data.density          
     a                                                 = atmo_data.speed_of_sound    
-    mu                                                = atmo_data.dynamic_viscosity
-     
-    speed                                             =  np.linalg.norm(velocity_vector, axis =1) 
+    mu                                                = atmo_data.dynamic_viscosity 
                                                       
     conditions                                        = Results() 
     conditions.freestream.altitude                    = np.atleast_2d(altitude)
-    conditions.freestream.mach_number                 = np.atleast_2d(speed/a)
+    conditions.freestream.mach_number                 = np.atleast_2d(velocity_range/a)
     conditions.freestream.pressure                    = np.atleast_2d(p)
     conditions.freestream.temperature                 = np.atleast_2d(T)
     conditions.freestream.density                     = np.atleast_2d(rho)
@@ -87,28 +130,25 @@ def setup_operating_conditions(compoment, altitude = 0,velocity_vector=np.array(
     conditions.freestream.Cp                          = np.atleast_2d(working_fluid.compute_cp(T,p))
     conditions.freestream.R                           = np.atleast_2d(working_fluid.gas_specific_constant)
     conditions.freestream.speed_of_sound              = np.atleast_2d(a)
-    conditions.freestream.velocity                    = velocity_vector 
-    
-    AoA =  np.arctan(velocity_vector[0, 2] / velocity_vector[0, 0])
 
-    conditions.frames.body.inertial_rotations        =  np.array([[0, AoA, 0]]) 
-    conditions.static_stability.roll_rate            =  np.array([[0]])  
-    conditions.static_stability.pitch_rate           =  np.array([[0]])
-    conditions.static_stability.yaw_rate             =  np.array([[0]]) 
+    num_ctrl_pts      = len(velocity_range)    
+    conditions._size  = num_ctrl_pts
+    conditions.expand_rows(num_ctrl_pts)
+     
+    conditions.freestream.velocity                    = np.atleast_2d(velocity_range) 
+    conditions.frames.body.inertial_rotations[:, 1]   = angle_of_attack
+    conditions.frames.inertial.velocity_vector[:, 0]  = np.atleast_2d(velocity_range)
 
     # setup conditions   
-    segment                                           = RCAIDE.Framework.Mission.Segments.Segment()  
-    segment.state.conditions                          = conditions    
-    orientations(segment)
+    segment                                          = RCAIDE.Framework.Mission.Segments.Segment()  
+    segment.state.conditions                         = conditions    
+    orientations(segment) 
+    segment.state.residuals.network                  = Residuals()
     
-    segment.state.residuals.network = Residuals()
-    propulsor.append_operating_conditions(segment) 
-    for tag, item in  propulsor.items(): 
-        if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,propulsor) 
-      
-    segment.state.conditions.energy[distributor.tag] = Conditions() 
-    segment.state.conditions.noise[distributor.tag]  = Conditions()    
-    propulsor.append_propulsor_unknowns_and_residuals(segment)
-         
-    return segment.state , propulsor.tag
+    # append component-specific operating conditions 
+    component.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)    
+    segment.state.conditions.expand_rows(num_ctrl_pts)              
+    return segment.state
+ 
+    
+    

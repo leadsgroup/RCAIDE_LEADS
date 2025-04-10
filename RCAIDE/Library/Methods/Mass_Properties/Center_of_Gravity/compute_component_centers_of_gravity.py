@@ -55,7 +55,7 @@ def compute_component_centers_of_gravity(vehicle, nose_load = 0.06):
             wing.sweeps.leading_edge = convert_sweep(wing,old_ref_chord_fraction = 0.25 ,new_ref_chord_fraction = 0.0)
         
         if isinstance(wing,C.Wings.Main_Wing):
-                wing.mass_properties.center_of_gravity[0][0] = .05*wing.chords.mean_aerodynamic +wing.aerodynamic_center[0]           
+            wing.mass_properties.center_of_gravity[0][0] = .05*wing.chords.mean_aerodynamic +wing.aerodynamic_center[0]           
             
         elif isinstance(wing,C.Wings.Horizontal_Tail):
             chord_length_h_tail_35_percent_semi_span  = compute_chord_length_from_span_location(wing,.35*wing.spans.projected*.5)

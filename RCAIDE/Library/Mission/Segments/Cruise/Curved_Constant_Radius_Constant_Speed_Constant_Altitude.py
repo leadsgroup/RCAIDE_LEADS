@@ -13,30 +13,77 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for constant radius curved flight at fixed altitude and speed.
 
-    Assumptions:
-    Curved segment with constant radius, constant speed and constant altitude
-    Assumes that it is a coordinated turn (true course and true heading are aligned)
-
-    Source:
-    N/A
-
-    Inputs:
-    segment.altitude                [meters] # deleted segment distance as it is now defined by the turn_angle and radius.
-    segment.speed                   [meters/second]
-    self.start_true_course          [degrees] true course of the vehicle before the turn
-    self.turn_angle                 [degrees] angle measure of the curve. + is right hand turn, - is left hand turn. 
-    self.radius                     [meters] radius of the turn
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - altitude : float
+                Cruise altitude [m]
+            - air_speed : float
+                True airspeed to maintain [m/s]
+            - true_course : float
+                Initial true course angle [deg]
+            - turn_angle : float
+                Total turn angle to execute [deg]
+                Positive for right turn, negative for left turn
+            - turn_radius : float
+                Radius of the turn [m]
+            - sideslip_angle : float
+                Aircraft sideslip angle [rad]
+            - state:
+                numerics.dimensionless.control_points : array
+                    Discretization points [-]
+                conditions : Data
+                    State conditions container
+                initials : Data, optional
+                    Initial conditions from previous segment
+        
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+            - conditions.frames.inertial.velocity_vector [m/s]
+            - conditions.frames.inertial.position_vector [m]
+            - conditions.frames.body.velocity_vector [m/s]
+            - conditions.freestream.altitude [m]
+            - conditions.frames.inertial.time [s]
+            - conditions.frames.planet.true_heading [rad]
+            - conditions.frames.planet.true_course [rad]
     
-    Outputs: ***pretty sure that no additional outputs are need. Verify this***
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
-    conditions.frames.inertial.time             [seconds]
+    Notes
+    -----
+    This function sets up the initial conditions for a coordinated turn segment with 
+    constant radius, constant speed, and constant altitude. The turn direction and 
+    magnitude are specified by the turn angle.
 
-    Properties Used:
-    N/A
+    **Calculation Process**
+    1. Check initial conditions
+    2. Calculate turn rate from speed and radius:
+        ω = V/R where:
+            - V is true airspeed
+            - R is turn radius
+    3. Calculate time required for turn:
+        t = |θ|/ω where:
+            - θ is turn angle
+            - ω is turn rate
+    4. Discretize time points
+    5. Calculate true course progression
+    6. Decompose velocity into inertial and body components
+
+    **Major Assumptions**
+        * Coordinated turn (true course aligned with true heading)
+        * Constant true airspeed
+        * Constant altitude
+        * Constant turn radius
+        * Small angle approximations
+        * Quasi-steady flight
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """        
     
     # unpack 

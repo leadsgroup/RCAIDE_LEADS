@@ -79,10 +79,10 @@ def compressibility_drag(state,settings,geometry):
     
     peak_volume_total = high_cutoff_volume_total*peak_factor
      
-    # subsonic side
+    # subsonic side smoothing function
     a1 = (low_cutoff_volume_total-peak_volume_total)/(low_mach_cutoff-peak_mach)/(low_mach_cutoff-peak_mach)
     
-    # supersonic side
+    # supersonic side smoothing function
     a2 = (high_cutoff_volume_total-peak_volume_total)/(high_mach_cutoff-peak_mach)/(high_mach_cutoff-peak_mach) 
     
     # Shorten cubic Hermite spline

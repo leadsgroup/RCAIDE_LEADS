@@ -162,9 +162,7 @@ class Boom(Component):
         self.lengths                                = Data()
         self.lengths.nose                           = 0.0 
         self.lengths.total                          = 0.0
-        self.lengths.cabin                          = 0.0
-        self.lengths.fore_space                     = 0.0
-        self.lengths.aft_space                      = 0.0
+        self.lengths.cabin                          = 0.0 
                  
         self.fineness                               = Data()
         self.fineness.nose                          = 0.0

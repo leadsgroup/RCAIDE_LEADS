@@ -14,7 +14,48 @@ from RCAIDE.Framework.Core import Units
 #  Rocket_LH2
 # ----------------------------------------------------------------------------------------------------------------------  
 class Rocket_LH2(Propellant):
-    """LH2 Rocket Fuel Class
+    """
+    A class representing liquid hydrogen (LH2) fuel properties specifically for rocket 
+    propulsion applications. Optimized for high-performance rocket engines with 
+    oxygen as oxidizer.
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the propellant ('Rocket_LH2')
+    molecular_weight : float
+        Molecular weight in kg/kmol (12.644)
+    isentropic_expansion_factor : float
+        Ratio of specific heats (1.145)
+    combustion_temperature : float
+        Adiabatic flame temperature in K (3331.0)
+    gas_specific_constant : float
+        Specific gas constant in J/(kg*K) (8314.45986/molecular_weight)
+
+    Notes
+    -----
+    This class implements properties for rocket-grade liquid hydrogen, focusing on 
+    parameters relevant to high-performance rocket engine applications. Properties 
+    are optimized for use with liquid oxygen in bipropellant rocket engines.
+
+    **Definitions**
+    
+    'Isentropic Expansion Factor'
+        Ratio of specific heats (cp/cv) for exhaust products
+    
+    'Combustion Temperature'
+        Theoretical maximum temperature achieved in the combustion chamber
+    
+    'Gas Specific Constant'
+        Individual gas constant for combustion products
+
+    **Major Assumptions**
+        * Properties are for rocket engine operating conditions
+        * O/F ratio of 5.50 (oxygen to fuel mass ratio)
+
+    References
+    ----------
+    [1] Sutton, G. P., & Biblarz, O. (2017). Rocket Propulsion Elements. John Wiley & Sons Inc. 
     """
 
     def __defaults__(self):
@@ -31,3 +72,11 @@ class Rocket_LH2(Propellant):
         self.isentropic_expansion_factor = 1.145
         self.combustion_temperature      = 3331.0*Units.kelvin                # [K]                      
         self.gas_specific_constant       = (8314.45986/self.molecular_weight)*Units['J/(kg*K)'] # [J/(kg-K)]
+
+        self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
+        self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
+        self.temperature                   = 0         # [K] Temperature of fuel
+        self.pressure                      = 0         # [Pa] Pressure of fuel
+        self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
+        self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
+        self.oxidizer                      = ''

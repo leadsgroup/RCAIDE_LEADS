@@ -7,8 +7,10 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports   
+import RCAIDE
 from .Converter  import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions import  append_combustor_conditions
+from RCAIDE.Library.Attributes.Gases.Air import Air
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Combustor
@@ -136,38 +138,38 @@ class Combustor(Converter):
         None 
         """         
         
-        self.tag                               = 'Combustor' 
-        self.alphac                            = 0.0
-        self.turbine_inlet_temperature         = 1500
-        self.area_ratio                        = 1.0
-        self.axial_fuel_velocity_ratio         = 0.0
-        self.fuel_velocity_ratio               = 0.0
-        self.burner_drag_coefficient           = 0.0
-        self.absolute_sensible_enthalpy        = 0.0 
-        self.diameter                          = 0.2
-        self.length                            = 0.3
-        self.fuel_equivalency_ratio            = 0.3 
-        self.number_of_combustors              = 30 
-                                               
-        self.f_air_PZ                          = 0.18                                                  # [-]       Fraction of total air present in the combustor that enters the Primary Zone         
-        self.FAR_st                            = 0.068                                                 # [-]       Stoichiometric Fuel to Air ratio
-        self.N_comb                            = 10                                                    # [-]       Number of can-annular combustors
-        self.N_PZ                              = 8                                                     # [-]       Number of PSR (EVEN, must match the number of PSR below)
-        self.A_PZ                              = 0.15                                                  # [m**2]    Primary Zone cross-sectional area     
-        self.L_PZ                              = 0.0153                                                # [m]       Primary Zone length  
-        self.N_SZ                              = 3                                                     # [-]       Number of dilution air inlets        
-        self.A_SZ                              = 0.15                                                  # [m**2]    Secondary Zone cross-sectional area
-        self.L_SZ                              = 0.075                                                 # [m]       Secondary Zone length  
-        self.phi_SZ                            = 0.2                                                   # [-]       Equivalence Ratio for PFR    phi_PZ_des              = 0.6                                                   # [-]       Primary Zone Design Equivalence Ratio
-        self.S_PZ                              = 0.6                                                   # [-]       Mixing parameter, used to define the Equivalence Ratio standard deviation  
-        self.F_SC                              = 0.425                                                 # [-]       Fuel scaler
-        self.number_of_assigned_PSR_1st_mixers = 2                                                     # [-]       Number of assigned PSRs to each mixer in the first row of mixers (CRN network model)
-        self.number_of_assigned_PSR_2nd_mixers = 2                                                     # [-]       Number of assigned mixers to each mixer in the second row of mixers (CRN network model)
-    
-    def append_operating_conditions(self,segment,propulsor):
+        self.tag                                     = 'Combustor' 
+        self.alphac                                  = 0.0
+        self.turbine_inlet_temperature               = 1500
+        self.area_ratio                              = 1.0
+        self.axial_fuel_velocity_ratio               = 0.0
+        self.fuel_velocity_ratio                     = 0.0
+        self.burner_drag_coefficient                 = 0.0
+        self.absolute_sensible_enthalpy              = 0.0 
+        self.tag                                     = 'CFM56-7B'     # [-] Combustor tag
+        self.volume                                  = 0.0023         # [m**3] Combustor volume
+        self.length                                  = 0.2            # [m] Combustor Length
+        self.number_of_combustors                    = 1              # [-] Number of Combustors for one engine
+        self.F_SC                                    = 1              # [-] Fuel scale factor
+        self.N_PZ                                    = 21             # [-] Number of PSR in the Primary Zone
+        self.L_PZ                                    = 0.05           # [m] Primary Zone length  
+        self.S_PZ                                    = 0.39           # [-] Mixing parameter in the Primary Zone  
+        self.design_equivalence_ratio_PZ             = 1.71           # [-] Design Equivalence Ratio in Primary Zone at Maximum Throttle  
+        self.N_SZ                                    = 500            # [-] Number of discritizations in the Secondary Zone
+        self.f_SM                                    = 0.6            # [-] Slow mode fraction
+        self.l_SA_SM                                 = 0.4            # [-] Secondary air length fraction (of L_SZ) in slow mode
+        self.l_SA_FM                                 = 0.05           # [-] Secondary air length fraction (of L_SZ) in fast mode
+        self.l_DA_start                              = 0.95           # [-] Dilution air start length fraction (of L_SZ)
+        self.l_DA_end                                = 1.0            # [-] Dilution air end length fraction (of L_SZ)
+        self.joint_mixing_fraction                   = 0.6            # [-] Joint mixing fraction
+        self.design_equivalence_ratio_SZ             = 0.61            # [-] Design Equivalence Ratio in Secondary Zone at Maximum Throttle
+        self.air_mass_flow_rate_take_off             = 40             # [kg/s] Air mass flow rate at take-off
+        self.fuel_to_air_ratio_take_off              = 0.025          # [-] Fuel to air ratio at take-off
+        self.air_data                                = Air()          # [-] Air object
+        self.fuel_data                               = RCAIDE.Library.Attributes.Propellants.Jet_A1()       # [-] Fuel object
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
         Appends operating conditions to the combustor.
-        """
-        propulsor_conditions =  segment.state.conditions.energy[propulsor.tag]
-        append_combustor_conditions(self,segment,propulsor_conditions)
+        """ 
+        append_combustor_conditions(self,segment,energy_conditions)
         return

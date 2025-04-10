@@ -27,13 +27,10 @@ jobs:
           python-version: "3.X"
       - name: Install dependencies
         run: |
-          pip install sphinx pydata-sphinx-theme
-
-      - name: Install Dependencies
-        run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install -e .
-          python3 -m pip install sphinx
+          python3 -m pip install "sphinx<8.2"
+          python3 -m pip install sphinx-rtd-theme
           python3 -m pip install sphinx_rtd_theme
           python3 -m pip install sphinx-autobuild
           python3 -m pip install sphinx-autoapi
@@ -43,6 +40,7 @@ jobs:
           python3 -m pip install pandoc
           python3 -m pip install nbconvert nbformat jupyter
           python3 -m pip install import_ipynb
+          python3 -m pip install pydata-sphinx-theme
        
           
       - name: Execute Notebooks

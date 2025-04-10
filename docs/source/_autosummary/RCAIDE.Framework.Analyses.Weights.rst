@@ -30,11 +30,9 @@ Weights
    :template: custom-module-template.rst
    :recursive:
 
+   Conventional
+   Electric
+   Hybrid
+   Hydrogen
    Weights
-   Weights_BWB
-   Weights_EVTOL
-   Weights_General_Aviation
-   Weights_Human_Powered
-   Weights_Transport
-   Weights_UAV
 

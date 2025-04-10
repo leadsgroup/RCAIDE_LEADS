@@ -14,27 +14,62 @@ from RCAIDE.Framework.Core    import Units
 #  Vertical Tail Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_vertical_tail_weight(vehicle, wing):
-    """ Calculate the vertical tail weight
+    """
+    Computes the vertical tail weight using NASA FLOPS weight estimation method.
 
-        Assumptions:
-           Conventional tail configuration
+    Parameters
+    ----------
+    vehicle : Vehicle
+        The vehicle instance containing:
+            - mass_properties.max_takeoff : float
+                Maximum takeoff weight [kg]
+    wing : Wing
+        The vertical tail instance containing:
+            - taper : float
+                Taper ratio
+            - areas.reference : float
+                Planform area [m²]
 
-        Source:
-            The Flight Optimization System Weight Estimation Method
+    Returns
+    -------
+    WVT : float
+        Vertical tail weight [kg]
 
-       Inputs:
-            vehicle - data dictionary with vehicle properties                   [dimensionless]
-                -.mass_properties.max_takeoff: MTOW                             [kilograms]
-            wing - data dictionary with vertical tail properties                [dimensionless]
-                -.taper: taper of wing
-                -.areas.reference: surface area of wing                         [m^2]
+    Notes
+    -----
+    Uses FLOPS correlation developed from transport aircraft database. The method accounts 
+    for tail size, aircraft weight, and planform effects.
 
-       Outputs:
-            WVT - vertical tail weight                                          [kilograms]
+    **Major Assumptions**
+        * Conventional tail configuration
+        * Single vertical tail (NVERT = 1). Multiple vertical tails are computed separately and summed.
 
-        Properties Used:
-            N/A
-        """
+    **Theory**
+    Weight is computed using:
+    .. math::
+        W_{VT} = 0.32W_{TO}^{0.3}(\\lambda_{VT} + 0.5)N_{VT}^{0.7}S_{VT}^{0.85}
+
+    where:
+        * W_TO = takeoff gross weight
+        * λ_VT = vertical tail taper ratio
+        * N_VT = number of vertical tails (fixed at 1)
+        * S_VT = vertical tail area
+
+    The correlation accounts for:
+        * Bending and torsional stiffness requirements
+        * Rudder integration
+        * Attachment structure
+        * Standard design margins
+        * Directional stability requirements
+
+    References
+    ----------
+    [1] NASA Flight Optimization System (FLOPS)
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Weights.Correlation_Buildups.FLOPS.compute_horizontal_tail_weight
+    """
     DG          = vehicle.mass_properties.max_takeoff / Units.lbs  # Design gross weight in lb
     TRVT        = wing.taper
     NVERT       = 1  # Number of vertical tails

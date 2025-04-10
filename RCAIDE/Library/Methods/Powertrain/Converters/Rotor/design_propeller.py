@@ -9,7 +9,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core   import interp2d
 from RCAIDE.Library.Methods.Geometry.Airfoil    import compute_airfoil_properties, compute_naca_4series, import_airfoil_geometry
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import compute_propeller_efficiency
 
 # package imports 
 import numpy as np
@@ -19,55 +18,122 @@ from scipy.optimize import root
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Propeller
 # ----------------------------------------------------------------------------------------------------------------------   
-def design_propeller(prop,number_of_stations=20):
-    """ Optimizes propeller chord and twist given input parameters.
-          
-          Inputs:
-          Either design power or thrust
-          prop_attributes.
-            hub radius                       [m]
-            tip radius                       [m]
-            rotation rate                    [rad/s]
-            freestream velocity              [m/s]
-            number of blades               
-            number of stations
-            design lift coefficient
-            design_altitude                  [m]
-            airfoil data
-            
-          Outputs:
-          Twist distribution                 [array of radians]
-          Chord distribution                 [array of meters]
-              
-          Assumptions/ Source:
-          Based on Design of Optimum Propellers by Adkins and Liebeck
-          
+def design_propeller(prop, number_of_stations=20):
     """
-
-    if prop.fidelity == 'Actuator_Disk':
-        
-        omega     = prop.cruise.design_angular_velocity
-        thrust    = prop.cruise.design_thrust
-        V         = prop.cruise.design_freestream_velocity 
-        atmo      = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-        rho       = atmo.compute_values(prop.cruise.design_altitude,0.).density
-        
-        n, D, J, eta_p, Cp, Ct  = compute_propeller_efficiency(prop, V, omega)
-        
-        power     = thrust*V/eta_p
-        Q         = power/omega
-
-        # Ct        = thrust/(rho * (n**2)*(D**4))          
-        # Cp        = power/(rho * (n**3)*(D**5) )              
-                
-        prop.cruise.design_power              = power
-        prop.cruise.design_efficiency         = eta_p 
-        prop.cruise.design_thrust             = thrust
-        prop.cruise.design_torque             = Q
-        prop.cruise.design_thrust_coefficient = Ct  
-        prop.cruise.design_power_coefficient  = Cp 
-
-    elif prop.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz':
+    Optimizes propeller chord and twist distribution given input parameters.
+    
+    Parameters
+    ----------
+    prop : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Propeller component with the following attributes:
+            - fidelity : str
+                Analysis fidelity level
+            - number_of_blades : int
+                Number of blades on the propeller
+            - tip_radius : float
+                Tip radius of the propeller [m]
+            - hub_radius : float
+                Hub radius of the propeller [m]
+            - cruise : Data
+                Cruise conditions
+                    - design_angular_velocity : float
+                        Rotation rate [rad/s]
+                    - design_freestream_velocity : float
+                        Freestream velocity [m/s]
+                    - design_Cl : float
+                        Design lift coefficient
+                    - design_altitude : float
+                        Design altitude [m]
+                    - design_thrust : float, optional
+                        Design thrust [N] (specify either thrust or power)
+                    - design_power : float, optional
+                        Design power [W] (specify either thrust or power)
+            - airfoils : dict
+                Dictionary of airfoil objects
+            - airfoil_polar_stations : list
+                Indices of airfoil polars for each radial station
+    number_of_stations : int, optional
+        Number of radial stations for blade discretization, default 20
+    
+    Returns
+    -------
+    prop : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Propeller with optimized parameters:
+            - cruise.design_power : float
+                Design power [W]
+            - cruise.design_thrust : float
+                Design thrust [N]
+            - cruise.design_torque : float
+                Design torque [N·m]
+            - max_thickness_distribution : array_like
+                Maximum thickness distribution [m]
+            - twist_distribution : array_like
+                Blade twist distribution [rad]
+            - chord_distribution : array_like
+                Blade chord distribution [m]
+            - radius_distribution : array_like
+                Radial station positions [m]
+            - cruise.design_power_coefficient : float
+                Design power coefficient
+            - cruise.design_thrust_coefficient : float
+                Design thrust coefficient
+            - mid_chord_alignment : array_like
+                Mid-chord alignment [m]
+            - thickness_to_chord : array_like
+                Thickness-to-chord ratio
+            - blade_solidity : float
+                Blade solidity
+    
+    Notes
+    -----
+    This function implements the design methodology from "Design of Optimum Propellers"
+    by Adkins and Liebeck to optimize propeller chord and twist distributions. It
+    iteratively solves for the optimal circulation distribution that minimizes induced
+    losses.
+    
+    The design process follows these steps:
+        1. Calculate atmospheric properties at the design altitude
+        2. Compute non-dimensional thrust or power coefficient
+        3. Initialize the wake skew angle (zeta)
+        4. Iteratively solve for the optimal circulation distribution:
+            a. Compute the Prandtl momentum loss factor
+            b. Determine the product of relative velocity and chord (Wc)
+            c. Calculate Reynolds number and Mach number at each station
+            d. Compute optimal angle of attack and drag coefficient
+            e. Calculate the efficiency parameter (epsilon = Cd/Cl)
+            f. Determine axial and tangential induction factors
+            g. Compute chord and blade twist angle
+            h. Calculate derivatives for thrust and power integrals
+            i. Update the wake skew angle (zeta)
+        5. Calculate final performance parameters (thrust, power, efficiency)
+        6. Compute thickness distribution and blade solidity
+    
+    **Major Assumptions**
+        * Either design thrust or design power must be specified (not both)
+        * The design is optimized for a single operating condition
+        * Airfoil performance is based on 2D characteristics
+        * The wake is modeled with a constant skew angle
+    
+    **Theory**
+    The method is based on the classical blade element momentum theory with
+    modifications to account for wake rotation. The key parameter in the optimization
+    is the wake skew angle (zeta), which relates to the induced velocities.
+    
+    The optimal circulation distribution minimizes induced losses while satisfying
+    the thrust or power constraint. The method iteratively solves for this distribution
+    by updating the wake skew angle until convergence.
+    
+    References
+    ----------
+    [1] Adkins, C.N. and Liebeck, R.H., "Design of Optimum Propellers", Journal of Propulsion and Power, Vol. 10, No. 5, 1994, pp. 676-682
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties
+    RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series
+    RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry
+    """
+    if prop.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
         # Unpack
         N            = number_of_stations       # this number determines the discretization of the propeller into stations
         B            = prop.number_of_blades
@@ -295,7 +361,7 @@ def design_propeller(prop,number_of_stations=20):
         prop.cruise.design_thrust_coefficient       = Ct
         prop.mid_chord_alignment                    = MCA
         prop.thickness_to_chord                     = t_c
-        prop.blade_solidity                         = sigma
+        prop.blade_solidity                         = sigma  
 
     return prop
 

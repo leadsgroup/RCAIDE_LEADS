@@ -14,7 +14,7 @@ from RCAIDE.Library.Components                      import Component
 # ----------------------------------------------------------------------------------------------------------------------
 class Converter(Component):
     """
-    A generatic converter class opject used to build all converters 
+    A generatic converter class object used to build all converters. Inherits from the Component class.
     """
 
     def __defaults__(self):
@@ -23,6 +23,7 @@ class Converter(Component):
         Assumptions:
             None 
         """
-        #set the deafult values
+        # set the deafult values
         self.tag                      = 'tag' 
-        self.working_fluid            = Data() 
+        self.working_fluid            = Data()
+        self.active                   = True
