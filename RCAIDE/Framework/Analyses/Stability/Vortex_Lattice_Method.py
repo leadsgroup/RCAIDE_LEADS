@@ -187,6 +187,14 @@ class Vortex_Lattice_Method(Stability):
         self.stability_derivatives.dCN_dbeta    = None
         self.stability_derivatives.dCN_dp       = None
         self.stability_derivatives.dCN_dr       = None
+        self.stability_derivatives.CY_delta_a   = None
+        self.stability_derivatives.CL_delta_a   = None
+        self.stability_derivatives.CN_delta_a   = None
+        self.stability_derivatives.CM_delta_e   = None
+        self.stability_derivatives.CY_delta_r   = None
+        self.stability_derivatives.CL_delta_r   = None
+        self.stability_derivatives.CN_delta_r   = None
+        self.stability_derivatives.CM_delta_f   = None
 
         # build the evaluation process
         compute                                    = Process() 
