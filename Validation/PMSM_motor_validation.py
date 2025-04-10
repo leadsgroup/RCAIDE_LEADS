@@ -73,23 +73,27 @@ def main():
 def plot_power_and_torque(x_cont_pow, y_cont_pow, motor_rpm_vector, motor_power_vector, x_cont_tq, y_cont_tq, motor_torque_vector):
     
     fig, ax1 = plt.subplots(figsize=(10, 5))
+    label_fontsize = 16
+    tick_fontsize = 14
     color = 'tab:blue'
-    ax1.set_xlabel('[RPM]')
-    ax1.set_ylabel('Power [kW]', color=color)
+    ax1.set_xlabel('[RPM]', fontsize=label_fontsize)
+    ax1.set_ylabel('Power [kW]', color=color, fontsize=label_fontsize)
     ax1.plot(x_cont_pow, y_cont_pow, '-', color=color, label='EMRAX 348 Power')
     ax1.plot(motor_rpm_vector, motor_power_vector, 'o', color='tab:cyan', label='RCAIDE PMSM Power')
-    ax1.tick_params(axis='y', labelcolor=color)
+    ax1.tick_params(axis='y', labelcolor=color, labelsize=tick_fontsize)
     ax2 = ax1.twinx()
     color = 'tab:orange'
-    ax2.set_ylabel('Torque [Nm]', color=color)
+    ax2.set_ylabel('Torque [Nm]', color=color, fontsize=label_fontsize)
     ax2.set_ylim(0, 600)
     ax2.plot(x_cont_tq, y_cont_tq, '-', color=color, label='EMRAX 348 Torque')
     ax2.plot(motor_rpm_vector, motor_torque_vector, 'o', color='tab:orange', label='RCAIDE PMSM Torque')
-    ax2.tick_params(axis='y', labelcolor=color)
-    ax1.legend(loc='upper left')
-    ax2.legend(loc='upper right')
+    ax2.tick_params(axis='y', labelcolor=color, labelsize=tick_fontsize)
+    ax1.tick_params(axis='x', labelsize=tick_fontsize)
+    lines, labels = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2, loc='upper center', bbox_to_anchor=(0.5, 1.35), fontsize=label_fontsize, ncol=2)
     fig.tight_layout()
-    plt.title('Power and Torque vs RPM')
+    fig.savefig('PMSM_motor_validation.png', dpi=300)
 
 # ----------------------------------------------------------------------        
 #   Call Main

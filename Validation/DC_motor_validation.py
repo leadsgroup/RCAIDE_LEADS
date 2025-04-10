@@ -69,26 +69,33 @@ def plot_power_and_torque(x_current, y_current, x_rpm, y_rpm, motor_torque_vecto
     
     fig, ax1 = plt.subplots(figsize=(10, 5))
 
+    # Increase font size for labels and tick marks
+    label_fontsize = 16
+    tick_fontsize = 14
+
     color = 'tab:blue'
-    ax1.set_xlabel('Torque [kgfcm]')
-    ax1.set_ylabel('Speed [RPM]', color=color)
+    ax1.set_xlabel('Torque [kgfcm]', fontsize=label_fontsize)
+    ax1.set_ylabel('Speed [RPM]', color=color, fontsize=label_fontsize)
     ax1.set_xlim(0, 16)
     ax1.plot(x_rpm, y_rpm, '-', color=color, label='8DCG12-25-30 rpm')
     ax1.plot(motor_torque_vector, motor_rpm_vector, 'o', color='tab:cyan', label='RCAIDE DC Motor rpm')
-    ax1.tick_params(axis='y', labelcolor=color)
+    ax1.tick_params(axis='y', labelcolor=color, labelsize=tick_fontsize)
 
     ax2 = ax1.twinx()
     color = 'tab:orange'
-    ax2.set_ylabel('Current [A]', color=color)
+    ax2.set_ylabel('Current [A]', color=color, fontsize=label_fontsize)
     ax2.set_xlim(0, 16)
     ax2.plot(x_current, y_current, '-', color=color, label='8DCG12-25-30 current')
     ax2.plot(motor_torque_vector, motor_current, 'o', color='tab:orange', label='RCAIDE DC Motor current')
-    ax2.tick_params(axis='y', labelcolor=color)
+    ax2.tick_params(axis='y', labelcolor=color, labelsize=tick_fontsize)
 
-    ax1.legend(loc='upper left')
-    ax2.legend(loc='upper right')
+    ax1.tick_params(axis='x', labelsize=tick_fontsize)
+    # Combine legends from both axes and place on top
+    lines, labels = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2, loc='upper center', bbox_to_anchor=(0.5, 1.35), fontsize=label_fontsize, ncol=2)
     fig.tight_layout()
-    plt.title('Current and Speed vs Torque')
+    fig.savefig('DC_motor_validation.png', dpi=300)
 
 # ----------------------------------------------------------------------        
 #   Call Main

@@ -1,4 +1,3 @@
-
 #--------------------------------------------------------------------------------------------
 #   Imports
 # -------------------------------------------------------------------------------------------
@@ -44,7 +43,7 @@ def propeller_test():
     propeller      = APC_11x4_Propeller()
     
     # define velocity range 
-    velocity_range  = np.linspace(0, 10, 19) 
+    velocity_range  = np.linspace(0, 10, 100) 
     
     # define RPM
     angular_velocity = 1000*Units.rpm
@@ -59,18 +58,32 @@ def propeller_test():
 
     literature_thrust = np.array([0.169, 0.165, 0.162, 0.158, 0.154, 0.149, 0.145, 0.140, 0.135, 0.130, 0.125, 0.120, 0.114, 0.109, 0.103, 0.097, 0.091, 0.084, 0.078, 0.071, 0.065, 0.058, 0.051, 0.044, 0.037, 0.030, 0.023, 0.016, 0.008, 0.001])
 
-    fig, ax = plt.subplots()
-    ax.plot(literature_advance_ratio, literature_thrust, label='literature')
-    ax.plot(results.advance_ratio, results.thrust[:,0], label='RCAIDE')
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    # Increase font size for labels and tick marks
+    label_fontsize = 16
+    tick_fontsize = 14
+    
+    ax.plot(literature_advance_ratio, literature_thrust, '-', label='literature')
+    ax.plot(results.advance_ratio, results.thrust[:,0], 'o', label='RCAIDE')
+    
     ax.set_xlim(0, 0.4)
     ax.set_ylim(0, 0.2)
-    ax.set_xlabel('Advance Ratio')
-    ax.set_ylabel('Thrust [N]')
-    ax.legend()
+    
+    # Set font size for labels
+    ax.set_xlabel('J [-]', fontsize=label_fontsize)
+    ax.set_ylabel('Thrust [N]', fontsize=label_fontsize)
+    
+    # Set font size for tick labels
+    ax.tick_params(axis='both', which='major', labelsize=tick_fontsize)
+    
+    # Combine legends and place on top
+    ax.legend(loc='upper right', fontsize=label_fontsize, ncol=2)
+    
+    fig.tight_layout()
+    fig.savefig('rotor_validation.png', dpi=300)
     
     return
-
-
 
 if __name__ == '__main__':
     main()
