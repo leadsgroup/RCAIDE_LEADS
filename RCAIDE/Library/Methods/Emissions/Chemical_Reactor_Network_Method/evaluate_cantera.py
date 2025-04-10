@@ -2,6 +2,7 @@
 
 # Created: June 2024, M. Clarke, M. Guidotti 
 # Updated: Mar 2025, M. Guidotti, J. Dost, D. Mehta
+# Updates: Apr 2025, S. Shekar
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -11,7 +12,13 @@
 from   RCAIDE.Framework.Core import Data  
 import numpy                 as np
 import os
-import cantera as ct
+
+try:
+    import cantera as ct
+    CANTERA_AVAILABLE = True
+except ImportError:
+    ct = None
+    CANTERA_AVAILABLE = False
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  evaluate_cantera
@@ -176,7 +183,7 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
     RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices_no_surrogate
     RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices_surrogate
     """
-
+    
     # ------------------------------------------------------------------------------              
     # ------------------------------ Combustor Inputs ------------------------------              
     # ------------------------------------------------------------------------------              
@@ -254,251 +261,251 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
 # ----------------------------------------------------------------------
 
 def compute_combustor_performance(results, combustor, Temp_air, Pres_air, mdot_air_tot, FAR, gas):
+    if CANTERA_AVAILABLE:
+        mdot_fuel_TakeOff = combustor.fuel_to_air_ratio_take_off * combustor.air_mass_flow_rate_take_off # [kg/s] Fuel mass flow rate at Take Off
+        mdot_fuel_tot     = mdot_air_tot * FAR                             # [kg/s] Fuel mass flow rate 
+        mdot_air          = mdot_air_tot / combustor.number_of_combustors  # [kg/s] Air mass flow rate per combustor
+        mdot_fuel         = mdot_fuel_tot / combustor.number_of_combustors # [kg/s] Fuel mass flow rate per combustor
 
-    mdot_fuel_TakeOff = combustor.fuel_to_air_ratio_take_off * combustor.air_mass_flow_rate_take_off # [kg/s] Fuel mass flow rate at Take Off
-    mdot_fuel_tot     = mdot_air_tot * FAR                             # [kg/s] Fuel mass flow rate 
-    mdot_air          = mdot_air_tot / combustor.number_of_combustors  # [kg/s] Air mass flow rate per combustor
-    mdot_fuel         = mdot_fuel_tot / combustor.number_of_combustors # [kg/s] Fuel mass flow rate per combustor
+        f_air_PZ          = mdot_fuel_TakeOff * combustor.F_SC / (combustor.design_equivalence_ratio_PZ * combustor.air_mass_flow_rate_take_off * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [-] Air mass flow rate fraction in Primary Zone
+        phi_sign          = (mdot_fuel * combustor.F_SC) / (mdot_air * f_air_PZ * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [-] Mean equivalence ratio in the Primary Zone
+        sigma_phi         = phi_sign * combustor.S_PZ                      # [-] Standard deviation of the Equivalence Ratio in the Primary Zone
+        V_PZ              = (combustor.volume/combustor.length) * combustor.L_PZ # [m^3] Volume of the Primary Zone
+        V_PZ_PSR          = V_PZ / combustor.N_PZ                          # [m^3] Volume of each PSR
+        mdot_air_PZ       = f_air_PZ * mdot_air                            # [kg/s] Air mass flow rate in the Primary Zone
+        phi_PSR           = np.linspace(phi_sign - 2 * sigma_phi, phi_sign + 2 * sigma_phi, combustor.N_PZ) # [-] Equivalence ratio in each PSR 
+        Delta_phi         = np.abs(phi_PSR[0] - phi_PSR[1])                # [-] Equivalence ratio step in the Primary Zone
 
-    f_air_PZ          = mdot_fuel_TakeOff * combustor.F_SC / (combustor.design_equivalence_ratio_PZ * combustor.air_mass_flow_rate_take_off * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [-] Air mass flow rate fraction in Primary Zone
-    phi_sign          = (mdot_fuel * combustor.F_SC) / (mdot_air * f_air_PZ * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [-] Mean equivalence ratio in the Primary Zone
-    sigma_phi         = phi_sign * combustor.S_PZ                      # [-] Standard deviation of the Equivalence Ratio in the Primary Zone
-    V_PZ              = (combustor.volume/combustor.length) * combustor.L_PZ # [m^3] Volume of the Primary Zone
-    V_PZ_PSR          = V_PZ / combustor.N_PZ                          # [m^3] Volume of each PSR
-    mdot_air_PZ       = f_air_PZ * mdot_air                            # [kg/s] Air mass flow rate in the Primary Zone
-    phi_PSR           = np.linspace(phi_sign - 2 * sigma_phi, phi_sign + 2 * sigma_phi, combustor.N_PZ) # [-] Equivalence ratio in each PSR 
-    Delta_phi         = np.abs(phi_PSR[0] - phi_PSR[1])                # [-] Equivalence ratio step in the Primary Zone
+        fuel              = ct.Solution(gas)                               # [-] Fuel object
+        fuel.TPX          = combustor.fuel_data.temperature, combustor.fuel_data.pressure, combustor.fuel_data.fuel_surrogate_S1                   # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of fuel
+        fuel_reservoir    = ct.Reservoir(fuel)                             # [-] Fuel reservoir
+        air               = ct.Solution(gas)                               # [-] Air object
+        air.TPX           = Temp_air, Pres_air, combustor.air_data.air_surrogate                      # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of air
+        air_reservoir     = ct.Reservoir(air)                              # [-] Air reservoir
+        fuel_hot          = ct.Solution(gas)                               # [-] Fuel hot state
+        fuel_hot.TPX      = Temp_air, Pres_air, combustor.fuel_data.fuel_surrogate_S1                     # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of hot fuel
+        delta_h           = np.abs(fuel.h - fuel_hot.h)                    # [J/kg] Fuel specific enthalpy difference
 
-    fuel              = ct.Solution(gas)                               # [-] Fuel object
-    fuel.TPX          = combustor.fuel_data.temperature, combustor.fuel_data.pressure, combustor.fuel_data.fuel_surrogate_S1                   # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of fuel
-    fuel_reservoir    = ct.Reservoir(fuel)                             # [-] Fuel reservoir
-    air               = ct.Solution(gas)                               # [-] Air object
-    air.TPX           = Temp_air, Pres_air, combustor.air_data.air_surrogate                      # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of air
-    air_reservoir     = ct.Reservoir(air)                              # [-] Air reservoir
-    fuel_hot          = ct.Solution(gas)                               # [-] Fuel hot state
-    fuel_hot.TPX      = Temp_air, Pres_air, combustor.fuel_data.fuel_surrogate_S1                     # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of hot fuel
-    delta_h           = np.abs(fuel.h - fuel_hot.h)                    # [J/kg] Fuel specific enthalpy difference
+        PZ_Structures     = {"PSRs": {}, "MFC_AirToPSR": {}, "MFC_FuelToPSR": {}, "PSR_Networks": {}, "MFC_PSRToMixer": {}} # [-] Primary Zone structures
+        mdot_PZ, f_PSR_data, mass_psr_list = [], [], [] # [-] Arrays to store results
+        mixer             = ct.ConstPressureReactor(air)                   # [-] Mixer object
 
-    PZ_Structures     = {"PSRs": {}, "MFC_AirToPSR": {}, "MFC_FuelToPSR": {}, "PSR_Networks": {}, "MFC_PSRToMixer": {}} # [-] Primary Zone structures
-    mdot_PZ, f_PSR_data, mass_psr_list = [], [], [] # [-] Arrays to store results
-    mixer             = ct.ConstPressureReactor(air)                   # [-] Mixer object
+        phi_diff          = phi_PSR - phi_sign                             # [-] Equivalence ratio difference
+        f_PSR_data        = (1 / (np.sqrt(2 * np.pi) * sigma_phi)) * np.exp(-(phi_diff ** 2) / (2 * sigma_phi ** 2)) * Delta_phi # [-] Fraction of mass flow entering each reactor
+        f_PSR_data       /= np.sum(f_PSR_data)                             # [-] Normalizes mass flow rate fraction in each PSR
+        
+        # ------------------------------------------------------------------
+        #  Primary Zone (PZ)
+        # ------------------------------------------------------------------
 
-    phi_diff          = phi_PSR - phi_sign                             # [-] Equivalence ratio difference
-    f_PSR_data        = (1 / (np.sqrt(2 * np.pi) * sigma_phi)) * np.exp(-(phi_diff ** 2) / (2 * sigma_phi ** 2)) * Delta_phi # [-] Fraction of mass flow entering each reactor
-    f_PSR_data       /= np.sum(f_PSR_data)                             # [-] Normalizes mass flow rate fraction in each PSR
+        for i in range(combustor.N_PZ):
+
+            f_PSR_PZ_i      = f_PSR_data[i]                                # [-] Fuel mass flow rate fraction in the PSR
+            mdot_air_PZ_i   = f_PSR_PZ_i * (mdot_air_PZ + mdot_fuel) / (1 + phi_PSR[i] * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [kg/s] Air mass flow rate in the PSR
+            mdot_fuel_PZ_i  = mdot_air_PZ_i * phi_PSR[i] * combustor.fuel_data.stoichiometric_fuel_air_ratio # [kg/s] Fuel mass flow rate in the PSR
+            mdot_total_PZ_i = mdot_air_PZ_i + mdot_fuel_PZ_i               # [kg/s] Total mass flow rate in the PSR
+            mdot_PZ.append(mdot_total_PZ_i)                                # [-] Store total mass flow rate in the PSR
+
+            h_mix_PZ_i      = (1 / (mdot_air_PZ_i + mdot_fuel_PZ_i)) * (mdot_air_PZ_i * air.h + mdot_fuel_PZ_i * fuel_hot.h - mdot_fuel_PZ_i * (combustor.fuel_data.heat_of_vaporization + delta_h)) # [J/kg] Mixture specific enthalpy
+            psr_gas_PZ_i    = ct.Solution(gas)                             # [-] PSR gas object
+            psr_gas_PZ_i.set_equivalence_ratio(phi_PSR[i], combustor.fuel_data.fuel_surrogate_S1, combustor.air_data.air_surrogate)  # [-] Set equivalence ratio, fuel, and air mole fractions
+            psr_gas_PZ_i.HP = h_mix_PZ_i, Pres_air                         # [J/kg, Pa] Set enthalpy and pressure
+            psr_gas_PZ_i.equilibrate('HP')                                 # [-] Equilibrate the gas at constant enthalpy and pressure
+            
+            psr_PZ_i        = ct.ConstPressureReactor(psr_gas_PZ_i, name=f'PSR_{i+1}') # [-] PSR object
+            psr_PZ_i.volume = V_PZ_PSR                                     # [m^3] PSR volume
+            PZ_Structures["PSRs"][f'PSR_{i+1}'] = psr_PZ_i                 # [-] Store PSR object
+
+            mfc_air_PZ_i       = ct.MassFlowController(air_reservoir, psr_PZ_i, name=f'AirToPSR_{i+1}', mdot=mdot_air_PZ_i) # [-] Air mass flow controller
+            PZ_Structures["MFC_AirToPSR"][f'AirToPSR_{i+1}'] = mfc_air_PZ_i # [-] Store air mass flow controller
+            mfc_fuel_PZ_i      = ct.MassFlowController(fuel_reservoir, psr_PZ_i, name=f'FuelToPSR_{i+1}', mdot=mdot_fuel_PZ_i) # [-] Fuel mass flow controller
+            PZ_Structures["MFC_FuelToPSR"][f'FuelToPSR_{i+1}'] = mfc_fuel_PZ_i # [-] Store fuel mass flow controller
+
+            psr_network_PZ_i   = ct.ReactorNet([psr_PZ_i])                 # [-] PSR network setup
+            rho_PZ_i           = psr_gas_PZ_i.density                      # [kg/m^3] Gas density in the PSR
+            t_res_PZ_i         = V_PZ_PSR * rho_PZ_i / mdot_total_PZ_i     # [s] Residence time in the PSR
+            mass_psr_list.append(t_res_PZ_i * mdot_total_PZ_i)             # [-] Mass of PSR
+            psr_network_PZ_i.advance(t_res_PZ_i)                           # [-] Advance the PSR network
+
+            mfc_out_PZ_i       = ct.MassFlowController(psr_PZ_i, mixer, name=f'PSRToMixer_{i+1}', mdot = mdot_total_PZ_i) # [-] PSR to mixer mass flow controller
+            PZ_Structures["MFC_PSRToMixer"][f'PSRToMixer_{i+1}'] = mfc_out_PZ_i # [-] Store PSR to mixer mass flow controller
+            
+            EI = calculate_emission_indices(psr_PZ_i, mdot_total_PZ_i, mdot_fuel_PZ_i) # [-] Emission indices computation
+
+            results.PZ.psr.phi.append(phi_PSR[i])                 # [-] Store Equivalence ratio
+            results.PZ.psr.T.append(psr_gas_PZ_i.T)               # [K] Store Temperature
+            results.PZ.psr.f_psr.append(f_PSR_PZ_i)               # [-] Store mass flow rate fraction
+            results.PZ.psr.EI.NOx.append(EI['NOx'])            # [kg/kg_fuel] Store NOx emission index
+            results.PZ.psr.EI.CO2.append(EI['CO2'])            # [kg/kg_fuel] Store CO2 emission index
+            results.PZ.psr.EI.CO.append(EI['CO'])              # [kg/kg_fuel] Store CO emission index
+            results.PZ.psr.EI.H2O.append(EI['H2O'])            # [kg/kg_fuel] Store H2O emission index\
+
+        # ----------------------------------------------------------------------
+        #  Initial Mixing
+        # ----------------------------------------------------------------------
+        
+        mdot_tot_PZ       = sum(mdot_PZ)                                   # [kg/s] Total mass flow rate of the PZ
+        mixture_list      = []                                             # [-] Mixture list
+        for i in range(combustor.N_PZ):
+            psr_output    = PZ_Structures["PSRs"][f'PSR_{i+1}'].thermo     # [-] PSR output
+            mixture       = ct.Quantity(psr_output, constant='HP')         # [-] Mixture Quantity setup
+            mixture.TPX   = psr_output.T, psr_output.P, psr_output.X       # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of the ixture
+            mixture.moles = mass_psr_list[i] / psr_output.mean_molecular_weight # [-] Mixture moles
+            mixture_list.append(mixture)                                   # [-] Store mixture moles
+        mixture_sum       = mixture_list[0]                                # [-] Define Mixture sum
+        
+        for mixture in mixture_list[1:]: 
+            mixture_sum  += mixture                                        # [-] Add all into a Mixture sum
     
-    # ------------------------------------------------------------------
-    #  Primary Zone (PZ)
-    # ------------------------------------------------------------------
+        EI_mixer_initial = calculate_emission_indices(mixture_sum, mdot_tot_PZ, mdot_fuel) # [-] Emission indices computation
 
-    for i in range(combustor.N_PZ):
+        results.PZ.phi = mixture_sum.equivalence_ratio()    # [-] Store Equivalence ratio
+        results.PZ.T = mixture_sum.T                        # [K] Store Temperature
+        results.PZ.EI.NOx = EI_mixer_initial['NOx']      # [kg/kg_fuel] Store NOx emission index
+        results.PZ.EI.CO2 = EI_mixer_initial['CO2']      # [kg/kg_fuel] Store CO2 emission index
+        results.PZ.EI.CO = EI_mixer_initial['CO']        # [kg/kg_fuel] Store CO emission index
+        results.PZ.EI.H2O = EI_mixer_initial['H2O']      # [kg/kg_fuel] Store H2O emission index
 
-        f_PSR_PZ_i      = f_PSR_data[i]                                # [-] Fuel mass flow rate fraction in the PSR
-        mdot_air_PZ_i   = f_PSR_PZ_i * (mdot_air_PZ + mdot_fuel) / (1 + phi_PSR[i] * combustor.fuel_data.stoichiometric_fuel_air_ratio) # [kg/s] Air mass flow rate in the PSR
-        mdot_fuel_PZ_i  = mdot_air_PZ_i * phi_PSR[i] * combustor.fuel_data.stoichiometric_fuel_air_ratio # [kg/s] Fuel mass flow rate in the PSR
-        mdot_total_PZ_i = mdot_air_PZ_i + mdot_fuel_PZ_i               # [kg/s] Total mass flow rate in the PSR
-        mdot_PZ.append(mdot_total_PZ_i)                                # [-] Store total mass flow rate in the PSR
+        # ----------------------------------------------------------------------
+        #  Secondary Zone
+        # ----------------------------------------------------------------------
 
-        h_mix_PZ_i      = (1 / (mdot_air_PZ_i + mdot_fuel_PZ_i)) * (mdot_air_PZ_i * air.h + mdot_fuel_PZ_i * fuel_hot.h - mdot_fuel_PZ_i * (combustor.fuel_data.heat_of_vaporization + delta_h)) # [J/kg] Mixture specific enthalpy
-        psr_gas_PZ_i    = ct.Solution(gas)                             # [-] PSR gas object
-        psr_gas_PZ_i.set_equivalence_ratio(phi_PSR[i], combustor.fuel_data.fuel_surrogate_S1, combustor.air_data.air_surrogate)  # [-] Set equivalence ratio, fuel, and air mole fractions
-        psr_gas_PZ_i.HP = h_mix_PZ_i, Pres_air                         # [J/kg, Pa] Set enthalpy and pressure
-        psr_gas_PZ_i.equilibrate('HP')                                 # [-] Equilibrate the gas at constant enthalpy and pressure
-        
-        psr_PZ_i        = ct.ConstPressureReactor(psr_gas_PZ_i, name=f'PSR_{i+1}') # [-] PSR object
-        psr_PZ_i.volume = V_PZ_PSR                                     # [m^3] PSR volume
-        PZ_Structures["PSRs"][f'PSR_{i+1}'] = psr_PZ_i                 # [-] Store PSR object
+        combustor.L_SZ                      = combustor.length - combustor.L_PZ # [m] Secondary Zone length
+        A_SZ                                = (combustor.volume/combustor.length)  # [m^2] Cross-sectional area of Secondary Zone
+        f_air_SA                            = mdot_fuel_TakeOff / (combustor.design_equivalence_ratio_SZ * combustor.fuel_data.stoichiometric_fuel_air_ratio * combustor.air_mass_flow_rate_take_off) # [-] Secondary air mass flow fraction
+        f_air_DA                            = 1 - f_air_PZ - f_air_SA      # [-] Dilution air mass flow fraction
+        f_FM                                = 1 - combustor.f_SM           # [-] Fast mode fraction
+        beta_SA_FM                          = (f_air_SA * f_FM * mdot_air) / (combustor.l_SA_FM * combustor.L_SZ) # [kg/s/m] Secondary air mass flow rate per unit length in fast mode
+        beta_SA_SM                          = (f_air_SA * combustor.f_SM * mdot_air) / (combustor.l_SA_SM * combustor.L_SZ) # [kg/s/m] Secondary air mass flow rate per unit length in slow mode
+        beta_DA                             = (f_air_DA * mdot_air) / ((combustor.l_DA_end - combustor.l_DA_start) * combustor.L_SZ) # [kg/s/m] Dilution air mass flow rate per unit length
+        mdot_total_sm                       = combustor.f_SM * mdot_tot_PZ # [kg/s] Initial total mass flow rate in slow mode
+        mdot_total_fm                       = f_FM * mdot_tot_PZ           # [kg/s] Initial total mass flow rate in fast mode
+        dz                                  = combustor.L_SZ / combustor.N_SZ # [m] Discretization step size
+        z_positions                         = np.linspace(0, combustor.L_SZ, combustor.N_SZ + 1) # [m] Axial position array
 
-        mfc_air_PZ_i       = ct.MassFlowController(air_reservoir, psr_PZ_i, name=f'AirToPSR_{i+1}', mdot=mdot_air_PZ_i) # [-] Air mass flow controller
-        PZ_Structures["MFC_AirToPSR"][f'AirToPSR_{i+1}'] = mfc_air_PZ_i # [-] Store air mass flow controller
-        mfc_fuel_PZ_i      = ct.MassFlowController(fuel_reservoir, psr_PZ_i, name=f'FuelToPSR_{i+1}', mdot=mdot_fuel_PZ_i) # [-] Fuel mass flow controller
-        PZ_Structures["MFC_FuelToPSR"][f'FuelToPSR_{i+1}'] = mfc_fuel_PZ_i # [-] Store fuel mass flow controller
+        # Slow Mode 
+        mixed_gas_sm                        = ct.Solution(gas)             # [-] Slow mode gas object
+        mixed_gas_sm.TPX                    = mixture_sum.T, mixture_sum.P, mixture_sum.X # [K, Pa, -] Initial state from PZ mixture
+        reactor_sm                          = ct.ConstPressureReactor(mixed_gas_sm) # [-] Slow mode reactor
+        sim_sm                              = ct.ReactorNet([reactor_sm])  # [-] Slow mode reactor network
 
-        psr_network_PZ_i   = ct.ReactorNet([psr_PZ_i])                 # [-] PSR network setup
-        rho_PZ_i           = psr_gas_PZ_i.density                      # [kg/m^3] Gas density in the PSR
-        t_res_PZ_i         = V_PZ_PSR * rho_PZ_i / mdot_total_PZ_i     # [s] Residence time in the PSR
-        mass_psr_list.append(t_res_PZ_i * mdot_total_PZ_i)             # [-] Mass of PSR
-        psr_network_PZ_i.advance(t_res_PZ_i)                           # [-] Advance the PSR network
+        for z_sm in z_positions[1:int(combustor.joint_mixing_fraction * combustor.N_SZ) + 1]:
+            z_frac_sm                       = z_sm / combustor.L_SZ        # [-] Fractional position in SZ
+            mdot_air_added_sm               = (beta_SA_SM * dz if z_frac_sm <= combustor.l_SA_SM else
+                                            beta_DA * dz if combustor.l_DA_start <= z_frac_sm <= combustor.l_DA_end else 0.0) # [kg/s] Air mass flow rate added
+            previous_mdot_total_sm          = mdot_total_sm                # [kg/s] Previous total mass flow rate
+            mdot_total_sm                  += mdot_air_added_sm            # [kg/s] Update total mass flow rate
+            residence_time                  = dz * A_SZ * mixed_gas_sm.density / mdot_total_sm # [s] Residence time
 
-        mfc_out_PZ_i       = ct.MassFlowController(psr_PZ_i, mixer, name=f'PSRToMixer_{i+1}', mdot = mdot_total_PZ_i) # [-] PSR to mixer mass flow controller
-        PZ_Structures["MFC_PSRToMixer"][f'PSRToMixer_{i+1}'] = mfc_out_PZ_i # [-] Store PSR to mixer mass flow controller
-        
-        EI = calculate_emission_indices(psr_PZ_i, mdot_total_PZ_i, mdot_fuel_PZ_i) # [-] Emission indices computation
+            air_qty                         = ct.Quantity(air)             # [-] Air quantity object
+            air_qty.mass                    = mdot_air_added_sm * residence_time # [kg] Mass of air added over residence time
+            mix_qty                         = ct.Quantity(mixed_gas_sm)    # [-] Mixture quantity object
+            mix_qty.mass                    = previous_mdot_total_sm * residence_time # [kg] Mass of existing mixture over residence time
+            mixture_sm                      = mix_qty + air_qty            # [-] Combined mixture
 
-        results.PZ.psr.phi.append(phi_PSR[i])                 # [-] Store Equivalence ratio
-        results.PZ.psr.T.append(psr_gas_PZ_i.T)               # [K] Store Temperature
-        results.PZ.psr.f_psr.append(f_PSR_PZ_i)               # [-] Store mass flow rate fraction
-        results.PZ.psr.EI.NOx.append(EI['NOx'])            # [kg/kg_fuel] Store NOx emission index
-        results.PZ.psr.EI.CO2.append(EI['CO2'])            # [kg/kg_fuel] Store CO2 emission index
-        results.PZ.psr.EI.CO.append(EI['CO'])              # [kg/kg_fuel] Store CO emission index
-        results.PZ.psr.EI.H2O.append(EI['H2O'])            # [kg/kg_fuel] Store H2O emission index\
+            mixed_gas_sm.TP                 = mixture_sm.T, mixture_sm.P   # [K, Pa] Update temperature and pressure
+            mixed_gas_sm.Y                  = mixture_sm.Y                 # [-] Update composition
 
-    # ----------------------------------------------------------------------
-    #  Initial Mixing
-    # ----------------------------------------------------------------------
-    
-    mdot_tot_PZ       = sum(mdot_PZ)                                   # [kg/s] Total mass flow rate of the PZ
-    mixture_list      = []                                             # [-] Mixture list
-    for i in range(combustor.N_PZ):
-        psr_output    = PZ_Structures["PSRs"][f'PSR_{i+1}'].thermo     # [-] PSR output
-        mixture       = ct.Quantity(psr_output, constant='HP')         # [-] Mixture Quantity setup
-        mixture.TPX   = psr_output.T, psr_output.P, psr_output.X       # [K, Pa, -] Temperauture, Pressure and Mole fraction composition of the ixture
-        mixture.moles = mass_psr_list[i] / psr_output.mean_molecular_weight # [-] Mixture moles
-        mixture_list.append(mixture)                                   # [-] Store mixture moles
-    mixture_sum       = mixture_list[0]                                # [-] Define Mixture sum
-    
-    for mixture in mixture_list[1:]: 
-        mixture_sum  += mixture                                        # [-] Add all into a Mixture sum
-  
-    EI_mixer_initial = calculate_emission_indices(mixture_sum, mdot_tot_PZ, mdot_fuel) # [-] Emission indices computation
+            reactor_sm                      = ct.ConstPressureReactor(mixed_gas_sm) # [-] Slow mode reactor
+            sim_sm                          = ct.ReactorNet([reactor_sm])  # [-] Reactor setup
+            sim_sm.advance(residence_time)                                 # [-] Advance simulation
 
-    results.PZ.phi = mixture_sum.equivalence_ratio()    # [-] Store Equivalence ratio
-    results.PZ.T = mixture_sum.T                        # [K] Store Temperature
-    results.PZ.EI.NOx = EI_mixer_initial['NOx']      # [kg/kg_fuel] Store NOx emission index
-    results.PZ.EI.CO2 = EI_mixer_initial['CO2']      # [kg/kg_fuel] Store CO2 emission index
-    results.PZ.EI.CO = EI_mixer_initial['CO']        # [kg/kg_fuel] Store CO emission index
-    results.PZ.EI.H2O = EI_mixer_initial['H2O']      # [kg/kg_fuel] Store H2O emission index
+            EI_sm                           = calculate_emission_indices(mixed_gas_sm, mdot_total_sm, combustor.f_SM * mdot_fuel) # [-] Emission indices    
 
-    # ----------------------------------------------------------------------
-    #  Secondary Zone
-    # ----------------------------------------------------------------------
+            results.SZ.sm.phi.append(mixed_gas_sm.equivalence_ratio()) # [-] Store equivalence ratio
+            results.SZ.sm.T.append(mixed_gas_sm.T)                # [K] Store temperature 
+            results.SZ.sm.z.append(z_frac_sm * 100)               # [%] Store position percentage 
+            results.SZ.sm.EI.CO2.append(EI_sm['CO2'])          # [kg/kg_fuel] Store CO2 emission index 
+            results.SZ.sm.EI.NOx.append(EI_sm['NOx'])          # [kg/kg_fuel] Store NOx emission index 
+            results.SZ.sm.EI.CO.append(EI_sm['CO'])            # [kg/kg_fuel] Store CO emission index 
+            results.SZ.sm.EI.H2O.append(EI_sm['H2O'])          # [kg/kg_fuel] Store H2O emission index
 
-    combustor.L_SZ                      = combustor.length - combustor.L_PZ # [m] Secondary Zone length
-    A_SZ                                = (combustor.volume/combustor.length)  # [m^2] Cross-sectional area of Secondary Zone
-    f_air_SA                            = mdot_fuel_TakeOff / (combustor.design_equivalence_ratio_SZ * combustor.fuel_data.stoichiometric_fuel_air_ratio * combustor.air_mass_flow_rate_take_off) # [-] Secondary air mass flow fraction
-    f_air_DA                            = 1 - f_air_PZ - f_air_SA      # [-] Dilution air mass flow fraction
-    f_FM                                = 1 - combustor.f_SM           # [-] Fast mode fraction
-    beta_SA_FM                          = (f_air_SA * f_FM * mdot_air) / (combustor.l_SA_FM * combustor.L_SZ) # [kg/s/m] Secondary air mass flow rate per unit length in fast mode
-    beta_SA_SM                          = (f_air_SA * combustor.f_SM * mdot_air) / (combustor.l_SA_SM * combustor.L_SZ) # [kg/s/m] Secondary air mass flow rate per unit length in slow mode
-    beta_DA                             = (f_air_DA * mdot_air) / ((combustor.l_DA_end - combustor.l_DA_start) * combustor.L_SZ) # [kg/s/m] Dilution air mass flow rate per unit length
-    mdot_total_sm                       = combustor.f_SM * mdot_tot_PZ # [kg/s] Initial total mass flow rate in slow mode
-    mdot_total_fm                       = f_FM * mdot_tot_PZ           # [kg/s] Initial total mass flow rate in fast mode
-    dz                                  = combustor.L_SZ / combustor.N_SZ # [m] Discretization step size
-    z_positions                         = np.linspace(0, combustor.L_SZ, combustor.N_SZ + 1) # [m] Axial position array
+        # Fast Mode
+        mixed_gas_fm                        = ct.Solution(gas)             # [-] Fast mode gas object
+        mixed_gas_fm.TPX                    = mixture_sum.T, mixture_sum.P, mixture_sum.X # [K, Pa, -] Initial state from PZ mixture
+        reactor_fm                          = ct.ConstPressureReactor(mixed_gas_fm) # [-] Fast mode reactor
+        sim_fm                              = ct.ReactorNet([reactor_fm])  # [-] Fast mode reactor network
 
-    # Slow Mode 
-    mixed_gas_sm                        = ct.Solution(gas)             # [-] Slow mode gas object
-    mixed_gas_sm.TPX                    = mixture_sum.T, mixture_sum.P, mixture_sum.X # [K, Pa, -] Initial state from PZ mixture
-    reactor_sm                          = ct.ConstPressureReactor(mixed_gas_sm) # [-] Slow mode reactor
-    sim_sm                              = ct.ReactorNet([reactor_sm])  # [-] Slow mode reactor network
+        for z_fm in z_positions[1:int(combustor.joint_mixing_fraction * combustor.N_SZ) + 1]:
+            z_frac_fm                       = z_fm / combustor.L_SZ        # [-] Fractional position in SZ
+            mdot_air_added_fm               = (beta_SA_FM * dz if z_frac_fm <= combustor.l_SA_FM else
+                                            beta_DA * dz if combustor.l_DA_start <= z_frac_fm <= combustor.l_DA_end else 0.0) # [kg/s] Air mass flow rate added
+            previous_mdot_total_fm          = mdot_total_fm                # [kg/s] Previous total mass flow rate
+            mdot_total_fm                  += mdot_air_added_fm            # [kg/s] Update total mass flow rate
+            residence_time                  = dz * A_SZ * mixed_gas_fm.density / mdot_total_fm # [s] Residence time
 
-    for z_sm in z_positions[1:int(combustor.joint_mixing_fraction * combustor.N_SZ) + 1]:
-        z_frac_sm                       = z_sm / combustor.L_SZ        # [-] Fractional position in SZ
-        mdot_air_added_sm               = (beta_SA_SM * dz if z_frac_sm <= combustor.l_SA_SM else
-                                           beta_DA * dz if combustor.l_DA_start <= z_frac_sm <= combustor.l_DA_end else 0.0) # [kg/s] Air mass flow rate added
-        previous_mdot_total_sm          = mdot_total_sm                # [kg/s] Previous total mass flow rate
-        mdot_total_sm                  += mdot_air_added_sm            # [kg/s] Update total mass flow rate
-        residence_time                  = dz * A_SZ * mixed_gas_sm.density / mdot_total_sm # [s] Residence time
+            air_qty                         = ct.Quantity(air)             # [-] Air quantity object
+            air_qty.mass                    = mdot_air_added_fm * residence_time # [kg] Mass of air added over residence time
+            mix_qty                         = ct.Quantity(mixed_gas_fm)    # [-] Mixture quantity object
+            mix_qty.mass                    = previous_mdot_total_fm * residence_time # [kg] Mass of existing mixture over residence time
+            mixture_fm                      = mix_qty + air_qty            # [-] Combined mixture
 
-        air_qty                         = ct.Quantity(air)             # [-] Air quantity object
-        air_qty.mass                    = mdot_air_added_sm * residence_time # [kg] Mass of air added over residence time
-        mix_qty                         = ct.Quantity(mixed_gas_sm)    # [-] Mixture quantity object
-        mix_qty.mass                    = previous_mdot_total_sm * residence_time # [kg] Mass of existing mixture over residence time
-        mixture_sm                      = mix_qty + air_qty            # [-] Combined mixture
+            mixed_gas_fm.TP                 = mixture_fm.T, mixture_fm.P   # [K, Pa] Update temperature and pressure
+            mixed_gas_fm.Y                  = mixture_fm.Y                 # [-] Update composition
 
-        mixed_gas_sm.TP                 = mixture_sm.T, mixture_sm.P   # [K, Pa] Update temperature and pressure
-        mixed_gas_sm.Y                  = mixture_sm.Y                 # [-] Update composition
+            reactor_fm                      = ct.ConstPressureReactor(mixed_gas_fm) # [-] Slow mode reactor
+            sim_fm                          = ct.ReactorNet([reactor_fm])  # [-] Reactor setup
+            sim_fm.advance(residence_time)                                 # [-] Advance simulation
 
-        reactor_sm                      = ct.ConstPressureReactor(mixed_gas_sm) # [-] Slow mode reactor
-        sim_sm                          = ct.ReactorNet([reactor_sm])  # [-] Reactor setup
-        sim_sm.advance(residence_time)                                 # [-] Advance simulation
+            EI_fm                           = calculate_emission_indices(mixed_gas_fm, mdot_total_fm, f_FM * mdot_fuel) # [-] Emission indices
+            
+            results.SZ.fm.phi.append(mixed_gas_fm.equivalence_ratio()) # [-] Store equivalence ratio
+            results.SZ.fm.T.append(mixed_gas_fm.T)                # [K] Store temperature 
+            results.SZ.fm.z.append(z_frac_fm * 100)               # [%] Store position percentage 
+            results.SZ.fm.EI.CO2.append(EI_fm['CO2'])          # [kg/kg_fuel] Store CO2 emission index 
+            results.SZ.fm.EI.NOx.append(EI_fm['NOx'])          # [kg/kg_fuel] Store NOx emission index 
+            results.SZ.fm.EI.CO.append(EI_fm['CO'])            # [kg/kg_fuel] Store CO emission index 
+            results.SZ.fm.EI.H2O.append(EI_fm['H2O'])          # [kg/kg_fuel] Store H2O emission index
 
-        EI_sm                           = calculate_emission_indices(mixed_gas_sm, mdot_total_sm, combustor.f_SM * mdot_fuel) # [-] Emission indices    
+        # Joint Mixing 
+        mixed_gas_joint                     = ct.Solution(gas)             # [-] Joint mode gas object
+        total_mass_flow                     = mdot_total_sm + mdot_total_fm # [kg/s] Total mass flow rate after slow and fast modes
+        sm_qty                              = ct.Quantity(mixed_gas_sm)    # [-] Slow mode quantity
+        fm_qty                              = ct.Quantity(mixed_gas_fm)    # [-] Fast mode quantity
+        joint_mixture                       = sm_qty + fm_qty              # [-] Combined mixture
+        mixed_gas_joint.TP                  = joint_mixture.T, joint_mixture.P # [K, Pa] Initial temperature and pressure
+        mixed_gas_joint.Y                   = joint_mixture.Y              # [-] Initial composition
+        mdot_total_joint                    = total_mass_flow              # [kg/s] Initial total mass flow rate
+        reactor_joint                       = ct.ConstPressureReactor(mixed_gas_joint) # [-] Joint mode reactor
+        sim_joint                           = ct.ReactorNet([reactor_joint]) # [-] Joint mode reactor network
 
-        results.SZ.sm.phi.append(mixed_gas_sm.equivalence_ratio()) # [-] Store equivalence ratio
-        results.SZ.sm.T.append(mixed_gas_sm.T)                # [K] Store temperature 
-        results.SZ.sm.z.append(z_frac_sm * 100)               # [%] Store position percentage 
-        results.SZ.sm.EI.CO2.append(EI_sm['CO2'])          # [kg/kg_fuel] Store CO2 emission index 
-        results.SZ.sm.EI.NOx.append(EI_sm['NOx'])          # [kg/kg_fuel] Store NOx emission index 
-        results.SZ.sm.EI.CO.append(EI_sm['CO'])            # [kg/kg_fuel] Store CO emission index 
-        results.SZ.sm.EI.H2O.append(EI_sm['H2O'])          # [kg/kg_fuel] Store H2O emission index
+        for z_joint in z_positions[int(combustor.joint_mixing_fraction * combustor.N_SZ) + 1:]:
+            z_frac_joint                    = z_joint / combustor.L_SZ     # [-] Fractional position in SZ
+            mdot_air_added_joint            = (beta_SA_FM * dz if z_frac_joint <= combustor.l_SA_FM else
+                                            beta_DA * dz if combustor.l_DA_start <= z_frac_joint <= combustor.l_DA_end else 0.0) # [kg/s] Air mass flow rate added
+            previous_mdot_total_joint       = mdot_total_joint             # [kg/s] Previous total mass flow rate
+            mdot_total_joint               += mdot_air_added_joint         # [kg/s] Update total mass flow rate
+            residence_time                  = dz * A_SZ * mixed_gas_joint.density / mdot_total_joint # [s] Residence time
 
-    # Fast Mode
-    mixed_gas_fm                        = ct.Solution(gas)             # [-] Fast mode gas object
-    mixed_gas_fm.TPX                    = mixture_sum.T, mixture_sum.P, mixture_sum.X # [K, Pa, -] Initial state from PZ mixture
-    reactor_fm                          = ct.ConstPressureReactor(mixed_gas_fm) # [-] Fast mode reactor
-    sim_fm                              = ct.ReactorNet([reactor_fm])  # [-] Fast mode reactor network
+            air_qty                         = ct.Quantity(air)             # [-] Air quantity object
+            air_qty.mass                    = mdot_air_added_joint * residence_time # [kg] Mass of air added over residence time
+            mix_qty                         = ct.Quantity(mixed_gas_joint) # [-] Mixture quantity object
+            mix_qty.mass                    = previous_mdot_total_joint * residence_time # [kg] Mass of existing mixture over residence time
+            mixture_joint                   = mix_qty + air_qty            # [-] Combined mixture
 
-    for z_fm in z_positions[1:int(combustor.joint_mixing_fraction * combustor.N_SZ) + 1]:
-        z_frac_fm                       = z_fm / combustor.L_SZ        # [-] Fractional position in SZ
-        mdot_air_added_fm               = (beta_SA_FM * dz if z_frac_fm <= combustor.l_SA_FM else
-                                           beta_DA * dz if combustor.l_DA_start <= z_frac_fm <= combustor.l_DA_end else 0.0) # [kg/s] Air mass flow rate added
-        previous_mdot_total_fm          = mdot_total_fm                # [kg/s] Previous total mass flow rate
-        mdot_total_fm                  += mdot_air_added_fm            # [kg/s] Update total mass flow rate
-        residence_time                  = dz * A_SZ * mixed_gas_fm.density / mdot_total_fm # [s] Residence time
+            mixed_gas_joint.TP              = mixture_joint.T, mixture_joint.P # [K, Pa] Update temperature and pressure
+            mixed_gas_joint.Y               = mixture_joint.Y              # [-] Update composition
 
-        air_qty                         = ct.Quantity(air)             # [-] Air quantity object
-        air_qty.mass                    = mdot_air_added_fm * residence_time # [kg] Mass of air added over residence time
-        mix_qty                         = ct.Quantity(mixed_gas_fm)    # [-] Mixture quantity object
-        mix_qty.mass                    = previous_mdot_total_fm * residence_time # [kg] Mass of existing mixture over residence time
-        mixture_fm                      = mix_qty + air_qty            # [-] Combined mixture
+            reactor_joint                   = ct.ConstPressureReactor(mixed_gas_joint) # [-] Joint mode reactor
+            sim_joint                       = ct.ReactorNet([reactor_joint]) # [-] Reactor setup
+            sim_joint.advance(residence_time)                              # [-] Advance simulation
 
-        mixed_gas_fm.TP                 = mixture_fm.T, mixture_fm.P   # [K, Pa] Update temperature and pressure
-        mixed_gas_fm.Y                  = mixture_fm.Y                 # [-] Update composition
+            EI_joint                        = calculate_emission_indices(mixed_gas_joint, mdot_total_joint, mdot_fuel) # [-] Emission indices
+            
+            results.SZ.joint.phi.append(mixed_gas_joint.equivalence_ratio()) # [-] Store equivalence ratio
+            results.SZ.joint.T.append(mixed_gas_joint.T)          # [K] Store temperature 
+            results.SZ.joint.z.append(z_frac_joint * 100)         # [%] Store position percentage 
+            results.SZ.joint.EI.CO2.append(EI_joint['CO2'])    # [kg/kg_fuel] Store CO2 emission index 
+            results.SZ.joint.EI.NOx.append(EI_joint['NOx'])    # [kg/kg_fuel] Store NOx emission index 
+            results.SZ.joint.EI.CO.append(EI_joint['CO'])      # [kg/kg_fuel] Store CO emission index 
+            results.SZ.joint.EI.H2O.append(EI_joint['H2O'])    # [kg/kg_fuel] Store H2O emission index
 
-        reactor_fm                      = ct.ConstPressureReactor(mixed_gas_fm) # [-] Slow mode reactor
-        sim_fm                          = ct.ReactorNet([reactor_fm])  # [-] Reactor setup
-        sim_fm.advance(residence_time)                                 # [-] Advance simulation
-
-        EI_fm                           = calculate_emission_indices(mixed_gas_fm, mdot_total_fm, f_FM * mdot_fuel) # [-] Emission indices
-        
-        results.SZ.fm.phi.append(mixed_gas_fm.equivalence_ratio()) # [-] Store equivalence ratio
-        results.SZ.fm.T.append(mixed_gas_fm.T)                # [K] Store temperature 
-        results.SZ.fm.z.append(z_frac_fm * 100)               # [%] Store position percentage 
-        results.SZ.fm.EI.CO2.append(EI_fm['CO2'])          # [kg/kg_fuel] Store CO2 emission index 
-        results.SZ.fm.EI.NOx.append(EI_fm['NOx'])          # [kg/kg_fuel] Store NOx emission index 
-        results.SZ.fm.EI.CO.append(EI_fm['CO'])            # [kg/kg_fuel] Store CO emission index 
-        results.SZ.fm.EI.H2O.append(EI_fm['H2O'])          # [kg/kg_fuel] Store H2O emission index
-
-    # Joint Mixing 
-    mixed_gas_joint                     = ct.Solution(gas)             # [-] Joint mode gas object
-    total_mass_flow                     = mdot_total_sm + mdot_total_fm # [kg/s] Total mass flow rate after slow and fast modes
-    sm_qty                              = ct.Quantity(mixed_gas_sm)    # [-] Slow mode quantity
-    fm_qty                              = ct.Quantity(mixed_gas_fm)    # [-] Fast mode quantity
-    joint_mixture                       = sm_qty + fm_qty              # [-] Combined mixture
-    mixed_gas_joint.TP                  = joint_mixture.T, joint_mixture.P # [K, Pa] Initial temperature and pressure
-    mixed_gas_joint.Y                   = joint_mixture.Y              # [-] Initial composition
-    mdot_total_joint                    = total_mass_flow              # [kg/s] Initial total mass flow rate
-    reactor_joint                       = ct.ConstPressureReactor(mixed_gas_joint) # [-] Joint mode reactor
-    sim_joint                           = ct.ReactorNet([reactor_joint]) # [-] Joint mode reactor network
-
-    for z_joint in z_positions[int(combustor.joint_mixing_fraction * combustor.N_SZ) + 1:]:
-        z_frac_joint                    = z_joint / combustor.L_SZ     # [-] Fractional position in SZ
-        mdot_air_added_joint            = (beta_SA_FM * dz if z_frac_joint <= combustor.l_SA_FM else
-                                           beta_DA * dz if combustor.l_DA_start <= z_frac_joint <= combustor.l_DA_end else 0.0) # [kg/s] Air mass flow rate added
-        previous_mdot_total_joint       = mdot_total_joint             # [kg/s] Previous total mass flow rate
-        mdot_total_joint               += mdot_air_added_joint         # [kg/s] Update total mass flow rate
-        residence_time                  = dz * A_SZ * mixed_gas_joint.density / mdot_total_joint # [s] Residence time
-
-        air_qty                         = ct.Quantity(air)             # [-] Air quantity object
-        air_qty.mass                    = mdot_air_added_joint * residence_time # [kg] Mass of air added over residence time
-        mix_qty                         = ct.Quantity(mixed_gas_joint) # [-] Mixture quantity object
-        mix_qty.mass                    = previous_mdot_total_joint * residence_time # [kg] Mass of existing mixture over residence time
-        mixture_joint                   = mix_qty + air_qty            # [-] Combined mixture
-
-        mixed_gas_joint.TP              = mixture_joint.T, mixture_joint.P # [K, Pa] Update temperature and pressure
-        mixed_gas_joint.Y               = mixture_joint.Y              # [-] Update composition
-
-        reactor_joint                   = ct.ConstPressureReactor(mixed_gas_joint) # [-] Joint mode reactor
-        sim_joint                       = ct.ReactorNet([reactor_joint]) # [-] Reactor setup
-        sim_joint.advance(residence_time)                              # [-] Advance simulation
-
-        EI_joint                        = calculate_emission_indices(mixed_gas_joint, mdot_total_joint, mdot_fuel) # [-] Emission indices
-        
-        results.SZ.joint.phi.append(mixed_gas_joint.equivalence_ratio()) # [-] Store equivalence ratio
-        results.SZ.joint.T.append(mixed_gas_joint.T)          # [K] Store temperature 
-        results.SZ.joint.z.append(z_frac_joint * 100)         # [%] Store position percentage 
-        results.SZ.joint.EI.CO2.append(EI_joint['CO2'])    # [kg/kg_fuel] Store CO2 emission index 
-        results.SZ.joint.EI.NOx.append(EI_joint['NOx'])    # [kg/kg_fuel] Store NOx emission index 
-        results.SZ.joint.EI.CO.append(EI_joint['CO'])      # [kg/kg_fuel] Store CO emission index 
-        results.SZ.joint.EI.H2O.append(EI_joint['H2O'])    # [kg/kg_fuel] Store H2O emission index
-
-    results.final.phi = mixed_gas_joint.equivalence_ratio() # [-] Store Equivalence ratio
-    results.final.T = mixed_gas_joint.T                    # [K] Store Temperature
-    results.final.EI.NOx = EI_joint['NOx']              # [kg/kg_fuel] Store NOx emission index
-    results.final.EI.CO2 = EI_joint['CO2']              # [kg/kg_fuel] Store CO2 emission index
-    results.final.EI.CO = EI_joint['CO']                # [kg/kg_fuel] Store CO emission index
-    results.final.EI.H2O = EI_joint['H2O']              # [kg/kg_fuel] Store H2O emission index
+        results.final.phi = mixed_gas_joint.equivalence_ratio() # [-] Store Equivalence ratio
+        results.final.T = mixed_gas_joint.T                    # [K] Store Temperature
+        results.final.EI.NOx = EI_joint['NOx']              # [kg/kg_fuel] Store NOx emission index
+        results.final.EI.CO2 = EI_joint['CO2']              # [kg/kg_fuel] Store CO2 emission index
+        results.final.EI.CO = EI_joint['CO']                # [kg/kg_fuel] Store CO emission index
+        results.final.EI.H2O = EI_joint['H2O']              # [kg/kg_fuel] Store H2O emission index
 
     return results
 
