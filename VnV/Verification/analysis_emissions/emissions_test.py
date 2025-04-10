@@ -127,10 +127,10 @@ def base_analysis(vehicle,emissions_method, use_surrogate):
     elif emissions_method == "Emission_Index_CRN_Method":
         emissions = RCAIDE.Framework.Analyses.Emissions.Emission_Index_CRN_Method() 
         emissions.settings.use_surrogate     = use_surrogate 
-        emissions.training.pressure          = np.linspace(10,30, 1) *1E6
-        emissions.training.temperature       = np.linspace(700, 900, 1) 
-        emissions.training.air_mass_flowrate = np.linspace(10, 60, 1) 
-        emissions.training.fuel_to_air_ratio = np.linspace(0.01, 0.05, 1)             
+        emissions.training.pressure          = np.linspace(2.5,5, 1) *1E6
+        emissions.training.temperature       = np.linspace(710, 800, 1) 
+        emissions.training.air_mass_flowrate = np.linspace(40, 50, 1) 
+        emissions.training.fuel_to_air_ratio = np.linspace(0.025, 0.03, 1)             
     emissions.vehicle = vehicle          
     analyses.append(emissions)
         
@@ -179,9 +179,9 @@ def mission_setup(analyses):
     segment     = Segments.Cruise.Constant_Mach_Constant_Altitude(base_segment)
     segment.tag = "cruise" 
     segment.analyses.extend( analyses.cruise ) 
-    segment.altitude                                      = 36000. * Units.ft
-    segment.altitude_start                                = 36000. * Units.ft
-    segment.altitude_end                                  = 36000. * Units.ft
+    segment.altitude                                      = 30000. * Units.ft
+    segment.altitude_start                                = 30000. * Units.ft
+    segment.altitude_end                                  = 30000. * Units.ft
     segment.mach_number                                   = 0.78
     segment.distance                                      = 500 * Units.km  
     segment.state.numerics.number_of_control_points       = 2   
