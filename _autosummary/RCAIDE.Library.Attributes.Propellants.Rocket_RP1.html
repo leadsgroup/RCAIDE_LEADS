@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,84 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Rocket_RP1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Rocket_RP1.html#Rocket_RP1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Propellant</span></code></a></p>
-<p>Rocket_RP1 Rocket Fuel Class</p>
+<p>A class representing Rocket Propellant-1 (RP-1) properties for rocket propulsion
+applications.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the propellant (‘Rocket_RP1’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.molecular_weight">
+<span class="sig-name descname"><span class="pre">molecular_weight</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.molecular_weight" title="Link to this definition">#</a></dt>
+<dd><p>Molecular weight of combustion products in kg/kmol (22.193)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.isentropic_expansion_factor">
+<span class="sig-name descname"><span class="pre">isentropic_expansion_factor</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.isentropic_expansion_factor" title="Link to this definition">#</a></dt>
+<dd><p>Ratio of specific heats (1.1505)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.combustion_temperature">
+<span class="sig-name descname"><span class="pre">combustion_temperature</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.combustion_temperature" title="Link to this definition">#</a></dt>
+<dd><p>Adiabatic flame temperature in K (3545.69)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.gas_specific_constant">
+<span class="sig-name descname"><span class="pre">gas_specific_constant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.gas_specific_constant" title="Link to this definition">#</a></dt>
+<dd><p>Specific gas constant for combustion products in J/(kg*K) (8314.45986/molecular_weight)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements properties for rocket-grade RP-1, a highly refined kerosene
+fuel specifically designed for rocket propulsion. Properties are optimized for use
+with liquid oxygen in bipropellant rocket engines.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Isentropic Expansion Factor’</dt><dd><p>Ratio of specific heats (cp/cv) for exhaust products</p>
+</dd>
+<dt>‘Combustion Temperature’</dt><dd><p>Theoretical maximum temperature achieved in the combustion chamber</p>
+</dd>
+<dt>‘Gas Specific Constant’</dt><dd><p>Individual gas constant for combustion products mixture</p>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties are for rocket engine operating conditions</p></li>
+<li><p>O/F ratio of 2.27 (oxygen to fuel mass ratio)</p></li>
+<li><p>Uniform mixture properties</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Sutton, G. P., &amp; Biblarz, O. (2017). Rocket Propulsion Elements. John Wiley &amp; Sons Inc.</p>
 </dd></dl>
 
 </section>
@@ -585,7 +662,14 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1"><code class="docutils literal notranslate"><span class="pre">Rocket_RP1</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1"><code class="docutils literal notranslate"><span class="pre">Rocket_RP1</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.tag"><code class="docutils literal notranslate"><span class="pre">Rocket_RP1.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.molecular_weight"><code class="docutils literal notranslate"><span class="pre">Rocket_RP1.molecular_weight</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.isentropic_expansion_factor"><code class="docutils literal notranslate"><span class="pre">Rocket_RP1.isentropic_expansion_factor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.combustion_temperature"><code class="docutils literal notranslate"><span class="pre">Rocket_RP1.combustion_temperature</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Rocket_RP1.Rocket_RP1.gas_specific_constant"><code class="docutils literal notranslate"><span class="pre">Rocket_RP1.gas_specific_constant</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

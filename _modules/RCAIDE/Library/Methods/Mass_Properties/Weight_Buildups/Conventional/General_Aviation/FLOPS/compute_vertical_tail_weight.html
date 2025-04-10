@@ -456,7 +456,7 @@
     <span class="k">else</span><span class="p">:</span> 
         <span class="n">HHT</span> <span class="o">=</span> <span class="mf">0.</span>
 
-    <span class="n">QCRUS</span>    <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">design_dynamic_pressure</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">psf</span>
+    <span class="n">QCRUS</span>    <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_dynamic_pressure</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">psf</span>
     <span class="n">ULF</span>      <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">ultimate_load</span>   
     <span class="n">WVT</span>      <span class="o">=</span> <span class="mf">0.073</span><span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.2</span><span class="o">*</span><span class="n">HHT</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ULF</span> <span class="o">*</span> <span class="n">DG</span><span class="p">)</span><span class="o">**</span><span class="mf">0.376</span> <span class="o">*</span> <span class="n">QCRUS</span><span class="o">**</span><span class="mf">0.122</span> 
     <span class="k">return</span> <span class="n">WVT</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span></div>

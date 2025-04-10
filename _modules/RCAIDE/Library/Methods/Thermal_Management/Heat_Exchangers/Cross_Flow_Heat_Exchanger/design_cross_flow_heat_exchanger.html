@@ -393,7 +393,9 @@
 
 <span class="c1"># Python package imports   </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="c1"># ----------------------------------------------------------------------</span>
 <span class="c1">#  Rotor Design</span>
@@ -416,24 +418,34 @@
 <span class="sd">    &quot;&quot;&quot;</span>    
     
     
-    <span class="c1"># start optimization </span>
-    <span class="n">ti</span>                   <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>  
+    <span class="c1"># start optimization  </span>
     <span class="n">optimization_problem</span> <span class="o">=</span> <span class="n">crossflow_heat_exchanger_design_problem_setup</span><span class="p">(</span><span class="n">HEX</span><span class="p">,</span><span class="n">coolant_line</span><span class="p">,</span><span class="n">print_iterations</span><span class="p">)</span>
-    <span class="n">output</span>               <span class="o">=</span> <span class="n">scipy_setup</span><span class="o">.</span><span class="n">SciPy_Solve</span><span class="p">(</span><span class="n">optimization_problem</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_name</span><span class="p">,</span> <span class="nb">iter</span> <span class="o">=</span> <span class="n">iterations</span> <span class="p">,</span> <span class="n">sense_step</span> <span class="o">=</span> <span class="n">solver_sense_step</span><span class="p">,</span><span class="n">tolerance</span> <span class="o">=</span> <span class="n">solver_tolerance</span><span class="p">)</span>  
     
-    <span class="n">tf</span>                   <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">elapsed_time</span>         <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">tf</span><span class="o">-</span><span class="n">ti</span><span class="p">)</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;HEX sizing optimization Simulation Time: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; mins&#39;</span><span class="p">)</span>    
- 
+    <span class="c1"># Commense suppression of console window output  </span>
+    <span class="n">devnull</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">devnull</span> 
+    <span class="n">output</span>               <span class="o">=</span> <span class="n">scipy_setup</span><span class="o">.</span><span class="n">SciPy_Solve</span><span class="p">(</span><span class="n">optimization_problem</span><span class="p">,</span>
+                                                   <span class="n">solver</span><span class="o">=</span><span class="n">solver_name</span><span class="p">,</span>
+                                                   <span class="nb">iter</span> <span class="o">=</span> <span class="n">iterations</span> <span class="p">,</span>
+                                                   <span class="n">sense_step</span> <span class="o">=</span> <span class="n">solver_sense_step</span><span class="p">,</span>
+                                                   <span class="n">tolerance</span> <span class="o">=</span> <span class="n">solver_tolerance</span><span class="p">)</span>  
+    
+    <span class="c1"># Terminate suppression of console window output   </span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span> 
+    <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cross-flow heat-exchanger desing optimization failed: &quot;</span><span class="p">,</span><span class="n">output</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+        
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Sizing &#39;</span><span class="p">,</span> <span class="n">HEX</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>   
 
     <span class="k">for</span> <span class="n">coolant_line</span> <span class="ow">in</span> <span class="n">optimization_problem</span><span class="o">.</span><span class="n">hex_configurations</span><span class="o">.</span><span class="n">optimized</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">electric</span><span class="o">.</span><span class="n">coolant_lines</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">heat_exchanger</span> <span class="ow">in</span> <span class="n">coolant_line</span><span class="o">.</span><span class="n">heat_exchangers</span><span class="p">:</span> 
             <span class="n">HEX_opt</span>       <span class="o">=</span> <span class="n">heat_exchanger</span>
              
-    <span class="n">HEX</span><span class="o">.</span><span class="n">design_air_inlet_pressure</span>     <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">HEX</span><span class="o">.</span><span class="n">design_coolant_inlet_pressure</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">HEX</span><span class="o">.</span><span class="n">design_air_mass_flow_rate</span>     <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">HEX</span><span class="o">.</span><span class="n">design_coolant_mass_flow_rate</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">HEX</span><span class="o">.</span><span class="n">design_air_inlet_pressure</span>     <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">HEX</span><span class="o">.</span><span class="n">design_coolant_inlet_pressure</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">HEX</span><span class="o">.</span><span class="n">design_air_mass_flow_rate</span>     <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">HEX</span><span class="o">.</span><span class="n">design_coolant_mass_flow_rate</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
     <span class="n">HEX</span><span class="o">.</span><span class="n">stack_length</span>                  <span class="o">=</span> <span class="n">HEX_opt</span><span class="o">.</span><span class="n">stack_length</span> 
     <span class="n">HEX</span><span class="o">.</span><span class="n">stack_width</span>                   <span class="o">=</span> <span class="n">HEX_opt</span><span class="o">.</span><span class="n">stack_width</span>  
     <span class="n">HEX</span><span class="o">.</span><span class="n">stack_height</span>                  <span class="o">=</span> <span class="n">HEX_opt</span><span class="o">.</span><span class="n">stack_height</span>  

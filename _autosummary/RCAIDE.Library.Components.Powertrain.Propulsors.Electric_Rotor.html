@@ -47,7 +47,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ICE_Propeller" href="RCAIDE.Library.Components.Powertrain.Propulsors.ICE_Propeller.html" />
+    <link rel="next" title="Internal_Combustion_Engine" href="RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine.html" />
     <link rel="prev" title="Electric_Ducted_Fan" href="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -596,15 +596,21 @@
 <p>This class models an electric propulsion system where an electric motor drives
 a rotor to generate lift and thrust. The system includes an electronic speed
 controller (ESC) to regulate power delivery from the electrical system to the motor.</p>
-<p>The class provides methods for:
-- Computing rotor performance (thrust, moment, power)
-- Managing operating conditions
-- Handling system states and residuals
-- Reusing stored performance data for computational efficiency</p>
-<p>This propulsor type is commonly used in:
-- Multicopters
-- eVTOL aircraft
-- Hybrid helicopters</p>
+<dl class="simple">
+<dt>The class provides methods for:</dt><dd><ul class="simple">
+<li><p>Computing rotor performance (thrust, moment, power)</p></li>
+<li><p>Managing operating conditions</p></li>
+<li><p>Handling system states and residuals</p></li>
+<li><p>Reusing stored performance data for computational efficiency</p></li>
+</ul>
+</dd>
+<dt>This propulsor type is commonly used in:</dt><dd><ul class="simple">
+<li><p>Multicopters</p></li>
+<li><p>eVTOL aircraft</p></li>
+<li><p>Hybrid helicopters</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Definitions</strong></p>
 <dl class="simple">
 <dt>‘Rotor’</dt><dd><p>A rotating assembly of airfoils (blades) that generates lift and thrust
@@ -616,11 +622,11 @@ power delivery based on input commands</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor" title="RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Energy</span></code></p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor" title="RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan" title="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_ICE_Propeller</span></code></p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.append_operating_conditions">
-<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Rotor.html#Electric_Rotor.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.append_operating_conditions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Rotor.html#Electric_Rotor.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.append_operating_conditions" title="Link to this definition">#</a></dt>
 <dd><p>Appends operating conditions to the segment.</p>
 </dd></dl>
 
@@ -644,13 +650,13 @@ power delivery based on input commands</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.compute_performance">
-<span class="sig-name descname"><span class="pre">compute_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Rotor.html#Electric_Rotor.compute_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.compute_performance" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Rotor.html#Electric_Rotor.compute_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.compute_performance" title="Link to this definition">#</a></dt>
 <dd><p>Computes propulsor performance including thrust, moment, and power.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.reuse_stored_data">
-<span class="sig-name descname"><span class="pre">reuse_stored_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_propulsor_tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Rotor.html#Electric_Rotor.reuse_stored_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.reuse_stored_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reuse_stored_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_propulsor_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Rotor.html#Electric_Rotor.reuse_stored_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.reuse_stored_data" title="Link to this definition">#</a></dt>
 <dd><p>Reuses stored propulsor data for performance calculations.</p>
 </dd></dl>
 
@@ -678,11 +684,11 @@ power delivery based on input commands</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Components.Powertrain.Propulsors.ICE_Propeller.html"
+       href="RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">ICE_Propeller</p>
+        <p class="prev-next-title">Internal_Combustion_Engine</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

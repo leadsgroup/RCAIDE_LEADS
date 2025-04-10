@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -536,7 +536,7 @@
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Segments.Transition.Constant_Acceleration_Constant_Angle_Linear_Climb.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Transition.Constant_Acceleration_Constant_Angle_Linear_Climb.initialize_conditions" title="RCAIDE.Library.Mission.Segments.Transition.Constant_Acceleration_Constant_Angle_Linear_Climb.initialize_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_conditions</span></code></a>(segment)</p></td>
-<td><p>Sets the specified conditions which are given for the segment type.</p></td>
+<td><p>Initializes conditions for transition segment with constant acceleration and climb angle</p></td>
 </tr>
 </tbody>
 </table>
@@ -544,25 +544,147 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Transition.Constant_Acceleration_Constant_Angle_Linear_Climb.initialize_conditions">
 <span class="sig-name descname"><span class="pre">initialize_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Transition/Constant_Acceleration_Constant_Angle_Linear_Climb.html#initialize_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Transition.Constant_Acceleration_Constant_Angle_Linear_Climb.initialize_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Sets the specified conditions which are given for the segment type.</p>
-<p>Assumptions:
-Constant acceleration and constant altitude
-Velocities specified in the aircraft velocity frame (x-forward, z-down)</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-segment.altitude                            [meters]
-segment.air_speed_start                     [meters/second]
-segment.air_speed_end                       [meters/second]
-segment.acceleration                        [meters/second^2]
-conditions.frames.inertial.time             [seconds]</p>
-<p>Outputs:
-conditions.frames.inertial.velocity_vector  [meters/second]
-conditions.frames.inertial.position_vector  [meters]
-conditions.freestream.altitude              [meters]
-conditions.frames.inertial.time             [seconds]</p>
-<p>Properties Used:
-N/A</p>
+<dd><p>Initializes conditions for transition segment with constant acceleration and climb angle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – <dl class="simple">
+<dt>The mission segment being analyzed</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>altitude_start<span class="classifier">float</span></dt><dd><p>Initial altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>altitude_end<span class="classifier">float</span></dt><dd><p>Final altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>climb_angle<span class="classifier">float</span></dt><dd><p>Fixed climb angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>air_speed_start<span class="classifier">float</span></dt><dd><p>Initial true airspeed [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>acceleration<span class="classifier">float</span></dt><dd><p>Constant acceleration [m/s^2]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sideslip_angle<span class="classifier">float</span></dt><dd><p>Aircraft sideslip angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pitch_initial<span class="classifier">float</span></dt><dd><p>Initial pitch angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pitch_final<span class="classifier">float</span></dt><dd><p>Final pitch angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state:</dt><dd><dl class="simple">
+<dt>numerics:</dt><dd><dl class="simple">
+<dt>dimensionless:</dt><dd><dl class="simple">
+<dt>control_points<span class="classifier">array</span></dt><dd><p>Discretization points [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>conditions<span class="classifier">Data</span></dt><dd><p>State conditions container</p>
+</dd>
+<dt>initials<span class="classifier">Data, optional</span></dt><dd><p>Initial conditions from previous segment</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Updates segment conditions directly:</dt><dd><ul class="simple">
+<li><p>conditions.freestream.altitude [m]</p></li>
+<li><p>conditions.frames.inertial.position_vector [m]</p></li>
+<li><p>conditions.frames.inertial.velocity_vector [m/s]</p></li>
+<li><p>conditions.frames.body.inertial_rotations [rad]</p></li>
+<li><p>conditions.frames.inertial.time [s]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up the initial conditions for a transition segment with constant
+acceleration, constant climb angle, and linear pitch variation. The segment handles
+the transition between different flight phases while climbing.</p>
+<dl>
+<dt><strong>Calculation Process</strong></dt><dd><ol class="arabic simple">
+<li><p>Check required inputs</p></li>
+<li><dl class="simple">
+<dt>Calculate trajectory geometry:</dt><dd><ul class="simple">
+<li><p>Ground distance = (alt_f - alt_0)/tan(γ)</p></li>
+<li><p>True distance = sqrt((alt_f - alt_0)^2 + ground_distance^2)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<p>where γ is climb angle
+3. Calculate time required:</p>
+<blockquote>
+<div><blockquote>
+<div><p>t = (-V0 + sqrt(V0^2 + 2ax))/ax</p>
+</div></blockquote>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>V0 is initial velocity</p></li>
+<li><p>ax is acceleration</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><dl class="simple">
+<dt>Compute velocity components:</dt><dd><ul class="simple">
+<li><p>vx = V*cos(β)*cos(γ)</p></li>
+<li><p>vy = V*sin(β)*cos(γ)</p></li>
+<li><p>vz = V*sin(γ)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Linear pitch transition</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant acceleration</p></li>
+<li><p>Constant climb angle</p></li>
+<li><p>Linear pitch variation</p></li>
+<li><p>Coordinated flight</p></li>
+<li><p>Small angle approximations</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

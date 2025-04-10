@@ -380,7 +380,9 @@
 <span></span><span class="c1"># RCAIDE/Library/Missions/Common/Update/thrust.py</span>
 <span class="c1"># </span>
 <span class="c1"># </span>
-<span class="c1"># Created:  Jul 2023, M. Clarke </span>
+<span class="c1"># Created:  Jul 2023, M. Clarke</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">RCAIDE</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  Update Thrust</span>
@@ -408,18 +410,24 @@
     <span class="n">energy_model</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span>
 
     <span class="c1"># evaluate</span>
-    <span class="n">energy_model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+    <span class="n">energy_model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>    
 
     <span class="c1"># pack conditions</span>
     <span class="n">conditions</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>
     <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">thrust_force_vector</span>       <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">thrust_force_vector</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">thrust_moment_vector</span>      <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">thrust_moment_vector</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle_mass_rate</span>             <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle_mass_rate</span> 
-
-    <span class="k">if</span> <span class="s2">&quot;vehicle_additional_fuel_rate&quot;</span> <span class="ow">in</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">:</span> 
-        <span class="n">conditions</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">has_additional_fuel</span>             <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">conditions</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle_fuel_rate</span>               <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle_fuel_rate</span>
-        <span class="n">conditions</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle_additional_fuel_rate</span>    <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle_additional_fuel_rate</span>  </div>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">thrust_moment_vector</span>      <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">thrust_moment_vector</span> 
+    
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Single_Point</span><span class="o">.</span><span class="n">Set_Speed_Set_Altitude</span> <span class="ow">or</span>\
+        <span class="nb">type</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Single_Point</span><span class="o">.</span><span class="n">Set_Speed_Set_Altitude_AVL_Trimmed</span> <span class="ow">or</span> \
+         <span class="nb">type</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Single_Point</span><span class="o">.</span><span class="n">Set_Speed_Set_Altitude_No_Propulsion</span> <span class="ow">or</span>\
+          <span class="nb">type</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Single_Point</span><span class="o">.</span><span class="n">Set_Speed_Set_Throttle</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="n">I</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">integrate</span>         
+        <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">fuel_consumption</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="n">conditions</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle_mass_rate</span><span class="p">)</span>
+        <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">cumulative_fuel_consumption</span> <span class="o">=</span>  <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">fuel_consumption</span>
+        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="p">:</span>  
+            <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">cumulative_fuel_consumption</span> <span class="o">+=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">cumulative_fuel_consumption</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 </pre></div>
 

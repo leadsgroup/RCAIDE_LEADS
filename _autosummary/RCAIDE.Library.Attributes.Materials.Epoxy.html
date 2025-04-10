@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,17 +533,112 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Epoxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Materials/Epoxy.html#Epoxy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Solid.html#RCAIDE.Library.Attributes.Materials.Solid.Solid" title="RCAIDE.Library.Attributes.Materials.Solid.Solid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solid</span></code></a></p>
-<p>Physical Constants Specific to Epoxy Resin</p>
-<p>Assumptions:
-None</p>
-<p>Source:
-MatWeb (Median of Mfg. Reported Values)</p>
-<p>Inputs:
-N/A</p>
-<p>Outputs:
-N/A</p>
-<p>Properties Used:
-None</p>
+<p>A class representing hardened epoxy resin material properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.ultimate_tensile_strength">
+<span class="sig-name descname"><span class="pre">ultimate_tensile_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.ultimate_tensile_strength" title="Link to this definition">#</a></dt>
+<dd><p>Maximum tensile stress before failure in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.ultimate_shear_strength">
+<span class="sig-name descname"><span class="pre">ultimate_shear_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.ultimate_shear_strength" title="Link to this definition">#</a></dt>
+<dd><p>Maximum shear stress before failure in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.ultimate_bearing_strength">
+<span class="sig-name descname"><span class="pre">ultimate_bearing_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.ultimate_bearing_strength" title="Link to this definition">#</a></dt>
+<dd><p>Maximum bearing stress before failure in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.yield_tensile_strength">
+<span class="sig-name descname"><span class="pre">yield_tensile_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.yield_tensile_strength" title="Link to this definition">#</a></dt>
+<dd><p>Stress at which material begins to deform plastically in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.yield_shear_strength">
+<span class="sig-name descname"><span class="pre">yield_shear_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.yield_shear_strength" title="Link to this definition">#</a></dt>
+<dd><p>Shear stress at which material begins to deform plastically in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.yield_bearing_strength">
+<span class="sig-name descname"><span class="pre">yield_bearing_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.yield_bearing_strength" title="Link to this definition">#</a></dt>
+<dd><p>Bearing stress at which material begins to deform plastically in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.minimum_gage_thickness">
+<span class="sig-name descname"><span class="pre">minimum_gage_thickness</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.minimum_gage_thickness" title="Link to this definition">#</a></dt>
+<dd><p>Minimum manufacturable thickness in m (250e-6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.density" title="Link to this definition">#</a></dt>
+<dd><p>Material density in kg/m³ (1800)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements material properties for cured epoxy resin. The zero values
+for strength properties indicate that these should be specified based on the
+specific epoxy formulation being used, as properties can vary significantly
+between different epoxy systems.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Epoxy Resin’</dt><dd><p>A thermosetting polymer that cures (hardens) when mixed with a catalyst
+or hardener</p>
+</dd>
+<dt>‘Ultimate Strength’</dt><dd><p>The maximum stress that a material can withstand before failure</p>
+</dd>
+<dt>‘Yield Strength’</dt><dd><p>The stress at which a material begins to deform plastically</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] MatWeb. (n.d.). Overview of materials for Epoxy, Cast, Unreinforced. Overview of materials for epoxy, cast, unreinforced. <a class="reference external" href="https://www.matweb.com/search/DataSheet.aspx?MatGUID=1c74545c91874b13a3e44f400cedfe39">https://www.matweb.com/search/DataSheet.aspx?MatGUID=1c74545c91874b13a3e44f400cedfe39</a></p>
 </dd></dl>
 
 </section>
@@ -595,7 +690,17 @@ None</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy"><code class="docutils literal notranslate"><span class="pre">Epoxy</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy"><code class="docutils literal notranslate"><span class="pre">Epoxy</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.ultimate_tensile_strength"><code class="docutils literal notranslate"><span class="pre">Epoxy.ultimate_tensile_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.ultimate_shear_strength"><code class="docutils literal notranslate"><span class="pre">Epoxy.ultimate_shear_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.ultimate_bearing_strength"><code class="docutils literal notranslate"><span class="pre">Epoxy.ultimate_bearing_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.yield_tensile_strength"><code class="docutils literal notranslate"><span class="pre">Epoxy.yield_tensile_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.yield_shear_strength"><code class="docutils literal notranslate"><span class="pre">Epoxy.yield_shear_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.yield_bearing_strength"><code class="docutils literal notranslate"><span class="pre">Epoxy.yield_bearing_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.minimum_gage_thickness"><code class="docutils literal notranslate"><span class="pre">Epoxy.minimum_gage_thickness</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy.density"><code class="docutils literal notranslate"><span class="pre">Epoxy.density</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

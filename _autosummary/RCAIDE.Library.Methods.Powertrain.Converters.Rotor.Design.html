@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,21 +535,39 @@
   <p>RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design">
 <span id="design"></span><h1>Design<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>Methods for designing rotors in aircraft propulsion systems.</p>
+<p>This module provides functions for setting up and executing the design process for
+various types of rotors, including propellers, lift rotors, and prop rotors. It includes
+methods for blade geometry setup, optimization parameter configuration, design procedure
+definition, and post-optimization parameter setting.</p>
+<dl class="simple">
+<dt>The design process typically involves:</dt><dd><ol class="arabic simple">
+<li><p>Setting up the blade geometry with appropriate airfoil sections and twist distribution</p></li>
+<li><p>Configuring the optimization parameters and constraints</p></li>
+<li><p>Defining the design procedure and analysis methods</p></li>
+<li><p>Running the optimization to find the optimal blade design</p></li>
+<li><p>Setting the optimized parameters in the rotor object</p></li>
+</ol>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">blade_geometry_setup</span></code></a>(rotor, number_of_stations)</p></td>
-<td><p>Defines a dummy vehicle for prop-rotor blade optimization.</p></td>
+<td><p>Defines a configuration for prop-rotor blade optimization.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimization_setup</span></code></a>(rotor, ...)</p></td>
-<td><p>Sets up rotor optimization problem including design variables, constraints and objective function using RCAIDE's Nexus optimization framework. Appends methodolody of planform modification to Nexus. Inputs:      rotor     - rotor data structure           [None].</p></td>
+<td><p>Sets up rotor optimization problem including design variables, constraints and objective function using RCAIDE's Nexus optimization framework.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">procedure_setup</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Creates a procedure for rotor blade optimization that defines the sequence of analysis steps.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_optimized_parameters</span></code></a>(rotor, ...)</p></td>
-<td><p>Append parameters of optimized prop-rotor to input prop-rotor</p></td>
+<td><p>Appends parameters of optimized rotor to input rotor data structure.</p></td>
 </tr>
 </tbody>
 </table>

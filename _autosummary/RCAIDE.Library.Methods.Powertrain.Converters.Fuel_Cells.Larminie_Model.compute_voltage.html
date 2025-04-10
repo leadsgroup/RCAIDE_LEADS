@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,26 +543,84 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage.compute_voltage">
 <span class="sig-name descname"><span class="pre">compute_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_density</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Larminie_Model/compute_voltage.html#compute_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage.compute_voltage" title="Link to this definition">#</a></dt>
-<dd><p>function that determines the fuel cell voltage based on an input
-current density and some semi-empirical values to describe the voltage
-drop off with current</p>
-<p>Assumptions:
-voltage curve is a function of current density of the form
-v = Eoc-r*i1-A1*np.log(i1)-m*np.exp(n*i1)</p>
-<p>Inputs:
-current_density           [A/m**2]
-fuel_cell.</p>
-<blockquote>
-<div><p>r                     [Ohms*m**2]
-A1                    [V]
-m                     [V]
-n                     [m**2/A]
-Eoc                   [V]</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Outputs:</dt><dd><p>V                     [V]</p>
+<dd><p>Calculates fuel cell voltage based on current density using the Larminie-Dicks model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fuel_cell</strong> (<em>RCAIDE.Components.Energy.Converters.Fuel_Cell</em>) – <dl class="simple">
+<dt>The fuel cell component containing electrochemical parameters</dt><dd><ul>
+<li><dl class="simple">
+<dt>r<span class="classifier">float</span></dt><dd><p>Area-specific resistance [Ohms*cm²]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>A1<span class="classifier">float</span></dt><dd><p>Tafel slope [V]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>m<span class="classifier">float</span></dt><dd><p>Mass transport loss coefficient [V]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n<span class="classifier">float</span></dt><dd><p>Mass transport loss exponential coefficient [cm²/A]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Eoc<span class="classifier">float</span></dt><dd><p>Open circuit voltage [V]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>current_density</strong> (<em>float</em><em> or </em><em>array</em>) – Current density [A/m²]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>v</strong> – Cell voltage [V]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or array</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function implements the Larminie-Dicks semi-empirical model to calculate
+fuel cell voltage as a function of current density. The model accounts for
+activation losses, ohmic losses, and concentration losses.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Voltage curve follows the Larminie-Dicks model form</p></li>
+<li><p>Steady-state operation (no transient effects)</p></li>
+<li><p>Uniform current distribution across the cell</p></li>
+<li><p>Constant temperature operation</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong></p>
+<p>The Larminie-Dicks model calculates cell voltage as:</p>
+<div class="math notranslate nohighlight">
+\[V = E_{oc} - r \cdot i - A_1 \ln(i) - m \exp(n \cdot i)\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(E_{oc}\)</span> is the open circuit voltage</p></li>
+<li><p>r is the area-specific resistance</p></li>
+<li><p>A_1 is the Tafel slope for activation losses</p></li>
+<li><p>m and n are parameters for mass transport losses</p></li>
+<li><p>i is the current density</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Larminie, J., &amp; Dicks, A. (2003). Fuel Cell Systems Explained (2nd ed.). John Wiley &amp; Sons Ltd.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

@@ -413,20 +413,6 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="../Missions/Tutorial_08_tilt_stopped_rotor_vtail_evtol_aircraft.html">Tutorial 8 - Tilt Stopped Rotor Vtail eVTOL Aircraft Simulation</a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
@@ -557,7 +543,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span> <span class="p">,</span> <span class="n">Data</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor</span><span class="w">          </span><span class="kn">import</span> <span class="n">design_turbofan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan</span><span class="w">          </span><span class="kn">import</span> <span class="n">design_turbofan</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Performance</span><span class="w">                            </span><span class="kn">import</span> <span class="n">aircraft_aerodynamic_analysis</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">                      </span><span class="kn">import</span> <span class="n">segment_properties</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                                          </span><span class="kn">import</span> <span class="o">*</span>
@@ -643,7 +629,7 @@
     <span class="n">root_airfoil</span>                          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
     <span class="n">ospath</span>                                <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Notebook&#39;</span><span class="p">))</span>
     <span class="n">separator</span>                             <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
-    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Regressions&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Vehicles&#39;</span> <span class="o">+</span> <span class="n">separator</span>
+    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;VnV&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Vehicles&#39;</span> <span class="o">+</span> <span class="n">separator</span>
     <span class="n">root_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>          <span class="o">=</span> <span class="n">rel_path</span>  <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;B737a.txt&#39;</span>
     <span class="n">segment</span>                               <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">tag</span>                           <span class="o">=</span> <span class="s1">&#39;Root&#39;</span>
@@ -1230,7 +1216,13 @@
 <span class="n">Mach_number_range</span>                 <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
 <span class="n">angle_of_attack_range</span>             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
 <span class="n">control_surface_deflection_range</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
-<span class="n">results</span>                           <span class="o">=</span> <span class="n">aircraft_aerodynamic_analysis</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">angle_of_attack_range</span><span class="p">,</span> <span class="n">Mach_number_range</span><span class="p">,</span><span class="n">control_surface_deflection_range</span><span class="p">,</span> <span class="n">altitude</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="n">delta_ISA</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">use_surrogate</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>  <span class="n">model_fuselage</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">aerodynamics_analysis_routine</span>     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Aerodynamics</span><span class="o">.</span><span class="n">Vortex_Lattice_Method</span><span class="p">()</span>
+<span class="n">aerodynamics_analysis_routine</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
+
+<span class="n">results</span>                           <span class="o">=</span> <span class="n">aircraft_aerodynamic_analysis</span><span class="p">(</span><span class="n">aerodynamics_analysis</span> <span class="o">=</span> <span class="n">aerodynamics_analysis_routine</span><span class="p">,</span>
+                                                                      <span class="n">angle_of_attack_range</span> <span class="o">=</span> <span class="n">angle_of_attack_range</span><span class="p">,</span>
+                                                                      <span class="n">Mach_number_range</span> <span class="o">=</span> <span class="n">Mach_number_range</span><span class="p">,</span>
+                                                                      <span class="n">control_surface_deflection_range</span><span class="o">=</span> <span class="n">control_surface_deflection_range</span><span class="p">)</span>
 
 <span class="n">plot_aircraft_aerodynamics</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 </pre></div>

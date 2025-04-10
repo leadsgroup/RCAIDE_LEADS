@@ -393,42 +393,92 @@
 
 <span class="c1"># Python package imports   </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <span class="c1">#  Design Lift-rotor</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="design_lift_rotor">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_lift_rotor.html#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_lift_rotor.design_lift_rotor">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">design_lift_rotor</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span><span class="n">number_of_stations</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span><span class="n">solver_name</span><span class="o">=</span> <span class="s1">&#39;SLSQP&#39;</span><span class="p">,</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
-                      <span class="n">solver_sense_step</span> <span class="o">=</span> <span class="mf">1E-5</span><span class="p">,</span><span class="n">solver_tolerance</span> <span class="o">=</span> <span class="mf">1E-4</span><span class="p">,</span><span class="n">print_iterations</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>  
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Optimizes rotor chord and twist given input parameters to meet either design power or thurst. </span>
-<span class="sd">        This scrip adopts RCAIDE&#39;s native optimization style where the objective function is expressed </span>
-<span class="sd">        as an aeroacoustic function, considering both efficiency and radiated noise.</span>
-<span class="sd">          </span>
-<span class="sd">          Inputs: </span>
-<span class="sd">          prop_attributes.</span>
-<span class="sd">              hub radius                             [m]</span>
-<span class="sd">              tip radius                             [m]</span>
-<span class="sd">              rotation rate                          [rad/s]</span>
-<span class="sd">              freestream velocity                    [m/s]</span>
-<span class="sd">              number of blades                       [None]       </span>
-<span class="sd">              number of stations                     [None]</span>
-<span class="sd">              design lift coefficient                [None]</span>
-<span class="sd">              airfoil data                           [None]</span>
-<span class="sd">              optimization_parameters.         </span>
-<span class="sd">                 slack_constaint                     [None]</span>
-<span class="sd">                 ideal_SPL_dbA                       [dBA]</span>
-<span class="sd">                 multiobjective_aeroacoustic_weight  [None]</span>
-<span class="sd">            </span>
-<span class="sd">          Outputs:</span>
-<span class="sd">          Twist distribution                         [array of radians]</span>
-<span class="sd">          Chord distribution                         [array of meters]</span>
-<span class="sd">              </span>
-<span class="sd">          Assumptions: </span>
-<span class="sd">             Rotor blade design considers one engine inoperative </span>
-<span class="sd">        </span>
-<span class="sd">          Source:</span>
-<span class="sd">             None </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">design_lift_rotor</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span> <span class="n">number_of_stations</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">solver_name</span><span class="o">=</span><span class="s1">&#39;SLSQP&#39;</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                      <span class="n">solver_sense_step</span><span class="o">=</span><span class="mf">1E-6</span><span class="p">,</span> <span class="n">solver_tolerance</span><span class="o">=</span><span class="mf">1E-5</span><span class="p">,</span> <span class="n">print_iterations</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Optimizes rotor chord and twist distribution to meet design power or thrust requirements.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor</span>
+<span class="sd">        Rotor component with the following attributes:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the rotor</span>
+<span class="sd">            - hub_radius : float</span>
+<span class="sd">                Hub radius of the rotor [m]</span>
+<span class="sd">            - tip_radius : float</span>
+<span class="sd">                Tip radius of the rotor [m]</span>
+<span class="sd">            - rotation_rate : float</span>
+<span class="sd">                Rotation rate [rad/s]</span>
+<span class="sd">            - freestream_velocity : float</span>
+<span class="sd">                Freestream velocity [m/s]</span>
+<span class="sd">            - number_of_blades : int</span>
+<span class="sd">                Number of blades on the rotor</span>
+<span class="sd">            - design_lift_coefficient : float</span>
+<span class="sd">                Design lift coefficient</span>
+<span class="sd">            - airfoil_data : dict</span>
+<span class="sd">                Dictionary of airfoil data</span>
+<span class="sd">            - optimization_parameters : Data</span>
+<span class="sd">                Optimization parameters</span>
+<span class="sd">                    - slack_constraint : float</span>
+<span class="sd">                        Slack constraint value</span>
+<span class="sd">                    - ideal_SPL_dbA : float</span>
+<span class="sd">                        Ideal sound pressure level [dBA]</span>
+<span class="sd">                    - multiobjective_aeroacoustic_weight : float</span>
+<span class="sd">                        Weight for multiobjective aeroacoustic optimization</span>
+<span class="sd">    number_of_stations : int, optional</span>
+<span class="sd">        Number of radial stations for blade discretization, default 20</span>
+<span class="sd">    solver_name : str, optional</span>
+<span class="sd">        Name of the optimization solver, default &#39;SLSQP&#39;</span>
+<span class="sd">    iterations : int, optional</span>
+<span class="sd">        Maximum number of iterations, default 200</span>
+<span class="sd">    solver_sense_step : float, optional</span>
+<span class="sd">        Step size for finite difference gradient calculation, default 1E-6</span>
+<span class="sd">    solver_tolerance : float, optional</span>
+<span class="sd">        Convergence tolerance for the optimizer, default 1E-5</span>
+<span class="sd">    print_iterations : bool, optional</span>
+<span class="sd">        Flag to print optimization iterations, default False</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor</span>
+<span class="sd">        Optimized rotor with updated chord and twist distributions</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function optimizes the chord and twist distributions of a lift rotor to meet</span>
+<span class="sd">    either design power or thrust requirements. It uses RCAIDE&#39;s native optimization</span>
+<span class="sd">    framework with an objective function that balances aerodynamic performance and</span>
+<span class="sd">    acoustic characteristics.</span>
+<span class="sd">    </span>
+<span class="sd">    The optimization process follows these steps:</span>
+<span class="sd">        1. Set up the optimization problem using the optimization_setup function</span>
+<span class="sd">        2. Solve the optimization problem using the specified solver</span>
+<span class="sd">        3. Report optimization results</span>
+<span class="sd">        4. Update the rotor with the optimized parameters</span>
+<span class="sd">    </span>
+<span class="sd">    The objective function is formulated as an aeroacoustic function that considers</span>
+<span class="sd">    both efficiency and radiated noise, with the balance controlled by the</span>
+<span class="sd">    multiobjective_aeroacoustic_weight parameter.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Rotor blade design considers one engine inoperative scenario</span>
+<span class="sd">        * Either design power or thrust must be specified (not both)</span>
+<span class="sd">        * The optimization balances aerodynamic performance and acoustic characteristics</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters</span>
+<span class="sd">    RCAIDE.Framework.Optimization.Packages.scipy.scipy_setup</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="c1"># Unpack rotor geometry  </span>
     <span class="n">rotor_tag</span>     <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">tag</span>
@@ -437,14 +487,27 @@
     <span class="c1"># start optimization </span>
     <span class="n">ti</span>                   <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>   
     <span class="n">optimization_problem</span> <span class="o">=</span> <span class="n">optimization_setup</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span><span class="n">number_of_stations</span><span class="p">,</span><span class="n">print_iterations</span><span class="p">)</span>
-    <span class="n">output</span>               <span class="o">=</span> <span class="n">scipy_setup</span><span class="o">.</span><span class="n">SciPy_Solve</span><span class="p">(</span><span class="n">optimization_problem</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_name</span><span class="p">,</span> <span class="nb">iter</span> <span class="o">=</span> <span class="n">iterations</span> <span class="p">,</span> <span class="n">sense_step</span> <span class="o">=</span> <span class="n">solver_sense_step</span><span class="p">,</span><span class="n">tolerance</span> <span class="o">=</span> <span class="n">solver_tolerance</span><span class="p">)</span>    
+
+    <span class="c1"># Commense suppression of console window output  </span>
+    <span class="n">devnull</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">devnull</span> 
+    <span class="n">outputs</span>               <span class="o">=</span> <span class="n">scipy_setup</span><span class="o">.</span><span class="n">SciPy_Solve</span><span class="p">(</span><span class="n">optimization_problem</span><span class="p">,</span>
+                                                   <span class="n">solver</span><span class="o">=</span><span class="n">solver_name</span><span class="p">,</span>
+                                                   <span class="nb">iter</span> <span class="o">=</span> <span class="n">iterations</span> <span class="p">,</span>
+                                                   <span class="n">sense_step</span> <span class="o">=</span> <span class="n">solver_sense_step</span><span class="p">,</span>
+                                                   <span class="n">tolerance</span> <span class="o">=</span> <span class="n">solver_tolerance</span><span class="p">)</span>
+    <span class="c1"># Terminate suppression of console window output   </span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
+
+    <span class="k">if</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>  
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Lift-rotor Optimization Failed: &#39;</span><span class="p">,</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="p">)</span>   
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Lift-rotor Optimization Successful&#39;</span><span class="p">)</span>  
+        
     <span class="n">tf</span>                   <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">elapsed_time</span>         <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">tf</span><span class="o">-</span><span class="n">ti</span><span class="p">)</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Lift-rotor Optimization Simulation Time: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; mins&#39;</span><span class="p">)</span>   
-    
-    <span class="c1"># print optimization results </span>
-    <span class="nb">print</span> <span class="p">(</span><span class="n">output</span><span class="p">)</span>  
-    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Simulation Time: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; mins&#39;</span><span class="p">)</span>   
+     
     <span class="c1"># set remaining rotor variables using optimized parameters </span>
     <span class="n">rotor</span>     <span class="o">=</span> <span class="n">set_optimized_parameters</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span><span class="n">optimization_problem</span><span class="p">)</span>
     <span class="n">rotor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">rotor_tag</span>

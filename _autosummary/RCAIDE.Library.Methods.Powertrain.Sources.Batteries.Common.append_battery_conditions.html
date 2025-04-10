@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -540,10 +540,11 @@
 <span id="append-battery-conditions"></span><h1>append_battery_conditions<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions.append_battery_conditions">
-<span class="sig-name descname"><span class="pre">append_battery_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Common/append_battery_conditions.html#append_battery_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions.append_battery_conditions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">append_battery_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Common/append_battery_conditions.html#append_battery_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions.append_battery_conditions" title="Link to this definition">#</a></dt>
 <dd><p>Appends the initial battery conditions</p>
-<p>Assumptions:
-Battery temperature is set to one degree hotter than ambient
+<section id="assumptions">
+<h2>Assumptions:<a class="headerlink" href="#assumptions" title="Link to this heading">#</a></h2>
+<p>Battery temperature is set to one degree hotter than ambient
 temperature for robust convergence. Initial mission energy, maxed aged energy, and
 initial segment energy are the same. Cycle day is zero unless specified, resistance_growth_factor and
 capacity_fade_factor is one unless specified in the segment</p>
@@ -554,12 +555,12 @@ N/A</p>
 <p>Optional:
 segment.</p>
 <blockquote>
-<div><p>battery.cycle_in_day               [unitless]
-battery.module.temperature         [Kelvin]
-battery.charge_throughput          [Ampere-Hours]
-battery.resistance_growth_factor   [unitless]
-battery.capacity_fade_factor       [unitless]
-battery.discharge                  [boolean]
+<div><p>battery_module.cycle_in_day               [unitless]
+battery_module.module.temperature         [Kelvin]
+battery_module.charge_throughput          [Ampere-Hours]
+battery_module.resistance_growth_factor   [unitless]
+battery_module.capacity_fade_factor       [unitless]
+battery_module.discharge                  [boolean]
 increment_battery_age_by_one_day   [boolean]</p>
 </div></blockquote>
 </dd>
@@ -567,25 +568,26 @@ increment_battery_age_by_one_day   [boolean]</p>
 <dt>segment</dt><dd><p>battery_discharge                    [boolean]
 increment_battery_age_by_one_day     [boolean]
 segment.state.conditions.energy
-battery.battery_discharge_flag         [boolean]
-battery.module.maximum_initial_energy  [watts]
-battery.module.energy                  [watts]
-battery.module.temperature             [kelvin]
-battery.cycle_in_day                   [int]
-battery.cell.charge_throughput         [Ampere-Hours]
-battery.resistance_growth_factor       [unitless]
-battery.capacity_fade_factor           [unitless]</p>
+battery_module.battery_discharge_flag         [boolean]
+battery_module.maximum_initial_energy  [watts]
+battery_module.energy                  [watts]
+battery_module.temperature             [kelvin]
+battery_module.cycle_in_day                   [int]
+battery_module.cell.charge_throughput         [Ampere-Hours]
+battery_module.resistance_growth_factor       [unitless]
+battery_module.capacity_fade_factor           [unitless]</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p>Properties Used:
 None</p>
+</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions.append_battery_segment_conditions">
-<span class="sig-name descname"><span class="pre">append_battery_segment_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Common/append_battery_conditions.html#append_battery_segment_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions.append_battery_segment_conditions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">append_battery_segment_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Common/append_battery_conditions.html#append_battery_segment_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions.append_battery_segment_conditions" title="Link to this definition">#</a></dt>
 <dd><p>Sets the initial battery energy at the start of each segment as the last point from the previous segment</p>
 <p>Assumptions:
 None</p>

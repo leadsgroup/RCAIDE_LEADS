@@ -395,15 +395,59 @@
 <div class="viewcode-block" id="compute_bus_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions.html#RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions.compute_bus_conditions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_bus_conditions</span><span class="p">(</span><span class="n">bus</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the conditions of the bus based on the response of the battery modules</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the conditions of the bus based on the response of the battery modules.</span>
 <span class="sd">    </span>
-<span class="sd">    Args:</span>
-<span class="sd">        bus: Electrical bus object</span>
-<span class="sd">        state: Current system state</span>
-<span class="sd">        t_idx: Time index</span>
-<span class="sd">        delta_t: Time step</span>
-<span class="sd">    &quot;&quot;&quot;</span>  
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bus : ElectricalBus</span>
+<span class="sd">        The electrical bus component with the following attributes:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the bus</span>
+<span class="sd">            - battery_modules : list</span>
+<span class="sd">                List of battery modules connected to the bus</span>
+<span class="sd">            - battery_module_electric_configuration : str</span>
+<span class="sd">                Configuration of battery modules (&#39;Series&#39; or &#39;Parallel&#39;)</span>
+<span class="sd">    state : State</span>
+<span class="sd">        Current system state containing conditions for all components</span>
+<span class="sd">    t_idx : int</span>
+<span class="sd">        Current time index in the simulation</span>
+<span class="sd">    delta_t : float</span>
+<span class="sd">        Time step [s]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the electrical properties of the bus based on the connected</span>
+<span class="sd">    battery modules. It handles both series and parallel configurations of battery modules.</span>
+<span class="sd">    </span>
+<span class="sd">    For series configuration:</span>
+<span class="sd">        - Voltage is the sum of all battery module voltages</span>
+<span class="sd">        - Temperature and energy are averaged/summed across modules</span>
+<span class="sd">        - State of charge is taken from the last battery module</span>
+<span class="sd">    </span>
+<span class="sd">    For parallel configuration:</span>
+<span class="sd">        - Voltage is the same as the last battery module</span>
+<span class="sd">        - Temperature and energy are averaged/summed across modules</span>
+<span class="sd">        - State of charge is taken from the last battery module&#39;s cell</span>
+<span class="sd">    </span>
+<span class="sd">    The function also handles the fully charged state by setting charging current,</span>
+<span class="sd">    power draw, and current draw to zero when the state of charge reaches 1.0.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Battery modules are the primary energy source for the bus</span>
+<span class="sd">        * In parallel configuration, all modules have the same voltage</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Energy_Storage.Battery.compute_battery_module_conditions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bus_conditions</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+    <span class="n">phi</span>   <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span>
      
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> 
         <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">battery_module_electric_configuration</span> <span class="o">==</span> <span class="s1">&#39;Series&#39;</span><span class="p">:</span>
@@ -411,7 +455,7 @@
             <span class="n">bus_conditions</span><span class="o">.</span><span class="n">voltage_open_circuit</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>  <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">voltage_open_circuit</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">bm_conditions</span><span class="p">)</span>
             <span class="n">bus_conditions</span><span class="o">.</span><span class="n">voltage_under_load</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>    <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">voltage_under_load</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">bm_conditions</span><span class="p">)</span>
             <span class="n">bus_conditions</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">bm_conditions</span><span class="p">)</span>
-            <span class="n">bus_conditions</span><span class="o">.</span><span class="n">efficiency</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>            <span class="o">=</span> <span class="p">(</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">])</span><span class="o">/</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
+            <span class="n">bus_conditions</span><span class="o">.</span><span class="n">efficiency</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>            <span class="o">=</span> <span class="p">(</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span><span class="o">*</span><span class="n">phi</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span><span class="o">*</span><span class="n">phi</span><span class="p">[</span><span class="n">t_idx</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">t_idx</span> <span class="o">!=</span> <span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">number_of_control_points</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>  
                 <span class="n">bm_conditions</span>                              <span class="o">=</span> <span class="p">[</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">[</span><span class="n">bm</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">]</span>
                 <span class="n">bus_conditions</span><span class="o">.</span><span class="n">temperature</span><span class="p">[</span><span class="n">t_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>        <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">temperature</span><span class="p">[</span><span class="n">t_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">bm_conditions</span><span class="p">)</span><span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">)</span>
@@ -423,7 +467,7 @@
             <span class="n">bus_conditions</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">bm_conditions</span><span class="p">)</span>
             <span class="n">bus_conditions</span><span class="o">.</span><span class="n">voltage_open_circuit</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>  <span class="o">=</span> <span class="n">bm_conditions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">voltage_open_circuit</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
             <span class="n">bus_conditions</span><span class="o">.</span><span class="n">voltage_under_load</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>    <span class="o">=</span> <span class="n">bm_conditions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">voltage_under_load</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>             
-            <span class="n">bus_conditions</span><span class="o">.</span><span class="n">efficiency</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>            <span class="o">=</span> <span class="p">(</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">+</span>  <span class="n">bus_conditions</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">])</span><span class="o">/</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
+            <span class="n">bus_conditions</span><span class="o">.</span><span class="n">efficiency</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>            <span class="o">=</span> <span class="p">(</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span><span class="o">*</span><span class="n">phi</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">+</span>  <span class="n">bus_conditions</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span><span class="o">*</span><span class="n">phi</span><span class="p">[</span><span class="n">t_idx</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">t_idx</span> <span class="o">!=</span> <span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">number_of_control_points</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>  
                 <span class="n">bus_conditions</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">heat_energy_generated</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">bm_conditions</span><span class="p">)</span>
                 <span class="n">bus_conditions</span><span class="o">.</span><span class="n">temperature</span><span class="p">[</span><span class="n">t_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>         <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">temperature</span><span class="p">[</span><span class="n">t_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">bm_conditions</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">)</span>

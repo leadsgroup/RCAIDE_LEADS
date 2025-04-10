@@ -399,20 +399,84 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="blade_geometry_setup">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup.html#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup.blade_geometry_setup">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">blade_geometry_setup</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span><span class="n">number_of_stations</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Defines a dummy vehicle for prop-rotor blade optimization.</span>
-<span class="sd">          </span>
-<span class="sd">          Inputs:  </span>
-<span class="sd">             rotor   - rotor data structure             [None] </span>
-<span class="sd">              </span>
-<span class="sd">          Outputs:  </span>
-<span class="sd">             configs - configuration used in optimization    [None]</span>
-<span class="sd">              </span>
-<span class="sd">          Assumptions: </span>
-<span class="sd">             N/A </span>
-<span class="sd">        </span>
-<span class="sd">          Source:</span>
-<span class="sd">             None</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">blade_geometry_setup</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span> <span class="n">number_of_stations</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines a configuration for prop-rotor blade optimization.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor</span>
+<span class="sd">        Rotor component with the following attributes:</span>
+<span class="sd">            - number_of_blades : int</span>
+<span class="sd">                Number of blades on the rotor</span>
+<span class="sd">            - tip_radius : float</span>
+<span class="sd">                Tip radius of the rotor [m]</span>
+<span class="sd">            - hub_radius : float</span>
+<span class="sd">                Hub radius of the rotor [m]</span>
+<span class="sd">            - hover : Data</span>
+<span class="sd">                Hover conditions</span>
+<span class="sd">                    - design_thrust : float, optional</span>
+<span class="sd">                        Design thrust at hover [N]</span>
+<span class="sd">                    - design_power : float, optional</span>
+<span class="sd">                        Design power at hover [W]</span>
+<span class="sd">                    - design_freestream_velocity : float</span>
+<span class="sd">                        Freestream velocity at hover [m/s]</span>
+<span class="sd">                    - design_altitude : float</span>
+<span class="sd">                        Altitude at hover [m]</span>
+<span class="sd">            - oei : Data</span>
+<span class="sd">                One engine inoperative conditions</span>
+<span class="sd">                    - design_freestream_velocity : float, optional</span>
+<span class="sd">                        Freestream velocity at OEI [m/s]</span>
+<span class="sd">                    - design_altitude : float, optional</span>
+<span class="sd">                        Altitude at OEI [m]</span>
+<span class="sd">                    - design_thrust : float, optional</span>
+<span class="sd">                        Design thrust at OEI [N]</span>
+<span class="sd">                    - design_power : float, optional</span>
+<span class="sd">                        Design power at OEI [W]</span>
+<span class="sd">            - airfoils : dict</span>
+<span class="sd">                Dictionary of airfoil objects</span>
+<span class="sd">            - airfoil_polar_stations : list</span>
+<span class="sd">                List of airfoil section indices for each station</span>
+<span class="sd">    number_of_stations : int</span>
+<span class="sd">        Number of radial stations for blade discretization</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    configs : RCAIDE.Library.Components.Configs.Config.Container</span>
+<span class="sd">        Configuration container with the following configs:</span>
+<span class="sd">            - hover : Config</span>
+<span class="sd">                Hover configuration</span>
+<span class="sd">            - oei : Config</span>
+<span class="sd">                One engine inoperative configuration</span>
+<span class="sd">            - cruise : Config (only for prop-rotors)</span>
+<span class="sd">                Cruise configuration</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function prepares the necessary configurations for rotor blade optimization by:</span>
+<span class="sd">        1. Unpacking rotor geometry parameters</span>
+<span class="sd">        2. Validating design requirements (thrust or power must be specified)</span>
+<span class="sd">        3. Processing airfoil data (importing geometry and computing polars if needed)</span>
+<span class="sd">        4. Setting up the radial distribution of stations</span>
+<span class="sd">        5. Extracting thickness-to-chord ratios from airfoils</span>
+<span class="sd">        6. Setting default OEI conditions if not specified</span>
+<span class="sd">        7. Creating vehicle and network configurations for analysis</span>
+<span class="sd">    </span>
+<span class="sd">    The function creates separate configurations for hover, OEI, and cruise (for prop-rotors)</span>
+<span class="sd">    conditions, which are used during the optimization process to evaluate the rotor</span>
+<span class="sd">    performance at different operating points.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Either design thrust or design power must be specified (not both)</span>
+<span class="sd">        * If OEI conditions are not specified, they default to hover conditions with 10% increase</span>
+<span class="sd">        * Rotor orientation is set to [0.0, π/2, 0.0] (horizontal rotor)</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup</span>
+<span class="sd">    RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties</span>
+<span class="sd">    RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series</span>
+<span class="sd">    RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     
     <span class="c1"># Unpack prop-rotor geometry  </span>
@@ -475,12 +539,9 @@
     
     <span class="n">vehicle</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Vehicle</span><span class="p">()</span>  
     <span class="n">net</span>                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Networks</span><span class="o">.</span><span class="n">Electric</span><span class="p">()</span> 
-    <span class="n">bus</span>                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span>
     <span class="n">propulsor</span>                          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
-    <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span>                    <span class="o">=</span> <span class="n">rotor</span>
-    <span class="n">bus</span><span class="o">.</span><span class="n">assigned_propulsors</span> <span class="o">=</span> <span class="p">[[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]]</span>
-    <span class="n">net</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
-    <span class="n">net</span><span class="o">.</span><span class="n">busses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
+    <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span>                    <span class="o">=</span> <span class="n">rotor</span> 
+    <span class="n">net</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> 
     <span class="n">vehicle</span><span class="o">.</span><span class="n">append_energy_network</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
     
     <span class="n">configs</span>                             <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Configs</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span>

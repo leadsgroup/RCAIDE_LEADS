@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,7 +537,7 @@
 <span id="compute-ducted-fan-performance"></span><h1>compute_ducted_fan_performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.compute_ducted_fan_performance">
-<span class="sig-name descname"><span class="pre">compute_ducted_fan_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propulsor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Ducted_Fan/compute_ducted_fan_performance.html#compute_ducted_fan_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.compute_ducted_fan_performance" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_ducted_fan_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ducted_fan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Ducted_Fan/compute_ducted_fan_performance.html#compute_ducted_fan_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.compute_ducted_fan_performance" title="Link to this definition">#</a></dt>
 <dd><p>Computes ducted fan performance characteristics using either Blade Element Momentum Theory (BEMT)
 or Rankine-Froude Momentum Theory.</p>
 <dl class="field-list simple">
@@ -548,131 +548,12 @@ or Rankine-Froude Momentum Theory.</p>
 <li><p><strong>center_of_gravity</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Aircraft center of gravity coordinates [[x, y, z]], defaults to [[0.0, 0.0, 0.0]]</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Updates state.conditions.energy[propulsor.tag][ducted_fan.tag] with computed performance data:</dt><dd><ul class="simple">
-<li><dl class="simple">
-<dt>thrust<span class="classifier">array(N,3)</span></dt><dd><p>Thrust vector [N]</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>power<span class="classifier">array(N,1)</span></dt><dd><p>Power required [W]</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>torque<span class="classifier">array(N,1)</span></dt><dd><p>Shaft torque [N-m]</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>moment<span class="classifier">array(N,3)</span></dt><dd><p>Moment vector [N-m]</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>efficiency<span class="classifier">array(N,1)</span></dt><dd><p>Propulsive efficiency [-]</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>tip_mach<span class="classifier">array(N,1)</span></dt><dd><p>Blade tip Mach number [-]</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>thrust_coefficient<span class="classifier">array(N,1)</span></dt><dd><p>Non-dimensional thrust coefficient [-]</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>power_coefficient<span class="classifier">array(N,1)</span></dt><dd><p>Non-dimensional power coefficient [-]</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>figure_of_merit<span class="classifier">array(N,1)</span></dt><dd><p>Hovering figure of merit [-] (BEMT only)</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Two fidelity levels are available:</p>
-<ol class="arabic simple">
-<li><dl class="simple">
-<dt>Blade Element Momentum Theory (BEMT):</dt><dd><ul class="simple">
-<li><p>Uses surrogate models trained on DFDC results</p></li>
-<li><p>Accounts for 3D effects and ducted fan geometry</p></li>
-<li><p>Computes detailed blade loading</p></li>
-<li><p>Includes tip losses and wake effects</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Rankine-Froude Momentum Theory:</dt><dd><ul class="simple">
-<li><p>Uses polynomial fits for thrust and power coefficients</p></li>
-<li><p>Simple momentum theory assumptions</p></li>
-<li><p>Suitable for preliminary design</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ol>
-<dl class="simple">
-<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
-<li><p>Steady state operation</p></li>
-<li><p>Incompressible flow for Rankine-Froude theory</p></li>
-<li><p>Rigid blades</p></li>
-<li><p>No blade-wake interaction</p></li>
-<li><p>No ground effect</p></li>
-</ul>
-</dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#module-RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan" title="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.design_ducted_fan.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.design_ducted_fan" title="RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.design_ducted_fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.design_ducted_fan</span></code></a></p>
 </div>
 </dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.compute_ducted_fan_efficiency">
-<span class="sig-name descname"><span class="pre">compute_ducted_fan_efficiency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ducted_fan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Ducted_Fan/compute_ducted_fan_performance.html#compute_ducted_fan_efficiency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.compute_ducted_fan_efficiency" title="Link to this definition">#</a></dt>
-<dd><p>Calculate propeller efficiency based on propeller type and velocity.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>propeller_type</strong> (<em>str</em>) – Type of propeller (‘constant_speed’ or ‘fixed_pitch’)</p></li>
-<li><p><strong>u0</strong> (<em>float</em>) – Current velocity</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Calculated propeller efficiency</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.BEMT_performance">
-<span class="sig-name descname"><span class="pre">BEMT_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ducted_fan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ducted_fan_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commanded_TV</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Ducted_Fan/compute_ducted_fan_performance.html#BEMT_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.BEMT_performance" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.RFMT_performance">
-<span class="sig-name descname"><span class="pre">RFMT_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ducted_fan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ducted_fan_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Ducted_Fan/compute_ducted_fan_performance.html#RFMT_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.RFMT_performance" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
 
 </section>
 
@@ -724,9 +605,6 @@ or Rankine-Froude Momentum Theory.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.compute_ducted_fan_performance"><code class="docutils literal notranslate"><span class="pre">compute_ducted_fan_performance()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.compute_ducted_fan_efficiency"><code class="docutils literal notranslate"><span class="pre">compute_ducted_fan_efficiency()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.BEMT_performance"><code class="docutils literal notranslate"><span class="pre">BEMT_performance()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance.RFMT_performance"><code class="docutils literal notranslate"><span class="pre">RFMT_performance()</span></code></a></li>
 </ul>
   </nav></div>
 

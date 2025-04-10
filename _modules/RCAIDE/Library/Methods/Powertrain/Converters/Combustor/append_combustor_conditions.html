@@ -389,15 +389,60 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="append_combustor_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions.html#RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions.append_combustor_conditions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">append_combustor_conditions</span><span class="p">(</span><span class="n">combustor</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Appends initial conditions to combustor component</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">append_combustor_conditions</span><span class="p">(</span><span class="n">combustor</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">energy_conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes combustor operating conditions for a mission segment.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    combustor : RCAIDE.Library.Components.Converters.Combustor</span>
+<span class="sd">        Combustor component with the following attributes:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the combustor</span>
+<span class="sd">    segment : RCAIDE.Framework.Mission.Segments.Segment</span>
+<span class="sd">        Mission segment with the following attributes:</span>
+<span class="sd">            - state : Data</span>
+<span class="sd">                Segment state</span>
+<span class="sd">                    - ones_row : function</span>
+<span class="sd">                        Function to create array of ones with specified length</span>
+<span class="sd">    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Energy conditions container where combustor conditions will be stored</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in energy_conditions.converters[combustor.tag]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function initializes the necessary data structures for storing combustor</span>
+<span class="sd">    operating conditions during a mission segment. It creates a container for the</span>
+<span class="sd">    combustor in the energy conditions and initializes the non-dimensional mass ratio</span>
+<span class="sd">    with ones.</span>
+<span class="sd">    </span>
+<span class="sd">    The function initializes the following in energy_conditions.converters[combustor.tag]:</span>
+<span class="sd">        - inputs : Conditions</span>
+<span class="sd">            Input conditions container</span>
+<span class="sd">                - nondim_mass_ratio : numpy.ndarray</span>
+<span class="sd">                    Non-dimensional mass ratio, initialized with ones</span>
+<span class="sd">        - outputs : Conditions</span>
+<span class="sd">            Output conditions container (empty)</span>
+<span class="sd">    </span>
+<span class="sd">    The non-dimensional mass ratio represents the ratio of mass flow at the combustor exit</span>
+<span class="sd">    to the mass flow at the combustor inlet, accounting for the addition of fuel.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Non-dimensional mass ratio is initialized with ones (no fuel addition initially)</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ones_row</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                           <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>                    <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">nondim_mass_ratio</span>  <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span>                   <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                           <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>                    <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">nondim_mass_ratio</span>  <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span>                   <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
     <span class="k">return</span> </div>
 
 </pre></div>

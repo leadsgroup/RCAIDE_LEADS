@@ -392,40 +392,107 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------            </span>
 <div class="viewcode-block" id="compute_fan_performance">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance.html#RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance.compute_fan_performance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_fan_performance</span><span class="p">(</span><span class="n">fan</span><span class="p">,</span><span class="n">fan_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; This computes the output values from the input values according to</span>
-<span class="sd">    equations from the source. The following outputs are computed: </span>
-<span class="sd">    fan_conditions.outputs.</span>
-<span class="sd">      stagnation_temperature  (numpy.ndarray): exit stagnation_temperature  [K]  </span>
-<span class="sd">      stagnation_pressure     (numpy.ndarray): exit stagnation_pressure     [Pa]</span>
-<span class="sd">      stagnation_enthalpy     (numpy.ndarray): exit stagnation_enthalpy     [J/kg]</span>
-<span class="sd">      work_done               (numpy.ndarray): work_done                    [J/(kg-s)]</span>
-<span class="sd"> </span>
-
-<span class="sd">    Assumptions:</span>
-<span class="sd">        Constant polytropic efficiency and pressure ratio</span>
-
-<span class="sd">    Source:</span>
-<span class="sd">        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        conditions.freestream.</span>
-<span class="sd">          isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor         [unitless]</span>
-<span class="sd">          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure  [J/(kg K)]</span>
-<span class="sd">        fan</span>
-<span class="sd">          .inputs.stagnation_temperature      (numpy.ndarray): entering stagnation temperature [K]</span>
-<span class="sd">          .inputs.stagnation_pressure         (numpy.ndarray): entering stagnation pressure    [Pa] </span>
-<span class="sd">          .pressure_ratio                             (float): pressure ratio of fan           [unitless]</span>
-<span class="sd">          .polytropic_efficiency                      (float): polytropic_efficiency           [unitless]</span>
-<span class="sd">      </span>
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
-<span class="sd">        </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_fan_performance</span><span class="p">(</span><span class="n">fan</span><span class="p">,</span> <span class="n">conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the thermodynamic performance of a fan in a gas turbine engine.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fan : RCAIDE.Library.Components.Converters.Fan</span>
+<span class="sd">        Fan component with the following attributes:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the fan</span>
+<span class="sd">            - working_fluid : Data</span>
+<span class="sd">                Working fluid properties object</span>
+<span class="sd">            - pressure_ratio : float</span>
+<span class="sd">                Pressure ratio across the fan</span>
+<span class="sd">            - polytropic_efficiency : float</span>
+<span class="sd">                Polytropic efficiency of the compression process</span>
+<span class="sd">    conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Flight conditions with:</span>
+<span class="sd">            - energy : Data</span>
+<span class="sd">                Energy conditions</span>
+<span class="sd">                    - converters : dict</span>
+<span class="sd">                        Converter energy conditions indexed by tag</span>
+<span class="sd">                        - inputs : Data</span>
+<span class="sd">                            Input conditions</span>
+<span class="sd">                            - stagnation_temperature : numpy.ndarray</span>
+<span class="sd">                                Stagnation temperature at fan inlet [K]</span>
+<span class="sd">                            - stagnation_pressure : numpy.ndarray</span>
+<span class="sd">                                Stagnation pressure at fan inlet [Pa]</span>
+<span class="sd">                            - static_pressure : numpy.ndarray</span>
+<span class="sd">                                Static pressure at fan inlet [Pa]</span>
+<span class="sd">                            - static_temperature : numpy.ndarray</span>
+<span class="sd">                                Static temperature at fan inlet [K]</span>
+<span class="sd">                            - mach_number : numpy.ndarray</span>
+<span class="sd">                                Mach number at fan inlet</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in conditions.energy.converters[fan.tag].outputs:</span>
+<span class="sd">            - stagnation_temperature : numpy.ndarray</span>
+<span class="sd">                Stagnation temperature at fan exit [K]</span>
+<span class="sd">            - stagnation_pressure : numpy.ndarray</span>
+<span class="sd">                Stagnation pressure at fan exit [Pa]</span>
+<span class="sd">            - static_temperature : numpy.ndarray</span>
+<span class="sd">                Static temperature at fan exit [K]</span>
+<span class="sd">            - static_pressure : numpy.ndarray</span>
+<span class="sd">                Static pressure at fan exit [Pa]</span>
+<span class="sd">            - stagnation_enthalpy : numpy.ndarray</span>
+<span class="sd">                Stagnation enthalpy at fan exit [J/kg]</span>
+<span class="sd">            - work_done : numpy.ndarray</span>
+<span class="sd">                Work done by the fan [J/kg]</span>
+<span class="sd">            - mach_number : numpy.ndarray</span>
+<span class="sd">                Mach number at fan exit</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function computes the thermodynamic properties at the fan exit based on</span>
+<span class="sd">    the inlet conditions and fan characteristics. It calculates the temperature rise,</span>
+<span class="sd">    pressure rise, and work done by the fan during the compression process.</span>
+<span class="sd">    </span>
+<span class="sd">    The computation follows these steps:</span>
+<span class="sd">        1. Extract inlet conditions (temperature, pressure, Mach number)</span>
+<span class="sd">        2. Compute working fluid properties (gamma, Cp)</span>
+<span class="sd">        3. Calculate stagnation pressure at exit using pressure ratio</span>
+<span class="sd">        4. Compute stagnation temperature at exit using polytropic efficiency</span>
+<span class="sd">        5. Calculate static temperature and pressure at exit based on exit Mach number</span>
+<span class="sd">        6. Compute stagnation enthalpy at inlet and exit</span>
+<span class="sd">        7. Calculate work done by the fan (exit - inlet stagnation enthalpy)</span>
+<span class="sd">        8. Store all results in the conditions data structure</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Constant polytropic efficiency and pressure ratio</span>
+<span class="sd">        * Mach number is preserved from inlet to exit</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    The stagnation temperature ratio across the fan is related to the pressure ratio by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\frac{T_{t,out}}{T_{t,in}} = \\left(\\frac{P_{t,out}}{P_{t,in}}\\right)^{\\frac{\\gamma-1}{\\gamma \\eta_{p}}}</span>
+<span class="sd">    </span>
+<span class="sd">    where:</span>
+<span class="sd">      - :math:`T_{t,out}` is the exit stagnation temperature</span>
+<span class="sd">      - :math:`T_{t,in}` is the inlet stagnation temperature</span>
+<span class="sd">      - :math:`P_{t,out}` is the exit stagnation pressure</span>
+<span class="sd">      - :math:`P_{t,in}` is the inlet stagnation pressure</span>
+<span class="sd">      - :math:`\\gamma` is the ratio of specific heats</span>
+<span class="sd">      - :math:`\\eta_{p}` is the polytropic efficiency</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Cantwell, B., &quot;AA283 Course Notes&quot;, Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance</span>
 <span class="sd">    &quot;&quot;&quot;</span>        
      
     <span class="c1"># unpack from fan</span>
     <span class="n">PR</span>                      <span class="o">=</span> <span class="n">fan</span><span class="o">.</span><span class="n">pressure_ratio</span>
     <span class="n">etapold</span>                 <span class="o">=</span> <span class="n">fan</span><span class="o">.</span><span class="n">polytropic_efficiency</span>
+    <span class="n">fan_conditions</span>          <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">fan</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
     <span class="n">Tt_in</span>                   <span class="o">=</span> <span class="n">fan_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>
     <span class="n">Pt_in</span>                   <span class="o">=</span> <span class="n">fan_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_pressure</span> 
     <span class="n">P0</span>                      <span class="o">=</span> <span class="n">fan_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">static_pressure</span> 

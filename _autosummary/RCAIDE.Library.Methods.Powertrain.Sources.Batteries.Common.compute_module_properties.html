@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,41 +541,151 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties.compute_module_properties">
 <span class="sig-name descname"><span class="pre">compute_module_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Common/compute_module_properties.html#compute_module_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties.compute_module_properties" title="Link to this definition">#</a></dt>
-<dd><p>Calculate module level properties of battery module using cell
-properties and module configuraton</p>
-<p>Assumptions:
-Total battery module pack mass contains build-up factor (1.42) for battery module casing,
-internal wires, thermal management system and battery module management system
-Factor computed using information of battery module properties for X-57 Maxwell
-Aircraft</p>
-<p>Source:
-Cell Charge: Chin, J. C., Schnulo, S. L., Miller, T. B., Prokopius, K., and Gray,
-J., Battery Performance Modeling on Maxwell X-57”,AIAA Scitech, San Diego, CA,
-2019. URLhttp://openmdao.org/pubs/chin_battery_performance_x57_2019.pdf.</p>
-<p>Inputs:
-mass
-battery_module.cell</p>
-<blockquote>
-<div><p>nominal_capacity        [amp-hours]
-nominal_voltage         [volts]
-pack_config             [unitless]
-mass                    [kilograms]</p>
-</div></blockquote>
-<dl>
-<dt>Outputs:</dt><dd><dl>
-<dt>battery_module.</dt><dd><p>maximum_energy         [watt-hours]
-maximum_power              [watts]
-initial_maximum_energy [watt-hours]
-specific_energy        [watt-hours/kilogram]
-charging_voltage       [volts]
-mass_properties.</p>
-<blockquote>
-<div><p>mass                  [kilograms]</p>
-</div></blockquote>
+<dd><p>Calculates module level properties of battery module using cell properties and module configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>battery_module</strong> (<em>BatteryModule</em>) – <dl class="simple">
+<dt>The battery module with the following attributes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>cell.nominal_capacity<span class="classifier">float</span></dt><dd><p>Nominal capacity of a single cell [Ah]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>cell.maximum_voltage<span class="classifier">float</span></dt><dd><p>Maximum voltage of a single cell [V]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>cell.mass<span class="classifier">float</span></dt><dd><p>Mass of a single cell [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>electrical_configuration.series<span class="classifier">int</span></dt><dd><p>Number of cells in series</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>electrical_configuration.parallel<span class="classifier">int</span></dt><dd><p>Number of cells in parallel</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>geometrtic_configuration<span class="classifier">GeometricConfiguration</span></dt><dd><p>Object containing geometric layout information</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>volume_packaging_factor<span class="classifier">float</span></dt><dd><p>Factor accounting for additional volume due to packaging</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>orientation_euler_angles<span class="classifier">numpy.ndarray</span></dt><dd><p>Euler angles for module orientation [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>BMS_additional_weight_factor<span class="classifier">float</span></dt><dd><p>Factor accounting for battery management system weight</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>This function modifies the battery_module object in-place, setting the following attributes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>length<span class="classifier">float</span></dt><dd><p>Length of the battery module [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>width<span class="classifier">float</span></dt><dd><p>Width of the battery module [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>height<span class="classifier">float</span></dt><dd><p>Height of the battery module [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mass_properties.mass<span class="classifier">float</span></dt><dd><p>Total mass of the battery module [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>specific_energy<span class="classifier">float</span></dt><dd><p>Specific energy of the battery module [Wh/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maximum_energy<span class="classifier">float</span></dt><dd><p>Maximum energy capacity of the battery module [J]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>specific_power<span class="classifier">float</span></dt><dd><p>Specific power of the battery module [W/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maximum_power<span class="classifier">float</span></dt><dd><p>Maximum power output of the battery module [W]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maximum_voltage<span class="classifier">float</span></dt><dd><p>Maximum voltage of the battery module [V]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>initial_maximum_energy<span class="classifier">float</span></dt><dd><p>Initial maximum energy capacity [J]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>nominal_capacity<span class="classifier">float</span></dt><dd><p>Nominal capacity of the battery module [Ah]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>voltage<span class="classifier">float</span></dt><dd><p>Voltage of the battery module [V]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the physical and electrical properties of a battery module
+based on the properties of its constituent cells and the module configuration.</p>
+<p>The physical dimensions are calculated based on the geometric layout of cells,
+including spacing between cells and a volume packaging factor. The module orientation
+can be adjusted using Euler angles.</p>
+<p>The electrical properties are calculated based on the series-parallel configuration
+of cells, with series connections increasing voltage and parallel connections
+increasing capacity.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Total battery module pack mass can be modeled with a build-up factor for battery module casing,
+internal wires, thermal management system and battery module management system.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Chin, J. C., Schnulo, S. L., Miller, T. B., Prokopius, K., and Gray, J., “Battery Performance Modeling on Maxwell X-57”, AIAA Scitech, San Diego, CA, 2019. URL <a class="reference external" href="http://openmdao.org/pubs/chin_battery_performance_x57_2019.pdf">http://openmdao.org/pubs/chin_battery_performance_x57_2019.pdf</a>.</p>
 </dd></dl>
 
 </section>

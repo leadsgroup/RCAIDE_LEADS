@@ -391,7 +391,7 @@
 <div class="viewcode-block" id="compute_power_difference">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power_difference.html#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power_difference.compute_power_difference">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_power_difference</span><span class="p">(</span><span class="n">current_density</span><span class="p">,</span> <span class="n">fuel_cell</span><span class="p">,</span> <span class="n">power_desired</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    function that determines the power difference between the actual power</span>
 <span class="sd">    and a desired input power, based on an input current density</span>
 
@@ -406,7 +406,7 @@
 <span class="sd">    </span>
 <span class="sd">    Outputs</span>
 <span class="sd">    (power_desired-power_out)**2   [Watts**2]</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">power_out</span>     <span class="o">=</span> <span class="n">compute_power</span><span class="p">(</span><span class="n">current_density</span><span class="p">,</span> <span class="n">fuel_cell</span><span class="p">)</span>              
     
     <span class="k">return</span> <span class="p">(</span><span class="n">power_desired</span><span class="o">-</span><span class="n">power_out</span><span class="p">)</span><span class="o">**</span><span class="mf">2.</span></div>

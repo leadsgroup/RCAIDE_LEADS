@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -538,15 +538,85 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.initialize_bus_properties.initialize_bus_properties">
 <span class="sig-name descname"><span class="pre">initialize_bus_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bus</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Distributors/Electrical_Bus/initialize_bus_properties.html#initialize_bus_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.initialize_bus_properties.initialize_bus_properties" title="Link to this definition">#</a></dt>
-<dd><p>Initializes the bus electrical properties based what is appended onto the bus</p>
-<p>Assumptions:
-N/A</p>
-<p>Source:
-N/A</p>
-<p>Inputs:</p>
-<p>Outputs:</p>
-<p>Properties Used:
-None</p>
+<dd><p>Initializes the bus electrical properties based on what is appended onto the bus.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bus</strong> (<em>ElectricalBus</em>) – <dl class="simple">
+<dt>The electrical bus component with the following attributes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>battery_modules<span class="classifier">list</span></dt><dd><p>List of battery modules connected to the bus</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>battery_module_electric_configuration<span class="classifier">str</span></dt><dd><p>Configuration of battery modules (‘Series’ or ‘Parallel’)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuel_cell_stacks<span class="classifier">list</span></dt><dd><p>List of fuel cell stacks connected to the bus</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuel_cell_stack_electric_configuration<span class="classifier">str</span></dt><dd><p>Configuration of fuel cell stacks (‘Series’ or ‘Parallel’)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>This function modifies the bus object in-place, setting the following attributes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>voltage<span class="classifier">float</span></dt><dd><p>Bus voltage [V]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>nominal_capacity<span class="classifier">float</span></dt><dd><p>Nominal capacity [Ah]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maximum_energy<span class="classifier">float</span></dt><dd><p>Maximum energy storage capacity [J]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the electrical properties of the bus based on the connected
+energy sources (battery modules and fuel cell stacks). It handles both series and
+parallel configurations.</p>
+<dl class="simple">
+<dt>For battery modules:</dt><dd><ul class="simple">
+<li><p>In series configuration: voltages add, capacity is the maximum of all modules</p></li>
+<li><p>In parallel configuration: voltage is the maximum voltage of all modules, capacities add</p></li>
+</ul>
+</dd>
+<dt>For fuel cell stacks:</dt><dd><ul class="simple">
+<li><p>In series configuration: voltages add</p></li>
+<li><p>In parallel configuration: voltage is the maximum voltage of all stacks</p></li>
+</ul>
+</dd>
+</dl>
+<p>The function first computes properties for each individual module/stack by calling
+their respective property computation functions.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

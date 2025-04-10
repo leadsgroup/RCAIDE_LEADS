@@ -395,27 +395,65 @@
 <div class="viewcode-block" id="compute_horizontal_tail_weight">
 <a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_horizontal_tail_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_horizontal_tail_weight.compute_horizontal_tail_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_horizontal_tail_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">wing</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the horizontal tail weight</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the horizontal tail weight using NASA FLOPS weight estimation method.</span>
 
-<span class="sd">        Assumptions:</span>
-<span class="sd">           Conventional tail configuration</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : Vehicle</span>
+<span class="sd">        The vehicle instance containing:</span>
+<span class="sd">            - mass_properties.max_takeoff : float</span>
+<span class="sd">                Maximum takeoff weight [kg]</span>
+<span class="sd">    wing : Wing</span>
+<span class="sd">        The horizontal tail instance containing:</span>
+<span class="sd">            - areas.reference : float</span>
+<span class="sd">                Planform area [m²]</span>
+<span class="sd">            - taper : float</span>
+<span class="sd">                Taper ratio</span>
 
-<span class="sd">        Source:</span>
-<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    WHT : float</span>
+<span class="sd">        Horizontal tail weight [kg]</span>
 
-<span class="sd">       Inputs:</span>
-<span class="sd">            vehicle - data dictionary with vehicle properties                   [dimensionless]</span>
-<span class="sd">                -.mass_properties.max_takeoff: MTOW                             [kilograms]</span>
-<span class="sd">            wing - data dictionary with vertical tail properties                [dimensionless]</span>
-<span class="sd">                -.taper: taper of wing</span>
-<span class="sd">                -.areas.reference: surface area of wing                         [m^2]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses FLOPS correlation developed from transport aircraft database. The method accounts </span>
+<span class="sd">    for tail size, aircraft weight, and planform effects.</span>
 
-<span class="sd">       Outputs:</span>
-<span class="sd">            WHT - vertical tail weight                                          [kilograms]</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Conventional tail configuration</span>
+<span class="sd">        * All-moving or fixed stabilizer with elevator</span>
+<span class="sd">        * Standard aluminum construction</span>
+<span class="sd">        * Conventional aerodynamic loads</span>
+<span class="sd">        * No special design features (e.g., folding)</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">            N/A</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    Weight is computed using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{HT} = 0.53 S_{HT} (TOGW)^{0.2} (\\lambda_{HT} + 0.5)</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        * S_HT = horizontal tail area</span>
+<span class="sd">        * TOGW = takeoff gross weight</span>
+<span class="sd">        * λ_HT = horizontal tail taper ratio</span>
+
+<span class="sd">    The correlation accounts for:</span>
+<span class="sd">        * Bending and torsional stiffness requirements</span>
+<span class="sd">        * Control surface integration</span>
+<span class="sd">        * Attachment structure</span>
+<span class="sd">        * Standard design margins</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] NASA Langley Research Center, &quot;Flight Optimization System, Release 8.23, </span>
+<span class="sd">        User&#39;s Guide&quot;, 2011.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_vertical_tail_weight</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">SHT</span>     <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span> <span class="o">**</span><span class="mi">2</span>
     <span class="n">DG</span>      <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>
     <span class="n">TRHT</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">taper</span>

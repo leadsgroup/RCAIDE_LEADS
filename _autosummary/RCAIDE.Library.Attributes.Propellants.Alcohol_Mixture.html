@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,31 +533,212 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Alcohol_Mixture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Alcohol_Mixture.html#Alcohol_Mixture"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Propellant</span></code></a></p>
-<p>Alcohol_Mixture class propellant</p>
+<p>A class representing a binary mixture of alcohol fuels with customizable composition.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the propellant (defaults to ‘Alcohol_Mixture’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.reactant">
+<span class="sig-name descname"><span class="pre">reactant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.reactant" title="Link to this definition">#</a></dt>
+<dd><p>Oxidizer used for combustion (defaults to ‘O2’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_1">
+<span class="sig-name descname"><span class="pre">propellant_1</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_1" title="Link to this definition">#</a></dt>
+<dd><p>First alcohol component (default: Ethanol)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant">Propellant</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_1_mass_fraction">
+<span class="sig-name descname"><span class="pre">propellant_1_mass_fraction</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_1_mass_fraction" title="Link to this definition">#</a></dt>
+<dd><p>Mass fraction of first component (defaults to 0.5)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_2">
+<span class="sig-name descname"><span class="pre">propellant_2</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_2" title="Link to this definition">#</a></dt>
+<dd><p>Second alcohol component (default: Propanol)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant">Propellant</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_2_mass_fraction">
+<span class="sig-name descname"><span class="pre">propellant_2_mass_fraction</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_2_mass_fraction" title="Link to this definition">#</a></dt>
+<dd><p>Mass fraction of second component (defaults to 0.5)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.density" title="Link to this definition">#</a></dt>
+<dd><p>Mixture density in kg/m³, computed from components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Mixture specific energy in J/kg, computed from components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Mixture energy density in J/m³, computed from components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.lower_heating_value">
+<span class="sig-name descname"><span class="pre">lower_heating_value</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.lower_heating_value" title="Link to this definition">#</a></dt>
+<dd><p>Mixture lower heating value in J/kg, computed from components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements properties for binary alcohol fuel mixtures. All mixture
+properties are computed using mass fraction weighted averages of the component
+properties, except density which uses a volume-based mixing rule.</p>
+<p><strong>Theory</strong></p>
+<p>Density mixing rule:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="n">rho_</span><span class="p">{</span><span class="n">mix</span><span class="p">}</span> <span class="o">=</span> \<span class="n">left</span><span class="p">(</span>\<span class="n">frac</span><span class="p">{</span><span class="n">X_1</span><span class="p">}{</span>\<span class="n">rho_1</span><span class="p">}</span> <span class="o">+</span> \<span class="n">frac</span><span class="p">{</span><span class="n">X_2</span><span class="p">}{</span>\<span class="n">rho_2</span><span class="p">}</span>\<span class="n">right</span><span class="p">)</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Property mixing rule:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">P_</span><span class="p">{</span><span class="n">mix</span><span class="p">}</span> <span class="o">=</span> <span class="n">X_1P_1</span> <span class="o">+</span> <span class="n">X_2P_2</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>X₁, X₂ are mass fractions</p></li>
+<li><p>ρ₁, ρ₂ are component densities</p></li>
+<li><p>P₁, P₂ are component properties</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Mass Fraction’</dt><dd><p>The ratio of component mass to total mixture mass</p>
+</dd>
+<dt>‘Lower Heating Value’</dt><dd><p>Heat of combustion excluding latent heat of water vapor</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_density">
 <span class="sig-name descname"><span class="pre">compute_mixture_density</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Alcohol_Mixture.html#Alcohol_Mixture.compute_mixture_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_density" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the mixture density using volume-based mixing rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rho_mix</strong> – Mixture density in kg/m³</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses reciprocal mixing rule for proper volume-based averaging.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_specific_energy">
 <span class="sig-name descname"><span class="pre">compute_mixture_specific_energy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Alcohol_Mixture.html#Alcohol_Mixture.compute_mixture_specific_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_specific_energy" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the mixture specific energy using mass fraction weighted average.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e_mix</strong> – Mixture specific energy in J/kg</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_energy_density">
 <span class="sig-name descname"><span class="pre">compute_mixture_energy_density</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Alcohol_Mixture.html#Alcohol_Mixture.compute_mixture_energy_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_energy_density" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the mixture energy density from specific energy and density.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>U_mix</strong> – Mixture energy density in J/m³</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_lower_heating_value">
 <span class="sig-name descname"><span class="pre">compute_mixture_lower_heating_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Alcohol_Mixture.html#Alcohol_Mixture.compute_mixture_lower_heating_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_lower_heating_value" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the mixture lower heating value using mass fraction weighted average.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>LHV_mix</strong> – Mixture lower heating value in J/kg</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_all">
 <span class="sig-name descname"><span class="pre">compute_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Alcohol_Mixture.html#Alcohol_Mixture.compute_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_all" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Update all mixture properties based on current composition.</p>
+<p class="rubric">Notes</p>
+<p>Recalculates density, specific energy, energy density, and lower heating value.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -611,6 +792,16 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.tag"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.reactant"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.reactant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_1"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.propellant_1</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_1_mass_fraction"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.propellant_1_mass_fraction</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_2"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.propellant_2</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.propellant_2_mass_fraction"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.propellant_2_mass_fraction</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.density"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.specific_energy"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.energy_density"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.lower_heating_value"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.lower_heating_value</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_density"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.compute_mixture_density()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_specific_energy"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.compute_mixture_specific_energy()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.Alcohol_Mixture.compute_mixture_energy_density"><code class="docutils literal notranslate"><span class="pre">Alcohol_Mixture.compute_mixture_energy_density()</span></code></a></li>

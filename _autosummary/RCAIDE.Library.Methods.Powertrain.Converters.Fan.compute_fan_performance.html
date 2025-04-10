@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,37 +539,179 @@
 <span id="compute-fan-performance"></span><h1>compute_fan_performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance.compute_fan_performance">
-<span class="sig-name descname"><span class="pre">compute_fan_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fan_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fan/compute_fan_performance.html#compute_fan_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance.compute_fan_performance" title="Link to this definition">#</a></dt>
-<dd><p>This computes the output values from the input values according to
-equations from the source. The following outputs are computed:
-fan_conditions.outputs.</p>
-<blockquote>
-<div><p>stagnation_temperature  (numpy.ndarray): exit stagnation_temperature  [K]
-stagnation_pressure     (numpy.ndarray): exit stagnation_pressure     [Pa]
-stagnation_enthalpy     (numpy.ndarray): exit stagnation_enthalpy     [J/kg]
-work_done               (numpy.ndarray): work_done                    [J/(kg-s)]</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Constant polytropic efficiency and pressure ratio</p>
-</dd>
-<dt>Source:</dt><dd><p><a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/">https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</a></p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">compute_fan_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fan/compute_fan_performance.html#compute_fan_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance.compute_fan_performance" title="Link to this definition">#</a></dt>
+<dd><p>Computes the thermodynamic performance of a fan in a gas turbine engine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>conditions.freestream.</strong> – isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor         [unitless]
-specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure  [J/(kg K)]</p></li>
-<li><p><strong>fan</strong> – .inputs.stagnation_temperature      (numpy.ndarray): entering stagnation temperature [K]
-.inputs.stagnation_pressure         (numpy.ndarray): entering stagnation pressure    [Pa]
-.pressure_ratio                             (float): pressure ratio of fan           [unitless]
-.polytropic_efficiency                      (float): polytropic_efficiency           [unitless]</p></li>
+<li><p><strong>fan</strong> (<em>RCAIDE.Library.Components.Converters.Fan</em>) – <dl class="simple">
+<dt>Fan component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the fan</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>working_fluid<span class="classifier">Data</span></dt><dd><p>Working fluid properties object</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pressure_ratio<span class="classifier">float</span></dt><dd><p>Pressure ratio across the fan</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>polytropic_efficiency<span class="classifier">float</span></dt><dd><p>Polytropic efficiency of the compression process</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – <dl>
+<dt>Flight conditions with:</dt><dd><ul>
+<li><dl>
+<dt>energy<span class="classifier">Data</span></dt><dd><dl>
+<dt>Energy conditions</dt><dd><ul>
+<li><dl>
+<dt>converters<span class="classifier">dict</span></dt><dd><p>Converter energy conditions indexed by tag
+- inputs : Data</p>
+<blockquote>
+<div><p>Input conditions
+- stagnation_temperature : numpy.ndarray</p>
+<blockquote>
+<div><p>Stagnation temperature at fan inlet [K]</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>stagnation_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation pressure at fan inlet [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Static pressure at fan inlet [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Static temperature at fan inlet [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number<span class="classifier">numpy.ndarray</span></dt><dd><p>Mach number at fan inlet</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Results are stored in conditions.energy.converters[fan.tag].outputs:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>stagnation_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation temperature at fan exit [K]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation pressure at fan exit [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Static temperature at fan exit [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Static pressure at fan exit [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_enthalpy<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation enthalpy at fan exit [J/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>work_done<span class="classifier">numpy.ndarray</span></dt><dd><p>Work done by the fan [J/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number<span class="classifier">numpy.ndarray</span></dt><dd><p>Mach number at fan exit</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function computes the thermodynamic properties at the fan exit based on
+the inlet conditions and fan characteristics. It calculates the temperature rise,
+pressure rise, and work done by the fan during the compression process.</p>
+<dl class="simple">
+<dt>The computation follows these steps:</dt><dd><ol class="arabic simple">
+<li><p>Extract inlet conditions (temperature, pressure, Mach number)</p></li>
+<li><p>Compute working fluid properties (gamma, Cp)</p></li>
+<li><p>Calculate stagnation pressure at exit using pressure ratio</p></li>
+<li><p>Compute stagnation temperature at exit using polytropic efficiency</p></li>
+<li><p>Calculate static temperature and pressure at exit based on exit Mach number</p></li>
+<li><p>Compute stagnation enthalpy at inlet and exit</p></li>
+<li><p>Calculate work done by the fan (exit - inlet stagnation enthalpy)</p></li>
+<li><p>Store all results in the conditions data structure</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant polytropic efficiency and pressure ratio</p></li>
+<li><p>Mach number is preserved from inlet to exit</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+The stagnation temperature ratio across the fan is related to the pressure ratio by:</p>
+<div class="math notranslate nohighlight">
+\[\frac{T_{t,out}}{T_{t,in}} = \left(\frac{P_{t,out}}{P_{t,in}}\right)^{\frac{\gamma-1}{\gamma \eta_{p}}}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(T_{t,out}\)</span> is the exit stagnation temperature</p></li>
+<li><p><span class="math notranslate nohighlight">\(T_{t,in}\)</span> is the inlet stagnation temperature</p></li>
+<li><p><span class="math notranslate nohighlight">\(P_{t,out}\)</span> is the exit stagnation pressure</p></li>
+<li><p><span class="math notranslate nohighlight">\(P_{t,in}\)</span> is the inlet stagnation pressure</p></li>
+<li><p><span class="math notranslate nohighlight">\(\gamma\)</span> is the ratio of specific heats</p></li>
+<li><p><span class="math notranslate nohighlight">\(\eta_{p}\)</span> is the polytropic efficiency</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Cantwell, B., “AA283 Course Notes”, Stanford University <a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/">https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</a></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -539,20 +539,82 @@
 <h1>RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_voltage_out_from_throttle<a class="headerlink" href="#rcaide-library-methods-powertrain-modulators-electronic-speed-controller-compute-esc-performance-compute-voltage-out-from-throttle" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_voltage_out_from_throttle">
-<span class="sig-name descname"><span class="pre">compute_voltage_out_from_throttle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">esc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">esc_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/compute_esc_performance.html#compute_voltage_out_from_throttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_voltage_out_from_throttle" title="Link to this definition">#</a></dt>
-<dd><p>The voltage out of the electronic speed controller</p>
-<p>Assumptions:
-The ESC’s output voltage is linearly related to throttle setting</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-conditions.energy.throttle     [0-1]
-esc_conditions.inputs.voltage            [volts]</p>
-<p>Outputs:
-voltsout                       [volts]
-esc_conditions.outputs.voltageout        [volts]</p>
-<p>Properties Used:
-None</p>
+<span class="sig-name descname"><span class="pre">compute_voltage_out_from_throttle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">esc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/compute_esc_performance.html#compute_voltage_out_from_throttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_voltage_out_from_throttle" title="Link to this definition">#</a></dt>
+<dd><p>Computes the output voltage of the Electronic Speed Controller (ESC) based on the
+throttle setting. Implements a linear voltage modulation model where output voltage
+is proportionally controlled by the throttle position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>esc</strong> (<em>RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller</em>) – The electronic speed controller component</p></li>
+<li><p><strong>esc_conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – <dl class="simple">
+<dt>ESC-specific operating conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>throttle<span class="classifier">float</span></dt><dd><p>Power modulation setting [0-1]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>inputs<span class="classifier">Conditions</span></dt><dd><dl class="simple">
+<dt>Input parameters</dt><dd><ul>
+<li><dl class="simple">
+<dt>voltage<span class="classifier">float</span></dt><dd><p>Input voltage [V]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>outputs<span class="classifier">Conditions</span></dt><dd><dl class="simple">
+<dt>Output parameters</dt><dd><ul>
+<li><dl class="simple">
+<dt>voltage<span class="classifier">float</span></dt><dd><p>Output voltage [V]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – Flight conditions (not directly used but maintained for API consistency)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>The function performs these operations:</dt><dd><ol class="arabic simple">
+<li><p>Clamps throttle between 0 and 1</p></li>
+<li><p>Computes output voltage as a linear function of throttle</p></li>
+<li><p>Updates ESC conditions with new values</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Linear relationship between throttle and output voltage</p></li>
+<li><p>No voltage drop across the ESC</p></li>
+<li><p>Instantaneous throttle response</p></li>
+<li><p>Perfect voltage regulation</p></li>
+<li><p>Throttle values outside [0,1] are clamped</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Voltage Modulation’</dt><dd><p>Process of controlling output voltage through throttle position</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

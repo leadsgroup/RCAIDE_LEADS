@@ -43,12 +43,14 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Motor';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Motor.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="append_motor_conditions" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions.html" />
-    <link rel="prev" title="compute_fuel_cell_performance" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.html" />
+    <link rel="prev" title="design_optimal_generator" href="RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_generator.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -545,11 +547,11 @@ The methods support both DC and PMSM motor modeling within the RCAIDE framework.
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions" title="RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_motor_conditions</span></code></a>(motor, segment, ...)</p></td>
 <td><p>Initializes motor operating conditions for a mission segment.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_motor_performance</span></code></a>(motor, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_motor_performance</span></code></a>(motor, conditions)</p></td>
 <td><p>Computes motor performance characteristics including electrical, mechanical and thermal parameters.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_DC_motor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_DC_motor" title="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_DC_motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">design_DC_motor</span></code></a>(motor)</p></td>
-<td><p>Sizes a DC motor to obtain the best combination of speed constant and resistance values by sizing the motor for a design RPM value. Note that this design RPM value can be compute from design tip mach. The following properties are computed. motor.speed_constant  (float): speed-constant [untiless]   motor.resistance      (float): resistance     [ohms].</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor" title="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">design_optimal_motor</span></code></a>(motor)</p></td>
+<td><p>Sizes a DC motor to obtain the best combination of speed constant and resistance values by sizing the motor for a design RPM value.</p></td>
 </tr>
 </tbody>
 </table>
@@ -567,12 +569,12 @@ The methods support both DC and PMSM motor modeling within the RCAIDE framework.
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.html"
+       href="RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_generator.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">compute_fuel_cell_performance</p>
+        <p class="prev-next-title">design_optimal_generator</p>
       </div>
     </a>
     <a class="right-next"

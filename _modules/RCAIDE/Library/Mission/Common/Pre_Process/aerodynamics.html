@@ -393,16 +393,57 @@
 <div class="viewcode-block" id="aerodynamics">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Pre_Process.aerodynamics.html#RCAIDE.Library.Mission.Common.Pre_Process.aerodynamics.aerodynamics">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">aerodynamics</span><span class="p">(</span><span class="n">mission</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Runs aerdoynamics model and build surrogate</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes and processes aerodynamic models for mission segments</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mission : Mission</span>
+<span class="sd">        The mission containing segments to be analyzed</span>
+<span class="sd">            - analyses.aerodynamics : Analysis</span>
+<span class="sd">                Aerodynamic analysis module</span>
+<span class="sd">                - vehicle : Vehicle</span>
+<span class="sd">                    Aircraft geometry definition</span>
+<span class="sd">                    - wings : list</span>
+<span class="sd">                        Wing geometry definitions</span>
+<span class="sd">                - process.compute.lift.inviscid_wings : Process</span>
+<span class="sd">                    Lift computation process</span>
+<span class="sd">                - surrogates : Data</span>
+<span class="sd">                    Aerodynamic surrogate models</span>
+<span class="sd">                - reference_values : Data</span>
+<span class="sd">                    Reference aerodynamic parameters</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function prepares the aerodynamic analysis for each mission segment.</span>
+<span class="sd">    It ensures proper wing geometry computation and manages aerodynamic</span>
+<span class="sd">    surrogate models across segments for computational efficiency.</span>
+
+<span class="sd">    The function performs the following steps:</span>
+<span class="sd">        1. Computes wing planform properties</span>
+<span class="sd">        2. Reuses previous segment&#39;s aerodynamic data when possible</span>
+<span class="sd">        3. Initializes new aerodynamic analyses when needed</span>
+
+<span class="sd">    **Wing Processing**</span>
 <span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            N/A</span>
-<span class="sd">        </span>
-<span class="sd">        Inputs:</span>
-<span class="sd">            None</span>
-<span class="sd">            </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">            None  </span>
+<span class="sd">    For each wing:</span>
+<span class="sd">        - If multi-segmented: Uses wing_segmented_planform</span>
+<span class="sd">        - If single segment: Uses wing_planform</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Valid wing geometry definitions</span>
+<span class="sd">        * Compatible aerodynamic models between segments</span>
+<span class="sd">        * Proper initialization of first segment</span>
+<span class="sd">        * Continuous aerodynamic characteristics</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates mission segment analyses directly</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Geometry.Planform</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
         

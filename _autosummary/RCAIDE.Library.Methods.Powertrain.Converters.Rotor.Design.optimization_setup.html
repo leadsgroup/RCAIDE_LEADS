@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -542,20 +542,108 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup.optimization_setup">
 <span class="sig-name descname"><span class="pre">optimization_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_stations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_iterations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Design/optimization_setup.html#optimization_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup.optimization_setup" title="Link to this definition">#</a></dt>
 <dd><p>Sets up rotor optimization problem including design variables, constraints and objective function
-using RCAIDE’s Nexus optimization framework. Appends methodolody of planform modification to Nexus.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Inputs:</dt><dd><p>rotor     - rotor data structure           [None]</p>
+using RCAIDE’s Nexus optimization framework.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rotor</strong> (<em>RCAIDE.Library.Components.Powertrain.Converters.Rotor</em>) – Rotor component (Lift_Rotor or Prop_Rotor) with optimization parameters</p></li>
+<li><p><strong>number_of_stations</strong> (<em>int</em>) – Number of radial stations for blade discretization</p></li>
+<li><p><strong>print_iterations</strong> (<em>bool</em>) – Flag to print optimization iterations</p></li>
+</ul>
 </dd>
-<dt>Outputs:</dt><dd><p>nexus    - RCAIDE’s optimization framework [None]</p>
-</dd>
-<dt>Assumptions:</dt><dd><p>1) minimum allowable blade taper : 0.2
-1) maximum allowable blade taper : 0.7</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>nexus</strong> –</p>
+<dl class="simple">
+<dt>RCAIDE’s optimization framework object with the following attributes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>optimization_problem<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Optimization problem definition</dt><dd><ul>
+<li><dl class="simple">
+<dt>inputs<span class="classifier">numpy.ndarray</span></dt><dd><p>Design variables</p>
 </dd>
 </dl>
-</div></blockquote>
+</li>
+<li><dl class="simple">
+<dt>objective<span class="classifier">numpy.ndarray</span></dt><dd><p>Objective function</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>constraints<span class="classifier">numpy.ndarray</span></dt><dd><p>Constraints</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>vehicle_configurations<span class="classifier">list</span></dt><dd><p>List of vehicle configurations for analysis</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>procedure<span class="classifier">Data</span></dt><dd><p>Optimization procedure</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>print_iterations<span class="classifier">bool</span></dt><dd><p>Flag to print optimization iterations</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RCAIDE.Framework.Optimization.Common.Nexus</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>This function configures a complete optimization problem for rotor blade design by:</dt><dd><ol class="arabic simple">
+<li><p>Creating a Nexus optimization framework</p></li>
+<li><p>Validating the rotor type (must be Lift_Rotor or Prop_Rotor)</p></li>
+<li><p>Setting up design variables with bounds and scaling</p></li>
+<li><p>Defining the objective function</p></li>
+<li><p>Establishing constraints for performance and geometry</p></li>
+<li><p>Creating aliases to link optimization variables to vehicle properties</p></li>
+<li><p>Setting up vehicle configurations using blade_geometry_setup</p></li>
+<li><p>Configuring the optimization procedure</p></li>
+</ol>
+</dd>
+<dt>The design variables include:</dt><dd><ul class="simple">
+<li><p>chord_r, chord_p, chord_q, chord_t: Parameters defining the chord distribution</p></li>
+<li><p>twist_r, twist_p, twist_q, twist_t: Parameters defining the twist distribution</p></li>
+<li><p>hover_tip_mach: Tip Mach number in hover</p></li>
+<li><p>OEI_tip_mach: Tip Mach number in one-engine-inoperative condition</p></li>
+<li><p>OEI_collective_pitch: Collective pitch in one-engine-inoperative condition</p></li>
+<li><p>cruise_tip_mach, cruise_collective_pitch: Additional parameters for prop rotors</p></li>
+</ul>
+</dd>
+<dt>Constraints ensure:</dt><dd><ul class="simple">
+<li><p>Thrust and power requirements are met</p></li>
+<li><p>Blade taper is within reasonable bounds (0.3 to 0.9)</p></li>
+<li><p>Blade twist is positive</p></li>
+<li><p>Maximum sectional lift coefficient is below 0.8</p></li>
+<li><p>Chord and twist distribution parameters maintain reasonable ratios</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Minimum allowable blade taper: 0.3</p></li>
+<li><p>Maximum allowable blade taper: 0.9</p></li>
+<li><p>Maximum sectional lift coefficient: 0.8</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

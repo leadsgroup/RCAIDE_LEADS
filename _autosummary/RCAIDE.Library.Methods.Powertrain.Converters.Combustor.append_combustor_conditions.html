@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,8 +537,93 @@
 <span id="append-combustor-conditions"></span><h1>append_combustor_conditions<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions.append_combustor_conditions">
-<span class="sig-name descname"><span class="pre">append_combustor_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combustor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor_conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Combustor/append_combustor_conditions.html#append_combustor_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions.append_combustor_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Appends initial conditions to combustor component</p>
+<span class="sig-name descname"><span class="pre">append_combustor_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combustor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Combustor/append_combustor_conditions.html#append_combustor_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions.append_combustor_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Initializes combustor operating conditions for a mission segment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combustor</strong> (<em>RCAIDE.Library.Components.Converters.Combustor</em>) – <dl class="simple">
+<dt>Combustor component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the combustor</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>segment</strong> (<em>RCAIDE.Framework.Mission.Segments.Segment</em>) – <dl class="simple">
+<dt>Mission segment with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>state<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Segment state</dt><dd><ul>
+<li><dl class="simple">
+<dt>ones_row<span class="classifier">function</span></dt><dd><p>Function to create array of ones with specified length</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>energy_conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – Energy conditions container where combustor conditions will be stored</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Results are stored in energy_conditions.converters[combustor.tag]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function initializes the necessary data structures for storing combustor
+operating conditions during a mission segment. It creates a container for the
+combustor in the energy conditions and initializes the non-dimensional mass ratio
+with ones.</p>
+<dl class="simple">
+<dt>The function initializes the following in energy_conditions.converters[combustor.tag]:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>inputs<span class="classifier">Conditions</span></dt><dd><dl class="simple">
+<dt>Input conditions container</dt><dd><ul>
+<li><dl class="simple">
+<dt>nondim_mass_ratio<span class="classifier">numpy.ndarray</span></dt><dd><p>Non-dimensional mass ratio, initialized with ones</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>outputs<span class="classifier">Conditions</span></dt><dd><p>Output conditions container (empty)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>The non-dimensional mass ratio represents the ratio of mass flow at the combustor exit
+to the mass flow at the combustor inlet, accounting for the addition of fuel.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Non-dimensional mass ratio is initialized with ones (no fuel addition initially)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

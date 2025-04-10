@@ -394,7 +394,54 @@
 <div class="viewcode-block" id="Aluminum_Alloy">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Aluminum_Alloy.html#RCAIDE.Library.Attributes.Materials.Aluminum_Alloy.Aluminum_Alloy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Aluminum_Alloy</span><span class="p">(</span><span class="n">Solid</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Physical constants specific to 6061-T6 Aluminum</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    A class representing an aluminum alloy and its material properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Material density in kg/m³ (2700)</span>
+<span class="sd">    thermal_conductivity : float</span>
+<span class="sd">        Heat conduction coefficient in W/(m·K) (202.4)</span>
+<span class="sd">    specific_heat_capacity : float</span>
+<span class="sd">        Specific heat at constant pressure in J/(kg·K) (871)</span>
+<span class="sd">    ultimate_tensile_strength : float</span>
+<span class="sd">        Maximum tensile stress before failure in Pa (310e6)</span>
+<span class="sd">    ultimate_shear_strength : float</span>
+<span class="sd">        Maximum shear stress before failure in Pa (206e6)</span>
+<span class="sd">    ultimate_bearing_strength : float</span>
+<span class="sd">        Maximum bearing stress before failure in Pa (607e6)</span>
+<span class="sd">    yield_tensile_strength : float</span>
+<span class="sd">        Stress at which material begins to deform plastically in Pa (276e6)</span>
+<span class="sd">    yield_shear_strength : float</span>
+<span class="sd">        Shear stress at which material begins to deform plastically in Pa (206e6)</span>
+<span class="sd">    yield_bearing_strength : float</span>
+<span class="sd">        Bearing stress at which material begins to deform plastically in Pa (386e6)</span>
+<span class="sd">    minimum_gage_thickness : float</span>
+<span class="sd">        Minimum manufacturable thickness in m (0.0)</span>
+<span class="sd">    minimum_width : float</span>
+<span class="sd">        Minimum width in m</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements standard 6061-T6 aluminum properties for both structural </span>
+<span class="sd">    and thermal applications. The thermal properties are particularly relevant for </span>
+<span class="sd">    battery cooling applications.</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Ultimate Strength&#39;</span>
+<span class="sd">        The maximum stress that a material can withstand before failure</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Yield Strength&#39;</span>
+<span class="sd">        The stress at which a material begins to deform plastically</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Thermal Conductivity&#39;</span>
+<span class="sd">        The property of a material to conduct heat, measured in watts per meter-kelvin</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] MatWeb. (n.d.). Aluminum 6061-T6; 6061-T651. https://www.matweb.com/search/DataSheet.aspx?MatGUID=b8d536e0b9b54bd7b69e4124d8f1d20a </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

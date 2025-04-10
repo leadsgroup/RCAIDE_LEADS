@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,105 +543,278 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance.compute_nmc_cell_performance">
 <span class="sig-name descname"><span class="pre">compute_nmc_cell_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coolant_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Lithium_Ion_NMC/compute_nmc_cell_performance.html#compute_nmc_cell_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance.compute_nmc_cell_performance" title="Link to this definition">#</a></dt>
-<dd><p>Compute the performance of a lithium-nickel-manganese-cobalt-oxide (NMC) battery_module cell.</p>
-<p>This function models the electrical and thermal behavior of an 18650 NMC battery_module cell
-based on experimental data from the Automotive Industrial Systems Company of Panasonic Group.</p>
+<dd><p>Computes the performance of a lithium-nickel-manganese-cobalt-oxide (NMC) battery cell.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>battery_module</strong> (<em>battery_module</em>) – The battery_module object containing cell properties and configuration.</p></li>
-<li><p><strong>state</strong> (<em>MissionState</em>) – The current state of the mission.</p></li>
-<li><p><strong>bus</strong> (<em>ElectricBus</em>) – The electric bus to which the battery_module is connected.</p></li>
-<li><p><strong>coolant_lines</strong> (<em>list</em>) – List of coolant lines for thermal management.</p></li>
-<li><p><strong>t_idx</strong> (<em>int</em>) – Current time index in the simulation.</p></li>
-<li><p><strong>delta_t</strong> (<em>float</em>) – Time step size.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A tuple containing:
-- stored_results_flag (bool): Flag indicating if results were stored.
-- stored_battery_module_tag (str): Tag of the battery_module for which results were stored.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple</p>
+<li><p><strong>battery_module</strong> (<em>RCAIDE.Library.Components.Sources.Battery_Modules.Lithium_Ion_NMC</em>) – <dl class="simple">
+<dt>Battery module component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the battery module</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The function updates various battery_module conditions in the <cite>state</cite> object, including:
-- Current energy
-- Temperature
-- Heat energy generated
-- Load power
-- Current
-- Open-circuit voltage
-- Charge throughput
-- Internal resistance
-- State of charge
-- Depth of discharge
-- Voltage under load</p>
-<p>The model includes:
-- Internal resistance calculation
-- Thermal modeling (heat generation and temperature change)
-- Electrical performance (voltage and current calculations)
-- State of charge and depth of discharge updates</p>
-<p>Arrays accessed from objects:
-- From bus_conditions:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>power_draw</p></li>
-<li><p>current_draw</p></li>
-</ul>
-</div></blockquote>
-<ul class="simple">
+</li>
 <li><dl class="simple">
-<dt>From battery_module_conditions:</dt><dd><ul>
-<li><p>energy</p></li>
-<li><p>voltage_open_circuit</p></li>
-<li><p>cell.voltage_open_circuit</p></li>
-<li><p>power</p></li>
-<li><p>cell.power</p></li>
-<li><p>internal_resistance</p></li>
-<li><p>cell.internal_resistance</p></li>
-<li><p>heat_energy_generated</p></li>
-<li><p>cell.heat_energy_generated</p></li>
-<li><p>voltage_under_load</p></li>
-<li><p>cell.voltage_under_load</p></li>
-<li><p>current</p></li>
-<li><p>cell.current</p></li>
-<li><p>temperature</p></li>
-<li><p>cell.temperature</p></li>
-<li><p>cell.state_of_charge</p></li>
-<li><p>cell.energy</p></li>
-<li><p>cell.charge_throughput</p></li>
-<li><p>cell.depth_of_discharge</p></li>
-</ul>
+<dt>cell<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Cell properties</dt><dd><ul>
+<li><dl class="simple">
+<dt>electrode_area<span class="classifier">float</span></dt><dd><p>Area of the electrode [m²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>surface_area<span class="classifier">float</span></dt><dd><p>Surface area of the cell [m²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mass<span class="classifier">float</span></dt><dd><p>Mass of a single cell [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>specific_heat_capacity<span class="classifier">float</span></dt><dd><p>Specific heat capacity of the cell [J/(kg·K)]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>discharge_performance_map<span class="classifier">function</span></dt><dd><p>Function that maps state of charge, temperature, and current to voltage</p>
 </dd>
 </dl>
 </li>
 </ul>
-<p class="rubric">References</p>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id1" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<p>Zou, Y., Hu, X., Ma, H., and Li, S. E., “Combined State of Charge and State of
-Health estimation over lithium-ion battery_module cell cycle lifespan for electric
-vehicles,” Journal of Power Sources, Vol. 273, 2015, pp. 793-803.
-doi:10.1016/j.jpowsour.2014.09.146</p>
-</aside>
-<aside class="footnote brackets" id="id2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<p>Jeon, Dong Hyup, and Seung Man Baek. “Thermal modeling of cylindrical lithium ion
-battery_module during discharge cycle.” Energy Conversion and Management 52.8-9 (2011):
-2973-2981.</p>
-</aside>
-</aside>
-<section id="assumptions">
-<h2>Assumptions<a class="headerlink" href="#assumptions" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p>All battery_module modules exhibit the same thermal behavior.</p></li>
-<li><p>The cell temperature is assumed to be the temperature of the entire module.</p></li>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maximum_energy<span class="classifier">float</span></dt><dd><p>Maximum energy capacity of the module [J]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>electrical_configuration<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Electrical configuration</dt><dd><ul>
+<li><dl class="simple">
+<dt>series<span class="classifier">int</span></dt><dd><p>Number of cells in series</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>parallel<span class="classifier">int</span></dt><dd><p>Number of cells in parallel</p>
+</dd>
+</dl>
+</li>
 </ul>
-</section>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>state</strong> (<em>RCAIDE.Framework.Mission.Common.State</em>) – <dl class="simple">
+<dt>State object containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>conditions<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Flight conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>energy<span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>Energy conditions indexed by component tag</dt><dd><ul>
+<li><dl class="simple">
+<dt>[bus.tag]<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Bus-specific conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>energy<span class="classifier">numpy.ndarray</span></dt><dd><p>Energy stored in the bus [J]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>power_draw<span class="classifier">numpy.ndarray</span></dt><dd><p>Power draw on the bus [W]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>current_draw<span class="classifier">numpy.ndarray</span></dt><dd><p>Current draw on the bus [A]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>battery_modules<span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>Battery module conditions indexed by tag</dt><dd><ul>
+<li><dl class="simple">
+<dt>[battery_module.tag]<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Battery module conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>energy<span class="classifier">numpy.ndarray</span></dt><dd><p>Energy stored in the module [J]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>voltage_open_circuit<span class="classifier">numpy.ndarray</span></dt><dd><p>Open-circuit voltage [V]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>power<span class="classifier">numpy.ndarray</span></dt><dd><p>Power output [W]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>internal_resistance<span class="classifier">numpy.ndarray</span></dt><dd><p>Internal resistance [Ω]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>heat_energy_generated<span class="classifier">numpy.ndarray</span></dt><dd><p>Heat energy generated [W]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>voltage_under_load<span class="classifier">numpy.ndarray</span></dt><dd><p>Voltage under load [V]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>current<span class="classifier">numpy.ndarray</span></dt><dd><p>Current [A]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state_of_charge<span class="classifier">numpy.ndarray</span></dt><dd><p>State of charge [0-1]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell<span class="classifier">Data</span></dt><dd><p>Cell-specific conditions with same properties as module</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>numerics<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Numerical properties</dt><dd><ul>
+<li><dl class="simple">
+<dt>number_of_control_points<span class="classifier">int</span></dt><dd><p>Number of control points in the mission</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>bus</strong> (<em>RCAIDE.Library.Components.Systems.Electrical_Bus</em>) – <dl class="simple">
+<dt>Electrical bus component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the electrical bus</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>battery_module_electric_configuration<span class="classifier">str</span></dt><dd><p>Configuration of battery modules (“Series” or “Parallel”)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>battery_modules<span class="classifier">list</span></dt><dd><p>List of battery modules connected to the bus</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>coolant_lines</strong> (<em>list</em>) – List of coolant lines for thermal management</p></li>
+<li><p><strong>t_idx</strong> (<em>int</em>) – Current time index in the simulation</p></li>
+<li><p><strong>delta_t</strong> (<em>numpy.ndarray</em>) – Time step size [s]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>stored_results_flag</strong> (<em>bool</em>) – Flag indicating if results were stored</p></li>
+<li><p><strong>stored_battery_module_tag</strong> (<em>str</em>) – Tag of the battery module for which results were stored</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function models the electrical and thermal behavior of an NMC battery cell
+based on experimental data. It updates various battery conditions in the <cite>state</cite> object,
+including: current energy, temperature, heat energy generated, load power, current,
+open-circuit voltage, charge throughput, internal resistance, state of charge,
+depth of discharge, and voltage under load.</p>
+<dl class="simple">
+<dt>The model includes:</dt><dd><ul class="simple">
+<li><p>Internal resistance calculation</p></li>
+<li><p>Thermal modeling (heat generation and temperature change)</p></li>
+<li><p>Electrical performance (voltage and current calculations)</p></li>
+<li><p>State of charge and depth of discharge updates</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>All battery modules exhibit the same thermal behavior</p></li>
+<li><p>The cell temperature is assumed to be the temperature of the entire module</p></li>
+<li><p>Battery performance follows empirical models based on experimental data</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+The internal resistance is modeled as a function of state of charge:</p>
+<div class="math notranslate nohighlight">
+\[R_0 = 0.01483 \cdot SOC^2 - 0.02518 \cdot SOC + 0.1036\]</div>
+<p>Heat generation includes both Joule heating and entropy effects:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\dot{q}_{entropy} = -T \cdot \Delta S \cdot i / (nF)\\\dot{q}_{joule} = i^2 / \sigma\\Q_{heat} = (\dot{q}_{joule} + \dot{q}_{entropy}) \cdot A_s\end{aligned}\end{align} \]</div>
+<p class="rubric">References</p>
+<p>[1] Zou, Y., Hu, X., Ma, H., and Li, S. E., “Combined State of Charge and State of Health estimation over lithium-ion battery cell cycle lifespan for electric vehicles,” Journal of Power Sources, Vol. 273, 2015, pp. 793-803. doi:10.1016/j.jpowsour.2014.09.146
+[2] Jeon, D. H., and Baek, S. M., “Thermal modeling of cylindrical lithium ion battery during discharge cycle,” Energy Conversion and Management, Vol. 52, No. 8-9, 2011, pp. 2973-2981. doi:10.1016/j.enconman.2011.04.013</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -659,22 +834,48 @@ N.A.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance.compute_nmc_cell_state">
 <span class="sig-name descname"><span class="pre">compute_nmc_cell_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_module_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SOC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Lithium_Ion_NMC/compute_nmc_cell_performance.html#compute_nmc_cell_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance.compute_nmc_cell_state" title="Link to this definition">#</a></dt>
-<dd><p>This computes the electrical state variables of a lithium ion
-battery_module cell with a  lithium-nickel-cobalt-aluminum oxide cathode
-chemistry from look-up tables</p>
-<p>Assumtions:
-N/A</p>
-<p>Source:
-N/A</p>
-<dl class="simple">
-<dt>Inputs:</dt><dd><p>SOC           - state of charge of cell     [unitless]
-battery_module_data  - look-up data structure      [unitless]
-T             - battery_module cell temperature    [Kelvin]
-I             - battery_module cell current        [Amperes]</p>
+<dd><p>Computes the electrical state variables of a lithium-nickel-manganese-cobalt-oxide (NMC) battery cell using look-up tables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery_module_data</strong> (<em>function</em>) – Look-up function that maps state of charge, temperature, and current to voltage</p></li>
+<li><p><strong>SOC</strong> (<em>numpy.ndarray</em>) – State of charge of the cell [unitless, 0-1]</p></li>
+<li><p><strong>T</strong> (<em>numpy.ndarray</em>) – Battery cell temperature [K]</p></li>
+<li><p><strong>I</strong> (<em>numpy.ndarray</em>) – Battery cell current [A]</p></li>
+</ul>
 </dd>
-<dt>Outputs:</dt><dd><p>V_ul          - under-load voltage          [Volts]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>V_ul</strong> – Under-load voltage [V]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function computes the voltage of an NMC battery cell under load conditions
+by using a look-up table approach. It converts the state of charge to depth of discharge,
+and then uses this value along with temperature and current to determine the cell voltage.</p>
+<p>The function applies limits to ensure the inputs are within the valid range of the
+look-up data:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>SOC is limited to [0, 1]</p></li>
+<li><p>Temperature is limited to [272.65K, 322.65K] (approximately 0°C to 50°C)</p></li>
+<li><p>Current is limited to [0A, 8A]</p></li>
+</ul>
+</div></blockquote>
+<p>The input to the look-up table is a concatenated array of [current, temperature, depth_of_discharge].</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>The battery performance can be accurately represented by a look-up table</p></li>
+<li><p>The model is valid only within the specified temperature and current ranges</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.html#module-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC" title="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

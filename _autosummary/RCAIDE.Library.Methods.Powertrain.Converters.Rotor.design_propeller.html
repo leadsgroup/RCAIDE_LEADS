@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -538,26 +538,211 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller.design_propeller">
 <span class="sig-name descname"><span class="pre">design_propeller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_stations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/design_propeller.html#design_propeller"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller.design_propeller" title="Link to this definition">#</a></dt>
-<dd><p>Optimizes propeller chord and twist given input parameters.</p>
-<p>Inputs:
-Either design power or thrust
-prop_attributes.</p>
-<blockquote>
-<div><p>hub radius                       [m]
-tip radius                       [m]
-rotation rate                    [rad/s]
-freestream velocity              [m/s]
-number of blades
-number of stations
-design lift coefficient
-design_altitude                  [m]
-airfoil data</p>
-</div></blockquote>
-<p>Outputs:
-Twist distribution                 [array of radians]
-Chord distribution                 [array of meters]</p>
-<p>Assumptions/ Source:
-Based on Design of Optimum Propellers by Adkins and Liebeck</p>
+<dd><p>Optimizes propeller chord and twist distribution given input parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prop</strong> (<em>RCAIDE.Library.Components.Powertrain.Converters.Rotor</em>) – <dl class="simple">
+<dt>Propeller component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>fidelity<span class="classifier">str</span></dt><dd><p>Analysis fidelity level</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>number_of_blades<span class="classifier">int</span></dt><dd><p>Number of blades on the propeller</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tip_radius<span class="classifier">float</span></dt><dd><p>Tip radius of the propeller [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>hub_radius<span class="classifier">float</span></dt><dd><p>Hub radius of the propeller [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cruise<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Cruise conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>design_angular_velocity<span class="classifier">float</span></dt><dd><p>Rotation rate [rad/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_freestream_velocity<span class="classifier">float</span></dt><dd><p>Freestream velocity [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_Cl<span class="classifier">float</span></dt><dd><p>Design lift coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_altitude<span class="classifier">float</span></dt><dd><p>Design altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_thrust<span class="classifier">float, optional</span></dt><dd><p>Design thrust [N] (specify either thrust or power)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_power<span class="classifier">float, optional</span></dt><dd><p>Design power [W] (specify either thrust or power)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>airfoils<span class="classifier">dict</span></dt><dd><p>Dictionary of airfoil objects</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>airfoil_polar_stations<span class="classifier">list</span></dt><dd><p>Indices of airfoil polars for each radial station</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>number_of_stations</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of radial stations for blade discretization, default 20</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>prop</strong> –</p>
+<dl class="simple">
+<dt>Propeller with optimized parameters:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>cruise.design_power<span class="classifier">float</span></dt><dd><p>Design power [W]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cruise.design_thrust<span class="classifier">float</span></dt><dd><p>Design thrust [N]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cruise.design_torque<span class="classifier">float</span></dt><dd><p>Design torque [N·m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>max_thickness_distribution<span class="classifier">array_like</span></dt><dd><p>Maximum thickness distribution [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>twist_distribution<span class="classifier">array_like</span></dt><dd><p>Blade twist distribution [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>chord_distribution<span class="classifier">array_like</span></dt><dd><p>Blade chord distribution [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>radius_distribution<span class="classifier">array_like</span></dt><dd><p>Radial station positions [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cruise.design_power_coefficient<span class="classifier">float</span></dt><dd><p>Design power coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cruise.design_thrust_coefficient<span class="classifier">float</span></dt><dd><p>Design thrust coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mid_chord_alignment<span class="classifier">array_like</span></dt><dd><p>Mid-chord alignment [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>thickness_to_chord<span class="classifier">array_like</span></dt><dd><p>Thickness-to-chord ratio</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>blade_solidity<span class="classifier">float</span></dt><dd><p>Blade solidity</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RCAIDE.Library.Components.Powertrain.Converters.Rotor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function implements the design methodology from “Design of Optimum Propellers”
+by Adkins and Liebeck to optimize propeller chord and twist distributions. It
+iteratively solves for the optimal circulation distribution that minimizes induced
+losses.</p>
+<dl class="simple">
+<dt>The design process follows these steps:</dt><dd><ol class="arabic simple">
+<li><p>Calculate atmospheric properties at the design altitude</p></li>
+<li><p>Compute non-dimensional thrust or power coefficient</p></li>
+<li><p>Initialize the wake skew angle (zeta)</p></li>
+<li><dl class="simple">
+<dt>Iteratively solve for the optimal circulation distribution:</dt><dd><ol class="loweralpha simple">
+<li><p>Compute the Prandtl momentum loss factor</p></li>
+<li><p>Determine the product of relative velocity and chord (Wc)</p></li>
+<li><p>Calculate Reynolds number and Mach number at each station</p></li>
+<li><p>Compute optimal angle of attack and drag coefficient</p></li>
+<li><p>Calculate the efficiency parameter (epsilon = Cd/Cl)</p></li>
+<li><p>Determine axial and tangential induction factors</p></li>
+<li><p>Compute chord and blade twist angle</p></li>
+<li><p>Calculate derivatives for thrust and power integrals</p></li>
+<li><p>Update the wake skew angle (zeta)</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p>Calculate final performance parameters (thrust, power, efficiency)</p></li>
+<li><p>Compute thickness distribution and blade solidity</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Either design thrust or design power must be specified (not both)</p></li>
+<li><p>The design is optimized for a single operating condition</p></li>
+<li><p>Airfoil performance is based on 2D characteristics</p></li>
+<li><p>The wake is modeled with a constant skew angle</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+The method is based on the classical blade element momentum theory with
+modifications to account for wake rotation. The key parameter in the optimization
+is the wake skew angle (zeta), which relates to the induced velocities.</p>
+<p>The optimal circulation distribution minimizes induced losses while satisfying
+the thrust or power constraint. The method iteratively solves for this distribution
+by updating the wake skew angle until convergence.</p>
+<p class="rubric">References</p>
+<p>[1] Adkins, C.N. and Liebeck, R.H., “Design of Optimum Propellers”, Journal of Propulsion and Power, Vol. 10, No. 5, 1994, pp. 676-682</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties.html#module-RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties" title="RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series.html#module-RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series" title="RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry.html#module-RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry" title="RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py function">

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -571,35 +571,28 @@ Default is [0., 0., 0.] for X-direction thrust in vehicle frame.</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller.variable_pitch">
-<span class="sig-name descname"><span class="pre">variable_pitch</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller.variable_pitch" title="Link to this definition">#</a></dt>
-<dd><p>Flag indicating if propeller has variable pitch capability. Default is False.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
 <p class="rubric">Notes</p>
 <p>The Propeller class models fixed or variable pitch propellers for aircraft
 propulsion. It includes capabilities for:</p>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li><p>Forward flight performance analysis</p></li>
 <li><p>Fixed and variable pitch operation</p></li>
 <li><p>Blade element momentum theory calculations</p></li>
 <li><p>Efficiency optimization</p></li>
 <li><p>Acoustic analysis</p></li>
 </ul>
-<p>The model assumes:</p>
-<ul class="simple">
+</div></blockquote>
+<dl class="simple">
+<dt>The model assumes:</dt><dd><ul class="simple">
 <li><p>Axial inflow (unless modified by orientation angles)</p></li>
 <li><p>Rigid blades</p></li>
 <li><p>Quasi-steady aerodynamics</p></li>
 <li><p>No blade-to-blade aerodynamic interference</p></li>
 <li><p>No compressibility effects (unless explicitly modeled)</p></li>
 </ul>
+</dd>
+</dl>
 <p><strong>Definitions</strong></p>
 <dl class="simple">
 <dt>‘Variable Pitch’</dt><dd><p>Capability to change blade pitch angle during operation</p>
@@ -668,7 +661,6 @@ propulsion. It includes capabilities for:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller.tag"><code class="docutils literal notranslate"><span class="pre">Propeller.tag</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller.orientation_euler_angles"><code class="docutils literal notranslate"><span class="pre">Propeller.orientation_euler_angles</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller.use_2d_analysis"><code class="docutils literal notranslate"><span class="pre">Propeller.use_2d_analysis</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Propeller.Propeller.variable_pitch"><code class="docutils literal notranslate"><span class="pre">Propeller.variable_pitch</span></code></a></li>
 </ul>
 </li>
 </ul>

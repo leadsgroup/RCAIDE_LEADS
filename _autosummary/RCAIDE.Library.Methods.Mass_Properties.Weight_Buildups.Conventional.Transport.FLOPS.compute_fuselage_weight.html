@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -544,35 +544,105 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_fuselage_weight.compute_fuselage_weight">
 <span class="sig-name descname"><span class="pre">compute_fuselage_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/compute_fuselage_weight.html#compute_fuselage_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_fuselage_weight.compute_fuselage_weight" title="Link to this definition">#</a></dt>
-<dd><p>Calculate the weight of the fuselage of a transport aircraft</p>
-<dl>
-<dt>Assumptions:</dt><dd><p>NFUSE = 1, only one fuselage (it’s possible to modify this in future work)
-delta_isa = 0, for pressure calculations
-Fuselage is tagged as ‘fuselage’</p>
+<dd><p>Computes the fuselage weight using NASA FLOPS weight estimation method. Accounts for
+aircraft type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – <dl class="simple">
+<dt>The vehicle instance containing:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>networks<span class="classifier">list</span></dt><dd><p>Propulsion system data for engine count and mounting</p>
 </dd>
-<dt>Source:</dt><dd><p>The Flight Optimization System Weight Estimation Method</p>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuselages[‘fuselage’]<span class="classifier">Fuselage</span></dt><dd><dl class="simple">
+<dt>Primary fuselage with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>lengths.total<span class="classifier">float</span></dt><dd><p>Total fuselage length [m]</p>
 </dd>
-<dt>Inputs:</dt><dd><dl>
-<dt>vehicle - data dictionary with vehicle properties                    [dimensionless]</dt><dd><p>-.networks: data dictionary containing all propulsion properties
--.fuselages[‘fuselage’].lengths.total: fuselage total length      [meters]
--.fuselages[‘fuselage’].width: fuselage width                    [meters]
--.fuselages[‘fuselage’].heights.maximum: fuselage maximum height [meters]
--.flight_envelope.ultimate_load: ultimate load factor (default: 3.75)
--.systems.accessories: type of aircraft (short-range, commuter</p>
-<blockquote>
-<div><p>medium-range, long-range,
-sst, cargo)</p>
-</div></blockquote>
-<p>-.mass_properties.max_takeoff: MTOW                              [kilograms]
--.design_mach_number: design mach number for cruise flight</p>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>width<span class="classifier">float</span></dt><dd><p>Maximum fuselage width [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>heights.maximum<span class="classifier">float</span></dt><dd><p>Maximum fuselage height [m]</p>
+</dd>
+</dl>
+</li>
+</ul>
 </dd>
 </dl>
 </dd>
-<dt>Outputs:</dt><dd><p>WFUSE - weight of the fuselage                                      [kilograms]</p>
-</dd>
-<dt>Properties Used:</dt><dd><p>N/A</p>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flight_envelope.ultimate_load<span class="classifier">float</span></dt><dd><p>Ultimate load factor (default: 3.75)</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>systems.accessories<span class="classifier">str</span></dt><dd><p>Aircraft type (‘short-range’, ‘commuter’, ‘medium-range’,
+‘long-range’, ‘sst’, ‘cargo’)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mass_properties.max_takeoff<span class="classifier">float</span></dt><dd><p>Maximum takeoff weight [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_mach_number<span class="classifier">float</span></dt><dd><p>Design cruise Mach number</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>WFUSE</strong> – Fuselage structural weight [kg]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses FLOPS correlations developed from transport aircraft database. For more details,
+please refer to the FLOPS documentation: <a class="reference external" href="https://ntrs.nasa.gov/citations/20170005851">https://ntrs.nasa.gov/citations/20170005851</a></p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Single fuselage configuration (NFUSE = 1). If there are multiple fuselages, these are calcualted separately.</p></li>
+<li><p>Fuselage is tagged as ‘fuselage’</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+For transport aircraft:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">fuse</span><span class="p">}</span> <span class="o">=</span> <span class="mf">1.35</span><span class="p">(</span><span class="n">L_</span><span class="p">{</span><span class="n">f</span><span class="p">}</span><span class="n">D_</span><span class="p">{</span><span class="n">eq</span><span class="p">})</span><span class="o">^</span><span class="p">{</span><span class="mf">1.28</span><span class="p">}(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.05</span><span class="o">*</span><span class="n">N_</span><span class="p">{</span><span class="n">ef</span><span class="p">})(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.38</span><span class="o">*</span><span class="n">F_</span><span class="p">{</span><span class="n">cargo</span><span class="p">})</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>L_f = fuselage length</p></li>
+<li><p>D_eq = equivalent diameter</p></li>
+<li><p>N_ef = number of fuselage-mounted engines</p></li>
+<li><p>F_cargo = cargo aircraft flag</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] NASA Flight Optimization System (FLOPS)</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

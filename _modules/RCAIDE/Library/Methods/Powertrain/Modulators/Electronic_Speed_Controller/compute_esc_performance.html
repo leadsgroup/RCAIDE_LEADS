@@ -387,28 +387,56 @@
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="compute_voltage_out_from_throttle">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_voltage_out_from_throttle.html#RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_voltage_out_from_throttle">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_voltage_out_from_throttle</span><span class="p">(</span><span class="n">esc</span><span class="p">,</span><span class="n">esc_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; The voltage out of the electronic speed controller</span>
-<span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">        The ESC&#39;s output voltage is linearly related to throttle setting</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_voltage_out_from_throttle</span><span class="p">(</span><span class="n">esc</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the output voltage of the Electronic Speed Controller (ESC) based on the </span>
+<span class="sd">    throttle setting. Implements a linear voltage modulation model where output voltage </span>
+<span class="sd">    is proportionally controlled by the throttle position.</span>
 
-<span class="sd">        Source:</span>
-<span class="sd">        N/A</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    esc : RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller</span>
+<span class="sd">        The electronic speed controller component</span>
+<span class="sd">    esc_conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        ESC-specific operating conditions</span>
+<span class="sd">            - throttle : float</span>
+<span class="sd">                Power modulation setting [0-1]</span>
+<span class="sd">            - inputs : Conditions</span>
+<span class="sd">                Input parameters</span>
+<span class="sd">                    - voltage : float</span>
+<span class="sd">                        Input voltage [V]</span>
+<span class="sd">            - outputs : Conditions</span>
+<span class="sd">                Output parameters</span>
+<span class="sd">                    - voltage : float</span>
+<span class="sd">                        Output voltage [V]</span>
+<span class="sd">    conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Flight conditions (not directly used but maintained for API consistency)</span>
 
-<span class="sd">        Inputs:</span>
-<span class="sd">        conditions.energy.throttle     [0-1] </span>
-<span class="sd">        esc_conditions.inputs.voltage            [volts]</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
 
-<span class="sd">        Outputs:</span>
-<span class="sd">        voltsout                       [volts]</span>
-<span class="sd">        esc_conditions.outputs.voltageout        [volts]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function performs these operations:</span>
+<span class="sd">        1. Clamps throttle between 0 and 1</span>
+<span class="sd">        2. Computes output voltage as a linear function of throttle</span>
+<span class="sd">        3. Updates ESC conditions with new values</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">        None</span>
-<span class="sd">       </span>
-<span class="sd">    &quot;&quot;&quot;</span> 
-    <span class="n">eta</span>        <span class="o">=</span> <span class="n">esc_conditions</span><span class="o">.</span><span class="n">throttle</span> <span class="o">*</span> <span class="mf">1.0</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Linear relationship between throttle and output voltage</span>
+<span class="sd">        * No voltage drop across the ESC</span>
+<span class="sd">        * Instantaneous throttle response</span>
+<span class="sd">        * Perfect voltage regulation</span>
+<span class="sd">        * Throttle values outside [0,1] are clamped</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">      </span>
+<span class="sd">    &#39;Voltage Modulation&#39;</span>
+<span class="sd">        Process of controlling output voltage through throttle position</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">esc_conditions</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">modulators</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+    <span class="n">eta</span>            <span class="o">=</span> <span class="n">esc_conditions</span><span class="o">.</span><span class="n">throttle</span> <span class="o">*</span> <span class="mf">1.0</span>
     
     <span class="c1"># Negative throttle is bad</span>
     <span class="n">eta</span><span class="p">[</span><span class="n">eta</span><span class="o">&lt;=</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -429,7 +457,7 @@
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="compute_current_in_from_throttle">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_current_in_from_throttle.html#RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_current_in_from_throttle">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_current_in_from_throttle</span><span class="p">(</span><span class="n">esc</span><span class="p">,</span><span class="n">esc_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_current_in_from_throttle</span><span class="p">(</span><span class="n">esc</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; The current going into the speed controller</span>
 <span class="sd">    </span>
 <span class="sd">        Assumptions:</span>
@@ -445,12 +473,12 @@
 <span class="sd">            esc.efficiency - [0-1] efficiency of the ESC</span>
 <span class="sd">           </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="c1"># Unpack, don&#39;t modify the throttle</span>
-    <span class="n">eta</span>        <span class="o">=</span> <span class="n">esc_conditions</span><span class="o">.</span><span class="n">throttle</span>
-    <span class="n">eff</span>        <span class="o">=</span> <span class="n">esc</span><span class="o">.</span><span class="n">efficiency</span>
-    <span class="n">currentout</span> <span class="o">=</span> <span class="n">esc_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">current</span> 
-    <span class="n">currentin</span>  <span class="o">=</span> <span class="n">currentout</span><span class="o">*</span><span class="n">eta</span><span class="o">/</span><span class="n">eff</span> <span class="c1"># The inclusion of eta satisfies a power balance: p_in = p_out/eff</span>
+     
+    <span class="n">esc_conditions</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">modulators</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+    <span class="n">eta</span>            <span class="o">=</span> <span class="n">esc_conditions</span><span class="o">.</span><span class="n">throttle</span>
+    <span class="n">eff</span>            <span class="o">=</span> <span class="n">esc</span><span class="o">.</span><span class="n">efficiency</span>
+    <span class="n">currentout</span>     <span class="o">=</span> <span class="n">esc_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">current</span> 
+    <span class="n">currentin</span>      <span class="o">=</span> <span class="n">currentout</span><span class="o">*</span><span class="n">eta</span><span class="o">/</span><span class="n">eff</span> <span class="c1"># The inclusion of eta satisfies a power balance: p_in = p_out/eff</span>
     
     <span class="c1"># Pack </span>
     <span class="n">esc_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">current</span>   <span class="o">=</span> <span class="n">currentin</span>

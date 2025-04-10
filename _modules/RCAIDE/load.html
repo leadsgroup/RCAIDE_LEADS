@@ -396,22 +396,40 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="load">
 <a class="viewcode-back" href="../../_autosummary/RCAIDE.load.html#RCAIDE.load.load">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">pickle_format</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a JSON file into a RCAIDE data structure. </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">pickle_format</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Imports a Pickle or JSON file into a RCAIDE data structure.</span>
 <span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            None</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            None</span>
-<span class="sd">     </span>
-<span class="sd">        Args:</span>
-<span class="sd">            filename (string)      : file to be loaded        [unitless] </span>
-<span class="sd">            pickle_format (boolean): pickle file format flag  [unitless]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            data  : RCAIDE data structure [unitless]  </span>
-<span class="sd">    &quot;&quot;&quot;</span> 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        Path to the file to be loaded, without extension for pickle files</span>
+<span class="sd">    pickle_format : bool, optional</span>
+<span class="sd">        Flag indicating whether to load a pickle file (True) or JSON file (False)</span>
+<span class="sd">        Default is False (JSON format)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : RCAIDE.Framework.Core.Data</span>
+<span class="sd">        RCAIDE data structure containing the loaded information</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function supports two file formats:</span>
+<span class="sd">    </span>
+<span class="sd">    1. JSON format (default): Loads a JSON file and converts it to a RCAIDE data structure</span>
+<span class="sd">       using the read_RCAIDE_json_dict function.</span>
+<span class="sd">    </span>
+<span class="sd">    2. Pickle format: Loads a binary pickle file directly into a Python object.</span>
+<span class="sd">       The .pkl extension is automatically added to the filename.</span>
+<span class="sd">    </span>
+<span class="sd">    JSON format is human-readable and more portable across different Python versions,</span>
+<span class="sd">    while pickle format is more efficient for large data structures but less portable.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.save</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="k">if</span> <span class="n">pickle_format</span><span class="p">:</span>
         <span class="n">load_file</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span> 

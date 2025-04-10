@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,24 +534,68 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl.find_take_off_weight_given_tofl">
 <span class="sig-name descname"><span class="pre">find_take_off_weight_given_tofl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_tofl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_isa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/find_take_off_weight_given_tofl.html#find_take_off_weight_given_tofl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl.find_take_off_weight_given_tofl" title="Link to this definition">#</a></dt>
-<dd><p>Estimates the takeoff weight given a certain takeoff field length.</p>
-<p>Assumptions:
-assumptions per estimate_take_off_field_length()</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-vehicle.mass_properties.</p>
+<dd><p>Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – <dl class="simple">
+<dt>The vehicle instance containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>mass_properties.operating_empty<span class="classifier">float</span></dt><dd><p>Operating empty weight [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mass_properties.max_takeoff<span class="classifier">float</span></dt><dd><p>Maximum takeoff weight [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>analyses</strong> (<em>Analyses</em>) – Container with atmosphere and aerodynamic analyses</p></li>
+<li><p><strong>target_tofl</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Target takeoff field length(s) [m]</p></li>
+<li><p><strong>altitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Airport altitude [m], default 0</p></li>
+<li><p><strong>delta_isa</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature offset from ISA conditions [K], default 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>max_tow</strong> – Maximum allowable takeoff weight(s) for given field length(s) [kg]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>Uses an interpolation approach by:</dt><dd><ol class="arabic simple">
+<li><p>Creating array of possible takeoff weights between OEW and 110% MTOW</p></li>
+<li><p>Computing TOFL for each weight</p></li>
+<li><p>Interpolating to find weight that gives target TOFL</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Linear interpolation between computed points is valid</p></li>
+<li><p>Target TOFL is within achievable range</p></li>
+<li><p>Meets assumptions from estimate_take_off_field_length</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+Takeoff field length varies approximately with W/T where:</p>
 <blockquote>
-<div><p>operating_empty         [kg]
-max_takeoff             [kg]
-analyses                [RCAIDE data structure]
-airport                 [RCAIDE data structure]
-target_tofl             [m]</p>
+<div><ul class="simple">
+<li><p>W = aircraft weight</p></li>
+<li><p>T = available thrust</p></li>
+</ul>
 </div></blockquote>
-<p>Outputs:
-max_tow                   [kg]</p>
-<p>Properties Used:
-N/A</p>
+<div class="math notranslate nohighlight">
+\[TOFL \propto \frac{W}{T}\]</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.estimate_take_off_field_length.html#module-RCAIDE.Library.Methods.Performance.estimate_take_off_field_length" title="RCAIDE.Library.Methods.Performance.estimate_take_off_field_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Performance.estimate_take_off_field_length</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

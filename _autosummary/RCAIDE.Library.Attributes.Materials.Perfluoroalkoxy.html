@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,95 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Perfluoroalkoxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Materials/Perfluoroalkoxy.html#Perfluoroalkoxy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Solid.html#RCAIDE.Library.Attributes.Materials.Solid.Solid" title="RCAIDE.Library.Attributes.Materials.Solid.Solid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solid</span></code></a></p>
-<p>Physical constants specific to Perfluoroalkoxy(PFA)</p>
+<p>A class representing Perfluoroalkoxy(PFA) and its material properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.electrical_permittivity">
+<span class="sig-name descname"><span class="pre">electrical_permittivity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.electrical_permittivity" title="Link to this definition">#</a></dt>
+<dd><p>Material electrical permittivity in kg/m³ (2.1)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.dielectric_strength_range">
+<span class="sig-name descname"><span class="pre">dielectric_strength_range</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.dielectric_strength_range" title="Link to this definition">#</a></dt>
+<dd><p>Range of dielectric strength in Pa (7E7,8E7)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.density" title="Link to this definition">#</a></dt>
+<dd><p>Material density in kg/m³ (2150)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.thermal_conductivity">
+<span class="sig-name descname"><span class="pre">thermal_conductivity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.thermal_conductivity" title="Link to this definition">#</a></dt>
+<dd><p>Heat conduction coefficient in W/(m·K) (0.19)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.melting_point">
+<span class="sig-name descname"><span class="pre">melting_point</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.melting_point" title="Link to this definition">#</a></dt>
+<dd><p>Material melting point in K (578)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.temperature_range">
+<span class="sig-name descname"><span class="pre">temperature_range</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.temperature_range" title="Link to this definition">#</a></dt>
+<dd><p>Range of temperature in K (183, 533)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.modulus_of_elasticity">
+<span class="sig-name descname"><span class="pre">modulus_of_elasticity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.modulus_of_elasticity" title="Link to this definition">#</a></dt>
+<dd><p>Material modulus of elasticity in Pa (0.55E9)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.yield_tensile_strength">
+<span class="sig-name descname"><span class="pre">yield_tensile_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.yield_tensile_strength" title="Link to this definition">#</a></dt>
+<dd><p>Stress at which material begins to deform plastically in Pa (28e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -585,7 +673,17 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.electrical_permittivity"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy.electrical_permittivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.dielectric_strength_range"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy.dielectric_strength_range</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.density"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.thermal_conductivity"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy.thermal_conductivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.melting_point"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy.melting_point</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.temperature_range"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy.temperature_range</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.modulus_of_elasticity"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy.modulus_of_elasticity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.Perfluoroalkoxy.yield_tensile_strength"><code class="docutils literal notranslate"><span class="pre">Perfluoroalkoxy.yield_tensile_strength</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

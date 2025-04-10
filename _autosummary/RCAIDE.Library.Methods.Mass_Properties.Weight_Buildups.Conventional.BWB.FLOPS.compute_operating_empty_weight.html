@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -545,62 +545,138 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_operating_empty_weight.compute_operating_empty_weight">
 <span class="sig-name descname"><span class="pre">compute_operating_empty_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/BWB/FLOPS/compute_operating_empty_weight.html#compute_operating_empty_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_operating_empty_weight.compute_operating_empty_weight" title="Link to this definition">#</a></dt>
 <dd><p>This is for a BWB aircraft configuration.</p>
-<dl>
+<dl class="simple">
 <dt>Assumptions:</dt><dd><p>Calculated aircraft weight from correlations created per component of historical aircraft
 The wings are made out of aluminum.
 A wing with the tag ‘main_wing’ exists.</p>
 </dd>
 <dt>Source:</dt><dd><p>N/A</p>
 </dd>
-<dt>Inputs:</dt><dd><dl>
+<dt>Inputs:</dt><dd><dl class="simple">
 <dt>engine - a data dictionary with the fields:</dt><dd><p>thrust_sls - sea level static thrust of a single engine                                        [Newtons]</p>
 </dd>
-<dt>wing - a data dictionary with the fields:</dt><dd><p>gross_area - wing gross area                                                                   [meters**2]
-span - span of the wing                                                                        [meters]
-taper - taper ratio of the wing                                                                [dimensionless]
-t_c - thickness-to-chord ratio of the wing                                                     [dimensionless]
-sweep - sweep angle of the wing                                                                [radians]
-mac - mean aerodynamic chord of the wing                                                       [meters]
-r_c - wing root chord                                                                          [meters]</p>
+</dl>
 </dd>
-<dt>aircraft - a data dictionary with the fields:</dt><dd><blockquote>
-<div><p>Nult - ultimate load of the aircraft                                                           [dimensionless]
-Nlim - limit load factor at zero fuel weight of the aircraft                                   [dimensionless]
-TOW - maximum takeoff weight of the aircraft                                                   [kilograms]
-zfw - maximum zero fuel weight of the aircraft                                                 [kilograms]
-num_eng - number of engines on the aircraft                                                    [dimensionless]
-num_pax - number of passengers on the aircraft                                                 [dimensionless]
-W_cargo - weight of the bulk cargo being carried on the aircraft                              [kilograms]
-num_seats - number of seats installed on the aircraft                                          [dimensionless]
-ctrl - specifies if the control system is “fully powered”, “partially powered”, or not powered [dimensionless]
-ac - determines type of instruments, electronics, and operating items based on types:</p>
-<blockquote>
-<div><p>“short-range”, “medium-range”, “long-range”, “business”, “cargo”, “commuter”, “sst”        [dimensionless]</p>
-</div></blockquote>
-</div></blockquote>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – <dl class="simple">
+<dt>The vehicle instance containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>mass_properties.max_takeoff<span class="classifier">float</span></dt><dd><p>Maximum takeoff weight [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuselages<span class="classifier">list</span></dt><dd><dl class="simple">
+<dt>BWB fuselage segments with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>aft_centerbody_area<span class="classifier">float</span></dt><dd><p>Planform area of aft section [m²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>aft_centerbody_taper<span class="classifier">float</span></dt><dd><p>Taper ratio of aft section</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cabin_area<span class="classifier">float</span></dt><dd><p>Pressurized cabin area [m²]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>wings<span class="classifier">list</span></dt><dd><p>Wing surfaces</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>networks<span class="classifier">list</span></dt><dd><p>Propulsion systems</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a><em>, </em><em>optional</em>) – <dl class="simple">
+<dt>Configuration settings with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>use_max_fuel_weight<span class="classifier">bool</span></dt><dd><p>Flag to use maximum fuel capacity</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>output</strong> –</p>
 <dl class="simple">
-<dt>fuselage - a data dictionary with the fields:</dt><dd><p>area - fuselage wetted area                                                                    [meters**2]
-diff_p - Maximum fuselage pressure differential                                                [Pascal]
-width - width of the fuselage                                                                  [meters]
-height - height of the fuselage                                                                [meters]
-length - length of the fuselage                                                                [meters]</p>
+<dt>Container with weight breakdowns:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>empty<span class="classifier">Data</span></dt><dd><p>Structural, propulsion, and systems weights</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>payload<span class="classifier">Data</span></dt><dd><p>Passenger, baggage, and cargo weights</p>
 </dd>
 </dl>
-</dd>
-<dt>Outputs:</dt><dd><dl class="simple">
-<dt>output - a data dictionary with fields:</dt><dd><p>W_payload - weight of the passengers plus baggage and paid cargo                              [kilograms]
-W_pax - weight of all the passengers                                                          [kilogram]
-W_bag - weight of all the baggage                                                             [kilogram]
-W_fuel - weight of the fuel carried                                                           [kilogram]
-W_empty - operating empty weight of the aircraft                                              [kilograms]</p>
+</li>
+<li><dl class="simple">
+<dt>fuel<span class="classifier">float</span></dt><dd><p>Total fuel weight [kg]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>zero_fuel_weight<span class="classifier">float</span></dt><dd><p>Operating empty weight plus payload [kg]</p>
 </dd>
 </dl>
-<p>Properties Used:
-N/A</p>
+</li>
+<li><dl class="simple">
+<dt>total<span class="classifier">float</span></dt><dd><p>Total aircraft weight [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Computes weights for all major aircraft components and systems using methods
+specific to BWB configurations.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Calculated aircraft weight from correlations created per component of historical aircraft</p></li>
+<li><p>The wings are made out of aluminum.</p></li>
+<li><p>A wing with the tag ‘main_wing’ exists.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Bradley, K. R., “A Sizing Methodology for the Conceptual Design of</dt><dd><p>Blended-Wing-Body Transports,” NASA/CR-2004-213016, 2004.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

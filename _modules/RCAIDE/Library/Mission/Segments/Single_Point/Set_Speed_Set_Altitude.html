@@ -394,30 +394,76 @@
 <div class="viewcode-block" id="initialize_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Segments.Single_Point.Set_Speed_Set_Altitude.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Single_Point.Set_Speed_Set_Altitude.initialize_conditions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">initialize_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the specified conditions which are given for the segment type.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes conditions for fixed speed and altitude analysis</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    A fixed speed and altitude</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">            - altitude : float</span>
+<span class="sd">                Flight altitude [m]</span>
+<span class="sd">            - air_speed : float</span>
+<span class="sd">                True airspeed [m/s]</span>
+<span class="sd">            - sideslip_angle : float</span>
+<span class="sd">                Aircraft sideslip angle [rad]</span>
+<span class="sd">            - linear_acceleration_x : float</span>
+<span class="sd">                Acceleration in x-direction [m/s^2]</span>
+<span class="sd">            - linear_acceleration_y : float</span>
+<span class="sd">                Acceleration in y-direction [m/s^2]</span>
+<span class="sd">            - linear_acceleration_z : float</span>
+<span class="sd">                Acceleration in z-direction [m/s^2]</span>
+<span class="sd">            - roll_rate : float</span>
+<span class="sd">                Aircraft roll rate [rad/s]</span>
+<span class="sd">            - pitch_rate : float</span>
+<span class="sd">                Aircraft pitch rate [rad/s]</span>
+<span class="sd">            - yaw_rate : float</span>
+<span class="sd">                Aircraft yaw rate [rad/s]</span>
+<span class="sd">            - state:</span>
+<span class="sd">                conditions : Data</span>
+<span class="sd">                    State conditions container</span>
+<span class="sd">                initials : Data, optional</span>
+<span class="sd">                    Initial conditions from previous segment</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment conditions directly:</span>
+<span class="sd">            - conditions.freestream.altitude [m]</span>
+<span class="sd">            - conditions.frames.inertial.position_vector [m]</span>
+<span class="sd">            - conditions.frames.inertial.velocity_vector [m/s]</span>
+<span class="sd">            - conditions.frames.inertial.acceleration_vector [m/s^2]</span>
+<span class="sd">            - conditions.static_stability.roll_rate [rad/s]</span>
+<span class="sd">            - conditions.static_stability.pitch_rate [rad/s]</span>
+<span class="sd">            - conditions.static_stability.yaw_rate [rad/s]</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function sets up the initial conditions for a single point analysis with</span>
+<span class="sd">    fixed speed and altitude. It includes both linear and angular motion states</span>
+<span class="sd">    for general flight dynamics analysis.</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    segment.altitude                               [meters]</span>
-<span class="sd">    segment.air_speed                              [meters/second]</span>
-<span class="sd">    segment.linear_acceleration_x                         [meters/second^2]</span>
-<span class="sd">    segment.sideslip_angle                         [radians]</span>
-<span class="sd">    segment.linear_acceleration_z                         [meters/second^2]</span>
+<span class="sd">    **Calculation Process**</span>
+<span class="sd">        1. Check initial conditions</span>
+<span class="sd">        2. Decompose velocity into components using sideslip angle:</span>
+<span class="sd">                - v_x = V * cos(β)</span>
+<span class="sd">                - v_y = V * sin(β)</span>
+<span class="sd">            where:</span>
+<span class="sd">                - V is true airspeed</span>
+<span class="sd">                - β is sideslip angle</span>
+<span class="sd">        3. Set position and altitude</span>
+<span class="sd">        4. Set acceleration vector</span>
+<span class="sd">        5. Set angular rates</span>
 
-<span class="sd">    Outputs:</span>
-<span class="sd">    conditions.frames.inertial.acceleration_vector [meters/second^2]</span>
-<span class="sd">    conditions.frames.inertial.velocity_vector     [meters/second]</span>
-<span class="sd">    conditions.frames.inertial.position_vector     [meters]</span>
-<span class="sd">    conditions.freestream.altitude                 [meters]</span>
-<span class="sd">    conditions.frames.inertial.time                [seconds]</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Fixed speed and altitude point</span>
+<span class="sd">        * Small angle approximations</span>
+<span class="sd">        * No atmospheric variations</span>
+<span class="sd">        * Quasi-steady state</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span>      
     
     <span class="c1"># unpack</span>

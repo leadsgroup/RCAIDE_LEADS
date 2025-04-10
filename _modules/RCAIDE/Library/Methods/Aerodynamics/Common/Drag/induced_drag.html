@@ -455,7 +455,7 @@
         <span class="c1"># Prime totals</span>
         <span class="n">area</span>                        <span class="o">=</span> <span class="mf">1E-12</span> 
         <span class="n">AR</span>                          <span class="o">=</span> <span class="mf">1E-12</span> 
-        <span class="n">total_induced_viscous_drag</span>  <span class="o">=</span> <span class="n">K</span><span class="o">*</span><span class="n">aero</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">total</span><span class="o">*</span><span class="p">(</span><span class="n">CL</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">total_viscous_induced_drag</span>  <span class="o">=</span> <span class="n">K</span><span class="o">*</span><span class="n">aero</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">total</span><span class="o">*</span><span class="p">(</span><span class="n">CL</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
         <span class="c1"># Go through each wing, and make calculations</span>
         <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">wings</span><span class="p">:</span> 
@@ -466,7 +466,7 @@
                 <span class="n">AR</span>   <span class="o">=</span> <span class="n">AR_wing</span>
         
         <span class="c1"># compute total induced drag </span>
-        <span class="n">total_induced_drag</span> <span class="o">=</span> <span class="n">total_induced_viscous_drag</span> <span class="o">+</span>  <span class="n">CDi</span>  
+        <span class="n">total_induced_drag</span> <span class="o">=</span> <span class="n">total_viscous_induced_drag</span> <span class="o">+</span>  <span class="n">CDi</span>
         
         <span class="c1"># Calculate the vehicle level oswald efficiency</span>
         <span class="n">e_osw</span> <span class="o">=</span> <span class="p">(</span><span class="n">CL</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">AR</span><span class="o">*</span><span class="n">total_induced_drag</span><span class="p">)</span>
@@ -483,10 +483,10 @@
 
         <span class="c1"># Calculate the induced drag       </span>
         <span class="n">total_induced_drag</span> <span class="o">=</span> <span class="n">CL</span> <span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">AR</span><span class="o">*</span><span class="n">e_osw</span><span class="p">)</span>
-        <span class="n">total_induced_viscous_drag</span> <span class="o">=</span> <span class="n">total_induced_drag</span> <span class="o">-</span> <span class="n">CDi</span>
+        <span class="n">total_viscous_induced_drag</span> <span class="o">=</span> <span class="n">total_induced_drag</span> <span class="o">-</span> <span class="n">CDi</span>
         
     <span class="n">aero</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">induced</span><span class="o">.</span><span class="n">total</span>                    <span class="o">=</span> <span class="n">total_induced_drag</span>
-    <span class="n">aero</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">induced</span><span class="o">.</span><span class="n">viscous</span>                  <span class="o">=</span> <span class="n">total_induced_viscous_drag</span>
+    <span class="n">aero</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">induced</span><span class="o">.</span><span class="n">viscous</span>                  <span class="o">=</span> <span class="n">total_viscous_induced_drag</span>
     <span class="n">aero</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">induced</span><span class="o">.</span><span class="n">oswald_efficiency_factor</span> <span class="o">=</span> <span class="n">e_osw</span>
     <span class="n">aero</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">induced</span><span class="o">.</span><span class="n">viscous_wings_drag</span>       <span class="o">=</span> <span class="n">wing_viscous_induced_drags</span> 
     

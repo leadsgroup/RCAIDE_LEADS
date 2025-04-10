@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,248 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Propellant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Propellant.html#Propellant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
-<p>Generic class for propellant</p>
+<p>Base class for defining propellant properties and characteristics in propulsion systems.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the specific propellant type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.reactant">
+<span class="sig-name descname"><span class="pre">reactant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.reactant" title="Link to this definition">#</a></dt>
+<dd><p>Primary oxidizer used for combustion</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.density" title="Link to this definition">#</a></dt>
+<dd><p>Fuel density in kg/m³</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy content in J/kg</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Energy density in J/m³</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.lower_heating_value">
+<span class="sig-name descname"><span class="pre">lower_heating_value</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.lower_heating_value" title="Link to this definition">#</a></dt>
+<dd><p>Lower heating value in J/kg</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.mass_properties">
+<span class="sig-name descname"><span class="pre">mass_properties</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.mass_properties" title="Link to this definition">#</a></dt>
+<dd><p>Object containing mass-related properties</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Library.Components.Mass_Properties.html#RCAIDE.Library.Components.Mass_Properties.Mass_Properties" title="RCAIDE.Library.Components.Mass_Properties.Mass_Properties">Mass_Properties</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.max_mass_fraction">
+<span class="sig-name descname"><span class="pre">max_mass_fraction</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.max_mass_fraction" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Maximum fuel-to-oxidizer mass ratios</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Air<span class="classifier">float</span></dt><dd><p>Maximum mass fraction with air</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>O2<span class="classifier">float</span></dt><dd><p>Maximum mass fraction with pure oxygen</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.temperatures">
+<span class="sig-name descname"><span class="pre">temperatures</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.temperatures" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Critical temperatures in K</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>flash<span class="classifier">float</span></dt><dd><p>Flash point temperature</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>autoignition<span class="classifier">float</span></dt><dd><p>Autoignition temperature</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>freeze<span class="classifier">float</span></dt><dd><p>Freezing point temperature</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>boiling<span class="classifier">float</span></dt><dd><p>Boiling point temperature</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.emission_indices">
+<span class="sig-name descname"><span class="pre">emission_indices</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.emission_indices" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Emission indices in kg/kg fuel</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Production<span class="classifier">float</span></dt><dd><p>CO2 production rate</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>CO2<span class="classifier">float</span></dt><dd><p>Carbon dioxide emissions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H2O<span class="classifier">float</span></dt><dd><p>Water vapor emissions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SO2<span class="classifier">float</span></dt><dd><p>Sulfur dioxide emissions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NOx<span class="classifier">float</span></dt><dd><p>Nitrogen oxides emissions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Soot<span class="classifier">float</span></dt><dd><p>Particulate matter emissions</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.global_warming_potential_100">
+<span class="sig-name descname"><span class="pre">global_warming_potential_100</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.global_warming_potential_100" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>100-year global warming potentials</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>CO2<span class="classifier">float</span></dt><dd><p>Carbon dioxide impact</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H2O<span class="classifier">float</span></dt><dd><p>Water vapor impact</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SO2<span class="classifier">float</span></dt><dd><p>Sulfur dioxide impact</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NOx<span class="classifier">float</span></dt><dd><p>Nitrogen oxides impact</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Soot<span class="classifier">float</span></dt><dd><p>Particulate matter impact</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Contrails<span class="classifier">float</span></dt><dd><p>Contrail formation impact</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This base class provides a standardized structure for defining propellant
+properties, including physical characteristics, combustion parameters, and
+environmental impacts. It serves as a template for specific propellant
+implementations.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Emission Index’</dt><dd><p>Mass of pollutant produced per unit mass of fuel burned</p>
+</dd>
+<dt>‘Global Warming Potential’</dt><dd><p>Relative measure of heat trapped in atmosphere compared to CO2</p>
+</dd>
+<dt>‘Lower Heating Value’</dt><dd><p>Heat of combustion excluding latent heat of water vapor</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -585,7 +826,20 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="docutils literal notranslate"><span class="pre">Propellant</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="docutils literal notranslate"><span class="pre">Propellant</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.tag"><code class="docutils literal notranslate"><span class="pre">Propellant.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.reactant"><code class="docutils literal notranslate"><span class="pre">Propellant.reactant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.density"><code class="docutils literal notranslate"><span class="pre">Propellant.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.specific_energy"><code class="docutils literal notranslate"><span class="pre">Propellant.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.energy_density"><code class="docutils literal notranslate"><span class="pre">Propellant.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.lower_heating_value"><code class="docutils literal notranslate"><span class="pre">Propellant.lower_heating_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.mass_properties"><code class="docutils literal notranslate"><span class="pre">Propellant.mass_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.max_mass_fraction"><code class="docutils literal notranslate"><span class="pre">Propellant.max_mass_fraction</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.temperatures"><code class="docutils literal notranslate"><span class="pre">Propellant.temperatures</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.emission_indices"><code class="docutils literal notranslate"><span class="pre">Propellant.emission_indices</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant.global_warming_potential_100"><code class="docutils literal notranslate"><span class="pre">Propellant.global_warming_potential_100</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

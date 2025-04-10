@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Electric_Rotor" href="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.html" />
-    <link rel="prev" title="Constant_Speed_ICE_Propeller" href="RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_ICE_Propeller.html" />
+    <link rel="prev" title="Constant_Speed_Internal_Combustion_Engine" href="RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -585,11 +585,15 @@
 <p>This class models an electric propulsion system where an electric motor drives
 a ducted fan to generate thrust. The system includes an electronic speed controller
 (ESC) to regulate power delivery from the electrical system to the motor.</p>
-<p>The ducted fan configuration provides several advantages over open propellers:
-- Higher static thrust efficiency
-- Reduced tip losses
-- Lower noise emission
-- Improved safety through shrouding</p>
+<dl class="simple">
+<dt>The ducted fan configuration provides several advantages over open propellers:</dt><dd><ul class="simple">
+<li><p>Higher static thrust efficiency</p></li>
+<li><p>Reduced tip losses</p></li>
+<li><p>Lower noise emission</p></li>
+<li><p>Improved safety through shrouding</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Definitions</strong></p>
 <dl class="simple">
 <dt>‘Ducted Fan’</dt><dd><p>A propulsion device consisting of a fan enclosed within a duct/shroud
@@ -605,7 +609,7 @@ power delivery based on input commands</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.Electric_Ducted_Fan.append_operating_conditions">
-<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Ducted_Fan.html#Electric_Ducted_Fan.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.Electric_Ducted_Fan.append_operating_conditions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Ducted_Fan.html#Electric_Ducted_Fan.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.Electric_Ducted_Fan.append_operating_conditions" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -625,12 +629,12 @@ power delivery based on input commands</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.Electric_Ducted_Fan.compute_performance">
-<span class="sig-name descname"><span class="pre">compute_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Ducted_Fan.html#Electric_Ducted_Fan.compute_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.Electric_Ducted_Fan.compute_performance" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Ducted_Fan.html#Electric_Ducted_Fan.compute_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.Electric_Ducted_Fan.compute_performance" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.Electric_Ducted_Fan.reuse_stored_data">
-<span class="sig-name descname"><span class="pre">reuse_stored_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_propulsor_tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Ducted_Fan.html#Electric_Ducted_Fan.reuse_stored_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.Electric_Ducted_Fan.reuse_stored_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reuse_stored_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_propulsor_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Ducted_Fan.html#Electric_Ducted_Fan.reuse_stored_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan.Electric_Ducted_Fan.reuse_stored_data" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -648,12 +652,12 @@ power delivery based on input commands</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_ICE_Propeller.html"
+       href="RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Constant_Speed_ICE_Propeller</p>
+        <p class="prev-next-title">Constant_Speed_Internal_Combustion_Engine</p>
       </div>
     </a>
     <a class="right-next"

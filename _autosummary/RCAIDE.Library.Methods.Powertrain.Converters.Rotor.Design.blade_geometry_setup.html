@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,17 +541,158 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup.blade_geometry_setup">
 <span class="sig-name descname"><span class="pre">blade_geometry_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_stations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Design/blade_geometry_setup.html#blade_geometry_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup.blade_geometry_setup" title="Link to this definition">#</a></dt>
-<dd><p>Defines a dummy vehicle for prop-rotor blade optimization.</p>
-<dl class="simple">
-<dt>Inputs:</dt><dd><p>rotor   - rotor data structure             [None]</p>
-</dd>
-<dt>Outputs:</dt><dd><p>configs - configuration used in optimization    [None]</p>
-</dd>
-<dt>Assumptions:</dt><dd><p>N/A</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
+<dd><p>Defines a configuration for prop-rotor blade optimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rotor</strong> (<em>RCAIDE.Library.Components.Powertrain.Converters.Rotor</em>) – <dl class="simple">
+<dt>Rotor component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>number_of_blades<span class="classifier">int</span></dt><dd><p>Number of blades on the rotor</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>tip_radius<span class="classifier">float</span></dt><dd><p>Tip radius of the rotor [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>hub_radius<span class="classifier">float</span></dt><dd><p>Hub radius of the rotor [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>hover<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Hover conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>design_thrust<span class="classifier">float, optional</span></dt><dd><p>Design thrust at hover [N]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_power<span class="classifier">float, optional</span></dt><dd><p>Design power at hover [W]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_freestream_velocity<span class="classifier">float</span></dt><dd><p>Freestream velocity at hover [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_altitude<span class="classifier">float</span></dt><dd><p>Altitude at hover [m]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>oei<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>One engine inoperative conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>design_freestream_velocity<span class="classifier">float, optional</span></dt><dd><p>Freestream velocity at OEI [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_altitude<span class="classifier">float, optional</span></dt><dd><p>Altitude at OEI [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_thrust<span class="classifier">float, optional</span></dt><dd><p>Design thrust at OEI [N]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_power<span class="classifier">float, optional</span></dt><dd><p>Design power at OEI [W]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>airfoils<span class="classifier">dict</span></dt><dd><p>Dictionary of airfoil objects</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>airfoil_polar_stations<span class="classifier">list</span></dt><dd><p>List of airfoil section indices for each station</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>number_of_stations</strong> (<em>int</em>) – Number of radial stations for blade discretization</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>configs</strong> –</p>
+<dl class="simple">
+<dt>Configuration container with the following configs:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>hover<span class="classifier">Config</span></dt><dd><p>Hover configuration</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>oei<span class="classifier">Config</span></dt><dd><p>One engine inoperative configuration</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cruise<span class="classifier">Config (only for prop-rotors)</span></dt><dd><p>Cruise configuration</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RCAIDE.Library.Components.Configs.Config.Container</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>This function prepares the necessary configurations for rotor blade optimization by:</dt><dd><ol class="arabic simple">
+<li><p>Unpacking rotor geometry parameters</p></li>
+<li><p>Validating design requirements (thrust or power must be specified)</p></li>
+<li><p>Processing airfoil data (importing geometry and computing polars if needed)</p></li>
+<li><p>Setting up the radial distribution of stations</p></li>
+<li><p>Extracting thickness-to-chord ratios from airfoils</p></li>
+<li><p>Setting default OEI conditions if not specified</p></li>
+<li><p>Creating vehicle and network configurations for analysis</p></li>
+</ol>
+</dd>
+</dl>
+<p>The function creates separate configurations for hover, OEI, and cruise (for prop-rotors)
+conditions, which are used during the optimization process to evaluate the rotor
+performance at different operating points.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Either design thrust or design power must be specified (not both)</p></li>
+<li><p>If OEI conditions are not specified, they default to hover conditions with 10% increase</p></li>
+<li><p>Rotor orientation is set to [0.0, π/2, 0.0] (horizontal rotor)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties.html#module-RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties" title="RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series.html#module-RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series" title="RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry.html#module-RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry" title="RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

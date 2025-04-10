@@ -386,11 +386,11 @@
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 
-<span class="c1"># RCAIDE imports  </span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods</span><span class="w">                           </span><span class="kn">import</span> <span class="n">skip</span>   
+<span class="c1"># RCAIDE imports   </span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                            </span><span class="kn">import</span> <span class="n">Units</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Segments.Evaluate</span><span class="w">       </span><span class="kn">import</span> <span class="n">Evaluate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission</span><span class="w">                           </span><span class="kn">import</span> <span class="n">Common</span><span class="p">,</span><span class="n">Segments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.skip</span><span class="w">                      </span><span class="kn">import</span> <span class="n">skip</span> 
  
 <span class="c1"># Package imports </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -428,34 +428,40 @@
 <span class="sd">    </span>
 <span class="sd">            Properties Used:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>           
+<span class="sd">        &quot;&quot;&quot;</span>          
         
         <span class="c1"># --------------------------------------------------------------------------------------------------------------</span>
         <span class="c1">#   User Inputs</span>
         <span class="c1"># --------------------------------------------------------------------------------------------------------------</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">altitude</span>                                <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">air_speed</span>                               <span class="o">=</span> <span class="mf">10.</span> <span class="o">*</span> <span class="n">Units</span><span class="p">[</span><span class="s1">&#39;km/hr&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">distance</span>                                <span class="o">=</span> <span class="mf">1.</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">km</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance</span>                                <span class="o">=</span> <span class="mf">10.</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">km</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_acceleration_x</span>                   <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_acceleration_y</span>                   <span class="o">=</span> <span class="mf">0.</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">linear_acceleration_z</span>                   <span class="o">=</span> <span class="mf">0.</span> <span class="c1"># note that down is positive</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">roll_rate</span>                               <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pitch_rate</span>                              <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">yaw_rate</span>                                <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">number_of_control_points</span> <span class="o">=</span> <span class="mi">1</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">roll_rate</span>                               <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitch_rate</span>                              <span class="o">=</span> <span class="mf">0.</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">yaw_rate</span>                                <span class="o">=</span> <span class="mf">0.</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">number_of_control_points</span> <span class="o">=</span> <span class="mi">1</span>   
+         
         <span class="c1"># -------------------------------------------------------------------------------------------------------------- </span>
         <span class="c1">#  Mission specific processes </span>
-        <span class="c1"># --------------------------------------------------------------------------------------------------------------             </span>
-        <span class="n">initialize</span>                         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span> 
-        <span class="n">initialize</span><span class="o">.</span><span class="n">expand_state</span>            <span class="o">=</span> <span class="n">skip</span>
-        <span class="n">initialize</span><span class="o">.</span><span class="n">differentials</span>           <span class="o">=</span> <span class="n">skip</span>
-        <span class="n">initialize</span><span class="o">.</span><span class="n">conditions</span>              <span class="o">=</span> <span class="n">Segments</span><span class="o">.</span><span class="n">Single_Point</span><span class="o">.</span><span class="n">Set_Speed_Set_Altitude_No_Propulsion</span><span class="o">.</span><span class="n">initialize_conditions</span> 
-        <span class="n">iterate</span>                            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">iterate</span>
-        <span class="n">iterate</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">differentials</span>   <span class="o">=</span> <span class="n">skip</span> 
-        <span class="n">iterate</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">weights</span>         <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Update</span><span class="o">.</span><span class="n">weights</span>
-        <span class="n">iterate</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">planet_position</span> <span class="o">=</span> <span class="n">skip</span> 
-        <span class="n">iterate</span><span class="o">.</span><span class="n">residuals</span><span class="o">.</span><span class="n">flight_dynamics</span>  <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Residuals</span><span class="o">.</span><span class="n">flight_dynamics</span>
-        <span class="n">iterate</span><span class="o">.</span><span class="n">unknowns</span><span class="o">.</span><span class="n">controls</span>          <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Unpack_Unknowns</span><span class="o">.</span><span class="n">control_surfaces</span>
-        <span class="n">iterate</span><span class="o">.</span><span class="n">unknowns</span><span class="o">.</span><span class="n">orientation</span>       <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Unpack_Unknowns</span><span class="o">.</span><span class="n">orientation</span>
+        <span class="c1"># --------------------------------------------------------------------------------------------------------------     </span>
+        <span class="n">initialize</span>                               <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span> 
+        <span class="n">initialize</span><span class="o">.</span><span class="n">expand_state</span>                  <span class="o">=</span> <span class="n">skip</span>
+        <span class="n">initialize</span><span class="o">.</span><span class="n">differentials</span>                 <span class="o">=</span> <span class="n">skip</span>
+        <span class="n">initialize</span><span class="o">.</span><span class="n">conditions</span>                    <span class="o">=</span> <span class="n">Segments</span><span class="o">.</span><span class="n">Single_Point</span><span class="o">.</span><span class="n">Set_Speed_Set_Altitude_No_Propulsion</span><span class="o">.</span><span class="n">initialize_conditions</span> 
+        <span class="n">iterate</span>                                  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">iterate</span> 
+        <span class="n">iterate</span><span class="o">.</span><span class="n">initials</span><span class="o">.</span><span class="n">energy</span>                  <span class="o">=</span> <span class="n">skip</span>
+        <span class="n">iterate</span><span class="o">.</span><span class="n">unknowns</span><span class="o">.</span><span class="n">controls</span>                <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Unpack_Unknowns</span><span class="o">.</span><span class="n">control_surfaces</span>
+        <span class="n">iterate</span><span class="o">.</span><span class="n">unknowns</span><span class="o">.</span><span class="n">mission</span>                 <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Unpack_Unknowns</span><span class="o">.</span><span class="n">orientation</span>  
+        <span class="n">iterate</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">planet_position</span>       <span class="o">=</span> <span class="n">skip</span>    
+        <span class="n">iterate</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">acceleration</span>          <span class="o">=</span> <span class="n">skip</span>
+        <span class="n">iterate</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">angular_acceleration</span>  <span class="o">=</span> <span class="n">skip</span> 
+        <span class="n">iterate</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">weights</span>               <span class="o">=</span> <span class="n">skip</span>
+        <span class="n">iterate</span><span class="o">.</span><span class="n">residuals</span><span class="o">.</span><span class="n">flight_dynamics</span>        <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Residuals</span><span class="o">.</span><span class="n">flight_dynamics</span>
+        <span class="n">post_process</span>                             <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">post_process</span> 
+        <span class="n">post_process</span><span class="o">.</span><span class="n">inertial_position</span>           <span class="o">=</span> <span class="n">skip</span>     
         
         <span class="k">return</span></div>
 

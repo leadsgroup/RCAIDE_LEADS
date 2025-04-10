@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,113 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Liquid_Hydrogen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Liquid_Hydrogen.html#Liquid_Hydrogen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Propellant</span></code></a></p>
-<p>Liquid hydrogen fuel class</p>
+<p>A class representing liquid hydrogen (LH2) fuel properties for aviation applications.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the propellant (‘Liquid_H2’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.reactant">
+<span class="sig-name descname"><span class="pre">reactant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.reactant" title="Link to this definition">#</a></dt>
+<dd><p>Oxidizer used for combustion (‘O2’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.density" title="Link to this definition">#</a></dt>
+<dd><p>Fuel density in kg/m³ (59.9)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy content in J/kg (141.86e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Energy density in J/m³ (8491.0e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.stoichiometric_fuel_to_air">
+<span class="sig-name descname"><span class="pre">stoichiometric_fuel_to_air</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.stoichiometric_fuel_to_air" title="Link to this definition">#</a></dt>
+<dd><p>Stoichiometric fuel-to-air ratio (0.0291)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.temperatures">
+<span class="sig-name descname"><span class="pre">temperatures</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.temperatures" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Critical temperatures</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>autoignition<span class="classifier">float</span></dt><dd><p>Autoignition temperature in K (845.15)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Liquid hydrogen represents a zero-carbon aviation fuel option with the highest
+specific energy of any fuel, but requires cryogenic storage at extremely low
+temperatures (-253°C).</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Specific Energy’</dt><dd><p>Energy content per unit mass, approximately 3 times higher than kerosene</p>
+</dd>
+<dt>‘Energy Density’</dt><dd><p>Energy content per unit volume, lower than conventional fuels due to low density</p>
+</dd>
+<dt>‘Stoichiometric Fuel-to-Air Ratio’</dt><dd><p>Ideal fuel-to-air mass ratio for complete combustion to H2O</p>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties are for liquid hydrogen</p></li>
+<li><p>No consideration of boil-off losses</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Roberts, K. (2008). ANALYSIS AND DESIGN OF A HYPERSONIC SCRAMJET ENGINE WITH A STARTING MACH NUMBER OF 4.00 (thesis). UTA. University of Texas at Austin. Retrieved December 30, 2024, from <a class="reference external" href="https://arc.uta.edu/publications/td_files/Kristen%20Roberts%20MS.pdf">https://arc.uta.edu/publications/td_files/Kristen%20Roberts%20MS.pdf</a>.</p>
 </dd></dl>
 
 </section>
@@ -585,7 +691,16 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.tag"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.reactant"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.reactant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.density"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.specific_energy"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.energy_density"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.stoichiometric_fuel_to_air"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.stoichiometric_fuel_to_air</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.temperatures"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.temperatures</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

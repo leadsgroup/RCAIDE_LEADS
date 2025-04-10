@@ -378,15 +378,15 @@
                   
   <h1>Source code for RCAIDE.Library.Methods.Aerodynamics.Common.Drag.spoiler_drag</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Methods/Aerodynamics/Common/Drag/spoiler_drag.py</span>
-<span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
 <span class="c1"># </span>
-<span class="c1"># Created:  Jun 2024, M. Clarke</span>
+<span class="c1"># Created:  Mar 2025, M. Clarke</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-
-<span class="c1"># python imports </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># RCAIDE imports </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
@@ -395,23 +395,44 @@
 <div class="viewcode-block" id="spoiler_drag">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.spoiler_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.spoiler_drag.spoiler_drag">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">spoiler_drag</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">geometry</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds a spoiler drag increment</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates the aerodynamic performance of an aircraft given the influence of deflected spoilers</span>
+<span class="sd">  </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    state : Data</span>
+<span class="sd">        flight conditions of aircraft</span>
+<span class="sd">        </span>
+<span class="sd">    settings : dict</span>
+<span class="sd">        aerodynamic settings</span>
+<span class="sd">        </span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        aircraft geometry </span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">        None</span>
-
-<span class="sd">    Source:</span>
-<span class="sd">        None</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        settings.spoiler_drag_increment (float): spoiler drag increment [Unitless]</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1]  Croom, Delwin R. Low-speed wind-tunnel investigation of various segments of flight spoilers</span>
+<span class="sd">         as trailing-vortex-alleviation devices on a transport aircraft model. No. NASA-TN-D-8162. 1976.</span>
+<span class="sd">      </span>
 <span class="sd">    &quot;&quot;&quot;</span>    
-    <span class="n">Mc</span> <span class="o">=</span>  <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>
-    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">spoiler_drag</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">spoiler_drag_increment</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Mc</span><span class="p">)</span>
+    <span class="c1"># unpack   </span>
+    <span class="n">parasite_total</span>        <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">total</span>            
+    <span class="n">induced_total</span>         <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">induced</span><span class="o">.</span><span class="n">total</span>            
+    <span class="n">compressibility_total</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">compressible</span><span class="o">.</span><span class="n">total</span>     
+    <span class="n">miscellaneous_drag</span>    <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">miscellaneous</span><span class="o">.</span><span class="n">total</span>
+    <span class="n">cooling_drag</span>          <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">cooling</span><span class="o">.</span><span class="n">total</span>  
+
+    <span class="c1"># untrimmed drag </span>
+    <span class="n">drag</span>  <span class="o">=</span>  <span class="n">parasite_total</span> <span class="o">+</span> <span class="n">induced_total</span>  <span class="o">+</span> <span class="n">compressibility_total</span> <span class="o">+</span> <span class="n">miscellaneous_drag</span> <span class="o">+</span> <span class="n">cooling_drag</span> 
     
+    <span class="n">spoiler_drag_coef</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">drag</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span> 
+        <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Spoiler</span><span class="p">:</span>
+                <span class="n">spoiler_drag_coef</span> <span class="o">+=</span> <span class="n">drag</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.0011</span> <span class="o">*</span> <span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">deflection</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">))</span>  
+                <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">total</span>  <span class="o">+=</span>  <span class="o">-</span><span class="mf">0.0075</span> <span class="o">*</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">deflection</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">)</span>  
+                <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">M</span>       <span class="o">+=</span>  <span class="mf">0.0053</span> <span class="o">*</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">deflection</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">)</span>  
+    
+    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">spoiler</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span>  <span class="n">spoiler_drag_coef</span> 
     <span class="k">return</span>  </div>
 
 </pre></div>

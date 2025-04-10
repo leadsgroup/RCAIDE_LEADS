@@ -377,9 +377,9 @@
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -530,94 +530,27 @@
 <dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Electric.Electric">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Electric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Electric.html#Electric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Electric.Electric" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Networks.Network.html#RCAIDE.Framework.Networks.Network.Network" title="RCAIDE.Framework.Networks.Network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a></p>
-<p>An electric network comprising one or more electrichemical energy source and/or fuel cells that to power electro-
-mechanical conversion machines eg. electric motors via a bus. Electronic speed controllers, thermal management
-system, avionics, and other eletric power systes paylaods are also modeled. Ducted fans, generators, rotors and
-motors etc. arranged into groups, called propulsor groups, to siginify how they are connected in the network.
-The network also takes into consideration thermal management components that are connected to a coolant line.
-Based on the propulsor, additional unknowns and residuals are added to the mission</p>
-<p>Assumptions:
-The y axis rotation is used for rotating the rotor about the Y-axis for tilt rotors and tiltwings</p>
-<p>Source:
-None</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Electric.Electric.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Electric.html#Electric.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Electric.Electric.evaluate" title="Link to this definition">#</a></dt>
-<dd><p>Calculate thrust given the current state of the vehicle</p>
-<p>Assumptions:
-Caps the throttle at 110% and linearly interpolates thrust off that</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-state [state()]</p>
-<p>Outputs:
-results.thrust_force_vector         [newtons]
-results.vehicle_mass_rate           [kg/s]
-conditions.energy                   [-]</p>
-<p>Properties Used:
-Defaulted values</p>
+<p>Electric Network Class - Derivative of the hybrid energy network class</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Electric.Electric.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Framework.Networks.Electric.Electric.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Electric.Electric.unpack_unknowns">
-<span class="sig-name descname"><span class="pre">unpack_unknowns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Electric.html#Electric.unpack_unknowns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Electric.Electric.unpack_unknowns" title="Link to this definition">#</a></dt>
-<dd><p>This adds additional unknowns which are unpacked from the mission solver and send to the network.</p>
-<p>Assumptions:
-None</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-unknowns specific to the rotors                        [None]
-unknowns specific to the battery cell</p>
-<p>Outputs:
-state.conditions.energy.bus.rotor.power_coefficient(s) [None]
-conditions specific to the battery cell</p>
-<p>Properties Used:
-N/A</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Electric.Electric.residuals">
-<span class="sig-name descname"><span class="pre">residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Electric.html#Electric.residuals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Electric.Electric.residuals" title="Link to this definition">#</a></dt>
-<dd><p>This packs the residuals to be sent to the mission solver.</p>
-<p>Assumptions:
-None</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-state.conditions.energy:</p>
-<blockquote>
-<div><p>motor(s).torque                      [N-m]
-rotor(s).torque                      [N-m]</p>
-</div></blockquote>
-<p>residuals soecific to the battery cell</p>
-<p>Outputs:
-residuals specific to battery cell and network</p>
-<p>Properties Used:
-N/A</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Electric.Electric.add_unknowns_and_residuals_to_segment">
-<span class="sig-name descname"><span class="pre">add_unknowns_and_residuals_to_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Electric.html#Electric.add_unknowns_and_residuals_to_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Electric.Electric.add_unknowns_and_residuals_to_segment" title="Link to this definition">#</a></dt>
-<dd><p>This function sets up the information that the mission needs to run a mission segment using this network</p>
-<p>Assumptions:
-None</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-segment
-estimated_battery_voltages                                    [v]
-estimated_rotor_power_coefficients                            [float]s
-estimated_battery_cell_temperature                            [Kelvin]
-estimated_battery_state_of_charges                            [unitless]
-estimated_battery_cell_currents                               [Amperes]</p>
-<p>Outputs:
-segment</p>
-<p>Properties Used:
-N/A</p>
-</dd></dl>
-
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Framework.Networks.Fuel</span></code></dt><dd><p>Fuel network class</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Framework.Networks.Hybrid</span></code></dt><dd><p>Hybrid network class</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </section>
@@ -670,10 +603,7 @@ N/A</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Electric.Electric"><code class="docutils literal notranslate"><span class="pre">Electric</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Electric.Electric.evaluate"><code class="docutils literal notranslate"><span class="pre">Electric.evaluate()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Electric.Electric.unpack_unknowns"><code class="docutils literal notranslate"><span class="pre">Electric.unpack_unknowns()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Electric.Electric.residuals"><code class="docutils literal notranslate"><span class="pre">Electric.residuals()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Electric.Electric.add_unknowns_and_residuals_to_segment"><code class="docutils literal notranslate"><span class="pre">Electric.add_unknowns_and_residuals_to_segment()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Electric.Electric.tag"><code class="docutils literal notranslate"><span class="pre">Electric.tag</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fan';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fan.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,15 +534,20 @@
   <p>RCAIDE.Library.Methods.Powertrain.Converters.Fan</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Converters.Fan">
 <span id="fan"></span><h1>Fan<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Fan" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides functionality for modeling fans in powertrains. It includes methods for computing
+fan performance and appending fan conditions to simulation results.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.html#module-RCAIDE.Library.Methods.Powertrain.Converters" title="RCAIDE.Library.Methods.Powertrain.Converters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions" title="RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_fan_conditions</span></code></a>(fan, segment, ...)</p></td>
-<td><p></p></td>
+<td><p>Initializes and appends fan conditions to the energy conditions dictionary.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_fan_performance</span></code></a>(fan, fan_conditions, ...)</p></td>
-<td><p>This computes the output values from the input values according to equations from the source. The following outputs are computed: fan_conditions.outputs. stagnation_temperature  (numpy.ndarray): exit stagnation_temperature  [K]   stagnation_pressure     (numpy.ndarray): exit stagnation_pressure     [Pa]   stagnation_enthalpy     (numpy.ndarray): exit stagnation_enthalpy     [J/kg]   work_done               (numpy.ndarray): work_done                    [J/(kg-s)].</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_fan_performance</span></code></a>(fan, conditions)</p></td>
+<td><p>Computes the thermodynamic performance of a fan in a gas turbine engine.</p></td>
 </tr>
 </tbody>
 </table>

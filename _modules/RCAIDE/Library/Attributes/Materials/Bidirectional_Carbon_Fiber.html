@@ -396,22 +396,47 @@
 <div class="viewcode-block" id="Bidirectional_Carbon_Fiber">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Bidirectional_Carbon_Fiber.html#RCAIDE.Library.Attributes.Materials.Bidirectional_Carbon_Fiber.Bidirectional_Carbon_Fiber">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Bidirectional_Carbon_Fiber</span><span class="p">(</span><span class="n">Solid</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Physical Constants Specific to Bidirectional Carbon Fiber</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    A class representing bidirectional carbon fiber composite material properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ultimate_tensile_strength : float</span>
+<span class="sd">        Maximum tensile stress before failure in Pa (600e6)</span>
+<span class="sd">    ultimate_shear_strength : float</span>
+<span class="sd">        Maximum shear stress before failure in Pa (90e6)</span>
+<span class="sd">    ultimate_bearing_strength : float</span>
+<span class="sd">        Maximum bearing stress before failure in Pa (600e6)</span>
+<span class="sd">    yield_tensile_strength : float</span>
+<span class="sd">        Stress at which material begins to deform plastically in Pa (600e6)</span>
+<span class="sd">    yield_shear_strength : float</span>
+<span class="sd">        Shear stress at which material begins to deform plastically in Pa (90e6)</span>
+<span class="sd">    yield_bearing_strength : float</span>
+<span class="sd">        Bearing stress at which material begins to deform plastically in Pa (600e6)</span>
+<span class="sd">    minimum_gage_thickness : float</span>
+<span class="sd">        Minimum manufacturable thickness in m (420e-6)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Material density in kg/m³ (1600)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements material properties for bidirectional woven carbon fiber composites.</span>
+<span class="sd">    Properties are based on median values from manufacturer reported data.</span>
+<span class="sd">    The equal ultimate and yield strengths reflect the generally linear elastic behavior </span>
+<span class="sd">    of carbon fiber composites up to failure.</span>
+
+<span class="sd">    **Definitions**</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    None</span>
+<span class="sd">    &#39;Bidirectional Carbon Fiber&#39;</span>
+<span class="sd">        A composite material with carbon fibers woven in two perpendicular directions,</span>
+<span class="sd">        providing similar properties in both directions</span>
 <span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">    MatWeb (Median of Mfg. Reported Values)</span>
+<span class="sd">    &#39;Ultimate Strength&#39;</span>
+<span class="sd">        The maximum stress that a material can withstand before failure</span>
 <span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Properties Used:</span>
-<span class="sd">    None</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] MatWeb. (n.d.). Overview of materials for Epoxy/Carbon Fiber Composite. Overview of materials for epoxy/carbon fiber composite. https://www.matweb.com/search/datasheet.aspx?matguid=39e40851fc164b6c9bda29d798bf3726 </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

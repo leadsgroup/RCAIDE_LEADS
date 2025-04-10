@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -548,61 +548,67 @@ used in aircraft propulsion modeling.</p>
 <td><p>A compressor component model for gas turbine engines.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Converter.html#module-RCAIDE.Library.Components.Powertrain.Converters.Converter" title="RCAIDE.Library.Components.Powertrain.Converters.Converter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Converter</span></code></a>(*args, **kwarg)</p></td>
-<td><p>A generatic converter class opject used to build all converters</p></td>
+<td><p>A generatic converter class object used to build all converters.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.html#module-RCAIDE.Library.Components.Powertrain.Converters.DC_Motor" title="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DC_Motor</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.DC_Generator.html#module-RCAIDE.Library.Components.Powertrain.Converters.DC_Generator" title="RCAIDE.Library.Components.Powertrain.Converters.DC_Generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DC_Generator</span></code></a>(*args, **kwarg)</p></td>
+<td><p>A electric generator component model for electric propulsion systems.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.html#module-RCAIDE.Library.Components.Powertrain.Converters.DC_Motor" title="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DC_Motor</span></code></a>(*args, **kwarg)</p></td>
 <td><p>A direct current (DC) electric motor component model for electric propulsion systems.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#module-RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan" title="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ducted_Fan</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html#module-RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan" title="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ducted_Fan</span></code></a>(*args, **kwarg)</p></td>
 <td><p>Ducted Fan Component Class</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Engine.html#module-RCAIDE.Library.Components.Powertrain.Converters.Engine" title="RCAIDE.Library.Components.Powertrain.Converters.Engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Engine</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Engine.html#module-RCAIDE.Library.Components.Powertrain.Converters.Engine" title="RCAIDE.Library.Components.Powertrain.Converters.Engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Engine</span></code></a>(*args, **kwarg)</p></td>
 <td><p>An internal combustion engine component model for propulsion systems.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.html#module-RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle" title="RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Expansion_Nozzle</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle.html#module-RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle" title="RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Expansion_Nozzle</span></code></a>(*args, **kwarg)</p></td>
 <td><p>An expansion nozzle component model for propulsion systems that converts pressure energy into kinetic energy.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Fan.html#module-RCAIDE.Library.Components.Powertrain.Converters.Fan" title="RCAIDE.Library.Components.Powertrain.Converters.Fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Fan</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Fan.html#module-RCAIDE.Library.Components.Powertrain.Converters.Fan" title="RCAIDE.Library.Components.Powertrain.Converters.Fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Fan</span></code></a>(*args, **kwarg)</p></td>
 <td><p>A fan component model for turbofan and ducted fan propulsion systems.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack.html#module-RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack" title="RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generic_Fuel_Cell_Stack</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack.html#module-RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack" title="RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generic_Fuel_Cell_Stack</span></code></a>(*args, **kwarg)</p></td>
 <td><p>This is a fuel cell component.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor.html#module-RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor" title="RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lift_Rotor</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor.html#module-RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor" title="RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lift_Rotor</span></code></a>(*args, **kwarg)</p></td>
 <td><p>A lift rotor component model for vertical lift applications, inheriting from the base Rotor class.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Offtake_Shaft.html#module-RCAIDE.Library.Components.Powertrain.Converters.Offtake_Shaft" title="RCAIDE.Library.Components.Powertrain.Converters.Offtake_Shaft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Offtake_Shaft</span></code></a>(*args, **kwarg)</p></td>
-<td><p>A power offtake shaft component model for extracting power from rotating machinery.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator.html#module-RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator" title="RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PMSM_Generator</span></code></a>(*args, **kwarg)</p></td>
+<td><p>A electric generator component model for electric propulsion systems.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor.html#module-RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor" title="RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PMSM_Motor</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor.html#module-RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor" title="RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PMSM_Motor</span></code></a>(*args, **kwarg)</p></td>
 <td><p>Permanent Magnet Synchronous Motor (PMSM) Component Class</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.html#module-RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor" title="RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Prop_Rotor</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.html#module-RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor" title="RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Prop_Rotor</span></code></a>(*args, **kwarg)</p></td>
 <td><p>A prop-rotor component model for tiltrotor and convertible aircraft applications, inheriting from the base Rotor class.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Propeller.html#module-RCAIDE.Library.Components.Powertrain.Converters.Propeller" title="RCAIDE.Library.Components.Powertrain.Converters.Propeller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Propeller</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Propeller.html#module-RCAIDE.Library.Components.Powertrain.Converters.Propeller" title="RCAIDE.Library.Components.Powertrain.Converters.Propeller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Propeller</span></code></a>(*args, **kwarg)</p></td>
 <td><p>A propeller component model for aircraft propulsion, inheriting from the base Rotor class.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell.html#module-RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell" title="RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proton_Exchange_Membrane_Fuel_Cell</span></code></a>(*args, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell.html#module-RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell" title="RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proton_Exchange_Membrane_Fuel_Cell</span></code></a>(*args, ...)</p></td>
 <td><p>Proton Exchange Membrane Fuel Cell class</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Ram.html#module-RCAIDE.Library.Components.Powertrain.Converters.Ram" title="RCAIDE.Library.Components.Powertrain.Converters.Ram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ram</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Ram.html#module-RCAIDE.Library.Components.Powertrain.Converters.Ram" title="RCAIDE.Library.Components.Powertrain.Converters.Ram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ram</span></code></a>(*args, **kwarg)</p></td>
 <td><p>A ram air compression component model that simulates the compression of incoming air flow.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Reformer.html#module-RCAIDE.Library.Components.Powertrain.Converters.Reformer" title="RCAIDE.Library.Components.Powertrain.Converters.Reformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reformer</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Reformer.html#module-RCAIDE.Library.Components.Powertrain.Converters.Reformer" title="RCAIDE.Library.Components.Powertrain.Converters.Reformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reformer</span></code></a>(*args, **kwarg)</p></td>
 <td><p>Reformer Component Class</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Rotor.html#module-RCAIDE.Library.Components.Powertrain.Converters.Rotor" title="RCAIDE.Library.Components.Powertrain.Converters.Rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rotor</span></code></a>(*args, **kwarg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Rotor.html#module-RCAIDE.Library.Components.Powertrain.Converters.Rotor" title="RCAIDE.Library.Components.Powertrain.Converters.Rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rotor</span></code></a>(*args, **kwarg)</p></td>
 <td><p>A generalized rotor component model serving as the base class for various rotary propulsion devices.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Solar_Panel.html#module-RCAIDE.Library.Components.Powertrain.Converters.Solar_Panel" title="RCAIDE.Library.Components.Powertrain.Converters.Solar_Panel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Solar_Panel</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Class for modeling photovoltaic solar panels in aircraft applications</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Supersonic_Nozzle.html#module-RCAIDE.Library.Components.Powertrain.Converters.Supersonic_Nozzle" title="RCAIDE.Library.Components.Powertrain.Converters.Supersonic_Nozzle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Supersonic_Nozzle</span></code></a>(*args, **kwarg)</p></td>
 <td><p>A supersonic nozzle component model for propulsion systems capable of supersonic outflow.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Turbine.html#module-RCAIDE.Library.Components.Powertrain.Converters.Turbine" title="RCAIDE.Library.Components.Powertrain.Converters.Turbine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turbine</span></code></a>(*args, **kwarg)</p></td>
 <td><p>A turbine component model for gas turbine and turbofan engines.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator.html#module-RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator" title="RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turboelectric_Generator</span></code></a>(*args, **kwarg)</p></td>
+<td><p>A Turboelectric_Generator propulsion system model that simulates the performance of a Turboelectric_Generator engine.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Turboshaft.html#module-RCAIDE.Library.Components.Powertrain.Converters.Turboshaft" title="RCAIDE.Library.Components.Powertrain.Converters.Turboshaft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turboshaft</span></code></a>(*args, **kwarg)</p></td>
+<td><p>A turboshaft system model that simulates the performance of a turboshaft engine</p></td>
 </tr>
 </tbody>
 </table>

@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_fuel_cell_performance';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_fuel_cell_performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,31 +543,65 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_fuel_cell_performance.compute_fuel_cell_performance">
 <span class="sig-name descname"><span class="pre">compute_fuel_cell_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coolant_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Larminie_Model/compute_fuel_cell_performance.html#compute_fuel_cell_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_fuel_cell_performance.compute_fuel_cell_performance" title="Link to this definition">#</a></dt>
-<dd><p>Computes the performance of a fuel cell using Larminie model</p>
-<blockquote>
-<div><p>Parameters</p>
-</div></blockquote>
-<dl class="simple">
-<dt>state<span class="classifier">MissionState</span></dt><dd><p>The current state of the mission.</p>
+<dd><p>Computes the performance of a fuel cell stack using the Larminie-Dicks model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fuel_cell_stack</strong> (<em>RCAIDE.Components.Energy.Converters.Fuel_Cell_Stack</em>) – The fuel cell stack component containing cell properties and electrical configuration</p></li>
+<li><p><strong>state</strong> (<em>RCAIDE.Framework.Mission.Common.State</em>) – Container for mission segment conditions</p></li>
+<li><p><strong>bus</strong> (<em>RCAIDE.Components.Energy.Distribution.Electric_Bus</em>) – The electric bus to which the fuel cell stack is connected</p></li>
+<li><p><strong>coolant_lines</strong> (<em>list</em>) – List of coolant line components for thermal management</p></li>
+<li><p><strong>t_idx</strong> (<em>int</em>) – Current time index in the simulation</p></li>
+<li><p><strong>delta_t</strong> (<em>float</em>) – Time step size [s]</p></li>
+</ul>
 </dd>
-<dt>bus<span class="classifier">ElectricBus</span></dt><dd><p>The electric bus to which the battery_module is connected.</p>
-</dd>
-<dt>coolant_lines<span class="classifier">list</span></dt><dd><p>List of coolant lines for thermal management.</p>
-</dd>
-<dt>t_idx<span class="classifier">int</span></dt><dd><p>Current time index in the simulation.</p>
-</dd>
-<dt>delta_t<span class="classifier">float</span></dt><dd><p>Time step size.</p>
-</dd>
-</dl>
-<section id="returns">
-<h2>Returns:<a class="headerlink" href="#returns" title="Link to this heading">#</a></h2>
-<dl class="simple">
-<dt>stored_results_flag: bool</dt><dd><p>Stored results boolean</p>
-</dd>
-<dt>stored_fuel_cell_stack_tag: string</dt><dd><p>Tag of fuel cell</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>stored_results_flag</strong> (<em>bool</em>) – Flag indicating that results have been stored for potential reuse</p></li>
+<li><p><strong>stored_fuel_cell_stack_tag</strong> (<em>str</em>) – Tag identifier of the fuel cell stack with stored results</p></li>
+</ul>
+</p>
 </dd>
 </dl>
-</section>
+<p class="rubric">Notes</p>
+<p>This function implements the Larminie-Dicks model to calculate fuel cell performance
+based on current operating conditions. It determines the optimal current density
+that matches the required power output, then calculates voltage, efficiency,
+and fuel consumption.</p>
+<p>The function handles both series and parallel electrical configurations for
+connecting the fuel cell stack to the electric bus.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Uniform temperature distribution across all cells</p></li>
+<li><p>No transient effects (steady-state operation at each time step)</p></li>
+<li><p>Hydrogen is the only fuel considered</p></li>
+<li><p>Ideal gas behavior</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong></p>
+<p>The Larminie-Dicks model calculates cell voltage as:</p>
+<div class="math notranslate nohighlight">
+\[V = E_0 - A\ln(j) - Rj - m\exp(nj)\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>E₀ is the open circuit voltage</p></li>
+<li><p>A is the activation loss coefficient</p></li>
+<li><p>R is the ohmic resistance</p></li>
+<li><p>m and n are mass transport loss coefficients</p></li>
+<li><p>j is the current density</p></li>
+</ul>
+</dd>
+</dl>
+<p>The efficiency is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[\eta = \frac{V}{E_{ideal}}\]</div>
+<p class="rubric">References</p>
+<p>[1] Larminie, J., &amp; Dicks, A. (2003). Fuel Cell Systems Explained (2nd ed.). John Wiley &amp; Sons Ltd.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power_difference.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power_difference" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power_difference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power_difference</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

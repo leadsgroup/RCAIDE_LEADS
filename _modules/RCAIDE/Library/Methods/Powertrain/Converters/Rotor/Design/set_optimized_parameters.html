@@ -387,21 +387,75 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------   </span>
 <div class="viewcode-block" id="set_optimized_parameters">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters.html#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters.set_optimized_parameters">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">set_optimized_parameters</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span><span class="n">optimization_problem</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Append parameters of optimized prop-rotor to input prop-rotor</span>
-<span class="sd">          </span>
-<span class="sd">          Inputs:  </span>
-<span class="sd">             rotor                - rotor data structure                        [None]</span>
-<span class="sd">             optimization_problem      - data struction of optimized parameters [None]</span>
-<span class="sd">             </span>
-<span class="sd">          Outputs: </span>
-<span class="sd">             rotor                - rotor data structure                        [None]</span>
-<span class="sd">              </span>
-<span class="sd">          Assumptions: </span>
-<span class="sd">             1) Default noise measurements are taken 135 degrees from prop-rotor plane </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_optimized_parameters</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span> <span class="n">optimization_problem</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Appends parameters of optimized rotor to input rotor data structure.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor</span>
+<span class="sd">        Rotor component to be updated with optimized parameters</span>
+<span class="sd">    optimization_problem : RCAIDE.Framework.Optimization.Common.Nexus</span>
+<span class="sd">        Optimization problem with results and optimized rotor configurations</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor</span>
+<span class="sd">        Updated rotor with optimized parameters</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function transfers the optimized rotor parameters from the optimization results</span>
+<span class="sd">    to the input rotor data structure. It copies geometric properties such as chord and</span>
+<span class="sd">    twist distributions, as well as performance metrics for different flight conditions.</span>
+<span class="sd">    </span>
+<span class="sd">    The function updates the following parameters:</span>
+<span class="sd">        - Geometric properties:</span>
+<span class="sd">            - chord_distribution</span>
+<span class="sd">            - twist_distribution</span>
+<span class="sd">            - max_thickness_distribution</span>
+<span class="sd">            - radius_distribution</span>
+<span class="sd">            - number_of_blades</span>
+<span class="sd">            - mid_chord_alignment</span>
+<span class="sd">            - thickness_to_chord</span>
+<span class="sd">            - blade_solidity</span>
 <span class="sd">        </span>
-<span class="sd">          Source:</span>
-<span class="sd">             None</span>
+<span class="sd">        - Hover performance metrics:</span>
+<span class="sd">            - design_power (if not specified)</span>
+<span class="sd">            - design_thrust (if not specified)</span>
+<span class="sd">            - design_torque</span>
+<span class="sd">            - design_angular_velocity</span>
+<span class="sd">            - design_Cl</span>
+<span class="sd">            - design_thrust_coefficient</span>
+<span class="sd">            - design_power_coefficient</span>
+<span class="sd">            - design_SPL_dBA</span>
+<span class="sd">            - design_blade_pitch_command</span>
+<span class="sd">        </span>
+<span class="sd">        - OEI (One Engine Inoperative) performance metrics:</span>
+<span class="sd">            - design_thrust</span>
+<span class="sd">            - design_power</span>
+<span class="sd">            - design_torque</span>
+<span class="sd">            - design_angular_velocity</span>
+<span class="sd">            - design_blade_pitch_command</span>
+<span class="sd">        </span>
+<span class="sd">        - Cruise performance metrics (for prop-rotors only):</span>
+<span class="sd">            - design_power (if not specified)</span>
+<span class="sd">            - design_thrust (if not specified)</span>
+<span class="sd">            - design_torque</span>
+<span class="sd">            - design_angular_velocity</span>
+<span class="sd">            - design_Cl</span>
+<span class="sd">            - design_thrust_coefficient</span>
+<span class="sd">            - design_power_coefficient</span>
+<span class="sd">            - design_SPL_dBA</span>
+<span class="sd">            - design_blade_pitch_command</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Default noise measurements are taken 135 degrees from rotor plane</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">results</span>                         <span class="o">=</span> <span class="n">optimization_problem</span><span class="o">.</span><span class="n">results</span> 
     <span class="n">optimal_hover_rotor</span>             <span class="o">=</span> <span class="n">optimization_problem</span><span class="o">.</span><span class="n">vehicle_configurations</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">electric</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">electric_rotor</span><span class="o">.</span><span class="n">rotor</span>     
@@ -421,12 +475,12 @@
     <span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_thrust_coefficient</span>  <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">thurst_c</span>
     <span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_power_coefficient</span>   <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">power_c</span> 
     <span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_SPL_dBA</span>             <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">mean_SPL</span> 
-    <span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_pitch_command</span>       <span class="o">=</span> <span class="n">optimal_hover_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_pitch_command</span>
+    <span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_blade_pitch_command</span> <span class="o">=</span> <span class="n">optimal_hover_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_blade_pitch_command</span>
     <span class="n">rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_thrust</span>                <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">thrust</span>    
     <span class="n">rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_power</span>                 <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">power</span> 
     <span class="n">rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_torque</span>                <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">torque</span>  
     <span class="n">rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_angular_velocity</span>      <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">omega</span> 
-    <span class="n">rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_pitch_command</span>         <span class="o">=</span> <span class="n">optimal_oei_rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_pitch_command</span>
+    <span class="n">rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_blade_pitch_command</span>   <span class="o">=</span> <span class="n">optimal_oei_rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_blade_pitch_command</span>
     
     <span class="k">if</span> <span class="n">optimization_problem</span><span class="o">.</span><span class="n">prop_rotor_flag</span><span class="p">:</span>  
         <span class="n">optimal_cruise_rotor</span>  <span class="o">=</span> <span class="n">optimization_problem</span><span class="o">.</span><span class="n">vehicle_configurations</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">electric</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">electric_rotor</span><span class="o">.</span><span class="n">rotor</span>      
@@ -442,7 +496,7 @@
         <span class="n">rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust_coefficient</span>  <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">thurst_c</span>
         <span class="n">rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_power_coefficient</span>   <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">power_c</span>   
         <span class="n">rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_SPL_dBA</span>             <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">mean_SPL</span>
-        <span class="n">rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_pitch_command</span>       <span class="o">=</span> <span class="n">optimal_cruise_rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_pitch_command</span>
+        <span class="n">rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_blade_pitch_command</span> <span class="o">=</span> <span class="n">optimal_cruise_rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_blade_pitch_command</span>
              
     <span class="n">rotor</span><span class="o">.</span><span class="n">max_thickness_distribution</span>        <span class="o">=</span> <span class="n">optimal_hover_rotor</span><span class="o">.</span><span class="n">max_thickness_distribution</span>  
     <span class="n">rotor</span><span class="o">.</span><span class="n">radius_distribution</span>               <span class="o">=</span> <span class="n">optimal_hover_rotor</span><span class="o">.</span><span class="n">radius_distribution</span>         

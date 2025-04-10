@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Ducted_Fan" href="RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan.html" />
-    <link rel="prev" title="Converter" href="RCAIDE.Library.Components.Powertrain.Converters.Converter.html" />
+    <link rel="prev" title="DC_Generator" href="RCAIDE.Library.Components.Powertrain.Converters.DC_Generator.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -582,28 +582,6 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.rotor_radius">
-<span class="sig-name descname"><span class="pre">rotor_radius</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.rotor_radius" title="Link to this definition">#</a></dt>
-<dd><p>Radius of the motor’s rotor [m]. Default is 0.0.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.rotor_Cp">
-<span class="sig-name descname"><span class="pre">rotor_Cp</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.rotor_Cp" title="Link to this definition">#</a></dt>
-<dd><p>Specific heat capacity of the rotor [J/kg/K]. Default is 0.0.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.efficiency">
 <span class="sig-name descname"><span class="pre">efficiency</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.efficiency" title="Link to this definition">#</a></dt>
 <dd><p>Overall motor efficiency. Default is 1.0.</p>
@@ -615,31 +593,9 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.gear_ratio">
-<span class="sig-name descname"><span class="pre">gear_ratio</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.gear_ratio" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.gearbox.gear_ratio">
+<span class="sig-prename descclassname"><span class="pre">gearbox.</span></span><span class="sig-name descname"><span class="pre">gear_ratio</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.gearbox.gear_ratio" title="Link to this definition">#</a></dt>
 <dd><p>Ratio of output shaft speed to motor speed. Default is 1.0.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.gearbox_efficiency">
-<span class="sig-name descname"><span class="pre">gearbox_efficiency</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.gearbox_efficiency" title="Link to this definition">#</a></dt>
-<dd><p>Efficiency of the gearbox. Default is 1.0.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.expected_current">
-<span class="sig-name descname"><span class="pre">expected_current</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.expected_current" title="Link to this definition">#</a></dt>
-<dd><p>Expected operating current [A]. Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
@@ -683,12 +639,16 @@
 <p class="rubric">Notes</p>
 <p>The DC_Motor class models a direct current electric motor’s performance
 characteristics. It accounts for electrical, mechanical, and thermal effects
-including:
-* Internal resistance losses
-* No-load current losses
-* Gearbox losses
-* Speed-torque relationships
-* Power distribution for multiple loads</p>
+including:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Internal resistance losses</p></li>
+<li><p>No-load current losses</p></li>
+<li><p>Gearbox losses</p></li>
+<li><p>Speed-torque relationships</p></li>
+<li><p>Power distribution for multiple loads</p></li>
+</ul>
+</div></blockquote>
 <p><strong>Definitions</strong></p>
 <dl class="simple">
 <dt>‘Kv’</dt><dd><p>Motor velocity constant, relating voltage to unloaded motor speed</p>
@@ -704,7 +664,7 @@ including:
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.append_operating_conditions">
-<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/DC_Motor.html#DC_Motor.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.append_operating_conditions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/DC_Motor.html#DC_Motor.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.append_operating_conditions" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -722,12 +682,12 @@ including:
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Components.Powertrain.Converters.Converter.html"
+       href="RCAIDE.Library.Components.Powertrain.Converters.DC_Generator.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Converter</p>
+        <p class="prev-next-title">DC_Generator</p>
       </div>
     </a>
     <a class="right-next"
@@ -763,12 +723,8 @@ including:
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.resistance"><code class="docutils literal notranslate"><span class="pre">DC_Motor.resistance</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.no_load_current"><code class="docutils literal notranslate"><span class="pre">DC_Motor.no_load_current</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.speed_constant"><code class="docutils literal notranslate"><span class="pre">DC_Motor.speed_constant</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.rotor_radius"><code class="docutils literal notranslate"><span class="pre">DC_Motor.rotor_radius</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.rotor_Cp"><code class="docutils literal notranslate"><span class="pre">DC_Motor.rotor_Cp</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.efficiency"><code class="docutils literal notranslate"><span class="pre">DC_Motor.efficiency</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.gear_ratio"><code class="docutils literal notranslate"><span class="pre">DC_Motor.gear_ratio</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.gearbox_efficiency"><code class="docutils literal notranslate"><span class="pre">DC_Motor.gearbox_efficiency</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.expected_current"><code class="docutils literal notranslate"><span class="pre">DC_Motor.expected_current</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.gearbox.gear_ratio"><code class="docutils literal notranslate"><span class="pre">DC_Motor.gearbox.gear_ratio</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.power_split_ratio"><code class="docutils literal notranslate"><span class="pre">DC_Motor.power_split_ratio</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.design_torque"><code class="docutils literal notranslate"><span class="pre">DC_Motor.design_torque</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.DC_Motor.DC_Motor.interpolated_func"><code class="docutils literal notranslate"><span class="pre">DC_Motor.interpolated_func</span></code></a></li>

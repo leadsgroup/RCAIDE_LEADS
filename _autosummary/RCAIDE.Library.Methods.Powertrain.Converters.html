@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -529,54 +531,65 @@
   <p>RCAIDE.Library.Methods.Powertrain.Converters</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Converters">
 <span id="converters"></span><h1>Converters<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides functionality for modeling energy conversion components in powertrains. It includes methods for
+various energy converters such as combustors, compressors, motors, fans, engines, nozzles, rotors, turbines, and reformers.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.html#module-RCAIDE.Library.Components.Powertrain.Converters" title="RCAIDE.Library.Components.Powertrain.Converters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Converters</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Distributors.html#module-RCAIDE.Library.Methods.Powertrain.Distributors" title="RCAIDE.Library.Methods.Powertrain.Distributors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Distributors</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.html#module-RCAIDE.Library.Methods.Powertrain.Sources" title="RCAIDE.Library.Methods.Powertrain.Sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Combustor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Combustor" title="RCAIDE.Library.Methods.Powertrain.Converters.Combustor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Combustor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>Methods for modeling and analyzing combustors in propulsion systems.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle" title="RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Compression_Nozzle</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides functionality for modeling compression nozzles in powertrains.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Compressor" title="RCAIDE.Library.Methods.Powertrain.Converters.Compressor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Compressor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>Collection of methods for computing compressor performance and conditions in propulsion systems.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan" title="RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ducted_Fan</span></code></a></p></td>
 <td><p>Ducted Fan Methods Package</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Engine.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Engine" title="RCAIDE.Library.Methods.Powertrain.Converters.Engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Engine</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>Collection of methods for engine performance calculations and condition management.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle" title="RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Expansion_Nozzle</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides functionality for modeling expansion nozzles in powertrains.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fan.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fan" title="RCAIDE.Library.Methods.Powertrain.Converters.Fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Fan</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides functionality for modeling fans in powertrains.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Fuel_Cells</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides methods for modeling and analyzing fuel cell systems in aircraft powertrains.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Motor" title="RCAIDE.Library.Methods.Powertrain.Converters.Motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Motor</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Generator.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Generator" title="RCAIDE.Library.Methods.Powertrain.Converters.Generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generator</span></code></a></p></td>
+<td><p>generator Methods Package</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Motor" title="RCAIDE.Library.Methods.Powertrain.Converters.Motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Motor</span></code></a></p></td>
 <td><p>Motor Methods Package</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Offtake_Shaft.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Offtake_Shaft" title="RCAIDE.Library.Methods.Powertrain.Converters.Offtake_Shaft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Offtake_Shaft</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Ram.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Ram" title="RCAIDE.Library.Methods.Powertrain.Converters.Ram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ram</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides functionality for modeling ram air compression in powertrains.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Reformer.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Reformer" title="RCAIDE.Library.Methods.Powertrain.Converters.Reformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reformer</span></code></a></p></td>
 <td><p>Reformer Methods Package</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rotor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>Methods for analyzing and designing rotors in aircraft propulsion systems.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle" title="RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Supersonic_Nozzle</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides functionality for modeling supersonic nozzles in powertrains.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Turbine.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Turbine" title="RCAIDE.Library.Methods.Powertrain.Converters.Turbine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turbine</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides functionality for modeling turbines in powertrains.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator" title="RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turboelectric_Generator</span></code></a></p></td>
+<td><p>This module provides methods for modeling and analyzing turboelectric generator systems in aircraft powertrains.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft" title="RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turboshaft</span></code></a></p></td>
+<td><p>Collection of methods for analyzing turboshaft propulsion systems.</p></td>
 </tr>
 </tbody>
 </table>

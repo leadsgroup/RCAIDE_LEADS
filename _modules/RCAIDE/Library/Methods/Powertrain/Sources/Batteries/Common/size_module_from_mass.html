@@ -389,25 +389,66 @@
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass.size_module_from_mass">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">size_module_from_mass</span><span class="p">(</span><span class="n">battery_module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the max energy and power based of the mass</span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    A constant value of specific energy and power</span>
-
-<span class="sd">    Inputs:</span>
-<span class="sd">    mass              [kilograms]</span>
-<span class="sd">    battery_module.</span>
-<span class="sd">      specific_energy [J/kg]               </span>
-<span class="sd">      specific_power  [W/kg]</span>
-
-<span class="sd">    Outputs:</span>
-<span class="sd">     battery_module.</span>
-<span class="sd">       maximum_energy</span>
-<span class="sd">       maximum_power</span>
-<span class="sd">       mass_properties.</span>
-<span class="sd">        mass</span>
-
-
-<span class="sd">    &quot;&quot;&quot;</span>     
+<span class="sd">    Calculates the maximum energy and power of a battery module based on its mass.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    battery_module : BatteryModule</span>
+<span class="sd">        The battery module with the following attributes:</span>
+<span class="sd">            - mass_properties.mass : float</span>
+<span class="sd">                Total mass of the battery module [kg]</span>
+<span class="sd">            - BMS_additional_weight_factor : float</span>
+<span class="sd">                Factor accounting for battery management system weight</span>
+<span class="sd">            - cell.mass : float or None</span>
+<span class="sd">                Mass of a single cell [kg]</span>
+<span class="sd">            - cell.specific_energy : float</span>
+<span class="sd">                Specific energy of the cell [J/kg]</span>
+<span class="sd">            - cell.specific_power : float</span>
+<span class="sd">                Specific power of the cell [W/kg]</span>
+<span class="sd">            - maximum_voltage : float</span>
+<span class="sd">                Maximum voltage of the battery module [V]</span>
+<span class="sd">            - cell.maximum_voltage : float</span>
+<span class="sd">                Maximum voltage of a single cell [V]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        This function modifies the battery_module object in-place, setting the following attributes:</span>
+<span class="sd">            - maximum_energy : float</span>
+<span class="sd">                Maximum energy capacity of the battery module [J]</span>
+<span class="sd">            - maximum_power : float</span>
+<span class="sd">                Maximum power output of the battery module [W]</span>
+<span class="sd">            - initial_maximum_energy : float</span>
+<span class="sd">                Initial maximum energy capacity (same as maximum_energy) [J]</span>
+<span class="sd">            - electrical_configuration.series : int</span>
+<span class="sd">                Number of cells in series</span>
+<span class="sd">            - electrical_configuration.parallel : int</span>
+<span class="sd">                Number of cells in parallel</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the energy and power capabilities of a battery module based on</span>
+<span class="sd">    its mass and the specific energy/power characteristics of its cells. It also determines</span>
+<span class="sd">    the electrical configuration (series/parallel arrangement) of the cells.</span>
+<span class="sd">    </span>
+<span class="sd">    The function first calculates the effective mass of the cells by removing the mass</span>
+<span class="sd">    contribution of the battery management system (BMS). It then uses this mass along with</span>
+<span class="sd">    the specific energy and power values to determine the module&#39;s capabilities.</span>
+<span class="sd">    </span>
+<span class="sd">    If the cell mass is provided, the function calculates the number of cells that can fit</span>
+<span class="sd">    within the module mass and arranges them in a series-parallel configuration based on</span>
+<span class="sd">    the voltage requirements. If cell mass is not provided, a default configuration of</span>
+<span class="sd">    1 series × 1 parallel is used.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Constant specific energy and power values</span>
+<span class="sd">        * BMS weight is a fixed fraction of the total module weight</span>
+<span class="sd">        * All cells have identical characteristics</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mass</span> <span class="o">=</span> <span class="n">battery_module</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span><span class="o">/</span><span class="n">battery_module</span><span class="o">.</span><span class="n">BMS_additional_weight_factor</span>
     
     <span class="k">if</span> <span class="n">battery_module</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">mass</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 

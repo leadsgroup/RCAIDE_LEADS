@@ -385,12 +385,11 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
-<span class="c1"># RCAIDE imports   </span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission.Common.Segments</span><span class="w">    </span><span class="kn">import</span>  <span class="n">sequential_segments</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission.Common.Pre_Process</span><span class="w"> </span><span class="kn">import</span>  <span class="n">aerodynamics</span><span class="p">,</span><span class="n">stability</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span><span class="n">emissions</span><span class="p">,</span> <span class="n">set_residuals_and_unknowns</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                               </span><span class="kn">import</span> <span class="n">Container</span> <span class="k">as</span> <span class="n">ContainerBase</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses</span><span class="w">                           </span><span class="kn">import</span> <span class="n">Process</span> 
+<span class="c1"># RCAIDE imports    </span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission.Common.Segments</span><span class="w">    </span><span class="kn">import</span> <span class="n">sequential_segments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission.Common.Pre_Process</span><span class="w"> </span><span class="kn">import</span> <span class="n">aerodynamics</span><span class="p">,</span><span class="n">stability</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span><span class="n">emissions</span><span class="p">,</span><span class="n">mass_properties</span><span class="p">,</span> <span class="n">set_residuals_and_unknowns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                     </span><span class="kn">import</span> <span class="n">Container</span> <span class="k">as</span> <span class="n">ContainerBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses</span><span class="w">                 </span><span class="kn">import</span> <span class="n">Process</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">Segments</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
@@ -431,6 +430,7 @@
         
         <span class="c1">#   Initialize   </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span>                                <span class="o">=</span> <span class="n">Process</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">mass_properties</span>                <span class="o">=</span> <span class="n">mass_properties</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">aero</span>                           <span class="o">=</span> <span class="n">aerodynamics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">stability</span>                      <span class="o">=</span> <span class="n">stability</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">energy</span>                         <span class="o">=</span> <span class="n">energy</span>

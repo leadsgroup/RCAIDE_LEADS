@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,75 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Gas.Gas">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Gas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Gas.html#Gas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
-<p>Default class for all gases.</p>
+<p>Base class for all gas implementations in RCAIDE. Provides fundamental gas properties and
+composition tracking.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Gas.Gas.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the gas type (‘gas’ by default)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Gas.Gas.molecular_mass">
+<span class="sig-name descname"><span class="pre">molecular_mass</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas.molecular_mass" title="Link to this definition">#</a></dt>
+<dd><p>Molecular mass of the gas in kg/kmol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Gas.Gas.gas_specific_constant">
+<span class="sig-name descname"><span class="pre">gas_specific_constant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas.gas_specific_constant" title="Link to this definition">#</a></dt>
+<dd><p>Specific gas constant in m²/s²-K</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Gas.Gas.composition">
+<span class="sig-name descname"><span class="pre">composition</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas.composition" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Chemical composition container for tracking gas components</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>gas<span class="classifier">float</span></dt><dd><p>Default mass fraction of primary gas component (1.0 by default)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class serves as the parent class for all specific gas implementations.
+The default values represent a generic gas and should be overridden by child classes
+with specific gas properties.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Molecular Mass’</dt><dd><p>The mass of one mole of the gas molecules in kg/kmol</p>
+</dd>
+<dt>‘Specific Gas Constant’</dt><dd><p>The individual gas constant for the specific gas, calculated as the universal
+gas constant divided by the molecular mass</p>
+</dd>
+<dt>‘Mass Fraction’</dt><dd><p>The ratio of the mass of a component to the total mass of the gas mixture</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -585,7 +653,13 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas"><code class="docutils literal notranslate"><span class="pre">Gas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas"><code class="docutils literal notranslate"><span class="pre">Gas</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas.tag"><code class="docutils literal notranslate"><span class="pre">Gas.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas.molecular_mass"><code class="docutils literal notranslate"><span class="pre">Gas.molecular_mass</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas.gas_specific_constant"><code class="docutils literal notranslate"><span class="pre">Gas.gas_specific_constant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Gas.Gas.composition"><code class="docutils literal notranslate"><span class="pre">Gas.composition</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

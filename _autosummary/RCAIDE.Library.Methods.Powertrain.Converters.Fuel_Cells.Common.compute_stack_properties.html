@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,33 +543,55 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties.compute_stack_properties">
 <span class="sig-name descname"><span class="pre">compute_stack_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Common/compute_stack_properties.html#compute_stack_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties.compute_stack_properties" title="Link to this definition">#</a></dt>
-<dd><p>Calculate fuel_cell_stack level properties of battery module using cell
-properties and module configuraton</p>
-<p>Assumptions:
-Inputs:
-mass
-fuel_cell_stack.cell</p>
-<blockquote>
-<div><p>nominal_capacity        [amp-hours]
-nominal_voltage         [volts]
-pack_config             [unitless]
-mass                    [kilograms]</p>
-</div></blockquote>
-<dl>
-<dt>Outputs:</dt><dd><dl>
-<dt>fuel_cell_stack.</dt><dd><p>maximum_energy         [watt-hours]
-maximum_power              [watts]
-initial_maximum_energy [watt-hours]
-specific_energy        [watt-hours/kilogram]
-charging_voltage       [volts]
-mass_properties.</p>
-<blockquote>
-<div><p>mass                  [kilograms]</p>
-</div></blockquote>
+<dd><p>Calculates fuel cell stack properties based on individual cell characteristics and stack configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fuel_cell_stack</strong> (<em>RCAIDE.Components.Powertrain.Converters.Fuel_Cell_Stack</em>) – The fuel cell stack component for which properties are being computed</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function computes geometric, electrical, and performance properties of a fuel cell stack
+based on individual cell properties and stack configuration. It handles both generic fuel cell
+stacks and proton exchange membrane (PEM) fuel cell stacks with different calculation methods.</p>
+<p>For generic fuel cells, optimization is used to find the maximum power point.
+For PEM fuel cells, specialized performance models are used that account for
+operating conditions like temperature and pressure.</p>
+<dl class="simple">
+<dt>The function calculates:</dt><dd><ul class="simple">
+<li><p>Physical dimensions (length, width, height) based on cell arrangement</p></li>
+<li><p>Maximum power, voltage, and current</p></li>
+<li><p>Fuel consumption rates</p></li>
+<li><p>Mass properties</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Cell properties are uniform across the stack</p></li>
+<li><p>Cells are arranged in a regular geometric pattern</p></li>
+<li><p>For PEM cells, standard atmospheric conditions are used if not specified</p></li>
+<li><p>Thermal effects within the stack are simplified</p></li>
+</ul>
 </dd>
 </dl>
+<p><strong>Theory</strong></p>
+<p>For generic fuel cells, the maximum power point is found by optimizing:</p>
+<div class="math notranslate nohighlight">
+\[P_{max} = \max_{j \in [j_{min}, j_{max}]} P(j)\]</div>
+<p>where j is the current density and P is the power function.</p>
+<dl class="simple">
+<dt>For PEM fuel cells, detailed electrochemical models account for:</dt><dd><ul class="simple">
+<li><p>Activation losses</p></li>
+<li><p>Ohmic losses</p></li>
+<li><p>Concentration losses</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

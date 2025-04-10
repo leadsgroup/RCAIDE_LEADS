@@ -392,7 +392,48 @@
 <div class="viewcode-block" id="Solid">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Solid.html#RCAIDE.Library.Attributes.Materials.Solid.Solid">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Solid</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Default Template for Solid Attribute Classes  </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all solid materials in RCAIDE. Provides fundamental mechanical and physical properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ultimate_tensile_strength : float</span>
+<span class="sd">        Maximum tensile stress the material can withstand before failure in Pa</span>
+<span class="sd">    ultimate_shear_strength : float</span>
+<span class="sd">        Maximum shear stress the material can withstand before failure in Pa</span>
+<span class="sd">    ultimate_bearing_strength : float</span>
+<span class="sd">        Maximum bearing stress the material can withstand before failure in Pa</span>
+<span class="sd">    yield_tensile_strength : float</span>
+<span class="sd">        Tensile stress at which material begins to deform plastically in Pa</span>
+<span class="sd">    yield_shear_strength : float</span>
+<span class="sd">        Shear stress at which material begins to deform plastically in Pa</span>
+<span class="sd">    yield_bearing_strength : float</span>
+<span class="sd">        Bearing stress at which material begins to deform plastically in Pa</span>
+<span class="sd">    minimum_gage_thickness : float</span>
+<span class="sd">        Minimum manufacturable thickness in m</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Material density in kg/m³</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class serves as the parent class for all specific material implementations.</span>
+<span class="sd">    The default values are None and should be overridden by child classes with </span>
+<span class="sd">    specific material properties.</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Ultimate Strength&#39;</span>
+<span class="sd">        The maximum stress that a material can withstand before failure</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Yield Strength&#39;</span>
+<span class="sd">        The stress at which a material begins to deform plastically</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Bearing Strength&#39;</span>
+<span class="sd">        The resistance of a material to crushing loads applied through a fastener or pin</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Minimum Gage Thickness&#39;</span>
+<span class="sd">        The minimum thickness that can be reliably manufactured while maintaining </span>
+<span class="sd">        structural integrity</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

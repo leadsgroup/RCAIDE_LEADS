@@ -396,7 +396,87 @@
 <div class="viewcode-block" id="Propellant">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Propellant</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic class for propellant</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for defining propellant properties and characteristics in propulsion systems.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the specific propellant type</span>
+<span class="sd">    reactant : str</span>
+<span class="sd">        Primary oxidizer used for combustion</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Fuel density in kg/m³</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy content in J/kg</span>
+<span class="sd">    energy_density : float</span>
+<span class="sd">        Energy density in J/m³</span>
+<span class="sd">    lower_heating_value : float</span>
+<span class="sd">        Lower heating value in J/kg</span>
+<span class="sd">    mass_properties : Mass_Properties</span>
+<span class="sd">        Object containing mass-related properties</span>
+<span class="sd">    max_mass_fraction : Data</span>
+<span class="sd">        Maximum fuel-to-oxidizer mass ratios</span>
+<span class="sd">            - Air : float</span>
+<span class="sd">                Maximum mass fraction with air</span>
+<span class="sd">            - O2 : float</span>
+<span class="sd">                Maximum mass fraction with pure oxygen</span>
+<span class="sd">    temperatures : Data</span>
+<span class="sd">        Critical temperatures in K</span>
+<span class="sd">            - flash : float</span>
+<span class="sd">                Flash point temperature</span>
+<span class="sd">            - autoignition : float</span>
+<span class="sd">                Autoignition temperature</span>
+<span class="sd">            - freeze : float</span>
+<span class="sd">                Freezing point temperature</span>
+<span class="sd">            - boiling : float</span>
+<span class="sd">                Boiling point temperature</span>
+<span class="sd">    emission_indices : Data</span>
+<span class="sd">        Emission indices in kg/kg fuel</span>
+<span class="sd">            - Production : float</span>
+<span class="sd">                CO2 production rate</span>
+<span class="sd">            - CO2 : float</span>
+<span class="sd">                Carbon dioxide emissions</span>
+<span class="sd">            - H2O : float</span>
+<span class="sd">                Water vapor emissions</span>
+<span class="sd">            - SO2 : float</span>
+<span class="sd">                Sulfur dioxide emissions</span>
+<span class="sd">            - NOx : float</span>
+<span class="sd">                Nitrogen oxides emissions</span>
+<span class="sd">            - Soot : float</span>
+<span class="sd">                Particulate matter emissions</span>
+<span class="sd">    global_warming_potential_100 : Data</span>
+<span class="sd">        100-year global warming potentials</span>
+<span class="sd">            - CO2 : float</span>
+<span class="sd">                Carbon dioxide impact</span>
+<span class="sd">            - H2O : float</span>
+<span class="sd">                Water vapor impact</span>
+<span class="sd">            - SO2 : float</span>
+<span class="sd">                Sulfur dioxide impact</span>
+<span class="sd">            - NOx : float</span>
+<span class="sd">                Nitrogen oxides impact</span>
+<span class="sd">            - Soot : float</span>
+<span class="sd">                Particulate matter impact</span>
+<span class="sd">            - Contrails : float</span>
+<span class="sd">                Contrail formation impact</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This base class provides a standardized structure for defining propellant </span>
+<span class="sd">    properties, including physical characteristics, combustion parameters, and </span>
+<span class="sd">    environmental impacts. It serves as a template for specific propellant </span>
+<span class="sd">    implementations.</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Emission Index&#39;</span>
+<span class="sd">        Mass of pollutant produced per unit mass of fuel burned</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Global Warming Potential&#39;</span>
+<span class="sd">        Relative measure of heat trapped in atmosphere compared to CO2</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Lower Heating Value&#39;</span>
+<span class="sd">        Heat of combustion excluding latent heat of water vapor</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -421,6 +501,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">autoignition</span> <span class="o">=</span> <span class="mf">0.0</span>                       <span class="c1"># K</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">freeze</span>       <span class="o">=</span> <span class="mf">0.0</span>                       <span class="c1"># K</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">boiling</span>      <span class="o">=</span> <span class="mf">0.0</span>                       <span class="c1"># K</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         
         <span class="c1"># Emission Indices </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span>             <span class="o">=</span>  <span class="n">Data</span><span class="p">()</span> 

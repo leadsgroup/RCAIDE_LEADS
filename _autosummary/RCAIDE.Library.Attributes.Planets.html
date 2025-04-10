@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -526,15 +526,25 @@
   <p>RCAIDE.Library.Attributes.Planets</p>
 <section id="module-RCAIDE.Library.Attributes.Planets">
 <span id="planets"></span><h1>Planets<a class="headerlink" href="#module-RCAIDE.Library.Attributes.Planets" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides planetary environment definitions for RCAIDE simulations. It includes
+base classes and specific implementation for Earth.</p>
+<p>The module supports atmospheric calculations, gravitational effects, and other planetary
+environmental factors needed for aerospace vehicle analysis and simulation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.html#module-RCAIDE.Library.Attributes.Atmospheres" title="RCAIDE.Library.Attributes.Atmospheres"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Atmospheres</span></code></a></dt><dd><p>Detailed atmospheric models</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Planets.Earth.html#module-RCAIDE.Library.Attributes.Planets.Earth" title="RCAIDE.Library.Attributes.Planets.Earth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Earth</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Class for planet Earth with defauk properties</p></td>
+<td><p>A class representing Earth's physical properties and gravitational characteristics.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Planets.Planet.html#module-RCAIDE.Library.Attributes.Planets.Planet" title="RCAIDE.Library.Attributes.Planets.Planet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Planet</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Default planet class</p></td>
+<td><p>Base class for planetary bodies in RCAIDE.</p></td>
 </tr>
 </tbody>
 </table>

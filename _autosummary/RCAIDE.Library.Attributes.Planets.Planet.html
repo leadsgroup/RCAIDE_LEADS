@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,50 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Planets.Planet.Planet">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Planet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Planets/Planet.html#Planet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Planets.Planet.Planet" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
-<p>Default planet class</p>
+<p>Base class for planetary bodies in RCAIDE. Provides fundamental planetary properties
+and gravitational calculations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Planets.Planet.Planet.mass">
+<span class="sig-name descname"><span class="pre">mass</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Planets.Planet.Planet.mass" title="Link to this definition">#</a></dt>
+<dd><p>Total mass of the planetary body in kg (defaults to 0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Planets.Planet.Planet.mean_radius">
+<span class="sig-name descname"><span class="pre">mean_radius</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Planets.Planet.Planet.mean_radius" title="Link to this definition">#</a></dt>
+<dd><p>Average radius of the planetary body in m (defaults to 0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class serves as the parent class for all specific planetary implementations.
+The default values are zero and should be overridden by child classes with
+specific planetary properties.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Mean Radius’</dt><dd><p>The average radius of a planetary body, accounting for polar flattening
+and equatorial bulge</p>
+</dd>
+<dt>‘Mass’</dt><dd><p>The total mass of the planetary body, including all components
+(core, mantle, crust, atmosphere)</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Planets.Earth.html#module-RCAIDE.Library.Attributes.Planets.Earth" title="RCAIDE.Library.Attributes.Planets.Earth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Planets.Earth</span></code></a></dt><dd><p>Earth-specific implementation</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </section>
@@ -585,7 +628,11 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Planet.Planet"><code class="docutils literal notranslate"><span class="pre">Planet</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Planet.Planet"><code class="docutils literal notranslate"><span class="pre">Planet</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Planet.Planet.mass"><code class="docutils literal notranslate"><span class="pre">Planet.mass</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Planet.Planet.mean_radius"><code class="docutils literal notranslate"><span class="pre">Planet.mean_radius</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

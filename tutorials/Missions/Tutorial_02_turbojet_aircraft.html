@@ -413,20 +413,6 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="Tutorial_08_tilt_stopped_rotor_vtail_evtol_aircraft.html">Tutorial 8 - Tilt Stopped Rotor Vtail eVTOL Aircraft Simulation</a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
@@ -537,7 +523,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># RCAIDE imports</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                                  </span><span class="kn">import</span> <span class="n">Units</span> <span class="p">,</span> <span class="n">Data</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor</span><span class="w">   </span><span class="kn">import</span> <span class="n">design_turbojet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet</span><span class="w">   </span><span class="kn">import</span> <span class="n">design_turbojet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">               </span><span class="kn">import</span> <span class="n">wing_segmented_planform</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">     </span><span class="kn">import</span> <span class="o">*</span>
 
@@ -632,8 +618,13 @@
     <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_zero_fuel</span>        <span class="o">=</span> <span class="mf">92000.</span>
 
     <span class="c1"># envelope properties</span>
-    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">ultimate_load</span>        <span class="o">=</span> <span class="mf">3.75</span>
-    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">positive_limit_load</span>  <span class="o">=</span> <span class="mf">2.5</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">ultimate_load</span>            <span class="o">=</span> <span class="mf">3.75</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">positive_limit_load</span>      <span class="o">=</span> <span class="mf">2.5</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_cruise_altitude</span>   <span class="o">=</span> <span class="mi">40000</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">feet</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_dynamic_pressure</span>  <span class="o">=</span> <span class="mi">55169</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_mach_number</span>       <span class="o">=</span> <span class="mf">2.05</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">limit_load</span>               <span class="o">=</span> <span class="mf">3.8</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_range</span>             <span class="o">=</span> <span class="mi">4488</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">nmi</span>
 
     <span class="c1"># basic parameters</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">reference_area</span>                       <span class="o">=</span> <span class="mf">358.25</span>
@@ -690,7 +681,7 @@
     <span class="n">wing_airfoil</span>                   <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
     <span class="n">ospath</span>                                <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Notebook&#39;</span><span class="p">))</span>
     <span class="n">separator</span>                             <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
-    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Regressions&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Vehicles&#39;</span> <span class="o">+</span> <span class="n">separator</span>
+    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;VnV&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Vehicles&#39;</span> <span class="o">+</span> <span class="n">separator</span>
     <span class="n">wing_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>   <span class="o">=</span> <span class="n">rel_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA65_203.txt&#39;</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">wing_airfoil</span><span class="p">)</span>
 
@@ -953,17 +944,17 @@
 
     <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span>
 
-    <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
+   <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># ########################################################## Energy Network #########################################################</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1">#initialize the fuel network</span>
     <span class="n">net</span>                                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Networks</span><span class="o">.</span><span class="n">Fuel</span><span class="p">()</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">identical_propulsors</span>                       <span class="o">=</span> <span class="kc">False</span> <span class="c1"># for regression</span>
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Fuel Distrubition Line</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="n">fuel_line</span>                                     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Fuel_Line</span><span class="p">()</span>
-    <span class="n">fuel_line</span><span class="o">.</span><span class="n">identical_propulsors</span>                <span class="o">=</span> <span class="kc">False</span> <span class="c1"># for regression</span>
 
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
@@ -971,8 +962,7 @@
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="n">outer_right_turbojet</span>                          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbojet</span><span class="p">()</span>
     <span class="n">outer_right_turbojet</span><span class="o">.</span><span class="n">tag</span>                      <span class="o">=</span> <span class="s1">&#39;outer_right_turbojet&#39;</span>
-    <span class="n">outer_right_turbojet</span><span class="o">.</span><span class="n">active_fuel_tanks</span>        <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tank_6_and_7&#39;</span><span class="p">,</span><span class="s1">&#39;tank_5A_and_7A&#39;</span><span class="p">,</span><span class="s1">&#39;tank_2_and_3&#39;</span><span class="p">,</span><span class="s1">&#39;tank_11&#39;</span><span class="p">]</span>
-    <span class="n">outer_right_turbojet</span><span class="o">.</span><span class="n">engine_length</span>            <span class="o">=</span> <span class="mf">4.039</span>
+    <span class="n">outer_right_turbojet</span><span class="o">.</span><span class="n">length</span>            <span class="o">=</span> <span class="mf">4.039</span>
     <span class="n">outer_right_turbojet</span><span class="o">.</span><span class="n">nacelle_diameter</span>         <span class="o">=</span> <span class="mf">1.3</span>
     <span class="n">outer_right_turbojet</span><span class="o">.</span><span class="n">inlet_diameter</span>           <span class="o">=</span> <span class="mf">1.212</span>
     <span class="n">outer_right_turbojet</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>             <span class="o">=</span> <span class="mi">30</span>
@@ -1086,7 +1076,6 @@
     <span class="n">inner_right_turbojet</span>                     <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">outer_right_turbojet</span><span class="p">)</span>
     <span class="n">inner_right_turbojet</span><span class="o">.</span><span class="n">tag</span>                 <span class="o">=</span> <span class="s1">&#39;inner_right_turbojet&#39;</span>
     <span class="n">inner_right_turbojet</span><span class="o">.</span><span class="n">origin</span>              <span class="o">=</span> <span class="p">[[</span><span class="mf">37.</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mf">1.6</span><span class="p">]]</span>
-    <span class="n">inner_right_turbojet</span><span class="o">.</span><span class="n">active_fuel_tanks</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tank_6_and_7&#39;</span><span class="p">,</span><span class="s1">&#39;tank_5A_and_7A&#39;</span><span class="p">,</span><span class="s1">&#39;tank_2_and_3&#39;</span><span class="p">,</span><span class="s1">&#39;tank_11&#39;</span><span class="p">]</span>
     <span class="n">nacelle_2</span>                                <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nacelle</span><span class="p">)</span>
     <span class="n">nacelle_2</span><span class="o">.</span><span class="n">tag</span>                            <span class="o">=</span> <span class="s1">&#39;nacelle_2&#39;</span>
     <span class="n">nacelle_2</span><span class="o">.</span><span class="n">origin</span>                         <span class="o">=</span> <span class="p">[[</span><span class="mf">37.</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mf">1.6</span><span class="p">]]</span>
@@ -1099,7 +1088,6 @@
     <span class="n">inner_left_turbojet</span>                     <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">outer_right_turbojet</span><span class="p">)</span>
     <span class="n">inner_left_turbojet</span><span class="o">.</span><span class="n">tag</span>                 <span class="o">=</span> <span class="s1">&#39;inner_left_turbojet&#39;</span>
     <span class="n">inner_left_turbojet</span><span class="o">.</span><span class="n">origin</span>              <span class="o">=</span> <span class="p">[[</span><span class="mf">37.</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mf">1.6</span><span class="p">]]</span>
-    <span class="n">inner_left_turbojet</span><span class="o">.</span><span class="n">active_fuel_tanks</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tank_9&#39;</span><span class="p">,</span><span class="s1">&#39;tank_10&#39;</span><span class="p">,</span><span class="s1">&#39;tank_1_and_4&#39;</span><span class="p">,</span><span class="s1">&#39;tank_5_and_8&#39;</span><span class="p">]</span>
     <span class="n">nacelle_3</span>                               <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nacelle</span><span class="p">)</span>
     <span class="n">nacelle_3</span><span class="o">.</span><span class="n">tag</span>                           <span class="o">=</span> <span class="s1">&#39;nacelle_3&#39;</span>
     <span class="n">nacelle_3</span><span class="o">.</span><span class="n">origin</span>                        <span class="o">=</span> <span class="p">[[</span><span class="mf">37.</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mf">1.6</span><span class="p">]]</span>
@@ -1111,7 +1099,6 @@
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="n">outer_left_turbojet</span>                     <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">outer_right_turbojet</span><span class="p">)</span>
     <span class="n">outer_left_turbojet</span><span class="o">.</span><span class="n">tag</span>                 <span class="o">=</span> <span class="s1">&#39;outer_left_turbojet&#39;</span>
-    <span class="n">outer_left_turbojet</span><span class="o">.</span><span class="n">active_fuel_tanks</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tank_9&#39;</span><span class="p">,</span><span class="s1">&#39;tank_10&#39;</span><span class="p">,</span><span class="s1">&#39;tank_1_and_4&#39;</span><span class="p">,</span><span class="s1">&#39;tank_5_and_8&#39;</span><span class="p">]</span>
     <span class="n">outer_left_turbojet</span><span class="o">.</span><span class="n">origin</span>              <span class="o">=</span> <span class="p">[[</span><span class="mf">37.</span><span class="p">,</span><span class="o">-</span><span class="mf">5.5</span><span class="p">,</span><span class="o">-</span><span class="mf">1.6</span><span class="p">]]</span>
     <span class="n">nacelle_4</span>                               <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nacelle</span><span class="p">)</span>
     <span class="n">nacelle_4</span><span class="o">.</span><span class="n">tag</span>                           <span class="o">=</span> <span class="s1">&#39;nacelle_4&#39;</span>
@@ -1125,39 +1112,39 @@
     <span class="n">fuel_tank</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span>                                  <span class="o">=</span> <span class="s1">&#39;tank_9&#39;</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">26.5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel_mass_when_full</span>  <span class="o">=</span> <span class="mi">11096</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                 <span class="o">=</span> <span class="mi">11096</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span>                  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
     <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span>
 
     <span class="n">fuel_tank</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span>                                  <span class="o">=</span> <span class="s1">&#39;tank_10&#39;</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">28.7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel_mass_when_full</span>  <span class="o">=</span> <span class="mi">11943</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                 <span class="o">=</span> <span class="mi">11943</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span>                  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
     <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span>
 
     <span class="n">fuel_tank</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span>                                  <span class="o">=</span> <span class="s1">&#39;tank_1_and_4&#39;</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">31.0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel_mass_when_full</span>  <span class="o">=</span> <span class="mi">4198</span><span class="o">+</span><span class="mi">4198</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                 <span class="o">=</span> <span class="mi">4198</span><span class="o">+</span><span class="mi">4198</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span>                  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
     <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span>
 
     <span class="n">fuel_tank</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span>                                  <span class="o">=</span> <span class="s1">&#39;tank_5_and_8&#39;</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">32.9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel_mass_when_full</span>  <span class="o">=</span> <span class="mi">7200</span><span class="o">+</span><span class="mi">12838</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                 <span class="o">=</span> <span class="mi">7200</span><span class="o">+</span><span class="mi">12838</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span>                  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                              <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
     <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span>
 
     <span class="n">fuel_tank</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span>                                  <span class="o">=</span> <span class="s1">&#39;tank_6_and_7&#39;</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">37.4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel_mass_when_full</span>  <span class="o">=</span> <span class="mi">11587</span><span class="o">+</span><span class="mi">7405</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                 <span class="o">=</span> <span class="mi">11587</span><span class="o">+</span><span class="mi">7405</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span>                  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
     <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span>
@@ -1165,7 +1152,7 @@
     <span class="n">fuel_tank</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span>                                  <span class="o">=</span> <span class="s1">&#39;tank_5A_and_7A&#39;</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">40.2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel_mass_when_full</span>  <span class="o">=</span> <span class="mi">2225</span><span class="o">+</span><span class="mi">2225</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                 <span class="o">=</span> <span class="mi">2225</span><span class="o">+</span><span class="mi">2225</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span>                  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
     <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span>
@@ -1173,7 +1160,7 @@
     <span class="n">fuel_tank</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span>                                  <span class="o">=</span> <span class="s1">&#39;tank_2_and_3&#39;</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">40.2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel_mass_when_full</span>  <span class="o">=</span> <span class="mi">4570</span><span class="o">+</span><span class="mi">4570</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                 <span class="o">=</span> <span class="mi">4570</span><span class="o">+</span><span class="mi">4570</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span>                  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
     <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span>
@@ -1181,9 +1168,9 @@
     <span class="n">fuel_tank</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Fuel_Tank</span><span class="p">()</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span>                                  <span class="o">=</span> <span class="s1">&#39;tank_11&#39;</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">49.8</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel_mass_when_full</span>  <span class="o">=</span> <span class="mi">10415</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                 <span class="o">=</span> <span class="mi">10415</span>
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span>                  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span>
-    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span>                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
     <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span>
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
@@ -1369,6 +1356,7 @@
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Weights</span>
     <span class="n">weights</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Conventional</span><span class="p">()</span>
+    <span class="n">weights</span><span class="o">.</span><span class="n">aircraft_type</span>  <span class="o">=</span>  <span class="s2">&quot;Transport&quot;</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
@@ -1945,28 +1933,43 @@
 <div class="highlight"><pre>
 
 Plotting vehicle
+
+Performing Weights Analysis
+--------------------------------------------------------
+Propulsion Architecture: Conventional
+Aircraft Type          : Transport
+Method                 : FLOPS
+Aircraft operating empty weight will be overwritten
+Aircraft center of gravity location will be overwritten
+Aircraft moment of intertia tensor will be overwritten
+
+ Mission Solver Initiated
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+  0%|          | 0/100 [00:00&lt;?, ?it/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_1.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_1.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_2.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_2.png" />
-</div>
+<div class="highlight"><pre>
+
+ Solving climb_1 segment.
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_3.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_3.png" />
-</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+108it [03:01,  1.68s/it]
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1979,14 +1982,88 @@ Plotting vehicle
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_5.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_5.png" />
+<div class="highlight"><pre>
+
+
+
+ Solving climb_2 segment.
+
+
+
+ Solving climb_3 segment.
+
+
+
+ Solving climb_4 segment.
+
+
+
+ Solving climb_5 segment.
+
+
+
+ Solving climbing_cruise segment.
+
+
+
+ Solving level_cruise segment.
+
+
+
+ Solving decel_1 segment.
+
+
+
+ Solving descent_1 segment.
+
+
+
+ Solving decel_2 segment.
+
+
+
+ Solving descent_2 segment.
+
+
+
+ Solving descent_3 segment.
+
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_6.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_6.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_7.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_7.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_8.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_8.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_9.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_9.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_6.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_6.png" />
+<img alt="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_10.png" src="../../_images/tutorials_Missions_Tutorial_02_turbojet_aircraft_18_10.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">

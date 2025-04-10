@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,24 +537,103 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Climb.Constant_Mach_Linear_Altitude.initialize_conditions">
 <span class="sig-name descname"><span class="pre">initialize_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Climb/Constant_Mach_Linear_Altitude.html#initialize_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Climb.Constant_Mach_Linear_Altitude.initialize_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Sets the specified conditions which are given for the segment type.</p>
-<p>Assumptions:
-Constrant dynamic pressure and constant rate of climb</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-segment.mach_number                         [unitless]
-segment.dynamic_pressure                    [pascals]
-segment.altitude_start                      [meters]
-segment.altitude_end                        [meters]
-segment.distance                            [meters]</p>
-<p>Outputs:
-conditions.frames.inertial.velocity_vector  [meters/second]
-conditions.frames.inertial.position_vector  [meters]
-conditions.freestream.altitude              [meters]
-conditions.frames.inertial.time             [seconds]</p>
-<p>Properties Used:
-N/A</p>
+<dd><p>Initializes conditions for constant Mach climb with linear altitude change</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up the initial conditions for a climb segment with constant
+Mach number and linear altitude variation. The climb angle is determined by
+the distance and altitude change.</p>
+<p><strong>Required Segment Components</strong></p>
+<dl class="simple">
+<dt>segment:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>mach_number<span class="classifier">float</span></dt><dd><p>Mach number to maintain [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>altitude_start<span class="classifier">float</span></dt><dd><p>Initial altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>altitude_end<span class="classifier">float</span></dt><dd><p>Final altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>distance<span class="classifier">float</span></dt><dd><p>Ground distance to cover [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sideslip_angle<span class="classifier">float</span></dt><dd><p>Aircraft sideslip angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state:</dt><dd><dl class="simple">
+<dt>numerics.dimensionless.control_points<span class="classifier">array</span></dt><dd><p>Discretization points [-]</p>
+</dd>
+<dt>conditions<span class="classifier">Data</span></dt><dd><p>State conditions container</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>analyses:</dt><dd><dl class="simple">
+<dt>atmosphere<span class="classifier">Model</span></dt><dd><p>Atmospheric model for property calculations</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt><strong>Calculation Process</strong></dt><dd><ol class="arabic simple">
+<li><p>Calculate climb angle from altitude change and distance</p></li>
+<li><p>Get atmospheric properties for speed of sound</p></li>
+<li><p>Calculate true airspeed from Mach number</p></li>
+<li><dl class="simple">
+<dt>Decompose velocity into components using:</dt><dd><ul class="simple">
+<li><p>Computed climb angle</p></li>
+<li><p>Sideslip angle</p></li>
+<li><p>Constant Mach requirement</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant Mach number</p></li>
+<li><p>Linear altitude change</p></li>
+<li><p>Standard atmosphere model</p></li>
+<li><p>Small angle approximations</p></li>
+<li><p>Quasi-steady flight</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Updates segment conditions directly:
+- conditions.frames.inertial.velocity_vector [m/s]
+- conditions.frames.inertial.position_vector [m]
+- conditions.freestream.altitude [m]</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Mission.Common.Update.atmosphere.html#module-RCAIDE.Library.Mission.Common.Update.atmosphere" title="RCAIDE.Library.Mission.Common.Update.atmosphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Mission.Common.Update.atmosphere</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

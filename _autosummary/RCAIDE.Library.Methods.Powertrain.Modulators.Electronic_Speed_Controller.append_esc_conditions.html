@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,8 +537,73 @@
 <span id="append-esc-conditions"></span><h1>append_esc_conditions<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.append_esc_conditions" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.append_esc_conditions.append_esc_conditions">
-<span class="sig-name descname"><span class="pre">append_esc_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">esc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor_conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/append_esc_conditions.html#append_esc_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.append_esc_conditions.append_esc_conditions" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">append_esc_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">esc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/append_esc_conditions.html#append_esc_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.append_esc_conditions.append_esc_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Initializes the Electronic Speed Controller (ESC) condition containers for tracking
+electrical state variables. Sets up basic input/output conditions and throttle settings
+for ESC performance analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>esc</strong> (<em>RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller</em>) – <dl class="simple">
+<dt>The electronic speed controller component</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the ESC</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>segment</strong> (<em>RCAIDE.Framework.Mission.Segments.Segment</em>) – <dl class="simple">
+<dt>The mission segment being analyzed</dt><dd><ul>
+<li><dl class="simple">
+<dt>state<span class="classifier">State</span></dt><dd><dl class="simple">
+<dt>Contains the flight condition state variables</dt><dd><ul>
+<li><dl class="simple">
+<dt>ones_row<span class="classifier">function</span></dt><dd><p>Returns array of ones with specified size</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>propulsor_conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – Container for propulsor-specific conditions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>Creates and initializes the following state variables:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>inputs<span class="classifier">Conditions</span></dt><dd><p>Container for input electrical parameters</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>outputs<span class="classifier">Conditions</span></dt><dd><p>Container for output electrical parameters</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>throttle<span class="classifier">float</span></dt><dd><p>Power modulation setting from 0 to 1</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 

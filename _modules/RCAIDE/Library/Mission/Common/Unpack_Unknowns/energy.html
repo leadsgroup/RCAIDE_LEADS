@@ -388,26 +388,37 @@
 <div class="viewcode-block" id="unknowns">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy.unknowns.html#RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy.unknowns">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unknowns</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>  
-    <span class="n">ACV_T</span>  <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">throttle</span>
-    <span class="n">ACV_TA</span> <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">thrust_vector_angle</span>
+    <span class="n">ACV_T</span>      <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">throttle</span>
+    <span class="n">ACV_TA</span>     <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">thrust_vector_angle</span>
+    <span class="n">ACV_RBPC</span>   <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">rotor_blade_pitch_command</span>
     
     <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span> 
         <span class="k">if</span> <span class="s1">&#39;throttle&#39;</span> <span class="ow">in</span> <span class="n">segment</span><span class="p">:</span> 
             <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span> 
-                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">throttle</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">throttle</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">throttle</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">throttle</span>
             
         <span class="k">if</span> <span class="n">ACV_T</span><span class="o">.</span><span class="n">active</span><span class="p">:</span> 
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ACV_T</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">)):</span> 
                 <span class="n">propulsor_group</span> <span class="o">=</span> <span class="n">ACV_T</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">propulsor_name</span> <span class="ow">in</span> <span class="n">propulsor_group</span><span class="p">:</span>  
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor_name</span><span class="p">]</span><span class="o">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;throttle_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>  
+                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_name</span><span class="p">]</span><span class="o">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;throttle_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>  
     
-       <span class="c1"># Thrust Vector Control </span>
-        <span class="k">if</span> <span class="n">ACV_TA</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>                
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ACV_TA</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">)):</span> 
-                <span class="n">propulsor_group</span> <span class="o">=</span> <span class="n">ACV_TA</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">propulsor_name</span> <span class="ow">in</span> <span class="n">propulsor_group</span><span class="p">:</span>  
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor_name</span><span class="p">]</span><span class="o">.</span><span class="n">commanded_thrust_vector_angle</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;thrust_vector_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+       <span class="c1">## Thrust Vector Control </span>
+        <span class="c1">#if ACV_TA.active:                </span>
+            <span class="c1">#for i in range(len(ACV_TA.assigned_propulsors)): </span>
+                <span class="c1">#propulsor_group = ACV_TA.assigned_propulsors[i]</span>
+                <span class="c1">#for propulsor_name in propulsor_group:  </span>
+                    <span class="c1">#segment.state.conditions.energy.propulsors[propulsor_name].commanded_thrust_vector_angle = segment.state.unknowns[&quot;thrust_vector_&quot; + str(i)]</span>
+                    
+             
+        <span class="c1">## Thrust Vector Control </span>
+        <span class="c1">#if ACV_RBPC.active:                </span>
+            <span class="c1">#for i in range(len(ACV_RBPC.assigned_propulsors)): </span>
+                <span class="c1">#propulsor_group = ACV_RBPC.assigned_propulsors[i] </span>
+                <span class="c1">#for propulsor_name in propulsor_group:</span>
+                    <span class="c1">#propulsor = network.propulsors[propulsor_name]</span>
+                    <span class="c1">#rotor     = propulsor.rotor </span>
+                    <span class="c1">#segment.state.conditions.energy.propulsors[propulsor_name][rotor.tag].blade_pitch_command = segment.state.unknowns[&quot;blade_pitch_command_&quot; + str(i)]                    </span>
     <span class="k">return</span> </div>
 
      

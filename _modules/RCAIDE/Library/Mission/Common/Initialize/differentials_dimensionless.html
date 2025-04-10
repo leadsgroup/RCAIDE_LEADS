@@ -394,25 +394,59 @@
 <div class="viewcode-block" id="differentials_dimensionless">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Initialize.differentials_dimensionless.html#RCAIDE.Library.Mission.Common.Initialize.differentials_dimensionless.differentials_dimensionless">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">differentials_dimensionless</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Discretizes the differential operators</span>
-<span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">        N/A</span>
-<span class="sd">        </span>
-<span class="sd">        Inputs:</span>
-<span class="sd">            state.numerics:</span>
-<span class="sd">                number_of_control_points [int]</span>
-<span class="sd">                discretization_method    [function]</span>
-<span class="sd">            </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">            numerics.dimensionless:            </span>
-<span class="sd">                control_points           [array]</span>
-<span class="sd">                differentiate            [array]</span>
-<span class="sd">                integrate                [array]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes dimensionless differential operators for mission segment discretization</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">        N/A</span>
-<span class="sd">                                </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function sets up the numerical discretization operators used for</span>
+<span class="sd">    solving differential equations in mission segments. It creates the</span>
+<span class="sd">    control points and differential/integral operators based on the</span>
+<span class="sd">    specified discretization method.</span>
+
+<span class="sd">    The function performs the following steps:</span>
+<span class="sd">        1. Gets number of control points and discretization method</span>
+<span class="sd">        2. Generates control points and operators</span>
+<span class="sd">        3. Ensures proper dimensioning of arrays</span>
+<span class="sd">        4. Stores results in segment numerics</span>
+
+<span class="sd">    **Required Segment State Variables**</span>
+
+<span class="sd">    state.numerics:</span>
+<span class="sd">        - number_of_control_points : int</span>
+<span class="sd">            Number of points for discretization</span>
+<span class="sd">        - discretization_method : function</span>
+<span class="sd">            Method to generate discretization operators</span>
+
+<span class="sd">    **Generated Operators**</span>
+
+<span class="sd">    numerics.dimensionless:</span>
+<span class="sd">        - control_points : array</span>
+<span class="sd">            Normalized points for evaluation</span>
+<span class="sd">        - differentiate : array</span>
+<span class="sd">            Differentiation operator matrix</span>
+<span class="sd">        - integrate : array</span>
+<span class="sd">            Integration operator matrix</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Valid discretization method provided</span>
+<span class="sd">        * Number of control points &gt; 1</span>
+<span class="sd">        * Method generates consistent operators</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment state directly</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Core.Arrays</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span>     
     
     <span class="c1"># unpack</span>

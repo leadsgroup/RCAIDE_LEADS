@@ -392,32 +392,61 @@
 <div class="viewcode-block" id="compute_payload_weight">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.compute_payload_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.compute_payload_weight.compute_payload_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_payload_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">W_passenger</span><span class="o">=</span><span class="mi">195</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span><span class="p">,</span> <span class="n">W_baggage</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of the payload and the resulting fuel mass</span>
-<span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">        based on FAA guidelines for weight of passengers</span>
-<span class="sd">        </span>
-<span class="sd">    Source: </span>
-<span class="sd">        N/A</span>
-<span class="sd">        </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">        TOW -                                                              [kilograms]</span>
-<span class="sd">        W_empty - Operating empty weight of the aircraft                  [kilograms]</span>
-<span class="sd">        num_pax - number of passengers on the aircraft                     [dimensionless]</span>
-<span class="sd">        W_cargo - weight of cargo being carried on the aircraft           [kilogram]</span>
-<span class="sd">        W_passenger - weight of each passenger on the aircraft            [kilogram]</span>
-<span class="sd">        W_baggage - weight of the baggage for each passenger              [kilogram]</span>
-<span class="sd">    </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">        output - a data dictionary with fields:</span>
-<span class="sd">            payload - weight of the passengers plus baggage and paid cargo [kilograms]</span>
-<span class="sd">            pax - weight of all the passengers                             [kilogram]</span>
-<span class="sd">            bag - weight of all the baggage                                [kilogram]</span>
-<span class="sd">            fuel - weight of the fuel carried                              [kilogram]</span>
-<span class="sd">            empty - operating empty weight of the aircraft                 [kilograms]</span>
-<span class="sd">               </span>
-<span class="sd">    Properties Used:</span>
-<span class="sd">        N/A</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the total payload weight including passengers, baggage, and cargo based on </span>
+<span class="sd">    FAA standard weights and aircraft configuration.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : Vehicle</span>
+<span class="sd">        The vehicle instance containing:</span>
+<span class="sd">            - passengers : int</span>
+<span class="sd">                Number of passengers</span>
+<span class="sd">            - mass_properties.cargo : float</span>
+<span class="sd">                Mass of cargo [kg]</span>
+<span class="sd">    W_passenger : float, optional</span>
+<span class="sd">        Standard passenger weight [kg], default 195 lbs</span>
+<span class="sd">    W_baggage : float, optional</span>
+<span class="sd">        Standard baggage weight per passenger [kg], default 30 lbs</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    output : Data</span>
+<span class="sd">        Container with payload breakdown:</span>
+<span class="sd">            - total : float</span>
+<span class="sd">                Total payload weight [kg]</span>
+<span class="sd">            - passengers : float</span>
+<span class="sd">                Total passenger weight [kg]</span>
+<span class="sd">            - baggage : float</span>
+<span class="sd">                Total baggage weight [kg]</span>
+<span class="sd">            - cargo : float</span>
+<span class="sd">                Bulk cargo weight [kg]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses FAA standard weights for passengers and baggage in commercial operations.</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Standard passenger weights</span>
+<span class="sd">        * Fixed baggage allowance per passenger</span>
+<span class="sd">        * Uniform passenger distribution</span>
+<span class="sd">        * No special cargo requirements</span>
+<span class="sd">        * No seasonal weight variations</span>
+
+<span class="sd">    **Theory**</span>
+<span class="sd">    Total payload weight is computed as:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{payload} = n_{pax}(W_{pax} + W_{bag}) + W_{cargo}</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        * n_pax = number of passengers</span>
+<span class="sd">        * W_pax = standard passenger weight</span>
+<span class="sd">        * W_bag = standard baggage allowance</span>
+<span class="sd">        * W_cargo = bulk cargo weight</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># process</span>

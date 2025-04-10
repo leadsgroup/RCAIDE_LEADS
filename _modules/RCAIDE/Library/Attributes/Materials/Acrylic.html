@@ -396,22 +396,44 @@
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Acrylic.html#RCAIDE.Library.Attributes.Materials.Acrylic.Acrylic">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Acrylic</span><span class="p">(</span><span class="n">Solid</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Physical Constants Specific to Polymethyl Methacrylate</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing Polymethyl Methacrylate (PMMA/Acrylic) material properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ultimate_tensile_strength : float</span>
+<span class="sd">        Maximum tensile stress the material can withstand before failure in Pa (75e6)</span>
+<span class="sd">    ultimate_shear_strength : float</span>
+<span class="sd">        Maximum shear stress the material can withstand before failure in Pa (55.2e6)</span>
+<span class="sd">    ultimate_bearing_strength : float</span>
+<span class="sd">        Maximum bearing stress the material can withstand before failure in Pa (0.0)</span>
+<span class="sd">    yield_tensile_strength : float</span>
+<span class="sd">        Stress at which material begins to deform plastically in Pa (75e6)</span>
+<span class="sd">    yield_shear_strength : float</span>
+<span class="sd">        Shear stress at which material begins to deform plastically in Pa (55.2e6)</span>
+<span class="sd">    yield_bearing_strength : float</span>
+<span class="sd">        Bearing stress at which material begins to deform plastically in Pa (0.0)</span>
+<span class="sd">    minimum_gage_thickness : float</span>
+<span class="sd">        Minimum manufacturable thickness in m (3.175e-3)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Material density in kg/m³ (1180)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    All material properties are based on median values from manufacturer reported data.</span>
+<span class="sd">    The bearing strength values are set to zero as they are typically not relevant for acrylic applications.</span>
+
+<span class="sd">    **Definitions**</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    None</span>
+<span class="sd">    &#39;Ultimate Strength&#39;</span>
+<span class="sd">        The maximum stress that a material can withstand before failure</span>
 <span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">    MatWeb (Median of Mfg. Reported Values)</span>
-<span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Properties Used:</span>
-<span class="sd">    None</span>
+<span class="sd">    &#39;Yield Strength&#39;</span>
+<span class="sd">        The stress at which a material begins to deform plastically</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] MatWeb. (n.d.). Overview of materials for Acrylic, Extruded. Overview of materials for acrylic, extruded. https://www.matweb.com/search/DataSheet.aspx?MatGUID=632572aeef2a4224b5ac8fbd4f1b6f77 </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

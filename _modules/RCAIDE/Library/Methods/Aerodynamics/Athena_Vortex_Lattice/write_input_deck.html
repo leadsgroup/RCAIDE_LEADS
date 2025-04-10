@@ -645,10 +645,10 @@
 <span class="sd">{0}&#39;&#39;&#39;</span>       
     <span class="n">pitch_rate_coeff</span>   <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">pitch</span>  
     <span class="k">if</span> <span class="n">pitch_rate_coeff</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="n">pitch_command</span> <span class="o">=</span> <span class="n">base_pitch_command</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pitch_rate_coeff</span><span class="p">)</span>
+        <span class="n">blade_pitch_command</span> <span class="o">=</span> <span class="n">base_pitch_command</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pitch_rate_coeff</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">pitch_command</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">return</span> <span class="n">pitch_command</span></div>
+        <span class="n">blade_pitch_command</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">blade_pitch_command</span></div>
 
 
 <div class="viewcode-block" id="make_beta_text_command">

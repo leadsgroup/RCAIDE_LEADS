@@ -397,7 +397,30 @@
 <div class="viewcode-block" id="Vehicle">
 <a class="viewcode-back" href="../../_autosummary/RCAIDE.Vehicle.html#RCAIDE.Vehicle.Vehicle">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Vehicle</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;RCAIDE Vehicle container class with database + input / output functionality</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    RCAIDE Vehicle container class with database and input/output functionality.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Data: Data</span>
+<span class="sd">        RCAIDE data structure containing the loaded information. See defualts for more information.</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Vehicle class serves as the top-level container for all aircraft components</span>
+<span class="sd">    and systems. It provides methods for adding components to the appropriate containers</span>
+<span class="sd">    and maintains the hierarchical structure of the aircraft model.</span>
+<span class="sd">    </span>
+<span class="sd">    The class uses a component mapping system to automatically place new components</span>
+<span class="sd">    in their appropriate containers based on their type.</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Component Root Map&#39;</span>
+<span class="sd">        Internal mapping that associates component types with their container locations</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Energy Network Root Map&#39;</span>
+<span class="sd">        Internal mapping that associates energy network types with their container locations</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -414,8 +437,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fuselages</span>                                                     <span class="o">=</span> <span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Fuselage</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wings</span>                                                         <span class="o">=</span> <span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Wing</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nacelles</span>                                                      <span class="o">=</span> <span class="n">Components</span><span class="o">.</span><span class="n">Nacelles</span><span class="o">.</span><span class="n">Nacelle</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">systems</span>                                                       <span class="o">=</span> <span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">System</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">avionics</span>                                                      <span class="o">=</span> <span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">systems</span>                                                       <span class="o">=</span> <span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">System</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avionics</span>                                                      <span class="o">=</span> <span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">booms</span>                                                         <span class="o">=</span> <span class="n">Components</span><span class="o">.</span><span class="n">Booms</span><span class="o">.</span><span class="n">Boom</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mass_properties</span>                                               <span class="o">=</span> <span class="n">Vehicle_Mass_Container</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">payload</span>                                                       <span class="o">=</span> <span class="n">Components</span><span class="o">.</span><span class="n">Payloads</span><span class="o">.</span><span class="n">Payload</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span>

@@ -391,29 +391,82 @@
 <div class="viewcode-block" id="initialize_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Segments.Transition.Constant_Acceleration_Constant_Pitchrate_Constant_Altitude.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Transition.Constant_Acceleration_Constant_Pitchrate_Constant_Altitude.initialize_conditions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">initialize_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the specified conditions which are given for the segment type.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes conditions for transition segment with constant acceleration and pitch rate</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Constant acceleration and constant altitude</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">            - altitude : float</span>
+<span class="sd">                Fixed flight altitude [m]</span>
+<span class="sd">            - air_speed_start : float</span>
+<span class="sd">                Initial true airspeed [m/s]</span>
+<span class="sd">            - air_speed_end : float</span>
+<span class="sd">                Final true airspeed [m/s]</span>
+<span class="sd">            - acceleration : float</span>
+<span class="sd">                Constant acceleration [m/s^2]</span>
+<span class="sd">            - sideslip_angle : float</span>
+<span class="sd">                Aircraft sideslip angle [rad]</span>
+<span class="sd">            - pitch_initial : float</span>
+<span class="sd">                Initial pitch angle [rad]</span>
+<span class="sd">            - pitch_final : float</span>
+<span class="sd">                Final pitch angle [rad]</span>
+<span class="sd">            - state:</span>
+<span class="sd">                numerics:</span>
+<span class="sd">                    dimensionless:</span>
+<span class="sd">                        control_points : array</span>
+<span class="sd">                            Discretization points [-]</span>
+<span class="sd">                conditions : Data</span>
+<span class="sd">                    State conditions container</span>
+<span class="sd">                initials : Data, optional</span>
+<span class="sd">                    Initial conditions from previous segment</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment conditions directly:</span>
+<span class="sd">            - conditions.freestream.altitude [m]</span>
+<span class="sd">            - conditions.frames.inertial.position_vector [m]</span>
+<span class="sd">            - conditions.frames.inertial.velocity_vector [m/s]</span>
+<span class="sd">            - conditions.frames.body.inertial_rotations [rad]</span>
+<span class="sd">            - conditions.frames.inertial.time [s]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function sets up the initial conditions for a transition segment with constant</span>
+<span class="sd">    acceleration and pitch rate at fixed altitude. The segment handles transitions</span>
+<span class="sd">    between different flight phases while maintaining altitude.</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    segment.altitude                [meters]</span>
-<span class="sd">    segment.air_speed_start         [meters/second]</span>
-<span class="sd">    segment.air_speed_end           [meters/second]</span>
-<span class="sd">    segment.acceleration            [meters/second^2]</span>
-<span class="sd">    conditions.frames.inertial.time [seconds]</span>
+<span class="sd">    **Calculation Process**</span>
+<span class="sd">        1. Check initial conditions</span>
+<span class="sd">        2. Calculate time required based on acceleration:</span>
+<span class="sd">            t = (Vf - V0)/ax where:</span>
+<span class="sd">                - V0 is initial airspeed</span>
+<span class="sd">                - Vf is final airspeed</span>
+<span class="sd">                - ax is acceleration</span>
+<span class="sd">        3. Calculate velocity magnitude profile:</span>
+<span class="sd">        V = V0 + ax*t</span>
+<span class="sd">        4. Decompose velocity using sideslip:</span>
+<span class="sd">            - v_x = V*cos(β)</span>
+<span class="sd">            - v_y = V*sin(β)</span>
+<span class="sd">        where β is sideslip angle</span>
+<span class="sd">        5. Linear pitch transition:</span>
+<span class="sd">            θ = θ0 + (θf - θ0)*t/tf for θf &gt; θ0</span>
+<span class="sd">            θ = θ0 - (θ0 - θf)*t/tf for θf &lt; θ0</span>
 
-<span class="sd">    Outputs:</span>
-<span class="sd">    conditions.frames.inertial.velocity_vector  [meters/second]</span>
-<span class="sd">    conditions.frames.inertial.position_vector  [meters]</span>
-<span class="sd">    conditions.freestream.altitude              [meters]</span>
-<span class="sd">    conditions.frames.inertial.time             [seconds]</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Constant acceleration</span>
+<span class="sd">        * Constant pitch rate</span>
+<span class="sd">        * Fixed altitude</span>
+<span class="sd">        * Linear pitch variation</span>
+<span class="sd">        * Coordinated flight</span>
+<span class="sd">        * Small angle approximations</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span>      
     
     <span class="c1"># unpack</span>

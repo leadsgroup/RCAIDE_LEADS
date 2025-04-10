@@ -47,7 +47,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Rotor.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Solar_Panel" href="RCAIDE.Library.Components.Powertrain.Converters.Solar_Panel.html" />
+    <link rel="next" title="Supersonic_Nozzle" href="RCAIDE.Library.Components.Powertrain.Converters.Supersonic_Nozzle.html" />
     <link rel="prev" title="Reformer" href="RCAIDE.Library.Components.Powertrain.Converters.Reformer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -780,8 +780,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.pitch_command">
-<span class="sig-name descname"><span class="pre">pitch_command</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.pitch_command" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.blade_pitch_command">
+<span class="sig-name descname"><span class="pre">blade_pitch_command</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.blade_pitch_command" title="Link to this definition">#</a></dt>
 <dd><p>Commanded blade pitch angle [rad]. Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -837,7 +837,8 @@
 <p class="rubric">Notes</p>
 <p>The Rotor class provides a comprehensive framework for modeling rotary
 propulsion devices including:</p>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li><p>Geometric definition of rotor and blades</p></li>
 <li><p>Aerodynamic performance calculation</p></li>
 <li><p>Wake modeling capabilities</p></li>
@@ -845,20 +846,27 @@ propulsion devices including:</p>
 <li><p>Performance optimization</p></li>
 <li><p>Acoustic analysis</p></li>
 </ul>
-<p><strong>Major Assumptions</strong></p>
-<ul class="simple">
+</div></blockquote>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
 <li><p>Rigid blade structure</p></li>
 <li><p>Quasi-steady aerodynamics</p></li>
 <li><p>Small angle approximations for flapping</p></li>
 <li><p>Linear blade twist and taper</p></li>
 <li><p>Uniform inflow (unless nonuniform_freestream is True)</p></li>
 </ul>
+</dd>
+</dl>
 <p><strong>Theory</strong></p>
-<p>The rotor model combines:
-* Blade Element Momentum Theory
-* Prescribed/Free Wake Analysis
-* Acoustic Propagation Models
-* Performance Optimization Methods</p>
+<dl class="simple">
+<dt>The rotor model combines:</dt><dd><ul class="simple">
+<li><p>Blade Element Momentum Theory</p></li>
+<li><p>Prescribed/Free Wake Analysis</p></li>
+<li><p>Acoustic Propagation Models</p></li>
+<li><p>Performance Optimization Methods</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Definitions</strong></p>
 <dl class="simple">
 <dt>‘Blade Solidity’</dt><dd><p>Ratio of total blade area to rotor disk area</p>
@@ -874,7 +882,7 @@ propulsion devices including:</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.append_operating_conditions">
-<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Rotor.html#Rotor.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.append_operating_conditions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Rotor.html#Rotor.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.append_operating_conditions" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1103,11 +1111,11 @@ N/A</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Components.Powertrain.Converters.Solar_Panel.html"
+       href="RCAIDE.Library.Components.Powertrain.Converters.Supersonic_Nozzle.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Solar_Panel</p>
+        <p class="prev-next-title">Supersonic_Nozzle</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1153,7 +1161,7 @@ N/A</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.clockwise_rotation"><code class="docutils literal notranslate"><span class="pre">Rotor.clockwise_rotation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.phase_offset_angle"><code class="docutils literal notranslate"><span class="pre">Rotor.phase_offset_angle</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.orientation_euler_angles"><code class="docutils literal notranslate"><span class="pre">Rotor.orientation_euler_angles</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.pitch_command"><code class="docutils literal notranslate"><span class="pre">Rotor.pitch_command</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.blade_pitch_command"><code class="docutils literal notranslate"><span class="pre">Rotor.blade_pitch_command</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.ducted"><code class="docutils literal notranslate"><span class="pre">Rotor.ducted</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.sol_tolerance"><code class="docutils literal notranslate"><span class="pre">Rotor.sol_tolerance</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor.use_2d_analysis"><code class="docutils literal notranslate"><span class="pre">Rotor.use_2d_analysis</span></code></a></li>

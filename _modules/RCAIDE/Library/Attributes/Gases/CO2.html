@@ -393,23 +393,51 @@
 <div class="viewcode-block" id="CO2">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.CO2.html#RCAIDE.Library.Attributes.Gases.CO2.CO2">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CO2</span><span class="p">(</span><span class="n">Gas</span><span class="p">):</span>
-<span class="w">   </span><span class="sd">&quot;&quot;&quot;Generic class for carbon dioxide </span>
-<span class="sd">   &quot;&quot;&quot;</span>
-   <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">      </span><span class="sd">&quot;&quot;&quot;This sets the default values.</span>
-<span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            None</span>
-<span class="sd">        </span>
-<span class="sd">        Source:</span>
-<span class="sd">            None</span>
-<span class="sd">      &quot;&quot;&quot;</span>            
-      <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                   <span class="o">=</span><span class="s1">&#39;CO2&#39;</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">molecular_mass</span>        <span class="o">=</span> <span class="mf">44.01</span>           <span class="c1"># kg/kmol</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">gas_specific_constant</span> <span class="o">=</span> <span class="mf">188.9</span>                       <span class="c1"># m^2/s^2-K, specific gas constant</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">composition</span><span class="o">.</span><span class="n">CO2</span>       <span class="o">=</span> <span class="mf">1.0</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing carbon dioxide gas and its thermodynamic properties.</span>
 
- 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the gas type (&#39;CO2&#39;)</span>
+<span class="sd">    molecular_mass : float</span>
+<span class="sd">        Molecular mass of CO2 in kg/kmol</span>
+<span class="sd">    gas_specific_constant : float</span>
+<span class="sd">        Specific gas constant in m²/s²-K</span>
+<span class="sd">    composition : Container</span>
+<span class="sd">        Chemical composition of the gas</span>
+<span class="sd">            - CO2 : float</span>
+<span class="sd">                Mass fraction of carbon dioxide (1.0 for pure CO2)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements basic thermodynamic properties for carbon dioxide gas.</span>
+<span class="sd">    All properties are for pure CO2 at standard conditions.</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Specific Gas Constant&#39;</span>
+<span class="sd">        The individual gas constant for CO2, equal to the universal gas constant divided </span>
+<span class="sd">        by the molecular mass of CO2</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Molecular Mass&#39;</span>
+<span class="sd">        The mass of one mole of CO2 molecules</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This sets the default values.</span>
+<span class="sd">        </span>
+<span class="sd">            Assumptions:</span>
+<span class="sd">                None</span>
+<span class="sd">            </span>
+<span class="sd">            Source:</span>
+<span class="sd">                None</span>
+<span class="sd">        &quot;&quot;&quot;</span>            
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                   <span class="o">=</span><span class="s1">&#39;CO2&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecular_mass</span>        <span class="o">=</span> <span class="mf">44.01</span>           <span class="c1"># kg/kmol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gas_specific_constant</span> <span class="o">=</span> <span class="mf">188.9</span>                       <span class="c1"># m^2/s^2-K, specific gas constant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">composition</span><span class="o">.</span><span class="n">CO2</span>       <span class="o">=</span> <span class="mf">1.0</span></div>
+
+    
 </pre></div>
 
                 </article>

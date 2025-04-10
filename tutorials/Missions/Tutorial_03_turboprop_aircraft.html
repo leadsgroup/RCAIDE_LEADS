@@ -413,20 +413,6 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="Tutorial_08_tilt_stopped_rotor_vtail_evtol_aircraft.html">Tutorial 8 - Tilt Stopped Rotor Vtail eVTOL Aircraft Simulation</a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
@@ -537,7 +523,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># RCAIDE imports</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                                         </span><span class="kn">import</span> <span class="n">Units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor</span><span class="w">         </span><span class="kn">import</span> <span class="n">design_turboprop</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop</span><span class="w">         </span><span class="kn">import</span> <span class="n">design_turboprop</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Performance.estimate_stall_speed</span><span class="w">       </span><span class="kn">import</span> <span class="n">estimate_stall_speed</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">                      </span><span class="kn">import</span> <span class="n">segment_properties</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                                          </span><span class="kn">import</span> <span class="o">*</span>
@@ -647,6 +633,9 @@
     <span class="n">vehicle</span><span class="o">.</span><span class="n">design_cruise_alt</span>                         <span class="o">=</span> <span class="mi">25000</span> <span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">feet</span>
 
     <span class="c1"># envelope properties</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_mach_number</span>        <span class="o">=</span> <span class="mf">0.43</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_range</span>              <span class="o">=</span> <span class="mi">890</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">nmi</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_cruise_altitude</span>    <span class="o">=</span> <span class="mi">25000</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">feet</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">ultimate_load</span>             <span class="o">=</span> <span class="mf">3.75</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">positive_limit_load</span>       <span class="o">=</span> <span class="mf">1.5</span>
 
@@ -1309,6 +1298,7 @@
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Weights</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Conventional</span><span class="p">()</span>
+    <span class="n">weights</span><span class="o">.</span><span class="n">aircraft_type</span>  <span class="o">=</span>  <span class="s2">&quot;Transport&quot;</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
@@ -1834,29 +1824,44 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_0.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_0.png" />
+<div class="highlight"><pre>
+
+Performing Weights Analysis
+--------------------------------------------------------
+Propulsion Architecture: Conventional
+Aircraft Type          : Transport
+Method                 : FLOPS
+Aircraft operating empty weight will be overwritten
+Aircraft center of gravity location will be overwritten
+Aircraft moment of intertia tensor will be overwritten
+
+ Mission Solver Initiated
+</pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+  0%|          | 0/100 [00:00&lt;?, ?it/s]
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_1.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_1.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_2.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_2.png" />
-</div>
+<div class="highlight"><pre>
+
+ Solving Takeoff segment.
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_3.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_3.png" />
-</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|██████████| 100/100 [12:38&lt;00:00,  7.59s/it]
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1869,8 +1874,49 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_5.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_5.png" />
-</div>
+<div class="highlight"><pre>
+
+
+
+ Solving Departure_End_of_Runway segment.
+
+
+
+ Solving Initial_CLimb_Area segment.
+
+
+
+ Solving Climb_1 segment.
+
+
+
+ Solving Climb_2 segment.
+
+
+
+ Solving Cruise segment.
+
+
+
+ Solving Decent segment.
+
+
+
+ Solving Downleg segment.
+
+
+
+ Solving Final_Approach segment.
+Segment did not converge. Segment Tag: Final_Approach
+Error Message:
+Iteration limit reached
+
+
+
+ Solving Landing segment.
+
+
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1879,11 +1925,46 @@
 <img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_6.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_6.png" />
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_7.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_7.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_8.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_8.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_9.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_9.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_10.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_10.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_11.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_11.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_12.png" src="../../_images/tutorials_Missions_Tutorial_03_turboprop_aircraft_21_12.png" />
 </div>
 </div>
 </section>

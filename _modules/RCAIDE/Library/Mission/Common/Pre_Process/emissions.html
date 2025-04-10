@@ -383,25 +383,60 @@
 <span class="c1"># Created:  Jul 2023, M. Clarke</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1">#  IMPORT</span>
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<span class="c1"># RCAIDE imports   </span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1">#  stability</span>
+<span class="c1">#  emissions</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="emissions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Pre_Process.emissions.html#RCAIDE.Library.Mission.Common.Pre_Process.emissions.emissions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">emissions</span><span class="p">(</span><span class="n">mission</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Runs emissions model and build surrogate</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes and processes emissions models for mission segments</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mission : Mission</span>
+<span class="sd">        The mission containing segments to be analyzed</span>
+<span class="sd">            - analyses.emissions : Analysis</span>
+<span class="sd">                Emissions analysis module</span>
+<span class="sd">                - process.emissions : Process</span>
+<span class="sd">                    Emissions computation process</span>
+<span class="sd">            - surrogates : Data</span>
+<span class="sd">                Emissions surrogate models</span>
 <span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            N/A</span>
-<span class="sd">        </span>
-<span class="sd">        Inputs:</span>
-<span class="sd">            None</span>
-<span class="sd">            </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">            None             </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates mission segment analyses directly</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function prepares the emissions analysis for each mission segment.</span>
+<span class="sd">    It manages emissions models and surrogate data across segments for</span>
+<span class="sd">    computational efficiency by reusing previously computed data when possible.</span>
+
+<span class="sd">    The function performs the following steps:</span>
+<span class="sd">        1. Identifies segments requiring emissions analysis</span>
+<span class="sd">        2. Reuses previous segment&#39;s emissions data when possible</span>
+<span class="sd">        3. Initializes new emissions analyses when needed</span>
+
+<span class="sd">    **Process Flow**</span>
+<span class="sd">    </span>
+<span class="sd">    For each segment:</span>
+<span class="sd">        1. Check if emissions analysis exists</span>
+<span class="sd">        2. If previous segment exists with computed data:</span>
+<span class="sd">            - Reuse process and surrogate data</span>
+<span class="sd">        3. Otherwise:</span>
+<span class="sd">            - Initialize new emissions analysis</span>
+<span class="sd">            - Store segment tag for future reference</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Compatible emissions models between segments</span>
+<span class="sd">        * Valid initialization of first segment</span>
+<span class="sd">        * Continuous emissions characteristics</span>
+<span class="sd">        * Proper surrogate model compatibility</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span>
         
     <span class="n">last_tag</span> <span class="o">=</span> <span class="kc">None</span>

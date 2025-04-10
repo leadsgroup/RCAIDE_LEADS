@@ -393,7 +393,52 @@
 <div class="viewcode-block" id="Glycol_Water">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Coolants.Glycol_Water.html#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Glycol_Water</span><span class="p">(</span><span class="n">Coolant</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic class of ethelyne glycol-water mixture coolant.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of a 50-50 ethylene glycol-water mixture coolant properties.</span>
+
+<span class="sd">    This class provides thermophysical properties and calculation methods for a standard</span>
+<span class="sd">    ethylene glycol-water mixture commonly used in cooling systems.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier set to &#39;Glycol_Water&#39;   </span>
+<span class="sd">    percent_glycol : float</span>
+<span class="sd">        Mass fraction of glycol in the mixture (default: 0.5)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Mass per unit volume [kg/m³]</span>
+<span class="sd">    specific_heat_capacity : float</span>
+<span class="sd">        Heat capacity at constant pressure [J/kg·K]</span>
+<span class="sd">    thermal_conductivity : float</span>
+<span class="sd">        Heat conduction coefficient [W/m·K]</span>
+<span class="sd">    dynamic_viscosity : float</span>
+<span class="sd">        Absolute viscosity [Pa·s]</span>
+<span class="sd">    Prandtl_number : float</span>
+<span class="sd">        Dimensionless number for heat transfer characteristics</span>
+<span class="sd">    kinematic_viscosity : float</span>
+<span class="sd">        Ratio of dynamic viscosity to density [m²/s]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    All properties are currently implemented as constant values, though the method</span>
+<span class="sd">    structure allows for future implementation of temperature and pressure dependence.</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Mixture is exactly 50% water and 50% ethylene glycol by mass</span>
+<span class="sd">        * Standard atmospheric pressure conditions</span>
+<span class="sd">        * Single-phase liquid mixture</span>
+
+<span class="sd">    **Extra modules required**</span>
+<span class="sd">    None</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] The Engineering ToolBox (2003). Ethylene Glycol Heat-Transfer Fluid Properties. [online] Available at: https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html [Accessed 8 January 2025].</span>
+<span class="sd">    [2] Microelectronics Heat Transfer Laboratory. (1997). Fluid Properties Calculator. Fluid properties calculator. http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html </span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Thermal_Management : Thermal management system components</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -418,20 +463,31 @@
 <div class="viewcode-block" id="Glycol_Water.compute_cp">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Coolants.Glycol_Water.html#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_cp">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_cp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the specfic heat capacity of water-glycol at a specfic temperature  </span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            Mixture is 50% water-50% glycol</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            Engineering Toolbox: https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self      : glycol-water coolant  [unitless]</span>
-<span class="sd">            T (float) : temperature           [K]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            cp (float): specfic heat capacity [J/(kg K)]         </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;         </span>
+<span class="sd">        Calculate specific heat capacity of glycol-water mixture at given temperature.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float, optional</span>
+<span class="sd">            Temperature [K] (default: 300)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        cp : float</span>
+<span class="sd">            Specific heat capacity [J/(kg·K)]</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Currently returns constant value of 3300 J/(kg·K), based on the default value, regardless of temperature.</span>
+
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * Temperature independence</span>
+<span class="sd">            * 50-50 water-glycol mixture</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] The Engineering ToolBox (2003). Ethylene Glycol Heat-Transfer Fluid Properties. [online] Available at: https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html [Accessed 8 January 2025].</span>
+<span class="sd">  </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">specific_heat_capacity</span></div>
 
@@ -439,21 +495,33 @@
 <div class="viewcode-block" id="Glycol_Water.compute_absolute_viscosity">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Coolants.Glycol_Water.html#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_absolute_viscosity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_absolute_viscosity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the absolute viscosity of water-glycol at a specfic temperature and pressure </span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            Mixture is 50% water-50% glycol</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            Engineering Toolbox: https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self      : glycol-water coolant  [unitless]</span>
-<span class="sd">            T (float) : temperature           [K]</span>
-<span class="sd">            P (float) : pressure              [Pa]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            mu (float): absolute viscosity    [kg/(m-s)] </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Calculate dynamic viscosity of glycol-water mixture at given conditions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float, optional</span>
+<span class="sd">            Temperature [K] (default: 300)</span>
+<span class="sd">        p : float, optional</span>
+<span class="sd">            Pressure [Pa] (default: 101325)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mu : float</span>
+<span class="sd">            Dynamic viscosity [kg/(m·s)]</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Currently returns constant value of 0.0019 Pa·s, based on the default value, regardless of conditions.</span>
+
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * Temperature and pressure independence</span>
+<span class="sd">            * 50-50 water-glycol mixture</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] The Engineering ToolBox (2003). Ethylene Glycol Heat-Transfer Fluid Properties. [online] Available at: https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html [Accessed 8 January 2025].</span>
+
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="k">return</span>  <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_viscosity</span></div>
 
@@ -461,21 +529,33 @@
 <div class="viewcode-block" id="Glycol_Water.compute_density">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Coolants.Glycol_Water.html#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_density">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span>  
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the density of water-glycol at a specfic temperature and pressure </span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            Mixture is 50% water-50% glycol</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            Engineering Toolbox: https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self       : glycol-water coolant  [unitless]</span>
-<span class="sd">            T (float)  : temperature           [K]</span>
-<span class="sd">            P (float)  : pressure              [Pa]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            rho (float): density               [kg/m^3]         </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Calculate density of glycol-water mixture at given conditions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float, optional</span>
+<span class="sd">            Temperature [K] (default: 300)</span>
+<span class="sd">        p : float, optional</span>
+<span class="sd">            Pressure [Pa] (default: 101325)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rho : float</span>
+<span class="sd">            Density [kg/m³]</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Currently returns constant value of 1075 kg/m³ based on the default value.</span>
+
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * Temperature and pressure independence</span>
+<span class="sd">            * 50-50 water-glycol mixture</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] The Engineering ToolBox (2003). Ethylene Glycol Heat-Transfer Fluid Properties. [online] Available at: https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html [Accessed 8 January 2025].</span>
+<span class="sd">   </span>
 <span class="sd">        &quot;&quot;&quot;</span>         
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">density</span>  </div>
 
@@ -483,21 +563,34 @@
 <div class="viewcode-block" id="Glycol_Water.compute_thermal_conductivity">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Coolants.Glycol_Water.html#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_thermal_conductivity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_thermal_conductivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the density of water-glycol at a specfic temperature and pressure </span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            Mixture is 50% water-50% glycol</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            University of Waterrloo: http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self       : glycol-water coolant  [unitless]</span>
-<span class="sd">            T (float)  : temperature           [K]</span>
-<span class="sd">            P (float)  : pressure              [Pa]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            k (float)  : thermal conductivity  [W/m·K]         </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate thermal conductivity of glycol-water mixture at given conditions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float, optional</span>
+<span class="sd">            Temperature [K] (default: 300)</span>
+<span class="sd">        p : float, optional</span>
+<span class="sd">            Pressure [Pa] (default: 101325)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        k : float</span>
+<span class="sd">            Thermal conductivity [W/(m·K)]</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Currently returns constant value of 0.387 W/(m·K), based on the default values, </span>
+<span class="sd">        regardless of conditions.</span>
+
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * Temperature and pressure independence</span>
+<span class="sd">            * 50-50 water-glycol mixture</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] Microelectronics Heat Transfer Laboratory. (1997). Fluid Properties Calculator. Fluid properties calculator. http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html </span>
+<span class="sd">       </span>
 <span class="sd">        &quot;&quot;&quot;</span>          
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">thermal_conductivity</span></div>
 
@@ -506,20 +599,37 @@
 <div class="viewcode-block" id="Glycol_Water.compute_prandtl_number">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Coolants.Glycol_Water.html#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_prandtl_number">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_prandtl_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the density of water-glycol at a specfic temperature and pressure </span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            Mixture is 50% water-50% glycol</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            University of Waterrloo: http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self       : glycol-water coolant  [unitless]</span>
-<span class="sd">            T (float)  : temperature           [K] </span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            Pr (float) : Prandtl number        [unitless]         </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate Prandtl number of glycol-water mixture at given temperature.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float, optional</span>
+<span class="sd">            Temperature [K] (default: 300)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Pr : float</span>
+<span class="sd">            Prandtl number [dimensionless]</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Calculated using the relationship:</span>
+<span class="sd">        Pr = (μ·Cp)/k</span>
+
+<span class="sd">        where:</span>
+<span class="sd">            - μ is dynamic viscosity</span>
+<span class="sd">            - Cp is specific heat capacity</span>
+<span class="sd">            - k is thermal conductivity</span>
+
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * Temperature independence of constituent properties</span>
+<span class="sd">            * 50-50 water-glycol mixture</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] Microelectronics Heat Transfer Laboratory. (1997). Fluid Properties Calculator. Fluid properties calculator. http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html </span>
+<span class="sd">       </span>
 <span class="sd">        &quot;&quot;&quot;</span>          
         
         <span class="n">Cp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_cp</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>

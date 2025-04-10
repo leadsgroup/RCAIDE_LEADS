@@ -389,6 +389,69 @@
 <div class="viewcode-block" id="control_surfaces">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Unpack_Unknowns.control_surfaces.html#RCAIDE.Library.Mission.Common.Unpack_Unknowns.control_surfaces.control_surfaces">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">control_surfaces</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Updates control surface deflections from solver unknowns</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">            - assigned_control_variables : Data</span>
+<span class="sd">                Control variable configurations</span>
+<span class="sd">                - {control_type}.active : bool</span>
+<span class="sd">                    Whether control is active</span>
+<span class="sd">                - {control_type}.assigned_surfaces : list</span>
+<span class="sd">                    Surface names for each control group</span>
+<span class="sd">            - state.unknowns : Data</span>
+<span class="sd">                Solver unknown values</span>
+<span class="sd">            - state.conditions.control_surfaces : Data</span>
+<span class="sd">                Results data structure</span>
+<span class="sd">            - analyses : list</span>
+<span class="sd">                Analysis modules containing vehicle definition</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment state and vehicle model directly</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function applies control surface deflection values from the solver&#39;s</span>
+<span class="sd">    unknowns to both the vehicle model and results data structure. It handles</span>
+<span class="sd">    all types of control surfaces including elevators, slats, rudders, flaps,</span>
+<span class="sd">    and ailerons.</span>
+
+<span class="sd">    The function processes:</span>
+<span class="sd">        1. Elevator deflections</span>
+<span class="sd">        2. Slat deflections</span>
+<span class="sd">        3. Rudder deflections</span>
+<span class="sd">        4. Flap deflections</span>
+<span class="sd">        5. Aileron deflections</span>
+<span class="sd">        6. Spoiler deflections</span>
+
+<span class="sd">    **Control Surface Types**</span>
+<span class="sd">    </span>
+<span class="sd">    Supported controls:</span>
+<span class="sd">        - Elevator</span>
+<span class="sd">        - Slat</span>
+<span class="sd">        - Rudder</span>
+<span class="sd">        - Flap</span>
+<span class="sd">        - Aileron</span>
+<span class="sd">        - Spoiler</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Valid control surface definitions</span>
+<span class="sd">        * Proper surface assignments</span>
+<span class="sd">        * Compatible deflection values</span>
+<span class="sd">        * Well-defined vehicle geometry</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Wings.Control_Surfaces</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
     <span class="n">assigned_control_variables</span>   <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span>
     <span class="n">control_surfaces</span>             <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">control_surfaces</span>
     
@@ -401,81 +464,32 @@
                     <span class="c1"># Elevator Control</span>
                     <span class="k">if</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">control_surface</span> <span class="ow">in</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Elevator</span><span class="p">:</span>
-                                <span class="n">num_elev_ctrls</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)</span>
-                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_elev_ctrls</span><span class="p">):</span>   
-                                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
-                                        <span class="n">elevator_name</span> <span class="o">=</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
-            
-                                        <span class="c1"># set deflection on vehicle</span>
-                                        <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">[</span><span class="n">elevator_name</span><span class="p">]</span><span class="o">.</span><span class="n">deflection</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;elevator_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
-            
-                                        <span class="c1"># set deflection in results data structure</span>
-                                        <span class="n">control_surfaces</span><span class="o">.</span><span class="n">elevator</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;elevator_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Elevator</span><span class="p">:</span> 
+                                <span class="n">control_surfaces</span><span class="o">.</span><span class="n">elevator</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;elevator&quot;</span><span class="p">]</span>
                             
                     <span class="c1"># Slat Control</span>
                     <span class="k">if</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">control_surface</span> <span class="ow">in</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Slat</span><span class="p">:</span>
-                                <span class="n">num_slat_ctrls</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)</span>
-                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_slat_ctrls</span><span class="p">):</span>   
-                                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
-                                        <span class="n">slat_name</span> <span class="o">=</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
-            
-                                        <span class="c1"># set deflection on vehicle</span>
-                                        <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">[</span><span class="n">slat_name</span><span class="p">]</span><span class="o">.</span><span class="n">deflection</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;slat_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
-            
-                                        <span class="c1"># set deflection in results data structure</span>
-                                        <span class="n">control_surfaces</span><span class="o">.</span><span class="n">slat</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;slat_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
-            
-            
+                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Slat</span><span class="p">:</span> 
+                                <span class="n">control_surfaces</span><span class="o">.</span><span class="n">slat</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;slat&quot;</span><span class="p">]</span>
+
                     <span class="c1"># Rudder Control</span>
                     <span class="k">if</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">control_surface</span> <span class="ow">in</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Rudder</span><span class="p">:</span>
-                                <span class="n">num_rud_ctrls</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)</span>
-                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_rud_ctrls</span><span class="p">):</span>
-                                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
-                                        <span class="n">rudder_name</span> <span class="o">=</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
-            
-                                        <span class="c1"># set deflection on vehicle</span>
-                                        <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">[</span><span class="n">rudder_name</span><span class="p">]</span><span class="o">.</span><span class="n">deflection</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;rudder_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
-            
-                                        <span class="c1"># set deflection in results data structure</span>
-                                        <span class="n">control_surfaces</span><span class="o">.</span><span class="n">rudder</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;rudder_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Rudder</span><span class="p">:</span> 
+                                <span class="n">control_surfaces</span><span class="o">.</span><span class="n">rudder</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;rudder&quot;</span><span class="p">]</span>
             
                     <span class="c1"># flap Control</span>
                     <span class="k">if</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">control_surface</span> <span class="ow">in</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Flap</span><span class="p">:</span>
-                                <span class="n">num_flap_ctrls</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)</span>
-                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_flap_ctrls</span><span class="p">):</span>   
-                                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
-                                        <span class="n">flap_name</span> <span class="o">=</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
-            
-                                        <span class="c1"># set deflection on vehicle</span>
-                                        <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">[</span><span class="n">flap_name</span><span class="p">]</span><span class="o">.</span><span class="n">deflection</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;flap_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
-            
-                                        <span class="c1"># set deflection in results data structure</span>
-                                        <span class="n">control_surfaces</span><span class="o">.</span><span class="n">flap</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;flap_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Flap</span><span class="p">:</span> 
+                                <span class="n">control_surfaces</span><span class="o">.</span><span class="n">flap</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;flap&quot;</span><span class="p">]</span>
             
                     <span class="c1"># Aileron Control</span>
                     <span class="k">if</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">aileron_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">control_surface</span> <span class="ow">in</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Aileron</span><span class="p">:</span>
-                                <span class="n">num_aile_ctrls</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">aileron_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)</span>
-                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_aile_ctrls</span><span class="p">):</span>   
-                                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">aileron_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
-                                        <span class="n">aileron_name</span> <span class="o">=</span> <span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">aileron_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
-            
-                                        <span class="c1"># set deflection on vehicle</span>
-                                        <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">[</span><span class="n">aileron_name</span><span class="p">]</span><span class="o">.</span><span class="n">deflection</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;aileron_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
-            
-                                        <span class="c1"># set deflection in results data structure</span>
-                                        <span class="n">control_surfaces</span><span class="o">.</span><span class="n">aileron</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;aileron_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
-
-
-    
+                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">control_surface</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Aileron</span><span class="p">:</span> 
+                                <span class="n">control_surfaces</span><span class="o">.</span><span class="n">aileron</span><span class="o">.</span><span class="n">deflection</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;aileron&quot;</span><span class="p">]</span>
     <span class="k">return</span></div>
 
 </pre></div>

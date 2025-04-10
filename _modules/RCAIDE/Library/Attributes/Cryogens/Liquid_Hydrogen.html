@@ -394,7 +394,105 @@
 <div class="viewcode-block" id="Liquid_Hydrogen">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.html#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Liquid_Hydrogen</span><span class="p">(</span><span class="n">Cryogen</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Liquid Hydrogen Cryogen Class </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing liquid hydrogen cryogenic fuel and its thermodynamic properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the cryogen type (&#39;Liquid_Hydrogen&#39;)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Density of liquid hydrogen in kg/m³</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy content in J/kg</span>
+<span class="sd">    energy_density : float</span>
+<span class="sd">        Energy density in J/m³</span>
+<span class="sd">    temperatures : Container</span>
+<span class="sd">        Temperature thresholds for the cryogen</span>
+<span class="sd">            - freeze : float</span>
+<span class="sd">                Freezing point temperature in Kelvin</span>
+<span class="sd">            - boiling : float</span>
+<span class="sd">                Boiling point temperature in Kelvin</span>
+<span class="sd">    vaporization_enthalpy : float</span>
+<span class="sd">        Enthalpy of vaporization in kJ/kg</span>
+<span class="sd">    specific_heat : float</span>
+<span class="sd">        Specific heat capacity in kJ/kg·K</span>
+<span class="sd">    liquid_cp_coefficients : Data</span>
+<span class="sd">        Coefficients for liquid specific heat capacity polynomial</span>
+<span class="sd">            - LCP_C0 : float</span>
+<span class="sd">                Constant term coefficient</span>
+<span class="sd">            - LCP_C1 : float</span>
+<span class="sd">                Linear term coefficient</span>
+<span class="sd">            - LCP_C2 : float</span>
+<span class="sd">                Quadratic term coefficient</span>
+<span class="sd">            - LCP_C3 : float</span>
+<span class="sd">                Cubic term coefficient</span>
+<span class="sd">            - LCP_minT : float</span>
+<span class="sd">                Minimum valid temperature in Kelvin</span>
+<span class="sd">            - LCP_maxT : float</span>
+<span class="sd">                Maximum valid temperature in Kelvin</span>
+<span class="sd">    </span>
+<span class="sd">    gas_cp_coefficients : Data</span>
+<span class="sd">        Coefficients for gas specific heat capacity polynomial</span>
+<span class="sd">            - GCP_C0 : float</span>
+<span class="sd">                Constant term coefficient</span>
+<span class="sd">            - GCP_C1 : float</span>
+<span class="sd">                Linear term coefficient</span>
+<span class="sd">            - GCP_C2 : float</span>
+<span class="sd">                Quadratic term coefficient</span>
+<span class="sd">            - GCP_C3 : float</span>
+<span class="sd">                Cubic term coefficient</span>
+<span class="sd">            - GCP_minT : float</span>
+<span class="sd">                Minimum valid temperature in Kelvin</span>
+<span class="sd">            - GCP_maxT : float</span>
+<span class="sd">                Maximum valid temperature in Kelvin</span>
+<span class="sd">    </span>
+<span class="sd">    antoine_coefficients : Data</span>
+<span class="sd">        Antoine equation coefficients for vapor pressure calculation</span>
+<span class="sd">            - antoine_A : float</span>
+<span class="sd">                A coefficient</span>
+<span class="sd">            - antoine_B : float</span>
+<span class="sd">                B coefficient</span>
+<span class="sd">            - antoine_C : float</span>
+<span class="sd">                C coefficient</span>
+<span class="sd">            - antoine_minT : float</span>
+<span class="sd">                Minimum valid temperature in Kelvin</span>
+<span class="sd">            - antoine_maxT : float</span>
+<span class="sd">                Maximum valid temperature in Kelvin</span>
+<span class="sd">    </span>
+<span class="sd">    vaporization_coefficients : Data</span>
+<span class="sd">        Coefficients for vaporization enthalpy polynomial</span>
+<span class="sd">            - H_C0 : float</span>
+<span class="sd">                Constant term coefficient</span>
+<span class="sd">            - H_C1 : float</span>
+<span class="sd">                Linear term coefficient</span>
+<span class="sd">            - H_C2 : float</span>
+<span class="sd">                Quadratic term coefficient</span>
+<span class="sd">            - H_C3 : float</span>
+<span class="sd">                Cubic term coefficient</span>
+<span class="sd">            - H_minP : float</span>
+<span class="sd">                Minimum valid pressure in Pascal</span>
+<span class="sd">            - H_maxP : float</span>
+<span class="sd">                Maximum valid pressure in Pascal</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The class implements various thermodynamic properties using polynomial fits and the Antoine equation.</span>
+<span class="sd">    Specific heat capacity calculations are provided for both liquid and gas phases.</span>
+<span class="sd">    Valid temperature and pressure ranges are specified for each correlation.</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Antoine Equation&#39;</span>
+<span class="sd">        An equation relating vapor pressure to temperature: log10(P) = A - (B/(T+C))</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Specific Heat Capacity&#39;</span>
+<span class="sd">        The amount of heat required to raise the temperature of 1 kg of the substance by 1 Kelvin</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Ekin, J. (2006). Experimental techniques for low-temperature measurements: Cryostat design, material properties and superconductor critical-current testing. Oxford University Press. </span>
+<span class="sd">    [2] National Institute of Standards and Technology. (2023). NIST Chemistry Webbook, SRD 69. Thermophysical Properties of Fluid Systems. https://webbook.nist.gov/chemistry/fluid/ </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

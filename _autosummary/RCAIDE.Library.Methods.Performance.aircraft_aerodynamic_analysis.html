@@ -47,7 +47,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="compute_payload_range_diagram" href="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.html" />
+    <link rel="next" title="compute_noise_certification_data" href="RCAIDE.Library.Methods.Performance.compute_noise_certification_data.html" />
     <link rel="prev" title="Performance" href="RCAIDE.Library.Methods.Performance.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -531,8 +531,73 @@
 <span id="aircraft-aerodynamic-analysis"></span><h1>aircraft_aerodynamic_analysis<a class="headerlink" href="#module-RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis.aircraft_aerodynamic_analysis">
-<span class="sig-name descname"><span class="pre">aircraft_aerodynamic_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_of_attack_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Mach_number_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_surface_deflection_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[0]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_ISA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_surrogate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fuselage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/aircraft_aerodynamic_analysis.html#aircraft_aerodynamic_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis.aircraft_aerodynamic_analysis" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">aircraft_aerodynamic_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aerodynamics_analysis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_of_attack_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Mach_number_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_surface_deflection_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[0]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_ISA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/aircraft_aerodynamic_analysis.html#aircraft_aerodynamic_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis.aircraft_aerodynamic_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Computes aerodynamic coefficients across ranges of angle of attack and Mach numbers using vortex lattice methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – The vehicle instance to be analyzed</p></li>
+<li><p><strong>angle_of_attack_range</strong> (<em>ndarray</em>) – Array of angle of attack values to evaluate [radians]</p></li>
+<li><p><strong>Mach_number_range</strong> (<em>ndarray</em>) – Array of Mach numbers to evaluate</p></li>
+<li><p><strong>control_surface_deflection_range</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Array of control surface deflection angles [radians], default [[0]]</p></li>
+<li><p><strong>altitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Altitude for atmospheric properties [m], default 0</p></li>
+<li><p><strong>delta_ISA</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature offset from ISA conditions [K], default 0</p></li>
+<li><p><strong>use_surrogate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for using surrogate model in analysis, default True</p></li>
+<li><p><strong>model_fuselage</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for including fuselage effects, default True. Of note, fuselage modeling can
+sometimes be difficult for VLM solvers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>results</strong> –</p>
+<dl class="simple">
+<dt>Container of analysis results including:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Mach<span class="classifier">ndarray</span></dt><dd><p>Evaluated Mach numbers</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>alpha<span class="classifier">ndarray</span></dt><dd><p>Evaluated angles of attack [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>lift_coefficient<span class="classifier">ndarray</span></dt><dd><p>Computed lift coefficients</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>drag_coefficient<span class="classifier">ndarray</span></dt><dd><p>Computed drag coefficients</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function uses the US Standard Atmosphere 1976 model for atmospheric properties
+and evaluates aerodynamic coefficients using vortex lattice methods. Can use a surrogate model
+for faster evaluation or just direct evaluation of the aerodynamics.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Flow is steady and inviscid</p></li>
+<li><p>Small angle approximations apply</p></li>
+<li><p>Linear aerodynamics</p></li>
+<li><p>Atmospheric properties follow US Standard Atmosphere 1976</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.html#module-RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.html#module-RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976" title="RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976</span></code></a></p>
+</div>
+</dd></dl>
 
 </section>
 
@@ -556,11 +621,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.html"
+       href="RCAIDE.Library.Methods.Performance.compute_noise_certification_data.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">compute_payload_range_diagram</p>
+        <p class="prev-next-title">compute_noise_certification_data</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

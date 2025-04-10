@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,124 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.JP7.JP7">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JP7</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/JP7.html#JP7"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Propellant</span></code></a></p>
-<p>JP7 Jet fuel class</p>
+<p>A class representing JP-7 high thermal stability jet fuel properties. This specialized
+fuel was developed for high-speed aircraft operating at elevated temperatures.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.JP7.JP7.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the propellant (‘JP7’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.JP7.JP7.reactant">
+<span class="sig-name descname"><span class="pre">reactant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.reactant" title="Link to this definition">#</a></dt>
+<dd><p>Oxidizer used for combustion (‘O2’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.JP7.JP7.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.density" title="Link to this definition">#</a></dt>
+<dd><p>Fuel density in kg/m³ (803.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.JP7.JP7.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy content in J/kg (43.50e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.JP7.JP7.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Energy density in J/m³ (34930.5e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.JP7.JP7.stoichiometric_fuel_to_air">
+<span class="sig-name descname"><span class="pre">stoichiometric_fuel_to_air</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.stoichiometric_fuel_to_air" title="Link to this definition">#</a></dt>
+<dd><p>Stoichiometric fuel-to-air ratio (0.0674)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.JP7.JP7.temperatures">
+<span class="sig-name descname"><span class="pre">temperatures</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.temperatures" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Critical temperatures in K</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>flash<span class="classifier">float</span></dt><dd><p>Flash point (333.15)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>autoignition<span class="classifier">float</span></dt><dd><p>Autoignition temperature (555.15)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>freeze<span class="classifier">float</span></dt><dd><p>Freezing point (514.15)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>JP-7 is a specialized jet fuel developed for the SR-71 Blackbird and similar
+high-speed aircraft. It features high thermal stability and low volatility for
+operation at elevated temperatures.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Flash Point’</dt><dd><p>Lowest temperature at which fuel vapors will ignite (60°C, significantly
+higher than conventional jet fuels)</p>
+</dd>
+<dt>‘Thermal Stability’</dt><dd><p>Resistance to thermal decomposition at elevated temperatures</p>
+</dd>
+<dt>‘Stoichiometric Fuel-to-Air Ratio’</dt><dd><p>Ideal fuel-to-air mass ratio for complete combustion</p>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties are for standard temperature and pressure conditions (15C, 1atm)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Roberts, K. (2008). ANALYSIS AND DESIGN OF A HYPERSONIC SCRAMJET ENGINE WITH A STARTING MACH NUMBER OF 4.00 (thesis). UTA. University of Texas at Austin. Retrieved December 30, 2024, from <a class="reference external" href="https://arc.uta.edu/publications/td_files/Kristen%20Roberts%20MS.pdf">https://arc.uta.edu/publications/td_files/Kristen%20Roberts%20MS.pdf</a>.</p>
 </dd></dl>
 
 </section>
@@ -585,7 +702,16 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7"><code class="docutils literal notranslate"><span class="pre">JP7</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7"><code class="docutils literal notranslate"><span class="pre">JP7</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.tag"><code class="docutils literal notranslate"><span class="pre">JP7.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.reactant"><code class="docutils literal notranslate"><span class="pre">JP7.reactant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.density"><code class="docutils literal notranslate"><span class="pre">JP7.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.specific_energy"><code class="docutils literal notranslate"><span class="pre">JP7.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.energy_density"><code class="docutils literal notranslate"><span class="pre">JP7.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.stoichiometric_fuel_to_air"><code class="docutils literal notranslate"><span class="pre">JP7.stoichiometric_fuel_to_air</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.JP7.JP7.temperatures"><code class="docutils literal notranslate"><span class="pre">JP7.temperatures</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

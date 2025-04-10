@@ -47,7 +47,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Turbine.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Distributors" href="RCAIDE.Library.Components.Powertrain.Distributors.html" />
+    <link rel="next" title="Turboelectric_Generator" href="RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator.html" />
     <link rel="prev" title="Supersonic_Nozzle" href="RCAIDE.Library.Components.Powertrain.Converters.Supersonic_Nozzle.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -573,7 +573,8 @@
 <p class="rubric">Notes</p>
 <p>The Turbine class models the expansion and work extraction process in a
 turbine stage. The model includes:</p>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li><p>Work extraction calculations</p></li>
 <li><p>Pressure ratio effects</p></li>
 <li><p>Temperature changes</p></li>
@@ -581,6 +582,7 @@ turbine stage. The model includes:</p>
 <li><p>Mechanical power transmission</p></li>
 <li><p>Real gas effects</p></li>
 </ul>
+</div></blockquote>
 <p><strong>Major Assumptions</strong></p>
 <ul class="simple">
 <li><p>Efficiencies do not change with varying conditions</p></li>
@@ -604,7 +606,7 @@ American Institute of Aeronautics and Astronautics.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Turbine.Turbine.append_operating_conditions">
-<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Turbine.html#Turbine.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Turbine.Turbine.append_operating_conditions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Converters/Turbine.html#Turbine.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Turbine.Turbine.append_operating_conditions" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -631,11 +633,11 @@ American Institute of Aeronautics and Astronautics.</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Components.Powertrain.Distributors.html"
+       href="RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Distributors</p>
+        <p class="prev-next-title">Turboelectric_Generator</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

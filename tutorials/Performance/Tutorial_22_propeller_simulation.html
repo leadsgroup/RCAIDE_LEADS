@@ -413,20 +413,6 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="../Missions/Tutorial_08_tilt_stopped_rotor_vtail_evtol_aircraft.html">Tutorial 8 - Tilt Stopped Rotor Vtail eVTOL Aircraft Simulation</a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
@@ -549,7 +535,7 @@
 <li><p><strong>RCAIDE</strong>: The core package is imported directly. This approach allows us to access specific classes and methods from RCAIDE without repeatedly importing individual components at the top of the script.</p></li>
 <li><p><strong>``Units`` Module</strong>: The Units module is a standardized way to handle unit conversions within RCAIDE. It ensures consistent units across all inputs and outputs, reducing the likelihood of conversion errors.</p></li>
 <li><p><strong>design_propeller</strong>: This function is used to design a propeller based on given parameters. It takes a propeller object and sets its properties based on the inputs.</p></li>
-<li><p><strong>propeller_aerodynamic_analysis</strong>: This function performs the propeller aerodynamic analysis.</p></li>
+<li><p><strong>rotor_aerodynamic_analysis</strong>: This function performs the propeller aerodynamic analysis.</p></li>
 </ol>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -559,8 +545,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                              </span><span class="kn">import</span> <span class="n">Units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                               </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Rotor</span><span class="w"> </span><span class="kn">import</span> <span class="n">design_propeller</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Performance</span><span class="w">                 </span><span class="kn">import</span> <span class="n">propeller_aerodynamic_analysis</span>
-<br/></pre></div>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Performance</span><span class="w">                 </span><span class="kn">import</span> <span class="n">rotor_aerodynamic_analysis</span>
+<br/><br/></pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -601,7 +587,7 @@
     <span class="c1"># define first airfoil</span>
     <span class="n">ospath</span>                                <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Notebook&#39;</span><span class="p">))</span>
     <span class="n">separator</span>                             <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
-    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Regressions&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Vehicles&#39;</span> <span class="o">+</span> <span class="n">separator</span>
+    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;VnV&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Vehicles&#39;</span> <span class="o">+</span> <span class="n">separator</span>
     <span class="n">airfoil_1</span>                                  <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
     <span class="n">airfoil_1</span><span class="o">.</span><span class="n">tag</span>                              <span class="o">=</span> <span class="s1">&#39;NACA_4412&#39;</span>
     <span class="n">airfoil_1</span><span class="o">.</span><span class="n">coordinate_file</span>                  <span class="o">=</span> <span class="n">rel_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412.txt&#39;</span>   <span class="c1"># absolute path</span>
@@ -635,7 +621,7 @@
 <section id="4.-Run-Propeller-Analysis">
 <h1>4. Run Propeller Analysis<a class="headerlink" href="#4.-Run-Propeller-Analysis" title="Link to this heading">#</a></h1>
 <p>This block runs the entire analysis beginning with calling the design propeller outlined in section 3. It next defined operating conditions and including the range of aircraft airspeeds over which the analysis will be performed as well as the angular velocity of the propeller. Note how the units class is used to define the angular velocity to be in revolutions per minute (rpm).</p>
-<p>The setup parameters are then passed to the propeller_aerodynamic_analysis function. This function performs the analysis of the propeller. It returns results of the analysis which are then plotted using the plot_rotor_disc_performance function. The propeller geometry is then plotted with the plot_3d_rotor function.</p>
+<p>The setup parameters are then passed to the rotor_aerodynamic_analysis function. This function performs the analysis of the propeller. It returns results of the analysis which are then plotted using the plot_rotor_disc_performance function. The propeller geometry is then plotted with the plot_3d_rotor function.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -643,17 +629,17 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">propeller</span>      <span class="o">=</span> <span class="n">design_test_propeller</span><span class="p">()</span>
 
 <span class="c1"># define velocity range</span>
-<span class="n">velocity_range</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">29</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">velocity_range</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">29</span><span class="p">)</span>
 
 <span class="c1"># define RPM</span>
 <span class="n">angular_velocity</span> <span class="o">=</span> <span class="mi">2500</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">rpm</span>
 
 <span class="c1"># run pr</span>
-<span class="n">results</span>        <span class="o">=</span> <span class="n">propeller_aerodynamic_analysis</span><span class="p">(</span><span class="n">propeller</span><span class="p">,</span> <span class="n">velocity_range</span><span class="p">,</span>
+<span class="n">results</span>        <span class="o">=</span> <span class="n">rotor_aerodynamic_analysis</span><span class="p">(</span><span class="n">propeller</span><span class="p">,</span> <span class="n">velocity_range</span><span class="p">,</span>
                                                 <span class="n">angular_velocity</span> <span class="o">=</span> <span class="n">angular_velocity</span><span class="p">,</span>
+                                                <span class="n">blade_pitch_command</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
                                                 <span class="n">angle_of_attack</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-                                                <span class="n">altitude</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-                                                <span class="n">delta_isa</span> <span class="o">=</span><span class="mi">0</span> <span class="p">)</span>
+                                                <span class="n">altitude</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span>
 
 
 <span class="n">plot_rotor_disc_performance</span><span class="p">(</span><span class="n">propeller</span><span class="p">,</span><span class="n">results</span><span class="p">,</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">save_figure</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -668,7 +654,6 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Rotor BEVW did not converge to a solution (Stall)
 
 Plotting rotor
 </pre></div></div>

@@ -391,21 +391,55 @@
 <div class="viewcode-block" id="initialize_bus_properties">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.initialize_bus_properties.html#RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.initialize_bus_properties.initialize_bus_properties">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">initialize_bus_properties</span><span class="p">(</span><span class="n">bus</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Initializes the bus electrical properties based what is appended onto the bus</span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">        N/A</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the bus electrical properties based on what is appended onto the bus.</span>
 <span class="sd">    </span>
-<span class="sd">        Source:</span>
-<span class="sd">        N/A</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bus : ElectricalBus</span>
+<span class="sd">        The electrical bus component with the following attributes:</span>
+<span class="sd">            - battery_modules : list</span>
+<span class="sd">                List of battery modules connected to the bus</span>
+<span class="sd">            - battery_module_electric_configuration : str</span>
+<span class="sd">                Configuration of battery modules (&#39;Series&#39; or &#39;Parallel&#39;)</span>
+<span class="sd">            - fuel_cell_stacks : list</span>
+<span class="sd">                List of fuel cell stacks connected to the bus</span>
+<span class="sd">            - fuel_cell_stack_electric_configuration : str</span>
+<span class="sd">                Configuration of fuel cell stacks (&#39;Series&#39; or &#39;Parallel&#39;)</span>
 <span class="sd">    </span>
-<span class="sd">        Inputs:  </span>
-<span class="sd">       </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">           </span>
-<span class="sd">        Properties Used:</span>
-<span class="sd">        None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        This function modifies the bus object in-place, setting the following attributes:</span>
+<span class="sd">            - voltage : float</span>
+<span class="sd">                Bus voltage [V]</span>
+<span class="sd">            - nominal_capacity : float</span>
+<span class="sd">                Nominal capacity [Ah]</span>
+<span class="sd">            - maximum_energy : float</span>
+<span class="sd">                Maximum energy storage capacity [J]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the electrical properties of the bus based on the connected</span>
+<span class="sd">    energy sources (battery modules and fuel cell stacks). It handles both series and </span>
+<span class="sd">    parallel configurations.</span>
+<span class="sd">    </span>
+<span class="sd">    For battery modules:</span>
+<span class="sd">        - In series configuration: voltages add, capacity is the maximum of all modules</span>
+<span class="sd">        - In parallel configuration: voltage is the maximum voltage of all modules, capacities add</span>
+<span class="sd">    </span>
+<span class="sd">    For fuel cell stacks:</span>
+<span class="sd">        - In series configuration: voltages add</span>
+<span class="sd">        - In parallel configuration: voltage is the maximum voltage of all stacks</span>
+<span class="sd">    </span>
+<span class="sd">    The function first computes properties for each individual module/stack by calling</span>
+<span class="sd">    their respective property computation functions.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
         <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">battery_module_electric_configuration</span> <span class="o">==</span> <span class="s1">&#39;Series&#39;</span><span class="p">:</span>
             <span class="n">bus</span><span class="o">.</span><span class="n">nominal_capacity</span> <span class="o">=</span> <span class="mi">0</span>
@@ -424,16 +458,18 @@
                 <span class="n">bus</span><span class="o">.</span><span class="n">nominal_capacity</span> <span class="o">+=</span>  <span class="n">battery_module</span><span class="o">.</span><span class="n">nominal_capacity</span>        
                 <span class="n">bus</span><span class="o">.</span><span class="n">maximum_energy</span>  <span class="o">+=</span>  <span class="n">battery_module</span><span class="o">.</span><span class="n">initial_maximum_energy</span>
     
+    <span class="n">cumulative_fuel_cell_stack</span> <span class="o">=</span>  <span class="mi">0</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
         <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stack_electric_configuration</span> <span class="o">==</span> <span class="s1">&#39;Series&#39;</span><span class="p">:</span>
             <span class="n">bus</span><span class="o">.</span><span class="n">maximum_energy</span>   <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">fuel_cell_stack</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">:</span> 
-                <span class="n">compute_stack_properties</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">)</span> 
-                <span class="n">bus</span><span class="o">.</span><span class="n">voltage</span>         <span class="o">+=</span>  <span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">voltage</span>  
+                <span class="n">compute_stack_properties</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">)</span>
+                <span class="n">cumulative_fuel_cell_stack</span> <span class="o">+=</span> <span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">voltage</span> 
+            <span class="n">bus</span><span class="o">.</span><span class="n">voltage</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">cumulative_fuel_cell_stack</span><span class="p">)</span> 
         <span class="k">elif</span> <span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stack_electric_configuration</span> <span class="o">==</span> <span class="s1">&#39;Parallel&#39;</span><span class="p">:</span> 
             <span class="k">for</span> <span class="n">fuel_cell_stack</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">:</span> 
                 <span class="n">compute_stack_properties</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">)</span>        
-                <span class="n">bus</span><span class="o">.</span><span class="n">voltage</span>           <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">bus</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>              
+                <span class="n">bus</span><span class="o">.</span><span class="n">voltage</span>     <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">bus</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>              
     <span class="k">return</span></div>
 
 </pre></div>

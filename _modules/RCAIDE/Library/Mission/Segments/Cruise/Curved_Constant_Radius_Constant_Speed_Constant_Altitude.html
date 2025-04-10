@@ -394,30 +394,77 @@
 <div class="viewcode-block" id="initialize_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude.initialize_conditions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">initialize_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the specified conditions which are given for the segment type.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes conditions for constant radius curved flight at fixed altitude and speed.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Curved segment with constant radius, constant speed and constant altitude</span>
-<span class="sd">    Assumes that it is a coordinated turn (true course and true heading are aligned)</span>
-
-<span class="sd">    Source:</span>
-<span class="sd">    N/A</span>
-
-<span class="sd">    Inputs:</span>
-<span class="sd">    segment.altitude                [meters] # deleted segment distance as it is now defined by the turn_angle and radius.</span>
-<span class="sd">    segment.speed                   [meters/second]</span>
-<span class="sd">    self.start_true_course          [degrees] true course of the vehicle before the turn</span>
-<span class="sd">    self.turn_angle                 [degrees] angle measure of the curve. + is right hand turn, - is left hand turn. </span>
-<span class="sd">    self.radius                     [meters] radius of the turn</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">            - altitude : float</span>
+<span class="sd">                Cruise altitude [m]</span>
+<span class="sd">            - air_speed : float</span>
+<span class="sd">                True airspeed to maintain [m/s]</span>
+<span class="sd">            - true_course : float</span>
+<span class="sd">                Initial true course angle [deg]</span>
+<span class="sd">            - turn_angle : float</span>
+<span class="sd">                Total turn angle to execute [deg]</span>
+<span class="sd">                Positive for right turn, negative for left turn</span>
+<span class="sd">            - turn_radius : float</span>
+<span class="sd">                Radius of the turn [m]</span>
+<span class="sd">            - sideslip_angle : float</span>
+<span class="sd">                Aircraft sideslip angle [rad]</span>
+<span class="sd">            - state:</span>
+<span class="sd">                numerics.dimensionless.control_points : array</span>
+<span class="sd">                    Discretization points [-]</span>
+<span class="sd">                conditions : Data</span>
+<span class="sd">                    State conditions container</span>
+<span class="sd">                initials : Data, optional</span>
+<span class="sd">                    Initial conditions from previous segment</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment conditions directly:</span>
+<span class="sd">            - conditions.frames.inertial.velocity_vector [m/s]</span>
+<span class="sd">            - conditions.frames.inertial.position_vector [m]</span>
+<span class="sd">            - conditions.frames.body.velocity_vector [m/s]</span>
+<span class="sd">            - conditions.freestream.altitude [m]</span>
+<span class="sd">            - conditions.frames.inertial.time [s]</span>
+<span class="sd">            - conditions.frames.planet.true_heading [rad]</span>
+<span class="sd">            - conditions.frames.planet.true_course [rad]</span>
 <span class="sd">    </span>
-<span class="sd">    Outputs: ***pretty sure that no additional outputs are need. Verify this***</span>
-<span class="sd">    conditions.frames.inertial.velocity_vector  [meters/second]</span>
-<span class="sd">    conditions.frames.inertial.position_vector  [meters]</span>
-<span class="sd">    conditions.freestream.altitude              [meters]</span>
-<span class="sd">    conditions.frames.inertial.time             [seconds]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function sets up the initial conditions for a coordinated turn segment with </span>
+<span class="sd">    constant radius, constant speed, and constant altitude. The turn direction and </span>
+<span class="sd">    magnitude are specified by the turn angle.</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    **Calculation Process**</span>
+<span class="sd">    1. Check initial conditions</span>
+<span class="sd">    2. Calculate turn rate from speed and radius:</span>
+<span class="sd">        ω = V/R where:</span>
+<span class="sd">            - V is true airspeed</span>
+<span class="sd">            - R is turn radius</span>
+<span class="sd">    3. Calculate time required for turn:</span>
+<span class="sd">        t = |θ|/ω where:</span>
+<span class="sd">            - θ is turn angle</span>
+<span class="sd">            - ω is turn rate</span>
+<span class="sd">    4. Discretize time points</span>
+<span class="sd">    5. Calculate true course progression</span>
+<span class="sd">    6. Decompose velocity into inertial and body components</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Coordinated turn (true course aligned with true heading)</span>
+<span class="sd">        * Constant true airspeed</span>
+<span class="sd">        * Constant altitude</span>
+<span class="sd">        * Constant turn radius</span>
+<span class="sd">        * Small angle approximations</span>
+<span class="sd">        * Quasi-steady flight</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span>        
     
     <span class="c1"># unpack </span>

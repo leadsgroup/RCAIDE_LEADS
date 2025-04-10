@@ -406,34 +406,76 @@
 <div class="viewcode-block" id="estimate_take_off_field_length">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.estimate_take_off_field_length.html#RCAIDE.Library.Methods.Performance.estimate_take_off_field_length.estimate_take_off_field_length">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">estimate_take_off_field_length</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">analyses</span><span class="p">,</span><span class="n">altitude</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">delta_isa</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">compute_2nd_seg_climb</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Computes the takeoff field length for a given vehicle configuration in a given airport.</span>
-<span class="sd">    Also optionally computes the second segment climb gradient.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    For second segment climb gradient:</span>
-<span class="sd">    One engine inoperative</span>
-<span class="sd">    Only validated for two engine aircraft</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : Vehicle</span>
+<span class="sd">        The vehicle instance containing:</span>
+<span class="sd">            - mass_properties.takeoff : float</span>
+<span class="sd">                Takeoff weight [kg]</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Wing reference area [m²]</span>
+<span class="sd">            - V2_VS_ratio : float, optional</span>
+<span class="sd">                Ratio of V2 to stall speed, default 1.20</span>
+<span class="sd">            - networks.*.number_of_engines : int</span>
+<span class="sd">                Number of engines per network</span>
+<span class="sd">    analyses : Analyses</span>
+<span class="sd">        Container with atmosphere and aerodynamic analyses</span>
+<span class="sd">    altitude : float, optional</span>
+<span class="sd">        Airport altitude [m], default 0</span>
+<span class="sd">    delta_isa : float, optional</span>
+<span class="sd">        Temperature offset from ISA conditions [K], default 0</span>
+<span class="sd">    compute_2nd_seg_climb : bool, optional</span>
+<span class="sd">        Flag to compute second segment climb gradient, default False</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    http://adg.stanford.edu/aa241/AircraftDesign.html</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    takeoff_field_length : float</span>
+<span class="sd">        Required takeoff field length [m]</span>
+<span class="sd">    second_seg_climb_gradient : float, optional</span>
+<span class="sd">        Second segment climb gradient [unitless], only if compute_2nd_seg_climb=True</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    analyses.base.atmosphere               [RCAIDE data type]</span>
-<span class="sd">    airport.</span>
-<span class="sd">      altitude                             [m]</span>
-<span class="sd">      delta_isa                            [K]</span>
-<span class="sd">    vehicle.</span>
-<span class="sd">      mass_properties.takeoff              [kg]</span>
-<span class="sd">      reference_area                       [m^2]</span>
-<span class="sd">      V2_VS_ratio (optional)               [Unitless]</span>
-<span class="sd">      maximum_lift_coefficient (optional)  [Unitless]</span>
-<span class="sd">      networks.*.number_of_engines       [Unitless]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The takeoff field length is computed using empirical correlations:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        TOFL = k_0 + k_1(V_2^2/T/W) + k_2(V_2^2/T/W)^2</span>
 
-<span class="sd">    Outputs:</span>
-<span class="sd">    takeoff_field_length                   [m]</span>
+<span class="sd">    where k₀, k₁, k₂ depend on number of engines:</span>
+<span class="sd">        * 2 engines: [857.4, 2.476, 0.00014]</span>
+<span class="sd">        * 3 engines: [667.9, 2.343, 0.000093]</span>
+<span class="sd">        * 4 engines: [486.7, 2.282, 0.0000705]</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Sea level standard conditions unless specified</span>
+<span class="sd">        * Standard V2 speed ratio (1.20 × stall speed)</span>
+<span class="sd">        * No wind conditions</span>
+<span class="sd">        * Dry runway surface</span>
+<span class="sd">        * For second segment climb:</span>
+<span class="sd">            - One engine inoperative</span>
+<span class="sd">            - Only validated for two-engine aircraft</span>
+
+<span class="sd">    **Theory**</span>
+<span class="sd">    Second segment climb gradient is computed as:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \gamma = T/W - 1/L/D</span>
+
+<span class="sd">    where L/D includes effects of:</span>
+<span class="sd">        * Windmilling drag</span>
+<span class="sd">        * Asymmetric drag</span>
+<span class="sd">        * High-lift device drag</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Stanford University AA241 Aircraft Design Course Notes http://adg.stanford.edu/aa241/AircraftDesign.html</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag</span>
 <span class="sd">    &quot;&quot;&quot;</span>        
 
     <span class="c1"># ==============================================</span>
@@ -534,13 +576,10 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span> <span class="o">=</span> <span class="n">analysis</span>      
     
     <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
-        <span class="n">network</span><span class="o">.</span><span class="n">add_unknowns_and_residuals_to_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
-        
+        <span class="n">network</span><span class="o">.</span><span class="n">add_unknowns_and_residuals_to_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> 
         <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span>  <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span> 
-            <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">]])</span>
-        
-        <span class="n">network</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">)</span>
-        
+            <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">]])</span> 
+        <span class="n">network</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">)</span> 
         <span class="n">thrust</span> <span class="o">+=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">thrust_force_vector</span>
          
     <span class="c1"># ==============================================</span>

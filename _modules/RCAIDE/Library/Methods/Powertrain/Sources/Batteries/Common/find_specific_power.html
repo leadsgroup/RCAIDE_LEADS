@@ -388,23 +388,52 @@
 <div class="viewcode-block" id="find_specific_power">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power.find_specific_power">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_specific_power</span><span class="p">(</span><span class="n">battery</span><span class="p">,</span> <span class="n">specific_energy</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;determines specific specific power from a ragone curve correlation</span>
-<span class="sd">    Assumptions:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines specific power from a Ragone curve correlation.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    battery : Battery</span>
+<span class="sd">        The battery component with the following attributes:</span>
+<span class="sd">            - cell.ragone.const_1 : float</span>
+<span class="sd">                Coefficient in the Ragone curve equation [W/kg]</span>
+<span class="sd">            - cell.ragone.const_2 : float</span>
+<span class="sd">                Exponent coefficient in the Ragone curve equation [kg/J]</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy value for which to calculate the specific power [J/kg]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    None</span>
+<span class="sd">        This function modifies the battery object in-place, setting the following attributes:</span>
+<span class="sd">            - specific_power : float</span>
+<span class="sd">                Calculated specific power [W/kg]</span>
+<span class="sd">            - specific_energy : float</span>
+<span class="sd">                Input specific energy value [J/kg]</span>
 <span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    battery.</span>
-<span class="sd">      specific_energy [J/kg]               </span>
-<span class="sd">      ragone.</span>
-<span class="sd">        constant_1    [W/kg]</span>
-<span class="sd">        constant_2    [J/kg]</span>
-<span class="sd">                </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">    battery.</span>
-<span class="sd">      specific_power  [W/kg]   </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the specific power of a battery based on its specific energy</span>
+<span class="sd">    using a Ragone curve correlation. The Ragone curve describes the trade-off between</span>
+<span class="sd">    specific energy and specific power in energy storage devices.</span>
 <span class="sd">    </span>
+<span class="sd">    The correlation used is:</span>
 <span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        P_{specific} = C_1 \\cdot 10^{C_2 \\cdot E_{specific}}</span>
 <span class="sd">    </span>
+<span class="sd">    where:</span>
+<span class="sd">      - :math:`P_{specific}` is the specific power [W/kg]</span>
+<span class="sd">      - :math:`E_{specific}` is the specific energy [J/kg]</span>
+<span class="sd">      - :math:`C_1` and :math:`C_2` are empirical constants</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * The Ragone curve can be accurately represented by the exponential equation</span>
+<span class="sd">        * The correlation is valid across the entire range of specific energy values</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_energy</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">const_1</span>                 <span class="o">=</span> <span class="n">battery</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">ragone</span><span class="o">.</span><span class="n">const_1</span>

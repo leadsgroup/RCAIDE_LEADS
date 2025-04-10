@@ -394,7 +394,52 @@
 <div class="viewcode-block" id="Liquid_Hydrogen">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.html#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Liquid_Hydrogen</span><span class="p">(</span><span class="n">Propellant</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Liquid hydrogen fuel class </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing liquid hydrogen (LH2) fuel properties for aviation applications.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the propellant (&#39;Liquid_H2&#39;)</span>
+<span class="sd">    reactant : str</span>
+<span class="sd">        Oxidizer used for combustion (&#39;O2&#39;)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Fuel density in kg/m³ (59.9)</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy content in J/kg (141.86e6)</span>
+<span class="sd">    energy_density : float</span>
+<span class="sd">        Energy density in J/m³ (8491.0e6)</span>
+<span class="sd">    stoichiometric_fuel_to_air : float</span>
+<span class="sd">        Stoichiometric fuel-to-air ratio (0.0291)</span>
+<span class="sd">    temperatures : Data</span>
+<span class="sd">        Critical temperatures</span>
+<span class="sd">            - autoignition : float</span>
+<span class="sd">                Autoignition temperature in K (845.15)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Liquid hydrogen represents a zero-carbon aviation fuel option with the highest </span>
+<span class="sd">    specific energy of any fuel, but requires cryogenic storage at extremely low </span>
+<span class="sd">    temperatures (-253°C).</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Specific Energy&#39;</span>
+<span class="sd">        Energy content per unit mass, approximately 3 times higher than kerosene</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Energy Density&#39;</span>
+<span class="sd">        Energy content per unit volume, lower than conventional fuels due to low density</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Stoichiometric Fuel-to-Air Ratio&#39;</span>
+<span class="sd">        Ideal fuel-to-air mass ratio for complete combustion to H2O</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Properties are for liquid hydrogen</span>
+<span class="sd">        * No consideration of boil-off losses</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Roberts, K. (2008). ANALYSIS AND DESIGN OF A HYPERSONIC SCRAMJET ENGINE WITH A STARTING MACH NUMBER OF 4.00 (thesis). UTA. University of Texas at Austin. Retrieved December 30, 2024, from https://arc.uta.edu/publications/td_files/Kristen%20Roberts%20MS.pdf. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -409,11 +454,18 @@
         
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                        <span class="o">=</span> <span class="s1">&#39;Liquid_H2&#39;</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span>                   <span class="o">=</span> <span class="s1">&#39;O2&#39;</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>                    <span class="o">=</span> <span class="mf">59.9</span>                             <span class="c1"># [kg/m^3] </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>                    <span class="o">=</span> <span class="mf">70.85</span>                            <span class="c1"># [kg/m^3]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span>            <span class="o">=</span> <span class="mf">141.86e6</span>                         <span class="c1"># [J/kg] </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>             <span class="o">=</span> <span class="mf">8491.0e6</span>                         <span class="c1"># [J/m^3] </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_to_air</span> <span class="o">=</span> <span class="mf">0.0291</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">autoignition</span>  <span class="o">=</span> <span class="mf">845.15</span>                           <span class="c1"># [K]         </span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">autoignition</span>  <span class="o">=</span> <span class="mf">845.15</span>                           <span class="c1"># [K]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mf">0.029411</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
 
 </pre></div>
 

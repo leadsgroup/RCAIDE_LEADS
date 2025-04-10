@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,24 +543,75 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power.find_specific_power">
 <span class="sig-name descname"><span class="pre">find_specific_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specific_energy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Common/find_specific_power.html#find_specific_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power.find_specific_power" title="Link to this definition">#</a></dt>
-<dd><p>determines specific specific power from a ragone curve correlation
-Assumptions:
-None</p>
-<p>Inputs:
-battery.</p>
-<blockquote>
-<div><p>specific_energy [J/kg]
-ragone.</p>
-<blockquote>
-<div><p>constant_1    [W/kg]
-constant_2    [J/kg]</p>
-</div></blockquote>
-</div></blockquote>
-<p>Outputs:
-battery.</p>
-<blockquote>
-<div><p>specific_power  [W/kg]</p>
-</div></blockquote>
+<dd><p>Determines specific power from a Ragone curve correlation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery</strong> (<em>Battery</em>) – <dl class="simple">
+<dt>The battery component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>cell.ragone.const_1<span class="classifier">float</span></dt><dd><p>Coefficient in the Ragone curve equation [W/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.ragone.const_2<span class="classifier">float</span></dt><dd><p>Exponent coefficient in the Ragone curve equation [kg/J]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>specific_energy</strong> (<em>float</em>) – Specific energy value for which to calculate the specific power [J/kg]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>This function modifies the battery object in-place, setting the following attributes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>specific_power<span class="classifier">float</span></dt><dd><p>Calculated specific power [W/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>specific_energy<span class="classifier">float</span></dt><dd><p>Input specific energy value [J/kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the specific power of a battery based on its specific energy
+using a Ragone curve correlation. The Ragone curve describes the trade-off between
+specific energy and specific power in energy storage devices.</p>
+<p>The correlation used is:</p>
+<div class="math notranslate nohighlight">
+\[P_{specific} = C_1 \cdot 10^{C_2 \cdot E_{specific}}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P_{specific}\)</span> is the specific power [W/kg]</p></li>
+<li><p><span class="math notranslate nohighlight">\(E_{specific}\)</span> is the specific energy [J/kg]</p></li>
+<li><p><span class="math notranslate nohighlight">\(C_1\)</span> and <span class="math notranslate nohighlight">\(C_2\)</span> are empirical constants</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>The Ragone curve can be accurately represented by the exponential equation</p></li>
+<li><p>The correlation is valid across the entire range of specific energy values</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_energy</span></code></p>
+</div>
 </dd></dl>
 
 </section>

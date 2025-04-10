@@ -388,27 +388,65 @@
 <div class="viewcode-block" id="time">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Initialize.time.html#RCAIDE.Library.Mission.Common.Initialize.time.time">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">time</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Sets the initial time of the vehicle at the start of the segment</span>
-<span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">        Only used if there is an initial condition</span>
-<span class="sd">        </span>
-<span class="sd">        Inputs:</span>
-<span class="sd">            state.initials.conditions:</span>
-<span class="sd">                frames.inertial.time     [seconds]</span>
-<span class="sd">                frames.planet.start_time [seconds]</span>
-<span class="sd">            state.conditions:           </span>
-<span class="sd">                frames.inertial.time     [seconds]</span>
-<span class="sd">            segment.start_time           [seconds]</span>
-<span class="sd">            </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">            state.conditions:           </span>
-<span class="sd">                frames.inertial.time     [seconds]</span>
-<span class="sd">                frames.planet.start_time [seconds]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes time variables for mission segment analysis</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">        N/A</span>
-<span class="sd">                                </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function sets up the initial time values for both inertial and</span>
+<span class="sd">    planetary reference frames. It handles time continuity between segments</span>
+<span class="sd">    and establishes start times for new segments.</span>
+
+<span class="sd">    The function follows this priority for time initialization:</span>
+<span class="sd">        1. Previous segment final time (if initials exist)</span>
+<span class="sd">        2. Explicit segment start time (if specified)</span>
+<span class="sd">        3. Current initial time value</span>
+
+<span class="sd">    **Required Segment State Variables**</span>
+
+<span class="sd">    If segment.state.initials exists:</span>
+<span class="sd">        state.initials.conditions.frames:</span>
+<span class="sd">            inertial:</span>
+<span class="sd">                - time : array</span>
+<span class="sd">                    Previous segment final time [s]</span>
+<span class="sd">            planet:</span>
+<span class="sd">                - start_time : float</span>
+<span class="sd">                    Previous segment start time [s]</span>
+
+<span class="sd">    state.conditions.frames:</span>
+<span class="sd">        inertial:</span>
+<span class="sd">            - time : array</span>
+<span class="sd">                Current segment time array [s]</span>
+<span class="sd">        planet:</span>
+<span class="sd">            - start_time : float</span>
+<span class="sd">                Current segment start time [s]</span>
+
+<span class="sd">    **Optional Segment Parameters**</span>
+<span class="sd">    </span>
+<span class="sd">    segment:</span>
+<span class="sd">        - start_time : float</span>
+<span class="sd">            Explicit segment start time [s]</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Continuous time tracking when using initials</span>
+<span class="sd">        * Valid time values (non-negative)</span>
+<span class="sd">        * Proper time synchronization between frames</span>
+<span class="sd">        * Time measured in seconds</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment conditions directly</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
+<span class="sd">    RCAIDE.Library.Mission.Common.Initialize.planet_position</span>
 <span class="sd">    &quot;&quot;&quot;</span>        
     
     <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="p">:</span>

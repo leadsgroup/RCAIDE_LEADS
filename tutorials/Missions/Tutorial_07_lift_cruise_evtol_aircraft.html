@@ -50,7 +50,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/tutorials/Missions/Tutorial_07_lift_cruise_evtol_aircraft.html" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Tutorial 8 - Tilt Stopped Rotor Vtail eVTOL Aircraft Simulation" href="Tutorial_08_tilt_stopped_rotor_vtail_evtol_aircraft.html" />
+    <link rel="next" title="Optimization" href="../optimization.html" />
     <link rel="prev" title="Tutorial 6 - Tiltrotor eVTOL Aircraft Simulation" href="Tutorial_06_tiltrotor_evtol_aircraft.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -413,20 +413,6 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="Tutorial_08_tilt_stopped_rotor_vtail_evtol_aircraft.html">Tutorial 8 - Tilt Stopped Rotor Vtail eVTOL Aircraft Simulation</a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
@@ -539,17 +525,16 @@
 <span class="c1"># ---------------------------------------------------------------------</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">                                  </span><span class="kn">import</span> <span class="n">wing_segmented_planform</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common</span><span class="w">    </span><span class="kn">import</span> <span class="n">compute_motor_weight</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Motor</span><span class="w">                        </span><span class="kn">import</span> <span class="n">design_DC_motor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Performance</span><span class="w">                                        </span><span class="kn">import</span> <span class="n">estimate_stall_speed</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Rotor</span><span class="w">                        </span><span class="kn">import</span> <span class="n">design_propeller</span> <span class="p">,</span><span class="n">design_lift_rotor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based</span><span class="w">      </span><span class="kn">import</span> <span class="n">converge_physics_based_weight_buildup</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia</span><span class="w">                  </span><span class="kn">import</span> <span class="n">compute_aircraft_moment_of_inertia</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity</span><span class="w">                  </span><span class="kn">import</span> <span class="n">compute_vehicle_center_of_gravity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                                                      </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE</span><span class="w"> </span><span class="kn">import</span>  <span class="n">load</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE</span><span class="w"> </span><span class="kn">import</span>  <span class="n">save</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">                                             </span><span class="kn">import</span> <span class="n">segment_properties</span><span class="p">,</span><span class="n">wing_segmented_planform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor</span><span class="w">                          </span><span class="kn">import</span> <span class="n">design_electric_rotor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                                                                 </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.load</span><span class="w">    </span><span class="kn">import</span> <span class="n">load</span> <span class="k">as</span> <span class="n">load_propulsor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.save</span><span class="w">    </span><span class="kn">import</span> <span class="n">save</span> <span class="k">as</span> <span class="n">save_propulsor</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -628,12 +613,18 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="k">def</span><span class="w"> </span><span class="nf">vehicle_setup</span><span class="p">()</span> <span class="p">:</span>
-
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ----------------------------------------------------------------------</span>
+<span class="c1">#   Build the Vehicle</span>
+<span class="c1"># ----------------------------------------------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vehicle_setup</span><span class="p">(</span><span class="n">new_regression</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">:</span>
 
     <span class="n">ospath</span>                                <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Notebook&#39;</span><span class="p">))</span>
     <span class="n">separator</span>                             <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
-    <span class="n">airfoil_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Regressions&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Vehicles&#39;</span> <span class="o">+</span> <span class="n">separator</span>
+    <span class="n">rel_path</span>                              <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;..&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;VnV&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Vehicles&#39;</span> <span class="o">+</span> <span class="n">separator</span>
+    <span class="n">airfoil_path</span>                          <span class="o">=</span> <span class="n">rel_path</span>
+
+    <span class="n">local_path</span>       <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span>
+
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># ################################################# Vehicle-level Properties ########################################################</span>
@@ -648,7 +639,7 @@
     <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span>           <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>   <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">ultimate_load</span>     <span class="o">=</span> <span class="mf">5.7</span>
-    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">limit_load</span>        <span class="o">=</span> <span class="mf">3.</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">positive_limit_load</span>        <span class="o">=</span> <span class="mf">3.</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">passengers</span>                        <span class="o">=</span> <span class="mi">5</span>
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
@@ -677,8 +668,6 @@
     <span class="n">wing</span><span class="o">.</span><span class="n">winglet_fraction</span>         <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span>                <span class="o">=</span> <span class="kc">True</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span>                 <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">airfoil</span>                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
-    <span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>       <span class="o">=</span> <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_63_412.txt&#39;</span>
 
     <span class="c1"># Segment</span>
     <span class="n">segment</span>                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
@@ -689,7 +678,6 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>     <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>  <span class="o">=</span> <span class="mf">0.9</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>    <span class="o">=</span> <span class="mf">0.16</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">append_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
     <span class="c1"># Segment</span>
@@ -701,7 +689,6 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>     <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>  <span class="o">=</span> <span class="mf">1.27273</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>    <span class="o">=</span> <span class="mf">0.16</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">append_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
     <span class="c1"># Segment</span>
@@ -713,7 +700,6 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>     <span class="o">=</span> <span class="mf">35.000</span><span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>  <span class="o">=</span> <span class="mf">45.000</span><span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>    <span class="o">=</span> <span class="mf">0.16</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">append_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
     <span class="c1"># Segment</span>
@@ -725,7 +711,6 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>     <span class="o">=</span> <span class="mf">60.</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>  <span class="o">=</span> <span class="mf">70.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>    <span class="o">=</span> <span class="mf">0.16</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">append_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
     <span class="c1"># Segment</span>
@@ -737,7 +722,6 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>     <span class="o">=</span> <span class="mi">0</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>  <span class="o">=</span> <span class="mi">0</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>    <span class="o">=</span> <span class="mf">0.16</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">append_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
 
@@ -1009,10 +993,6 @@
     <span class="n">boom</span><span class="o">.</span><span class="n">tag</span>          <span class="o">=</span> <span class="s1">&#39;boom_2l&#39;</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">boom</span><span class="p">)</span>
 
-    <span class="n">sys</span>                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">System</span><span class="p">()</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>       <span class="o">=</span> <span class="mi">5</span> <span class="c1"># kg</span>
-    <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
-
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># ########################################################  Energy Network  #########################################################</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
@@ -1049,6 +1029,7 @@
     <span class="c1"># Electronic Speed Controller</span>
     <span class="n">propeller_esc</span>                                          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
     <span class="n">propeller_esc</span><span class="o">.</span><span class="n">efficiency</span>                               <span class="o">=</span> <span class="mf">0.95</span>
+    <span class="n">propeller_esc</span><span class="o">.</span><span class="n">bus_voltage</span>                              <span class="o">=</span> <span class="n">cruise_bus</span><span class="o">.</span><span class="n">voltage</span>
     <span class="n">propeller_esc</span><span class="o">.</span><span class="n">origin</span>                                   <span class="o">=</span> <span class="p">[[</span><span class="mf">6.583</span><span class="p">,</span> <span class="mf">1.300</span><span class="p">,</span>  <span class="mf">1.092</span> <span class="p">]]</span>
     <span class="n">propeller_esc</span><span class="o">.</span><span class="n">tag</span>                                      <span class="o">=</span> <span class="s1">&#39;propeller_esc_1&#39;</span>
     <span class="n">cruise_propulsor_1</span><span class="o">.</span><span class="n">electronic_speed_controller</span>         <span class="o">=</span> <span class="n">propeller_esc</span>
@@ -1072,7 +1053,6 @@
     <span class="n">propeller</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust</span>                         <span class="o">=</span> <span class="mi">3150</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">rotation</span>                                     <span class="o">=</span> <span class="mi">1</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">variable_pitch</span>                               <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">propeller</span><span class="o">.</span><span class="n">fidelity</span>                                     <span class="o">=</span> <span class="s1">&#39;Blade_Element_Momentum_Theory_Helmholtz&#39;</span>
     <span class="n">airfoil</span>                                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
     <span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>                                <span class="o">=</span> <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412.txt&#39;</span>
     <span class="n">airfoil</span><span class="o">.</span><span class="n">polar_files</span>                                    <span class="o">=</span> <span class="p">[</span><span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_50000.txt&#39;</span> <span class="p">,</span>
@@ -1085,7 +1065,6 @@
                                                              <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_7500000.txt&#39;</span> <span class="p">]</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>
     <span class="n">propeller</span><span class="o">.</span><span class="n">airfoil_polar_stations</span>                       <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">design_propeller</span><span class="p">(</span><span class="n">propeller</span><span class="p">)</span>
     <span class="n">cruise_propulsor_1</span><span class="o">.</span><span class="n">rotor</span>                               <span class="o">=</span> <span class="n">propeller</span>
 
     <span class="c1"># Propeller Motor</span>
@@ -1096,11 +1075,6 @@
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">nominal_voltage</span>                        <span class="o">=</span> <span class="n">cruise_bus</span><span class="o">.</span><span class="n">voltage</span>
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">no_load_current</span>                        <span class="o">=</span> <span class="mf">0.001</span>
     <span class="n">propeller_motor</span><span class="o">.</span><span class="n">wing_tag</span>                               <span class="o">=</span> <span class="s1">&#39;horizontal_tail&#39;</span>
-    <span class="n">propeller_motor</span><span class="o">.</span><span class="n">rotor_radius</span>                           <span class="o">=</span> <span class="n">propeller</span><span class="o">.</span><span class="n">tip_radius</span>
-    <span class="n">propeller_motor</span><span class="o">.</span><span class="n">design_torque</span>                          <span class="o">=</span> <span class="n">propeller</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_torque</span>
-    <span class="n">propeller_motor</span><span class="o">.</span><span class="n">angular_velocity</span>                       <span class="o">=</span> <span class="n">propeller</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_angular_velocity</span><span class="o">/</span><span class="n">propeller_motor</span><span class="o">.</span><span class="n">gear_ratio</span>
-    <span class="n">design_DC_motor</span><span class="p">(</span><span class="n">propeller_motor</span><span class="p">)</span>
-    <span class="n">propeller_motor</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                   <span class="o">=</span> <span class="n">compute_motor_weight</span><span class="p">(</span><span class="n">propeller_motor</span><span class="p">)</span>
     <span class="n">cruise_propulsor_1</span><span class="o">.</span><span class="n">motor</span>                               <span class="o">=</span> <span class="n">propeller_motor</span>
 
     <span class="c1"># rear propeller nacelle</span>
@@ -1176,6 +1150,10 @@
     <span class="n">nac_segment</span><span class="o">.</span><span class="n">width</span>              <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">propeller_nacelle</span><span class="o">.</span><span class="n">append_segment</span><span class="p">(</span><span class="n">nac_segment</span><span class="p">)</span>
     <span class="n">cruise_propulsor_1</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">propeller_nacelle</span>
+
+    <span class="n">design_electric_rotor</span><span class="p">(</span><span class="n">cruise_propulsor_1</span><span class="p">)</span>
+
+
     <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cruise_propulsor_1</span><span class="p">)</span>
 
     <span class="c1"># make and append copy of forward propulsor (efficient coding)</span>
@@ -1193,7 +1171,7 @@
     <span class="c1"># Additional Bus Loads</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Payload</span>
-    <span class="n">payload</span>                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">payload</span>                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Payloads</span><span class="o">.</span><span class="n">Payload</span><span class="p">()</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">power_draw</span>             <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>   <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">cruise_bus</span><span class="o">.</span><span class="n">payload</span>             <span class="o">=</span> <span class="n">payload</span>
@@ -1241,6 +1219,7 @@
     <span class="n">lift_rotor_esc</span>                                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Modulators</span><span class="o">.</span><span class="n">Electronic_Speed_Controller</span><span class="p">()</span>
     <span class="n">lift_rotor_esc</span><span class="o">.</span><span class="n">efficiency</span>                              <span class="o">=</span> <span class="mf">0.95</span>
     <span class="n">lift_rotor_esc</span><span class="o">.</span><span class="n">origin</span>                                  <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mf">0.073</span> <span class="p">,</span>  <span class="mf">1.950</span> <span class="p">,</span> <span class="mf">1.2</span><span class="p">]]</span>
+    <span class="n">lift_rotor_esc</span><span class="o">.</span><span class="n">bus_voltage</span>                             <span class="o">=</span> <span class="n">lift_bus</span><span class="o">.</span><span class="n">voltage</span>
     <span class="n">lift_propulsor_1</span><span class="o">.</span><span class="n">electronic_speed_controller</span>           <span class="o">=</span> <span class="n">lift_rotor_esc</span>
 
     <span class="c1"># Lift Rotor Design</span>
@@ -1257,19 +1236,17 @@
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_thrust</span>                           <span class="o">=</span> <span class="n">Hover_Load</span><span class="o">/</span><span class="mi">7</span>
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_freestream_velocity</span>              <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lift_rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_thrust</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mf">1.2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
     <span class="n">airfoil</span>                                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
-    <span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>                                <span class="o">=</span> <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412.txt&#39;</span>
-    <span class="n">airfoil</span><span class="o">.</span><span class="n">polar_files</span>                                    <span class="o">=</span> <span class="p">[</span><span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_50000.txt&#39;</span> <span class="p">,</span>
-                                                             <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_100000.txt&#39;</span> <span class="p">,</span>
-                                                              <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_200000.txt&#39;</span> <span class="p">,</span>
-                                                              <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_500000.txt&#39;</span> <span class="p">,</span>
-                                                              <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_1000000.txt&#39;</span><span class="p">,</span>
-                                                              <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_3500000.txt&#39;</span><span class="p">,</span>
-                                                              <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_5000000.txt&#39;</span><span class="p">,</span>
-                                                              <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_7500000.txt&#39;</span> <span class="p">]</span>
+    <span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>                       <span class="o">=</span>  <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412.txt&#39;</span>
+    <span class="n">airfoil</span><span class="o">.</span><span class="n">polar_files</span>                           <span class="o">=</span> <span class="p">[</span><span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_50000.txt&#39;</span> <span class="p">,</span>
+                                                     <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_100000.txt&#39;</span> <span class="p">,</span>
+                                                     <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_200000.txt&#39;</span> <span class="p">,</span>
+                                                     <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_500000.txt&#39;</span> <span class="p">,</span>
+                                                     <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_1000000.txt&#39;</span><span class="p">,</span>
+                                                     <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_3500000.txt&#39;</span><span class="p">,</span>
+                                                     <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_5000000.txt&#39;</span><span class="p">,</span>
+                                                     <span class="n">airfoil_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;Polars&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;NACA_4412_polar_Re_7500000.txt&#39;</span> <span class="p">]</span>
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span>
     <span class="n">lift_rotor</span><span class="o">.</span><span class="n">airfoil_polar_stations</span>                      <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">design_lift_rotor</span><span class="p">(</span><span class="n">lift_rotor</span><span class="p">)</span>
-
     <span class="n">lift_propulsor_1</span><span class="o">.</span><span class="n">rotor</span> <span class="o">=</span>  <span class="n">lift_rotor</span>
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
@@ -1280,11 +1257,6 @@
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">nominal_voltage</span>                       <span class="o">=</span> <span class="n">lift_bus</span><span class="o">.</span><span class="n">voltage</span><span class="o">*</span><span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">propeller_radius</span>                      <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
     <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">no_load_current</span>                       <span class="o">=</span> <span class="mf">0.01</span>
-    <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">rotor_radius</span>                          <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">tip_radius</span>
-    <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">design_torque</span>                         <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_torque</span>
-    <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">angular_velocity</span>                      <span class="o">=</span> <span class="n">lift_rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_angular_velocity</span><span class="o">/</span><span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">gear_ratio</span>
-    <span class="n">design_DC_motor</span><span class="p">(</span><span class="n">lift_rotor_motor</span><span class="p">)</span>
-    <span class="n">lift_rotor_motor</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                  <span class="o">=</span> <span class="n">compute_motor_weight</span><span class="p">(</span><span class="n">lift_rotor_motor</span><span class="p">)</span>
     <span class="n">lift_propulsor_1</span><span class="o">.</span><span class="n">motor</span>                                 <span class="o">=</span> <span class="n">lift_rotor_motor</span>
 
 
@@ -1299,6 +1271,10 @@
     <span class="n">nacelle</span><span class="o">.</span><span class="n">flow_through</span>              <span class="o">=</span> <span class="kc">False</span>
     <span class="n">nacelle</span><span class="o">.</span><span class="n">origin</span>                    <span class="o">=</span> <span class="p">[[</span>  <span class="o">-</span><span class="mf">0.073</span><span class="p">,</span>  <span class="mf">1.950</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]]</span>
     <span class="n">lift_propulsor_1</span><span class="o">.</span><span class="n">nacelle</span>          <span class="o">=</span>  <span class="n">nacelle</span>
+
+    <span class="n">design_electric_rotor</span><span class="p">(</span><span class="n">lift_propulsor_1</span><span class="p">)</span>
+
+    <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lift_propulsor_1</span><span class="p">)</span>
 
 
     <span class="c1"># Front Rotors Locations</span>
@@ -1329,7 +1305,7 @@
     <span class="c1"># Additional Bus Loads</span>
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Payload</span>
-    <span class="n">payload</span>                                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
+    <span class="n">payload</span>                                                 <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Payloads</span><span class="o">.</span><span class="n">Payload</span><span class="p">()</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">power_draw</span>                                      <span class="o">=</span> <span class="mf">10.</span> <span class="c1"># Watts</span>
     <span class="n">payload</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                            <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kg</span>
     <span class="n">lift_bus</span><span class="o">.</span><span class="n">payload</span>                                        <span class="o">=</span> <span class="n">payload</span>
@@ -1345,26 +1321,8 @@
 
     <span class="c1"># append energy network</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">append_energy_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
-
-    <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="c1"># ##################################   Determine Vehicle Mass Properties Using Physic Based Methods  ################################</span>
-    <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">converged_vehicle</span><span class="p">,</span> <span class="n">breakdown</span> <span class="o">=</span> <span class="n">converge_physics_based_weight_buildup</span><span class="p">(</span><span class="n">vehicle</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">breakdown</span><span class="p">)</span>
-
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#   CG Location</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="n">_</span> <span class="p">,</span> <span class="n">_</span> <span class="o">=</span>  <span class="n">compute_vehicle_center_of_gravity</span><span class="p">(</span><span class="n">converged_vehicle</span><span class="p">)</span>
-    <span class="n">CG_location</span>  <span class="o">=</span> <span class="n">converged_vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>
-
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#   Operating Aircraft MOI</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_aircraft_moment_of_inertia</span><span class="p">(</span><span class="n">converged_vehicle</span><span class="p">,</span> <span class="n">CG_location</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">converged_vehicle</span>
-<br/><br/></pre></div>
+    <span class="k">return</span> <span class="n">vehicle</span>
+<br/></pre></div>
 </div>
 </div>
 </section>
@@ -1416,7 +1374,7 @@
     <span class="n">configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertical_config</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">configs</span>
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 </section>
@@ -1484,7 +1442,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="k">def</span><span class="w"> </span><span class="nf">base_analysis</span><span class="p">(</span><span class="n">vehicle</span><span class="p">):</span>
 
-     <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#   Initialize the Analyses</span>
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="n">analyses</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Vehicle</span><span class="p">()</span>
@@ -1492,12 +1450,14 @@
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Weights</span>
     <span class="n">weights</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Electric</span><span class="p">()</span>
+    <span class="n">weights</span><span class="o">.</span><span class="n">aircraft_type</span> <span class="o">=</span> <span class="s2">&quot;VTOL&quot;</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Aerodynamics Analysis</span>
     <span class="n">aerodynamics</span>          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Aerodynamics</span><span class="o">.</span><span class="n">Vortex_Lattice_Method</span><span class="p">()</span>
+    <span class="n">aerodynamics</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">Mach</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span>  <span class="p">,</span><span class="mf">0.3</span><span class="p">,</span>  <span class="mf">0.5</span><span class="p">,</span>  <span class="mf">0.65</span> <span class="p">,</span> <span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">])</span>
     <span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aerodynamics</span><span class="p">)</span>
 
@@ -1526,7 +1486,7 @@
 
     <span class="c1"># done!</span>
     <span class="k">return</span> <span class="n">analyses</span>
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 </section>
@@ -1641,11 +1601,12 @@
 
     <span class="c1"># base segment</span>
     <span class="n">base_segment</span>  <span class="o">=</span> <span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
+    <span class="n">base_segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">type</span>  <span class="o">=</span> <span class="s2">&quot;root_finder&quot;</span>
 
     <span class="c1"># VSTALL Calculation</span>
     <span class="n">vehicle_mass</span>   <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
     <span class="n">reference_area</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">reference_area</span>
-    <span class="n">Vstall</span>         <span class="o">=</span> <span class="n">estimate_stall_speed</span><span class="p">(</span><span class="n">vehicle_mass</span><span class="p">,</span><span class="n">reference_area</span><span class="p">,</span><span class="n">altitude</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span><span class="n">maximum_lift_coefficient</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">)</span>
+    <span class="n">Vstall</span>         <span class="o">=</span>  <span class="mi">80</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">kts</span><span class="c1">#estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)</span>
 
     <span class="c1">#------------------------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Vertical Climb</span>
@@ -2007,2218 +1968,39 @@
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
+<div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Warning: pitch commanded for a fixed-pitch rotor. Changing to variable pitch rotor for weights analysis.
-Inputs
-[0.14       2.         1.         0.07       0.52359878 1.
- 0.5        0.52359878 0.5        0.5        0.52359878]
-Obj
-[0.76225801]
-Inputs
-[0.14001    2.         1.         0.07       0.52359878 1.
- 0.5        0.52359878 0.5        0.5        0.52359878]
-Obj
-[0.76224994]
-Inputs
-[0.14       1.99999    1.         0.07       0.52359878 1.
- 0.5        0.52359878 0.5        0.5        0.52359878]
-Obj
-[0.76225829]
-Inputs
-[0.14       2.         1.00001    0.07       0.52359878 1.
- 0.5        0.52359878 0.5        0.5        0.52359878]
-Obj
-[0.76225844]
-Inputs
-[0.14       2.         1.         0.07001    0.52359878 1.
- 0.5        0.52359878 0.5        0.5        0.52359878]
-Obj
-[0.76225085]
-Inputs
-[0.14       2.         1.         0.07       0.52360878 1.
- 0.5        0.52359878 0.5        0.5        0.52359878]
-Obj
-[0.76226293]
-Inputs
-[0.14       2.         1.         0.07       0.52359878 1.00001
- 0.5        0.52359878 0.5        0.5        0.52359878]
-Obj
-[0.76225904]
-Inputs
-[0.14       2.         1.         0.07       0.52359878 1.
- 0.50001    0.52359878 0.5        0.5        0.52359878]
-Obj
-[0.76225519]
-Inputs
-[0.14       2.         1.         0.07       0.52359878 1.
- 0.5        0.52360878 0.5        0.5        0.52359878]
-Obj
-[0.76226384]
-Inputs
-[0.14       2.         1.         0.07       0.52359878 1.
- 0.5        0.52359878 0.50001    0.5        0.52359878]
-Obj
-[0.76225692]
-Inputs
-[0.14       2.         1.         0.07       0.52359878 1.
- 0.5        0.52359878 0.5        0.50001    0.52359878]
-Obj
-[0.76225801]
-Inputs
-[0.14       2.         1.         0.07       0.52359878 1.
- 0.5        0.52359878 0.5        0.5        0.52358878]
-Obj
-[0.76225801]
-Inputs
-[0.07       0.55308445 0.25       0.07382168 0.78539816 2.
- 0.25       0.63961697 0.7        0.73427035 0.43938839]
-Obj
-[0.90977915]
-Inputs
-[0.07001    0.55308445 0.25       0.07382168 0.78539816 2.
- 0.25       0.63961697 0.7        0.73427035 0.43938839]
-Obj
-[0.90977601]
-Inputs
-[0.07       0.55309445 0.25       0.07382168 0.78539816 2.
- 0.25       0.63961697 0.7        0.73427035 0.43938839]
-Obj
-[0.90977906]
-Inputs
-[0.07       0.55308445 0.25001    0.07382168 0.78539816 2.
- 0.25       0.63961697 0.7        0.73427035 0.43938839]
-Obj
-[0.90977951]
-Inputs
-[0.07       0.55308445 0.25       0.07383168 0.78539816 2.
- 0.25       0.63961697 0.7        0.73427035 0.43938839]
-Obj
-[0.90977599]
-Inputs
-[0.07       0.55308445 0.25       0.07382168 0.78538816 2.
- 0.25       0.63961697 0.7        0.73427035 0.43938839]
-Obj
-[0.90977731]
-Inputs
-[0.07       0.55308445 0.25       0.07382168 0.78539816 1.99999
- 0.25       0.63961697 0.7        0.73427035 0.43938839]
-Obj
-[0.90977902]
-Inputs
-[0.07       0.55308445 0.25       0.07382168 0.78539816 2.
- 0.25001    0.63961697 0.7        0.73427035 0.43938839]
-Obj
-[0.90977775]
-Inputs
-[0.07       0.55308445 0.25       0.07382168 0.78539816 2.
- 0.25       0.63962697 0.7        0.73427035 0.43938839]
-Obj
-[0.90978093]
-Inputs
-[0.07       0.55308445 0.25       0.07382168 0.78539816 2.
- 0.25       0.63961697 0.69999    0.73427035 0.43938839]
-Obj
-[0.90977996]
-Inputs
-[0.07       0.55308445 0.25       0.07382168 0.78539816 2.
- 0.25       0.63961697 0.7        0.73428035 0.43938839]
-Obj
-[0.90977915]
-Inputs
-[0.07       0.55308445 0.25       0.07382168 0.78539816 2.
- 0.25       0.63961697 0.7        0.73427035 0.43939839]
-Obj
-[0.90977915]
-Inputs
-[0.07       0.25       0.25       0.03081998 0.34071254 2.
- 0.48438437 0.45148202 0.57811785 0.85       0.52359878]
-Obj
-[0.77432428]
-Inputs
-[0.07       0.43777825 0.25       0.05746201 0.61622086 2.
- 0.33916978 0.56804244 0.65363085 0.77829882 0.4714256 ]
-Obj
-[0.86947025]
-Inputs
-[0.07       0.49936274 0.25       0.06619963 0.70657765 2.
- 0.29154463 0.60627005 0.67839639 0.75478343 0.45431468]
-Obj
-[0.88927482]
-Inputs
-[0.07001    0.49936274 0.25       0.06619963 0.70657765 2.
- 0.29154463 0.60627005 0.67839639 0.75478343 0.45431468]
-Obj
-[0.88927097]
-Inputs
-[0.07       0.49937274 0.25       0.06619963 0.70657765 2.
- 0.29154463 0.60627005 0.67839639 0.75478343 0.45431468]
-Obj
-[0.8892747]
-Inputs
-[0.07       0.49936274 0.25001    0.06619963 0.70657765 2.
- 0.29154463 0.60627005 0.67839639 0.75478343 0.45431468]
-Obj
-[0.88927528]
-Inputs
-[0.07       0.49936274 0.25       0.06620963 0.70657765 2.
- 0.29154463 0.60627005 0.67839639 0.75478343 0.45431468]
-Obj
-[0.88927086]
-Inputs
-[0.07       0.49936274 0.25       0.06619963 0.70658765 2.
- 0.29154463 0.60627005 0.67839639 0.75478343 0.45431468]
-Obj
-[0.88927655]
-Inputs
-[0.07       0.49936274 0.25       0.06619963 0.70657765 1.99999
- 0.29154463 0.60627005 0.67839639 0.75478343 0.45431468]
-Obj
-[0.88927469]
-Inputs
-[0.07       0.49936274 0.25       0.06619963 0.70657765 2.
- 0.29155463 0.60627005 0.67839639 0.75478343 0.45431468]
-Obj
-[0.88927364]
-Inputs
-[0.07       0.49936274 0.25       0.06619963 0.70657765 2.
- 0.29154463 0.60628005 0.67839639 0.75478343 0.45431468]
-Obj
-[0.88927659]
-Inputs
-[0.07       0.49936274 0.25       0.06619963 0.70657765 2.
- 0.29154463 0.60627005 0.67840639 0.75478343 0.45431468]
-Obj
-[0.88927387]
-Inputs
-[0.07       0.49936274 0.25       0.06619963 0.70657765 2.
- 0.29154463 0.60627005 0.67839639 0.75479343 0.45431468]
-Obj
-[0.88927482]
-Inputs
-[0.07       0.49936274 0.25       0.06619963 0.70657765 2.
- 0.29154463 0.60627005 0.67839639 0.75478343 0.45432468]
-Obj
-[0.88927482]
-Inputs
-[0.09979948 0.25       0.31258226 0.05377187 0.78539816 2.
- 0.49418729 0.78539816 0.7        0.84228322 0.3251235 ]
-Obj
-[0.91294727]
-Inputs
-[0.0835221  0.38620947 0.27839794 0.06056029 0.74234401 2.
- 0.38349774 0.68755297 0.68819946 0.79448819 0.39569163]
-Obj
-[0.8987963]
-Inputs
-[0.0835321  0.38620947 0.27839794 0.06056029 0.74234401 2.
- 0.38349774 0.68755297 0.68819946 0.79448819 0.39569163]
-Obj
-[0.89879305]
-Inputs
-[0.0835221  0.38621947 0.27839794 0.06056029 0.74234401 2.
- 0.38349774 0.68755297 0.68819946 0.79448819 0.39569163]
-Obj
-[0.89879612]
-Inputs
-[0.0835221  0.38620947 0.27840794 0.06056029 0.74234401 2.
- 0.38349774 0.68755297 0.68819946 0.79448819 0.39569163]
-Obj
-[0.89879682]
-Inputs
-[0.0835221  0.38620947 0.27839794 0.06057029 0.74234401 2.
- 0.38349774 0.68755297 0.68819946 0.79448819 0.39569163]
-Obj
-[0.89879253]
-Inputs
-[0.0835221  0.38620947 0.27839794 0.06056029 0.74235401 2.
- 0.38349774 0.68755297 0.68819946 0.79448819 0.39569163]
-Obj
-[0.89879796]
-Inputs
-[0.0835221  0.38620947 0.27839794 0.06056029 0.74234401 1.99999
- 0.38349774 0.68755297 0.68819946 0.79448819 0.39569163]
-Obj
-[0.89879613]
-Inputs
-[0.0835221  0.38620947 0.27839794 0.06056029 0.74234401 2.
- 0.38350774 0.68755297 0.68819946 0.79448819 0.39569163]
-Obj
-[0.89879522]
-Inputs
-[0.0835221  0.38620947 0.27839794 0.06056029 0.74234401 2.
- 0.38349774 0.68756297 0.68819946 0.79448819 0.39569163]
-Obj
-[0.89879805]
-Inputs
-[0.0835221  0.38620947 0.27839794 0.06056029 0.74234401 2.
- 0.38349774 0.68755297 0.68820946 0.79448819 0.39569163]
-Obj
-[0.89879544]
-Inputs
-[0.0835221  0.38620947 0.27839794 0.06056029 0.74234401 2.
- 0.38349774 0.68755297 0.68819946 0.79449819 0.39569163]
-Obj
-[0.8987963]
-Inputs
-[0.0835221  0.38620947 0.27839794 0.06056029 0.74234401 2.
- 0.38349774 0.68755297 0.68819946 0.79448819 0.39570163]
-Obj
-[0.8987963]
-Inputs
-[0.07       1.58401603 1.31992739 0.14       0.10352452 2.
- 0.73023689 0.34987659 0.51547224 0.3        0.52359878]
-Obj
-[0.54642667]
-Inputs
-[0.07650543 1.00775626 0.81885189 0.10178188 0.41085793 2.
- 0.56342212 0.5123313  0.59857058 0.53789622 0.46206318]
-Obj
-[0.78116583]
-Inputs
-[0.08142276 0.57217245 0.44009844 0.07289354 0.64316541 2.
- 0.43733001 0.63512772 0.66138305 0.71771744 0.41554959]
-Obj
-[0.87081869]
-Inputs
-[0.08294277 0.43752764 0.32302065 0.06396376 0.71497478 2.
- 0.39835324 0.67308575 0.68079923 0.77330261 0.40117161]
-Obj
-[0.89113588]
-Inputs
-[0.08345285 0.39234417 0.28373225 0.06096715 0.73907223 2.
- 0.3852736  0.68582352 0.68731481 0.79195561 0.39634672]
-Obj
-[0.89787641]
-Inputs
-[0.08346285 0.39234417 0.28373225 0.06096715 0.73907223 2.
- 0.3852736  0.68582352 0.68731481 0.79195561 0.39634672]
-Obj
-[0.89787316]
-Inputs
-[0.08345285 0.39235417 0.28373225 0.06096715 0.73907223 2.
- 0.3852736  0.68582352 0.68731481 0.79195561 0.39634672]
-Obj
-[0.89787623]
-Inputs
-[0.08345285 0.39234417 0.28374225 0.06096715 0.73907223 2.
- 0.3852736  0.68582352 0.68731481 0.79195561 0.39634672]
-Obj
-[0.89787693]
-Inputs
-[0.08345285 0.39234417 0.28373225 0.06097715 0.73907223 2.
- 0.3852736  0.68582352 0.68731481 0.79195561 0.39634672]
-Obj
-[0.89787261]
-Inputs
-[0.08345285 0.39234417 0.28373225 0.06096715 0.73908223 2.
- 0.3852736  0.68582352 0.68731481 0.79195561 0.39634672]
-Obj
-[0.89787805]
-Inputs
-[0.08345285 0.39234417 0.28373225 0.06096715 0.73907223 1.99999
- 0.3852736  0.68582352 0.68731481 0.79195561 0.39634672]
-Obj
-[0.89787625]
-Inputs
-[0.08345285 0.39234417 0.28373225 0.06096715 0.73907223 2.
- 0.3852836  0.68582352 0.68731481 0.79195561 0.39634672]
-Obj
-[0.89787533]
-Inputs
-[0.08345285 0.39234417 0.28373225 0.06096715 0.73907223 2.
- 0.3852736  0.68583352 0.68731481 0.79195561 0.39634672]
-Obj
-[0.89787816]
-Inputs
-[0.08345285 0.39234417 0.28373225 0.06096715 0.73907223 2.
- 0.3852736  0.68582352 0.68732481 0.79195561 0.39634672]
-Obj
-[0.89787554]
-Inputs
-[0.08345285 0.39234417 0.28373225 0.06096715 0.73907223 2.
- 0.3852736  0.68582352 0.68731481 0.79196561 0.39634672]
-Obj
-[0.89787641]
-Inputs
-[0.08345285 0.39234417 0.28373225 0.06096715 0.73907223 2.
- 0.3852736  0.68582352 0.68731481 0.79195561 0.39635672]
-Obj
-[0.89787641]
-Inputs
-[0.12765337 1.75882078 1.4531095  0.14       0.03965614 2.
- 0.73344731 0.24692437 0.45373243 0.3        0.52359878]
-Obj
-[0.66884943]
-Inputs
-[0.12766337 1.75882078 1.4531095  0.14       0.03965614 2.
- 0.73344731 0.24692437 0.45373243 0.3        0.52359878]
-Obj
-[0.66884886]
-Inputs
-[0.12765337 1.75883078 1.4531095  0.14       0.03965614 2.
- 0.73344731 0.24692437 0.45373243 0.3        0.52359878]
-Obj
-[0.66884935]
-Inputs
-[0.12765337 1.75882078 1.4531195  0.14       0.03965614 2.
- 0.73344731 0.24692437 0.45373243 0.3        0.52359878]
-Obj
-[0.66884956]
-Inputs
-[0.12765337 1.75882078 1.4531095  0.13999    0.03965614 2.
- 0.73344731 0.24692437 0.45373243 0.3        0.52359878]
-Obj
-[0.66885306]
-Inputs
-[0.12765337 1.75882078 1.4531095  0.14       0.03966614 2.
- 0.73344731 0.24692437 0.45373243 0.3        0.52359878]
-Obj
-[0.66884009]
-Inputs
-[0.12765337 1.75882078 1.4531095  0.14       0.03965614 1.99999
- 0.73344731 0.24692437 0.45373243 0.3        0.52359878]
-Obj
-[0.6688495]
-Inputs
-[0.12765337 1.75882078 1.4531095  0.14       0.03965614 2.
- 0.73345731 0.24692437 0.45373243 0.3        0.52359878]
-Obj
-[0.66884962]
-Inputs
-[0.12765337 1.75882078 1.4531095  0.14       0.03965614 2.
- 0.73344731 0.24693437 0.45373243 0.3        0.52359878]
-Obj
-[0.66884073]
-Inputs
-[0.12765337 1.75882078 1.4531095  0.14       0.03965614 2.
- 0.73344731 0.24692437 0.45374243 0.3        0.52359878]
-Obj
-[0.66884013]
-Inputs
-[0.12765337 1.75882078 1.4531095  0.14       0.03965614 2.
- 0.73344731 0.24692437 0.45373243 0.30001    0.52359878]
-Obj
-[0.66884943]
-Inputs
-[0.12765337 1.75882078 1.4531095  0.14       0.03965614 2.
- 0.73344731 0.24692437 0.45373243 0.3        0.52358878]
-Obj
-[0.66884943]
-Inputs
-[7.83424219e-02 1.74848581e+00 1.06081905e+00 6.69535991e-02
- 5.81768192e-01 1.28561977e+00 3.38138105e-01 1.05471187e-15
- 6.66330968e-01 8.18264696e-01 4.07565831e-01]
-Obj
-[0.45460602]
-Inputs
-[0.12272227 1.75778729 1.41388046 0.13269536 0.09386735 1.92856198
- 0.69391639 0.22223193 0.47499228 0.35182647 0.51199548]
-Obj
-[0.62452404]
-Inputs
-[0.12273227 1.75778729 1.41388046 0.13269536 0.09386735 1.92856198
- 0.69391639 0.22223193 0.47499228 0.35182647 0.51199548]
-Obj
-[0.62452296]
-Inputs
-[0.12272227 1.75779729 1.41388046 0.13269536 0.09386735 1.92856198
- 0.69391639 0.22223193 0.47499228 0.35182647 0.51199548]
-Obj
-[0.62452394]
-Inputs
-[0.12272227 1.75778729 1.41389046 0.13269536 0.09386735 1.92856198
- 0.69391639 0.22223193 0.47499228 0.35182647 0.51199548]
-Obj
-[0.62452419]
-Inputs
-[0.12272227 1.75778729 1.41388046 0.13270536 0.09386735 1.92856198
- 0.69391639 0.22223193 0.47499228 0.35182647 0.51199548]
-Obj
-[0.62452041]
-Inputs
-[0.12272227 1.75778729 1.41388046 0.13269536 0.09387735 1.92856198
- 0.69391639 0.22223193 0.47499228 0.35182647 0.51199548]
-Obj
-[0.62451595]
-Inputs
-[0.12272227 1.75778729 1.41388046 0.13269536 0.09386735 1.92857198
- 0.69391639 0.22223193 0.47499228 0.35182647 0.51199548]
-Obj
-[0.6245239]
-Inputs
-[0.12272227 1.75778729 1.41388046 0.13269536 0.09386735 1.92856198
- 0.69392639 0.22223193 0.47499228 0.35182647 0.51199548]
-Obj
-[0.62452442]
-Inputs
-[0.12272227 1.75778729 1.41388046 0.13269536 0.09386735 1.92856198
- 0.69391639 0.22224193 0.47499228 0.35182647 0.51199548]
-Obj
-[0.62451696]
-Inputs
-[0.12272227 1.75778729 1.41388046 0.13269536 0.09386735 1.92856198
- 0.69391639 0.22223193 0.47500228 0.35182647 0.51199548]
-Obj
-[0.62451581]
-Inputs
-[0.12272227 1.75778729 1.41388046 0.13269536 0.09386735 1.92856198
- 0.69391639 0.22223193 0.47499228 0.35183647 0.51199548]
-Obj
-[0.62452404]
-Inputs
-[0.12272227 1.75778729 1.41388046 0.13269536 0.09386735 1.92856198
- 0.69391639 0.22223193 0.47499228 0.35182647 0.51200548]
-Obj
-[0.62452404]
-Inputs
-[0.0843435  1.57721629 1.22699295 0.07548832 0.61171679 1.21523302
- 0.8186561  0.         0.7        0.83219447 0.32158391]
-Obj
-[0.4685873]
-Inputs
-[0.1188844  1.73973019 1.39519171 0.12697466 0.14565229 1.85722908
- 0.70639036 0.20000874 0.49749305 0.39986327 0.49295432]
-Obj
-[0.58713577]
-Inputs
-[0.12231297 1.75586155 1.41188735 0.13208526 0.09939007 1.92095452
- 0.6952467  0.21986189 0.47739193 0.35694946 0.50996479]
-Obj
-[0.62020789]
-Inputs
-[0.12232297 1.75586155 1.41188735 0.13208526 0.09939007 1.92095452
- 0.6952467  0.21986189 0.47739193 0.35694946 0.50996479]
-Obj
-[0.62020676]
-Inputs
-[0.12231297 1.75587155 1.41188735 0.13208526 0.09939007 1.92095452
- 0.6952467  0.21986189 0.47739193 0.35694946 0.50996479]
-Obj
-[0.62020779]
-Inputs
-[0.12231297 1.75586155 1.41189735 0.13208526 0.09939007 1.92095452
- 0.6952467  0.21986189 0.47739193 0.35694946 0.50996479]
-Obj
-[0.62020803]
-Inputs
-[0.12231297 1.75586155 1.41188735 0.13209526 0.09939007 1.92095452
- 0.6952467  0.21986189 0.47739193 0.35694946 0.50996479]
-Obj
-[0.62020426]
-Inputs
-[0.12231297 1.75586155 1.41188735 0.13208526 0.09940007 1.92095452
- 0.6952467  0.21986189 0.47739193 0.35694946 0.50996479]
-Obj
-[0.6201999]
-Inputs
-[0.12231297 1.75586155 1.41188735 0.13208526 0.09939007 1.92096452
- 0.6952467  0.21986189 0.47739193 0.35694946 0.50996479]
-Obj
-[0.62020773]
-Inputs
-[0.12231297 1.75586155 1.41188735 0.13208526 0.09939007 1.92095452
- 0.6952567  0.21986189 0.47739193 0.35694946 0.50996479]
-Obj
-[0.62020828]
-Inputs
-[0.12231297 1.75586155 1.41188735 0.13208526 0.09939007 1.92095452
- 0.6952467  0.21987189 0.47739193 0.35694946 0.50996479]
-Obj
-[0.62020091]
-Inputs
-[0.12231297 1.75586155 1.41188735 0.13208526 0.09939007 1.92095452
- 0.6952467  0.21986189 0.47740193 0.35694946 0.50996479]
-Obj
-[0.62019974]
-Inputs
-[0.12231297 1.75586155 1.41188735 0.13208526 0.09939007 1.92095452
- 0.6952467  0.21986189 0.47739193 0.35695946 0.50996479]
-Obj
-[0.62020789]
-Inputs
-[0.12231297 1.75586155 1.41188735 0.13208526 0.09939007 1.92095452
- 0.6952467  0.21986189 0.47739193 0.35694946 0.50997479]
-Obj
-[0.62020789]
-Inputs
-[0.09997554 1.11228224 1.05337776 0.06767441 0.68062871 1.47137393
- 1.10196904 0.         0.64847179 0.79791397 0.2999185 ]
-Obj
-[0.50813948]
-Inputs
-[0.12007923 1.69150361 1.37603639 0.12564418 0.15751394 1.87599646
- 0.73591894 0.1978757  0.49449992 0.40104592 0.48896016]
-Obj
-[0.58428888]
-Inputs
-[0.1220896  1.74942575 1.40830225 0.13144115 0.10520246 1.91645871
- 0.69931392 0.21766327 0.47910273 0.36135911 0.50786433]
-Obj
-[0.61625078]
-Inputs
-[0.1220996  1.74942575 1.40830225 0.13144115 0.10520246 1.91645871
- 0.69931392 0.21766327 0.47910273 0.36135911 0.50786433]
-Obj
-[0.6162496]
-Inputs
-[0.1220896  1.74943575 1.40830225 0.13144115 0.10520246 1.91645871
- 0.69931392 0.21766327 0.47910273 0.36135911 0.50786433]
-Obj
-[0.61625067]
-Inputs
-[0.1220896  1.74942575 1.40831225 0.13144115 0.10520246 1.91645871
- 0.69931392 0.21766327 0.47910273 0.36135911 0.50786433]
-Obj
-[0.61625092]
-Inputs
-[0.1220896  1.74942575 1.40830225 0.13145115 0.10520246 1.91645871
- 0.69931392 0.21766327 0.47910273 0.36135911 0.50786433]
-Obj
-[0.61624715]
-Inputs
-[0.1220896  1.74942575 1.40830225 0.13144115 0.10521246 1.91645871
- 0.69931392 0.21766327 0.47910273 0.36135911 0.50786433]
-Obj
-[0.61624294]
-Inputs
-[0.1220896  1.74942575 1.40830225 0.13144115 0.10520246 1.91646871
- 0.69931392 0.21766327 0.47910273 0.36135911 0.50786433]
-Obj
-[0.61625061]
-Inputs
-[0.1220896  1.74942575 1.40830225 0.13144115 0.10520246 1.91645871
- 0.69932392 0.21766327 0.47910273 0.36135911 0.50786433]
-Obj
-[0.61625118]
-Inputs
-[0.1220896  1.74942575 1.40830225 0.13144115 0.10520246 1.91645871
- 0.69931392 0.21767327 0.47910273 0.36135911 0.50786433]
-Obj
-[0.61624394]
-Inputs
-[0.1220896  1.74942575 1.40830225 0.13144115 0.10520246 1.91645871
- 0.69931392 0.21766327 0.47911273 0.36135911 0.50786433]
-Obj
-[0.61624271]
-Inputs
-[0.1220896  1.74942575 1.40830225 0.13144115 0.10520246 1.91645871
- 0.69931392 0.21766327 0.47910273 0.36136911 0.50786433]
-Obj
-[0.61625078]
-Inputs
-[0.1220896  1.74942575 1.40830225 0.13144115 0.10520246 1.91645871
- 0.69931392 0.21766327 0.47910273 0.36135911 0.50787433]
-Obj
-[0.61625078]
-Inputs
-[0.12672159 0.27321493 1.06139257 0.11651234 0.4321748  1.94873402
- 1.12637993 0.04585523 0.7        0.74041613 0.02877697]
-Obj
-[0.47945571]
-Inputs
-[0.1225528  1.60180467 1.37361129 0.12994827 0.13789969 1.91968624
- 0.74202052 0.20048247 0.50119245 0.39926481 0.45995559]
-Obj
-[0.58957237]
-Inputs
-[0.1225628  1.60180467 1.37361129 0.12994827 0.13789969 1.91968624
- 0.74202052 0.20048247 0.50119245 0.39926481 0.45995559]
-Obj
-[0.58957095]
-Inputs
-[0.1225528  1.60181467 1.37361129 0.12994827 0.13789969 1.91968624
- 0.74202052 0.20048247 0.50119245 0.39926481 0.45995559]
-Obj
-[0.58957225]
-Inputs
-[0.1225528  1.60180467 1.37362129 0.12994827 0.13789969 1.91968624
- 0.74202052 0.20048247 0.50119245 0.39926481 0.45995559]
-Obj
-[0.58957252]
-Inputs
-[0.1225528  1.60180467 1.37361129 0.12995827 0.13789969 1.91968624
- 0.74202052 0.20048247 0.50119245 0.39926481 0.45995559]
-Obj
-[0.58956874]
-Inputs
-[0.1225528  1.60180467 1.37361129 0.12994827 0.13790969 1.91968624
- 0.74202052 0.20048247 0.50119245 0.39926481 0.45995559]
-Obj
-[0.5895654]
-Inputs
-[0.1225528  1.60180467 1.37361129 0.12994827 0.13789969 1.91969624
- 0.74202052 0.20048247 0.50119245 0.39926481 0.45995559]
-Obj
-[0.58957217]
-Inputs
-[0.1225528  1.60180467 1.37361129 0.12994827 0.13789969 1.91968624
- 0.74203052 0.20048247 0.50119245 0.39926481 0.45995559]
-Obj
-[0.58957282]
-Inputs
-[0.1225528  1.60180467 1.37361129 0.12994827 0.13789969 1.91968624
- 0.74202052 0.20049247 0.50119245 0.39926481 0.45995559]
-Obj
-[0.58956628]
-Inputs
-[0.1225528  1.60180467 1.37361129 0.12994827 0.13789969 1.91968624
- 0.74202052 0.20048247 0.50120245 0.39926481 0.45995559]
-Obj
-[0.58956503]
-Inputs
-[0.1225528  1.60180467 1.37361129 0.12994827 0.13789969 1.91968624
- 0.74202052 0.20048247 0.50119245 0.39927481 0.45995559]
-Obj
-[0.58957237]
-Inputs
-[0.1225528  1.60180467 1.37361129 0.12994827 0.13789969 1.91968624
- 0.74202052 0.20048247 0.50119245 0.39926481 0.45996559]
-Obj
-[0.58957237]
-Inputs
-[0.1095824  0.97704119 1.16804554 0.09968189 0.43240138 1.66485282
- 1.15428382 0.06564543 0.7        0.69685868 0.1031122 ]
-Obj
-[0.47293176]
-Inputs
-[0.12125576 1.53932832 1.35305471 0.12692163 0.16734986 1.8942029
- 0.78324685 0.18699876 0.52107321 0.4290242  0.42427126]
-Obj
-[0.56807343]
-Inputs
-[0.12126576 1.53932832 1.35305471 0.12692163 0.16734986 1.8942029
- 0.78324685 0.18699876 0.52107321 0.4290242  0.42427126]
-Obj
-[0.56807174]
-Inputs
-[0.12125576 1.53933832 1.35305471 0.12692163 0.16734986 1.8942029
- 0.78324685 0.18699876 0.52107321 0.4290242  0.42427126]
-Obj
-[0.56807329]
-Inputs
-[0.12125576 1.53932832 1.35306471 0.12692163 0.16734986 1.8942029
- 0.78324685 0.18699876 0.52107321 0.4290242  0.42427126]
-Obj
-[0.56807359]
-Inputs
-[0.12125576 1.53932832 1.35305471 0.12693163 0.16734986 1.8942029
- 0.78324685 0.18699876 0.52107321 0.4290242  0.42427126]
-Obj
-[0.56806972]
-Inputs
-[0.12125576 1.53932832 1.35305471 0.12692163 0.16735986 1.8942029
- 0.78324685 0.18699876 0.52107321 0.4290242  0.42427126]
-Obj
-[0.56806715]
-Inputs
-[0.12125576 1.53932832 1.35305471 0.12692163 0.16734986 1.8942129
- 0.78324685 0.18699876 0.52107321 0.4290242  0.42427126]
-Obj
-[0.5680732]
-Inputs
-[0.12125576 1.53932832 1.35305471 0.12692163 0.16734986 1.8942029
- 0.78325685 0.18699876 0.52107321 0.4290242  0.42427126]
-Obj
-[0.56807392]
-Inputs
-[0.12125576 1.53932832 1.35305471 0.12692163 0.16734986 1.8942029
- 0.78324685 0.18700876 0.52107321 0.4290242  0.42427126]
-Obj
-[0.56806787]
-Inputs
-[0.12125576 1.53932832 1.35305471 0.12692163 0.16734986 1.8942029
- 0.78324685 0.18699876 0.52108321 0.4290242  0.42427126]
-Obj
-[0.56806659]
-Inputs
-[0.12125576 1.53932832 1.35305471 0.12692163 0.16734986 1.8942029
- 0.78324685 0.18699876 0.52107321 0.4290342  0.42427126]
-Obj
-[0.56807343]
-Inputs
-[0.12125576 1.53932832 1.35305471 0.12692163 0.16734986 1.8942029
- 0.78324685 0.18699876 0.52107321 0.4290242  0.42428126]
-Obj
-[0.56807343]
-Inputs
-[ 0.12082568  0.25        0.69004554  0.10339186  0.49125365  2.
-  1.44831393  0.04091973  0.7         0.85       -0.49311651]
-Rotor BEVW did not converge to a solution (Stall)
-Obj
-[0.48629556]
-Inputs
-[0.12121275 1.41039549 1.28675379 0.12456866 0.19974024 1.90478261
- 0.84975356 0.17239086 0.53896589 0.47112178 0.33253248]
-Obj
-[0.54942033]
-Inputs
-[0.12122275 1.41039549 1.28675379 0.12456866 0.19974024 1.90478261
- 0.84975356 0.17239086 0.53896589 0.47112178 0.33253248]
-Obj
-[0.54941845]
-Inputs
-[0.12121275 1.41040549 1.28675379 0.12456866 0.19974024 1.90478261
- 0.84975356 0.17239086 0.53896589 0.47112178 0.33253248]
-Obj
-[0.54942018]
-Inputs
-[0.12121275 1.41039549 1.28676379 0.12456866 0.19974024 1.90478261
- 0.84975356 0.17239086 0.53896589 0.47112178 0.33253248]
-Obj
-[0.54942051]
-Inputs
-[0.12121275 1.41039549 1.28675379 0.12457866 0.19974024 1.90478261
- 0.84975356 0.17239086 0.53896589 0.47112178 0.33253248]
-Obj
-[0.54941652]
-Inputs
-[0.12121275 1.41039549 1.28675379 0.12456866 0.19975024 1.90478261
- 0.84975356 0.17239086 0.53896589 0.47112178 0.33253248]
-Obj
-[0.54941472]
-Inputs
-[0.12121275 1.41039549 1.28675379 0.12456866 0.19974024 1.90479261
- 0.84975356 0.17239086 0.53896589 0.47112178 0.33253248]
-Obj
-[0.54942007]
-Inputs
-[0.12121275 1.41039549 1.28675379 0.12456866 0.19974024 1.90478261
- 0.84976356 0.17239086 0.53896589 0.47112178 0.33253248]
-Obj
-[0.54942084]
-Inputs
-[0.12121275 1.41039549 1.28675379 0.12456866 0.19974024 1.90478261
- 0.84975356 0.17240086 0.53896589 0.47112178 0.33253248]
-Obj
-[0.54941516]
-Inputs
-[0.12121275 1.41039549 1.28675379 0.12456866 0.19974024 1.90478261
- 0.84975356 0.17239086 0.53897589 0.47112178 0.33253248]
-Obj
-[0.54941391]
-Inputs
-[0.12121275 1.41039549 1.28675379 0.12456866 0.19974024 1.90478261
- 0.84975356 0.17239086 0.53896589 0.47113178 0.33253248]
-Obj
-[0.54942033]
-Inputs
-[0.12121275 1.41039549 1.28675379 0.12456866 0.19974024 1.90478261
- 0.84975356 0.17239086 0.53896589 0.47112178 0.33254248]
-Obj
-[0.54942033]
-Inputs
-[ 1.26886247e-01  2.50000000e-01  2.50000001e-01  1.03360759e-01
-  5.58123459e-01  1.88243294e+00  1.50000000e+00  1.15515425e-09
-  7.00000000e-01  8.50000000e-01 -5.23598776e-01]
-Rotor BEVW did not converge to a solution (Stall)
-Obj
-[0.48601548]
-Rotor BEVW did not converge to a solution (Stall)
-Inputs
-[0.12336159 0.97089493 0.89408261 0.11653615 0.33547812 1.89631766
- 1.09603483 0.10709771 0.59995766 0.61462216 0.0082722 ]
-Obj
-[0.49934921]
-Inputs
-[0.12337159 0.97089493 0.89408261 0.11653615 0.33547812 1.89631766
- 1.09603483 0.10709771 0.59995766 0.61462216 0.0082722 ]
-Obj
-[0.49934679]
-Inputs
-[0.12336159 0.97090493 0.89408261 0.11653615 0.33547812 1.89631766
- 1.09603483 0.10709771 0.59995766 0.61462216 0.0082722 ]
-Obj
-[0.499349]
-Inputs
-[0.12336159 0.97089493 0.89409261 0.11653615 0.33547812 1.89631766
- 1.09603483 0.10709771 0.59995766 0.61462216 0.0082722 ]
-Obj
-[0.49934948]
-Inputs
-[0.12336159 0.97089493 0.89408261 0.11654615 0.33547812 1.89631766
- 1.09603483 0.10709771 0.59995766 0.61462216 0.0082722 ]
-Obj
-[0.49934535]
-Inputs
-[0.12336159 0.97089493 0.89408261 0.11653615 0.33548812 1.89631766
- 1.09603483 0.10709771 0.59995766 0.61462216 0.0082722 ]
-Obj
-[0.49934523]
-Inputs
-[0.12336159 0.97089493 0.89408261 0.11653615 0.33547812 1.89632766
- 1.09603483 0.10709771 0.59995766 0.61462216 0.0082722 ]
-Obj
-[0.49934881]
-Inputs
-[0.12336159 0.97089493 0.89408261 0.11653615 0.33547812 1.89631766
- 1.09604483 0.10709771 0.59995766 0.61462216 0.0082722 ]
-Obj
-[0.49934989]
-Inputs
-[0.12336159 0.97089493 0.89408261 0.11653615 0.33547812 1.89631766
- 1.09603483 0.10710771 0.59995766 0.61462216 0.0082722 ]
-Obj
-[0.49934379]
-Inputs
-[0.12336159 0.97089493 0.89408261 0.11653615 0.33547812 1.89631766
- 1.09603483 0.10709771 0.59996766 0.61462216 0.0082722 ]
-Obj
-[0.49934369]
-Inputs
-[0.12336159 0.97089493 0.89408261 0.11653615 0.33547812 1.89631766
- 1.09603483 0.10709771 0.59995766 0.61463216 0.0082722 ]
-Obj
-[0.49934921]
-Inputs
-[0.12336159 0.97089493 0.89408261 0.11653615 0.33547812 1.89631766
- 1.09603483 0.10709771 0.59995766 0.61462216 0.0082822 ]
-Obj
-[0.49934921]
-Inputs
-[0.15786656 0.25       0.25       0.11636529 0.37714898 1.24693617
- 1.5        0.15132449 0.7        0.47415339 0.18676117]
-Obj
-[0.4584687]
-Inputs
-[0.15787656 0.25       0.25       0.11636529 0.37714898 1.24693617
- 1.5        0.15132449 0.7        0.47415339 0.18676117]
-Obj
-[0.45846671]
-Inputs
-[0.15786656 0.25001    0.25       0.11636529 0.37714898 1.24693617
- 1.5        0.15132449 0.7        0.47415339 0.18676117]
-Obj
-[0.45846841]
-Inputs
-[0.15786656 0.25       0.25001    0.11636529 0.37714898 1.24693617
- 1.5        0.15132449 0.7        0.47415339 0.18676117]
-Obj
-[0.4584693]
-Inputs
-[0.15786656 0.25       0.25       0.11637529 0.37714898 1.24693617
- 1.5        0.15132449 0.7        0.47415339 0.18676117]
-Obj
-[0.45846699]
-Inputs
-[0.15786656 0.25       0.25       0.11636529 0.37715898 1.24693617
- 1.5        0.15132449 0.7        0.47415339 0.18676117]
-Obj
-[0.45846579]
-Inputs
-[0.15786656 0.25       0.25       0.11636529 0.37714898 1.24694617
- 1.5        0.15132449 0.7        0.47415339 0.18676117]
-Obj
-[0.4584679]
-Inputs
-[0.15786656 0.25       0.25       0.11636529 0.37714898 1.24693617
- 1.49999    0.15132449 0.7        0.47415339 0.18676117]
-Obj
-[0.45846803]
-Inputs
-[0.15786656 0.25       0.25       0.11636529 0.37714898 1.24693617
- 1.5        0.15133449 0.7        0.47415339 0.18676117]
-Obj
-[0.45846343]
-Inputs
-[0.15786656 0.25       0.25       0.11636529 0.37714898 1.24693617
- 1.5        0.15132449 0.69999    0.47415339 0.18676117]
-Obj
-[0.45847306]
-Inputs
-[0.15786656 0.25       0.25       0.11636529 0.37714898 1.24693617
- 1.5        0.15132449 0.7        0.47416339 0.18676117]
-Obj
-[0.4584687]
-Inputs
-[0.15786656 0.25       0.25       0.11636529 0.37714898 1.24693617
- 1.5        0.15132449 0.7        0.47415339 0.18677117]
-Obj
-[0.4584687]
-Inputs
-[0.1822439  0.25       0.375005   0.10827797 0.30831507 1.83785661
- 1.45485651 0.11385281 0.7        0.30880662 0.52359878]
-Obj
-[0.46907876]
-Inputs
-[0.1822539  0.25       0.375005   0.10827797 0.30831507 1.83785661
- 1.45485651 0.11385281 0.7        0.30880662 0.52359878]
-Obj
-[0.46907696]
-Inputs
-[0.1822439  0.25001    0.375005   0.10827797 0.30831507 1.83785661
- 1.45485651 0.11385281 0.7        0.30880662 0.52359878]
-Obj
-[0.46907831]
-Inputs
-[0.1822439  0.25       0.375015   0.10827797 0.30831507 1.83785661
- 1.45485651 0.11385281 0.7        0.30880662 0.52359878]
-Obj
-[0.46907946]
-Inputs
-[0.1822439  0.25       0.375005   0.10828797 0.30831507 1.83785661
- 1.45485651 0.11385281 0.7        0.30880662 0.52359878]
-Obj
-[0.46907632]
-Inputs
-[0.1822439  0.25       0.375005   0.10827797 0.30832507 1.83785661
- 1.45485651 0.11385281 0.7        0.30880662 0.52359878]
-Obj
-[0.46907468]
-Inputs
-[0.1822439  0.25       0.375005   0.10827797 0.30831507 1.83786661
- 1.45485651 0.11385281 0.7        0.30880662 0.52359878]
-Obj
-[0.46907826]
-Inputs
-[0.1822439  0.25       0.375005   0.10827797 0.30831507 1.83785661
- 1.45486651 0.11385281 0.7        0.30880662 0.52359878]
-Obj
-[0.46907935]
-Inputs
-[0.1822439  0.25       0.375005   0.10827797 0.30831507 1.83785661
- 1.45485651 0.11386281 0.7        0.30880662 0.52359878]
-Obj
-[0.46907236]
-Inputs
-[0.1822439  0.25       0.375005   0.10827797 0.30831507 1.83785661
- 1.45485651 0.11385281 0.69999    0.30880662 0.52359878]
-Obj
-[0.46908339]
-Inputs
-[0.1822439  0.25       0.375005   0.10827797 0.30831507 1.83785661
- 1.45485651 0.11385281 0.7        0.30881662 0.52359878]
-Obj
-[0.46907876]
-Inputs
-[0.1822439  0.25       0.375005   0.10827797 0.30831507 1.83785661
- 1.45485651 0.11385281 0.7        0.30880662 0.52358878]
-Obj
-[0.46907876]
-Inputs
-[0.17597487 0.31673797 0.48620023 0.11096333 0.33672568 1.72899656
- 1.49461646 0.1353273  0.7        0.39921603 0.26414493]
-Obj
-[0.45866259]
-Inputs
-[0.17598487 0.31673797 0.48620023 0.11096333 0.33672568 1.72899656
- 1.49461646 0.1353273  0.7        0.39921603 0.26414493]
-Obj
-[0.45866071]
-Inputs
-[0.17597487 0.31674797 0.48620023 0.11096333 0.33672568 1.72899656
- 1.49461646 0.1353273  0.7        0.39921603 0.26414493]
-Obj
-[0.45866213]
-Inputs
-[0.17597487 0.31673797 0.48621023 0.11096333 0.33672568 1.72899656
- 1.49461646 0.1353273  0.7        0.39921603 0.26414493]
-Obj
-[0.45866319]
-Inputs
-[0.17597487 0.31673797 0.48620023 0.11097333 0.33672568 1.72899656
- 1.49461646 0.1353273  0.7        0.39921603 0.26414493]
-Obj
-[0.45865986]
-Inputs
-[0.17597487 0.31673797 0.48620023 0.11096333 0.33673568 1.72899656
- 1.49461646 0.1353273  0.7        0.39921603 0.26414493]
-Obj
-[0.45865937]
-Inputs
-[0.17597487 0.31673797 0.48620023 0.11096333 0.33672568 1.72900656
- 1.49461646 0.1353273  0.7        0.39921603 0.26414493]
-Obj
-[0.45866211]
-Inputs
-[0.17597487 0.31673797 0.48620023 0.11096333 0.33672568 1.72899656
- 1.49462646 0.1353273  0.7        0.39921603 0.26414493]
-Obj
-[0.4586631]
-Inputs
-[0.17597487 0.31673797 0.48620023 0.11096333 0.33672568 1.72899656
- 1.49461646 0.1353373  0.7        0.39921603 0.26414493]
-Obj
-[0.45865741]
-Inputs
-[0.17597487 0.31673797 0.48620023 0.11096333 0.33672568 1.72899656
- 1.49461646 0.1353273  0.69999    0.39921603 0.26414493]
-Obj
-[0.45866697]
-Inputs
-[0.17597487 0.31673797 0.48620023 0.11096333 0.33672568 1.72899656
- 1.49461646 0.1353273  0.7        0.39922603 0.26414493]
-Obj
-[0.45866259]
-Inputs
-[0.17597487 0.31673797 0.48620023 0.11096333 0.33672568 1.72899656
- 1.49461646 0.1353273  0.7        0.39921603 0.26415493]
-Obj
-[0.45866259]
-Inputs
-[0.17416087 0.41902206 0.55154746 0.11939218 0.35458604 1.64627774
- 1.5        0.13970069 0.7        0.54214179 0.14083112]
-Obj
-[0.45276218]
-Inputs
-[0.17579347 0.32696638 0.49273496 0.11180621 0.33851172 1.72072468
- 1.49515481 0.13576464 0.7        0.41350861 0.25181355]
-Obj
-[0.45802053]
-Inputs
-[0.17580347 0.32696638 0.49273496 0.11180621 0.33851172 1.72072468
- 1.49515481 0.13576464 0.7        0.41350861 0.25181355]
-Obj
-[0.45801866]
-Inputs
-[0.17579347 0.32697638 0.49273496 0.11180621 0.33851172 1.72072468
- 1.49515481 0.13576464 0.7        0.41350861 0.25181355]
-Obj
-[0.45802009]
-Inputs
-[0.17579347 0.32696638 0.49274496 0.11180621 0.33851172 1.72072468
- 1.49515481 0.13576464 0.7        0.41350861 0.25181355]
-Obj
-[0.45802112]
-Inputs
-[0.17579347 0.32696638 0.49273496 0.11181621 0.33851172 1.72072468
- 1.49515481 0.13576464 0.7        0.41350861 0.25181355]
-Obj
-[0.45801782]
-Inputs
-[0.17579347 0.32696638 0.49273496 0.11180621 0.33852172 1.72072468
- 1.49515481 0.13576464 0.7        0.41350861 0.25181355]
-Obj
-[0.45801734]
-Inputs
-[0.17579347 0.32696638 0.49273496 0.11180621 0.33851172 1.72073468
- 1.49515481 0.13576464 0.7        0.41350861 0.25181355]
-Obj
-[0.45802005]
-Inputs
-[0.17579347 0.32696638 0.49273496 0.11180621 0.33851172 1.72072468
- 1.49516481 0.13576464 0.7        0.41350861 0.25181355]
-Obj
-[0.45802104]
-Inputs
-[0.17579347 0.32696638 0.49273496 0.11180621 0.33851172 1.72072468
- 1.49515481 0.13577464 0.7        0.41350861 0.25181355]
-Obj
-[0.45801538]
-Inputs
-[0.17579347 0.32696638 0.49273496 0.11180621 0.33851172 1.72072468
- 1.49515481 0.13576464 0.69999    0.41350861 0.25181355]
-Obj
-[0.45802491]
-Inputs
-[0.17579347 0.32696638 0.49273496 0.11180621 0.33851172 1.72072468
- 1.49515481 0.13576464 0.7        0.41351861 0.25181355]
-Obj
-[0.45802053]
-Inputs
-[0.17579347 0.32696638 0.49273496 0.11180621 0.33851172 1.72072468
- 1.49515481 0.13576464 0.7        0.41350861 0.25182355]
-Obj
-[0.45802053]
-Inputs
-[0.18345282 0.55202581 0.47391285 0.08499901 0.34209313 1.92221874
- 1.5        0.11604394 0.7        0.5142214  0.26839475]
-Obj
-[0.45531]
-Inputs
-[0.17755287 0.37866377 0.48841141 0.10564845 0.33933439 1.76700897
- 1.49626778 0.13123469 0.7        0.43664289 0.25562234]
-Obj
-[0.45688674]
-Inputs
-[0.17756287 0.37866377 0.48841141 0.10564845 0.33933439 1.76700897
- 1.49626778 0.13123469 0.7        0.43664289 0.25562234]
-Obj
-[0.4568848]
-Inputs
-[0.17755287 0.37867377 0.48841141 0.10564845 0.33933439 1.76700897
- 1.49626778 0.13123469 0.7        0.43664289 0.25562234]
-Obj
-[0.45688635]
-Inputs
-[0.17755287 0.37866377 0.48842141 0.10564845 0.33933439 1.76700897
- 1.49626778 0.13123469 0.7        0.43664289 0.25562234]
-Obj
-[0.45688732]
-Inputs
-[0.17755287 0.37866377 0.48841141 0.10565845 0.33933439 1.76700897
- 1.49626778 0.13123469 0.7        0.43664289 0.25562234]
-Obj
-[0.45688401]
-Inputs
-[0.17755287 0.37866377 0.48841141 0.10564845 0.33934439 1.76700897
- 1.49626778 0.13123469 0.7        0.43664289 0.25562234]
-Obj
-[0.4568835]
-Inputs
-[0.17755287 0.37866377 0.48841141 0.10564845 0.33933439 1.76701897
- 1.49626778 0.13123469 0.7        0.43664289 0.25562234]
-Obj
-[0.45688627]
-Inputs
-[0.17755287 0.37866377 0.48841141 0.10564845 0.33933439 1.76700897
- 1.49627778 0.13123469 0.7        0.43664289 0.25562234]
-Obj
-[0.45688725]
-Inputs
-[0.17755287 0.37866377 0.48841141 0.10564845 0.33933439 1.76700897
- 1.49626778 0.13124469 0.7        0.43664289 0.25562234]
-Obj
-[0.45688149]
-Inputs
-[0.17755287 0.37866377 0.48841141 0.10564845 0.33933439 1.76700897
- 1.49626778 0.13123469 0.69999    0.43664289 0.25562234]
-Obj
-[0.45689113]
-Inputs
-[0.17755287 0.37866377 0.48841141 0.10564845 0.33933439 1.76700897
- 1.49626778 0.13123469 0.7        0.43665289 0.25562234]
-Obj
-[0.45688674]
-Inputs
-[0.17755287 0.37866377 0.48841141 0.10564845 0.33933439 1.76700897
- 1.49626778 0.13123469 0.7        0.43664289 0.25563234]
-Obj
-[0.45688674]
-Inputs
-[0.18359349 0.55666637 0.47532297 0.08620306 0.34421619 1.90397157
- 1.5        0.11644019 0.7        0.52747931 0.2600878 ]
-Obj
-[0.45474999]
-Inputs
-[0.17815693 0.39646403 0.48710257 0.10370391 0.33982257 1.78070523
- 1.496641   0.12975524 0.7        0.44572653 0.25606888]
-Obj
-[0.45653445]
-Inputs
-[0.17816693 0.39646403 0.48710257 0.10370391 0.33982257 1.78070523
- 1.496641   0.12975524 0.7        0.44572653 0.25606888]
-Obj
-[0.45653248]
-Inputs
-[0.17815693 0.39647403 0.48710257 0.10370391 0.33982257 1.78070523
- 1.496641   0.12975524 0.7        0.44572653 0.25606888]
-Obj
-[0.45653407]
-Inputs
-[0.17815693 0.39646403 0.48711257 0.10370391 0.33982257 1.78070523
- 1.496641   0.12975524 0.7        0.44572653 0.25606888]
-Obj
-[0.45653503]
-Inputs
-[0.17815693 0.39646403 0.48710257 0.10371391 0.33982257 1.78070523
- 1.496641   0.12975524 0.7        0.44572653 0.25606888]
-Obj
-[0.45653171]
-Inputs
-[0.17815693 0.39646403 0.48710257 0.10370391 0.33983257 1.78070523
- 1.496641   0.12975524 0.7        0.44572653 0.25606888]
-Obj
-[0.4565312]
-Inputs
-[0.17815693 0.39646403 0.48710257 0.10370391 0.33982257 1.78071523
- 1.496641   0.12975524 0.7        0.44572653 0.25606888]
-Obj
-[0.45653398]
-Inputs
-[0.17815693 0.39646403 0.48710257 0.10370391 0.33982257 1.78070523
- 1.496651   0.12975524 0.7        0.44572653 0.25606888]
-Obj
-[0.45653496]
-Inputs
-[0.17815693 0.39646403 0.48710257 0.10370391 0.33982257 1.78070523
- 1.496641   0.12976524 0.7        0.44572653 0.25606888]
-Obj
-[0.45652915]
-Inputs
-[0.17815693 0.39646403 0.48710257 0.10370391 0.33982257 1.78070523
- 1.496641   0.12975524 0.69999    0.44572653 0.25606888]
-Obj
-[0.45653885]
-Inputs
-[0.17815693 0.39646403 0.48710257 0.10370391 0.33982257 1.78070523
- 1.496641   0.12975524 0.7        0.44573653 0.25606888]
-Obj
-[0.45653445]
-Inputs
-[0.17815693 0.39646403 0.48710257 0.10370391 0.33982257 1.78070523
- 1.496641   0.12975524 0.7        0.44572653 0.25607888]
-Obj
-[0.45653445]
-Inputs
-[0.18537625 0.60125935 0.46888487 0.08157116 0.34616023 1.9299234
- 1.5        0.11252863 0.7        0.55429127 0.26083972]
-Obj
-[0.45452811]
-Inputs
-[0.17887886 0.41694356 0.4852808  0.10149064 0.34045634 1.79562705
- 1.4969769  0.12803258 0.7        0.45658301 0.25654597]
-Obj
-[0.45616305]
-Inputs
-[0.17888886 0.41694356 0.4852808  0.10149064 0.34045634 1.79562705
- 1.4969769  0.12803258 0.7        0.45658301 0.25654597]
-Obj
-[0.45616105]
-Inputs
-[0.17887886 0.41695356 0.4852808  0.10149064 0.34045634 1.79562705
- 1.4969769  0.12803258 0.7        0.45658301 0.25654597]
-Obj
-[0.45616268]
-Inputs
-[0.17887886 0.41694356 0.4852908  0.10149064 0.34045634 1.79562705
- 1.4969769  0.12803258 0.7        0.45658301 0.25654597]
-Obj
-[0.45616362]
-Inputs
-[0.17887886 0.41694356 0.4852808  0.10150064 0.34045634 1.79562705
- 1.4969769  0.12803258 0.7        0.45658301 0.25654597]
-Obj
-[0.45616031]
-Inputs
-[0.17887886 0.41694356 0.4852808  0.10149064 0.34046634 1.79562705
- 1.4969769  0.12803258 0.7        0.45658301 0.25654597]
-Obj
-[0.45615978]
-Inputs
-[0.17887886 0.41694356 0.4852808  0.10149064 0.34045634 1.79563705
- 1.4969769  0.12803258 0.7        0.45658301 0.25654597]
-Obj
-[0.45616258]
-Inputs
-[0.17887886 0.41694356 0.4852808  0.10149064 0.34045634 1.79562705
- 1.4969869  0.12803258 0.7        0.45658301 0.25654597]
-Obj
-[0.45616356]
-Inputs
-[0.17887886 0.41694356 0.4852808  0.10149064 0.34045634 1.79562705
- 1.4969769  0.12804258 0.7        0.45658301 0.25654597]
-Obj
-[0.4561577]
-Inputs
-[0.17887886 0.41694356 0.4852808  0.10149064 0.34045634 1.79562705
- 1.4969769  0.12803258 0.69999    0.45658301 0.25654597]
-Obj
-[0.45616745]
-Inputs
-[0.17887886 0.41694356 0.4852808  0.10149064 0.34045634 1.79562705
- 1.4969769  0.12803258 0.7        0.45659301 0.25654597]
-Obj
-[0.45616305]
-Inputs
-[0.17887886 0.41694356 0.4852808  0.10149064 0.34045634 1.79562705
- 1.4969769  0.12803258 0.7        0.45658301 0.25655597]
-Obj
-[0.45616305]
-Inputs
-[0.18640173 0.62551719 0.46524135 0.07931111 0.34759987 1.93990705
- 1.5        0.11049124 0.7        0.57059654 0.26031521]
-Obj
-[0.45436816]
-Inputs
-[0.17963115 0.43780092 0.48327685 0.09927268 0.34117069 1.81005505
- 1.49727921 0.12627844 0.7        0.46798436 0.25692289]
-Obj
-[0.45581746]
-Inputs
-[0.17964115 0.43780092 0.48327685 0.09927268 0.34117069 1.81005505
- 1.49727921 0.12627844 0.7        0.46798436 0.25692289]
-Obj
-[0.45581544]
-Inputs
-[0.17963115 0.43781092 0.48327685 0.09927268 0.34117069 1.81005505
- 1.49727921 0.12627844 0.7        0.46798436 0.25692289]
-Obj
-[0.45581711]
-Inputs
-[0.17963115 0.43780092 0.48328685 0.09927268 0.34117069 1.81005505
- 1.49727921 0.12627844 0.7        0.46798436 0.25692289]
-Obj
-[0.45581804]
-Inputs
-[0.17963115 0.43780092 0.48327685 0.09928268 0.34117069 1.81005505
- 1.49727921 0.12627844 0.7        0.46798436 0.25692289]
-Obj
-[0.45581472]
-Inputs
-[0.17963115 0.43780092 0.48327685 0.09927268 0.34118069 1.81005505
- 1.49727921 0.12627844 0.7        0.46798436 0.25692289]
-Obj
-[0.45581419]
-Inputs
-[0.17963115 0.43780092 0.48327685 0.09927268 0.34117069 1.81006505
- 1.49727921 0.12627844 0.7        0.46798436 0.25692289]
-Obj
-[0.455817]
-Inputs
-[0.17963115 0.43780092 0.48327685 0.09927268 0.34117069 1.81005505
- 1.49728921 0.12627844 0.7        0.46798436 0.25692289]
-Obj
-[0.45581798]
-Inputs
-[0.17963115 0.43780092 0.48327685 0.09927268 0.34117069 1.81005505
- 1.49727921 0.12628844 0.7        0.46798436 0.25692289]
-Obj
-[0.45581206]
-Inputs
-[0.17963115 0.43780092 0.48327685 0.09927268 0.34117069 1.81005505
- 1.49727921 0.12627844 0.69999    0.46798436 0.25692289]
-Obj
-[0.45582188]
-Inputs
-[0.17963115 0.43780092 0.48327685 0.09927268 0.34117069 1.81005505
- 1.49727921 0.12627844 0.7        0.46799436 0.25692289]
-Obj
-[0.45581746]
-Inputs
-[0.17963115 0.43780092 0.48327685 0.09927268 0.34117069 1.81005505
- 1.49727921 0.12627844 0.7        0.46798436 0.25693289]
-Obj
-[0.45581746]
-Inputs
-[0.18701847 0.63845436 0.46287116 0.078227   0.34866679 1.94222877
- 1.5        0.1094453  0.7        0.58063133 0.25966855]
-Obj
-[0.45422687]
-Inputs
-[0.18036988 0.45786627 0.48123629 0.09716812 0.3419203  1.82327242
- 1.49755129 0.12459513 0.7        0.47924906 0.25719746]
-Obj
-[0.4555127]
-Inputs
-[0.18037988 0.45786627 0.48123629 0.09716812 0.3419203  1.82327242
- 1.49755129 0.12459513 0.7        0.47924906 0.25719746]
-Obj
-[0.45551065]
-Inputs
-[0.18036988 0.45787627 0.48123629 0.09716812 0.3419203  1.82327242
- 1.49755129 0.12459513 0.7        0.47924906 0.25719746]
-Obj
-[0.45551236]
-Inputs
-[0.18036988 0.45786627 0.48124629 0.09716812 0.3419203  1.82327242
- 1.49755129 0.12459513 0.7        0.47924906 0.25719746]
-Obj
-[0.45551327]
-Inputs
-[0.18036988 0.45786627 0.48123629 0.09717812 0.3419203  1.82327242
- 1.49755129 0.12459513 0.7        0.47924906 0.25719746]
-Obj
-[0.45550995]
-Inputs
-[0.18036988 0.45786627 0.48123629 0.09716812 0.3419303  1.82327242
- 1.49755129 0.12459513 0.7        0.47924906 0.25719746]
-Obj
-[0.45550939]
-Inputs
-[0.18036988 0.45786627 0.48123629 0.09716812 0.3419203  1.82328242
- 1.49755129 0.12459513 0.7        0.47924906 0.25719746]
-Obj
-[0.45551224]
-Inputs
-[0.18036988 0.45786627 0.48123629 0.09716812 0.3419203  1.82327242
- 1.49756129 0.12459513 0.7        0.47924906 0.25719746]
-Obj
-[0.45551322]
-Inputs
-[0.18036988 0.45786627 0.48123629 0.09716812 0.3419203  1.82327242
- 1.49755129 0.12460513 0.7        0.47924906 0.25719746]
-Obj
-[0.45550725]
-Inputs
-[0.18036988 0.45786627 0.48123629 0.09716812 0.3419203  1.82327242
- 1.49755129 0.12459513 0.69999    0.47924906 0.25719746]
-Obj
-[0.45551713]
-Inputs
-[0.18036988 0.45786627 0.48123629 0.09716812 0.3419203  1.82327242
- 1.49755129 0.12459513 0.7        0.47925906 0.25719746]
-Obj
-[0.4555127]
-Inputs
-[0.18036988 0.45786627 0.48123629 0.09716812 0.3419203  1.82327242
- 1.49755129 0.12459513 0.7        0.47924906 0.25720746]
-Obj
-[0.4555127]
-Inputs
-[0.18800084 0.65972502 0.45890714 0.07614276 0.35002395 1.95036688
- 1.5        0.10760437 0.7        0.59518055 0.25988398]
-Obj
-[0.45411821]
-Inputs
-[0.18113298 0.47805214 0.47900337 0.09506558 0.34273067 1.83598187
- 1.49779616 0.12289605 0.7        0.49084221 0.25746611]
-Obj
-[0.45523228]
-Inputs
-[0.18114298 0.47805214 0.47900337 0.09506558 0.34273067 1.83598187
- 1.49779616 0.12289605 0.7        0.49084221 0.25746611]
-Obj
-[0.45523021]
-Inputs
-[0.18113298 0.47806214 0.47900337 0.09506558 0.34273067 1.83598187
- 1.49779616 0.12289605 0.7        0.49084221 0.25746611]
-Obj
-[0.45523196]
-Inputs
-[0.18113298 0.47805214 0.47901337 0.09506558 0.34273067 1.83598187
- 1.49779616 0.12289605 0.7        0.49084221 0.25746611]
-Obj
-[0.45523286]
-Inputs
-[0.18113298 0.47805214 0.47900337 0.09507558 0.34273067 1.83598187
- 1.49779616 0.12289605 0.7        0.49084221 0.25746611]
-Obj
-[0.45522953]
-Inputs
-[0.18113298 0.47805214 0.47900337 0.09506558 0.34274067 1.83598187
- 1.49779616 0.12289605 0.7        0.49084221 0.25746611]
-Obj
-[0.45522897]
-Inputs
-[0.18113298 0.47805214 0.47900337 0.09506558 0.34273067 1.83599187
- 1.49779616 0.12289605 0.7        0.49084221 0.25746611]
-Obj
-[0.45523182]
-Inputs
-[0.18113298 0.47805214 0.47900337 0.09506558 0.34273067 1.83598187
- 1.49780616 0.12289605 0.7        0.49084221 0.25746611]
-Obj
-[0.4552328]
-Inputs
-[0.18113298 0.47805214 0.47900337 0.09506558 0.34273067 1.83598187
- 1.49779616 0.12290605 0.7        0.49084221 0.25746611]
-Obj
-[0.45522678]
-Inputs
-[0.18113298 0.47805214 0.47900337 0.09506558 0.34273067 1.83598187
- 1.49779616 0.12289605 0.69999    0.49084221 0.25746611]
-Obj
-[0.45523672]
-Inputs
-[0.18113298 0.47805214 0.47900337 0.09506558 0.34273067 1.83598187
- 1.49779616 0.12289605 0.7        0.49085221 0.25746611]
-Obj
-[0.45523228]
-Inputs
-[0.18113298 0.47805214 0.47900337 0.09506558 0.34273067 1.83598187
- 1.49779616 0.12289605 0.7        0.49084221 0.25747611]
-Obj
-[0.45523228]
-Inputs
-[0.188088   0.65869583 0.45822749 0.07640979 0.35045423 1.94507104
- 1.5        0.10774148 0.7        0.59659602 0.25950932]
-Obj
-[0.45401714]
-Inputs
-[0.18182848 0.49611651 0.47692578 0.0932     0.34350302 1.84689078
- 1.49801654 0.1213806  0.7        0.50141759 0.25767043]
-Obj
-[0.455002]
-Inputs
-[0.18183848 0.49611651 0.47692578 0.0932     0.34350302 1.84689078
- 1.49801654 0.1213806  0.7        0.50141759 0.25767043]
-Obj
-[0.45499991]
-Inputs
-[0.18182848 0.49612651 0.47692578 0.0932     0.34350302 1.84689078
- 1.49801654 0.1213806  0.7        0.50141759 0.25767043]
-Obj
-[0.45500169]
-Inputs
-[0.18182848 0.49611651 0.47693578 0.0932     0.34350302 1.84689078
- 1.49801654 0.1213806  0.7        0.50141759 0.25767043]
-Obj
-[0.45500258]
-Inputs
-[0.18182848 0.49611651 0.47692578 0.09321    0.34350302 1.84689078
- 1.49801654 0.1213806  0.7        0.50141759 0.25767043]
-Obj
-[0.45499924]
-Inputs
-[0.18182848 0.49611651 0.47692578 0.0932     0.34351302 1.84689078
- 1.49801654 0.1213806  0.7        0.50141759 0.25767043]
-Obj
-[0.4549987]
-Inputs
-[0.18182848 0.49611651 0.47692578 0.0932     0.34350302 1.84690078
- 1.49801654 0.1213806  0.7        0.50141759 0.25767043]
-Obj
-[0.45500155]
-Inputs
-[0.18182848 0.49611651 0.47692578 0.0932     0.34350302 1.84689078
- 1.49802654 0.1213806  0.7        0.50141759 0.25767043]
-Obj
-[0.45500252]
-Inputs
-[0.18182848 0.49611651 0.47692578 0.0932     0.34350302 1.84689078
- 1.49801654 0.1213906  0.7        0.50141759 0.25767043]
-Obj
-[0.45499646]
-Inputs
-[0.18182848 0.49611651 0.47692578 0.0932     0.34350302 1.84689078
- 1.49801654 0.1213806  0.69999    0.50141759 0.25767043]
-Obj
-[0.45500644]
-Inputs
-[0.18182848 0.49611651 0.47692578 0.0932     0.34350302 1.84689078
- 1.49801654 0.1213806  0.7        0.50142759 0.25767043]
-Obj
-[0.455002]
-Inputs
-[0.18182848 0.49611651 0.47692578 0.0932     0.34350302 1.84689078
- 1.49801654 0.1213806  0.7        0.50141759 0.25768043]
-Obj
-[0.455002]
-Inputs
-[0.18281037 0.52153591 0.48140437 0.09118538 0.34479422 1.86257068
- 1.5        0.11997219 0.7        0.49285393 0.26474735]
-Obj
-[0.45457463]
-Inputs
-[0.18192667 0.49865845 0.47737364 0.09299854 0.34363214 1.84845877
- 1.49821489 0.12123975 0.7        0.50056122 0.25837812]
-Obj
-[0.45495755]
-Inputs
-[0.18193667 0.49865845 0.47737364 0.09299854 0.34363214 1.84845877
- 1.49821489 0.12123975 0.7        0.50056122 0.25837812]
-Obj
-[0.45495545]
-Inputs
-[0.18192667 0.49866845 0.47737364 0.09299854 0.34363214 1.84845877
- 1.49821489 0.12123975 0.7        0.50056122 0.25837812]
-Obj
-[0.45495724]
-Inputs
-[0.18192667 0.49865845 0.47738364 0.09299854 0.34363214 1.84845877
- 1.49821489 0.12123975 0.7        0.50056122 0.25837812]
-Obj
-[0.45495812]
-Inputs
-[0.18192667 0.49865845 0.47737364 0.09300854 0.34363214 1.84845877
- 1.49821489 0.12123975 0.7        0.50056122 0.25837812]
-Obj
-[0.45495479]
-Inputs
-[0.18192667 0.49865845 0.47737364 0.09299854 0.34364214 1.84845877
- 1.49821489 0.12123975 0.7        0.50056122 0.25837812]
-Obj
-[0.45495424]
-Inputs
-[0.18192667 0.49865845 0.47737364 0.09299854 0.34363214 1.84846877
- 1.49821489 0.12123975 0.7        0.50056122 0.25837812]
-Obj
-[0.45495709]
-Inputs
-[0.18192667 0.49865845 0.47737364 0.09299854 0.34363214 1.84845877
- 1.49822489 0.12123975 0.7        0.50056122 0.25837812]
-Obj
-[0.45495807]
-Inputs
-[0.18192667 0.49865845 0.47737364 0.09299854 0.34363214 1.84845877
- 1.49821489 0.12124975 0.7        0.50056122 0.25837812]
-Obj
-[0.454952]
-Inputs
-[0.18192667 0.49865845 0.47737364 0.09299854 0.34363214 1.84845877
- 1.49821489 0.12123975 0.69999    0.50056122 0.25837812]
-Obj
-[0.45496199]
-Inputs
-[0.18192667 0.49865845 0.47737364 0.09299854 0.34363214 1.84845877
- 1.49821489 0.12123975 0.7        0.50057122 0.25837812]
-Obj
-[0.45495755]
-Inputs
-[0.18192667 0.49865845 0.47737364 0.09299854 0.34363214 1.84845877
- 1.49821489 0.12123975 0.7        0.50056122 0.25838812]
-Obj
-[0.45495755]
-Inputs
-[0.18644262 0.59969882 0.47851959 0.08448969 0.34781966 1.90882094
- 1.5        0.1131313  0.7        0.48223607 0.28690625]
-Obj
-[0.45409554]
-Inputs
-[0.18237826 0.50876249 0.47748824 0.09214765 0.34405089 1.85449499
- 1.4983934  0.12042891 0.7        0.49872871 0.26123094]
-Obj
-[0.45483843]
-Inputs
-[0.18238826 0.50876249 0.47748824 0.09214765 0.34405089 1.85449499
- 1.4983934  0.12042891 0.7        0.49872871 0.26123094]
-Obj
-[0.45483633]
-Inputs
-[0.18237826 0.50877249 0.47748824 0.09214765 0.34405089 1.85449499
- 1.4983934  0.12042891 0.7        0.49872871 0.26123094]
-Obj
-[0.45483813]
-Inputs
-[0.18237826 0.50876249 0.47749824 0.09214765 0.34405089 1.85449499
- 1.4983934  0.12042891 0.7        0.49872871 0.26123094]
-Obj
-[0.454839]
-Inputs
-[0.18237826 0.50876249 0.47748824 0.09215765 0.34405089 1.85449499
- 1.4983934  0.12042891 0.7        0.49872871 0.26123094]
-Obj
-[0.45483567]
-Inputs
-[0.18237826 0.50876249 0.47748824 0.09214765 0.34406089 1.85449499
- 1.4983934  0.12042891 0.7        0.49872871 0.26123094]
-Obj
-[0.45483513]
-Inputs
-[0.18237826 0.50876249 0.47748824 0.09214765 0.34405089 1.85450499
- 1.4983934  0.12042891 0.7        0.49872871 0.26123094]
-Obj
-[0.45483798]
-Inputs
-[0.18237826 0.50876249 0.47748824 0.09214765 0.34405089 1.85449499
- 1.4984034  0.12042891 0.7        0.49872871 0.26123094]
-Obj
-[0.45483896]
-Inputs
-[0.18237826 0.50876249 0.47748824 0.09214765 0.34405089 1.85449499
- 1.4983934  0.12043891 0.7        0.49872871 0.26123094]
-Obj
-[0.45483286]
-Inputs
-[0.18237826 0.50876249 0.47748824 0.09214765 0.34405089 1.85449499
- 1.4983934  0.12042891 0.69999    0.49872871 0.26123094]
-Obj
-[0.45484287]
-Inputs
-[0.18237826 0.50876249 0.47748824 0.09214765 0.34405089 1.85449499
- 1.4983934  0.12042891 0.7        0.49873871 0.26123094]
-Obj
-[0.45483843]
-Inputs
-[0.18237826 0.50876249 0.47748824 0.09214765 0.34405089 1.85449499
- 1.4983934  0.12042891 0.7        0.49872871 0.26124094]
-Obj
-[0.45483843]
-Inputs
-[0.1901729  0.67471003 0.47558477 0.0780519  0.35103656 1.95104197
- 1.5        0.10654107 0.7        0.46436394 0.31265155]
-Obj
-[0.45394199]
-Inputs
-[0.18315773 0.52535724 0.47729789 0.09073808 0.34474946 1.86414969
- 1.49855406 0.11904012 0.7        0.49529223 0.266373  ]
-Obj
-[0.4546662]
-Inputs
-[0.18316773 0.52535724 0.47729789 0.09073808 0.34474946 1.86414969
- 1.49855406 0.11904012 0.7        0.49529223 0.266373  ]
-Obj
-[0.45466408]
-Inputs
-[0.18315773 0.52536724 0.47729789 0.09073808 0.34474946 1.86414969
- 1.49855406 0.11904012 0.7        0.49529223 0.266373  ]
-Obj
-[0.4546659]
-Inputs
-[0.18315773 0.52535724 0.47730789 0.09073808 0.34474946 1.86414969
- 1.49855406 0.11904012 0.7        0.49529223 0.266373  ]
-Obj
-[0.45466676]
-Inputs
-[0.18315773 0.52535724 0.47729789 0.09074808 0.34474946 1.86414969
- 1.49855406 0.11904012 0.7        0.49529223 0.266373  ]
-Obj
-[0.45466344]
-Inputs
-[0.18315773 0.52535724 0.47729789 0.09073808 0.34475946 1.86414969
- 1.49855406 0.11904012 0.7        0.49529223 0.266373  ]
-Obj
-[0.45466288]
-Inputs
-[0.18315773 0.52535724 0.47729789 0.09073808 0.34474946 1.86415969
- 1.49855406 0.11904012 0.7        0.49529223 0.266373  ]
-Obj
-[0.45466574]
-Inputs
-[0.18315773 0.52535724 0.47729789 0.09073808 0.34474946 1.86414969
- 1.49856406 0.11904012 0.7        0.49529223 0.266373  ]
-Obj
-[0.45466672]
-Inputs
-[0.18315773 0.52535724 0.47729789 0.09073808 0.34474946 1.86414969
- 1.49855406 0.11905012 0.7        0.49529223 0.266373  ]
-Obj
-[0.45466055]
-Inputs
-[0.18315773 0.52535724 0.47729789 0.09073808 0.34474946 1.86414969
- 1.49855406 0.11904012 0.69999    0.49529223 0.266373  ]
-Obj
-[0.45467064]
-Inputs
-[0.18315773 0.52535724 0.47729789 0.09073808 0.34474946 1.86414969
- 1.49855406 0.11904012 0.7        0.49530223 0.266373  ]
-Obj
-[0.4546662]
-Inputs
-[0.18315773 0.52535724 0.47729789 0.09073808 0.34474946 1.86414969
- 1.49855406 0.11904012 0.7        0.49529223 0.266383  ]
-Obj
-[0.4546662]
-Inputs
-[0.18817694 0.62884242 0.47479625 0.0815406  0.34952173 1.92281094
- 1.5        0.11044745 0.7        0.47598869 0.29955063]
-Obj
-[0.45394589]
-Inputs
-[0.18365965 0.53570576 0.47704773 0.08981833 0.34522669 1.87001581
- 1.49869865 0.11818086 0.7        0.49336188 0.26969076]
-Obj
-[0.45456202]
-Inputs
-[0.18366965 0.53570576 0.47704773 0.08981833 0.34522669 1.87001581
- 1.49869865 0.11818086 0.7        0.49336188 0.26969076]
-Obj
-[0.4545599]
-Inputs
-[0.18365965 0.53571576 0.47704773 0.08981833 0.34522669 1.87001581
- 1.49869865 0.11818086 0.7        0.49336188 0.26969076]
-Obj
-[0.45456172]
-Inputs
-[0.18365965 0.53570576 0.47705773 0.08981833 0.34522669 1.87001581
- 1.49869865 0.11818086 0.7        0.49336188 0.26969076]
-Obj
-[0.45456258]
-Inputs
-[0.18365965 0.53570576 0.47704773 0.08982833 0.34522669 1.87001581
- 1.49869865 0.11818086 0.7        0.49336188 0.26969076]
-Obj
-[0.45455926]
-Inputs
-[0.18365965 0.53570576 0.47704773 0.08981833 0.34523669 1.87001581
- 1.49869865 0.11818086 0.7        0.49336188 0.26969076]
-Obj
-[0.45455869]
-Inputs
-[0.18365965 0.53570576 0.47704773 0.08981833 0.34522669 1.87002581
- 1.49869865 0.11818086 0.7        0.49336188 0.26969076]
-Obj
-[0.45456156]
-Inputs
-[0.18365965 0.53570576 0.47704773 0.08981833 0.34522669 1.87001581
- 1.49870865 0.11818086 0.7        0.49336188 0.26969076]
-Obj
-[0.45456255]
-Inputs
-[0.18365965 0.53570576 0.47704773 0.08981833 0.34522669 1.87001581
- 1.49869865 0.11819086 0.7        0.49336188 0.26969076]
-Obj
-[0.45455635]
-Inputs
-[0.18365965 0.53570576 0.47704773 0.08981833 0.34522669 1.87001581
- 1.49869865 0.11818086 0.69999    0.49336188 0.26969076]
-Obj
-[0.45456647]
-Inputs
-[0.18365965 0.53570576 0.47704773 0.08981833 0.34522669 1.87001581
- 1.49869865 0.11818086 0.7        0.49337188 0.26969076]
-Obj
-[0.45456202]
-Inputs
-[0.18365965 0.53570576 0.47704773 0.08981833 0.34522669 1.87001581
- 1.49869865 0.11818086 0.7        0.49336188 0.26970076]
-Obj
-[0.45456202]
-Inputs
-[0.19057669 0.67297766 0.47099076 0.07738062 0.35174006 1.94602989
- 1.5        0.10647018 0.7        0.46709692 0.31618622]
-Obj
-[0.45385485]
-Inputs
-[0.18435135 0.54943295 0.47644203 0.08857456 0.34587802 1.87761722
- 1.49882879 0.11700979 0.7        0.49073538 0.27434031]
-Obj
-[0.45443825]
-Inputs
-[0.18436135 0.54943295 0.47644203 0.08857456 0.34587802 1.87761722
- 1.49882879 0.11700979 0.7        0.49073538 0.27434031]
-Obj
-[0.45443613]
-Inputs
-[0.18435135 0.54944295 0.47644203 0.08857456 0.34587802 1.87761722
- 1.49882879 0.11700979 0.7        0.49073538 0.27434031]
-Obj
-[0.45443797]
-Inputs
-[0.18435135 0.54943295 0.47645203 0.08857456 0.34587802 1.87761722
- 1.49882879 0.11700979 0.7        0.49073538 0.27434031]
-Obj
-[0.45443882]
-Inputs
-[0.18435135 0.54943295 0.47644203 0.08858456 0.34587802 1.87761722
- 1.49882879 0.11700979 0.7        0.49073538 0.27434031]
-Obj
-[0.4544355]
-Inputs
-[0.18435135 0.54943295 0.47644203 0.08857456 0.34588802 1.87761722
- 1.49882879 0.11700979 0.7        0.49073538 0.27434031]
-Obj
-[0.45443492]
-Inputs
-[0.18435135 0.54943295 0.47644203 0.08857456 0.34587802 1.87762722
- 1.49882879 0.11700979 0.7        0.49073538 0.27434031]
-Obj
-[0.4544378]
-Inputs
-[0.18435135 0.54943295 0.47644203 0.08857456 0.34587802 1.87761722
- 1.49883879 0.11700979 0.7        0.49073538 0.27434031]
-Obj
-[0.45443878]
-Inputs
-[0.18435135 0.54943295 0.47644203 0.08857456 0.34587802 1.87761722
- 1.49882879 0.11701979 0.7        0.49073538 0.27434031]
-Obj
-[0.45443255]
-Inputs
-[0.18435135 0.54943295 0.47644203 0.08857456 0.34587802 1.87761722
- 1.49882879 0.11700979 0.69999    0.49073538 0.27434031]
-Obj
-[0.4544427]
-Inputs
-[0.18435135 0.54943295 0.47644203 0.08857456 0.34587802 1.87761722
- 1.49882879 0.11700979 0.7        0.49074538 0.27434031]
-Obj
-[0.45443825]
-Inputs
-[0.18435135 0.54943295 0.47644203 0.08857456 0.34587802 1.87761722
- 1.49882879 0.11700979 0.7        0.49073538 0.27435031]
-Obj
-[0.45443825]
-Inputs
-[0.1901898  0.6620514  0.47012118 0.07811966 0.35155837 1.93811171
- 1.5        0.10738237 0.7        0.4701193  0.31373547]
-Obj
-[0.45381683]
-Inputs
-[0.18552057 0.57198604 0.47517621 0.08648085 0.34701557 1.88973191
- 1.49906334 0.11508179 0.7        0.48660678 0.28222962]
-Obj
-[0.45425334]
-Inputs
-[0.18553057 0.57198604 0.47517621 0.08648085 0.34701557 1.88973191
- 1.49906334 0.11508179 0.7        0.48660678 0.28222962]
-Obj
-[0.4542512]
-Inputs
-[0.18552057 0.57199604 0.47517621 0.08648085 0.34701557 1.88973191
- 1.49906334 0.11508179 0.7        0.48660678 0.28222962]
-Obj
-[0.45425306]
-Inputs
-[0.18552057 0.57198604 0.47518621 0.08648085 0.34701557 1.88973191
- 1.49906334 0.11508179 0.7        0.48660678 0.28222962]
-Obj
-[0.4542539]
-Inputs
-[0.18552057 0.57198604 0.47517621 0.08649085 0.34701557 1.88973191
- 1.49906334 0.11508179 0.7        0.48660678 0.28222962]
-Obj
-[0.45425058]
-Inputs
-[0.18552057 0.57198604 0.47517621 0.08648085 0.34702557 1.88973191
- 1.49906334 0.11508179 0.7        0.48660678 0.28222962]
-Obj
-[0.45425]
-Inputs
-[0.18552057 0.57198604 0.47517621 0.08648085 0.34701557 1.88974191
- 1.49906334 0.11508179 0.7        0.48660678 0.28222962]
-Obj
-[0.45425289]
-Inputs
-[0.18552057 0.57198604 0.47517621 0.08648085 0.34701557 1.88973191
- 1.49907334 0.11508179 0.7        0.48660678 0.28222962]
-Obj
-[0.45425387]
-Inputs
-[0.18552057 0.57198604 0.47517621 0.08648085 0.34701557 1.88973191
- 1.49906334 0.11509179 0.7        0.48660678 0.28222962]
-Obj
-[0.45424758]
-Inputs
-[0.18552057 0.57198604 0.47517621 0.08648085 0.34701557 1.88973191
- 1.49906334 0.11508179 0.69999    0.48660678 0.28222962]
-Obj
-[0.45425779]
-Inputs
-[0.18552057 0.57198604 0.47517621 0.08648085 0.34701557 1.88973191
- 1.49906334 0.11508179 0.7        0.48661678 0.28222962]
-Obj
-[0.45425334]
-Inputs
-[0.18552057 0.57198604 0.47517621 0.08648085 0.34701557 1.88973191
- 1.49906334 0.11508179 0.7        0.48660678 0.28223962]
-Obj
-[0.45425334]
-Inputs
-[0.19137682 0.68084905 0.46705456 0.07616726 0.35279169 1.94602218
- 1.5        0.10562462 0.7        0.46698009 0.32202745]
-Obj
-[0.45376423]
-Inputs
-[0.18733695 0.60575112 0.47265719 0.08328197 0.3488071  1.90719097
- 1.49935385 0.11214854 0.7        0.48051935 0.29457336]
-Obj
-[0.45403114]
-Inputs
-[0.18734695 0.60575112 0.47265719 0.08328197 0.3488071  1.90719097
- 1.49935385 0.11214854 0.7        0.48051935 0.29457336]
-Obj
-[0.45402899]
-Inputs
-[0.18733695 0.60576112 0.47265719 0.08328197 0.3488071  1.90719097
- 1.49935385 0.11214854 0.7        0.48051935 0.29457336]
-Obj
-[0.45403088]
-Inputs
-[0.18733695 0.60575112 0.47266719 0.08328197 0.3488071  1.90719097
- 1.49935385 0.11214854 0.7        0.48051935 0.29457336]
-Obj
-[0.45403171]
-Inputs
-[0.18733695 0.60575112 0.47265719 0.08329197 0.3488071  1.90719097
- 1.49935385 0.11214854 0.7        0.48051935 0.29457336]
-Obj
-[0.45402838]
-Inputs
-[0.18733695 0.60575112 0.47265719 0.08328197 0.3488171  1.90719097
- 1.49935385 0.11214854 0.7        0.48051935 0.29457336]
-Obj
-[0.4540278]
-Inputs
-[0.18733695 0.60575112 0.47265719 0.08328197 0.3488071  1.90720097
- 1.49935385 0.11214854 0.7        0.48051935 0.29457336]
-Obj
-[0.45403069]
-Inputs
-[0.18733695 0.60575112 0.47265719 0.08328197 0.3488071  1.90719097
- 1.49936385 0.11214854 0.7        0.48051935 0.29457336]
-Obj
-[0.45403168]
-Inputs
-[0.18733695 0.60575112 0.47265719 0.08328197 0.3488071  1.90719097
- 1.49935385 0.11215854 0.7        0.48051935 0.29457336]
-Obj
-[0.45402529]
-Inputs
-[0.18733695 0.60575112 0.47265719 0.08328197 0.3488071  1.90719097
- 1.49935385 0.11214854 0.69999    0.48051935 0.29457336]
-Obj
-[0.45403561]
-Inputs
-[0.18733695 0.60575112 0.47265719 0.08328197 0.3488071  1.90719097
- 1.49935385 0.11214854 0.7        0.48052935 0.29457336]
-Obj
-[0.45403114]
-Inputs
-[0.18733695 0.60575112 0.47265719 0.08328197 0.3488071  1.90719097
- 1.49935385 0.11214854 0.7        0.48051935 0.29458336]
-Obj
-[0.45403114]
-Inputs
-[0.19182901 0.68549091 0.46489426 0.07550544 0.35333885 1.94633753
- 1.5        0.10511454 0.7        0.46656274 0.32535294]
-Obj
-[0.45372785]
-Inputs
-[0.18972642 0.64816735 0.46852783 0.07914538 0.35121769 1.92801432
- 1.49969756 0.10840692 0.7        0.47309536 0.31094604]
-Obj
-[0.45382328]
-Inputs
-[0.18973642 0.64816735 0.46852783 0.07914538 0.35121769 1.92801432
- 1.49969756 0.10840692 0.7        0.47309536 0.31094604]
-Obj
-[0.45382109]
-Inputs
-[0.18972642 0.64817735 0.46852783 0.07914538 0.35121769 1.92801432
- 1.49969756 0.10840692 0.7        0.47309536 0.31094604]
-Obj
-[0.45382303]
-Inputs
-[0.18972642 0.64816735 0.46853783 0.07914538 0.35121769 1.92801432
- 1.49969756 0.10840692 0.7        0.47309536 0.31094604]
-Obj
-[0.45382385]
-Inputs
-[0.18972642 0.64816735 0.46852783 0.07915538 0.35121769 1.92801432
- 1.49969756 0.10840692 0.7        0.47309536 0.31094604]
-Obj
-[0.4538205]
-Inputs
-[0.18972642 0.64816735 0.46852783 0.07914538 0.35122769 1.92801432
- 1.49969756 0.10840692 0.7        0.47309536 0.31094604]
-Obj
-[0.45381993]
-Inputs
-[0.18972642 0.64816735 0.46852783 0.07914538 0.35121769 1.92802432
- 1.49969756 0.10840692 0.7        0.47309536 0.31094604]
-Obj
-[0.45382283]
-Inputs
-[0.18972642 0.64816735 0.46852783 0.07914538 0.35121769 1.92801432
- 1.49970756 0.10840692 0.7        0.47309536 0.31094604]
-Obj
-[0.45382382]
-Inputs
-[0.18972642 0.64816735 0.46852783 0.07914538 0.35121769 1.92801432
- 1.49969756 0.10841692 0.7        0.47309536 0.31094604]
-Obj
-[0.45381735]
-Inputs
-[0.18972642 0.64816735 0.46852783 0.07914538 0.35121769 1.92801432
- 1.49969756 0.10840692 0.69999    0.47309536 0.31094604]
-Obj
-[0.45382775]
-Inputs
-[0.18972642 0.64816735 0.46852783 0.07914538 0.35121769 1.92801432
- 1.49969756 0.10840692 0.7        0.47310536 0.31094604]
-Obj
-[0.45382328]
-Inputs
-[0.18972642 0.64816735 0.46852783 0.07914538 0.35121769 1.92801432
- 1.49969756 0.10840692 0.7        0.47309536 0.31095604]
-Obj
-[0.45382328]
-Inputs
-[0.19345049 0.71117764 0.45974642 0.07272638 0.35508205 1.95668886
- 1.5        0.1026793  0.7        0.46663178 0.33534603]
-Obj
-[0.45369428]
-Inputs
-[0.19346049 0.71117764 0.45974642 0.07272638 0.35508205 1.95668886
- 1.5        0.1026793  0.7        0.46663178 0.33534603]
-Obj
-[0.45369207]
-Inputs
-[0.19345049 0.71118764 0.45974642 0.07272638 0.35508205 1.95668886
- 1.5        0.1026793  0.7        0.46663178 0.33534603]
-Obj
-[0.45369405]
-Inputs
-[0.19345049 0.71117764 0.45975642 0.07272638 0.35508205 1.95668886
- 1.5        0.1026793  0.7        0.46663178 0.33534603]
-Obj
-[0.45369484]
-Inputs
-[0.19345049 0.71117764 0.45974642 0.07273638 0.35508205 1.95668886
- 1.5        0.1026793  0.7        0.46663178 0.33534603]
-Obj
-[0.4536915]
-Inputs
-[0.19345049 0.71117764 0.45974642 0.07272638 0.35509205 1.95668886
- 1.5        0.1026793  0.7        0.46663178 0.33534603]
-Obj
-[0.45369089]
-Inputs
-[0.19345049 0.71117764 0.45974642 0.07272638 0.35508205 1.95669886
- 1.5        0.1026793  0.7        0.46663178 0.33534603]
-Obj
-[0.45369382]
-Inputs
-[0.19345049 0.71117764 0.45974642 0.07272638 0.35508205 1.95668886
- 1.49999    0.1026793  0.7        0.46663178 0.33534603]
-Obj
-[0.45369372]
-Inputs
-[0.19345049 0.71117764 0.45974642 0.07272638 0.35508205 1.95668886
- 1.5        0.1026893  0.7        0.46663178 0.33534603]
-Obj
-[0.45368813]
-Inputs
-[0.19345049 0.71117764 0.45974642 0.07272638 0.35508205 1.95668886
- 1.5        0.1026793  0.69999    0.46663178 0.33534603]
-Obj
-[0.45369876]
-Inputs
-[0.19345049 0.71117764 0.45974642 0.07272638 0.35508205 1.95668886
- 1.5        0.1026793  0.7        0.46664178 0.33534603]
-Obj
-[0.45369428]
-Inputs
-[0.19345049 0.71117764 0.45974642 0.07272638 0.35508205 1.95668886
- 1.5        0.1026793  0.7        0.46663178 0.33535603]
-Obj
-[0.45369428]
-Inputs
-[0.19300499 0.70006552 0.45929789 0.07342984 0.35464652 1.95091654
- 1.5        0.10357011 0.7        0.46823409 0.33320732]
-Obj
-[0.4536849]
-Optimization terminated successfully    (Exit mode 0)
-            Current function value: 0.4536848950787379
-            Iterations: 33
-            Function evaluations: 429
-            Gradient evaluations: 33
-Lift-rotor Optimization Simulation Time: 0.55 mins
-[0.19300499 0.70006552 0.45929789 0.07342984 0.35464652 1.95091654
- 1.5        0.10357011 0.7        0.46823409 0.33320732]
-Converged MTOW = 2309 kg
-&lt;data object &#39;RCAIDE.Framework.Core.Data&#39;&gt;
-empty :
-  structural :
-    booms : 155.18838447725062
-    fusleage : 151.47513729833574
-    landing_gear : 50.7917687032095
-    wings : 132.86645856170412
-    total : 445.7470445822727
-  propulsion :
-    motors : 465.9998185877284
-    rotors : 63.027378099117776
-    hubs : 44.0
-    servos : 17.160000000000004
-    wiring : 56.83101666868017
-    battery : 839.7312
-    fuel_cell : 0.0
-    TMS : 0.0
-    total : 1351.590375777751
-  systems :
-    environmental_control_system : 38.5
-    avionics : 18.700000000000003
-    seats : 82.5
-    balistic_recovery_system : 35.2
-    total : 159.0
-  total : 1956.3374203600238
-payload :
-  total : 352.0
-  passengers : 350.0
-  payload : 2.0
-zero_fuel_weight : 2308.3374203600238
-fuel : 0
-total : 2308.3374203600238
-
-
-Plotting vehicle
+  0%|          | 0/100 [00:00&lt;?, ?it/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_1.png" src="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_1.png" />
-</div>
+<div class="highlight"><pre>
+Lift-rotor Optimization Successful
+Simulation Time: 0.78 mins
+
+Performing Weights Analysis
+--------------------------------------------------------
+Propulsion Architecture: Electric
+Aircraft Type          : VTOL
+Method                 : Physics_Based
+Aircraft operating empty weight will be overwritten
+Aircraft center of gravity location will be overwritten
+Aircraft moment of intertia tensor will be overwritten
+Converged MTOW = 2370 kg
+
+ Mission Solver Initiated
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_2.png" src="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_2.png" />
-</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+104it [02:24,  1.39s/it]
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -4231,8 +2013,57 @@ Plotting vehicle
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_4.png" src="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_4.png" />
-</div>
+<div class="highlight"><pre>
+
+ Solving Vertical_Climb segment.
+
+
+
+ Solving High_Speed_Climbing_Transition segment.
+Segment did not converge. Segment Tag: High_Speed_Climbing_Transition
+Error Message:
+The number of calls to function has reached maxfev = 200.
+
+
+
+ Solving Climb segment.
+Segment did not converge. Segment Tag: Climb
+Error Message:
+The number of calls to function has reached maxfev = 200.
+
+
+
+ Solving Cruise segment.
+Segment did not converge. Segment Tag: Cruise
+Error Message:
+The number of calls to function has reached maxfev = 200.
+
+
+
+ Solving Descent segment.
+Segment did not converge. Segment Tag: Descent
+Error Message:
+The number of calls to function has reached maxfev = 200.
+
+
+
+ Solving Descending_Transition segment.
+Segment did not converge. Segment Tag: Descending_Transition
+Error Message:
+The number of calls to function has reached maxfev = 200.
+
+
+
+ Solving Low_Speed_Approach_Transition segment.
+
+
+
+ Solving Vertical_Descent segment.
+
+
+
+Plotting vehicle
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -4276,11 +2107,32 @@ Plotting vehicle
 <img alt="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_10.png" src="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_10.png" />
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_11.png" src="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_11.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_12.png" src="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_12.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_13.png" src="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_13.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_14.png" src="../../_images/tutorials_Missions_Tutorial_07_lift_cruise_evtol_aircraft_26_14.png" />
 </div>
 </div>
 </section>
@@ -4305,11 +2157,11 @@ Plotting vehicle
       </div>
     </a>
     <a class="right-next"
-       href="Tutorial_08_tilt_stopped_rotor_vtail_evtol_aircraft.html"
+       href="../optimization.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Tutorial 8 - Tilt Stopped Rotor Vtail eVTOL Aircraft Simulation</p>
+        <p class="prev-next-title">Optimization</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

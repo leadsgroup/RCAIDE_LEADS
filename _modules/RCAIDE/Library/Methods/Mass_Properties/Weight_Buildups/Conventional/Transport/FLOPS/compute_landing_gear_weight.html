@@ -399,35 +399,76 @@
 <div class="viewcode-block" id="compute_landing_gear_weight">
 <a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_landing_gear_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_landing_gear_weight.compute_landing_gear_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_landing_gear_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of the main and nose landing gear of a transport aircraft</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the landing gear weight using NASA FLOPS weight estimation method. Accounts for </span>
+<span class="sd">    aircraft type, size, and operational requirements.</span>
 
-<span class="sd">        Assumptions:</span>
-<span class="sd">            No fighter jet, change DFTE to 1 for a fighter jet</span>
-<span class="sd">            Aircraft is not meant for carrier operations, change CARBAS to 1 for carrier-based aircraft</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : Vehicle</span>
+<span class="sd">        The vehicle instance containing:</span>
+<span class="sd">            - networks : list</span>
+<span class="sd">                Propulsion system data for nacelle dimensions</span>
+<span class="sd">            - design_range : float</span>
+<span class="sd">                Design range [nmi]</span>
+<span class="sd">            - systems.accessories : str</span>
+<span class="sd">                Aircraft type (&#39;short-range&#39;, &#39;commuter&#39;, &#39;medium-range&#39;, </span>
+<span class="sd">                &#39;long-range&#39;, &#39;sst&#39;, &#39;cargo&#39;)</span>
+<span class="sd">            - mass_properties.max_takeoff : float</span>
+<span class="sd">                Maximum takeoff weight [kg]</span>
+<span class="sd">            - wings[&#39;main_wing&#39;].dihedral : float</span>
+<span class="sd">                Wing dihedral angle [rad]</span>
+<span class="sd">            - fuselages[&#39;fuselage&#39;] : Fuselage</span>
+<span class="sd">                Primary fuselage with:</span>
+<span class="sd">                    - width : float</span>
+<span class="sd">                        Maximum width [m]</span>
+<span class="sd">                    - lengths.total : float</span>
+<span class="sd">                        Total length [m]</span>
 
-<span class="sd">        Source:</span>
-<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    output : Data</span>
+<span class="sd">        Container with weight breakdown:</span>
+<span class="sd">            - main : float</span>
+<span class="sd">                Main landing gear weight [kg]</span>
+<span class="sd">            - nose : float</span>
+<span class="sd">                Nose landing gear weight [kg]</span>
 
-<span class="sd">        Inputs:</span>
-<span class="sd">            vehicle - data dictionary with vehicle properties                   [dimensionless]</span>
-<span class="sd">                -.networks: data dictionary containing all propulsion properties</span>
-<span class="sd">                -.design_range: design range of aircraft                        [nmi]</span>
-<span class="sd">                -.systems.accessories: type of aircraft (short-range, commuter</span>
-<span class="sd">                                                        medium-range, long-range,</span>
-<span class="sd">                                                        sst, cargo)</span>
-<span class="sd">                -.mass_properties.max_takeoff: MTOW                              [kilograms]</span>
-<span class="sd">                -.nacelles[&#39;nacelle&#39;]                                            [meters]</span>
-<span class="sd">                -.wings[&#39;main_wing&#39;].dihedral                                    [radians]</span>
-<span class="sd">                -.fuselages[&#39;fuselage&#39;].width: fuselage width                    [meters]</span>
-<span class="sd">                -.fuselages[&#39;fuselage&#39;].lengths.total: fuselage total length     [meters]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses FLOPS correlations developed from transport aircraft database, with </span>
+<span class="sd">    adjustments for different aircraft types. Please refer to the FLOPS documentation </span>
+<span class="sd">    for more details: https://ntrs.nasa.gov/citations/20170005851  </span>
 
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Average landing gear</span>
+<span class="sd">        * Not designed for carrier operations (CARBAS = 0)</span>
+<span class="sd">        * Not a fighter aircraft (DFTE = 0)</span>
+<span class="sd">        * Retractable gear configuration</span>
 
-<span class="sd">        Outputs:</span>
-<span class="sd">            output - data dictionary with main and nose landing gear weights    [kilograms]</span>
-<span class="sd">                    output.main, output.nose</span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    Main gear weight is computed using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{MLG} = (0.0117 - 0.0012D_{FTE})W_{L}^{0.95}X_{MLG}^{0.43}</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">            N/A</span>
+<span class="sd">    Nose gear weight is computed using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{NLG} = (0.048 - 0.0080D_{FTE})W_{L}^{0.67}X_{NLG}^{0.43}(1 + 0.8C_{B})</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        * W_L = landing weight</span>
+<span class="sd">        * X_MLG = extended main gear length</span>
+<span class="sd">        * X_NLG = extended nose gear length</span>
+<span class="sd">        * D_FTE = fighter aircraft flag</span>
+<span class="sd">        * C_B = carrier-based flag</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] NASA Flight Optimization System (FLOPS)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">DFTE</span>    <span class="o">=</span> <span class="mi">0</span>
     <span class="n">CARBAS</span>  <span class="o">=</span> <span class="mi">0</span>

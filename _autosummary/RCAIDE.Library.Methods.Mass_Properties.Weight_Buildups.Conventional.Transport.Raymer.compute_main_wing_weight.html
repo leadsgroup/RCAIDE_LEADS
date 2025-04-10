@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -544,33 +546,112 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight.compute_main_wing_weight">
 <span class="sig-name descname"><span class="pre">compute_main_wing_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/Raymer/compute_main_wing_weight.html#compute_main_wing_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight.compute_main_wing_weight" title="Link to this definition">#</a></dt>
-<dd><p>Calculate the wing weight of the aircraft based the Raymer method</p>
-<p>Assumptions:</p>
-<dl>
-<dt>Source:</dt><dd><p>Aircraft Design: A Conceptual Approach (2nd edition)</p>
-</dd>
-<dt>Inputs:</dt><dd><dl>
-<dt>vehicle - data dictionary with vehicle properties                   [dimensionless]</dt><dd><p>-.mass_properties.max_takeoff: MTOW                         [kg]
--.flight_envelope.ultimate_load: ultimate loading factor
--.systems.accessories: type of aircraft (short-range, commuter</p>
-<blockquote>
-<div><p>medium-range, long-range,
-sst, cargo)</p>
-</div></blockquote>
-</dd>
-<dt>wing    - data dictionary with specific wing properties             [dimensionless]</dt><dd><p>-.taper: taper ratio
--.sweeps.quarter_chord: quarter chord sweep angle           [deg]
--.thickness_to_chord: thickness to chord
--.aspect_ratio: aspect ratio of wing
--.areas.reference: wing surface area                        [m^2]</p>
+<dd><p>Calculates the wing weight for transport aircraft using Raymer’s empirical method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<em>RCAIDE.Vehicle</em><em>(</em><em>)</em>) – <dl class="simple">
+<dt>Vehicle data structure containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>mass_properties.max_takeoff<span class="classifier">float</span></dt><dd><p>Maximum takeoff weight [kg]</p>
 </dd>
 </dl>
-</dd>
-<dt>Outputs:</dt><dd><p>weight - weight of the wing                  [kilograms]</p>
-</dd>
-<dt>Properties Used:</dt><dd><p>N/A</p>
+</li>
+<li><dl class="simple">
+<dt>flight_envelope.ultimate_load<span class="classifier">float</span></dt><dd><p>Ultimate load factor</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>systems.accessories<span class="classifier">str</span></dt><dd><p>Aircraft type (‘short-range’, ‘commuter’, ‘medium-range’,
+‘long-range’, ‘sst’, ‘cargo’)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>wing</strong> (<em>RCAIDE.Component</em><em>(</em><em>)</em>) – <dl class="simple">
+<dt>Wing component containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>taper<span class="classifier">float</span></dt><dd><p>Wing taper ratio</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sweeps.quarter_chord<span class="classifier">float</span></dt><dd><p>Quarter chord sweep angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>thickness_to_chord<span class="classifier">float</span></dt><dd><p>Thickness-to-chord ratio</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>aspect_ratio<span class="classifier">float</span></dt><dd><p>Wing aspect ratio</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>areas.reference<span class="classifier">float</span></dt><dd><p>Wing reference area [m^2]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>weight</strong> – Weight of the wing structure [kg]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method implements Raymer’s correlation for transport aircraft wing
+weight estimation, accounting for geometry, loads, and configuration effects.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Control surfaces comprise 10% of wing area</p></li>
+<li><p>Correlation based on transport category aircraft data</p></li>
+<li><p>SST configurations treated with zero sweep angle parameter</p></li>
+<li><p>If advanced composites are used, the wing weight is reduced by 10%</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+The wing weight is calculated using:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">wing</span><span class="p">}</span> <span class="o">=</span> <span class="mf">0.0051</span><span class="p">(</span><span class="n">W_</span><span class="p">{</span><span class="n">dg</span><span class="p">}</span><span class="n">N_z</span><span class="p">)</span><span class="o">^</span><span class="p">{</span><span class="mf">0.557</span><span class="p">}</span><span class="n">S_w</span><span class="o">^</span><span class="p">{</span><span class="mf">0.649</span><span class="p">}</span><span class="n">A</span><span class="o">^</span><span class="p">{</span><span class="mf">0.5</span><span class="p">}(</span><span class="n">t</span><span class="o">/</span><span class="n">c</span><span class="p">)</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mf">0.4</span><span class="p">}(</span><span class="mi">1</span><span class="o">+</span>\<span class="k">lambda</span><span class="p">)</span><span class="o">^</span><span class="p">{</span><span class="mf">0.1</span><span class="p">}</span>\<span class="n">cos</span><span class="p">(</span>\<span class="n">Lambda</span><span class="p">)</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mf">1.0</span><span class="p">}</span><span class="n">S_</span><span class="p">{</span><span class="n">cs</span><span class="p">}</span><span class="o">^</span><span class="p">{</span><span class="mf">0.1</span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(W_{dg}\)</span> is design gross weight</p></li>
+<li><p><span class="math notranslate nohighlight">\(N_z\)</span> is ultimate load factor</p></li>
+<li><p><span class="math notranslate nohighlight">\(S_w\)</span> is wing area</p></li>
+<li><p><span class="math notranslate nohighlight">\(A\)</span> is aspect ratio</p></li>
+<li><p><span class="math notranslate nohighlight">\(t/c\)</span> is thickness ratio</p></li>
+<li><p><span class="math notranslate nohighlight">\(\lambda\)</span> is taper ratio</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Lambda\)</span> is quarter-chord sweep</p></li>
+<li><p><span class="math notranslate nohighlight">\(S_{cs}\)</span> is control surface area</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Raymer, D., “Aircraft Design: A Conceptual Approach”, AIAA</dt><dd><p>Education Series, 2018.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_vertical_tail_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_vertical_tail_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_vertical_tail_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_vertical_tail_weight</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

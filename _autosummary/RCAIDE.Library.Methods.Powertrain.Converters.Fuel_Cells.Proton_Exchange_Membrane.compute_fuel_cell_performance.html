@@ -43,11 +43,13 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Motor" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.html" />
+    <link rel="next" title="Generator" href="RCAIDE.Library.Methods.Powertrain.Converters.Generator.html" />
     <link rel="prev" title="append_fuel_cell_conditions" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.append_fuel_cell_conditions.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,31 +543,67 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.compute_fuel_cell_performance">
 <span class="sig-name descname"><span class="pre">compute_fuel_cell_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coolant_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#compute_fuel_cell_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.compute_fuel_cell_performance" title="Link to this definition">#</a></dt>
-<dd><p>Computes the performance of a PEM fuel cell</p>
-<blockquote>
-<div><p>Parameters</p>
-</div></blockquote>
-<dl class="simple">
-<dt>state<span class="classifier">MissionState</span></dt><dd><p>The current state of the mission.</p>
+<dd><p>Computes the performance of a PEM fuel cell stack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fuel_cell_stack</strong> (<em>RCAIDE.Components.Energy.Converters.Fuel_Cell_Stack</em>) – The fuel cell stack object containing cell properties and configuration</p></li>
+<li><p><strong>state</strong> (<em>RCAIDE.Framework.Mission.Common.State</em>) – Container for mission segment conditions</p></li>
+<li><p><strong>bus</strong> (<em>RCAIDE.Components.Energy.Distribution.Electric_Bus</em>) – The electric bus to which the fuel cell stack is connected</p></li>
+<li><p><strong>coolant_lines</strong> (<em>list</em>) – List of coolant line components for thermal management</p></li>
+<li><p><strong>t_idx</strong> (<em>int</em>) – Current time index in the simulation</p></li>
+<li><p><strong>delta_t</strong> (<em>float</em>) – Time step size [s]</p></li>
+</ul>
 </dd>
-<dt>bus<span class="classifier">ElectricBus</span></dt><dd><p>The electric bus to which the battery_module is connected.</p>
-</dd>
-<dt>coolant_lines<span class="classifier">list</span></dt><dd><p>List of coolant lines for thermal management.</p>
-</dd>
-<dt>t_idx<span class="classifier">int</span></dt><dd><p>Current time index in the simulation.</p>
-</dd>
-<dt>delta_t<span class="classifier">float</span></dt><dd><p>Time step size.</p>
-</dd>
-</dl>
-<section id="returns">
-<h2>Returns:<a class="headerlink" href="#returns" title="Link to this heading">#</a></h2>
-<dl class="simple">
-<dt>stored_results_flag: bool</dt><dd><p>Stored results boolean</p>
-</dd>
-<dt>stored_fuel_cell_stack_tag: string</dt><dd><p>Tag of fuel cell</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>stored_results_flag</strong> (<em>bool</em>) – Flag indicating that results have been stored for potential reuse</p></li>
+<li><p><strong>stored_fuel_cell_stack_tag</strong> (<em>str</em>) – Tag identifier of the fuel cell stack with stored results</p></li>
+</ul>
+</p>
 </dd>
 </dl>
-</section>
+<p class="rubric">Notes</p>
+<p>This function implements a detailed electrochemical model for PEM fuel cells that accounts
+for activation losses, ohmic losses, and concentration losses. It iteratively determines
+the current density required to match the power demand from the electric bus.</p>
+<p>The function also models the compressor-expander module (CEM) that supplies air to the
+fuel cell, accounting for parasitic power losses.</p>
+<p>Temperature effects are considered through a thermal model that updates the stack
+temperature based on heat generation.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Uniform temperature distribution across all cells</p></li>
+<li><p>Hydrogen is supplied at constant pressure</p></li>
+<li><p>Air composition is standard atmospheric (21% oxygen)</p></li>
+<li><p>Water management is ideal (no flooding or membrane dehydration)</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong></p>
+<p>The PEM fuel cell voltage is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[V_{cell} = E_{cell} - \eta_{act} - \eta_{ohmic} - \eta_{conc} - degradation\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>E_{cell} is the Nernst potential</p></li>
+<li><p>η_{act} is the activation loss</p></li>
+<li><p>η_{ohmic} is the ohmic loss</p></li>
+<li><p>η_{conc} is the concentration loss</p></li>
+<li><p>degradation accounts for cell degradation over time</p></li>
+</ul>
+</dd>
+</dl>
+<p>The thermal model uses:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dT}{dt} = \frac{Q_{gross}}{m_{stack} \cdot c_p}\]</div>
+<p>where Q_{gross} is the heat generated by the stack.</p>
+<p class="rubric">References</p>
+<p>[1] O’Hayre, R., Cha, S. W., Colella, W., &amp; Prinz, F. B. (2016). Fuel Cell Fundamentals (3rd ed.). John Wiley &amp; Sons.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.evaluate_PEM</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.evaluate_CEM</span></code></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -594,8 +632,8 @@ optional, defaults to 0 V</p>
 </dd>
 </dl>
 </section>
-<section id="id1">
-<h2>Returns:<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="returns">
+<h2>Returns:<a class="headerlink" href="#returns" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>Hydrogen Mass flow (kg/s)</p>
 </dd>
@@ -617,8 +655,8 @@ optional, defaults to 0 V</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_CEM">
 <span class="sig-name descname"><span class="pre">evaluate_CEM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#evaluate_CEM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.evaluate_CEM" title="Link to this definition">#</a></dt>
 <dd><p>Evaluates the power required by the CEM (compressor-expander module)</p>
-<section id="id2">
-<h2>Parameters:<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h2>Parameters:<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>FC_air_p: float</dt><dd><p>Air pressure after the humidifier entering the fuel cell (bar)</p>
 </dd>
@@ -634,8 +672,8 @@ optional, defaults to 0 V</p>
 </dd>
 </dl>
 </section>
-<section id="id3">
-<h2>Returns:<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id2">
+<h2>Returns:<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>The power required to run the CEM at the given operating conditions (W)</p>
 </dd>
@@ -648,8 +686,8 @@ optional, defaults to 0 V</p>
 <span class="sig-name descname"><span class="pre">calculate_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_cell_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_voltage" title="Link to this definition">#</a></dt>
 <dd><p>Calculates the output voltage of the fuel cell by subtracting the activation,
 ohmic, and concentration voltage losses from the reversible Nernst voltage, E_cell.</p>
-<section id="id4">
-<h2>Parameters:<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id3">
+<h2>Parameters:<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>i: float</dt><dd><p>The current density to evaluate the cell voltage at (A/m^2)</p>
 </dd>
@@ -670,8 +708,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id5">
-<h2>Returns:<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h2>Returns:<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>Output voltage of the fuel cell (V)</p>
 </dd>
@@ -683,8 +721,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.set_rated_current_density">
 <span class="sig-name descname"><span class="pre">set_rated_current_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rated_current_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rated_power_density</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#set_rated_current_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.set_rated_current_density" title="Link to this definition">#</a></dt>
 <dd><p>Sets the rated cd and pd of the fuel cell system</p>
-<section id="id6">
-<h2>Parameters:<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h2>Parameters:<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>rated_CD: float</dt><dd><p>The current density (A/cm2) to set</p>
 </dd>
@@ -698,15 +736,15 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_hum">
 <span class="sig-name descname"><span class="pre">calculate_P_drop_hum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_P_drop_hum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_hum" title="Link to this definition">#</a></dt>
 <dd><p>Calculates the pressure drop across the humidifier for the rated current</p>
-<section id="id7">
-<h2>Parameters:<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>Parameters:<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>i: float</dt><dd><p>Current Density (Acm2) to calculate the pressure drop</p>
 </dd>
 </dl>
 </section>
-<section id="id8">
-<h2>Returns:<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>Returns:<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float</dt><dd><p>The Humidifier pressure drop in bar</p>
 </dd>
@@ -718,15 +756,15 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_stack">
 <span class="sig-name descname"><span class="pre">calculate_P_drop_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_P_drop_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_drop_stack" title="Link to this definition">#</a></dt>
 <dd><p>Calculates the pressure drop across the stack for the rated current</p>
-<section id="id9">
-<h2>Parameters:<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>Parameters:<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>i: float</dt><dd><p>Current Density (Acm2) to calculate the pressure drop</p>
 </dd>
 </dl>
 </section>
-<section id="id10">
-<h2>Returns:<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>Returns:<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float</dt><dd><p>The stack pressure drop in bar</p>
 </dd>
@@ -738,8 +776,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_O2">
 <span class="sig-name descname"><span class="pre">calculate_P_O2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_air</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_P_O2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_O2" title="Link to this definition">#</a></dt>
 <dd><p>Calculate the partial pressure of oxygen at the fuel cell cathode</p>
-<section id="id11">
-<h2>Parameters:<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h2>Parameters:<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>P_air: float</dt><dd><p>The input air pressure to the fuel cell (bar)</p>
 </dd>
@@ -755,8 +793,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id12">
-<h2>Returns:<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<section id="id11">
+<h2>Returns:<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float</dt><dd><p>The oxygen partial pressure (bar)</p>
 </dd>
@@ -768,8 +806,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_H2">
 <span class="sig-name descname"><span class="pre">calculate_P_H2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_H2_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_P_H2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_P_H2" title="Link to this definition">#</a></dt>
 <dd><p>Calculate the partial pressure of hydroen at the fuel cell anode</p>
-<section id="id13">
-<h2>Parameters:<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h2>Parameters:<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>P_H2_input: float</dt><dd><p>The input hydrogen pressure to the fuel cell (bar)</p>
 </dd>
@@ -781,8 +819,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id14">
-<h2>Returns:<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h2>Returns:<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float</dt><dd><p>The hydrogen partial pressure (bar)</p>
 </dd>
@@ -794,8 +832,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_E_cell">
 <span class="sig-name descname"><span class="pre">calculate_E_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_H2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_E_cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_E_cell" title="Link to this definition">#</a></dt>
 <dd><p>Calculates the reversible Nernst Voltage of the cell</p>
-<section id="id15">
-<h2>Parameters:<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<section id="id14">
+<h2>Parameters:<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>stack_temperature: float</dt><dd><p>The fuel cell stack temperature (K)</p>
 </dd>
@@ -805,8 +843,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id16">
-<h2>Returns:<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<section id="id15">
+<h2>Returns:<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float</dt><dd><p>The reversible cell potential (V)</p>
 </dd>
@@ -818,8 +856,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_activation_losses">
 <span class="sig-name descname"><span class="pre">calculate_activation_losses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_activation_losses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_activation_losses" title="Link to this definition">#</a></dt>
 <dd><p>calculation of activation losses for both high temperature and low temperature fuel cells</p>
-<section id="id17">
-<h2>Parameters:<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<section id="id16">
+<h2>Parameters:<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
 </dd>
@@ -829,8 +867,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id18">
-<h2>Returns:<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
+<section id="id17">
+<h2>Returns:<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>Activation voltage loss (V)</p>
 </dd>
@@ -842,8 +880,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_LT">
 <span class="sig-name descname"><span class="pre">calculate_ohmic_losses_LT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_ohmic_losses_LT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_LT" title="Link to this definition">#</a></dt>
 <dd><p>Calculation of ohmic losses for low temperature fuel cells</p>
-<section id="id19">
-<h2>Parameters:<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
+<section id="id18">
+<h2>Parameters:<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
 </dd>
@@ -851,8 +889,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id20">
-<h2>Returns:<a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
+<section id="id19">
+<h2>Returns:<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>Ohmic voltage loss (V)</p>
 </dd>
@@ -864,8 +902,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_HT">
 <span class="sig-name descname"><span class="pre">calculate_ohmic_losses_HT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_ohmic_losses_HT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_ohmic_losses_HT" title="Link to this definition">#</a></dt>
 <dd><p>Calculation of ohmic losses for high temperature fuel cells</p>
-<section id="id21">
-<h2>Parameters:<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<section id="id20">
+<h2>Parameters:<a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
 </dd>
@@ -873,8 +911,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id22">
-<h2>Returns:<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
+<section id="id21">
+<h2>Returns:<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>Ohmic voltage loss (V)</p>
 </dd>
@@ -886,8 +924,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_LT">
 <span class="sig-name descname"><span class="pre">calculate_concentration_losses_LT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_concentration_losses_LT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_LT" title="Link to this definition">#</a></dt>
 <dd><p>Calculation of concentration losses for low temperature fuel cells</p>
-<section id="id23">
-<h2>Parameters:<a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<section id="id22">
+<h2>Parameters:<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
 </dd>
@@ -903,8 +941,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id24">
-<h2>Returns:<a class="headerlink" href="#id24" title="Link to this heading">#</a></h2>
+<section id="id23">
+<h2>Returns:<a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>Concentration voltage loss (V)</p>
 </dd>
@@ -916,8 +954,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_LT">
 <span class="sig-name descname"><span class="pre">calculate_limiting_current_density_LT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_limiting_current_density_LT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_LT" title="Link to this definition">#</a></dt>
 <dd><p>Calculation of the limiting current density for LT-PEM</p>
-<section id="id25">
-<h2>Parameters:<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
+<section id="id24">
+<h2>Parameters:<a class="headerlink" href="#id24" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
 </dd>
@@ -933,8 +971,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id26">
-<h2>Returns:<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
+<section id="id25">
+<h2>Returns:<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>limiting current density (A/cm^2)</p>
 </dd>
@@ -946,8 +984,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_HT">
 <span class="sig-name descname"><span class="pre">calculate_concentration_losses_HT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_concentration_losses_HT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_concentration_losses_HT" title="Link to this definition">#</a></dt>
 <dd><p>Calculation of concentration losses for high temperature fuel cells</p>
-<section id="id27">
-<h2>Parameters:<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
+<section id="id26">
+<h2>Parameters:<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
 </dd>
@@ -963,8 +1001,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id28">
-<h2>Returns:<a class="headerlink" href="#id28" title="Link to this heading">#</a></h2>
+<section id="id27">
+<h2>Returns:<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>Concentration voltage loss (V)</p>
 </dd>
@@ -976,8 +1014,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_HT">
 <span class="sig-name descname"><span class="pre">calculate_limiting_current_density_HT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_cell_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_O2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_excess_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_drop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Fuel_Cells/Proton_Exchange_Membrane/compute_fuel_cell_performance.html#calculate_limiting_current_density_HT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance.calculate_limiting_current_density_HT" title="Link to this definition">#</a></dt>
 <dd><p>Calculation of the limiting current density for HT-PEM</p>
-<section id="id29">
-<h2>Parameters:<a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
+<section id="id28">
+<h2>Parameters:<a class="headerlink" href="#id28" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>stack_temperature: float</dt><dd><p>Stack Temperature (K)</p>
 </dd>
@@ -993,8 +1031,8 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
 </dd>
 </dl>
 </section>
-<section id="id30">
-<h2>Returns:<a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
+<section id="id29">
+<h2>Returns:<a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt>float:</dt><dd><p>limiting current density (A/cm^2)</p>
 </dd>
@@ -1034,11 +1072,11 @@ optional, defaults to 0 (0% of fuel_cell.maximum_deg)</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.html"
+       href="RCAIDE.Library.Methods.Powertrain.Converters.Generator.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Motor</p>
+        <p class="prev-next-title">Generator</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

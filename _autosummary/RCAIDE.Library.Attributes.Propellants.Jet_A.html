@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,265 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Jet_A</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Jet_A.html#Jet_A"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Propellant</span></code></a></p>
-<p>Jet A class propellant</p>
+<p>A class representing Jet A aviation kerosene fuel properties and emissions characteristics.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the propellant (‘Jet_A’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.reactant">
+<span class="sig-name descname"><span class="pre">reactant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.reactant" title="Link to this definition">#</a></dt>
+<dd><p>Oxidizer used for combustion (‘O2’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.density" title="Link to this definition">#</a></dt>
+<dd><p>Fuel density in kg/m³ (820.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy content in J/kg (43.02e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Energy density in J/m³ (35276.4e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.lower_heating_value">
+<span class="sig-name descname"><span class="pre">lower_heating_value</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.lower_heating_value" title="Link to this definition">#</a></dt>
+<dd><p>Lower heating value in J/kg (43.24e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.max_mass_fraction">
+<span class="sig-name descname"><span class="pre">max_mass_fraction</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.max_mass_fraction" title="Link to this definition">#</a></dt>
+<dd><dl>
+<dt>Maximum fuel-to-oxidizer mass ratios</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Air<span class="classifier">float</span></dt><dd><p>Maximum mass fraction with air (0.0633)</p>
+</dd>
+</dl>
+</li>
+<li><p>O2 : float</p></li>
+</ul>
+<p>Maximum mass fraction with pure oxygen (0.3022)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.use_high_fidelity_kinetics_model">
+<span class="sig-name descname"><span class="pre">use_high_fidelity_kinetics_model</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.use_high_fidelity_kinetics_model" title="Link to this definition">#</a></dt>
+<dd><p>Flag for using detailed chemical kinetics (True)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.fuel_surrogate_chemical_properties">
+<span class="sig-name descname"><span class="pre">fuel_surrogate_chemical_properties</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.fuel_surrogate_chemical_properties" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Simplified surrogate composition</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>N-C12H26<span class="classifier">float</span></dt><dd><p>Dodecane fraction (0.6)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>A1CH3<span class="classifier">float</span></dt><dd><p>Toluene fraction (0.2)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>A1<span class="classifier">float</span></dt><dd><p>Benzene fraction (0.2)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.fuel_chemical_properties">
+<span class="sig-name descname"><span class="pre">fuel_chemical_properties</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.fuel_chemical_properties" title="Link to this definition">#</a></dt>
+<dd><p>Detailed chemical composition for high-fidelity model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.emission_indices">
+<span class="sig-name descname"><span class="pre">emission_indices</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.emission_indices" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Emission indices in kg/kg fuel</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Production<span class="classifier">float</span></dt><dd><p>CO2 production rate (0.4656)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>CO2<span class="classifier">float</span></dt><dd><p>Carbon dioxide (3.16)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>CO<span class="classifier">float</span></dt><dd><p>Carbon monoxide (0.00201)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H2O<span class="classifier">float</span></dt><dd><p>Water vapor (1.34)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SO2<span class="classifier">float</span></dt><dd><p>Sulfur dioxide (0.0012)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NOx<span class="classifier">float</span></dt><dd><p>Nitrogen oxides (0.01514)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Soot<span class="classifier">float</span></dt><dd><p>Particulate matter (0.0012)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.global_warming_potential_100">
+<span class="sig-name descname"><span class="pre">global_warming_potential_100</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.global_warming_potential_100" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>100-year global warming potentials</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>CO2<span class="classifier">float</span></dt><dd><p>Carbon dioxide (1)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H2O<span class="classifier">float</span></dt><dd><p>Water vapor (0.06)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SO2<span class="classifier">float</span></dt><dd><p>Sulfur dioxide (-226)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NOx<span class="classifier">float</span></dt><dd><p>Nitrogen oxides (52)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Soot<span class="classifier">float</span></dt><dd><p>Particulate matter (1166)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Contrails<span class="classifier">float</span></dt><dd><p>Contrail formation (11)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements properties for Jet A aviation kerosene, including both
+simplified and detailed chemical kinetics options. Properties are specified at
+standard conditions (15°C, 1 atm).</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Emission Index’</dt><dd><p>Mass of pollutant produced per mass of fuel burned</p>
+</dd>
+<dt>‘Global Warming Potential’</dt><dd><p>Relative measure of heat trapped in atmosphere compared to CO2</p>
+</dd>
+<dt>‘Surrogate Model’</dt><dd><p>Simplified three-component representation of complex fuel mixture</p>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties are for standard temperature and pressure conditions (15C, 1atm)</p></li>
+<li><p>Surrogate model uses three-component representation</p></li>
+<li><p>Detailed model includes complex hydrocarbon mixture</p></li>
+<li><p>Emission indices are for typical aircraft cruise conditions</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] D.S. Lee, D.W. Fahey, A. Skowron, M.R. Allen, U. Burkhardt, Q. Chen, S.J. Doherty, S. Freeman, P.M. Forster, J. Fuglestvedt, A. Gettelman, R.R. De León, L.L. Lim, M.T. Lund, R.J. Millar, B. Owen, J.E. Penner, G. Pitari, M.J. Prather, R. Sausen, L.J. Wilcox, “The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018,” Atmospheric Environment, Volume 244, 2021, 117834, ISSN 1352-2310, <a class="reference external" href="https://doi.org/10.1016/j.atmosenv.2020.117834">https://doi.org/10.1016/j.atmosenv.2020.117834</a>.
+[2] Chevron Products Company. (n.d.). Aviation fuels. Chevron. <a class="reference external" href="https://www.chevron.com/-/media/chevron/operations/documents/aviation-tech-review.pdf">https://www.chevron.com/-/media/chevron/operations/documents/aviation-tech-review.pdf</a></p>
 </dd></dl>
 
 </section>
@@ -585,7 +843,21 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A"><code class="docutils literal notranslate"><span class="pre">Jet_A</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A"><code class="docutils literal notranslate"><span class="pre">Jet_A</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.tag"><code class="docutils literal notranslate"><span class="pre">Jet_A.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.reactant"><code class="docutils literal notranslate"><span class="pre">Jet_A.reactant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.density"><code class="docutils literal notranslate"><span class="pre">Jet_A.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.specific_energy"><code class="docutils literal notranslate"><span class="pre">Jet_A.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.energy_density"><code class="docutils literal notranslate"><span class="pre">Jet_A.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.lower_heating_value"><code class="docutils literal notranslate"><span class="pre">Jet_A.lower_heating_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.max_mass_fraction"><code class="docutils literal notranslate"><span class="pre">Jet_A.max_mass_fraction</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.use_high_fidelity_kinetics_model"><code class="docutils literal notranslate"><span class="pre">Jet_A.use_high_fidelity_kinetics_model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.fuel_surrogate_chemical_properties"><code class="docutils literal notranslate"><span class="pre">Jet_A.fuel_surrogate_chemical_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.fuel_chemical_properties"><code class="docutils literal notranslate"><span class="pre">Jet_A.fuel_chemical_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.emission_indices"><code class="docutils literal notranslate"><span class="pre">Jet_A.emission_indices</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A.global_warming_potential_100"><code class="docutils literal notranslate"><span class="pre">Jet_A.global_warming_potential_100</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

@@ -47,7 +47,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="design_DC_motor" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_DC_motor.html" />
+    <link rel="next" title="design_optimal_motor" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor.html" />
     <link rel="prev" title="append_motor_conditions" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,7 +537,7 @@
 <span id="compute-motor-performance"></span><h1>compute_motor_performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance.compute_motor_performance">
-<span class="sig-name descname"><span class="pre">compute_motor_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motor_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Motor/compute_motor_performance.html#compute_motor_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance.compute_motor_performance" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_motor_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Motor/compute_motor_performance.html#compute_motor_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance.compute_motor_performance" title="Link to this definition">#</a></dt>
 <dd><p>Computes motor performance characteristics including electrical, mechanical and thermal parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -559,6 +559,7 @@
 <dl class="simple">
 <dt>For PMSM motors:</dt><dd><ul class="simple">
 <li><p>Computes electromagnetic torque and power</p></li>
+<li><p>Accounts for gearbox effects</p></li>
 <li><p>Calculates thermal resistances and heat transfer</p></li>
 <li><p>Determines cooling flow characteristics</p></li>
 <li><p>Evaluates airgap and endspace heat transfer</p></li>
@@ -567,8 +568,13 @@
 <dt>For DC motors:</dt><dd><ul class="simple">
 <li><p>Uses speed-torque relationships</p></li>
 <li><p>Accounts for gearbox effects</p></li>
-<li><p>Computes electrical parameters (current, voltage)</p></li>
 <li><p>Determines overall efficiency</p></li>
+</ul>
+</dd>
+<dt>For Both Motors:</dt><dd><ul class="simple">
+<li><p>motor.inverse_calculation arg is used to determine parameters that are solved.</p></li>
+<li><p>motor.inverse_calculation == False calculates electrical properties (electrical power and voltage) from mechnical properties (rpm and torque)</p></li>
+<li><p>motor.inverse_calculation == True calculates mechanial properties (rpm and torque) from electrical properties (electrical power and voltage)</p></li>
 </ul>
 </dd>
 <dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
@@ -608,11 +614,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_DC_motor.html"
+       href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">design_DC_motor</p>
+        <p class="prev-next-title">design_optimal_motor</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

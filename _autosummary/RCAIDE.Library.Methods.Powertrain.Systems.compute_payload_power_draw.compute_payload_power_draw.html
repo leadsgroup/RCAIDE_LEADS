@@ -47,7 +47,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="setup_operating_conditions" href="RCAIDE.Library.Methods.Powertrain.Systems.setup_operating_conditions.html" />
+    <link rel="next" title="setup_operating_conditions" href="RCAIDE.Library.Methods.Powertrain.setup_operating_conditions.html" />
     <link rel="prev" title="compute_payload_power_draw" href="RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -536,8 +536,109 @@
 <h1>RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw<a class="headerlink" href="#rcaide-library-methods-powertrain-systems-compute-payload-power-draw-compute-payload-power-draw" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw">
-<span class="sig-name descname"><span class="pre">compute_payload_power_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Systems/compute_payload_power_draw.html#compute_payload_power_draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">compute_payload_power_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Systems/compute_payload_power_draw.html#compute_payload_power_draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw" title="Link to this definition">#</a></dt>
+<dd><p>Computes the power draw of a payload component on an electrical bus.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>payload</strong> (<em>RCAIDE.Library.Components.Systems.Payload</em>) – <dl class="simple">
+<dt>Payload component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the payload</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>power_draw<span class="classifier">float</span></dt><dd><p>Power required by the payload [W]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>bus</strong> (<em>RCAIDE.Library.Components.Systems.Electrical_Bus</em>) – <dl class="simple">
+<dt>Electrical bus component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the electrical bus</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>power_split_ratio<span class="classifier">float</span></dt><dd><p>Ratio of power allocation to this bus</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>efficiency<span class="classifier">float</span></dt><dd><p>Efficiency of the bus [0-1]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – <dl>
+<dt>Flight conditions with:</dt><dd><ul>
+<li><dl>
+<dt>energy<span class="classifier">dict</span></dt><dd><dl>
+<dt>Energy conditions indexed by component tag</dt><dd><ul>
+<li><dl>
+<dt>[bus.tag]<span class="classifier">Data</span></dt><dd><dl>
+<dt>Bus-specific conditions</dt><dd><ul>
+<li><dl>
+<dt>[payload.tag]<span class="classifier">Data</span></dt><dd><p>Payload-specific conditions
+- power : numpy.ndarray</p>
+<blockquote>
+<div><p>Power draw of the payload [W]</p>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>power_draw<span class="classifier">numpy.ndarray</span></dt><dd><p>Total power draw on the bus [W]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the power draw of a payload component on an electrical bus
+and updates the total power draw on the bus. The power draw is adjusted by the
+bus power split ratio and efficiency.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant payload power draw</p></li>
+<li><p>Constant bus efficiency</p></li>
+<li><p>Power draw is independent of flight conditions</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw.html#module-RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw" title="RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw</span></code></a></p>
+</div>
+</dd></dl>
 
 </section>
 
@@ -561,7 +662,7 @@
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Methods.Powertrain.Systems.setup_operating_conditions.html"
+       href="RCAIDE.Library.Methods.Powertrain.setup_operating_conditions.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>

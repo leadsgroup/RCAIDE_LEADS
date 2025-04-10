@@ -401,21 +401,75 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="optimization_setup">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup.html#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup.optimization_setup">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">optimization_setup</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span><span class="n">number_of_stations</span><span class="p">,</span><span class="n">print_iterations</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Sets up rotor optimization problem including design variables, constraints and objective function</span>
-<span class="sd">        using RCAIDE&#39;s Nexus optimization framework. Appends methodolody of planform modification to Nexus.</span>
-<span class="sd">          Inputs: </span>
-<span class="sd">             rotor     - rotor data structure           [None]</span>
-<span class="sd">             </span>
-<span class="sd">          Outputs: </span>
-<span class="sd">              nexus    - RCAIDE&#39;s optimization framework [None]</span>
-<span class="sd">              </span>
-<span class="sd">          Assumptions: </span>
-<span class="sd">            1) minimum allowable blade taper : 0.2  </span>
-<span class="sd">            1) maximum allowable blade taper : 0.7     </span>
-<span class="sd">        </span>
-<span class="sd">          Source:</span>
-<span class="sd">             None</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">optimization_setup</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span> <span class="n">number_of_stations</span><span class="p">,</span> <span class="n">print_iterations</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets up rotor optimization problem including design variables, constraints and objective function</span>
+<span class="sd">    using RCAIDE&#39;s Nexus optimization framework.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor</span>
+<span class="sd">        Rotor component (Lift_Rotor or Prop_Rotor) with optimization parameters</span>
+<span class="sd">    number_of_stations : int</span>
+<span class="sd">        Number of radial stations for blade discretization</span>
+<span class="sd">    print_iterations : bool</span>
+<span class="sd">        Flag to print optimization iterations</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    nexus : RCAIDE.Framework.Optimization.Common.Nexus</span>
+<span class="sd">        RCAIDE&#39;s optimization framework object with the following attributes:</span>
+<span class="sd">            - optimization_problem : Data</span>
+<span class="sd">                Optimization problem definition</span>
+<span class="sd">                    - inputs : numpy.ndarray</span>
+<span class="sd">                        Design variables</span>
+<span class="sd">                    - objective : numpy.ndarray</span>
+<span class="sd">                        Objective function</span>
+<span class="sd">                    - constraints : numpy.ndarray</span>
+<span class="sd">                        Constraints</span>
+<span class="sd">            - vehicle_configurations : list</span>
+<span class="sd">                List of vehicle configurations for analysis</span>
+<span class="sd">            - procedure : Data</span>
+<span class="sd">                Optimization procedure</span>
+<span class="sd">            - print_iterations : bool</span>
+<span class="sd">                Flag to print optimization iterations</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function configures a complete optimization problem for rotor blade design by:</span>
+<span class="sd">        1. Creating a Nexus optimization framework</span>
+<span class="sd">        2. Validating the rotor type (must be Lift_Rotor or Prop_Rotor)</span>
+<span class="sd">        3. Setting up design variables with bounds and scaling</span>
+<span class="sd">        4. Defining the objective function</span>
+<span class="sd">        5. Establishing constraints for performance and geometry</span>
+<span class="sd">        6. Creating aliases to link optimization variables to vehicle properties</span>
+<span class="sd">        7. Setting up vehicle configurations using blade_geometry_setup</span>
+<span class="sd">        8. Configuring the optimization procedure</span>
+<span class="sd">    </span>
+<span class="sd">    The design variables include:</span>
+<span class="sd">        - chord_r, chord_p, chord_q, chord_t: Parameters defining the chord distribution</span>
+<span class="sd">        - twist_r, twist_p, twist_q, twist_t: Parameters defining the twist distribution</span>
+<span class="sd">        - hover_tip_mach: Tip Mach number in hover</span>
+<span class="sd">        - OEI_tip_mach: Tip Mach number in one-engine-inoperative condition</span>
+<span class="sd">        - OEI_collective_pitch: Collective pitch in one-engine-inoperative condition</span>
+<span class="sd">        - cruise_tip_mach, cruise_collective_pitch: Additional parameters for prop rotors</span>
+<span class="sd">    </span>
+<span class="sd">    Constraints ensure:</span>
+<span class="sd">        - Thrust and power requirements are met</span>
+<span class="sd">        - Blade taper is within reasonable bounds (0.3 to 0.9)</span>
+<span class="sd">        - Blade twist is positive</span>
+<span class="sd">        - Maximum sectional lift coefficient is below 0.8</span>
+<span class="sd">        - Chord and twist distribution parameters maintain reasonable ratios</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Minimum allowable blade taper: 0.3</span>
+<span class="sd">        * Maximum allowable blade taper: 0.9</span>
+<span class="sd">        * Maximum sectional lift coefficient: 0.8</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">nexus</span>                        <span class="o">=</span> <span class="n">Nexus</span><span class="p">()</span>
     <span class="n">problem</span>                      <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
@@ -450,11 +504,11 @@
     <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;twist_q&#39;</span>               <span class="p">,</span>  <span class="mf">0.5</span>      <span class="p">,</span> <span class="mf">0.25</span>       <span class="p">,</span> <span class="mf">1.5</span>       <span class="p">,</span> <span class="mf">1.0</span>     <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span>
     <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;twist_t&#39;</span>               <span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span>  <span class="p">,</span> <span class="mi">0</span>          <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span>   <span class="p">,</span> <span class="mf">1.0</span>     <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span>  
     <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;hover_tip_mach&#39;</span>        <span class="p">,</span> <span class="n">tm_0_h</span>    <span class="p">,</span> <span class="n">tm_ll_h</span>    <span class="p">,</span> <span class="n">tm_ul_h</span>   <span class="p">,</span> <span class="mf">1.0</span>     <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span>
-    <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;OEI_tip_mach&#39;</span>          <span class="p">,</span> <span class="n">tm_0_h</span>    <span class="p">,</span> <span class="n">tm_ll_h</span>    <span class="p">,</span> <span class="mf">0.85</span>      <span class="p">,</span> <span class="mf">1.0</span>     <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span>  
-    <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;OEI_collective_pitch&#39;</span>  <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span>   <span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span>   <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span>   <span class="p">,</span> <span class="mf">1.0</span>      <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span> 
+    <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;OEI_tip_mach&#39;</span>          <span class="p">,</span> <span class="n">tm_0_h</span>    <span class="p">,</span> <span class="n">tm_ll_h</span>    <span class="p">,</span> <span class="mf">0.85</span>      <span class="p">,</span> <span class="mf">1.0</span>     <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;OEI_collective_pitch&#39;</span>  <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span>   <span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">5</span>   <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">5</span>   <span class="p">,</span> <span class="mf">1.0</span>      <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">nexus</span><span class="o">.</span><span class="n">prop_rotor_flag</span><span class="p">:</span> 
-        <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;cruise_tip_mach&#39;</span>         <span class="p">,</span> <span class="n">tm_ll_c</span> <span class="p">,</span> <span class="n">tm_ll_c</span>    <span class="p">,</span> <span class="n">tm_ul_c</span>   <span class="p">,</span> <span class="mf">1.0</span>     <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span> 
-        <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;cuise_collective_pitch&#39;</span>  <span class="p">,</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span>  <span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span>   <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span>  <span class="p">,</span> <span class="mf">1.0</span>     <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span> 
+        <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;cruise_tip_mach&#39;</span>         <span class="p">,</span> <span class="n">tm_ll_c</span> <span class="p">,</span> <span class="n">tm_ll_c</span>    <span class="p">,</span> <span class="n">tm_ul_c</span>  <span class="p">,</span> <span class="mf">1.0</span>     <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span> 
+        <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;cuise_collective_pitch&#39;</span>  <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">8</span> <span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">5</span>   <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">5</span>  <span class="p">,</span> <span class="mf">1.0</span>     <span class="p">,</span>  <span class="mi">1</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">less</span><span class="p">])</span> 
     <span class="n">problem</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>   
 
     <span class="c1"># -------------------------------------------------------------------</span>
@@ -503,11 +557,11 @@
     <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;chord_p_to_q_ratio&#39;</span>         <span class="p">,</span> <span class="s1">&#39;summary.chord_p_to_q_ratio&#39;</span>    <span class="p">])</span>  
     <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;twist_p_to_q_ratio&#39;</span>         <span class="p">,</span> <span class="s1">&#39;summary.twist_p_to_q_ratio&#39;</span>    <span class="p">])</span>   
     <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;OEI_hov_thrust_pow_res&#39;</span>     <span class="p">,</span> <span class="s1">&#39;summary.oei_thrust_power_residual&#39;</span>   <span class="p">])</span> 
-    <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;OEI_collective_pitch&#39;</span>       <span class="p">,</span> <span class="s1">&#39;vehicle_configurations.oei.networks.electric.propulsors.electric_rotor.rotor.oei.design_pitch_command&#39;</span> <span class="p">])</span> 
+    <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;OEI_collective_pitch&#39;</span>       <span class="p">,</span> <span class="s1">&#39;vehicle_configurations.oei.networks.electric.propulsors.electric_rotor.rotor.oei.design_blade_pitch_command&#39;</span> <span class="p">])</span> 
     <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;OEI_tip_mach&#39;</span>               <span class="p">,</span> <span class="s1">&#39;vehicle_configurations.oei.networks.electric.propulsors.electric_rotor.rotor.oei.design_tip_mach&#39;</span> <span class="p">])</span> 
     <span class="k">if</span> <span class="n">nexus</span><span class="o">.</span><span class="n">prop_rotor_flag</span><span class="p">:</span> 
         <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;cruise_tip_mach&#39;</span>        <span class="p">,</span> <span class="s1">&#39;vehicle_configurations.cruise.networks.electric.propulsors.electric_rotor.rotor.cruise.design_tip_mach&#39;</span> <span class="p">])</span>  
-        <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;cuise_collective_pitch&#39;</span> <span class="p">,</span> <span class="s1">&#39;vehicle_configurations.cruise.networks.electric.propulsors.electric_rotor.rotor.cruise.design_pitch_command&#39;</span> <span class="p">])</span>  
+        <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;cuise_collective_pitch&#39;</span> <span class="p">,</span> <span class="s1">&#39;vehicle_configurations.cruise.networks.electric.propulsors.electric_rotor.rotor.cruise.design_blade_pitch_command&#39;</span> <span class="p">])</span>  
         <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;cruise_thrust_pow_res&#39;</span>  <span class="p">,</span> <span class="s1">&#39;summary.cruise_thrust_power_residual&#39;</span>   <span class="p">])</span> 
         <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;max_sectional_cl_cruise&#39;</span><span class="p">,</span> <span class="s1">&#39;summary.max_sectional_cl_cruise&#39;</span><span class="p">])</span>  
          

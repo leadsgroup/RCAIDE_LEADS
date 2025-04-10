@@ -394,23 +394,69 @@
 <div class="viewcode-block" id="initialize_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Segments.Ground.Landing.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Ground.Landing.initialize_conditions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">initialize_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the specified conditions which are given for the segment type.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes conditions for aircraft landing segment</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Builds on the initialize conditions for common</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">            - altitude : float</span>
+<span class="sd">                Ground altitude [m]</span>
+<span class="sd">            - velocity_start : float</span>
+<span class="sd">                Initial velocity at touchdown [m/s]</span>
+<span class="sd">            - velocity_end : float</span>
+<span class="sd">                Final velocity after landing roll [m/s]</span>
+<span class="sd">            - friction_coefficient : float</span>
+<span class="sd">                Ground friction coefficient [-]</span>
+<span class="sd">            - state:</span>
+<span class="sd">                numerics:</span>
+<span class="sd">                    dimensionless:</span>
+<span class="sd">                        control_points : array</span>
+<span class="sd">                            Discretization points [-]</span>
+<span class="sd">                conditions : Data</span>
+<span class="sd">                    State conditions container</span>
+<span class="sd">                unknowns:</span>
+<span class="sd">                    ground_velocity : array</span>
+<span class="sd">                        Ground velocity profile [m/s]</span>
+<span class="sd">                initials : Data, optional</span>
+<span class="sd">                    Initial conditions from previous segment</span>
 
-<span class="sd">    Source:</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    None</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">    segment.throttle                                         [unitless]</span>
-<span class="sd">    segment.analyses.weights.vehicle.mass_properties.landing [kilogram]</span>
+<span class="sd">        Updates segment conditions directly:</span>
+<span class="sd">            - conditions.frames.inertial.velocity_vector [m/s]</span>
+<span class="sd">            - conditions.ground.friction_coefficient [-]</span>
+<span class="sd">            - conditions.freestream.altitude [m]</span>
+<span class="sd">            - conditions.frames.inertial.position_vector [m]</span>
 <span class="sd">    </span>
-<span class="sd">    Returns:</span>
-<span class="sd">    conditions.weights.total_mass   [kilogram]</span>
-<span class="sd">    conditions.propulsion.throttle  [unitless]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function sets up the initial conditions for a ground landing segment with</span>
+<span class="sd">    deceleration from touchdown to final speed. The segment handles ground effects</span>
+<span class="sd">    and friction during the landing roll.</span>
 
+<span class="sd">    **Calculation Process**</span>
+<span class="sd">        1. Check initial conditions</span>
+<span class="sd">        2. Initialize velocity profile:</span>
+<span class="sd">            v = v0 + (vf - v0)*t where:</span>
+<span class="sd">                - v0 is touchdown speed</span>
+<span class="sd">                - vf is final speed</span>
+<span class="sd">                - t is normalized time/distance</span>
+<span class="sd">        3. Set ground friction coefficient</span>
+<span class="sd">        4. Set position and altitude</span>
 
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Constant friction coefficient</span>
+<span class="sd">        * Linear velocity decrease</span>
+<span class="sd">        * No bouncing or porpoising</span>
+<span class="sd">        * Quasi-steady deceleration</span>
+<span class="sd">        * Small minimum velocity for numerical stability</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span>      
      
     <span class="c1"># unpack inputs</span>

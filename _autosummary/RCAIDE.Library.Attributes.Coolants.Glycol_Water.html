@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,138 +533,275 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Glycol_Water</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Coolants/Glycol_Water.html#Glycol_Water"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Coolants.Coolant.html#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant" title="RCAIDE.Library.Attributes.Coolants.Coolant.Coolant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Coolant</span></code></a></p>
-<p>Generic class of ethelyne glycol-water mixture coolant.</p>
+<p>Implementation of a 50-50 ethylene glycol-water mixture coolant properties.</p>
+<p>This class provides thermophysical properties and calculation methods for a standard
+ethylene glycol-water mixture commonly used in cooling systems.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier set to ‘Glycol_Water’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.percent_glycol">
+<span class="sig-name descname"><span class="pre">percent_glycol</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.percent_glycol" title="Link to this definition">#</a></dt>
+<dd><p>Mass fraction of glycol in the mixture (default: 0.5)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.density" title="Link to this definition">#</a></dt>
+<dd><p>Mass per unit volume [kg/m³]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.specific_heat_capacity">
+<span class="sig-name descname"><span class="pre">specific_heat_capacity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.specific_heat_capacity" title="Link to this definition">#</a></dt>
+<dd><p>Heat capacity at constant pressure [J/kg·K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.thermal_conductivity">
+<span class="sig-name descname"><span class="pre">thermal_conductivity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.thermal_conductivity" title="Link to this definition">#</a></dt>
+<dd><p>Heat conduction coefficient [W/m·K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.dynamic_viscosity">
+<span class="sig-name descname"><span class="pre">dynamic_viscosity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.dynamic_viscosity" title="Link to this definition">#</a></dt>
+<dd><p>Absolute viscosity [Pa·s]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.Prandtl_number">
+<span class="sig-name descname"><span class="pre">Prandtl_number</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.Prandtl_number" title="Link to this definition">#</a></dt>
+<dd><p>Dimensionless number for heat transfer characteristics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.kinematic_viscosity">
+<span class="sig-name descname"><span class="pre">kinematic_viscosity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.kinematic_viscosity" title="Link to this definition">#</a></dt>
+<dd><p>Ratio of dynamic viscosity to density [m²/s]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>All properties are currently implemented as constant values, though the method
+structure allows for future implementation of temperature and pressure dependence.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Mixture is exactly 50% water and 50% ethylene glycol by mass</p></li>
+<li><p>Standard atmospheric pressure conditions</p></li>
+<li><p>Single-phase liquid mixture</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Extra modules required</strong>
+None</p>
+<p class="rubric">References</p>
+<p>[1] The Engineering ToolBox (2003). Ethylene Glycol Heat-Transfer Fluid Properties. [online] Available at: <a class="reference external" href="https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html">https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</a> [Accessed 8 January 2025].
+[2] Microelectronics Heat Transfer Laboratory. (1997). Fluid Properties Calculator. Fluid properties calculator. <a class="reference external" href="http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html">http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html</a></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Components.Thermal_Management.html#module-RCAIDE.Library.Components.Thermal_Management" title="RCAIDE.Library.Components.Thermal_Management"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Thermal_Management</span></code></a></dt><dd><p>Thermal management system components</p>
+</dd>
+</dl>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_cp">
 <span class="sig-name descname"><span class="pre">compute_cp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Coolants/Glycol_Water.html#Glycol_Water.compute_cp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_cp" title="Link to this definition">#</a></dt>
-<dd><p>Computes the specfic heat capacity of water-glycol at a specfic temperature</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Mixture is 50% water-50% glycol</p>
-</dd>
-<dt>Source:</dt><dd><p>Engineering Toolbox: <a class="reference external" href="https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html">https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</a></p>
-</dd>
-</dl>
+<dd><p>Calculate specific heat capacity of glycol-water mixture at given temperature.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – glycol-water coolant  [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-</ul>
+<dd class="field-odd"><p><strong>T</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature [K] (default: 300)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>specfic heat capacity [J/(kg K)]</p>
+<dd class="field-even"><p><strong>cp</strong> – Specific heat capacity [J/(kg·K)]</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>cp (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Currently returns constant value of 3300 J/(kg·K), based on the default value, regardless of temperature.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Temperature independence</p></li>
+<li><p>50-50 water-glycol mixture</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] The Engineering ToolBox (2003). Ethylene Glycol Heat-Transfer Fluid Properties. [online] Available at: <a class="reference external" href="https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html">https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</a> [Accessed 8 January 2025].</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_absolute_viscosity">
 <span class="sig-name descname"><span class="pre">compute_absolute_viscosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Coolants/Glycol_Water.html#Glycol_Water.compute_absolute_viscosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_absolute_viscosity" title="Link to this definition">#</a></dt>
-<dd><p>Computes the absolute viscosity of water-glycol at a specfic temperature and pressure</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Mixture is 50% water-50% glycol</p>
-</dd>
-<dt>Source:</dt><dd><p>Engineering Toolbox: <a class="reference external" href="https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html">https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</a></p>
-</dd>
-</dl>
+<dd><p>Calculate dynamic viscosity of glycol-water mixture at given conditions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – glycol-water coolant  [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure              [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature [K] (default: 300)</p></li>
+<li><p><strong>p</strong> (<em>float</em><em>, </em><em>optional</em>) – Pressure [Pa] (default: 101325)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>absolute viscosity    [kg/(m-s)]</p>
+<dd class="field-even"><p><strong>mu</strong> – Dynamic viscosity [kg/(m·s)]</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>mu (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Currently returns constant value of 0.0019 Pa·s, based on the default value, regardless of conditions.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Temperature and pressure independence</p></li>
+<li><p>50-50 water-glycol mixture</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] The Engineering ToolBox (2003). Ethylene Glycol Heat-Transfer Fluid Properties. [online] Available at: <a class="reference external" href="https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html">https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</a> [Accessed 8 January 2025].</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_density">
 <span class="sig-name descname"><span class="pre">compute_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Coolants/Glycol_Water.html#Glycol_Water.compute_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_density" title="Link to this definition">#</a></dt>
-<dd><p>Computes the density of water-glycol at a specfic temperature and pressure</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Mixture is 50% water-50% glycol</p>
-</dd>
-<dt>Source:</dt><dd><p>Engineering Toolbox: <a class="reference external" href="https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html">https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</a></p>
-</dd>
-</dl>
+<dd><p>Calculate density of glycol-water mixture at given conditions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – glycol-water coolant  [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure              [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature [K] (default: 300)</p></li>
+<li><p><strong>p</strong> (<em>float</em><em>, </em><em>optional</em>) – Pressure [Pa] (default: 101325)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>density               [kg/m^3]</p>
+<dd class="field-even"><p><strong>rho</strong> – Density [kg/m³]</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>rho (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Currently returns constant value of 1075 kg/m³ based on the default value.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Temperature and pressure independence</p></li>
+<li><p>50-50 water-glycol mixture</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] The Engineering ToolBox (2003). Ethylene Glycol Heat-Transfer Fluid Properties. [online] Available at: <a class="reference external" href="https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html">https://www.engineeringtoolbox.com/ethylene-glycol-d_146.html</a> [Accessed 8 January 2025].</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_thermal_conductivity">
 <span class="sig-name descname"><span class="pre">compute_thermal_conductivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Coolants/Glycol_Water.html#Glycol_Water.compute_thermal_conductivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_thermal_conductivity" title="Link to this definition">#</a></dt>
-<dd><p>Computes the density of water-glycol at a specfic temperature and pressure</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Mixture is 50% water-50% glycol</p>
-</dd>
-<dt>Source:</dt><dd><p>University of Waterrloo: <a class="reference external" href="http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html">http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html</a></p>
-</dd>
-</dl>
+<dd><p>Calculate thermal conductivity of glycol-water mixture at given conditions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – glycol-water coolant  [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure              [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature [K] (default: 300)</p></li>
+<li><p><strong>p</strong> (<em>float</em><em>, </em><em>optional</em>) – Pressure [Pa] (default: 101325)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>thermal conductivity  [W/m·K]</p>
+<dd class="field-even"><p><strong>k</strong> – Thermal conductivity [W/(m·K)]</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>k (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Currently returns constant value of 0.387 W/(m·K), based on the default values,
+regardless of conditions.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Temperature and pressure independence</p></li>
+<li><p>50-50 water-glycol mixture</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Microelectronics Heat Transfer Laboratory. (1997). Fluid Properties Calculator. Fluid properties calculator. <a class="reference external" href="http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html">http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html</a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_prandtl_number">
 <span class="sig-name descname"><span class="pre">compute_prandtl_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Coolants/Glycol_Water.html#Glycol_Water.compute_prandtl_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_prandtl_number" title="Link to this definition">#</a></dt>
-<dd><p>Computes the density of water-glycol at a specfic temperature and pressure</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Mixture is 50% water-50% glycol</p>
-</dd>
-<dt>Source:</dt><dd><p>University of Waterrloo: <a class="reference external" href="http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html">http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html</a></p>
-</dd>
-</dl>
+<dd><p>Calculate Prandtl number of glycol-water mixture at given temperature.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – glycol-water coolant  [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-</ul>
+<dd class="field-odd"><p><strong>T</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature [K] (default: 300)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Prandtl number        [unitless]</p>
+<dd class="field-even"><p><strong>Pr</strong> – Prandtl number [dimensionless]</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Pr (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Calculated using the relationship:
+Pr = (μ·Cp)/k</p>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>μ is dynamic viscosity</p></li>
+<li><p>Cp is specific heat capacity</p></li>
+<li><p>k is thermal conductivity</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Temperature independence of constituent properties</p></li>
+<li><p>50-50 water-glycol mixture</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Microelectronics Heat Transfer Laboratory. (1997). Fluid Properties Calculator. Fluid properties calculator. <a class="reference external" href="http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html">http://www.mhtl.uwaterloo.ca/old/onlinetools/airprop/airprop.html</a></p>
 </dd></dl>
 
 </dd></dl>
@@ -719,6 +856,14 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water"><code class="docutils literal notranslate"><span class="pre">Glycol_Water</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.tag"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.percent_glycol"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.percent_glycol</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.density"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.specific_heat_capacity"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.specific_heat_capacity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.thermal_conductivity"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.thermal_conductivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.dynamic_viscosity"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.dynamic_viscosity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.Prandtl_number"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.Prandtl_number</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.kinematic_viscosity"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.kinematic_viscosity</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_cp"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.compute_cp()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_absolute_viscosity"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.compute_absolute_viscosity()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Glycol_Water.Glycol_Water.compute_density"><code class="docutils literal notranslate"><span class="pre">Glycol_Water.compute_density()</span></code></a></li>

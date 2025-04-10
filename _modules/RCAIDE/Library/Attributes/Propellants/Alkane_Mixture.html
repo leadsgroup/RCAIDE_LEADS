@@ -393,7 +393,60 @@
 <div class="viewcode-block" id="Alkane_Mixture">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.html#RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.Alkane_Mixture">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Alkane_Mixture</span><span class="p">(</span><span class="n">Propellant</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alkane_Mixture class propellant  </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing a binary mixture of alkane fuels with customizable composition.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the propellant (defaults to &#39;Alkane_Mixture&#39;)</span>
+<span class="sd">    reactant : str</span>
+<span class="sd">        Oxidizer used for combustion (defaults to &#39;O2&#39;)</span>
+<span class="sd">    propellant_1 : Propellant</span>
+<span class="sd">        First alkane component (default: Ethane)</span>
+<span class="sd">    propellant_1_mass_fraction : float</span>
+<span class="sd">        Mass fraction of first component (defaults to 0.5)</span>
+<span class="sd">    propellant_2 : Propellant</span>
+<span class="sd">        Second alkane component (default: Propane)</span>
+<span class="sd">    propellant_2_mass_fraction : float</span>
+<span class="sd">        Mass fraction of second component (defaults to 0.5)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Mixture density in kg/m³, computed from components</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Mixture specific energy in J/kg, computed from components</span>
+<span class="sd">    energy_density : float</span>
+<span class="sd">        Mixture energy density in J/m³, computed from components</span>
+<span class="sd">    lower_heating_value : float</span>
+<span class="sd">        Mixture lower heating value in J/kg, computed from components</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements properties for binary alkane fuel mixtures. All mixture </span>
+<span class="sd">    properties are computed using mass fraction weighted averages of the component </span>
+<span class="sd">    properties, except density which uses a volume-based mixing rule.</span>
+
+<span class="sd">    **Theory**</span>
+<span class="sd">    </span>
+<span class="sd">    Density mixing rule:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\rho_{mix} = \\left(\\frac{X_1}{\\rho_1} + \\frac{X_2}{\\rho_2}\\right)^{-1}</span>
+<span class="sd">    </span>
+<span class="sd">    Property mixing rule:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        P_{mix} = X_1P_1 + X_2P_2</span>
+<span class="sd">    </span>
+<span class="sd">    where:</span>
+<span class="sd">        - X₁, X₂ are mass fractions</span>
+<span class="sd">        - ρ₁, ρ₂ are component densities</span>
+<span class="sd">        - P₁, P₂ are component properties</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Mass Fraction&#39;</span>
+<span class="sd">        The ratio of component mass to total mixture mass</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Lower Heating Value&#39;</span>
+<span class="sd">        Heat of combustion excluding latent heat of water vapor</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -415,10 +468,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span>            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_mixture_specific_energy</span><span class="p">()</span>                         <span class="c1"># J/kg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>             <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_mixture_energy_density</span><span class="p">()</span>                          <span class="c1"># J/m^3</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lower_heating_value</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_mixture_lower_heating_value</span><span class="p">()</span>                     <span class="c1"># J/kg</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         
 <div class="viewcode-block" id="Alkane_Mixture.compute_mixture_density">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.html#RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.Alkane_Mixture.compute_mixture_density">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_mixture_density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the mixture density using volume-based mixing rule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rho_mix : float</span>
+<span class="sd">            Mixture density in kg/m³</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Uses mixing rule for proper volume-based averaging of alkane components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p1</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propellant_1</span> 
         <span class="n">p2</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propellant_2</span>
         <span class="n">rho1</span>  <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">density</span>
@@ -433,6 +506,18 @@
 <div class="viewcode-block" id="Alkane_Mixture.compute_mixture_specific_energy">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.html#RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.Alkane_Mixture.compute_mixture_specific_energy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_mixture_specific_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the mixture specific energy using mass fraction weighted average.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        e_mix : float</span>
+<span class="sd">            Mixture specific energy in J/kg</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Linear combination of component specific energies weighted by mass fractions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p1</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propellant_1</span> 
         <span class="n">p2</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propellant_2</span>
         <span class="n">e1</span>    <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">specific_energy</span>
@@ -448,6 +533,18 @@
 <div class="viewcode-block" id="Alkane_Mixture.compute_mixture_energy_density">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.html#RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.Alkane_Mixture.compute_mixture_energy_density">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_mixture_energy_density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the mixture energy density from specific energy and density.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        U_mix : float</span>
+<span class="sd">            Mixture energy density in J/m³</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Product of mixture specific energy and mixture density.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">e_mix</span>   <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">compute_mixture_specific_energy</span><span class="p">()</span>
         <span class="n">rho_mix</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">compute_mixture_density</span><span class="p">()</span>
         
@@ -458,6 +555,18 @@
 <div class="viewcode-block" id="Alkane_Mixture.compute_mixture_lower_heating_value">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.html#RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.Alkane_Mixture.compute_mixture_lower_heating_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_mixture_lower_heating_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the mixture lower heating value using mass fraction weighted average.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        LHV_mix : float</span>
+<span class="sd">            Mixture lower heating value in J/kg</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Linear combination of component lower heating values weighted by mass fractions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p1</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propellant_1</span> 
         <span class="n">p2</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propellant_2</span>
         <span class="n">LHV1</span>  <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">lower_heating_value</span>
@@ -472,6 +581,19 @@
 <div class="viewcode-block" id="Alkane_Mixture.compute_all">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.html#RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.Alkane_Mixture.compute_all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update all mixture properties based on current composition.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Recalculates all mixture properties:</span>
+<span class="sd">            - Density</span>
+<span class="sd">            - Specific energy</span>
+<span class="sd">            - Energy density</span>
+<span class="sd">            - Lower heating value</span>
+<span class="sd">        </span>
+<span class="sd">        Should be called after changing mixture composition.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">density</span>                    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_mixture_density</span><span class="p">()</span>                                 <span class="c1"># kg/m^3 (15 C, 1 atm)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span>            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_mixture_specific_energy</span><span class="p">()</span>                         <span class="c1"># J/kg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>             <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_mixture_energy_density</span><span class="p">()</span>                          <span class="c1"># J/m^3</span>

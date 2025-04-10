@@ -395,58 +395,73 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="compute_supersonic_nozzle_performance">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.compute_supersonic_nozzle_performance.html#RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.compute_supersonic_nozzle_performance.compute_supersonic_nozzle_performance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_supersonic_nozzle_performance</span><span class="p">(</span><span class="n">supersonic_nozzle</span><span class="p">,</span><span class="n">s_nozzle_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This computes the output values from the input values according to</span>
-<span class="sd">    equations from the source.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_supersonic_nozzle_performance</span><span class="p">(</span><span class="n">supersonic_nozzle</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the performance parameters of a supersonic nozzle based on input conditions.</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Constant polytropic efficiency and pressure ratio</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    supersonic_nozzle : RCAIDE.Components.Energy.Converters.Supersonic_Nozzle</span>
+<span class="sd">        The supersonic nozzle component for which performance is being computed</span>
+<span class="sd">    conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Container for flight conditions and energy system states</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        This function modifies the conditions object in-place</span>
 <span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">    https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates output values from input conditions according to </span>
+<span class="sd">    gas dynamics equations for supersonic nozzles.</span>
 <span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    conditions.freestream.</span>
-<span class="sd">      isentropic_expansion_factor         [-]</span>
-<span class="sd">      specific_heat_at_constant_pressure  [J/(kg K)]</span>
-<span class="sd">      pressure                            [Pa]</span>
-<span class="sd">      stagnation_pressure                 [Pa]</span>
-<span class="sd">      stagnation_temperature              [K]</span>
-<span class="sd">      gas_specific_constant               [J/(kg K)]</span>
-<span class="sd">      mach_number                         [-]</span>
-<span class="sd">    self.inputs.</span>
-<span class="sd">      stagnation_temperature              [K]</span>
-<span class="sd">      stagnation_pressure                 [Pa]</span>
-<span class="sd">               </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">    s_nozzle_conditions.</span>
-<span class="sd">      stagnation_temperature              [K]  </span>
-<span class="sd">      stagnation_pressure                 [Pa]</span>
-<span class="sd">      stagnation_enthalpy                 [J/kg]</span>
-<span class="sd">      mach_number                         [-]</span>
-<span class="sd">      static_temperature                  [K]</span>
-<span class="sd">      static_enthalpy                     [J/kg]</span>
-<span class="sd">      velocity                            [m/s]</span>
-<span class="sd">      static_pressure                     [Pa]</span>
-<span class="sd">      area_ratio                          [-]</span>
-<span class="sd">            </span>
-<span class="sd">    Properties Used:</span>
-<span class="sd">    self.</span>
-<span class="sd">      pressure_ratio                      [-]</span>
-<span class="sd">      polytropic_efficiency               [-]</span>
-<span class="sd">      pressure_recovery                   [-]</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Constant polytropic efficiency and pressure ratio</span>
+<span class="sd">        * Isentropic flow except for losses accounted by efficiency terms</span>
+<span class="sd">        * Perfect gas behavior</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    </span>
+<span class="sd">    The nozzle performance is calculated using isentropic flow relations. For supersonic flow,</span>
+<span class="sd">    the Mach number is calculated from the pressure ratio:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        M = \\sqrt{\\frac{2}{\\gamma-1}\\left[\\left(\\frac{P_t}{P_0}\\right)^{\\frac{\\gamma-1}{\\gamma}}-1\\right]}</span>
+<span class="sd">    </span>
+<span class="sd">    The static temperature is related to stagnation temperature by:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        T = \\frac{T_t}{1+\\frac{\\gamma-1}{2}M^2}</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Pressure ratio&#39;</span>
+<span class="sd">        Ratio of exit pressure to inlet pressure in the nozzle</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Polytropic efficiency&#39;</span>
+<span class="sd">        Measure of the nozzle&#39;s thermodynamic efficiency accounting for irreversibilities</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Cantwell, B. &quot;AA283 Course Material: Course Notes.&quot; Stanford University. https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Gas_Dynamics.fm_id</span>
 <span class="sd">    &quot;&quot;&quot;</span>           
     
     <span class="c1">#unpack the values</span>
     
     <span class="c1">#unpack from conditions</span>
-    <span class="n">gamma</span>    <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">isentropic_expansion_factor</span>
-    <span class="n">Cp</span>       <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">specific_heat_at_constant_pressure</span>
-    <span class="n">Po</span>       <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">pressure</span>
-    <span class="n">Pto</span>      <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">stagnation_pressure</span>
-    <span class="n">Tto</span>      <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">stagnation_temperature</span>
-    <span class="n">R</span>        <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">gas_specific_constant</span>
-    <span class="n">Mo</span>       <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>
+    <span class="n">gamma</span>               <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">isentropic_expansion_factor</span>
+    <span class="n">Cp</span>                  <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">specific_heat_at_constant_pressure</span>
+    <span class="n">Po</span>                  <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">pressure</span>
+    <span class="n">Pto</span>                 <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">stagnation_pressure</span>
+    <span class="n">Tto</span>                 <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">stagnation_temperature</span>
+    <span class="n">R</span>                   <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">gas_specific_constant</span>
+    <span class="n">Mo</span>                  <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>
+    <span class="n">s_nozzle_conditions</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">supersonic_nozzle</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
     
     <span class="c1">#unpack from inputs</span>
     <span class="n">Tt_in</span>    <span class="o">=</span> <span class="n">s_nozzle_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>
@@ -467,8 +482,8 @@
     <span class="c1">#compute the output Mach number, static quantities and the output velocity</span>
     <span class="n">Mach</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((((</span><span class="n">Pt_out</span><span class="o">/</span><span class="n">Po</span><span class="p">)</span><span class="o">**</span><span class="p">((</span><span class="n">gamma</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">gamma</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
     
-    <span class="c1">#Remove check on mach numbers from expansion nozzle</span>
-    <span class="n">i_low</span>         <span class="o">=</span> <span class="n">Mach</span> <span class="o">&lt;</span> <span class="mf">10.0</span>
+    <span class="c1">#Remove check on mach numbers fromn expansion nozzle</span>
+    <span class="n">i_low</span>         <span class="o">=</span> <span class="n">Mach</span> <span class="o">&lt;</span> <span class="mf">1.0</span>
     
     <span class="c1">#initializing the Pout array</span>
     <span class="n">P_out</span>         <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span><span class="n">Mach</span><span class="o">/</span><span class="n">Mach</span>

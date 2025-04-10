@@ -396,22 +396,45 @@
 <div class="viewcode-block" id="Steel">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Steel.html#RCAIDE.Library.Attributes.Materials.Steel.Steel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Steel</span><span class="p">(</span><span class="n">Solid</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Physical Constants Specific to AISI 4340 Steel</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    A class representing AISI 4340 steel material properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ultimate_tensile_strength : float</span>
+<span class="sd">        Maximum tensile stress before failure in Pa (1110e6)</span>
+<span class="sd">    ultimate_shear_strength : float</span>
+<span class="sd">        Maximum shear stress before failure in Pa (825e6)</span>
+<span class="sd">    ultimate_bearing_strength : float</span>
+<span class="sd">        Maximum bearing stress before failure in Pa (1110e6)</span>
+<span class="sd">    yield_tensile_strength : float</span>
+<span class="sd">        Stress at which material begins to deform plastically in Pa (710e6)</span>
+<span class="sd">    yield_shear_strength : float</span>
+<span class="sd">        Shear stress at which material begins to deform plastically in Pa (410e6)</span>
+<span class="sd">    yield_bearing_strength : float</span>
+<span class="sd">        Bearing stress at which material begins to deform plastically in Pa (710e6)</span>
+<span class="sd">    minimum_gage_thickness : float</span>
+<span class="sd">        Minimum manufacturable thickness in m (0.0)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Material density in kg/m³ (7850)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements material properties for AISI 4340 steel, a high-strength </span>
+<span class="sd">    alloy steel commonly used in aerospace applications. The properties are based on </span>
+<span class="sd">    median values.</span>
+
+<span class="sd">    **Definitions**</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    None</span>
+<span class="sd">    &#39;Ultimate Strength&#39;</span>
+<span class="sd">        The maximum stress that a material can withstand before failure</span>
 <span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">    MatWeb (Median of Mfg. Reported Values)</span>
-<span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Properties Used:</span>
-<span class="sd">    None</span>
+<span class="sd">    &#39;Yield Strength&#39;</span>
+<span class="sd">        The stress at which a material begins to deform plastically</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] MatWeb. (n.d.). Crucible Steel AISI 4340 Alloy Steel. Crucible Steel aisi 4340 alloy steel. https://www.matweb.com/search/DataSheet.aspx?MatGUID=32036e9a93d04975bec68fc8ca3a696d </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

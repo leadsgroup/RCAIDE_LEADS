@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Stability" href="RCAIDE.Library.Methods.Stability.html" />
-    <link rel="prev" title="setup_operating_conditions" href="RCAIDE.Library.Methods.Powertrain.Systems.setup_operating_conditions.html" />
+    <link rel="prev" title="RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw" href="RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -531,8 +531,181 @@
 <span id="setup-operating-conditions"></span><h1>setup_operating_conditions<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.setup_operating_conditions" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.setup_operating_conditions.setup_operating_conditions">
-<span class="sig-name descname"><span class="pre">setup_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compoment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[10,</span> <span class="pre">0,</span> <span class="pre">0]])</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/setup_operating_conditions.html#setup_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.setup_operating_conditions.setup_operating_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Set up operating conditions</p>
+<span class="sig-name descname"><span class="pre">setup_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([10])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_of_attack</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/setup_operating_conditions.html#setup_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.setup_operating_conditions.setup_operating_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Sets up operating conditions for single component analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>component</strong> (<em>RCAIDE.Library.Components.Component</em>) – <dl class="simple">
+<dt>Component to set up operating conditions for</dt><dd><ul>
+<li><dl class="simple">
+<dt>working_fluid<span class="classifier">Data</span></dt><dd><p>Working fluid properties object (will be set by this function)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>altitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Altitude for analysis [m]
+Default: 0 (sea level)</p></li>
+<li><p><strong>velocity_range</strong> (<em>numpy.ndarray</em><em>, </em><em>optional</em>) – Array of velocities to analyze [m/s]
+Default: np.array([10])</p></li>
+<li><p><strong>angle_of_attack</strong> (<em>float</em><em>, </em><em>optional</em>) – Angle of attack for analysis [deg]Default: 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>state</strong> –</p>
+<dl class="simple">
+<dt>State object containing:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>conditions<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Flight conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>freestream<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Freestream properties</dt><dd><ul>
+<li><dl class="simple">
+<dt>altitude<span class="classifier">numpy.ndarray</span></dt><dd><p>Altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number<span class="classifier">numpy.ndarray</span></dt><dd><p>Mach number</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Atmospheric pressure [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Atmospheric temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>density<span class="classifier">numpy.ndarray</span></dt><dd><p>Air density [kg/m³]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>dynamic_viscosity<span class="classifier">numpy.ndarray</span></dt><dd><p>Air dynamic viscosity [kg/(m·s)]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>gravity<span class="classifier">numpy.ndarray</span></dt><dd><p>Gravitational acceleration [m/s²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>isentropic_expansion_factor<span class="classifier">numpy.ndarray</span></dt><dd><p>Ratio of specific heats (gamma)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Cp<span class="classifier">numpy.ndarray</span></dt><dd><p>Specific heat at constant pressure [J/(kg·K)]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>R<span class="classifier">numpy.ndarray</span></dt><dd><p>Gas constant [J/(kg·K)]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>speed_of_sound<span class="classifier">numpy.ndarray</span></dt><dd><p>Speed of sound [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>velocity<span class="classifier">numpy.ndarray</span></dt><dd><p>Freestream velocity [m/s]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>frames<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Reference frames</dt><dd><ul>
+<li><dl class="simple">
+<dt>body<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Body-fixed frame</dt><dd><ul>
+<li><dl class="simple">
+<dt>inertial_rotations<span class="classifier">numpy.ndarray</span></dt><dd><p>Rotation angles [rad]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>inertial<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Inertial frame</dt><dd><ul>
+<li><dl class="simple">
+<dt>velocity_vector<span class="classifier">numpy.ndarray</span></dt><dd><p>Velocity vector [m/s]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RCAIDE.Framework.Mission.Common.State</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function creates a standardized set of operating conditions for component analysis.
+It sets up atmospheric conditions based on the US Standard Atmosphere 1976 model and
+initializes all necessary parameters for component performance evaluation.</p>
+<dl class="simple">
+<dt>The function:</dt><dd><ol class="arabic simple">
+<li><p>Sets up Earth as the planet and air as the working fluid</p></li>
+<li><p>Computes atmospheric properties at the specified altitude</p></li>
+<li><p>Creates a conditions data structure with all necessary parameters</p></li>
+<li><p>Sets up reference frames and orientations</p></li>
+<li><p>Appends component-specific operating conditions</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>US Standard Atmosphere 1976</p></li>
+<li><p>Earth gravity</p></li>
+<li><p>Air as working fluid</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976.html#module-RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976" title="RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Mission.Common.Update.orientations.html#module-RCAIDE.Library.Mission.Common.Update.orientations" title="RCAIDE.Library.Mission.Common.Update.orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Mission.Common.Update.orientations</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>
@@ -548,12 +721,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Methods.Powertrain.Systems.setup_operating_conditions.html"
+       href="RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">setup_operating_conditions</p>
+        <p class="prev-next-title">RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw</p>
       </div>
     </a>
     <a class="right-next"

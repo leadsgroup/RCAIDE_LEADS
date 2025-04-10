@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,213 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Propanol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Propanol.html#Propanol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Propellant</span></code></a></p>
-<p>Propanol class propellant</p>
+<p>A class representing propanol (C3H7OH) fuel properties and emissions characteristics
+for propulsion applications.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the propellant (‘Propanol’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.reactant">
+<span class="sig-name descname"><span class="pre">reactant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.reactant" title="Link to this definition">#</a></dt>
+<dd><p>Oxidizer used for combustion (‘O2’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.density" title="Link to this definition">#</a></dt>
+<dd><p>Fuel density in kg/m³ (804.16)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy content in J/kg (3.34e7)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Energy density in J/m³ (2.69e10)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.lower_heating_value">
+<span class="sig-name descname"><span class="pre">lower_heating_value</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.lower_heating_value" title="Link to this definition">#</a></dt>
+<dd><p>Lower heating value in J/kg (3.07e7)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.use_high_fidelity_kinetics_model">
+<span class="sig-name descname"><span class="pre">use_high_fidelity_kinetics_model</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.use_high_fidelity_kinetics_model" title="Link to this definition">#</a></dt>
+<dd><p>Flag for using detailed chemical kinetics (False)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.fuel_surrogate_chemical_properties">
+<span class="sig-name descname"><span class="pre">fuel_surrogate_chemical_properties</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.fuel_surrogate_chemical_properties" title="Link to this definition">#</a></dt>
+<dd><p>Simplified chemical composition {‘NC3H7OH’: 1.0}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.fuel_chemical_properties">
+<span class="sig-name descname"><span class="pre">fuel_chemical_properties</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.fuel_chemical_properties" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Detailed chemical composition for high-fidelity model</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>NC10H22<span class="classifier">float</span></dt><dd><p>n-Decane fraction (0.16449)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NC12H26<span class="classifier">float</span></dt><dd><p>n-Dodecane fraction (0.34308)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NC16H34<span class="classifier">float</span></dt><dd><p>n-Hexadecane fraction (0.10335)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>IC8H18<span class="classifier">float</span></dt><dd><p>iso-Octane fraction (0.08630)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NC7H14<span class="classifier">float</span></dt><dd><p>n-Heptene fraction (0.07945)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>C6H5C2H5<span class="classifier">float</span></dt><dd><p>Ethylbenzene fraction (0.07348)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>C6H5C4H9<span class="classifier">float</span></dt><dd><p>Butylbenzene fraction (0.05812)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>C10H7CH3<span class="classifier">float</span></dt><dd><p>Methylnaphthalene fraction (0.10972)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.global_warming_potential_100">
+<span class="sig-name descname"><span class="pre">global_warming_potential_100</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.global_warming_potential_100" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>100-year global warming potentials</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>CO2<span class="classifier">float</span></dt><dd><p>Carbon dioxide (1)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H2O<span class="classifier">float</span></dt><dd><p>Water vapor (0.06)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SO2<span class="classifier">float</span></dt><dd><p>Sulfur dioxide (-226)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NOx<span class="classifier">float</span></dt><dd><p>Nitrogen oxides (52)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Soot<span class="classifier">float</span></dt><dd><p>Particulate matter (1166)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Contrails<span class="classifier">float</span></dt><dd><p>Contrail formation (11)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Propanol is an alcohol fuel that can be produced through biological or synthetic
+processes. It has properties similar to other light alcohols.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Lower Heating Value’</dt><dd><p>Heat of combustion excluding latent heat of water vapor</p>
+</dd>
+<dt>‘Global Warming Potential’</dt><dd><p>Relative measure of heat trapped in atmosphere compared to CO2</p>
+</dd>
+<dt>‘Surrogate Model’</dt><dd><p>Simplified single-component representation using pure propanol</p>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties are for standard temperature (20°C) and pressure (1 atm)</p></li>
+<li><p>Air composition is standard atmospheric</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -585,7 +791,19 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol"><code class="docutils literal notranslate"><span class="pre">Propanol</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol"><code class="docutils literal notranslate"><span class="pre">Propanol</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.tag"><code class="docutils literal notranslate"><span class="pre">Propanol.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.reactant"><code class="docutils literal notranslate"><span class="pre">Propanol.reactant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.density"><code class="docutils literal notranslate"><span class="pre">Propanol.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.specific_energy"><code class="docutils literal notranslate"><span class="pre">Propanol.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.energy_density"><code class="docutils literal notranslate"><span class="pre">Propanol.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.lower_heating_value"><code class="docutils literal notranslate"><span class="pre">Propanol.lower_heating_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.use_high_fidelity_kinetics_model"><code class="docutils literal notranslate"><span class="pre">Propanol.use_high_fidelity_kinetics_model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.fuel_surrogate_chemical_properties"><code class="docutils literal notranslate"><span class="pre">Propanol.fuel_surrogate_chemical_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.fuel_chemical_properties"><code class="docutils literal notranslate"><span class="pre">Propanol.fuel_chemical_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Propanol.Propanol.global_warming_potential_100"><code class="docutils literal notranslate"><span class="pre">Propanol.global_warming_potential_100</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

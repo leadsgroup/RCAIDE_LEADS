@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,15 +535,82 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Pre_Process.emissions.emissions">
 <span class="sig-name descname"><span class="pre">emissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mission</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Pre_Process/emissions.html#emissions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Pre_Process.emissions.emissions" title="Link to this definition">#</a></dt>
-<dd><p>Runs emissions model and build surrogate</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>N/A</p>
-</dd>
-<dt>Inputs:</dt><dd><p>None</p>
-</dd>
-<dt>Outputs:</dt><dd><p>None</p>
+<dd><p>Initializes and processes emissions models for mission segments</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mission</strong> (<em>Mission</em>) – <dl>
+<dt>The mission containing segments to be analyzed</dt><dd><ul>
+<li><dl>
+<dt>analyses.emissions<span class="classifier">Analysis</span></dt><dd><p>Emissions analysis module
+- process.emissions : Process</p>
+<blockquote>
+<div><p>Emissions computation process</p>
+</div></blockquote>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>surrogates<span class="classifier">Data</span></dt><dd><p>Emissions surrogate models</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updates mission segment analyses directly</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function prepares the emissions analysis for each mission segment.
+It manages emissions models and surrogate data across segments for
+computational efficiency by reusing previously computed data when possible.</p>
+<dl class="simple">
+<dt>The function performs the following steps:</dt><dd><ol class="arabic simple">
+<li><p>Identifies segments requiring emissions analysis</p></li>
+<li><p>Reuses previous segment’s emissions data when possible</p></li>
+<li><p>Initializes new emissions analyses when needed</p></li>
+</ol>
+</dd>
+</dl>
+<p><strong>Process Flow</strong></p>
+<dl class="simple">
+<dt>For each segment:</dt><dd><ol class="arabic simple">
+<li><p>Check if emissions analysis exists</p></li>
+<li><dl class="simple">
+<dt>If previous segment exists with computed data:</dt><dd><ul class="simple">
+<li><p>Reuse process and surrogate data</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Otherwise:</dt><dd><ul class="simple">
+<li><p>Initialize new emissions analysis</p></li>
+<li><p>Store segment tag for future reference</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Compatible emissions models between segments</p></li>
+<li><p>Valid initialization of first segment</p></li>
+<li><p>Continuous emissions characteristics</p></li>
+<li><p>Proper surrogate model compatibility</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

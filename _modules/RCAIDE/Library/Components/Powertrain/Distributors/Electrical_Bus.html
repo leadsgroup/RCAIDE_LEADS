@@ -413,9 +413,6 @@
 <span class="sd">    assigned_propulsors : list</span>
 <span class="sd">        List of propulsion systems powered by this bus</span>
 <span class="sd">        </span>
-<span class="sd">    solar_panel : Component, optional</span>
-<span class="sd">        Solar panel system connected to this bus</span>
-<span class="sd">        </span>
 <span class="sd">    avionics : Component</span>
 <span class="sd">        Aircraft avionics system</span>
 <span class="sd">        </span>
@@ -464,8 +461,6 @@
 <span class="sd">    --------</span>
 <span class="sd">    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules</span>
 <span class="sd">        Battery module components</span>
-<span class="sd">    RCAIDE.Library.Components.Powertrain.Sources.Solar_Panels</span>
-<span class="sd">        Solar panel components</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -482,7 +477,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fuel_cell_stacks</span>                       <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cryogenic_tanks</span>                        <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assigned_propulsors</span>                    <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solar_panel</span>                            <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">assigned_converters</span>                    <span class="o">=</span> <span class="p">[]</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">avionics</span>                               <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Systems</span><span class="o">.</span><span class="n">Avionics</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">payload</span>                                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Payloads</span><span class="o">.</span><span class="n">Payload</span><span class="p">()</span>         
         <span class="bp">self</span><span class="o">.</span><span class="n">identical_battery_modules</span>              <span class="o">=</span> <span class="kc">True</span>      

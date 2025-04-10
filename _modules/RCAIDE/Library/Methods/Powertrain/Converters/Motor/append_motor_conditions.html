@@ -388,7 +388,7 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="append_motor_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions.html#RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions.append_motor_conditions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">append_motor_conditions</span><span class="p">(</span><span class="n">motor</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">):</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">append_motor_conditions</span><span class="p">(</span><span class="n">motor</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">):</span> 
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initializes motor operating conditions for a mission segment.</span>
@@ -399,26 +399,25 @@
 <span class="sd">        Motor component (DC_Motor or PMSM_Motor) for which conditions are being initialized</span>
 <span class="sd">    segment : Segment</span>
 <span class="sd">        Mission segment containing the state conditions</span>
-<span class="sd">    propulsor_conditions : Conditions</span>
+<span class="sd">    energy_conditions : Conditions</span>
 <span class="sd">        Container for propulsor operating conditions</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">        Modifies propulsor_conditions in-place by adding motor-specific conditions</span>
+<span class="sd">        Modifies energy_conditions in-place by adding motor-specific conditions</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function initializes arrays of zeros for key motor operating parameters during</span>
 <span class="sd">    a mission segment. The conditions are stored in a nested structure under the motor&#39;s</span>
-<span class="sd">    tag within propulsor_conditions.</span>
+<span class="sd">    tag within energy_conditions.</span>
 
 <span class="sd">    The following conditions are initialized:</span>
 <span class="sd">        - torque: Motor output torque [N-m]</span>
 <span class="sd">        - efficiency: Motor operating efficiency [-] </span>
 <span class="sd">        - current: Motor current draw [A]</span>
 <span class="sd">        - voltage: Motor voltage [V]</span>
-<span class="sd">        - rotor_power_coefficient: Non-dimensional power coefficient [-]</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -428,14 +427,16 @@
 
 
     <span class="n">ones_row</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                         <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>                  <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span>                 <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">torque</span>                  <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">efficiency</span>              <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">current</span>                 <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">voltage</span>                 <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">rotor_power_coefficient</span> <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                         <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>                  <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span>                 <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">efficiency</span>              <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">voltage</span>          <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">current</span>          <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">work_done</span>       <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">power</span>           <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">torque</span>          <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">motor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">omega</span>           <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> </div>
 
 

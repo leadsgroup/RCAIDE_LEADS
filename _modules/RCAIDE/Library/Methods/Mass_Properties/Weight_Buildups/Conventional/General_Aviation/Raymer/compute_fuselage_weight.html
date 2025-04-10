@@ -426,12 +426,10 @@
     <span class="n">w_fus</span>       <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">width</span>
     <span class="n">h_fus</span>       <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">maximum</span> 
     <span class="n">l_fus</span>       <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">total</span><span class="o">-</span><span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">tail</span>  
-    <span class="n">V_fuse</span>      <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">volume</span> 
-    <span class="n">num_seats</span>   <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">number_coach_seats</span>  
-
-    <span class="n">Nult</span>       <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">ultimate_load</span> 
-    <span class="n">TOW</span>        <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
-    <span class="n">q_c</span>        <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">design_dynamic_pressure</span>
+    <span class="n">V_fuse</span>      <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">volume</span>  
+    <span class="n">Nult</span>        <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">ultimate_load</span> 
+    <span class="n">TOW</span>         <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
+    <span class="n">q_c</span>         <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_dynamic_pressure</span>
     
     <span class="c1"># take average as diameter</span>
     <span class="n">d_fus</span>    <span class="o">=</span> <span class="p">(</span><span class="n">h_fus</span><span class="o">+</span><span class="n">w_fus</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span>

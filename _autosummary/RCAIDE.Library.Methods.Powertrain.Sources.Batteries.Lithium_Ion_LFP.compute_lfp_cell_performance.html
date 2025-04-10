@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,60 +543,170 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.compute_lfp_cell_performance">
 <span class="sig-name descname"><span class="pre">compute_lfp_cell_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coolant_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Lithium_Ion_LFP/compute_lfp_cell_performance.html#compute_lfp_cell_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.compute_lfp_cell_performance" title="Link to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>Assumptions:</dt><dd><ul class="simple">
-<li><p>All battery_module modules exhibit the same thermal behavior.</p></li>
-<li><p>The cell temperature is assumed to be the temperature of the entire module.</p></li>
+<dd><p>Computes the performance of lithium iron phosphate (LFP) battery cells.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery_module</strong> (<em>BatteryModule</em>) – <dl class="simple">
+<dt>The battery module containing LFP cells with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>cell.electrode_area<span class="classifier">float</span></dt><dd><p>Area of the cell electrode [m²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.surface_area<span class="classifier">float</span></dt><dd><p>Surface area of the cell [m²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.mass<span class="classifier">float</span></dt><dd><p>Mass of the cell [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.specific_heat_capacity<span class="classifier">float</span></dt><dd><p>Specific heat capacity of the cell [J/(kg·K)]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.discharge_performance_map<span class="classifier">function</span></dt><dd><p>Function that maps C-rate, temperature, and discharge capacity to voltage</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>electrical_configuration.series<span class="classifier">int</span></dt><dd><p>Number of cells in series</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>electrical_configuration.parallel<span class="classifier">int</span></dt><dd><p>Number of cells in parallel</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>
-<p>Source:
-Internal Resistance:</p>
-<dl>
-<dt>Inputs:</dt><dd><dl class="simple">
-<dt>battery.</dt><dd><p><a href="#id1"><span class="problematic" id="id2">**</span></a>* will be done in sphinx format.</p>
+</p></li>
+<li><p><strong>state</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Common.State.html#RCAIDE.Framework.Mission.Common.State.State" title="RCAIDE.Framework.Mission.Common.State.State"><em>State</em></a>) – Current system state containing conditions for all components</p></li>
+<li><p><strong>bus</strong> (<em>ElectricalBus</em>) – The electrical bus connected to the battery module</p></li>
+<li><p><strong>coolant_lines</strong> (<em>list</em>) – List of coolant lines that may be connected to the battery module</p></li>
+<li><p><strong>t_idx</strong> (<em>int</em>) – Current time index in the simulation</p></li>
+<li><p><strong>delta_t</strong> (<em>numpy.ndarray</em>) – Time step array [s]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>stored_results_flag</strong> (<em>bool</em>) – Flag indicating if results were stored</p></li>
+<li><p><strong>stored_battery_tag</strong> (<em>str</em>) – Tag of the battery module for which results were stored</p></li>
+</ul>
+</p>
 </dd>
 </dl>
-<p>inputs.</p>
-</dd>
-<dt>Outputs:</dt><dd><p>battery.</p>
+<p class="rubric">Notes</p>
+<p>This function computes the electrical and thermal performance of LFP battery cells
+within a battery module. It calculates:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Current flow through the module and individual cells</p></li>
+<li><p>Heat generation due to joule heating and entropy changes</p></li>
+<li><p>Cell voltage under load based on state of charge, temperature, and current</p></li>
+<li><p>Power flow through the module</p></li>
+<li><p>Temperature changes based on heat generation and cooling (if present)</p></li>
+<li><p>State of charge and depth of discharge updates</p></li>
+<li><p>Charge throughput tracking</p></li>
+</ol>
+</div></blockquote>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>All battery cells in a module exhibit the same thermal behavior</p></li>
+<li><p>The cell temperature is assumed to be the temperature of the entire module</p></li>
+</ul>
 </dd>
 </dl>
+<p><strong>Theory</strong></p>
+<p>Heat generation in the cell includes both joule heating and entropic effects:</p>
+<div class="math notranslate nohighlight">
+\[\dot{Q}_{joule} = \frac{i_{cell}^2}{\sigma}\]</div>
+<div class="math notranslate nohighlight">
+\[\dot{Q}_{entropy} = f(SOC) \cdot T \cdot \frac{dU}{dT}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(i_{cell}\)</span> is the current density [A/m²]</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma\)</span> is the electrical conductivity [S/m]</p></li>
+<li><p><span class="math notranslate nohighlight">\(SOC\)</span> is the state of charge</p></li>
+<li><p><span class="math notranslate nohighlight">\(T\)</span> is the temperature [K]</p></li>
+<li><p><span class="math notranslate nohighlight">\(\frac{dU}{dT}\)</span> is the entropic coefficient</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP.html#module-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP" title="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.reuse_stored_lfp_cell_data">
 <span class="sig-name descname"><span class="pre">reuse_stored_lfp_cell_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_results_flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_battery_tag</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Lithium_Ion_LFP/compute_lfp_cell_performance.html#reuse_stored_lfp_cell_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.reuse_stored_lfp_cell_data" title="Link to this definition">#</a></dt>
 <dd><p>Reuses results from one propulsor for identical batteries</p>
-<p>Assumptions:
-N/A</p>
-<p>Source:
-N/A</p>
-<p>Inputs:</p>
-<p>Outputs:</p>
-<p>Properties Used:
-N.A.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.compute_lfp_cell_state">
 <span class="sig-name descname"><span class="pre">compute_lfp_cell_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">battery_module_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SOC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Lithium_Ion_LFP/compute_lfp_cell_performance.html#compute_lfp_cell_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.compute_lfp_cell_state" title="Link to this definition">#</a></dt>
-<dd><p>This computes the electrical state variables of a lithium ion
-battery_module cell with a  lithium-nickel-cobalt-aluminum oxide cathode
-chemistry from look-up tables</p>
-<p>Assumtions:
-N/A</p>
-<p>Source:
-N/A</p>
-<dl class="simple">
-<dt>Inputs:</dt><dd><p>SOC           - state of charge of cell     [unitless]
-battery_module_data  - look-up data structure      [unitless]
-T             - battery_module cell temperature    [Kelvin]
-I             - battery_module cell current        [Amperes]</p>
-</dd>
-<dt>Outputs:</dt><dd><p>V_ul          - under-load voltage          [Volts]</p>
+<dd><p>Computes the electrical state variables of a lithium iron phosphate (LFP) battery cell using look-up tables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery_module</strong> (<em>BatteryModule</em>) – <dl class="simple">
+<dt>The battery module containing LFP cells with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>cell.nominal_capacity<span class="classifier">float</span></dt><dd><p>Nominal capacity of the cell [Ah]</p>
 </dd>
 </dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>battery_module_data</strong> (<em>function</em>) – Look-up function that maps C-rate, temperature, and discharge capacity to voltage</p></li>
+<li><p><strong>SOC</strong> (<em>numpy.ndarray</em>) – State of charge of the cell [unitless, 0-1]</p></li>
+<li><p><strong>T</strong> (<em>numpy.ndarray</em>) – Battery cell temperature [K]</p></li>
+<li><p><strong>I</strong> (<em>numpy.ndarray</em>) – Battery cell current [A]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>V_ul</strong> – Under-load voltage [V]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function computes the voltage of an LFP battery cell under load conditions
+by using a look-up table approach. It converts the state of charge to discharge
+capacity, calculates the C-rate, and then uses these values along with temperature
+to determine the cell voltage.</p>
+<p>The function applies limits to ensure the inputs are within the valid range of the
+look-up data:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>SOC is limited to [0, 1]</p></li>
+<li><p>Temperature is limited to [-10°C, 60°C]</p></li>
+<li><p>Current is limited to [0A, 52A]</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>The model is valid only within the specified temperature and current ranges</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP.html#module-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP" title="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

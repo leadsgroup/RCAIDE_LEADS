@@ -412,45 +412,62 @@
 <span class="sd">        engine - a data dictionary with the fields:</span>
 <span class="sd">            thrust_sls - sea level static thrust of a single engine                                        [Newtons]</span>
 
-<span class="sd">        wing - a data dictionary with the fields:</span>
-<span class="sd">            gross_area - wing gross area                                                                   [meters**2]</span>
-<span class="sd">            span - span of the wing                                                                        [meters]</span>
-<span class="sd">            taper - taper ratio of the wing                                                                [dimensionless]</span>
-<span class="sd">            t_c - thickness-to-chord ratio of the wing                                                     [dimensionless]</span>
-<span class="sd">            sweep - sweep angle of the wing                                                                [radians]</span>
-<span class="sd">            mac - mean aerodynamic chord of the wing                                                       [meters]</span>
-<span class="sd">            r_c - wing root chord                                                                          [meters]</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : Vehicle</span>
+<span class="sd">        The vehicle instance containing:</span>
+<span class="sd">            - mass_properties.max_takeoff : float</span>
+<span class="sd">                Maximum takeoff weight [kg]</span>
+<span class="sd">            - fuselages : list</span>
+<span class="sd">                BWB fuselage segments with:</span>
+<span class="sd">                    - aft_centerbody_area : float</span>
+<span class="sd">                        Planform area of aft section [m²]</span>
+<span class="sd">                    - aft_centerbody_taper : float</span>
+<span class="sd">                        Taper ratio of aft section</span>
+<span class="sd">                    - cabin_area : float</span>
+<span class="sd">                        Pressurized cabin area [m²]</span>
+<span class="sd">            - wings : list</span>
+<span class="sd">                Wing surfaces</span>
+<span class="sd">            - networks : list</span>
+<span class="sd">                Propulsion systems</span>
+<span class="sd">    settings : Data, optional</span>
+<span class="sd">        Configuration settings with:</span>
+<span class="sd">            - use_max_fuel_weight : bool</span>
+<span class="sd">                Flag to use maximum fuel capacity</span>
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    output : Data</span>
+<span class="sd">        Container with weight breakdowns:</span>
+<span class="sd">            - empty : Data</span>
+<span class="sd">                Structural, propulsion, and systems weights</span>
+<span class="sd">            - payload : Data</span>
+<span class="sd">                Passenger, baggage, and cargo weights</span>
+<span class="sd">            - fuel : float</span>
+<span class="sd">                Total fuel weight [kg]</span>
+<span class="sd">            - zero_fuel_weight : float</span>
+<span class="sd">                Operating empty weight plus payload [kg]</span>
+<span class="sd">            - total : float</span>
+<span class="sd">                Total aircraft weight [kg]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes weights for all major aircraft components and systems using methods </span>
+<span class="sd">    specific to BWB configurations.</span>
 
-<span class="sd">        aircraft - a data dictionary with the fields:</span>
-<span class="sd">            Nult - ultimate load of the aircraft                                                           [dimensionless]</span>
-<span class="sd">            Nlim - limit load factor at zero fuel weight of the aircraft                                   [dimensionless]</span>
-<span class="sd">            TOW - maximum takeoff weight of the aircraft                                                   [kilograms]</span>
-<span class="sd">            zfw - maximum zero fuel weight of the aircraft                                                 [kilograms]</span>
-<span class="sd">            num_eng - number of engines on the aircraft                                                    [dimensionless]</span>
-<span class="sd">            num_pax - number of passengers on the aircraft                                                 [dimensionless]</span>
-<span class="sd">            W_cargo - weight of the bulk cargo being carried on the aircraft                              [kilograms]</span>
-<span class="sd">            num_seats - number of seats installed on the aircraft                                          [dimensionless]</span>
-<span class="sd">            ctrl - specifies if the control system is &quot;fully powered&quot;, &quot;partially powered&quot;, or not powered [dimensionless]</span>
-<span class="sd">            ac - determines type of instruments, electronics, and operating items based on types:</span>
-<span class="sd">                &quot;short-range&quot;, &quot;medium-range&quot;, &quot;long-range&quot;, &quot;business&quot;, &quot;cargo&quot;, &quot;commuter&quot;, &quot;sst&quot;        [dimensionless]</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Calculated aircraft weight from correlations created per component of historical aircraft</span>
+<span class="sd">        * The wings are made out of aluminum.</span>
+<span class="sd">        * A wing with the tag &#39;main_wing&#39; exists.</span>
 
-<span class="sd">         fuselage - a data dictionary with the fields:</span>
-<span class="sd">            area - fuselage wetted area                                                                    [meters**2]</span>
-<span class="sd">            diff_p - Maximum fuselage pressure differential                                                [Pascal]</span>
-<span class="sd">            width - width of the fuselage                                                                  [meters]</span>
-<span class="sd">            height - height of the fuselage                                                                [meters]</span>
-<span class="sd">            length - length of the fuselage                                                                [meters]</span>
-
-<span class="sd">    Outputs:</span>
-<span class="sd">        output - a data dictionary with fields:</span>
-<span class="sd">            W_payload - weight of the passengers plus baggage and paid cargo                              [kilograms]</span>
-<span class="sd">            W_pax - weight of all the passengers                                                          [kilogram]</span>
-<span class="sd">            W_bag - weight of all the baggage                                                             [kilogram]</span>
-<span class="sd">            W_fuel - weight of the fuel carried                                                           [kilogram]</span>
-<span class="sd">            W_empty - operating empty weight of the aircraft                                              [kilograms]</span>
-
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Bradley, K. R., &quot;A Sizing Methodology for the Conceptual Design of </span>
+<span class="sd">        Blended-Wing-Body Transports,&quot; NASA/CR-2004-213016, 2004.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Unpack inputs</span>
@@ -645,11 +662,11 @@
     <span class="k">if</span> <span class="n">nose_landing_gear</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
         <span class="n">nose_gear</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Landing_Gear</span><span class="o">.</span><span class="n">Nose_Landing_Gear</span><span class="p">()</span>  
         <span class="n">nose_gear</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">nose</span>    
-        <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">nose_gear</span><span class="p">)</span> 
+        <span class="n">vehicle</span><span class="o">.</span><span class="n">landing_gears</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nose_gear</span><span class="p">)</span> 
     <span class="k">if</span> <span class="n">main_landing_gear</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
         <span class="n">main_gear</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Landing_Gear</span><span class="o">.</span><span class="n">Main_Landing_Gear</span><span class="p">()</span>  
         <span class="n">main_gear</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">main</span>  
-        <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">main_gear</span><span class="p">)</span> 
+        <span class="n">vehicle</span><span class="o">.</span><span class="n">landing_gears</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">main_gear</span><span class="p">)</span> 
          
     <span class="n">control_systems</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>             <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">systems</span><span class="o">.</span><span class="n">control_systems</span>
     <span class="n">electrical_systems</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>          <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">systems</span><span class="o">.</span><span class="n">electrical</span>

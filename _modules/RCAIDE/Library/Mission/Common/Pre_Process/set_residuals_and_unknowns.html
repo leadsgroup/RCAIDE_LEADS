@@ -393,19 +393,70 @@
 <div class="viewcode-block" id="set_residuals_and_unknowns">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns.html#RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns.set_residuals_and_unknowns">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_residuals_and_unknowns</span><span class="p">(</span><span class="n">mission</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Sets the flight dynamics residuals and fligth controls of the aircraft   </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets up flight dynamics residuals and control variables for mission segments</span>
 
-<span class="sd">        Assumptions:</span>
-<span class="sd">        N/A</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mission : Mission</span>
+<span class="sd">        The mission containing segments to be analyzed</span>
+<span class="sd">            - state.ones_row : function</span>
+<span class="sd">                Creates array of ones</span>
+<span class="sd">            - assigned_control_variables : Data</span>
+<span class="sd">                Control variable configurations</span>
+<span class="sd">            - flight_dynamics : Data</span>
+<span class="sd">                Force/moment flags</span>
+<span class="sd">            - state.residuals : Data</span>
+<span class="sd">                Storage for residuals</span>
+<span class="sd">            - state.unknowns : Data</span>
+<span class="sd">                Storage for unknowns</span>
 
-<span class="sd">        Inputs: </span>
-<span class="sd">            mission     - data structure of mission  [-]</span>
-<span class="sd"> </span>
-<span class="sd">        Outputs:  </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates mission segment states directly</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function configures the flight dynamics problem for each segment by</span>
+<span class="sd">    setting up force/moment residuals and initializing control variables.</span>
+<span class="sd">    It handles a comprehensive set of flight controls and dynamics states.</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">        N/A</span>
+<span class="sd">    The function processes:</span>
+<span class="sd">    1. Force and moment residuals (degrees of freedom)</span>
+<span class="sd">    2. Control variable initialization including:</span>
+<span class="sd">        - Body angles</span>
+<span class="sd">        - Bank angles</span>
+<span class="sd">        - Wind angles</span>
+<span class="sd">        - Throttle settings</span>
+<span class="sd">        - Velocity and acceleration</span>
+<span class="sd">        - Time parameters</span>
+<span class="sd">        - Control surface deflections</span>
+<span class="sd">            * Elevator</span>
+<span class="sd">            * Rudder</span>
+<span class="sd">            * Flaps</span>
+<span class="sd">            * Slats</span>
+<span class="sd">            * Ailerons</span>
+<span class="sd">        - Thrust vectoring</span>
 
+<span class="sd">    **Control Variable Initialization**</span>
+<span class="sd">    </span>
+<span class="sd">    For each control:</span>
+<span class="sd">        1. Check if active</span>
+<span class="sd">        2. Use provided initial values if available</span>
+<span class="sd">        3. Apply default values if needed</span>
+<span class="sd">        4. Track number of controls</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Valid control configurations</span>
+<span class="sd">        * Proper degrees of freedom setup</span>
+<span class="sd">        * Compatible control assignments</span>
+<span class="sd">        * Valid initial guess values</span>
+<span class="sd">        * Units in standard format</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span>     
     <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>  
         <span class="n">ones_row</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span> 
@@ -495,61 +546,62 @@
             <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>                         
                                 
         <span class="c1"># Elevator </span>
-        <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>     
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ctrls</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)):</span> 
-                <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>  
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;elevator_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;elevator_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>  
-                <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>   
+        <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>      
+            <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>  
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;elevator&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">elevator_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;elevator&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>  
+            <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>   
                 
         <span class="c1"># Elevator </span>
-        <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>  
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ctrls</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)):</span>   
-                <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span> 
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;rudder_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;rudder_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>  
-                <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>    
+        <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>    
+            <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span> 
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;rudder&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">rudder_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;rudder&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>  
+            <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>    
                     
         <span class="c1"># Flap  </span>
-        <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>  
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ctrls</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;flap_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;flap_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
-                <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>    
+        <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>   
+            <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;flap&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">flap_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;flap&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
+            <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>
+            
         <span class="c1"># Slat  </span>
-        <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>  
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ctrls</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)):</span>  
-                <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>      
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;slat_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;slat_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
-                <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>   
+        <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>   
+            <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>      
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;slat&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">slat_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;slat&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
+            <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>   
                 
         <span class="c1"># Aileron  </span>
         <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">aileron_deflection</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>  
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ctrls</span><span class="o">.</span><span class="n">aileron_deflection</span><span class="o">.</span><span class="n">assigned_surfaces</span><span class="p">)):</span>   
                 <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">aileron_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;aileron_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">aileron_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;aileron&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">aileron_deflection</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span> 
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;aileron_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
+                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;aileron&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
                 <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>       
             
-        <span class="c1">#  Thrust Vector Angle</span>
-        <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">thrust_vector_angle</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>  
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ctrls</span><span class="o">.</span><span class="n">thrust_vector_angle</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">)):</span>  
-                <span class="k">if</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">thrust_vector_angle</span><span class="o">.</span><span class="n">initial_guess_values</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>  
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;thrust_vector_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctrls</span><span class="o">.</span><span class="n">thrust_vector_angle</span><span class="o">.</span><span class="n">initial_guess_values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">unknowns</span><span class="p">[</span><span class="s2">&quot;thrust_vector_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
-                <span class="n">num_ctrls</span> <span class="o">+=</span> <span class="mi">1</span>         
-        
-        <span class="c1"># TO DO: add pitch command</span>
-        
-        <span class="c1"># TO DO: if the degrees of freedom are greater than the number of control inputs, post problem at optimization   </span>
+        <span class="c1">##  Thrust Vector Angle</span>
+        <span class="c1">#if ctrls.thrust_vector_angle.active:  </span>
+            <span class="c1">#for i in range(len(ctrls.thrust_vector_angle.assigned_propulsors)):  </span>
+                <span class="c1">#if ctrls.thrust_vector_angle.initial_guess_values != None:  </span>
+                    <span class="c1">#segment.state.unknowns[&quot;thrust_vector_&quot; + str(i)] = ones_row(1) * ctrls.thrust_vector_angle.initial_guess_values[i][0]</span>
+                <span class="c1">#else:</span>
+                    <span class="c1">#segment.state.unknowns[&quot;thrust_vector_&quot; + str(i)] = ones_row(1) * 0.0 * Units.degrees </span>
+                <span class="c1">#num_ctrls += 1         </span>
+         
+        <span class="c1">#if ctrls.rotor_blade_pitch_command.active:  </span>
+            <span class="c1">#for i in range(len(ctrls.rotor_blade_pitch_command.assigned_propulsors)):  </span>
+                <span class="c1">#if ctrls.rotor_blade_pitch_command.initial_guess_values != None:  </span>
+                    <span class="c1">#segment.state.unknowns[&quot;blade_pitch_command_&quot; + str(i)] = ones_row(1) * ctrls.rotor_blade_pitch_command.initial_guess_values[i][0]</span>
+                <span class="c1">#else:</span>
+                    <span class="c1">#segment.state.unknowns[&quot;blade_pitch_command_&quot; + str(i)] = ones_row(1) * 0.0 * Units.degrees </span>
+                <span class="c1">#num_ctrls += 1</span>
     <span class="k">return</span> </div>
 
                                                                                                                                                                 

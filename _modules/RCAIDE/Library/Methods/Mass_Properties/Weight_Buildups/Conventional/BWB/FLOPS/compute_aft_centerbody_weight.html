@@ -392,31 +392,60 @@
 <div class="viewcode-block" id="compute_aft_centerbody_weight">
 <a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight.compute_aft_centerbody_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_aft_centerbody_weight</span><span class="p">(</span><span class="n">no_of_engines</span><span class="p">,</span> <span class="n">aft_centerbody_area</span><span class="p">,</span> <span class="n">aft_centerbody_taper</span><span class="p">,</span> <span class="n">TOGW</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Weight estimate for the aft section of a BWB centerbody.</span>
-<span class="sd">        Regression from FEA by K. Bradley (George Washington University).</span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            -The engines are mounted on the aft centerbody</span>
-<span class="sd">            -The aft centerbody is unpressurized</span>
-<span class="sd">        </span>
-<span class="sd">        Sources:</span>
-<span class="sd">            Bradley, K. R., &quot;A Sizing Methodology for the Conceptual Design of </span>
-<span class="sd">            Blended-Wing-Body Transports,&quot; NASA/CR-2004-213016, 2004.</span>
-<span class="sd">            </span>
-<span class="sd">        Inputs:</span>
-<span class="sd">            no_of_engines - the number of engines mounted on the aft centerbody </span>
-<span class="sd">            [dimensionless]</span>
-<span class="sd">            aft_centerbody_area - the planform area of the aft centerbody. </span>
-<span class="sd">            Typcially the area behind 70% chord [meters**2]</span>
-<span class="sd">            aft_centerbody_taper - the taper ratio of the aft centerbody (exclude</span>
-<span class="sd">            the chord taken up by the pressurized passenger cabin) [dimensionless]</span>
-<span class="sd">            TOGW - Takeoff gross weight of the aircraft [kilograms]</span>
-<span class="sd">        Outputs:</span>
-<span class="sd">            W_aft - the estimated structural weight of the BWB aft centerbody</span>
-<span class="sd">                </span>
-<span class="sd">        Properties Used:</span>
-<span class="sd">        N/A</span>
-<span class="sd">        &quot;&quot;&quot;</span>         
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the structural weight of the aft section of a BWB centerbody using regression-based methods.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    no_of_engines : int</span>
+<span class="sd">        Number of engines mounted on aft centerbody</span>
+<span class="sd">    aft_centerbody_area : float</span>
+<span class="sd">        Planform area of aft centerbody section [m²]</span>
+<span class="sd">        Typically measured behind 70% chord</span>
+<span class="sd">    aft_centerbody_taper : float</span>
+<span class="sd">        Taper ratio of aft centerbody section</span>
+<span class="sd">        Excludes chord taken up by pressurized cabin</span>
+<span class="sd">    TOGW : float</span>
+<span class="sd">        Takeoff gross weight of aircraft [kg]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    W_aft : float</span>
+<span class="sd">        Estimated structural weight of BWB aft centerbody [kg]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses regression equations derived from FEA studies to estimate the structural</span>
+<span class="sd">    weight required to handle engine loads and aerodynamic forces.</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Engines are mounted on the aft centerbody</span>
+<span class="sd">        * Aft section is unpressurized</span>
+<span class="sd">        * Linear relationship with planform area</span>
+<span class="sd">        * Engine count affects weight through simple scaling</span>
+<span class="sd">        * Structure sized primarily by engine and aerodynamic loads</span>
+
+<span class="sd">    **Theory**</span>
+<span class="sd">    Weight is computed using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{aft} = (1 + 0.05n_e)\\cdot 0.53\\cdot S_{aft}\\cdot W^{0.2}\\cdot(\\lambda + 0.5)</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        * n_e = number of engines</span>
+<span class="sd">        * S_aft = aft centerbody area</span>
+<span class="sd">        * W = takeoff weight</span>
+<span class="sd">        * λ = taper ratio</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Bradley, K. R., &quot;A Sizing Methodology for the Conceptual Design of </span>
+<span class="sd">        Blended-Wing-Body Transports,&quot; NASA/CR-2004-213016, 2004.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_operating_empty_weight</span>
+<span class="sd">    &quot;&quot;&quot;</span>         
     <span class="c1"># convert to imperial units and shorten variable names </span>
     <span class="n">S_aft</span>  <span class="o">=</span> <span class="n">aft_centerbody_area</span>  <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">feet</span> <span class="o">**</span> <span class="mf">2.0</span>
     <span class="n">l_aft</span>  <span class="o">=</span> <span class="n">aft_centerbody_taper</span>

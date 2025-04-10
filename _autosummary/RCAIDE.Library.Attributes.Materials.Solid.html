@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,111 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Solid.Solid">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Solid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Materials/Solid.html#Solid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
-<p>Default Template for Solid Attribute Classes</p>
+<p>Base class for all solid materials in RCAIDE. Provides fundamental mechanical and physical properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Solid.Solid.ultimate_tensile_strength">
+<span class="sig-name descname"><span class="pre">ultimate_tensile_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.ultimate_tensile_strength" title="Link to this definition">#</a></dt>
+<dd><p>Maximum tensile stress the material can withstand before failure in Pa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Solid.Solid.ultimate_shear_strength">
+<span class="sig-name descname"><span class="pre">ultimate_shear_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.ultimate_shear_strength" title="Link to this definition">#</a></dt>
+<dd><p>Maximum shear stress the material can withstand before failure in Pa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Solid.Solid.ultimate_bearing_strength">
+<span class="sig-name descname"><span class="pre">ultimate_bearing_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.ultimate_bearing_strength" title="Link to this definition">#</a></dt>
+<dd><p>Maximum bearing stress the material can withstand before failure in Pa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Solid.Solid.yield_tensile_strength">
+<span class="sig-name descname"><span class="pre">yield_tensile_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.yield_tensile_strength" title="Link to this definition">#</a></dt>
+<dd><p>Tensile stress at which material begins to deform plastically in Pa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Solid.Solid.yield_shear_strength">
+<span class="sig-name descname"><span class="pre">yield_shear_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.yield_shear_strength" title="Link to this definition">#</a></dt>
+<dd><p>Shear stress at which material begins to deform plastically in Pa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Solid.Solid.yield_bearing_strength">
+<span class="sig-name descname"><span class="pre">yield_bearing_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.yield_bearing_strength" title="Link to this definition">#</a></dt>
+<dd><p>Bearing stress at which material begins to deform plastically in Pa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Solid.Solid.minimum_gage_thickness">
+<span class="sig-name descname"><span class="pre">minimum_gage_thickness</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.minimum_gage_thickness" title="Link to this definition">#</a></dt>
+<dd><p>Minimum manufacturable thickness in m</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Solid.Solid.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.density" title="Link to this definition">#</a></dt>
+<dd><p>Material density in kg/m³</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class serves as the parent class for all specific material implementations.
+The default values are None and should be overridden by child classes with
+specific material properties.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Ultimate Strength’</dt><dd><p>The maximum stress that a material can withstand before failure</p>
+</dd>
+<dt>‘Yield Strength’</dt><dd><p>The stress at which a material begins to deform plastically</p>
+</dd>
+<dt>‘Bearing Strength’</dt><dd><p>The resistance of a material to crushing loads applied through a fastener or pin</p>
+</dd>
+<dt>‘Minimum Gage Thickness’</dt><dd><p>The minimum thickness that can be reliably manufactured while maintaining
+structural integrity</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -585,7 +689,17 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid"><code class="docutils literal notranslate"><span class="pre">Solid</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid"><code class="docutils literal notranslate"><span class="pre">Solid</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.ultimate_tensile_strength"><code class="docutils literal notranslate"><span class="pre">Solid.ultimate_tensile_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.ultimate_shear_strength"><code class="docutils literal notranslate"><span class="pre">Solid.ultimate_shear_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.ultimate_bearing_strength"><code class="docutils literal notranslate"><span class="pre">Solid.ultimate_bearing_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.yield_tensile_strength"><code class="docutils literal notranslate"><span class="pre">Solid.yield_tensile_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.yield_shear_strength"><code class="docutils literal notranslate"><span class="pre">Solid.yield_shear_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.yield_bearing_strength"><code class="docutils literal notranslate"><span class="pre">Solid.yield_bearing_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.minimum_gage_thickness"><code class="docutils literal notranslate"><span class="pre">Solid.minimum_gage_thickness</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Solid.Solid.density"><code class="docutils literal notranslate"><span class="pre">Solid.density</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

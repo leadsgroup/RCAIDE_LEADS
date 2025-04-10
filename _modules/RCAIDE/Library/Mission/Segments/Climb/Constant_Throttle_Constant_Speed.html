@@ -395,22 +395,37 @@
 <div class="viewcode-block" id="unpack_body_angle">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.unpack_body_angle.html#RCAIDE.Library.Mission.Segments.Climb.Constant_Throttle_Constant_Speed.unpack_body_angle">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unpack_body_angle</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unpacks and sets the proper value for body angle</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unpacks and sets the proper value for body angle</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function handles the initialization of the body angle for a climb segment</span>
+<span class="sd">    with constant throttle and constant speed.</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    state.unknowns.body_angle                      [Radians]</span>
+<span class="sd">    **Required Segment Components**</span>
 
-<span class="sd">    Outputs:</span>
-<span class="sd">    state.conditions.frames.body.inertial_rotation [Radians]</span>
+<span class="sd">    segment:</span>
+<span class="sd">        state:</span>
+<span class="sd">            unknowns:</span>
+<span class="sd">                body_angle : array</span>
+<span class="sd">                    Aircraft body angle [rad]</span>
+<span class="sd">            conditions:</span>
+<span class="sd">                frames:</span>
+<span class="sd">                    body:</span>
+<span class="sd">                        transform_to_inertial : array</span>
+<span class="sd">                            Rotation matrix from body to inertial frame</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment conditions directly:</span>
+<span class="sd">        - conditions.frames.body.transform_to_inertial</span>
 <span class="sd">    &quot;&quot;&quot;</span>          
     
     <span class="n">ctrls</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span> 
@@ -453,7 +468,6 @@
 
 <span class="sd">    Outputs:</span>
 <span class="sd">    conditions.frames.inertial.velocity_vector          [meters/second]</span>
-<span class="sd">    conditions.energy.throttle                          [Unitless]</span>
 
 <span class="sd">    Properties Used:</span>
 <span class="sd">    N/A</span>

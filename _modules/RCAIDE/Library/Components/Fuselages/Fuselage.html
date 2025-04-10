@@ -417,15 +417,6 @@
 <span class="sd">    differential_pressure : float</span>
 <span class="sd">        Cabin pressurization differential, defaults to 0.0</span>
 <span class="sd">        </span>
-<span class="sd">    seats_abreast : float</span>
-<span class="sd">        Number of passenger seats arranged side-by-side, defaults to 0.0</span>
-<span class="sd">        </span>
-<span class="sd">    seat_pitch : float</span>
-<span class="sd">        Longitudinal distance between seat rows in meters, defaults to 0.0</span>
-<span class="sd">        </span>
-<span class="sd">    number_coach_seats : float</span>
-<span class="sd">        Total number of economy class seats, defaults to 0.0</span>
-<span class="sd">        </span>
 <span class="sd">    areas : Data</span>
 <span class="sd">        Collection of fuselage area measurements</span>
 <span class="sd">        </span>
@@ -545,10 +536,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                    <span class="o">=</span> <span class="s1">&#39;fuselage&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">origin</span>                                 <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aerodynamic_center</span>                     <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">differential_pressure</span>                  <span class="o">=</span> <span class="mf">0.0</span>    
-        <span class="bp">self</span><span class="o">.</span><span class="n">seats_abreast</span>                          <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seat_pitch</span>                             <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">number_coach_seats</span>                     <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">differential_pressure</span>                  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_passengers</span>                   <span class="o">=</span> <span class="mf">0.0</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span>     <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">areas</span>                                  <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">front_projected</span>                  <span class="o">=</span> <span class="mf">0.0</span>
@@ -568,10 +558,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span>                                <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>     
         <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">nose</span>                           <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">tail</span>                           <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">total</span>                          <span class="o">=</span> <span class="mf">0.0</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">cabin</span>                          <span class="o">=</span> <span class="mf">0.0</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">fore_space</span>                     <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">aft_space</span>                      <span class="o">=</span> <span class="mf">0.0</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">total</span>                          <span class="o">=</span> <span class="mf">0.0</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">x_rotation</span>                             <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y_rotation</span>                             <span class="o">=</span> <span class="mf">0.0</span>
@@ -589,6 +576,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">vsp_data</span><span class="o">.</span><span class="n">xsec_surf_id</span>                  <span class="o">=</span> <span class="s1">&#39;&#39;</span>    <span class="c1"># There is only one XSecSurf in each VSP geom.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vsp_data</span><span class="o">.</span><span class="n">xsec_num</span>                      <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Number if XSecs in fuselage geom. </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">segments</span>                               <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cabins</span>                                 <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">vsp_data</span>                               <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vsp_data</span><span class="o">.</span><span class="n">xsec_id</span>                       <span class="o">=</span> <span class="s1">&#39;&#39;</span>       
@@ -614,6 +602,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
         <span class="k">return</span></div>
+
+    
+<div class="viewcode-block" id="Fuselage.append_cabin">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Components.Fuselages.Fuselage.html#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.append_cabin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_cabin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cabin</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new segment to the fuselage&#39;s segment container.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        segment : Data</span>
+<span class="sd">            Fuselage segment to be added</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Assert database type</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cabin</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Cabin</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;input component must be of type Cabin&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Store data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cabins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cabin</span><span class="p">)</span>
+
+        <span class="k">return</span>    </div>
 
     
 <div class="viewcode-block" id="Fuselage.append_fuel_tank">

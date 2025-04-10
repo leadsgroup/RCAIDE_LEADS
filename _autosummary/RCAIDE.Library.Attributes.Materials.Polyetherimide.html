@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,56 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Polyetherimide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Materials/Polyetherimide.html#Polyetherimide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Solid.html#RCAIDE.Library.Attributes.Materials.Solid.Solid" title="RCAIDE.Library.Attributes.Materials.Solid.Solid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solid</span></code></a></p>
-<p>Physical Constants Specific to Polyetherimide</p>
+<p>A class representing polyetherimide (PEI) material properties, commonly used in reservoir casings
+and other high-temperature thermoplastic applications.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide.conductivity">
+<span class="sig-name descname"><span class="pre">conductivity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide.conductivity" title="Link to this definition">#</a></dt>
+<dd><p>Thermal conductivity in W/(m·K) (0.2)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide.emissivity">
+<span class="sig-name descname"><span class="pre">emissivity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide.emissivity" title="Link to this definition">#</a></dt>
+<dd><p>Surface emissivity, unitless (0.96)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide.specific_heat">
+<span class="sig-name descname"><span class="pre">specific_heat</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide.specific_heat" title="Link to this definition">#</a></dt>
+<dd><p>Specific heat capacity in J/(kg·K) (1100)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements thermal properties for polyetherimide, a high-performance
+thermoplastic known for its heat resistance and dimensional stability. The material
+is commonly used in aerospace and high-temperature applications.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Thermal Conductivity’</dt><dd><p>The property of a material to conduct heat, measured in watts per meter-kelvin</p>
+</dd>
+<dt>‘Emissivity’</dt><dd><p>The effectiveness of a material’s surface in emitting energy as thermal radiation</p>
+</dd>
+<dt>‘Specific Heat’</dt><dd><p>The amount of heat required to raise the temperature of 1 kg of the material by 1 Kelvin</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] MatWeb. (n.d.-b).  Overview of materials for Polyetherimide (PEI). MatWeb Material Property Data. <a class="reference external" href="https://www.matweb.com/search/DataSheet.aspx?MatGUID=65baf7a4f90c4a54a6ace03e16b1125b&amp;amp%3Bckck=1&amp;ckck=1">https://www.matweb.com/search/DataSheet.aspx?MatGUID=65baf7a4f90c4a54a6ace03e16b1125b&amp;amp%3Bckck=1&amp;ckck=1</a></p>
 </dd></dl>
 
 </section>
@@ -585,7 +634,12 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide"><code class="docutils literal notranslate"><span class="pre">Polyetherimide</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide"><code class="docutils literal notranslate"><span class="pre">Polyetherimide</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide.conductivity"><code class="docutils literal notranslate"><span class="pre">Polyetherimide.conductivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide.emissivity"><code class="docutils literal notranslate"><span class="pre">Polyetherimide.emissivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide.specific_heat"><code class="docutils literal notranslate"><span class="pre">Polyetherimide.specific_heat</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

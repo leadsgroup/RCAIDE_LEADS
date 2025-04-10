@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,39 +539,173 @@
 <span id="compute-compressor-performance"></span><h1>compute_compressor_performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance.compute_compressor_performance">
-<span class="sig-name descname"><span class="pre">compute_compressor_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compressor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressor_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Compressor/compute_compressor_performance.html#compute_compressor_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance.compute_compressor_performance" title="Link to this definition">#</a></dt>
-<dd><dl>
-<dt>Computes the performance of a compressor bases on its polytropic efficiency.</dt><dd><blockquote>
-<div><p>The following properties are computed:</p>
-</div></blockquote>
-<dl class="simple">
-<dt>compressor.outputs.</dt><dd><p>stagnation_temperature  (numpy.ndarray): exit stagnation_temperature   [K]
-stagnation_pressure     (numpy.ndarray): exit stagnation_pressure      [Pa]
-stagnation_enthalpy     (numpy.ndarray): exit stagnation_enthalpy      [J/kg]
-work_done               (numpy.ndarray): work done                     [J/kg]</p>
-</dd>
-</dl>
-</dd>
-<dt>Assumptions:</dt><dd><p>Constant polytropic efficiency and pressure ratio</p>
-</dd>
-<dt>Source:</dt><dd><p><a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/">https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</a></p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">compute_compressor_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compressor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Compressor/compute_compressor_performance.html#compute_compressor_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance.compute_compressor_performance" title="Link to this definition">#</a></dt>
+<dd><p>Computes the performance of a compressor based on its polytropic efficiency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>conditions.freestream.</strong> – isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor        [unitless]
-specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]</p></li>
-<li><p><strong>compressor.</strong> – inputs.stagnation_temperature      (numpy.ndarray): entering stagnation temperature [K]
-inputs.stagnation_pressure         (numpy.ndarray): entering stagnation pressure    [Pa]
-pressure_ratio                             (float): pressure ratio                  [unitless]
-polytropic_efficiency                      (float): polytropic efficiency           [unitless]</p></li>
+<li><p><strong>compressor</strong> (<em>RCAIDE.Library.Components.Converters.Compressor</em>) – <dl class="simple">
+<dt>Compressor component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the compressor</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pressure_ratio<span class="classifier">float</span></dt><dd><p>Pressure ratio across compressor</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>polytropic_efficiency<span class="classifier">float</span></dt><dd><p>Polytropic efficiency of compression</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>working_fluid<span class="classifier">Data</span></dt><dd><p>Working fluid properties object</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – <dl class="simple">
+<dt>Flight conditions with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>energy.converters[compressor.tag].inputs<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Input conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>stagnation_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Inlet stagnation temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Inlet stagnation pressure [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Inlet static temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Inlet static pressure [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number<span class="classifier">numpy.ndarray</span></dt><dd><p>Inlet Mach number</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>energy.hybrid_power_split_ratio<span class="classifier">float</span></dt><dd><p>Ratio of power split for hybrid systems</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Results are stored in conditions.energy.converters[compressor.tag].outputs:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>work_done<span class="classifier">numpy.ndarray</span></dt><dd><p>Specific work done by compressor [J/kg]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Exit stagnation temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Exit stagnation pressure [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_enthalpy<span class="classifier">numpy.ndarray</span></dt><dd><p>Exit stagnation enthalpy [J/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Exit static temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Exit static pressure [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number<span class="classifier">numpy.ndarray</span></dt><dd><p>Exit Mach number</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>gas_constant<span class="classifier">numpy.ndarray</span></dt><dd><p>Gas constant [J/(kg·K)]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>gamma<span class="classifier">numpy.ndarray</span></dt><dd><p>Ratio of specific heats</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cp<span class="classifier">numpy.ndarray</span></dt><dd><p>Specific heat at constant pressure [J/(kg·K)]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function implements the thermodynamic calculations for a compressor with
+a specified pressure ratio and polytropic efficiency. The work done is adjusted
+by the hybrid power split ratio if applicable.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant polytropic efficiency</p></li>
+<li><p>Constant pressure ratio</p></li>
+<li><p>Ideal gas behavior</p></li>
+<li><p>Adiabatic process</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+The compression process follows the polytropic relation:</p>
+<div class="math notranslate nohighlight">
+\[T_{t,out}/T_{t,in} = (P_{t,out}/P_{t,in})^{(\gamma-1)/(\gamma \eta_{p})}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\eta_{p}\)</span> is the polytropic efficiency.</p>
+<p>Enthalpy is calculated using the specific heat at constant pressure and the stagnation temperature.</p>
+<div class="math notranslate nohighlight">
+\[h_{t} = C_{p} T_{t}\]</div>
+<p class="rubric">References</p>
+<p>[1] Cantwell, B., “AA283 Course Notes”, Stanford University <a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf">https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf</a></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions" title="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

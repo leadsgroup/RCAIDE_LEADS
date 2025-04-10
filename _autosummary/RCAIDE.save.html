@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -523,26 +523,34 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.save.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickle_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/save.html#save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.save.save" title="Link to this definition">#</a></dt>
-<dd><p>Converts a RCAIDE data structure to a JSON file for storage.</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Data must be numpy arrays, strings, booleans, floats, ints, or lists.
-Functions are ignored and all other data raises an error.</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Converts a RCAIDE data structure to a JSON or Pickle file for storage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – RCAIDE data structure [unitless]</p></li>
-<li><p><strong>filename</strong> (<em>string</em>) – file to be output     [unitless]</p></li>
-<li><p><strong>pickle_format</strong> (<em>boolean</em>) – pickle file format flag  [unitless]</p></li>
+<li><p><strong>data</strong> (<em>RCAIDE.Framework.Core.Data</em>) – RCAIDE data structure to be saved</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Path where the file will be saved, without extension for pickle files</p></li>
+<li><p><strong>pickle_format</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag indicating whether to save as a pickle file (True) or JSON file (False)
+Default is False (JSON format)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function supports two file formats:</p>
+<ol class="arabic simple">
+<li><p>JSON format (default): Converts the RCAIDE data structure to a JSON string
+using the build_dict_base and build_dict_r helper functions, then writes it to a file.</p></li>
+<li><p>Pickle format: Serializes the Python object directly to a binary file.
+The .pkl extension is automatically added to the filename.</p></li>
+</ol>
+<p>JSON format is human-readable and more portable across different Python versions,
+while pickle format is more efficient for large data structures but less portable.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.load.html#module-RCAIDE.load" title="RCAIDE.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.load</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.build_dict_base</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.build_dict_r</span></code></p>
+</div>
 </dd></dl>
 
 <dl class="py function">

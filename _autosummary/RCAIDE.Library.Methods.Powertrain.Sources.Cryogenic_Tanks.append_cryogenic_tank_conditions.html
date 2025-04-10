@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -538,7 +538,37 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Cryogenic_Tanks.append_cryogenic_tank_conditions.append_cryogenic_tank_conditions">
 <span class="sig-name descname"><span class="pre">append_cryogenic_tank_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cryogenic_tank</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Cryogenic_Tanks/append_cryogenic_tank_conditions.html#append_cryogenic_tank_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Cryogenic_Tanks.append_cryogenic_tank_conditions.append_cryogenic_tank_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Appends conditions to cryogenic tank compoment</p>
+<dd><p>Appends conditions data structure to cryogenic tank component for use during mission analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cryogenic_tank</strong> (<em>CryogenicTank</em>) – The cryogenic tank component for which conditions are being initialized.</p></li>
+<li><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment in which the cryogenic tank is operating.</p></li>
+<li><p><strong>bus</strong> (<em>Bus</em>) – The energy bus connected to the cryogenic tank.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function initializes the conditions for a cryogenic tank component at the start
+of a mission segment. It creates a Conditions object for the cryogenic tank within
+the segment’s energy conditions dictionary, indexed by the bus tag and tank tag.</p>
+<dl class="simple">
+<dt>The function initializes arrays for:</dt><dd><ul class="simple">
+<li><p>Mass flow rate [kg/s]</p></li>
+<li><p>Mass [kg]</p></li>
+</ul>
+</dd>
+</dl>
+<p>These arrays are initialized with ones of the same length as the segment’s state vector,
+which will be updated during mission analysis based on the cryogenic tank’s performance
+and usage.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Sources.Cryogenic_Tanks.html#module-RCAIDE.Library.Components.Powertrain.Sources.Cryogenic_Tanks" title="RCAIDE.Library.Components.Powertrain.Sources.Cryogenic_Tanks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Sources.Cryogenic_Tanks</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions" title="RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

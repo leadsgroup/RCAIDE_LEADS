@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,31 +541,93 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.update_nmc_cell_age.update_nmc_cell_age">
 <span class="sig-name descname"><span class="pre">update_nmc_cell_age</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">battery_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment_battery_age_by_one_day</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Lithium_Ion_NMC/update_nmc_cell_age.html#update_nmc_cell_age"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.update_nmc_cell_age.update_nmc_cell_age" title="Link to this definition">#</a></dt>
-<dd><p>This is an aging model for 18650 lithium-nickel-manganese-cobalt-oxide batteries.</p>
-<p>Source:
-Schmalstieg, Johannes, et al. “A holistic aging model for Li (NiMnCo) O2
-based 18650 lithium-ion batteries.” Journal of Power Sources 257 (2014): 325-334.</p>
-<p>Assumptions:
-None</p>
+<dd><p>Updates the aging model for 18650 lithium-nickel-manganese-cobalt-oxide batteries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery</strong> (<em>BatteryModule</em>) – The battery module containing NMC cells</p></li>
+<li><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment in which the battery is operating</p></li>
+<li><p><strong>battery_conditions</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Common.Conditions.html#RCAIDE.Framework.Mission.Common.Conditions.Conditions" title="RCAIDE.Framework.Mission.Common.Conditions.Conditions"><em>Conditions</em></a>) – <dl class="simple">
+<dt>Object containing battery state with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>cell.state_of_charge<span class="classifier">numpy.ndarray</span></dt><dd><p>State of charge of the cell [unitless, 0-1]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>voltage_under_load<span class="classifier">numpy.ndarray</span></dt><dd><p>Battery voltage under load [V]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.cycle_in_day<span class="classifier">int</span></dt><dd><p>Number of cycles the battery has undergone [days]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.charge_throughput<span class="classifier">numpy.ndarray</span></dt><dd><p>Cumulative charge throughput [Ah]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Battery cell temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.capacity_fade_factor<span class="classifier">float</span></dt><dd><p>Factor representing capacity degradation [unitless, 0-1]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.resistance_growth_factor<span class="classifier">float</span></dt><dd><p>Factor representing internal resistance growth [unitless, ≥1]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>increment_battery_age_by_one_day</strong> (<em>bool</em>) – Flag to increment the battery age by one day</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function modifies the battery_conditions object in-place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function implements a holistic aging model for NMC batteries based on
+research by Schmalstieg et al. The model accounts for:</p>
+<ol class="arabic simple">
+<li><p>Capacity fade due to:
+- Calendar aging (time-dependent, voltage-dependent, temperature-dependent)
+- Cycling aging (charge throughput-dependent, voltage-dependent, DOD-dependent)</p></li>
+<li><p>Resistance growth due to:
+- Calendar aging (time-dependent, voltage-dependent, temperature-dependent)
+- Cycling aging (charge throughput-dependent, voltage-dependent, DOD-dependent)</p></li>
+</ol>
+<p>The model uses the following key equations:</p>
+<p>Capacity fade factor:
+E_fade_factor = 1 - α_cap * t^0.75 - β_cap * √Q</p>
+<p>Resistance growth factor:
+R_growth_factor = 1 + α_res * t^0.75 + β_res * Q</p>
 <dl class="simple">
-<dt>Inputs:</dt><dd><dl class="simple">
-<dt>segment.conditions.energy.</dt><dd><p>battery.cycle_in_day                                                   [unitless]
-battery.cell.temperature                                               [Kelvin]
-battery.voltage_open_circuit                                           [Volts]
-battery.charge_throughput                                              [Amp-hrs]
-battery.cell.state_of_charge                                           [unitless]</p>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>t is time in days</p></li>
+<li><p>Q is charge throughput</p></li>
+<li><p>α_cap, β_cap, α_res, β_res are coefficients dependent on voltage and temperature</p></li>
+</ul>
 </dd>
 </dl>
-</dd>
-<dt>Outputs:</dt><dd><dl class="simple">
-<dt>segment.conditions.energy.</dt><dd><p>battery.capacity_fade_factor     (internal resistance growth factor)   [unitless]
-battery.resistance_growth_factor (capactance (energy) growth factor)   [unitless]</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>Properties Used:
-N/A</p>
+<p class="rubric">References</p>
+<p>[1] Schmalstieg, Johannes, et al. “A holistic aging model for Li(NiMnCo)O2 based 18650 lithium-ion batteries.” Journal of Power Sources 257 (2014): 325-334.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

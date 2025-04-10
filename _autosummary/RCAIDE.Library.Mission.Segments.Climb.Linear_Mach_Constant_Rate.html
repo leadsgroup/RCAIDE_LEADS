@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -536,7 +536,7 @@
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Segments.Climb.Linear_Mach_Constant_Rate.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Climb.Linear_Mach_Constant_Rate.initialize_conditions" title="RCAIDE.Library.Mission.Segments.Climb.Linear_Mach_Constant_Rate.initialize_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_conditions</span></code></a>(segment)</p></td>
-<td><p>Sets the specified conditions which are given for the segment type.</p></td>
+<td><p>Initializes conditions for linear Mach number climb segment</p></td>
 </tr>
 </tbody>
 </table>
@@ -544,24 +544,108 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Climb.Linear_Mach_Constant_Rate.initialize_conditions">
 <span class="sig-name descname"><span class="pre">initialize_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Climb/Linear_Mach_Constant_Rate.html#initialize_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Climb.Linear_Mach_Constant_Rate.initialize_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Sets the specified conditions which are given for the segment type.</p>
-<p>Assumptions:
-Linearly changing mach number, with a constant rate of climb</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-segment.climb_rate                                  [meters/second]
-segment.mach_number_start                                  [Unitless]
-segment.mach_number_end                                    [Unitless]
-segment.altitude_end                                [meters]
-segment.state.numerics.dimensionless.control_points [Unitless]
-conditions.freestream.density                       [kilograms/meter^3]</p>
-<p>Outputs:
-conditions.frames.inertial.velocity_vector  [meters/second]
-conditions.frames.inertial.position_vector  [meters]
-conditions.freestream.altitude              [meters]</p>
-<p>Properties Used:
-N/A</p>
+<dd><p>Initializes conditions for linear Mach number climb segment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up the initial conditions for a climb segment with linearly
+varying Mach number and constant rate of climb. The Mach number varies linearly
+between the start and end values.</p>
+<p><strong>Required Segment Components</strong></p>
+<dl class="simple">
+<dt>segment:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>climb_rate<span class="classifier">float</span></dt><dd><p>Rate of climb [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number_start<span class="classifier">float</span></dt><dd><p>Initial Mach number [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number_end<span class="classifier">float</span></dt><dd><p>Final Mach number [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>altitude_start<span class="classifier">float</span></dt><dd><p>Initial altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>altitude_end<span class="classifier">float</span></dt><dd><p>Final altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sideslip_angle<span class="classifier">float</span></dt><dd><p>Aircraft sideslip angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state:</dt><dd><dl class="simple">
+<dt>numerics.dimensionless.control_points<span class="classifier">array</span></dt><dd><p>Discretization points [-]</p>
+</dd>
+<dt>conditions<span class="classifier">Data</span></dt><dd><p>State conditions container</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>analyses:</dt><dd><dl class="simple">
+<dt>atmosphere<span class="classifier">Model</span></dt><dd><p>Atmospheric model for property calculations</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt><strong>Calculation Process</strong></dt><dd><ol class="arabic simple">
+<li><p>Discretize altitude profile</p></li>
+<li><p>Get atmospheric properties for speed of sound</p></li>
+<li><p>Calculate velocity from Mach number variation</p></li>
+<li><dl class="simple">
+<dt>Decompose velocity into components using:</dt><dd><ul class="simple">
+<li><p>Climb rate constraint</p></li>
+<li><p>Sideslip angle</p></li>
+<li><p>Linear Mach profile</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Linear Mach number variation</p></li>
+<li><p>Constant rate of climb</p></li>
+<li><p>Standard atmosphere model</p></li>
+<li><p>Small angle approximations</p></li>
+<li><p>Quasi-steady flight</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Updates segment conditions directly:
+- conditions.frames.inertial.velocity_vector [m/s]
+- conditions.frames.inertial.position_vector [m]
+- conditions.freestream.altitude [m]</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Mission.Common.Update.atmosphere.html#module-RCAIDE.Library.Mission.Common.Update.atmosphere" title="RCAIDE.Library.Mission.Common.Update.atmosphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Mission.Common.Update.atmosphere</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

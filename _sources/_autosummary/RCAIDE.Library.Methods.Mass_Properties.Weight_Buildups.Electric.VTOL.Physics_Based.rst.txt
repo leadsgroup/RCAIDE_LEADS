@@ -34,6 +34,5 @@ Physics\_Based
    compute_fuselage_weight
    compute_operating_empty_weight
    compute_wing_weight
-   converge_physics_based_weight_buildup
    dynamo_supply_mass_estimation
 

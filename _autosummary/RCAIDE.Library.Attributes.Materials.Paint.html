@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,17 +533,108 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Paint.Paint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Paint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Materials/Paint.html#Paint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Solid.html#RCAIDE.Library.Attributes.Materials.Solid.Solid" title="RCAIDE.Library.Attributes.Materials.Solid.Solid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solid</span></code></a></p>
-<p>Physical Constants Specific to Paint/Vinyl Surface Coverings</p>
-<p>Assumptions:
-None</p>
-<p>Source:
-MatWeb (Median of Mfg. Reported Values)</p>
-<p>Inputs:
-N/A</p>
-<p>Outputs:
-N/A</p>
-<p>Properties Used:
-None</p>
+<p>A class representing paint and vinyl surface coating material properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Paint.Paint.ultimate_tensile_strength">
+<span class="sig-name descname"><span class="pre">ultimate_tensile_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.ultimate_tensile_strength" title="Link to this definition">#</a></dt>
+<dd><p>Maximum tensile stress before failure in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Paint.Paint.ultimate_shear_strength">
+<span class="sig-name descname"><span class="pre">ultimate_shear_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.ultimate_shear_strength" title="Link to this definition">#</a></dt>
+<dd><p>Maximum shear stress before failure in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Paint.Paint.ultimate_bearing_strength">
+<span class="sig-name descname"><span class="pre">ultimate_bearing_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.ultimate_bearing_strength" title="Link to this definition">#</a></dt>
+<dd><p>Maximum bearing stress before failure in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Paint.Paint.yield_tensile_strength">
+<span class="sig-name descname"><span class="pre">yield_tensile_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.yield_tensile_strength" title="Link to this definition">#</a></dt>
+<dd><p>Stress at which material begins to deform plastically in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Paint.Paint.yield_shear_strength">
+<span class="sig-name descname"><span class="pre">yield_shear_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.yield_shear_strength" title="Link to this definition">#</a></dt>
+<dd><p>Shear stress at which material begins to deform plastically in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Paint.Paint.yield_bearing_strength">
+<span class="sig-name descname"><span class="pre">yield_bearing_strength</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.yield_bearing_strength" title="Link to this definition">#</a></dt>
+<dd><p>Bearing stress at which material begins to deform plastically in Pa (0.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Paint.Paint.minimum_gage_thickness">
+<span class="sig-name descname"><span class="pre">minimum_gage_thickness</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.minimum_gage_thickness" title="Link to this definition">#</a></dt>
+<dd><p>Minimum applicable thickness in m (150e-6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Paint.Paint.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.density" title="Link to this definition">#</a></dt>
+<dd><p>Material density in kg/m³ (1800)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements material properties for paint and vinyl surface coatings.
+The zero values for strength properties reflect that these coatings are non
+load-bearing elements. The minimum gage thickness represents a typical
+coating thickness for aerospace applications.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Surface Coating’</dt><dd><p>A material applied to the surface of another material to provide protection,
+decoration, or other functional properties</p>
+</dd>
+<dt>‘Minimum Gage Thickness’</dt><dd><p>The minimum thickness required for adequate surface coverage and protection</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -595,7 +686,17 @@ None</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint"><code class="docutils literal notranslate"><span class="pre">Paint</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint"><code class="docutils literal notranslate"><span class="pre">Paint</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.ultimate_tensile_strength"><code class="docutils literal notranslate"><span class="pre">Paint.ultimate_tensile_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.ultimate_shear_strength"><code class="docutils literal notranslate"><span class="pre">Paint.ultimate_shear_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.ultimate_bearing_strength"><code class="docutils literal notranslate"><span class="pre">Paint.ultimate_bearing_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.yield_tensile_strength"><code class="docutils literal notranslate"><span class="pre">Paint.yield_tensile_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.yield_shear_strength"><code class="docutils literal notranslate"><span class="pre">Paint.yield_shear_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.yield_bearing_strength"><code class="docutils literal notranslate"><span class="pre">Paint.yield_bearing_strength</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.minimum_gage_thickness"><code class="docutils literal notranslate"><span class="pre">Paint.minimum_gage_thickness</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Paint.Paint.density"><code class="docutils literal notranslate"><span class="pre">Paint.density</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

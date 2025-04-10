@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,58 +533,110 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Steam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Steam.html#Steam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Gases.Gas.html#RCAIDE.Library.Attributes.Gases.Gas.Gas" title="RCAIDE.Library.Attributes.Gases.Gas.Gas"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gas</span></code></a></p>
-<p>Holds constants and functions that compute gas properties for steam.</p>
+<p>A class representing water vapor (steam) and its thermodynamic properties. Provides methods for computing
+various gas properties including density, speed of sound, and specific heat.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the gas type (‘steam’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam.molecular_mass">
+<span class="sig-name descname"><span class="pre">molecular_mass</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.molecular_mass" title="Link to this definition">#</a></dt>
+<dd><p>Molecular mass of H2O in kg/kmol (18.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam.gas_specific_constant">
+<span class="sig-name descname"><span class="pre">gas_specific_constant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.gas_specific_constant" title="Link to this definition">#</a></dt>
+<dd><p>Specific gas constant in m²/s²-K (461.889)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam.composition">
+<span class="sig-name descname"><span class="pre">composition</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.composition" title="Link to this definition">#</a></dt>
+<dd><p>Chemical composition of steam</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>H2O<span class="classifier">float</span></dt><dd><p>Mass fraction of water vapor (1.0)</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements steam properties assuming ideal gas behavior for most calculations.
+All properties are for pure water vapor.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_density">
 <span class="sig-name descname"><span class="pre">compute_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Steam.html#Steam.compute_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_density" title="Link to this definition">#</a></dt>
-<dd><p>Computes steam density given temperature and pressure</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Ideal gas</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Computes steam density using the ideal gas law.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – steam                 [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure              [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>density               [kg/m^3]</p>
+<dd class="field-even"><p><strong>rho</strong> – Density in kg/m³</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>rho (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p><strong>Major Assumptions</strong>
+* Steam behaves as an ideal gas</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_speed_of_sound">
 <span class="sig-name descname"><span class="pre">compute_speed_of_sound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Steam.html#Steam.compute_speed_of_sound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_speed_of_sound" title="Link to this definition">#</a></dt>
-<dd><p>Computes speed of sound given temperature and pressure</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Ideal gas with gamma = 1.33 if variable gamma is False</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Computes speed of sound in steam.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – steam         [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature   [K]</p></li>
-<li><p><strong>p</strong> (<em>float</em>) – Pressure      [Pa]</p></li>
-<li><p><strong>variable_gamma</strong> (<em>boolean</em>) – [unitless]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
+<li><p><strong>variable_gamma</strong> (<em>bool</em>) – If True, uses temperature-dependent specific heat ratio</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>speed of sound [m/s]</p>
+<dd class="field-even"><p><strong>a</strong> – Speed of sound in m/s</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a (float)</p>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>If variable_gamma is False, assumes γ = 1.33</p></li>
+<li><p>Steam behaves as an ideal gas</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -592,54 +644,61 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_cp">
 <span class="sig-name descname"><span class="pre">compute_cp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Steam.html#Steam.compute_cp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_cp" title="Link to this definition">#</a></dt>
-<dd><p>Computes Cp by 3rd-order polynomial data fit: cp(T) = c1*T^3 + c2*T^2 + c3*T + c4</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>300 K &lt; T &lt; 1500 K</p>
-</dd>
-<dt>Source:</dt><dd><p>Unknown, possibly Combustion Technologies for a Clean Environment
-(Energy, Combustion and the Environment), Jun 15, 1995, Carvalhoc</p>
-</dd>
-</dl>
+<dd><p>Computes specific heat capacity at constant pressure using a 3rd-order polynomial fit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – steam             [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature       [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure          [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>specfic heat capacity [J/(kg K)]</p>
+<dd class="field-even"><p><strong>cp</strong> – Specific heat capacity in J/(kg·K)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>cp (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Valid for temperature range: 300 K &lt; T &lt; 1500 K</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c_p</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_1T</span><span class="o">^</span><span class="mi">3</span> <span class="o">+</span> <span class="n">c_2T</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">c_3T</span> <span class="o">+</span> <span class="n">c_4</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<p>[1] Carvalho, M. G., Lockwood, F. C., Fiveland, W. A., &amp; Papadopoulos, C. (2022). Combustion Technologies for a clean environment: Selected papers from the proceedings of the first international conference, Vilamoura, Portugal, September 3-6, 1991. CRC Press.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_gamma">
 <span class="sig-name descname"><span class="pre">compute_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Steam.html#Steam.compute_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_gamma" title="Link to this definition">#</a></dt>
-<dd><p>Gives constant gamma of 1.33</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>233 K &lt; T &lt; 1273 K</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Returns the specific heat ratio for steam.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – steam         [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature   [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure      [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>gamma         [unitless]</p>
+<dd class="field-even"><p><strong>g</strong> – Specific heat ratio (gamma) [unitless]</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>g  (float)</p>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Valid for temperature range: 233 K &lt; T &lt; 1273 K</p></li>
+<li><p>Uses constant value of 1.33</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -647,26 +706,26 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_absolute_viscosity">
 <span class="sig-name descname"><span class="pre">compute_absolute_viscosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Steam.html#Steam.compute_absolute_viscosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_absolute_viscosity" title="Link to this definition">#</a></dt>
-<dd><p>Returns a constant absolute viscosity of 1e-6</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>None</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Returns the absolute (dynamic) viscosity of steam.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – steam                 [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure              [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>absolute viscosity    [kg/(m-s)]</p>
+<dd class="field-even"><p><strong>mu</strong> – Absolute viscosity in kg/(m·s)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>mu (float)</p>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Uses constant value of 1e-6 kg/(m·s)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -723,6 +782,10 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam"><code class="docutils literal notranslate"><span class="pre">Steam</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.tag"><code class="docutils literal notranslate"><span class="pre">Steam.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.molecular_mass"><code class="docutils literal notranslate"><span class="pre">Steam.molecular_mass</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.gas_specific_constant"><code class="docutils literal notranslate"><span class="pre">Steam.gas_specific_constant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.composition"><code class="docutils literal notranslate"><span class="pre">Steam.composition</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_density"><code class="docutils literal notranslate"><span class="pre">Steam.compute_density()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_speed_of_sound"><code class="docutils literal notranslate"><span class="pre">Steam.compute_speed_of_sound()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Steam.Steam.compute_cp"><code class="docutils literal notranslate"><span class="pre">Steam.compute_cp()</span></code></a></li>

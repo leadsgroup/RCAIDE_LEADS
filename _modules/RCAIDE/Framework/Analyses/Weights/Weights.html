@@ -427,12 +427,16 @@
 <span class="sd">        Properties Used:</span>
 <span class="sd">        N/A</span>
 <span class="sd">        &quot;&quot;&quot;</span>           
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>           <span class="o">=</span> <span class="s1">&#39;weights&#39;</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">method</span>        <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span>       <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">aircraft_type</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">propulsion_architecture</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>      <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                     <span class="o">=</span> <span class="s1">&#39;weights&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span>                                  <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span>                                 <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aircraft_type</span>                           <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">propulsion_architecture</span>                 <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>                                <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_mass_properties</span>         <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_center_of_gravity</span>       <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_moment_of_inertia</span>       <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_weight_analysis_report</span>            <span class="o">=</span> <span class="kc">True</span>
         
 <div class="viewcode-block" id="Weights.evaluate">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Framework.Analyses.Weights.Weights.html#RCAIDE.Framework.Analyses.Weights.Weights.Weights.evaluate">[docs]</a>
@@ -452,25 +456,38 @@
 <span class="sd">        results </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#unpack</span>
-        <span class="n">vehicle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span> 
-
-
+        <span class="n">vehicle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aircraft_type</span> <span class="o">==</span>  <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specify Aircraft Type. Current options are: &quot;Transport&quot;, &quot;BWB&quot;, &quot;General_Aviation&quot; and &quot;VTOL&quot; &#39;</span><span class="p">)</span>
         
         <span class="k">try</span><span class="p">:</span>
             <span class="n">compute_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">propulsion_architecture</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aircraft_type</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">.compute_operating_empty_weight&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_weight_analysis_report</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Performing Weights Analysis&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--------------------------------------------------------&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Propulsion Architecture:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">propulsion_architecture</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aircraft Type          :&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aircraft_type</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Method                 :&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
+                
+                <span class="k">if</span>  <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_mass_properties</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aircraft operating empty weight will be overwritten&quot;</span><span class="p">)</span>
+                <span class="k">if</span>  <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_center_of_gravity</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aircraft center of gravity location will be overwritten&quot;</span><span class="p">)</span>
+                <span class="k">if</span>  <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_moment_of_inertia</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aircraft moment of intertia tensor will be overwritten&quot;</span><span class="p">)</span>  
         <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Aircraft Type or Weight Buildup Method do not exist!&#39;</span><span class="p">)</span>
         <span class="n">compute_operating_empty_weight</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">compute_module</span><span class="p">,</span> <span class="s2">&quot;compute_operating_empty_weight&quot;</span><span class="p">)</span>
+        
         <span class="c1"># Call the function</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">compute_operating_empty_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
-
-
-        <span class="c1"># storing weigth breakdown into vehicle</span>
-        <span class="n">vehicle</span><span class="o">.</span><span class="n">weight_breakdown</span> <span class="o">=</span> <span class="n">results</span>
-
+        <span class="n">results</span> <span class="o">=</span> <span class="n">compute_operating_empty_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span> 
+        <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">weight_breakdown</span> <span class="o">=</span> <span class="n">results</span>
+        
         <span class="c1"># updating empty weight</span>
-        <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">total</span>
-
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_mass_properties</span><span class="p">:</span>  
+            <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">total</span>
+            
         <span class="c1"># done!</span>
         <span class="k">return</span> <span class="n">results</span>        </div>
 </div>

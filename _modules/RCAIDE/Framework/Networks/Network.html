@@ -377,43 +377,510 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Framework.Networks.Network</h1><div class="highlight"><pre>
-<span></span><span class="c1"># RCAIDE/Framework/Networks/Network.py</span>
-<span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
+<span></span><span class="c1"># RCAIDE/Framework/Networks/Network.py </span>
 <span class="c1">#</span>
-<span class="c1"># Created:  Jul 2024, RCAIDE Team</span>
-<span class="c1"># Modified: Aug 2023, E. Botero</span>
-
+<span class="c1"># Created:  Mar 2025, M.Clarke</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1">#  IMPORT</span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Imports</span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># RCAIDE Imports</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">RCAIDE</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common</span><span class="w">                      </span><span class="kn">import</span> <span class="n">Residuals</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy</span><span class="w"> </span><span class="kn">import</span> <span class="n">unknowns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw</span><span class="w">                </span><span class="kn">import</span> <span class="n">compute_avionics_power_draw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw</span><span class="w">                 </span><span class="kn">import</span> <span class="n">compute_payload_power_draw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance</span><span class="w">         </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
 
+<span class="c1"># python imports </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1">#  NETWORK</span>
+<span class="c1">#  Network</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="Network">
 <a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Networks.Network.html#RCAIDE.Framework.Networks.Network.Network">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Network</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; The top-level network class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Network</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Generalized Hybrid Energy Network (powertrain) Class capable of creating all derivatives of hybrid</span>
+<span class="sd">    networks, the conventional fuel network and the all-electric network.</span>
+<span class="sd">    </span>
+<span class="sd">                                            GENERIC NETWORK</span>
+<span class="sd">          .........................................:..........................................                          </span>
+<span class="sd">          :                        :                                :                        :</span>
+<span class="sd">    .-------------.         .-------------.                 .-------------.           .-------------.                     </span>
+<span class="sd">    | propulsor 1 |         | propulsor 2 |                 | propulsor 2 |           | propulsor 3 | </span>
+<span class="sd">    &#39;-------------&#39;         &#39;-------------&#39;                 &#39;-------------&#39;           &#39;-------------&#39;            </span>
+<span class="sd">          ||                       ||                              ||                        ||                                  </span>
+<span class="sd">          ||   .-------------.     ||                              ||  .-------------.       ||</span>
+<span class="sd">          ||== | converter 1 |====== electric bus / fuel line =========| converter 2 |=======|| </span>
+<span class="sd">               &#39;-------------&#39;                                         &#39;-------------&#39;  </span>
+<span class="sd">                           </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the network   </span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The evaluate function is broken into three sections: Section 1 computes all the forces and moments</span>
+<span class="sd">    from propulsors regardless of if they are powered by fuel or an electrochemical energy storage system;</span>
+<span class="sd">    Section 2 computees the perfomrance of any converters on the distrution lines, for example,</span>
+<span class="sd">    turboshafts, motors, pumps etc; and Section 3 computes the thermal mangement of the system as</span>
+<span class="sd">    well as energy consumtion of the powertrain. The state of storage devices such as covnentional fuel tanks,</span>
+<span class="sd">    cryogenic tanks and batteries are also updates. Propulsor groups can be &quot;active&quot; or &quot;inactive&quot; to simulate</span>
+<span class="sd">    engine out conditions. Energy consumtion from payload and avionics is also modeled </span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions** </span>
+<span class="sd">    &#39;Propulsor Group&#39;</span>
+<span class="sd">        Any single or group of compoments that work together to provide thrust.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Framework.Networks.Fuel</span>
+<span class="sd">        Fuel network class </span>
+<span class="sd">    RCAIDE.Library.Framework.Networks.Fuel_Cell</span>
+<span class="sd">        Fuel_Cell network class </span>
+<span class="sd">    RCAIDE.Library.Framework.Networks.Electric</span>
+<span class="sd">        All-Electric network class  </span>
+<span class="sd">    &quot;&quot;&quot;</span>      
+    
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; This sets the default attributes for the network.</span>
-
-<span class="sd">            Assumptions:</span>
-<span class="sd">                None</span>
-
-<span class="sd">            Source:</span>
-<span class="sd">                None </span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This sets the default values for the network to function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                          <span class="o">=</span> <span class="s1">&#39;network&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">propulsors</span>                   <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">busses</span>                       <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coolant_lines</span>                <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_lines</span>                   <span class="o">=</span> <span class="n">Container</span><span class="p">()</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">identical_propulsors</span>         <span class="o">=</span> <span class="kc">True</span></div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_lines</span>                   <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">converters</span>                   <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identical_propulsors</span>         <span class="o">=</span> <span class="kc">True</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">reverse_thrust</span>               <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wing_mounted</span>                 <span class="o">=</span> <span class="kc">True</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_voltage</span>               <span class="o">=</span> <span class="kc">None</span>  
         
+    <span class="c1"># linking the different network components</span>
+<div class="viewcode-block" id="Network.evaluate">
+<a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Networks.Network.html#RCAIDE.Framework.Networks.Network.Network.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="n">network</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the performance of the network</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+        <span class="c1"># unpack   </span>
+        <span class="n">conditions</span>           <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span> 
+        <span class="n">busses</span>               <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">busses</span> 
+        <span class="n">fuel_lines</span>           <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span> 
+        <span class="n">coolant_lines</span>        <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">coolant_lines</span>
+        <span class="n">converters</span>           <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">converters</span> 
+        <span class="n">total_thrust</span>         <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> 
+        <span class="n">total_mech_power</span>     <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+        <span class="n">total_elec_power</span>     <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+        <span class="n">total_moment</span>         <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  
+        <span class="n">fuel_mdot</span>            <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">total_mdot</span>           <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">cryogen_mdot</span>         <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  
+        <span class="n">reverse_thrust</span>       <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">reverse_thrust</span> 
+    
+        <span class="c1"># ----------------------------------------------------------       </span>
+        <span class="c1"># Section 1.0 Propulsor Performance </span>
+        <span class="c1"># ----------------------------------------------------------</span>
+        <span class="c1"># 1.1 Fuel Propulsors  </span>
+        <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="n">fuel_lines</span><span class="p">:</span> 
+            <span class="k">for</span> <span class="n">propulsor_group</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">:</span>
+                <span class="n">stored_results_flag</span>  <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="kc">None</span> 
+                <span class="k">for</span> <span class="n">propulsor_tag</span> <span class="ow">in</span> <span class="n">propulsor_group</span><span class="p">:</span>
+                    <span class="n">propulsor</span>            <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_tag</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">active</span> <span class="ow">and</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>   
+                        <span class="k">if</span> <span class="n">network</span><span class="o">.</span><span class="n">identical_propulsors</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                            <span class="c1"># run analysis  </span>
+                            <span class="n">T</span><span class="p">,</span><span class="n">M</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">P_elec</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">compute_performance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">center_of_gravity</span><span class="o">=</span> <span class="n">center_of_gravity</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>             
+                            <span class="k">if</span> <span class="n">stored_results_flag</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span> 
+                                <span class="c1"># run propulsor analysis </span>
+                                <span class="n">T</span><span class="p">,</span><span class="n">M</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">P_elec</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">compute_performance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="o">=</span> <span class="n">center_of_gravity</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="c1"># use previous propulsor results </span>
+                                <span class="n">T</span><span class="p">,</span><span class="n">M</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">P_elec</span> <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">reuse_stored_data</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span><span class="o">=</span><span class="n">stored_propulsor_tag</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="o">=</span> <span class="n">center_of_gravity</span><span class="p">)</span>
+        
+                        <span class="n">total_thrust</span>      <span class="o">+=</span> <span class="n">T</span>   
+                        <span class="n">total_moment</span>      <span class="o">+=</span> <span class="n">M</span>   
+                        <span class="n">total_mech_power</span>  <span class="o">+=</span> <span class="n">P</span> 
+                        <span class="n">total_elec_power</span>  <span class="o">+=</span> <span class="n">P_elec</span> 
+        
+                        <span class="c1"># compute total mass flow rate </span>
+                        <span class="n">fuel_mdot</span>     <span class="o">+=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_flow_rate</span>
+                
+        <span class="c1"># 1.2 Electric Propulsors         </span>
+        <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span> <span class="n">busses</span><span class="p">:</span>           
+            <span class="n">bus_conditions</span>       <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
+            <span class="n">avionics</span>             <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">avionics</span>
+            <span class="n">payload</span>              <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">payload</span>  
+    
+            <span class="c1"># Avionics Power Consumtion </span>
+            <span class="n">compute_avionics_power_draw</span><span class="p">(</span><span class="n">avionics</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">conditions</span><span class="p">)</span>
+    
+            <span class="c1"># Payload Power </span>
+            <span class="n">compute_payload_power_draw</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">conditions</span><span class="p">)</span>
+    
+            <span class="c1"># Bus Voltage </span>
+            <span class="n">bus_voltage</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">voltage</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>       
+    
+            <span class="k">if</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">recharging</span><span class="p">:</span>             
+                <span class="n">bus</span><span class="o">.</span><span class="n">charging_current</span>         <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">nominal_capacity</span> <span class="o">*</span> <span class="n">bus</span><span class="o">.</span><span class="n">charging_c_rate</span> 
+                <span class="n">charging_power</span>               <span class="o">=</span> <span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">charging_current</span><span class="o">*</span><span class="n">bus_voltage</span><span class="o">*</span><span class="n">bus</span><span class="o">.</span><span class="n">power_split_ratio</span><span class="p">)</span> 
+                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span>   <span class="o">-=</span> <span class="n">charging_power</span><span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">efficiency</span>
+                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">current_draw</span>  <span class="o">=</span> <span class="o">-</span><span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">voltage</span>
+    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">propulsor_group</span> <span class="ow">in</span> <span class="n">bus</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">:</span>
+                    <span class="n">stored_results_flag</span>  <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="kc">None</span>   
+                    <span class="k">for</span> <span class="n">propulsor_tag</span> <span class="ow">in</span> <span class="n">propulsor_group</span><span class="p">:</span>
+                        <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_tag</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">active</span> <span class="ow">and</span> <span class="n">bus</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>       
+                            <span class="k">if</span> <span class="n">network</span><span class="o">.</span><span class="n">identical_propulsors</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                                <span class="c1"># run analysis  </span>
+                                <span class="n">T</span><span class="p">,</span><span class="n">M</span><span class="p">,</span><span class="n">P_mech</span><span class="p">,</span><span class="n">P_elec</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">compute_performance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="o">=</span> <span class="n">center_of_gravity</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>             
+                                <span class="k">if</span> <span class="n">stored_results_flag</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span> 
+                                    <span class="c1"># run propulsor analysis </span>
+                                    <span class="n">T</span><span class="p">,</span><span class="n">M</span><span class="p">,</span><span class="n">P_mech</span><span class="p">,</span><span class="n">P_elec</span><span class="p">,</span> <span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">compute_performance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="o">=</span> <span class="n">center_of_gravity</span><span class="p">)</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="c1"># use previous propulsor results </span>
+                                    <span class="n">T</span><span class="p">,</span><span class="n">M</span><span class="p">,</span><span class="n">P_mech</span><span class="p">,</span><span class="n">P_elec</span>  <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">reuse_stored_data</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span><span class="o">=</span><span class="n">stored_propulsor_tag</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="o">=</span><span class="n">center_of_gravity</span><span class="p">)</span>
+    
+                            <span class="n">total_thrust</span>      <span class="o">+=</span> <span class="n">T</span>   
+                            <span class="n">total_moment</span>      <span class="o">+=</span> <span class="n">M</span>   
+                            <span class="n">total_mech_power</span>  <span class="o">+=</span> <span class="n">P_mech</span> 
+                            <span class="n">total_elec_power</span>  <span class="o">+=</span> <span class="n">P_elec</span> 
+    
+                <span class="c1"># compute power from each componemnt </span>
+                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span>        <span class="o">+=</span> <span class="p">(</span><span class="n">total_elec_power</span><span class="o">-</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">regenerative_power</span><span class="o">*</span><span class="n">bus_voltage</span> <span class="p">)</span> <span class="o">*</span> <span class="n">bus</span><span class="o">.</span><span class="n">power_split_ratio</span>  <span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">efficiency</span>   
+                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">current_draw</span>       <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="o">/</span><span class="n">bus_voltage</span> 
+                <span class="n">total_elec_power</span>                 <span class="o">+=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span>  
+             
+        <span class="c1"># ------------------------------------------------------------------------------------------------------------------- </span>
+        <span class="c1"># Section 2.0 Converters</span>
+        <span class="c1"># -------------------------------------------------------------------------------------------------------------------  </span>
+        <span class="c1"># 2.1 Fuel Converters         </span>
+        <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="n">fuel_lines</span><span class="p">:</span> 
+            <span class="k">if</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">active</span><span class="p">:</span> 
+                <span class="k">for</span> <span class="n">converter_group</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">assigned_converters</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">converter_tag</span> <span class="ow">in</span> <span class="n">converter_group</span><span class="p">:</span>
+                        <span class="n">converter</span> <span class="o">=</span>  <span class="n">converters</span><span class="p">[</span><span class="n">converter_tag</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">converter</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                            <span class="n">converter</span><span class="o">.</span><span class="n">inverse_calculation</span> <span class="o">=</span> <span class="kc">True</span>           
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">converter</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Turboelectric_Generator</span><span class="p">):</span> 
+                                <span class="n">generator</span>             <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">generator</span>   
+                                <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">generator</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">power</span>  <span class="o">=</span>  <span class="n">total_elec_power</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span> <span class="p">)</span> 
+                                <span class="n">P_mech</span><span class="p">,</span> <span class="n">P_elec</span><span class="p">,</span> <span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span>         <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">compute_performance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">fuel_line</span><span class="p">,</span><span class="n">bus</span><span class="p">)</span>  
+                                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span>   <span class="o">+=</span> <span class="n">P_elec</span><span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">efficiency</span>
+                                <span class="n">fuel_mdot</span>                   <span class="o">+=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">converter</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_flow_rate</span>  
+                 
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">converter</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Turboshaft</span><span class="p">):</span>   
+                                <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">converter</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="n">total_mech_power</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span> <span class="p">)</span>   
+                                <span class="n">P_mech</span><span class="p">,</span> <span class="n">P_elec</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">compute_performance</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>   
+                                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span>   <span class="o">+=</span> <span class="n">P_elec</span><span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">efficiency</span>
+                                <span class="n">fuel_mdot</span>                   <span class="o">+=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">converter</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_flow_rate</span>   
+                    
+        <span class="c1"># 2.1 Electric Converters                            </span>
+        <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span> <span class="n">busses</span><span class="p">:</span> 
+            <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">bus_conditions</span>  <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>            
+                <span class="k">for</span> <span class="n">converter_group</span> <span class="ow">in</span> <span class="n">bus</span><span class="o">.</span><span class="n">assigned_converters</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">converter_tag</span> <span class="ow">in</span> <span class="n">converter_group</span><span class="p">:</span>
+                        <span class="n">converter</span> <span class="o">=</span>  <span class="n">converters</span><span class="p">[</span><span class="n">converter_tag</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">converter</span><span class="o">.</span><span class="n">active</span><span class="p">:</span> 
+                            <span class="n">converter</span><span class="o">.</span><span class="n">inverse_calculation</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">converter</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">converter</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">PMSM_Motor</span><span class="p">):</span>  
+                                <span class="n">compute_motor_performance</span><span class="p">(</span><span class="n">converter</span><span class="p">,</span><span class="n">conditions</span><span class="p">)</span>
+                                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span>   <span class="o">+=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">converter</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">power</span><span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">efficiency</span>
+                                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">current_draw</span>  <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">voltage</span>                            
+                                
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">converter</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Generator</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">converter</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">PMSM_Generator</span><span class="p">):</span>                              
+                                <span class="n">compute_generator_performance</span><span class="p">(</span><span class="n">converter</span><span class="p">,</span><span class="n">conditions</span><span class="p">)</span> 
+                                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span>   <span class="o">+=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">converter</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">power</span><span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">efficiency</span>
+                                <span class="n">bus_conditions</span><span class="o">.</span><span class="n">current_draw</span>  <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">voltage</span>                            
+                        
+        <span class="c1"># ----------------------------------------------------------        </span>
+        <span class="c1"># Section 3.0 Sources</span>
+        <span class="c1"># ----------------------------------------------------------</span>
+        <span class="c1"># 3.1 Fuel Sources  </span>
+        <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="n">fuel_lines</span><span class="p">:</span>     
+            <span class="k">for</span> <span class="n">fuel_tank</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">:</span>  
+                <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">mass_flow_rate</span>  <span class="o">+=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel_selector_ratio</span><span class="o">*</span><span class="n">fuel_mdot</span> <span class="o">+</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">secondary_fuel_flow</span>
+                   
+        <span class="n">time</span>               <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">time</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">delta_t</span>            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">total_mdot</span>         <span class="o">+=</span> <span class="n">fuel_mdot</span>
+        
+        <span class="c1"># 3.2 Electric Sources   </span>
+        <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span>  <span class="n">busses</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">active</span><span class="p">:</span> 
+                <span class="k">for</span> <span class="n">t_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">number_of_control_points</span><span class="p">):</span>            
+                    <span class="n">stored_results_flag</span>       <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">stored_battery_cell_tag</span>   <span class="o">=</span> <span class="kc">None</span>
+                    
+                    <span class="c1"># ------------------------------------------------------------------------------------------------------------------- </span>
+                    <span class="c1"># 3.1 Batteries</span>
+                    <span class="c1"># -------------------------------------------------------------------------------------------------------------------                </span>
+                    <span class="k">for</span> <span class="n">battery_module</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">:</span>                   
+                        <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">identical_battery_modules</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                            <span class="c1"># run analysis  </span>
+                            <span class="n">stored_results_flag</span><span class="p">,</span> <span class="n">stored_battery_cell_tag</span> <span class="o">=</span>  <span class="n">battery_module</span><span class="o">.</span><span class="n">energy_calc</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">coolant_lines</span><span class="p">,</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>             
+                            <span class="k">if</span> <span class="n">stored_results_flag</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span> 
+                                <span class="c1"># run battery analysis </span>
+                                <span class="n">stored_results_flag</span><span class="p">,</span> <span class="n">stored_battery_cell_tag</span>  <span class="o">=</span>  <span class="n">battery_module</span><span class="o">.</span><span class="n">energy_calc</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">coolant_lines</span><span class="p">,</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="c1"># use previous battery results </span>
+                                <span class="n">battery_module</span><span class="o">.</span><span class="n">reuse_stored_data</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span> <span class="n">stored_battery_cell_tag</span><span class="p">)</span>
+                      
+                    <span class="c1"># ------------------------------------------------------------------------------------------------------------------- </span>
+                    <span class="c1"># 3.2 Fuel Cell Stacks</span>
+                    <span class="c1"># ------------------------------------------------------------------------------------------------------------------- </span>
+                    <span class="n">stored_results_flag</span>       <span class="o">=</span> <span class="kc">False</span>   
+                    <span class="n">stored_fuel_cell_tag</span>      <span class="o">=</span> <span class="kc">None</span>                  
+                    <span class="k">for</span> <span class="n">fuel_cell_stack</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">:</span>                   
+                        <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">identical_fuel_cell_stacks</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                            <span class="c1"># run analysis  </span>
+                            <span class="n">stored_results_flag</span><span class="p">,</span> <span class="n">stored_fuel_cell_tag</span> <span class="o">=</span>  <span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">energy_calc</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">coolant_lines</span><span class="p">,</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>             
+                            <span class="k">if</span> <span class="n">stored_results_flag</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span> 
+                                <span class="c1"># run battery analysis </span>
+                                <span class="n">stored_results_flag</span><span class="p">,</span> <span class="n">stored_fuel_cell_tag</span>  <span class="o">=</span>  <span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">energy_calc</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">coolant_lines</span><span class="p">,</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="c1"># use previous battery results </span>
+                                <span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">reuse_stored_data</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span> <span class="n">stored_fuel_cell_tag</span><span class="p">)</span>
+                             
+                        <span class="c1"># compute cryogen mass flow rate </span>
+                        <span class="n">fuel_cell_stack_conditions</span>  <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">[</span><span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                        
+                        <span class="n">cryogen_mdot</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>        <span class="o">+=</span> <span class="n">fuel_cell_stack_conditions</span><span class="o">.</span><span class="n">H2_mass_flow_rate</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
+                        
+                        <span class="c1"># compute total mass flow rate </span>
+                        <span class="n">total_mdot</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>     <span class="o">+=</span> <span class="n">fuel_cell_stack_conditions</span><span class="o">.</span><span class="n">H2_mass_flow_rate</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>    
+                       
+                    <span class="c1"># Step 3: Compute bus properties          </span>
+                    <span class="n">bus</span><span class="o">.</span><span class="n">compute_distributor_conditions</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">t_idx</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+                    
+                    <span class="c1"># Step 4 : Battery Thermal Management Calculations                    </span>
+                    <span class="k">for</span> <span class="n">coolant_line</span> <span class="ow">in</span> <span class="n">coolant_lines</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">t_idx</span> <span class="o">!=</span> <span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">number_of_control_points</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span> 
+                            <span class="k">for</span> <span class="n">heat_exchanger</span> <span class="ow">in</span> <span class="n">coolant_line</span><span class="o">.</span><span class="n">heat_exchangers</span><span class="p">:</span> 
+                                <span class="n">heat_exchanger</span><span class="o">.</span><span class="n">compute_heat_exchanger_performance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">coolant_line</span><span class="p">,</span><span class="n">delta_t</span><span class="p">[</span><span class="n">t_idx</span><span class="p">],</span><span class="n">t_idx</span><span class="p">)</span> 
+                            <span class="k">for</span> <span class="n">reservoir</span> <span class="ow">in</span> <span class="n">coolant_line</span><span class="o">.</span><span class="n">reservoirs</span><span class="p">:</span>   
+                                <span class="n">reservoir</span><span class="o">.</span><span class="n">compute_reservior_coolant_temperature</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">coolant_line</span><span class="p">,</span><span class="n">delta_t</span><span class="p">[</span><span class="n">t_idx</span><span class="p">],</span><span class="n">t_idx</span><span class="p">)</span> 
+           
+                <span class="c1"># Step 5: Determine mass flow from cryogenic tanks </span>
+                <span class="k">for</span> <span class="n">cryogenic_tank</span> <span class="ow">in</span> <span class="n">bus</span><span class="o">.</span><span class="n">cryogenic_tanks</span><span class="p">:</span>
+                    <span class="c1"># Step 5.1: Determine the cumulative flow from each cryogen tank</span>
+                    <span class="n">fuel_tank_mdot</span> <span class="o">=</span> <span class="n">cryogenic_tank</span><span class="o">.</span><span class="n">croygen_selector_ratio</span><span class="o">*</span><span class="n">cryogen_mdot</span> <span class="o">+</span> <span class="n">cryogenic_tank</span><span class="o">.</span><span class="n">secondary_cryogenic_flow</span> 
+                    
+                    <span class="c1"># Step 5.2: DStore mass flow results </span>
+                    <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">cryogenic_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">mass_flow_rate</span>  <span class="o">=</span> <span class="n">fuel_tank_mdot</span> 
+                                 
+        <span class="k">if</span> <span class="n">reverse_thrust</span> <span class="o">==</span>  <span class="kc">True</span><span class="p">:</span>
+            <span class="n">total_thrust</span> <span class="o">=</span>  <span class="n">total_thrust</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>     
+            <span class="n">total_moment</span> <span class="o">=</span>  <span class="n">total_moment</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>                    
+        <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">thrust_force_vector</span>  <span class="o">=</span> <span class="n">total_thrust</span>
+        <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">power</span>                <span class="o">=</span> <span class="n">total_mech_power</span> 
+        <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">thrust_moment_vector</span> <span class="o">=</span> <span class="n">total_moment</span> 
+        <span class="n">conditions</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle_mass_rate</span>   <span class="o">=</span> <span class="n">total_mdot</span>  
+    
+        <span class="k">return</span></div>
+
+    
+<div class="viewcode-block" id="Network.unpack_unknowns">
+<a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Networks.Network.html#RCAIDE.Framework.Networks.Network.Network.unpack_unknowns">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unpack_unknowns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpacks the unknowns set in the mission to be available for the mission.</span>
+<span class="sd">    </span>
+<span class="sd">        Assumptions:</span>
+<span class="sd">        N/A</span>
+<span class="sd">        </span>
+<span class="sd">        Source:</span>
+<span class="sd">        N/A</span>
+<span class="sd">        </span>
+<span class="sd">        Inputs: </span>
+<span class="sd">            segment   - data structure of mission segment [-]</span>
+<span class="sd">        </span>
+<span class="sd">        Outputs: </span>
+<span class="sd">        </span>
+<span class="sd">        Properties Used:</span>
+<span class="sd">        N/A</span>
+<span class="sd">        &quot;&quot;&quot;</span>            
+         
+        <span class="n">unknowns</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>  
+        <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
+            <span class="c1"># Fuel unknowns </span>
+            <span class="k">for</span> <span class="n">fuel_line_i</span><span class="p">,</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">):</span>    
+                <span class="k">if</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">propulsor_group</span> <span class="ow">in</span>  <span class="n">fuel_line</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">:</span>
+                        <span class="n">propulsor</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="n">propulsor</span><span class="o">.</span><span class="n">unpack_propulsor_unknowns</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+                        
+            <span class="c1"># electric unknowns </span>
+            <span class="k">for</span> <span class="n">bus_i</span><span class="p">,</span> <span class="n">bus</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">busses</span><span class="p">):</span>    
+                <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">propulsor_group</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">:</span>
+                        <span class="n">propulsor</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="n">propulsor</span><span class="o">.</span><span class="n">unpack_propulsor_unknowns</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> 
+        <span class="k">return</span>    </div>
+
+     
+<div class="viewcode-block" id="Network.residuals">
+<a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Networks.Network.html#RCAIDE.Framework.Networks.Network.Network.residuals">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">residuals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This packs the residuals to be sent to the mission solver.</span>
+<span class="sd">    </span>
+<span class="sd">           Assumptions:</span>
+<span class="sd">           None</span>
+<span class="sd">    </span>
+<span class="sd">           Source:</span>
+<span class="sd">           N/A</span>
+<span class="sd">    </span>
+<span class="sd">           Inputs:</span>
+<span class="sd">           state.conditions.energy:</span>
+<span class="sd">               motor(s).torque                      [N-m]</span>
+<span class="sd">               rotor(s).torque                      [N-m] </span>
+<span class="sd">           residuals soecific to the battery cell   </span>
+<span class="sd">           </span>
+<span class="sd">           Outputs:</span>
+<span class="sd">           residuals specific to battery cell and network</span>
+<span class="sd">    </span>
+<span class="sd">           Properties Used: </span>
+<span class="sd">           N/A</span>
+<span class="sd">       &quot;&quot;&quot;</span>         
+        <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">fuel_line_i</span><span class="p">,</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">):</span>    
+                <span class="k">if</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">propulsor_group</span> <span class="ow">in</span>  <span class="n">fuel_line</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">:</span>
+                        <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="n">propulsor</span><span class="o">.</span><span class="n">pack_propulsor_residuals</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> 
+            <span class="k">for</span> <span class="n">bus_i</span><span class="p">,</span> <span class="n">bus</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">busses</span><span class="p">):</span>    
+                <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">propulsor_group</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">:</span>
+                        <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="n">propulsor</span><span class="o">.</span><span class="n">pack_propulsor_residuals</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>   
+        <span class="k">return</span>      </div>
+
+    
+<div class="viewcode-block" id="Network.add_unknowns_and_residuals_to_segment">
+<a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Networks.Network.html#RCAIDE.Framework.Networks.Network.Network.add_unknowns_and_residuals_to_segment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_unknowns_and_residuals_to_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This function sets up the information that the mission needs to run a mission segment using this network </span>
+<span class="sd">         </span>
+<span class="sd">            Assumptions:</span>
+<span class="sd">            None</span>
+<span class="sd">    </span>
+<span class="sd">            Source:</span>
+<span class="sd">            N/A</span>
+<span class="sd">    </span>
+<span class="sd">            Inputs:</span>
+<span class="sd">            segment</span>
+<span class="sd">            eestimated_throttles           [-]</span>
+<span class="sd">            estimated_propulsor_group_rpms [-]  </span>
+<span class="sd">            </span>
+<span class="sd">            Outputs:</span>
+<span class="sd">            segment</span>
+<span class="sd">    </span>
+<span class="sd">            Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">        &quot;&quot;&quot;</span>                   
+        <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">residuals</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">Residuals</span><span class="p">()</span>
+        
+        <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span> 
+                <span class="n">propulsor</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>     
+    
+            <span class="k">for</span> <span class="n">converter</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">converters</span><span class="p">:</span> 
+                <span class="n">converter</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span>                 
+    
+            <span class="k">for</span> <span class="n">fuel_line_i</span><span class="p">,</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">):</span>   
+                <span class="c1"># ------------------------------------------------------------------------------------------------------            </span>
+                <span class="c1"># Create fuel_line results data structure  </span>
+                <span class="c1"># ------------------------------------------------------------------------------------------------------   </span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">Conditions</span><span class="p">()</span> 
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>  <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">Conditions</span><span class="p">()</span>   
+                 
+                <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+                <span class="c1"># Assign network-specific  residuals, unknowns and results data structures</span>
+                <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+                <span class="k">if</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">propulsor_group</span> <span class="ow">in</span>  <span class="n">fuel_line</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">:</span>
+                        <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="n">propulsor</span><span class="o">.</span><span class="n">append_propulsor_unknowns_and_residuals</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+                        
+                <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+                <span class="c1"># Assign sub component results data structures</span>
+                <span class="c1"># ------------------------------------------------------------------------------------------------------  </span>
+                <span class="k">for</span> <span class="n">fuel_tank</span> <span class="ow">in</span>  <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">:</span> 
+                    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">fuel_line</span><span class="p">)</span> 
+    
+            <span class="c1"># ------------------------------------------------------------------------------------------------------            </span>
+            <span class="c1"># Create bus results data structure  </span>
+            <span class="c1"># ------------------------------------------------------------------------------------------------------     </span>
+            <span class="k">for</span> <span class="n">bus_i</span><span class="p">,</span> <span class="n">bus</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">busses</span><span class="p">):</span>   
+                <span class="c1"># ------------------------------------------------------------------------------------------------------            </span>
+                <span class="c1"># Create bus results data structure  </span>
+                <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">Conditions</span><span class="p">()</span> 
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>  <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">Conditions</span><span class="p">()</span>   
+    
+                <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+                <span class="c1"># Assign network-specific  residuals, unknowns and results data structures</span>
+                <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+                <span class="k">if</span> <span class="n">bus</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">propulsor_group</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">assigned_propulsors</span><span class="p">:</span>
+                        <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="n">propulsor</span><span class="o">.</span><span class="n">append_propulsor_unknowns_and_residuals</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+                        
+                <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+                <span class="c1"># Assign sub component results data structures</span>
+                <span class="c1"># ------------------------------------------------------------------------------------------------------ </span>
+                <span class="n">bus</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">battery_module</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">:</span> 
+                    <span class="n">battery_module</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">bus</span><span class="p">)</span> 
+    
+                <span class="k">for</span> <span class="n">fuel_cell_stack</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">:</span> 
+                    <span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">bus</span><span class="p">)</span>      
+                    
+                <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">bus_item</span> <span class="ow">in</span> <span class="n">bus</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  
+                    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">bus_item</span><span class="p">),</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+                        <span class="n">bus_item</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">bus</span><span class="p">)</span>
+         
+                <span class="k">for</span> <span class="n">cryogenic_tank</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">cryogenic_tanks</span><span class="p">:</span> 
+                    <span class="n">cryogenic_tank</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">bus</span><span class="p">)</span>
+                                                    
+    
+            <span class="k">for</span> <span class="n">coolant_line_i</span><span class="p">,</span> <span class="n">coolant_line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">coolant_lines</span><span class="p">):</span>  
+                <span class="c1"># ------------------------------------------------------------------------------------------------------            </span>
+                <span class="c1"># Create coolant_lines results data structure  </span>
+                <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">coolant_line</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">Conditions</span><span class="p">()</span>        
+                
+                <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+                <span class="c1"># Assign network-specific  residuals, unknowns and results data structures</span>
+                <span class="c1"># ------------------------------------------------------------------------------------------------------       </span>
+                <span class="k">for</span> <span class="n">battery_module</span> <span class="ow">in</span> <span class="n">coolant_line</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">:</span> 
+                    <span class="k">for</span> <span class="n">btms</span> <span class="ow">in</span> <span class="n">battery_module</span><span class="p">:</span>
+                        <span class="n">btms</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">coolant_line</span><span class="p">)</span>
+                        
+                <span class="k">for</span> <span class="n">heat_exchanger</span> <span class="ow">in</span> <span class="n">coolant_line</span><span class="o">.</span><span class="n">heat_exchangers</span><span class="p">:</span> 
+                    <span class="n">heat_exchanger</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">coolant_line</span><span class="p">)</span>
+                        
+                <span class="k">for</span> <span class="n">reservoir</span> <span class="ow">in</span> <span class="n">coolant_line</span><span class="o">.</span><span class="n">reservoirs</span><span class="p">:</span> 
+                    <span class="n">reservoir</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">coolant_line</span><span class="p">)</span>                           
+    
+        <span class="c1"># Ensure the mission knows how to pack and unpack the unknowns and residuals</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">unknowns</span><span class="o">.</span><span class="n">network</span>            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unpack_unknowns</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">residuals</span><span class="o">.</span><span class="n">network</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">residuals</span>   
+        
+        <span class="k">return</span> <span class="n">segment</span></div>
+</div>
+
+ 
 <span class="c1"># ----------------------------------------------------------------------</span>
 <span class="c1">#  Component Container</span>
 <span class="c1"># ---------------------------------------------------------------------- </span>
@@ -425,19 +892,13 @@
 <div class="viewcode-block" id="Container.evaluate">
 <a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Networks.Network.html#RCAIDE.Framework.Networks.Network.Container.evaluate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; This is used to evaluate the thrust produced by the network.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This is used to evaluate the thrust and moments produced by the network.</span>
 
 <span class="sd">            Assumptions:  </span>
 <span class="sd">                If multiple networks are attached their performances will be summed</span>
 
 <span class="sd">            Source:</span>
-<span class="sd">                None</span>
-
-<span class="sd">            Args:</span>
-<span class="sd">                State (dict): flight conditions </span>
-
-<span class="sd">            Returns:</span>
-<span class="sd">                results (dict): Results of the evaluate method </span>
+<span class="sd">                None </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="k">for</span> <span class="n">net</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span> 
             <span class="n">net</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">)</span>  

@@ -391,28 +391,66 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="compute_voltage">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage.html#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage.compute_voltage">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_voltage</span><span class="p">(</span><span class="n">fuel_cell</span><span class="p">,</span><span class="n">current_density</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    function that determines the fuel cell voltage based on an input</span>
-<span class="sd">    current density and some semi-empirical values to describe the voltage</span>
-<span class="sd">    drop off with current</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_voltage</span><span class="p">(</span><span class="n">fuel_cell</span><span class="p">,</span> <span class="n">current_density</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates fuel cell voltage based on current density using the Larminie-Dicks model.</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    voltage curve is a function of current density of the form</span>
-<span class="sd">    v = Eoc-r*i1-A1*np.log(i1)-m*np.exp(n*i1)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fuel_cell : RCAIDE.Components.Energy.Converters.Fuel_Cell</span>
+<span class="sd">        The fuel cell component containing electrochemical parameters</span>
+<span class="sd">            - r : float</span>
+<span class="sd">                Area-specific resistance [Ohms*cm²]</span>
+<span class="sd">            - A1 : float</span>
+<span class="sd">                Tafel slope [V]</span>
+<span class="sd">            - m : float</span>
+<span class="sd">                Mass transport loss coefficient [V]</span>
+<span class="sd">            - n : float</span>
+<span class="sd">                Mass transport loss exponential coefficient [cm²/A]</span>
+<span class="sd">            - Eoc : float</span>
+<span class="sd">                Open circuit voltage [V]</span>
+<span class="sd">    current_density : float or array</span>
+<span class="sd">        Current density [A/m²]</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    v : float or array</span>
+<span class="sd">        Cell voltage [V]</span>
 <span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    current_density           [A/m**2]</span>
-<span class="sd">    fuel_cell.</span>
-<span class="sd">        r                     [Ohms*m**2]</span>
-<span class="sd">        A1                    [V]</span>
-<span class="sd">        m                     [V]</span>
-<span class="sd">        n                     [m**2/A]</span>
-<span class="sd">        Eoc                   [V]</span>
-<span class="sd">   </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">        V                     [V] </span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function implements the Larminie-Dicks semi-empirical model to calculate</span>
+<span class="sd">    fuel cell voltage as a function of current density. The model accounts for</span>
+<span class="sd">    activation losses, ohmic losses, and concentration losses.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Voltage curve follows the Larminie-Dicks model form</span>
+<span class="sd">        * Steady-state operation (no transient effects)</span>
+<span class="sd">        * Uniform current distribution across the cell</span>
+<span class="sd">        * Constant temperature operation</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    </span>
+<span class="sd">    The Larminie-Dicks model calculates cell voltage as:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        V = E_{oc} - r \\cdot i - A_1 \\ln(i) - m \\exp(n \\cdot i)</span>
+<span class="sd">    </span>
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`E_{oc}` is the open circuit voltage</span>
+<span class="sd">        - r is the area-specific resistance</span>
+<span class="sd">        - A_1 is the Tafel slope for activation losses</span>
+<span class="sd">        - m and n are parameters for mass transport losses</span>
+<span class="sd">        - i is the current density</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Larminie, J., &amp; Dicks, A. (2003). Fuel Cell Systems Explained (2nd ed.). John Wiley &amp; Sons Ltd.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">r</span>   <span class="o">=</span> <span class="n">fuel_cell</span><span class="o">.</span><span class="n">r</span><span class="o">/</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="n">Units</span><span class="o">.</span><span class="n">cm</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
     <span class="n">Eoc</span> <span class="o">=</span> <span class="n">fuel_cell</span><span class="o">.</span><span class="n">Eoc</span> 
     <span class="n">A1</span>  <span class="o">=</span> <span class="n">fuel_cell</span><span class="o">.</span><span class="n">A1</span>  

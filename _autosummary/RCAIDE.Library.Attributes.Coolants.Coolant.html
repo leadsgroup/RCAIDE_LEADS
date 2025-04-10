@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,96 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Coolant.Coolant">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Coolant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Coolants/Coolant.html#Coolant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
-<p>Default class of a liquid coolant.</p>
+<p>Base class for defining liquid coolant properties used in thermal management systems.</p>
+<p>This class serves as a template for specific coolant implementations and provides
+structure for essential thermophysical properties required for heat transfer calculations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the coolant type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.density" title="Link to this definition">#</a></dt>
+<dd><p>Mass per unit volume of the coolant [kg/m³]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.specific_heat_capacity">
+<span class="sig-name descname"><span class="pre">specific_heat_capacity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.specific_heat_capacity" title="Link to this definition">#</a></dt>
+<dd><p>Amount of heat required to raise temperature by one degree [J/kg·K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.thermal_conductivity">
+<span class="sig-name descname"><span class="pre">thermal_conductivity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.thermal_conductivity" title="Link to this definition">#</a></dt>
+<dd><p>Ability to conduct heat [W/m·K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.dynamic_viscosity">
+<span class="sig-name descname"><span class="pre">dynamic_viscosity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.dynamic_viscosity" title="Link to this definition">#</a></dt>
+<dd><p>Resistance to flow [Pa·s]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.temperatures">
+<span class="sig-name descname"><span class="pre">temperatures</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.temperatures" title="Link to this definition">#</a></dt>
+<dd><p>Container for temperature-dependent properties</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This base class provides a framework for implementing specific coolants.
+All properties are initialized to 0.0 and should be properly defined in
+derived classes for specific coolants.</p>
+<p>Temperature dependence of properties can be implemented through the
+temperatures Data container for more sophisticated models.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties are initially set as constants</p></li>
+<li><p>All properties are for liquid phase</p></li>
+<li><p>Standard atmospheric pressure conditions</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Coolants.Glycol_Water.html#module-RCAIDE.Library.Attributes.Coolants.Glycol_Water" title="RCAIDE.Library.Attributes.Coolants.Glycol_Water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Coolants.Glycol_Water</span></code></a></dt><dd><p>Glycol-water mixture implementation</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </section>
@@ -585,7 +674,15 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant"><code class="docutils literal notranslate"><span class="pre">Coolant</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant"><code class="docutils literal notranslate"><span class="pre">Coolant</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.tag"><code class="docutils literal notranslate"><span class="pre">Coolant.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.density"><code class="docutils literal notranslate"><span class="pre">Coolant.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.specific_heat_capacity"><code class="docutils literal notranslate"><span class="pre">Coolant.specific_heat_capacity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.thermal_conductivity"><code class="docutils literal notranslate"><span class="pre">Coolant.thermal_conductivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.dynamic_viscosity"><code class="docutils literal notranslate"><span class="pre">Coolant.dynamic_viscosity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant.temperatures"><code class="docutils literal notranslate"><span class="pre">Coolant.temperatures</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

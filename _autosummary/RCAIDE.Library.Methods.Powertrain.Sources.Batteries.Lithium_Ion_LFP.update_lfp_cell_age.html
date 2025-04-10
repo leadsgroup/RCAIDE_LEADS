@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,14 +541,80 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.update_lfp_cell_age.update_lfp_cell_age">
 <span class="sig-name descname"><span class="pre">update_lfp_cell_age</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">battery_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment_battery_age_by_one_day</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Lithium_Ion_LFP/update_lfp_cell_age.html#update_lfp_cell_age"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.update_lfp_cell_age.update_lfp_cell_age" title="Link to this definition">#</a></dt>
-<dd><p>This is an aging model for 26650 A123 LFP cell.</p>
-<p>Source:
-Nájera, J., J.R. Arribas, R.M. De Castro, and C.S. Núñez.
-“Semi-Empirical Ageing Model for LFP and NMC Li-Ion Battery Chemistries.”
-Journal of Energy Storage 72 (November 2023): 108016.
-<a class="reference external" href="https://doi.org/10.1016/j.est.2023.108016">https://doi.org/10.1016/j.est.2023.108016</a>.</p>
-<p>Assumptions:
-None</p>
+<dd><p>Updates the aging model for a 26650 A123 LFP cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery_module</strong> (<em>BatteryModule</em>) – The battery module containing LFP cells</p></li>
+<li><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment in which the battery is operating</p></li>
+<li><p><strong>battery_conditions</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Common.Conditions.html#RCAIDE.Framework.Mission.Common.Conditions.Conditions" title="RCAIDE.Framework.Mission.Common.Conditions.Conditions"><em>Conditions</em></a>) – <dl class="simple">
+<dt>Object containing battery state with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>cell.state_of_charge<span class="classifier">numpy.ndarray</span></dt><dd><p>State of charge of the cell [unitless, 0-1]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.current<span class="classifier">numpy.ndarray</span></dt><dd><p>Battery cell current [A]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.cycle_in_day<span class="classifier">int</span></dt><dd><p>Number of cycles the battery has undergone [days]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.charge_throughput<span class="classifier">numpy.ndarray</span></dt><dd><p>Cumulative charge throughput [Ah]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Battery cell temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cell.capacity_fade_factor<span class="classifier">float</span></dt><dd><p>Factor representing capacity degradation [unitless, 0-1]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>increment_battery_age_by_one_day</strong> (<em>bool</em>) – Flag to increment the battery age by one day</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function implements a semi-empirical aging model for LFP cells based on
+research by Nájera et al. The model accounts for capacity fade due to:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Cycling effects (charge throughput)</p></li>
+<li><p>Calendar aging (time)</p></li>
+</ol>
+</div></blockquote>
+<dl class="simple">
+<dt>The model considers the effects of:</dt><dd><ul class="simple">
+<li><p>Temperature</p></li>
+<li><p>C-rate</p></li>
+<li><p>State of charge</p></li>
+<li><p>Charge throughput</p></li>
+<li><p>Time (days)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Nájera, J., J.R. Arribas, R.M. De Castro, and C.S. Núñez. “Semi-Empirical Ageing Model for LFP and NMC Li-Ion Battery Chemistries.” Journal of Energy Storage 72 (November 2023): 108016. <a class="reference external" href="https://doi.org/10.1016/j.est.2023.108016">https://doi.org/10.1016/j.est.2023.108016</a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP.html#module-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP" title="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

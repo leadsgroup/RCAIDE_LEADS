@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,15 +534,20 @@
   <p>RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle">
 <span id="expansion-nozzle"></span><h1>Expansion_Nozzle<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides functionality for modeling expansion nozzles in powertrains. It includes methods for computing
+expansion nozzle performance and appending expansion nozzle conditions to simulation results.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.html#module-RCAIDE.Library.Methods.Powertrain.Converters" title="RCAIDE.Library.Methods.Powertrain.Converters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.append_expansion_nozzle_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.append_expansion_nozzle_conditions" title="RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.append_expansion_nozzle_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_expansion_nozzle_conditions</span></code></a>(...)</p></td>
-<td><p></p></td>
+<td><p>Initializes and appends expansion nozzle conditions to the energy conditions dictionary.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_expansion_nozzle_performance</span></code></a>(...)</p></td>
-<td><p>This computes the output values from the input values according to equations from the source. The following properties are computed: expansion_nozzle.outputs. stagnation_temperature  (numpy.ndarray): [K]   stagnation_pressure     (numpy.ndarray): [Pa]   stagnation_enthalpy     (numpy.ndarray): [J/kg]   mach_number             (numpy.ndarray): [-]   static_temperature      (numpy.ndarray): [K]   static_enthalpy         (numpy.ndarray): [J/kg]   velocity                (numpy.ndarray): [m/s]   static_pressure         (numpy.ndarray): [Pa]   area_ratio              (numpy.ndarray): [-]   denisty                 (numpy.ndarray): [kg/m^3].</p></td>
+<td><p>Computes the thermodynamic performance of an expansion nozzle in a propulsion system.</p></td>
 </tr>
 </tbody>
 </table>

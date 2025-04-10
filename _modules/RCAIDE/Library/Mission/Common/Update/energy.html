@@ -407,14 +407,13 @@
 <span class="sd">       N/A </span>
 <span class="sd">    &quot;&quot;&quot;</span>  
     <span class="c1"># loop throuh networks in vehicle </span>
-    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span> 
-        <span class="k">if</span> <span class="s1">&#39;busses&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="p">:</span> 
-            <span class="n">busses</span>  <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">busses</span>
-            <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span> <span class="n">busses</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">battery</span> <span class="ow">in</span> <span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">:</span> 
-                    <span class="n">increment_day</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">increment_battery_age_by_one_day</span>
-                    <span class="n">battery_conditions</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">[</span><span class="n">battery</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
-                    <span class="n">battery</span><span class="o">.</span><span class="n">update_battery_age</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">battery_conditions</span><span class="p">,</span><span class="n">increment_battery_age_by_one_day</span> <span class="o">=</span> <span class="n">increment_day</span><span class="p">)</span> </div>
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>  
+        <span class="n">busses</span>  <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">busses</span>
+        <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span> <span class="n">busses</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">battery</span> <span class="ow">in</span> <span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">:</span> 
+                <span class="n">increment_day</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">increment_battery_age_by_one_day</span>
+                <span class="n">battery_conditions</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">[</span><span class="n">battery</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
+                <span class="n">battery</span><span class="o">.</span><span class="n">update_battery_age</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">battery_conditions</span><span class="p">,</span><span class="n">increment_battery_age_by_one_day</span> <span class="o">=</span> <span class="n">increment_day</span><span class="p">)</span> </div>
 
 </pre></div>
 

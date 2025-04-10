@@ -399,61 +399,103 @@
 <div class="viewcode-block" id="compute_propulsion_system_weight">
 <a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.compute_propulsion_system_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_propulsion_system_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">ref_propulsor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of propulsion system, including:</span>
-<span class="sd">        - dry engine weight</span>
-<span class="sd">        - fuel system weight</span>
-<span class="sd">        - thurst reversers weight</span>
-<span class="sd">        - electrical system weight</span>
-<span class="sd">        - starter engine weight</span>
-<span class="sd">        - nacelle weight</span>
-<span class="sd">        - cargo containers</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the complete propulsion system weight using NASA FLOPS weight estimation </span>
+<span class="sd">    method. Includes engines, nacelles, thrust reversers, and associated systems.</span>
 
-<span class="sd">        Assumptions:</span>
-<span class="sd">            1) Rated thrust per scaled engine and rated thurst for baseline are the same</span>
-<span class="sd">            2) Engine weight scaling parameter is 1.15</span>
-<span class="sd">            3) Enginge inlet weight scaling exponent is 1</span>
-<span class="sd">            4) Baseline inlet weight is 0 lbs as in example files FLOPS</span>
-<span class="sd">            5) Baseline nozzle weight is 0 lbs as in example files FLOPS</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : Vehicle</span>
+<span class="sd">        The vehicle instance containing:</span>
+<span class="sd">            - networks : list</span>
+<span class="sd">                Propulsion systems with:</span>
+<span class="sd">                    - propulsors : list</span>
+<span class="sd">                        Engine data</span>
+<span class="sd">                    - fuel_lines : list</span>
+<span class="sd">                        Fuel system data with fuel tanks</span>
+<span class="sd">            - design_mach_number : float</span>
+<span class="sd">                Design cruise Mach number</span>
+<span class="sd">            - mass_properties.max_zero_fuel : float</span>
+<span class="sd">                Maximum zero fuel weight [kg]</span>
+<span class="sd">            - systems.accessories : str</span>
+<span class="sd">                Aircraft type (&#39;short-range&#39;, &#39;commuter&#39;, &#39;medium-range&#39;, </span>
+<span class="sd">                &#39;long-range&#39;, &#39;sst&#39;, &#39;cargo&#39;)</span>
+<span class="sd">    ref_propulsor : Propulsor</span>
+<span class="sd">        Reference engine containing:</span>
+<span class="sd">            - sealevel_static_thrust : float</span>
+<span class="sd">                Sea level static thrust [N]</span>
+<span class="sd">            - nacelle : Nacelle</span>
+<span class="sd">                Nacelle geometry with:</span>
+<span class="sd">                    - diameter : float</span>
+<span class="sd">                        Maximum diameter [m]</span>
+<span class="sd">                    - length : float</span>
+<span class="sd">                        Total length [m]</span>
 
-<span class="sd">        Source:</span>
-<span class="sd">            The Flight Optimization System Weight Estimation Method</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    output : Data</span>
+<span class="sd">        Container with propulsion weight breakdown:</span>
+<span class="sd">            - W_prop : float</span>
+<span class="sd">                Total propulsion system weight [kg]</span>
+<span class="sd">            - W_engine : float</span>
+<span class="sd">                Dry engine weight [kg]</span>
+<span class="sd">            - W_thrust_reverser : float</span>
+<span class="sd">                Thrust reverser weight [kg]</span>
+<span class="sd">            - W_starter : float</span>
+<span class="sd">                Starter system weight [kg]</span>
+<span class="sd">            - W_engine_controls : float</span>
+<span class="sd">                Engine controls weight [kg]</span>
+<span class="sd">            - W_fuel_system : float</span>
+<span class="sd">                Fuel system weight [kg]</span>
+<span class="sd">            - W_nacelle : float</span>
+<span class="sd">                Nacelle weight [kg]</span>
+<span class="sd">            - number_of_engines : int</span>
+<span class="sd">                Total engine count</span>
+<span class="sd">            - number_of_fuel_tanks : int</span>
+<span class="sd">                Total fuel tank count</span>
 
-<span class="sd">        Inputs:</span>
-<span class="sd">            vehicle - data dictionary with vehicle properties                   [dimensionless]</span>
-<span class="sd">                -.design_mach_number: design mach number for cruise flight</span>
-<span class="sd">                -.mass_properties.max_zero_fuel: zero fuel weight               [kg]</span>
-<span class="sd">                -.systems.accessories: type of aircraft (short-range, commuter</span>
-<span class="sd">                                                        medium-range, long-range,</span>
-<span class="sd">                                                        sst, cargo)</span>
-<span class="sd">            nacelle - data dictionary with propulsion system properties </span>
-<span class="sd">                -.diameter: diameter of nacelle                                 [meters]</span>
-<span class="sd">                -.length: length of complete engine assembly                    [meters]</span>
-<span class="sd">            ref_propulsor.</span>
-<span class="sd">                -.sealevel_static_thrust: thrust at sea level                   [N]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses FLOPS correlations developed from transport aircraft database.</span>
 
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Engines have a thrust to weight ratio of 5.5</span>
+<span class="sd">        * All nacelles are identical</span>
+<span class="sd">        * Number of nacelles equals number of engines</span>
+<span class="sd">        * Number of thrust reversers equals the number of engines unless there is an odd number of engines in which case it is N - 1</span>
 
-<span class="sd">        Outputs:</span>
-<span class="sd">            output - data dictionary with weights                               [kilograms]</span>
-<span class="sd">                    - output.W_prop: total propulsive system weight</span>
-<span class="sd">                    - output.W_thrust_reverser: thurst reverser weight</span>
-<span class="sd">                    - output.starter: starter engine weight</span>
-<span class="sd">                    - output.W_engine_controls: engine controls weight</span>
-<span class="sd">                    - output.fuel_system: fuel system weight</span>
-<span class="sd">                    - output.nacelle: nacelle weight</span>
-<span class="sd">                    - output.W_engine: dry engine weight</span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    Engine weight is computed using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{eng} = THRUST/5.5</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">            N/A</span>
+<span class="sd">    Nacelle weight is computed using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{nac} = 0.25N_{nac}D_{nac}L_{nac}T^{0.36}</span>
+
+<span class="sd">    Thrust reverser weight is computed using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{rev} = 0.034T N_{nac}</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        * W_base = baseline engine weight</span>
+<span class="sd">        * T = sea level static thrust</span>
+<span class="sd">        * N_nac = number of nacelles</span>
+<span class="sd">        * D_nac = nacelle diameter</span>
+<span class="sd">        * L_nac = nacelle length</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] NASA Flight Optimization System (FLOPS)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
      
     <span class="n">NENG</span> <span class="o">=</span>  <span class="mi">0</span> 
     <span class="n">number_of_tanks</span> <span class="o">=</span>  <span class="mi">0</span>
     <span class="n">ref_nacelle</span> <span class="o">=</span>  <span class="kc">None</span>
     <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span>  <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbofan</span><span class="p">)</span> <span class="ow">or</span>  <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbojet</span><span class="p">):</span>
-                <span class="n">ref_propulsor</span> <span class="o">=</span> <span class="n">propulsor</span>  
-                <span class="n">NENG</span>  <span class="o">+=</span> <span class="mi">1</span> 
+        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span> 
+            <span class="n">ref_propulsor</span> <span class="o">=</span> <span class="n">propulsor</span>  
+            <span class="n">NENG</span>  <span class="o">+=</span> <span class="mi">1</span> 
             <span class="k">if</span> <span class="s1">&#39;nacelle&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span>
                 <span class="n">ref_nacelle</span> <span class="o">=</span>  <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span>   
         <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">:</span>

@@ -388,7 +388,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">   </span><span class="kn">import</span> <span class="n">interp2d</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Airfoil</span><span class="w">    </span><span class="kn">import</span> <span class="n">compute_airfoil_properties</span><span class="p">,</span> <span class="n">compute_naca_4series</span><span class="p">,</span> <span class="n">import_airfoil_geometry</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_propeller_efficiency</span>
 
 <span class="c1"># package imports </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -400,55 +399,122 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------   </span>
 <div class="viewcode-block" id="design_propeller">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller.html#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller.design_propeller">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">design_propeller</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span><span class="n">number_of_stations</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Optimizes propeller chord and twist given input parameters.</span>
-<span class="sd">          </span>
-<span class="sd">          Inputs:</span>
-<span class="sd">          Either design power or thrust</span>
-<span class="sd">          prop_attributes.</span>
-<span class="sd">            hub radius                       [m]</span>
-<span class="sd">            tip radius                       [m]</span>
-<span class="sd">            rotation rate                    [rad/s]</span>
-<span class="sd">            freestream velocity              [m/s]</span>
-<span class="sd">            number of blades               </span>
-<span class="sd">            number of stations</span>
-<span class="sd">            design lift coefficient</span>
-<span class="sd">            design_altitude                  [m]</span>
-<span class="sd">            airfoil data</span>
-<span class="sd">            </span>
-<span class="sd">          Outputs:</span>
-<span class="sd">          Twist distribution                 [array of radians]</span>
-<span class="sd">          Chord distribution                 [array of meters]</span>
-<span class="sd">              </span>
-<span class="sd">          Assumptions/ Source:</span>
-<span class="sd">          Based on Design of Optimum Propellers by Adkins and Liebeck</span>
-<span class="sd">          </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">design_propeller</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">number_of_stations</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Optimizes propeller chord and twist distribution given input parameters.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    prop : RCAIDE.Library.Components.Powertrain.Converters.Rotor</span>
+<span class="sd">        Propeller component with the following attributes:</span>
+<span class="sd">            - fidelity : str</span>
+<span class="sd">                Analysis fidelity level</span>
+<span class="sd">            - number_of_blades : int</span>
+<span class="sd">                Number of blades on the propeller</span>
+<span class="sd">            - tip_radius : float</span>
+<span class="sd">                Tip radius of the propeller [m]</span>
+<span class="sd">            - hub_radius : float</span>
+<span class="sd">                Hub radius of the propeller [m]</span>
+<span class="sd">            - cruise : Data</span>
+<span class="sd">                Cruise conditions</span>
+<span class="sd">                    - design_angular_velocity : float</span>
+<span class="sd">                        Rotation rate [rad/s]</span>
+<span class="sd">                    - design_freestream_velocity : float</span>
+<span class="sd">                        Freestream velocity [m/s]</span>
+<span class="sd">                    - design_Cl : float</span>
+<span class="sd">                        Design lift coefficient</span>
+<span class="sd">                    - design_altitude : float</span>
+<span class="sd">                        Design altitude [m]</span>
+<span class="sd">                    - design_thrust : float, optional</span>
+<span class="sd">                        Design thrust [N] (specify either thrust or power)</span>
+<span class="sd">                    - design_power : float, optional</span>
+<span class="sd">                        Design power [W] (specify either thrust or power)</span>
+<span class="sd">            - airfoils : dict</span>
+<span class="sd">                Dictionary of airfoil objects</span>
+<span class="sd">            - airfoil_polar_stations : list</span>
+<span class="sd">                Indices of airfoil polars for each radial station</span>
+<span class="sd">    number_of_stations : int, optional</span>
+<span class="sd">        Number of radial stations for blade discretization, default 20</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    prop : RCAIDE.Library.Components.Powertrain.Converters.Rotor</span>
+<span class="sd">        Propeller with optimized parameters:</span>
+<span class="sd">            - cruise.design_power : float</span>
+<span class="sd">                Design power [W]</span>
+<span class="sd">            - cruise.design_thrust : float</span>
+<span class="sd">                Design thrust [N]</span>
+<span class="sd">            - cruise.design_torque : float</span>
+<span class="sd">                Design torque [N·m]</span>
+<span class="sd">            - max_thickness_distribution : array_like</span>
+<span class="sd">                Maximum thickness distribution [m]</span>
+<span class="sd">            - twist_distribution : array_like</span>
+<span class="sd">                Blade twist distribution [rad]</span>
+<span class="sd">            - chord_distribution : array_like</span>
+<span class="sd">                Blade chord distribution [m]</span>
+<span class="sd">            - radius_distribution : array_like</span>
+<span class="sd">                Radial station positions [m]</span>
+<span class="sd">            - cruise.design_power_coefficient : float</span>
+<span class="sd">                Design power coefficient</span>
+<span class="sd">            - cruise.design_thrust_coefficient : float</span>
+<span class="sd">                Design thrust coefficient</span>
+<span class="sd">            - mid_chord_alignment : array_like</span>
+<span class="sd">                Mid-chord alignment [m]</span>
+<span class="sd">            - thickness_to_chord : array_like</span>
+<span class="sd">                Thickness-to-chord ratio</span>
+<span class="sd">            - blade_solidity : float</span>
+<span class="sd">                Blade solidity</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function implements the design methodology from &quot;Design of Optimum Propellers&quot;</span>
+<span class="sd">    by Adkins and Liebeck to optimize propeller chord and twist distributions. It</span>
+<span class="sd">    iteratively solves for the optimal circulation distribution that minimizes induced</span>
+<span class="sd">    losses.</span>
+<span class="sd">    </span>
+<span class="sd">    The design process follows these steps:</span>
+<span class="sd">        1. Calculate atmospheric properties at the design altitude</span>
+<span class="sd">        2. Compute non-dimensional thrust or power coefficient</span>
+<span class="sd">        3. Initialize the wake skew angle (zeta)</span>
+<span class="sd">        4. Iteratively solve for the optimal circulation distribution:</span>
+<span class="sd">            a. Compute the Prandtl momentum loss factor</span>
+<span class="sd">            b. Determine the product of relative velocity and chord (Wc)</span>
+<span class="sd">            c. Calculate Reynolds number and Mach number at each station</span>
+<span class="sd">            d. Compute optimal angle of attack and drag coefficient</span>
+<span class="sd">            e. Calculate the efficiency parameter (epsilon = Cd/Cl)</span>
+<span class="sd">            f. Determine axial and tangential induction factors</span>
+<span class="sd">            g. Compute chord and blade twist angle</span>
+<span class="sd">            h. Calculate derivatives for thrust and power integrals</span>
+<span class="sd">            i. Update the wake skew angle (zeta)</span>
+<span class="sd">        5. Calculate final performance parameters (thrust, power, efficiency)</span>
+<span class="sd">        6. Compute thickness distribution and blade solidity</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Either design thrust or design power must be specified (not both)</span>
+<span class="sd">        * The design is optimized for a single operating condition</span>
+<span class="sd">        * Airfoil performance is based on 2D characteristics</span>
+<span class="sd">        * The wake is modeled with a constant skew angle</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    The method is based on the classical blade element momentum theory with</span>
+<span class="sd">    modifications to account for wake rotation. The key parameter in the optimization</span>
+<span class="sd">    is the wake skew angle (zeta), which relates to the induced velocities.</span>
+<span class="sd">    </span>
+<span class="sd">    The optimal circulation distribution minimizes induced losses while satisfying</span>
+<span class="sd">    the thrust or power constraint. The method iteratively solves for this distribution</span>
+<span class="sd">    by updating the wake skew angle until convergence.</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Adkins, C.N. and Liebeck, R.H., &quot;Design of Optimum Propellers&quot;, Journal of Propulsion and Power, Vol. 10, No. 5, 1994, pp. 676-682</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties</span>
+<span class="sd">    RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series</span>
+<span class="sd">    RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">fidelity</span> <span class="o">==</span> <span class="s1">&#39;Actuator_Disk&#39;</span><span class="p">:</span>
-        
-        <span class="n">omega</span>     <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_angular_velocity</span>
-        <span class="n">thrust</span>    <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust</span>
-        <span class="n">V</span>         <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_freestream_velocity</span> 
-        <span class="n">atmo</span>      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Atmospheric</span><span class="o">.</span><span class="n">US_Standard_1976</span><span class="p">()</span>
-        <span class="n">rho</span>       <span class="o">=</span> <span class="n">atmo</span><span class="o">.</span><span class="n">compute_values</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_altitude</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span><span class="o">.</span><span class="n">density</span>
-        
-        <span class="n">n</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">eta_p</span><span class="p">,</span> <span class="n">Cp</span><span class="p">,</span> <span class="n">Ct</span>  <span class="o">=</span> <span class="n">compute_propeller_efficiency</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
-        
-        <span class="n">power</span>     <span class="o">=</span> <span class="n">thrust</span><span class="o">*</span><span class="n">V</span><span class="o">/</span><span class="n">eta_p</span>
-        <span class="n">Q</span>         <span class="o">=</span> <span class="n">power</span><span class="o">/</span><span class="n">omega</span>
-
-        <span class="c1"># Ct        = thrust/(rho * (n**2)*(D**4))          </span>
-        <span class="c1"># Cp        = power/(rho * (n**3)*(D**5) )              </span>
-                
-        <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_power</span>              <span class="o">=</span> <span class="n">power</span>
-        <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_efficiency</span>         <span class="o">=</span> <span class="n">eta_p</span> 
-        <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust</span>             <span class="o">=</span> <span class="n">thrust</span>
-        <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_torque</span>             <span class="o">=</span> <span class="n">Q</span>
-        <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust_coefficient</span> <span class="o">=</span> <span class="n">Ct</span>  
-        <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_power_coefficient</span>  <span class="o">=</span> <span class="n">Cp</span> 
-
-    <span class="k">elif</span> <span class="n">prop</span><span class="o">.</span><span class="n">fidelity</span> <span class="o">==</span> <span class="s1">&#39;Blade_Element_Momentum_Theory_Helmholtz&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">fidelity</span> <span class="o">==</span> <span class="s1">&#39;Blade_Element_Momentum_Theory_Helmholtz_Wake&#39;</span><span class="p">:</span>
         <span class="c1"># Unpack</span>
         <span class="n">N</span>            <span class="o">=</span> <span class="n">number_of_stations</span>       <span class="c1"># this number determines the discretization of the propeller into stations</span>
         <span class="n">B</span>            <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">number_of_blades</span>
@@ -676,7 +742,7 @@
         <span class="n">prop</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust_coefficient</span>       <span class="o">=</span> <span class="n">Ct</span>
         <span class="n">prop</span><span class="o">.</span><span class="n">mid_chord_alignment</span>                    <span class="o">=</span> <span class="n">MCA</span>
         <span class="n">prop</span><span class="o">.</span><span class="n">thickness_to_chord</span>                     <span class="o">=</span> <span class="n">t_c</span>
-        <span class="n">prop</span><span class="o">.</span><span class="n">blade_solidity</span>                         <span class="o">=</span> <span class="n">sigma</span>
+        <span class="n">prop</span><span class="o">.</span><span class="n">blade_solidity</span>                         <span class="o">=</span> <span class="n">sigma</span>  
 
     <span class="k">return</span> <span class="n">prop</span></div>
 

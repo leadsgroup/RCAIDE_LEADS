@@ -397,7 +397,7 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="compute_rotor_point_source_coordinates">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Noise.Common.compute_noise_source_coordinates.compute_rotor_point_source_coordinates.html#RCAIDE.Library.Methods.Noise.Common.compute_noise_source_coordinates.compute_rotor_point_source_coordinates">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_rotor_point_source_coordinates</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span><span class="n">rotor</span><span class="p">,</span><span class="n">conditions</span><span class="p">,</span><span class="n">mls</span><span class="p">,</span><span class="n">settings</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_rotor_point_source_coordinates</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span><span class="n">conditions</span><span class="p">,</span><span class="n">mls</span><span class="p">,</span><span class="n">settings</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This calculated the position vector from a point source to the observer </span>
 <span class="sd">            </span>
 <span class="sd">    Assumptions:</span>
@@ -418,9 +418,8 @@
 <span class="sd">    Properties Used:</span>
 <span class="sd">        N/A       </span>
 <span class="sd">    &quot;&quot;&quot;</span>  
-    <span class="c1"># unpack </span>
-    <span class="n">rotor_conditions</span>        <span class="o">=</span>  <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
-    <span class="n">commanded_thrust_vector</span> <span class="o">=</span>  <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">commanded_thrust_vector_angle</span>
+    <span class="c1"># unpack  </span>
+    <span class="n">commanded_thrust_vector</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">commanded_thrust_vector_angle</span>
 
     <span class="c1"># aquire dimension of matrix</span>
     <span class="n">num_cpt</span>     <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">commanded_thrust_vector</span><span class="p">)</span>
@@ -435,7 +434,7 @@
     <span class="n">r</span>           <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">radius_distribution</span>  
     <span class="n">beta</span>        <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">flap_angle</span>
     <span class="n">theta</span>       <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">twist_distribution</span>   
-    <span class="n">theta_0</span>     <span class="o">=</span> <span class="n">rotor_conditions</span><span class="o">.</span><span class="n">pitch_command</span> 
+    <span class="n">theta_0</span>     <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">blade_pitch_command</span> 
     <span class="n">MCA</span>         <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">mid_chord_alignment</span>
  
     <span class="c1"># dimension of matrices [control point, microphone , rotor, number of blades, number of sections , x,y,z coords]    </span>
@@ -543,7 +542,7 @@
     <span class="n">rev_Translation_mic_loc</span>            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Translation_mic_loc</span><span class="p">)</span>    
 
     <span class="c1"># -----------------------------------------------------------------------------------------------------------------------------</span>
-    <span class="c1"># vehicle velocit vector </span>
+    <span class="c1"># vehicle velocity vector </span>
     <span class="c1"># -----------------------------------------------------------------------------------------------------------------------------    </span>
     <span class="n">M_vec</span>                      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">I</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,:,:,:],(</span><span class="n">num_cpt</span><span class="p">,</span><span class="n">num_mic</span><span class="p">,</span><span class="n">num_blades</span><span class="p">,</span><span class="n">num_sec</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>     
     <span class="n">M_vec</span><span class="p">[:,:,:,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="p">[:,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">],(</span><span class="mi">1</span><span class="p">,</span><span class="n">num_mic</span><span class="p">,</span><span class="n">num_blades</span><span class="p">,</span><span class="n">num_sec</span><span class="p">))</span> 

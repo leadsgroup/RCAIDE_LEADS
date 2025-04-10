@@ -398,23 +398,50 @@
 <div class="viewcode-block" id="estimate_stall_speed">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.estimate_stall_speed.html#RCAIDE.Library.Methods.Performance.estimate_stall_speed.estimate_stall_speed">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">estimate_stall_speed</span><span class="p">(</span><span class="n">vehicle_mass</span><span class="p">,</span><span class="n">reference_area</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">maximum_lift_coefficient</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the stall speed of an aircraft at a given altitude and a maximum lift coefficient.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the stall speed of an aircraft at a given altitude and maximum lift coefficient.</span>
 
-<span class="sd">        Sources:</span>
-<span class="sd">        N/A</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle_mass : float</span>
+<span class="sd">        Total mass of the vehicle [kg]</span>
+<span class="sd">    reference_area : float</span>
+<span class="sd">        Wing reference area [m²]</span>
+<span class="sd">    altitude : float</span>
+<span class="sd">        Flight altitude [m]</span>
+<span class="sd">    maximum_lift_coefficient : float</span>
+<span class="sd">        Maximum lift coefficient of the aircraft [unitless]</span>
 
-<span class="sd">        Assumptions:</span>
-<span class="sd">        None </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    V_stall : float</span>
+<span class="sd">        Stall speed [m/s]</span>
 
-<span class="sd">        Inputs:</span>
-<span class="sd">            vehicle_mass                    vehicle mass             [kg]</span>
-<span class="sd">            reference_area                  vehicle reference area   [m^2] </span>
-<span class="sd">            altitude                        cruise altitude          [m]</span>
-<span class="sd">            maximum_lift_coefficient        maximum lift coefficient [unitless] </span>
-<span class="sd">            </span>
-<span class="sd">        Outputs: </span>
-<span class="sd">            V_stall                         stall speed              [m/s]</span>
-<span class="sd">    &quot;&quot;&quot;</span> 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The stall speed is calculated using the standard lift equation solved for velocity:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        V_{stall} = \sqrt{\\frac{2W}{\\rho S C_{L_{max}}}}</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        * W = mg (vehicle weight)</span>
+<span class="sd">        * ρ = air density at altitude</span>
+<span class="sd">        * S = reference area</span>
+<span class="sd">        * CL_max = maximum lift coefficient</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Steady, level flight</span>
+<span class="sd">        * Incompressible flow</span>
+<span class="sd">        * Standard atmospheric conditions</span>
+<span class="sd">        * No wind or atmospheric disturbances</span>
+<span class="sd">        * Rigid aircraft structure</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Attributes.Atmospheres</span>
+<span class="sd">    RCAIDE.Library.Methods.Performance.estimate_take_off_field_length</span>
+<span class="sd">    &quot;&quot;&quot;</span>
       
     <span class="n">g</span>       <span class="o">=</span> <span class="mf">9.81</span> 
     <span class="n">atmo</span>    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Atmospheric</span><span class="o">.</span><span class="n">US_Standard_1976</span><span class="p">()</span>

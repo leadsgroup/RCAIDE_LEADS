@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -526,15 +526,22 @@
   <p>RCAIDE.Library.Attributes.Cryogens</p>
 <section id="module-RCAIDE.Library.Attributes.Cryogens">
 <span id="cryogens"></span><h1>Cryogens<a class="headerlink" href="#module-RCAIDE.Library.Attributes.Cryogens" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides cryogenic fuel handling capabilities for RCAIDE. It includes classes for managing different types of cryogenic fuels and their properties, with specific implementations for liquid hydrogen and general cryogenic substances.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.html#module-RCAIDE.Library.Attributes.Propellants" title="RCAIDE.Library.Attributes.Propellants"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Propellants</span></code></a></dt><dd><p>Related module for conventional fuel handling</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Cryogens.Cryogen.html#module-RCAIDE.Library.Attributes.Cryogens.Cryogen" title="RCAIDE.Library.Attributes.Cryogens.Cryogen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Cryogen</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Defauly cryogenic liquid class</p></td>
+<td><p>Base class for defining cryogenic fluid properties used in aerospace applications.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.html#module-RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen" title="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Liquid_Hydrogen</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Liquid Hydrogen Cryogen Class</p></td>
+<td><p>A class representing liquid hydrogen cryogenic fuel and its thermodynamic properties.</p></td>
 </tr>
 </tbody>
 </table>

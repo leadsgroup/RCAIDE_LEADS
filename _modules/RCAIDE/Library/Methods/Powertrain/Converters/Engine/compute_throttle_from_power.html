@@ -378,7 +378,6 @@
                   
   <h1>Source code for RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Converters/Engine/compute_throttle_from_power.py</span>
-<span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Jun 2024, M. Clarke </span>
 
@@ -397,44 +396,85 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="compute_throttle_from_power">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power.html#RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power.compute_throttle_from_power">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_throttle_from_power</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">engine_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; The internal combustion engine output power and specific power consumption.</span>
-<span class="sd">    The following perperties are computed:</span>
-<span class="sd">    engine </span>
-<span class="sd">       .outputs.power_specific_fuel_consumption (numpy.ndarray): Power (brake) SFC [lbf/(HP · h) ]</span>
-<span class="sd">       .outputs.fuel_flow_rate                  (numpy.ndarray): Fuel flow rate    [kg/s]</span>
-<span class="sd">       .outputs.throttle                        (numpy.ndarray): throttle setting  [unitless]    </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_throttle_from_power</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes engine throttle setting and fuel consumption based on required power output.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    engine : RCAIDE.Library.Components.Propulsors</span>
+<span class="sd">        Engine instance with the following attributes:</span>
+<span class="sd">            - sea_level_power : float</span>
+<span class="sd">                Maximum power output at sea level [W]</span>
+<span class="sd">            - flat_rate_altitude : float</span>
+<span class="sd">                Altitude below which power remains constant [m]</span>
+<span class="sd">            - power_specific_fuel_consumption : float</span>
+<span class="sd">                Power specific fuel consumption [kg/(W·s)]</span>
+<span class="sd">    engine_conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Engine operating conditions with:</span>
+<span class="sd">            - power : numpy.ndarray</span>
+<span class="sd">                Required power output [W]</span>
+<span class="sd">    conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Flight conditions with:</span>
+<span class="sd">            - freestream.altitude : numpy.ndarray</span>
+<span class="sd">                Current altitude [m]</span>
+<span class="sd">            - freestream.delta_ISA : numpy.ndarray</span>
+<span class="sd">                Temperature offset from standard atmosphere [K]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is the inverse of compute_power_from_throttle, calculating the</span>
+<span class="sd">    required throttle setting to achieve a desired power output considering</span>
+<span class="sd">    atmospheric conditions.</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Power varies linearly with density ratio above flat-rate altitude</span>
+<span class="sd">        * Power remains constant below flat-rate altitude</span>
+<span class="sd">        * Standard atmosphere conditions apply except for ISA temperature offset</span>
+<span class="sd">        * Minimum power output is zero (negative values are clipped)</span>
+
+<span class="sd">    **Theory**</span>
 <span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">        Gagg and Ferrar model (ref: S. Gudmundsson, 2014 - eq. 7-16)</span>
-<span class="sd">    </span>
-<span class="sd">    Assumtions:</span>
-<span class="sd">        None </span>
-<span class="sd">    </span>
-<span class="sd">    Args:</span>
-<span class="sd">        engine</span>
-<span class="sd">          .sea_level_power                        (float): sea-level power      [W]</span>
-<span class="sd">          .flat_rate_altitude                     (float): flat rate altitude   [m]</span>
-<span class="sd">          .power_specific_fuel_consumption        (float): PSFC                 [RPM]</span>
-<span class="sd">          .throttle setting               (numpy.ndarray): throttle             [unitless]</span>
-<span class="sd">          .inputs.speed                   (numpy.ndarray): angular velocity     [rad/s]</span>
-<span class="sd">        freestream conditions </span>
-<span class="sd">          .altitude                               (float): altitde              [m]</span>
-<span class="sd">          .delta_isa                              (float): altitude offset      [m]</span>
-<span class="sd">          </span>
-<span class="sd">    Returns:</span>
-<span class="sd">        None </span>
+<span class="sd">    The power available is computed using:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        P_{available} = P_{SL} \\frac{\\sigma - 0.117}{0.883}</span>
+
+<span class="sd">    Then throttle is determined by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \\text{throttle} = \\frac{P_{required}}{P_{available}}</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`P_{SL}` is sea-level power</span>
+<span class="sd">        - :math:`\\sigma` is the density ratio</span>
+<span class="sd">        - :math:`P_{required}` is the requested power output</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Gudmundsson, S. (2014). General Aviation Aircraft Design: Applied Methods and Procedures. Butterworth-Heinemann.</span>
+<span class="sd">    [2] Gagg and Ferrar</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_power_from_throttle</span>
+<span class="sd">    RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Unpack atmospheric conditions </span>
-    <span class="n">delta_isa</span>  <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">delta_ISA</span>
-    <span class="n">altitude</span>   <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">altitude</span>
+    <span class="n">delta_isa</span>         <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">delta_ISA</span>
+    <span class="n">altitude</span>          <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">altitude</span>
     
     <span class="c1"># Unpack engine operating conditions </span>
-    <span class="n">PSLS</span>     <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">sea_level_power</span>
-    <span class="n">h_flat</span>   <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">flat_rate_altitude</span>
-    <span class="n">P</span>        <span class="o">=</span> <span class="n">engine_conditions</span><span class="o">.</span><span class="n">power</span><span class="o">*</span><span class="mf">1.0</span>
-    <span class="n">PSFC</span>     <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">power_specific_fuel_consumption</span>
+    <span class="n">engine_conditions</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">engine</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
+    <span class="n">PSLS</span>              <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">sea_level_power</span>
+    <span class="n">h_flat</span>            <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">flat_rate_altitude</span>
+    <span class="n">P</span>                 <span class="o">=</span> <span class="n">engine_conditions</span><span class="o">.</span><span class="n">power</span><span class="o">*</span><span class="mf">1.0</span>
+    <span class="n">PSFC</span>              <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">power_specific_fuel_consumption</span>
     
     <span class="n">altitude_virtual</span> <span class="o">=</span> <span class="n">altitude</span> <span class="o">-</span> <span class="n">h_flat</span>        
     <span class="n">altitude_virtual</span><span class="p">[</span><span class="n">altitude_virtual</span><span class="o">&lt;</span><span class="mf">0.</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>   

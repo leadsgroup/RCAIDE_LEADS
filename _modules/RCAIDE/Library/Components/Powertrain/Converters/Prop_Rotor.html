@@ -408,68 +408,63 @@
 <span class="sd">        Default is [0., 0., 0.] for X-direction thrust in vehicle frame.</span>
 <span class="sd">        </span>
 <span class="sd">    use_2d_analysis : bool</span>
-<span class="sd">        Flag for using 2D aerodynamic analysis. Default is False.</span>
-<span class="sd">        </span>
-<span class="sd">    variable_pitch : bool</span>
-<span class="sd">        Flag indicating if rotor has variable pitch capability. Default is True.</span>
+<span class="sd">        Flag for using 2D aerodynamic analysis. Default is False. </span>
 <span class="sd">        </span>
 <span class="sd">    hover : Data</span>
 <span class="sd">        Hover mode performance parameters</span>
-<span class="sd">        </span>
-<span class="sd">        - design_thrust : float</span>
-<span class="sd">            Design point thrust [N]. Default is None.</span>
-<span class="sd">        - design_torque : float</span>
-<span class="sd">            Design point torque [N·m]. Default is None.</span>
-<span class="sd">        - design_power : float</span>
-<span class="sd">            Design point power [W]. Default is None.</span>
-<span class="sd">        - design_angular_velocity : float</span>
-<span class="sd">            Design point rotational speed [rad/s]. Default is None.</span>
-<span class="sd">        - design_tip_mach : float</span>
-<span class="sd">            Design point blade tip Mach number. Default is None.</span>
-<span class="sd">        - design_acoustics : Data</span>
-<span class="sd">            Acoustic characteristics at design point. Default is None.</span>
-<span class="sd">        - design_performance : Data</span>
-<span class="sd">            Performance metrics at design point. Default is None.</span>
-<span class="sd">        - design_freestream_velocity : float</span>
-<span class="sd">            Design point forward velocity [m/s]. Default is None.</span>
-<span class="sd">        - design_SPL_dBA : float</span>
-<span class="sd">            Design point sound pressure level [dBA]. Default is None.</span>
-<span class="sd">        - design_pitch_command : float</span>
-<span class="sd">            Design point blade pitch command [rad]. Default is 0.0.</span>
-<span class="sd">        - design_Cl : float</span>
-<span class="sd">            Design point lift coefficient. Default is None.</span>
-<span class="sd">        - design_thrust_coefficient : float</span>
-<span class="sd">            Design point thrust coefficient. Default is None.</span>
-<span class="sd">        - design_power_coefficient : float</span>
-<span class="sd">            Design point power coefficient. Default is None.</span>
+<span class="sd">            - design_thrust : float</span>
+<span class="sd">                Design point thrust [N]. Default is None.</span>
+<span class="sd">            - design_torque : float</span>
+<span class="sd">                Design point torque [N·m]. Default is None.</span>
+<span class="sd">            - design_power : float</span>
+<span class="sd">                Design point power [W]. Default is None.</span>
+<span class="sd">            - design_angular_velocity : float</span>
+<span class="sd">                Design point rotational speed [rad/s]. Default is None.</span>
+<span class="sd">            - design_tip_mach : float</span>
+<span class="sd">                Design point blade tip Mach number. Default is None.</span>
+<span class="sd">            - design_acoustics : Data</span>
+<span class="sd">                Acoustic characteristics at design point. Default is None.</span>
+<span class="sd">            - design_performance : Data</span>
+<span class="sd">                Performance metrics at design point. Default is None.</span>
+<span class="sd">            - design_freestream_velocity : float</span>
+<span class="sd">                Design point forward velocity [m/s]. Default is None.</span>
+<span class="sd">            - design_SPL_dBA : float</span>
+<span class="sd">                Design point sound pressure level [dBA]. Default is None.</span>
+<span class="sd">            - design_blade_pitch_command : float</span>
+<span class="sd">                Design point blade pitch command [rad]. Default is 0.0.</span>
+<span class="sd">            - design_Cl : float</span>
+<span class="sd">                Design point lift coefficient. Default is None.</span>
+<span class="sd">            - design_thrust_coefficient : float</span>
+<span class="sd">                Design point thrust coefficient. Default is None.</span>
+<span class="sd">            - design_power_coefficient : float</span>
+<span class="sd">                Design point power coefficient. Default is None.</span>
 <span class="sd">            </span>
 <span class="sd">    cruise : Data</span>
 <span class="sd">        Cruise mode performance parameters</span>
-<span class="sd">        </span>
-<span class="sd">        - design_thrust : float</span>
-<span class="sd">            Design point thrust [N]. Default is None.</span>
-<span class="sd">        - design_torque : float</span>
-<span class="sd">            Design point torque [N·m]. Default is None.</span>
-<span class="sd">        - design_power : float</span>
-<span class="sd">            Design point power [W]. Default is None.</span>
-<span class="sd">        - design_angular_velocity : float</span>
-<span class="sd">            Design point rotational speed [rad/s]. Default is None.</span>
-<span class="sd">        - design_tip_mach : float</span>
-<span class="sd">            Design point blade tip Mach number. Default is None.</span>
-<span class="sd">        - design_acoustics : Data</span>
-<span class="sd">            Acoustic characteristics at design point. Default is None.</span>
-<span class="sd">        - design_performance : Data</span>
-<span class="sd">            Performance metrics at design point. Default is None.</span>
-<span class="sd">        - design_SPL_dBA : float</span>
-<span class="sd">            Design point sound pressure level [dBA]. Default is None.</span>
-<span class="sd">        - design_pitch_command : float</span>
-<span class="sd">            Design point blade pitch command [rad]. Default is 0.0.</span>
-<span class="sd">        - design_Cl : float</span>
-<span class="sd">            Design point lift coefficient. Default is None.</span>
-<span class="sd">        - design_thrust_coefficient : float</span>
-<span class="sd">            Design point thrust coefficient. Default is None.</span>
-<span class="sd">        - design_power_coefficient : float</span>
-<span class="sd">            Design point power coefficient. Default is None.</span>
+<span class="sd">            - design_thrust : float</span>
+<span class="sd">                Design point thrust [N]. Default is None.</span>
+<span class="sd">            - design_torque : float</span>
+<span class="sd">                Design point torque [N·m]. Default is None.</span>
+<span class="sd">            - design_power : float</span>
+<span class="sd">                Design point power [W]. Default is None.</span>
+<span class="sd">            - design_angular_velocity : float</span>
+<span class="sd">                Design point rotational speed [rad/s]. Default is None.</span>
+<span class="sd">            - design_tip_mach : float</span>
+<span class="sd">                Design point blade tip Mach number. Default is None.</span>
+<span class="sd">            - design_acoustics : Data</span>
+<span class="sd">                Acoustic characteristics at design point. Default is None.</span>
+<span class="sd">            - design_performance : Data</span>
+<span class="sd">                Performance metrics at design point. Default is None.</span>
+<span class="sd">            - design_SPL_dBA : float</span>
+<span class="sd">                Design point sound pressure level [dBA]. Default is None.</span>
+<span class="sd">            - design_blade_pitch_command : float</span>
+<span class="sd">                Design point blade pitch command [rad]. Default is 0.0.</span>
+<span class="sd">            - design_Cl : float</span>
+<span class="sd">                Design point lift coefficient. Default is None.</span>
+<span class="sd">            - design_thrust_coefficient : float</span>
+<span class="sd">                Design point thrust coefficient. Default is None.</span>
+<span class="sd">            - design_power_coefficient : float</span>
+<span class="sd">                Design point power coefficient. Default is None.</span>
 <span class="sd">            </span>
 <span class="sd">    oei : Data</span>
 <span class="sd">        One engine inoperative performance parameters</span>
@@ -483,13 +478,12 @@
 <span class="sd">    -----</span>
 <span class="sd">    The Prop_Rotor class models rotors designed for both hover and forward flight,</span>
 <span class="sd">    typical of tiltrotor aircraft. It includes capabilities for:</span>
-
-<span class="sd">    * Hover and cruise performance analysis</span>
-<span class="sd">    * One engine inoperative (OEI) conditions</span>
-<span class="sd">    * Variable pitch operation</span>
-<span class="sd">    * Acoustic analysis</span>
-<span class="sd">    * Performance optimization</span>
-<span class="sd">    * Multi-mode operation</span>
+<span class="sd">        * Hover and cruise performance analysis</span>
+<span class="sd">        * One engine inoperative (OEI) conditions</span>
+<span class="sd">        * Variable pitch operation</span>
+<span class="sd">        * Acoustic analysis</span>
+<span class="sd">        * Performance optimization</span>
+<span class="sd">        * Multi-mode operation</span>
 
 <span class="sd">    **Definitions**</span>
 <span class="sd">    </span>
@@ -528,8 +522,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                 <span class="o">=</span> <span class="s1">&#39;prop_rotor&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientation_euler_angles</span>            <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]</span> <span class="c1"># This is X-direction thrust in vehicle frame</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_2d_analysis</span>                     <span class="o">=</span> <span class="kc">False</span>       
-        <span class="bp">self</span><span class="o">.</span><span class="n">variable_pitch</span>                      <span class="o">=</span> <span class="kc">True</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_2d_analysis</span>                     <span class="o">=</span> <span class="kc">False</span>    
         
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span>                               <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_thrust</span>                 <span class="o">=</span> <span class="kc">None</span>
@@ -541,10 +534,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_performance</span>            <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_freestream_velocity</span>    <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_SPL_dBA</span>                <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_pitch_command</span>          <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_blade_pitch_command</span>    <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_efficiency</span>             <span class="o">=</span> <span class="mf">0.86</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_Cl</span>                     <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_thrust_coefficient</span>     <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_power_coefficient</span>      <span class="o">=</span> <span class="kc">None</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_power_coefficient</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_torque_coefficient</span>     <span class="o">=</span> <span class="kc">None</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span>                                 <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>   
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_thrust</span>                   <span class="o">=</span> <span class="kc">None</span>
@@ -555,12 +550,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_acoustics</span>                <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_performance</span>              <span class="o">=</span> <span class="kc">None</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_freestream_velocity</span>      <span class="o">=</span> <span class="kc">None</span>   
-        <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_pitch_command</span>            <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_blade_pitch_command</span>            <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_efficiency</span>               <span class="o">=</span> <span class="mf">0.86</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_altitude</span>                 <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_SPL_dBA</span>                  <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_Cl</span>                       <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_thrust_coefficient</span>       <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_power_coefficient</span>        <span class="o">=</span> <span class="kc">None</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_torque_coefficient</span>       <span class="o">=</span> <span class="kc">None</span>  
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span>                              <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>     
         <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust</span>                <span class="o">=</span> <span class="kc">None</span>
@@ -571,10 +568,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_acoustics</span>             <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_performance</span>           <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_SPL_dBA</span>               <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_pitch_command</span>         <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_blade_pitch_command</span>         <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_efficiency</span>            <span class="o">=</span> <span class="mf">0.86</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_Cl</span>                    <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust_coefficient</span>    <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_power_coefficient</span>     <span class="o">=</span> <span class="kc">None</span>       
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_power_coefficient</span>     <span class="o">=</span> <span class="kc">None</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_torque_coefficient</span>    <span class="o">=</span> <span class="kc">None</span>       
         
         <span class="bp">self</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">multiobjective_performance_weight</span>  <span class="o">=</span> <span class="mf">0.5</span></div>
 

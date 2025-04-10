@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Performance.estimate_stall_speed';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Performance.estimate_stall_speed.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,20 +534,48 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.estimate_stall_speed.estimate_stall_speed">
 <span class="sig-name descname"><span class="pre">estimate_stall_speed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle_mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_area</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_lift_coefficient</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/estimate_stall_speed.html#estimate_stall_speed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.estimate_stall_speed.estimate_stall_speed" title="Link to this definition">#</a></dt>
-<dd><p>Calculates the stall speed of an aircraft at a given altitude and a maximum lift coefficient.</p>
-<p>Sources:
-N/A</p>
-<p>Assumptions:
-None</p>
-<dl class="simple">
-<dt>Inputs:</dt><dd><p>vehicle_mass                    vehicle mass             [kg]
-reference_area                  vehicle reference area   [m^2]
-altitude                        cruise altitude          [m]
-maximum_lift_coefficient        maximum lift coefficient [unitless]</p>
+<dd><p>Calculates the stall speed of an aircraft at a given altitude and maximum lift coefficient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle_mass</strong> (<em>float</em>) – Total mass of the vehicle [kg]</p></li>
+<li><p><strong>reference_area</strong> (<em>float</em>) – Wing reference area [m²]</p></li>
+<li><p><strong>altitude</strong> (<em>float</em>) – Flight altitude [m]</p></li>
+<li><p><strong>maximum_lift_coefficient</strong> (<em>float</em>) – Maximum lift coefficient of the aircraft [unitless]</p></li>
+</ul>
 </dd>
-<dt>Outputs:</dt><dd><p>V_stall                         stall speed              [m/s]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>V_stall</strong> – Stall speed [m/s]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The stall speed is calculated using the standard lift equation solved for velocity:</p>
+<div class="math notranslate nohighlight">
+\[V_{stall} = \sqrt{\frac{2W}{\rho S C_{L_{max}}}}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>W = mg (vehicle weight)</p></li>
+<li><p>ρ = air density at altitude</p></li>
+<li><p>S = reference area</p></li>
+<li><p>CL_max = maximum lift coefficient</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Steady, level flight</p></li>
+<li><p>Incompressible flow</p></li>
+<li><p>Standard atmospheric conditions</p></li>
+<li><p>No wind or atmospheric disturbances</p></li>
+<li><p>Rigid aircraft structure</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.html#module-RCAIDE.Library.Attributes.Atmospheres" title="RCAIDE.Library.Attributes.Atmospheres"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Atmospheres</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Performance.estimate_take_off_field_length.html#module-RCAIDE.Library.Methods.Performance.estimate_take_off_field_length" title="RCAIDE.Library.Methods.Performance.estimate_take_off_field_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Performance.estimate_take_off_field_length</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

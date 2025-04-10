@@ -43,11 +43,13 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Propulsors';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Propulsors.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Constant_Speed_ICE_Propulsor" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_ICE_Propulsor.html" />
+    <link rel="next" title="Constant_Speed_Internal_Combustion_Engine" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.html" />
     <link rel="prev" title="RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_voltage_out_from_throttle" href="RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance.compute_voltage_out_from_throttle.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -529,33 +531,38 @@
   <p>RCAIDE.Library.Methods.Powertrain.Propulsors</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Propulsors">
 <span id="propulsors"></span><h1>Propulsors<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Propulsors" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides functionality for modeling complete propulsor systems in powertrains. It includes methods for
+various propulsion technologies including electric rotors, electric ducted fans, internal combustion engines,
+and different turbine-based propulsors.</p>
+<p>The propulsors module enables the simulation and analysis of the components that convert mechanical or electrical
+power into thrust, providing the propulsive force for aerospace vehicles.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.html#module-RCAIDE.Library.Components.Powertrain.Propulsors" title="RCAIDE.Library.Components.Powertrain.Propulsors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.html#module-RCAIDE.Library.Methods.Powertrain.Converters" title="RCAIDE.Library.Methods.Powertrain.Converters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.html#module-RCAIDE.Library.Methods.Powertrain.Sources" title="RCAIDE.Library.Methods.Powertrain.Sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_ICE_Propulsor.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_ICE_Propulsor" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_ICE_Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Constant_Speed_ICE_Propulsor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Constant_Speed_Internal_Combustion_Engine</span></code></a></p></td>
+<td><p>Methods for modeling and analyzing constant speed internal combustion engine propulsors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Electric_Ducted_Fan_Propulsor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Electric_Ducted_Fan</span></code></a></p></td>
+<td><p>Methods for analyzing electric ducted fan (EDF) propulsion systems.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Electric_Rotor_Propulsor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Electric_Rotor</span></code></a></p></td>
+<td><p>Collection of methods for analyzing electric rotor propulsion systems.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.ICE_Propulsor.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.ICE_Propulsor" title="RCAIDE.Library.Methods.Powertrain.Propulsors.ICE_Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ICE_Propulsor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Internal_Combustion_Engine</span></code></a></p></td>
+<td><p>Methods for modeling and analyzing internal combustion engine propulsors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turbofan_Propulsor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turbofan</span></code></a></p></td>
+<td><p>Collection of methods for modeling and analyzing turbofan propulsion systems.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet_Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turbojet_Propulsor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turbojet</span></code></a></p></td>
+<td><p>Contains methods for analyzing and designing turbojet propulsion systems.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop_Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turboprop_Propulsor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Turboshaft_Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turboshaft_Propulsor</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.html#module-RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop" title="RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Turboprop</span></code></a></p></td>
+<td><p>Contains methods for analyzing and designing turboprop propulsion systems.</p></td>
 </tr>
 </tbody>
 </table>
@@ -582,11 +589,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_ICE_Propulsor.html"
+       href="RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Constant_Speed_ICE_Propulsor</p>
+        <p class="prev-next-title">Constant_Speed_Internal_Combustion_Engine</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

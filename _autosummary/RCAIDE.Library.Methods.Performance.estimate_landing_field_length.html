@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Performance.estimate_landing_field_length';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Performance.estimate_landing_field_length.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,29 +534,77 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.estimate_landing_field_length.estimate_landing_field_length">
 <span class="sig-name descname"><span class="pre">estimate_landing_field_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_isa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/estimate_landing_field_length.html#estimate_landing_field_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.estimate_landing_field_length.estimate_landing_field_length" title="Link to this definition">#</a></dt>
-<dd><p>Computes the landing field length for a given vehicle configuration in a given airport.</p>
-<p>Assumptions:
-See source
-Two wheel trucks (code needed for four wheel trucks also included)</p>
-<p>Source:
-Torenbeek, E., “Advanced Aircraft Design”, 2013 (equation 9.25)</p>
-<p>Inputs:
-airport.</p>
-<blockquote>
-<div><p>atmosphere                           [RCAIDE data type]
-altitude                             [m]
-delta_isa                            [K]</p>
-</div></blockquote>
-<dl class="simple">
-<dt>vehicle.</dt><dd><p>mass_properties.landing              [kg]
-reference_area                       [m^2]
-maximum_lift_coefficient (optional)  [Unitless]</p>
+<dd><p>Computes the landing field length required for a given vehicle configuration at specified airport conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – <dl class="simple">
+<dt>The vehicle instance containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>mass_properties.landing<span class="classifier">float</span></dt><dd><p>Landing weight [kg]</p>
 </dd>
 </dl>
-<p>Outputs:
-landing_field_length                   [m]</p>
-<p>Properties Used:
-N/A</p>
+</li>
+<li><dl class="simple">
+<dt>reference_area<span class="classifier">float</span></dt><dd><p>Wing reference area [m^2]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maximum_lift_coefficient<span class="classifier">float, optional</span></dt><dd><p>Maximum lift coefficient if pre-computed</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Vref_VS_ratio<span class="classifier">float, optional</span></dt><dd><p>Ratio of approach to stall speed, default 1.23</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>analyses</strong> (<em>Analyses</em>) – Container with aerodynamic analyses for computing maximum lift coefficient</p></li>
+<li><p><strong>altitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Airport altitude [ft], default 0</p></li>
+<li><p><strong>delta_isa</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature offset from ISA conditions [K], default 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>landing_field_length</strong> – Required landing field length [m]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The landing distance is computed using a semi-empirical approach:</p>
+<div class="math notranslate nohighlight">
+\[LFL = k_1 + k_2 V_{ref}^2\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>k₁ = 250 (constant)</p></li>
+<li><p>k₂ = 2.485/g for two-wheel trucks</p></li>
+<li><p>Vref = 1.23 * Vstall (default)</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Two-wheel truck landing gear configuration</p></li>
+<li><p>Sea level standard atmospheric conditions unless specified</p></li>
+<li><p>Standard approach speed ratio (1.23 × stall speed)</p></li>
+<li><p>No wind conditions</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+The stall speed is computed as:</p>
+<div class="math notranslate nohighlight">
+\[V_{stall} = \sqrt{\frac{2W}{\rho S C_{L_{max}}}}\]</div>
+<p class="rubric">References</p>
+<p>[1] Torenbeek, E. (2013). Advanced Aircraft Design: Conceptual Design, Analysis and Optimization of Subsonic Civil Airplanes. Equation 9.25.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff.html#module-RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff" title="RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

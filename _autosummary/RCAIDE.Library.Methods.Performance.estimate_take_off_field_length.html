@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Performance.estimate_take_off_field_length';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Performance.estimate_take_off_field_length.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,33 +534,97 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.estimate_take_off_field_length.estimate_take_off_field_length">
 <span class="sig-name descname"><span class="pre">estimate_take_off_field_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_isa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_2nd_seg_climb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/estimate_take_off_field_length.html#estimate_take_off_field_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.estimate_take_off_field_length.estimate_take_off_field_length" title="Link to this definition">#</a></dt>
-<dd><p>Computes the takeoff field length for a given vehicle configuration in a given airport.
-Also optionally computes the second segment climb gradient.</p>
-<p>Assumptions:
-For second segment climb gradient:
-One engine inoperative
-Only validated for two engine aircraft</p>
-<p>Source:
-<a class="reference external" href="http://adg.stanford.edu/aa241/AircraftDesign.html">http://adg.stanford.edu/aa241/AircraftDesign.html</a></p>
-<p>Inputs:
-analyses.base.atmosphere               [RCAIDE data type]
-airport.</p>
-<blockquote>
-<div><p>altitude                             [m]
-delta_isa                            [K]</p>
-</div></blockquote>
-<dl class="simple">
-<dt>vehicle.</dt><dd><p>mass_properties.takeoff              [kg]
-reference_area                       [m^2]
-V2_VS_ratio (optional)               [Unitless]
-maximum_lift_coefficient (optional)  [Unitless]
-networks.*.number_of_engines       [Unitless]</p>
+<dd><p>Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – <dl class="simple">
+<dt>The vehicle instance containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>mass_properties.takeoff<span class="classifier">float</span></dt><dd><p>Takeoff weight [kg]</p>
 </dd>
 </dl>
-<p>Outputs:
-takeoff_field_length                   [m]</p>
-<p>Properties Used:
-N/A</p>
+</li>
+<li><dl class="simple">
+<dt>reference_area<span class="classifier">float</span></dt><dd><p>Wing reference area [m²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>V2_VS_ratio<span class="classifier">float, optional</span></dt><dd><p>Ratio of V2 to stall speed, default 1.20</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>networks.*.number_of_engines<span class="classifier">int</span></dt><dd><p>Number of engines per network</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>analyses</strong> (<em>Analyses</em>) – Container with atmosphere and aerodynamic analyses</p></li>
+<li><p><strong>altitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Airport altitude [m], default 0</p></li>
+<li><p><strong>delta_isa</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature offset from ISA conditions [K], default 0</p></li>
+<li><p><strong>compute_2nd_seg_climb</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag to compute second segment climb gradient, default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>takeoff_field_length</strong> (<em>float</em>) – Required takeoff field length [m]</p></li>
+<li><p><strong>second_seg_climb_gradient</strong> (<em>float, optional</em>) – Second segment climb gradient [unitless], only if compute_2nd_seg_climb=True</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The takeoff field length is computed using empirical correlations:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TOFL</span> <span class="o">=</span> <span class="n">k_0</span> <span class="o">+</span> <span class="n">k_1</span><span class="p">(</span><span class="n">V_2</span><span class="o">^</span><span class="mi">2</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">k_2</span><span class="p">(</span><span class="n">V_2</span><span class="o">^</span><span class="mi">2</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">W</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>where k₀, k₁, k₂ depend on number of engines:</dt><dd><ul class="simple">
+<li><p>2 engines: [857.4, 2.476, 0.00014]</p></li>
+<li><p>3 engines: [667.9, 2.343, 0.000093]</p></li>
+<li><p>4 engines: [486.7, 2.282, 0.0000705]</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Sea level standard conditions unless specified</p></li>
+<li><p>Standard V2 speed ratio (1.20 × stall speed)</p></li>
+<li><p>No wind conditions</p></li>
+<li><p>Dry runway surface</p></li>
+<li><dl class="simple">
+<dt>For second segment climb:</dt><dd><ul>
+<li><p>One engine inoperative</p></li>
+<li><p>Only validated for two-engine aircraft</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+Second segment climb gradient is computed as:</p>
+<div class="math notranslate nohighlight">
+\[\gamma = T/W - 1/L/D\]</div>
+<dl class="simple">
+<dt>where L/D includes effects of:</dt><dd><ul class="simple">
+<li><p>Windmilling drag</p></li>
+<li><p>Asymmetric drag</p></li>
+<li><p>High-lift device drag</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Stanford University AA241 Aircraft Design Course Notes <a class="reference external" href="http://adg.stanford.edu/aa241/AircraftDesign.html">http://adg.stanford.edu/aa241/AircraftDesign.html</a></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag.html#module-RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag" title="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag.html#module-RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag" title="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

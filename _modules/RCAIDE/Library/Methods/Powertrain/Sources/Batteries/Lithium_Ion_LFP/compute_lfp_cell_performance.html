@@ -394,26 +394,82 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="compute_lfp_cell_performance">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.compute_lfp_cell_performance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_lfp_cell_performance</span><span class="p">(</span><span class="n">battery_module</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">coolant_lines</span><span class="p">,</span><span class="n">t_idx</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">):</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_lfp_cell_performance</span><span class="p">(</span><span class="n">battery_module</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">bus</span><span class="p">,</span> <span class="n">coolant_lines</span><span class="p">,</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">       Assumptions: </span>
-<span class="sd">        - All battery_module modules exhibit the same thermal behavior.</span>
-<span class="sd">        - The cell temperature is assumed to be the temperature of the entire module.</span>
-<span class="sd">       </span>
-<span class="sd">       Source:</span>
-<span class="sd">       Internal Resistance:</span>
-<span class="sd">       </span>
-<span class="sd">       Inputs:</span>
-<span class="sd">         battery. </span>
-<span class="sd">                *** will be done in sphinx format.</span>
-<span class="sd">           </span>
-<span class="sd">         inputs.</span>
-<span class="sd">        </span>
-<span class="sd">       </span>
-<span class="sd">       Outputs:</span>
-<span class="sd">         battery.          </span>
-<span class="sd">   </span>
-<span class="sd">        </span>
+<span class="sd">    Computes the performance of lithium iron phosphate (LFP) battery cells.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    battery_module : BatteryModule</span>
+<span class="sd">        The battery module containing LFP cells with the following attributes:</span>
+<span class="sd">            - cell.electrode_area : float</span>
+<span class="sd">                Area of the cell electrode [m²]</span>
+<span class="sd">            - cell.surface_area : float</span>
+<span class="sd">                Surface area of the cell [m²]</span>
+<span class="sd">            - cell.mass : float</span>
+<span class="sd">                Mass of the cell [kg]</span>
+<span class="sd">            - cell.specific_heat_capacity : float</span>
+<span class="sd">                Specific heat capacity of the cell [J/(kg·K)]</span>
+<span class="sd">            - cell.discharge_performance_map : function</span>
+<span class="sd">                Function that maps C-rate, temperature, and discharge capacity to voltage</span>
+<span class="sd">            - electrical_configuration.series : int</span>
+<span class="sd">                Number of cells in series</span>
+<span class="sd">            - electrical_configuration.parallel : int</span>
+<span class="sd">                Number of cells in parallel</span>
+<span class="sd">    state : State</span>
+<span class="sd">        Current system state containing conditions for all components</span>
+<span class="sd">    bus : ElectricalBus</span>
+<span class="sd">        The electrical bus connected to the battery module</span>
+<span class="sd">    coolant_lines : list</span>
+<span class="sd">        List of coolant lines that may be connected to the battery module</span>
+<span class="sd">    t_idx : int</span>
+<span class="sd">        Current time index in the simulation</span>
+<span class="sd">    delta_t : numpy.ndarray</span>
+<span class="sd">        Time step array [s]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    stored_results_flag : bool</span>
+<span class="sd">        Flag indicating if results were stored</span>
+<span class="sd">    stored_battery_tag : str</span>
+<span class="sd">        Tag of the battery module for which results were stored</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function computes the electrical and thermal performance of LFP battery cells</span>
+<span class="sd">    within a battery module. It calculates:</span>
+<span class="sd">        1. Current flow through the module and individual cells</span>
+<span class="sd">        2. Heat generation due to joule heating and entropy changes</span>
+<span class="sd">        3. Cell voltage under load based on state of charge, temperature, and current</span>
+<span class="sd">        4. Power flow through the module</span>
+<span class="sd">        5. Temperature changes based on heat generation and cooling (if present)</span>
+<span class="sd">        6. State of charge and depth of discharge updates</span>
+<span class="sd">        7. Charge throughput tracking</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * All battery cells in a module exhibit the same thermal behavior</span>
+<span class="sd">        * The cell temperature is assumed to be the temperature of the entire module</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    </span>
+<span class="sd">    Heat generation in the cell includes both joule heating and entropic effects:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\dot{Q}_{joule} = \\frac{i_{cell}^2}{\sigma}</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\dot{Q}_{entropy} = f(SOC) \\cdot T \\cdot \\frac{dU}{dT}</span>
+<span class="sd">    </span>
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`i_{cell}` is the current density [A/m²]</span>
+<span class="sd">        - :math:`\\sigma` is the electrical conductivity [S/m]</span>
+<span class="sd">        - :math:`SOC` is the state of charge</span>
+<span class="sd">        - :math:`T` is the temperature [K]</span>
+<span class="sd">        - :math:`\\frac{dU}{dT}` is the entropic coefficient</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="c1"># ---------------------------------------------------------------------------------    </span>
     <span class="c1"># battery cell properties</span>
@@ -428,10 +484,12 @@
     <span class="c1"># Compute Bus electrical properties </span>
     <span class="c1"># ---------------------------------------------------------------------------------    </span>
     <span class="n">bus_conditions</span>              <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
-    <span class="n">bus_config</span>                  <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">battery_module_electric_configuration</span>
+    <span class="n">bus_config</span>                  <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">battery_module_electric_configuration</span> 
+    <span class="n">phi</span>                         <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span> 
+    <span class="n">psi</span>                         <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">battery_fuel_cell_power_split_ratio</span>
     <span class="n">E_bus</span>                       <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">energy</span>
-    <span class="n">P_bus</span>                       <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span>
-    <span class="n">I_bus</span>                       <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">current_draw</span>
+    <span class="n">P_bus</span>                       <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="o">*</span><span class="n">phi</span> <span class="o">*</span> <span class="n">psi</span>
+    <span class="n">I_bus</span>                       <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">current_draw</span><span class="o">*</span><span class="n">phi</span> <span class="o">*</span><span class="n">psi</span>   
     
     <span class="c1"># ---------------------------------------------------------------------------------</span>
     <span class="c1"># Compute battery_module Conditions</span>
@@ -511,7 +569,7 @@
     <span class="n">V_ul_cell</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>      <span class="o">=</span> <span class="n">compute_lfp_cell_state</span><span class="p">(</span><span class="n">battery_module</span><span class="p">,</span><span class="n">battery_module_data</span><span class="p">,</span><span class="n">SOC_cell</span><span class="p">[</span><span class="n">t_idx</span><span class="p">],</span><span class="n">T_cell</span><span class="p">[</span><span class="n">t_idx</span><span class="p">],</span><span class="nb">abs</span><span class="p">(</span><span class="n">I_cell</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]))</span> 
  
     <span class="c1"># Effective Power flowing through battery_module </span>
-    <span class="n">P_module</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>       <span class="o">=</span> <span class="n">P_bus</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">/</span><span class="n">no_modules</span>  <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Q_heat_module</span><span class="p">[</span><span class="n">t_idx</span><span class="p">])</span> 
+    <span class="n">P_module</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>       <span class="o">=</span> <span class="n">P_bus</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">/</span><span class="n">no_modules</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Q_heat_module</span><span class="p">[</span><span class="n">t_idx</span><span class="p">])</span> 
 
     <span class="c1"># store remaining variables  </span>
     <span class="n">V_ul_module</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>     <span class="o">=</span> <span class="n">V_ul_cell</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span><span class="o">*</span><span class="n">n_series</span>  
@@ -552,22 +610,8 @@
 <div class="viewcode-block" id="reuse_stored_lfp_cell_data">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.reuse_stored_lfp_cell_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reuse_stored_lfp_cell_data</span><span class="p">(</span><span class="n">battery_module</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span> <span class="n">stored_battery_tag</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Reuses results from one propulsor for identical batteries</span>
-<span class="sd">    </span>
-<span class="sd">    Assumptions: </span>
-<span class="sd">    N/A</span>
-
-<span class="sd">    Source:</span>
-<span class="sd">    N/A</span>
-
-<span class="sd">    Inputs:  </span>
-<span class="sd">    </span>
-
-<span class="sd">    Outputs:  </span>
-<span class="sd">    </span>
-<span class="sd">    Properties Used: </span>
-<span class="sd">    N.A.        </span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reuses results from one propulsor for identical batteries       </span>
+<span class="sd">    &quot;&quot;&quot;</span>
    
     <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">[</span><span class="n">battery_module</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">[</span><span class="n">stored_battery_tag</span><span class="p">])</span>      
     <span class="k">return</span></div>
@@ -576,27 +620,50 @@
 
 <div class="viewcode-block" id="compute_lfp_cell_state">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance.compute_lfp_cell_state">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_lfp_cell_state</span><span class="p">(</span><span class="n">battery_module</span><span class="p">,</span><span class="n">battery_module_data</span><span class="p">,</span><span class="n">SOC</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">I</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This computes the electrical state variables of a lithium ion </span>
-<span class="sd">    battery_module cell with a  lithium-nickel-cobalt-aluminum oxide cathode </span>
-<span class="sd">    chemistry from look-up tables </span>
-<span class="sd">     </span>
-<span class="sd">    Assumtions: </span>
-<span class="sd">    N/A</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_lfp_cell_state</span><span class="p">(</span><span class="n">battery_module</span><span class="p">,</span> <span class="n">battery_module_data</span><span class="p">,</span> <span class="n">SOC</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">I</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the electrical state variables of a lithium iron phosphate (LFP) battery cell using look-up tables.</span>
 <span class="sd">    </span>
-<span class="sd">    Source:  </span>
-<span class="sd">    N/A </span>
-<span class="sd">     </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">        SOC           - state of charge of cell     [unitless]</span>
-<span class="sd">        battery_module_data  - look-up data structure      [unitless]</span>
-<span class="sd">        T             - battery_module cell temperature    [Kelvin]</span>
-<span class="sd">        I             - battery_module cell current        [Amperes]</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    battery_module : BatteryModule</span>
+<span class="sd">        The battery module containing LFP cells with the following attributes:</span>
+<span class="sd">            - cell.nominal_capacity : float</span>
+<span class="sd">                Nominal capacity of the cell [Ah]</span>
+<span class="sd">    battery_module_data : function</span>
+<span class="sd">        Look-up function that maps C-rate, temperature, and discharge capacity to voltage</span>
+<span class="sd">    SOC : numpy.ndarray</span>
+<span class="sd">        State of charge of the cell [unitless, 0-1]</span>
+<span class="sd">    T : numpy.ndarray</span>
+<span class="sd">        Battery cell temperature [K]</span>
+<span class="sd">    I : numpy.ndarray</span>
+<span class="sd">        Battery cell current [A]</span>
 <span class="sd">    </span>
-<span class="sd">    Outputs:  </span>
-<span class="sd">        V_ul          - under-load voltage          [Volts] </span>
-<span class="sd">        </span>
-<span class="sd">    &quot;&quot;&quot;</span> 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    V_ul : numpy.ndarray</span>
+<span class="sd">        Under-load voltage [V]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function computes the voltage of an LFP battery cell under load conditions</span>
+<span class="sd">    by using a look-up table approach. It converts the state of charge to discharge</span>
+<span class="sd">    capacity, calculates the C-rate, and then uses these values along with temperature</span>
+<span class="sd">    to determine the cell voltage.</span>
+<span class="sd">    </span>
+<span class="sd">    The function applies limits to ensure the inputs are within the valid range of the</span>
+<span class="sd">    look-up data:</span>
+<span class="sd">        - SOC is limited to [0, 1]</span>
+<span class="sd">        - Temperature is limited to [-10°C, 60°C]</span>
+<span class="sd">        - Current is limited to [0A, 52A]</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * The model is valid only within the specified temperature and current ranges</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Make sure things do not break by limiting current, temperature and current </span>
     <span class="n">capacity</span>      <span class="o">=</span> <span class="n">battery_module</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">nominal_capacity</span>

@@ -397,27 +397,54 @@
 <div class="viewcode-block" id="find_take_off_weight_given_tofl">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl.html#RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl.find_take_off_weight_given_tofl">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_take_off_weight_given_tofl</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">analyses</span><span class="p">,</span><span class="n">target_tofl</span><span class="p">,</span><span class="n">altitude</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">delta_isa</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimates the takeoff weight given a certain takeoff field length.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    assumptions per estimate_take_off_field_length()</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : Vehicle</span>
+<span class="sd">        The vehicle instance containing:</span>
+<span class="sd">            - mass_properties.operating_empty : float</span>
+<span class="sd">                Operating empty weight [kg]</span>
+<span class="sd">            - mass_properties.max_takeoff : float</span>
+<span class="sd">                Maximum takeoff weight [kg]</span>
+<span class="sd">    analyses : Analyses</span>
+<span class="sd">        Container with atmosphere and aerodynamic analyses</span>
+<span class="sd">    target_tofl : float or ndarray</span>
+<span class="sd">        Target takeoff field length(s) [m]</span>
+<span class="sd">    altitude : float, optional</span>
+<span class="sd">        Airport altitude [m], default 0</span>
+<span class="sd">    delta_isa : float, optional</span>
+<span class="sd">        Temperature offset from ISA conditions [K], default 0</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    max_tow : ndarray</span>
+<span class="sd">        Maximum allowable takeoff weight(s) for given field length(s) [kg]</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    vehicle.mass_properties.</span>
-<span class="sd">      operating_empty         [kg]</span>
-<span class="sd">      max_takeoff             [kg]</span>
-<span class="sd">      analyses                [RCAIDE data structure]</span>
-<span class="sd">      airport                 [RCAIDE data structure]</span>
-<span class="sd">      target_tofl             [m]</span>
-<span class="sd">      </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">    max_tow                   [kg]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses an interpolation approach by:</span>
+<span class="sd">        1. Creating array of possible takeoff weights between OEW and 110% MTOW</span>
+<span class="sd">        2. Computing TOFL for each weight</span>
+<span class="sd">        3. Interpolating to find weight that gives target TOFL</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Linear interpolation between computed points is valid</span>
+<span class="sd">        * Target TOFL is within achievable range</span>
+<span class="sd">        * Meets assumptions from estimate_take_off_field_length</span>
+
+<span class="sd">    **Theory**</span>
+<span class="sd">    Takeoff field length varies approximately with W/T where:</span>
+<span class="sd">        * W = aircraft weight</span>
+<span class="sd">        * T = available thrust</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        TOFL \propto \\frac{W}{T}</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Performance.estimate_take_off_field_length</span>
 <span class="sd">    &quot;&quot;&quot;</span>       
 
     <span class="c1">#unpack</span>

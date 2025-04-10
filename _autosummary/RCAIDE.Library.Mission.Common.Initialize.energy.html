@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,17 +535,80 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Initialize.energy.energy">
 <span class="sig-name descname"><span class="pre">energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Initialize/energy.html#energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Initialize.energy.energy" title="Link to this definition">#</a></dt>
-<dd><p>Sets the initial battery energy at the start of the mission</p>
-<p>Assumptions:
-N/A</p>
-<dl class="simple">
-<dt>Inputs:</dt><dd><p>segment</p>
-</dd>
-<dt>Outputs:</dt><dd><p>None</p>
+<dd><p>Initializes energy states for vehicle networks at mission segment start</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p>
 </dd>
 </dl>
-<p>Properties Used:
-N/A</p>
+<p class="rubric">Notes</p>
+<p>This function initializes energy-related conditions for all energy networks
+in the vehicle, including batteries, fuel systems, and thermal management
+systems. It handles both electrical and fuel-based energy storage systems.</p>
+<p>The function processes:
+1. Electrical networks with busses</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Battery module conditions</p></li>
+<li><dl class="simple">
+<dt>Thermal management systems</dt><dd><ul>
+<li><p>Battery cooling systems</p></li>
+<li><p>Heat exchangers</p></li>
+<li><p>Coolant reservoirs</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><dl class="simple">
+<dt>Fuel-based networks</dt><dd><ul class="simple">
+<li><p>Fuel tank conditions</p></li>
+<li><p>Fuel mass tracking</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<p><strong>Required Segment Components</strong></p>
+<dl class="simple">
+<dt>segment.analyses.energy.vehicle.networks:</dt><dd><p>Network configurations containing:
+- Electrical busses with battery modules
+- Cooling systems and heat exchangers
+- Fuel lines and tanks</p>
+</dd>
+</dl>
+<p><strong>State Variables</strong></p>
+<dl>
+<dt>conditions.energy:</dt><dd><p>For electrical systems:
+- Battery states
+- Thermal conditions
+- Coolant properties</p>
+<p>For fuel systems:
+- Fuel mass
+- Tank conditions</p>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Well-defined network architecture</p></li>
+<li><p>Valid initial conditions</p></li>
+<li><p>Compatible energy storage systems</p></li>
+<li><p>Proper thermal management setup</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Updates segment conditions directly</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

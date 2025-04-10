@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,43 +537,160 @@
 <span id="compute-combustor-performance"></span><h1>compute_combustor_performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance.compute_combustor_performance">
-<span class="sig-name descname"><span class="pre">compute_combustor_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combustor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combustor_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Combustor/compute_combustor_performance.html#compute_combustor_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance.compute_combustor_performance" title="Link to this definition">#</a></dt>
-<dd><dl>
-<dt>This computes the output values from the input values according to</dt><dd><p>equations from the source. The following properties are computed
-combustor_conditions.outputs.</p>
-<blockquote>
-<div><p>stagnation_temperature             (numpy.ndarray):  [K]
-stagnation_pressure                (numpy.ndarray):  [Pa]
-stagnation_enthalpy                (numpy.ndarray):  [J/kg]
-fuel_to_air_ratio                  (numpy.ndarray):  [unitless]</p>
-</div></blockquote>
-</dd>
-<dt>Assumptions:</dt><dd><p>Constant efficiency and pressure ratio</p>
-</dd>
-<dt>Source:</dt><dd><p><a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/">https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</a></p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">compute_combustor_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combustor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Combustor/compute_combustor_performance.html#compute_combustor_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance.compute_combustor_performance" title="Link to this definition">#</a></dt>
+<dd><p>Computes the thermodynamic performance of a combustor in a gas turbine engine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>conditions.freestream.</strong> – isentropic_expansion_factor        (numpy.ndarray):  [unitless]
-specific_heat_at_constant_pressure (numpy.ndarray):  [J/(kg K)]
-temperature                        (numpy.ndarray):  [K]
-stagnation_temperature             (numpy.ndarray):  [K]</p></li>
-<li><p><strong>combustor_conditions.inputs.</strong> – stagnation_temperature             (numpy.ndarray):  [K]
-stagnation_pressure                (numpy.ndarray):  [Pa]
-nondim_mass_ratio                  (numpy.ndarray):  [unitless]</p></li>
-<li><p><strong>combustor.</strong> – turbine_inlet_temperature                  (float):  [K]
-pressure_ratio                             (float):  [unitless]
-efficiency                                 (float):  [unitless]
-area_ratio                                 (float):  [unitless]
-fuel_data.specific_energy                  (float):  [J/kg]</p></li>
+<li><p><strong>combustor</strong> (<em>RCAIDE.Library.Components.Converters.Combustor</em>) – <dl class="simple">
+<dt>Combustor component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the combustor</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>working_fluid<span class="classifier">Data</span></dt><dd><p>Working fluid properties object</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>turbine_inlet_temperature<span class="classifier">float</span></dt><dd><p>Target turbine inlet temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pressure_ratio<span class="classifier">float</span></dt><dd><p>Pressure ratio across the combustor (typically &lt; 1.0 due to losses)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>efficiency<span class="classifier">float</span></dt><dd><p>Combustion efficiency</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>area_ratio<span class="classifier">float</span></dt><dd><p>Exit to inlet area ratio</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuel_data<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Fuel properties</dt><dd><ul>
+<li><dl class="simple">
+<dt>specific_energy<span class="classifier">float</span></dt><dd><p>Fuel specific energy [J/kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – <dl class="simple">
+<dt>Flight conditions with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>energy<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Energy conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>converters<span class="classifier">dict</span></dt><dd><p>Converter energy conditions indexed by tag</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Results are stored in conditions.energy.converters[combustor.tag].outputs:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>stagnation_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation temperature at combustor exit [K]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation pressure at combustor exit [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_enthalpy<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation enthalpy at combustor exit [J/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuel_to_air_ratio<span class="classifier">numpy.ndarray</span></dt><dd><p>Fuel-to-air ratio</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Static temperature at combustor exit [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Static pressure at combustor exit [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number<span class="classifier">numpy.ndarray</span></dt><dd><p>Mach number at combustor exit</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function computes the thermodynamic properties at the combustor exit based on
+the inlet conditions, combustor characteristics, and fuel properties. It calculates
+the fuel-to-air ratio required to achieve the specified turbine inlet temperature,
+accounting for combustion efficiency and pressure losses.</p>
+<dl class="simple">
+<dt>The computation follows these steps:</dt><dd><ol class="arabic simple">
+<li><p>Extract inlet conditions (temperature, pressure, Mach number)</p></li>
+<li><p>Compute working fluid properties (gamma, Cp)</p></li>
+<li><p>Calculate stagnation pressure at exit using pressure ratio</p></li>
+<li><p>Set exit stagnation temperature to the specified turbine inlet temperature</p></li>
+<li><p>Compute stagnation enthalpies at inlet and exit</p></li>
+<li><p>Calculate fuel-to-air ratio required to achieve the temperature rise</p></li>
+<li><p>Compute exit static conditions (temperature, pressure) based on exit Mach number</p></li>
+<li><p>Store all results in the conditions data structure</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant efficiency and pressure ratio</p></li>
+<li><p>Turbine inlet temperature is controlled to a specified value</p></li>
+<li><p>Mach number is preserved from inlet to exit</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Cantwell, B., “AA283 Course Notes”, Stanford University <a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/">https://web.stanford.edu/~cantwell/AA283_Course_Material/</a></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

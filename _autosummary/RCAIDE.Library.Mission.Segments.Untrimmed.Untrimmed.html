@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -536,7 +536,7 @@
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Segments.Untrimmed.Untrimmed.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Untrimmed.Untrimmed.initialize_conditions" title="RCAIDE.Library.Mission.Segments.Untrimmed.Untrimmed.initialize_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_conditions</span></code></a>(segment)</p></td>
-<td><p>Sets the specified conditions which are given for the segment type.</p></td>
+<td><p>Initializes conditions for untrimmed flight analysis at fixed state</p></td>
 </tr>
 </tbody>
 </table>
@@ -544,25 +544,126 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Untrimmed.Untrimmed.initialize_conditions">
 <span class="sig-name descname"><span class="pre">initialize_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Untrimmed/Untrimmed.html#initialize_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Untrimmed.Untrimmed.initialize_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Sets the specified conditions which are given for the segment type.</p>
-<p>Assumptions:
-A fixed speed and altitude</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-segment.altitude                               [meters]
-segment.air_speed                              [meters/second]
-segment.linear_acceleration_x                         [meters/second^2]
-segment.sideslip_angle                         [radians]
-segment.linear_acceleration_z                         [meters/second^2]</p>
-<p>Outputs:
-conditions.frames.inertial.acceleration_vector [meters/second^2]
-conditions.frames.inertial.velocity_vector     [meters/second]
-conditions.frames.inertial.position_vector     [meters]
-conditions.freestream.altitude                 [meters]
-conditions.frames.inertial.time                [seconds]</p>
-<p>Properties Used:
-N/A</p>
+<dd><p>Initializes conditions for untrimmed flight analysis at fixed state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – <dl class="simple">
+<dt>The mission segment being analyzed</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>altitude<span class="classifier">float</span></dt><dd><p>Flight altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>air_speed<span class="classifier">float</span></dt><dd><p>True airspeed [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sideslip_angle<span class="classifier">float</span></dt><dd><p>Aircraft sideslip angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>linear_acceleration_x<span class="classifier">float</span></dt><dd><p>Acceleration in x-direction [m/s^2]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>linear_acceleration_y<span class="classifier">float</span></dt><dd><p>Acceleration in y-direction [m/s^2]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>linear_acceleration_z<span class="classifier">float</span></dt><dd><p>Acceleration in z-direction [m/s^2]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>roll_rate<span class="classifier">float</span></dt><dd><p>Aircraft roll rate [rad/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pitch_rate<span class="classifier">float</span></dt><dd><p>Aircraft pitch rate [rad/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>yaw_rate<span class="classifier">float</span></dt><dd><p>Aircraft yaw rate [rad/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state:</dt><dd><dl class="simple">
+<dt>conditions<span class="classifier">Data</span></dt><dd><p>State conditions container</p>
+</dd>
+<dt>initials<span class="classifier">Data, optional</span></dt><dd><p>Initial conditions from previous segment</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Updates segment conditions directly:</dt><dd><ul class="simple">
+<li><p>conditions.freestream.altitude [m]</p></li>
+<li><p>conditions.frames.inertial.position_vector [m]</p></li>
+<li><p>conditions.frames.inertial.velocity_vector [m/s]</p></li>
+<li><p>conditions.frames.inertial.acceleration_vector [m/s^2]</p></li>
+<li><p>conditions.static_stability.roll_rate [rad/s]</p></li>
+<li><p>conditions.static_stability.pitch_rate [rad/s]</p></li>
+<li><p>conditions.static_stability.yaw_rate [rad/s]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up the initial conditions for an untrimmed flight analysis
+at fixed speed and altitude. It allows specification of full 6-DOF motion
+states without enforcing trim constraints.</p>
+<dl>
+<dt><strong>Calculation Process</strong></dt><dd><ol class="arabic">
+<li><p>Check initial altitude</p></li>
+<li><dl>
+<dt>Decompose velocity into components using sideslip angle:</dt><dd><ul class="simple">
+<li><p>v_x = V * cos(β)</p></li>
+<li><p>v_y = V * sin(β)</p></li>
+</ul>
+<p>where:
+- V is true airspeed
+- β is sideslip angle</p>
+</dd>
+</dl>
+</li>
+<li><p>Set position and altitude</p></li>
+<li><p>Set full acceleration vector</p></li>
+<li><p>Set angular rates</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Fixed speed and altitude point</p></li>
+<li><p>No trim constraints enforced</p></li>
+<li><p>Full 6-DOF motion allowed</p></li>
+<li><p>Small angle approximations</p></li>
+<li><p>No atmospheric variations</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

@@ -47,8 +47,8 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.landing_gear_noise" href="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.landing_gear_noise.html" />
-    <link rel="prev" title="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.clean_wing_noise.clean_wing_noise" href="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.clean_wing_noise.clean_wing_noise.html" />
+    <link rel="next" title="trailing_edge_flap_noise" href="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.trailing_edge_flap_noise.html" />
+    <link rel="prev" title="clean_wing_noise" href="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.clean_wing_noise.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,15 +535,6 @@
   <p>RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise</p>
 <section id="module-RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise">
 <span id="landing-gear-noise"></span><h1>landing_gear_noise<a class="headerlink" href="#module-RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise" title="Link to this heading">#</a></h1>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.landing_gear_noise.html#RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.landing_gear_noise" title="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.landing_gear_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">landing_gear_noise</span></code></a>(D, H, wheels, M, ...)</p></td>
-<td><p>This calculates the Landing gear 1/3 octave band sound pressure level and overall sound pressure level for a tyre diameter D, a strut length H and WHEELS number of  wheels per unit.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.landing_gear_noise">
 <span class="sig-name descname"><span class="pre">landing_gear_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">D</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wheels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Noise/Correlation_Buildup/Airframe/landing_gear_noise.html#landing_gear_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.landing_gear_noise" title="Link to this definition">#</a></dt>
@@ -552,13 +543,13 @@ for a tyre diameter D, a strut length H and WHEELS number of  wheels per unit.</
 <dl class="simple">
 <dt>Assumptions:</dt><dd><p>Correlation based.</p>
 </dd>
-<dt>Source:</dt><dd><p>None</p>
+<dt>Source:</dt><dd><p>Fink, Martin R. “Noise component method for airframe noise.” Journal of aircraft 16.10 (1979): 659-665.</p>
 </dd>
-<dt>Inputs:</dt><dd><p>D         - Landing gear tyre diameter                                     [ft]
-H         - Lading gear strut length                                       [ft]
+<dt>Inputs:</dt><dd><p>D         - Landing gear tyre diameter
+H         - Lading gear strut length
 wheels    - Number of wheels per unit                                      [-]
 M         - Mach number                                                    [-]
-velocity  - Aircraft speed                                                 [kts]
+velocity  - Aircraft speed
 phi       - Azimuthal angle                                                [rad]
 theta     - Polar angle                                                    [rad]
 distance  - Distance from airplane to observer, evaluated at retarded time [ft]
@@ -566,18 +557,6 @@ frequemcy - Frequency array                                                [Hz]<
 </dd>
 <dt>Outputs: One Third Octave Band SPL [dB]</dt><dd><p>SPL           - Sound Pressure Level of the landing gear         [dB]
 OASPL         - Overall Sound Pressure Level of the landing gear [dB]</p>
-</dd>
-<dt>Source:</dt><dd><p>SAE ARP 876D</p>
-</dd>
-<dt>Inputs:</dt><dd><p>Ce = wing chord length at the engine location - as figure 7.3 of the SAE ARP 876D                    [m]
-Xe = fan exit location downstream of the leading edge (Xe&lt;Ce) - as figure 7.3 of the SAE ARP 876D    [m]
-Ye = separation distance from the wing chord line to nozzle lip - as figure 7.3 of the SAE ARP 876D  [m]
-theta_s                                                                                              [rad]
-Diameter_mixed                                                                                       [m]</p>
-</dd>
-<dt>Outputs:</dt><dd><p>INST_s          [-]</p>
-</dd>
-<dt>Properties Used:</dt><dd><p>N/A</p>
 </dd>
 </dl>
 </dd></dl>
@@ -595,20 +574,20 @@ Diameter_mixed                                                                  
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.clean_wing_noise.clean_wing_noise.html"
+       href="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.clean_wing_noise.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.clean_wing_noise.clean_wing_noise</p>
+        <p class="prev-next-title">clean_wing_noise</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.landing_gear_noise.html"
+       href="RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.trailing_edge_flap_noise.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">RCAIDE.Library.Methods.Noise.Correlation_Buildup.Airframe.landing_gear_noise.landing_gear_noise</p>
+        <p class="prev-next-title">trailing_edge_flap_noise</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,15 +532,25 @@
   <p>RCAIDE.Library.Methods.Powertrain.Converters.Combustor</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Converters.Combustor">
 <span id="combustor"></span><h1>Combustor<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Combustor" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>Methods for modeling and analyzing combustors in propulsion systems.</p>
+<p>This module provides functions for computing the thermodynamic performance of combustors
+in gas turbine engines and other propulsion systems. It includes methods for calculating
+combustion properties, fuel consumption, and temperature rise across the combustor, as well
+as functions for initializing combustor conditions during mission analysis.</p>
+<p>The combustor is a critical component in gas turbine engines where fuel is mixed with
+compressed air and burned to produce high-temperature gases that drive the turbine.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Turbine.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Turbine" title="RCAIDE.Library.Methods.Powertrain.Converters.Turbine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Turbine</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Compressor" title="RCAIDE.Library.Methods.Powertrain.Converters.Compressor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Compressor</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle" title="RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions" title="RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_combustor_conditions</span></code></a>(combustor, ...)</p></td>
-<td><p>Appends initial conditions to combustor component</p></td>
+<td><p>Initializes combustor operating conditions for a mission segment.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_combustor_performance</span></code></a>(combustor, ...)</p></td>
-<td><p>This computes the output values from the input values according to</p></td>
+<td><p>Computes the thermodynamic performance of a combustor in a gas turbine engine.</p></td>
 </tr>
 </tbody>
 </table>

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,30 +533,118 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Air</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Gases.Gas.html#RCAIDE.Library.Attributes.Gases.Gas.Gas" title="RCAIDE.Library.Attributes.Gases.Gas.Gas"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gas</span></code></a></p>
-<p>Generic class of air gas.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.compute_density">
-<span class="sig-name descname"><span class="pre">compute_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air.compute_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_density" title="Link to this definition">#</a></dt>
-<dd><p>Computes air density given temperature and pressure</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Ideal gas</p>
+<p>A class representing air and its thermodynamic properties. Provides methods for computing various
+gas properties including density, speed of sound, specific heat, and transport properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the gas type (‘air’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
-<dt>Source:</dt><dd><p>None</p>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.molecular_mass">
+<span class="sig-name descname"><span class="pre">molecular_mass</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.molecular_mass" title="Link to this definition">#</a></dt>
+<dd><p>Molecular mass of air in kg/kmol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.gas_specific_constant">
+<span class="sig-name descname"><span class="pre">gas_specific_constant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.gas_specific_constant" title="Link to this definition">#</a></dt>
+<dd><p>Specific gas constant in m²/s²-K</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.specific_heat_capacity">
+<span class="sig-name descname"><span class="pre">specific_heat_capacity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.specific_heat_capacity" title="Link to this definition">#</a></dt>
+<dd><p>Specific heat capacity in J/kg·K</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.composition">
+<span class="sig-name descname"><span class="pre">composition</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.composition" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Chemical composition of air</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>O2<span class="classifier">float</span></dt><dd><p>Mass fraction of oxygen (0.20946)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Ar<span class="classifier">float</span></dt><dd><p>Mass fraction of argon (0.00934)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>CO2<span class="classifier">float</span></dt><dd><p>Mass fraction of carbon dioxide (0.00036)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>N2<span class="classifier">float</span></dt><dd><p>Mass fraction of nitrogen (0.78084)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>other<span class="classifier">float</span></dt><dd><p>Mass fraction of other components (0.00)</p>
+</dd>
+</dl>
+</li>
+</ul>
 </dd>
 </dl>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements standard atmospheric air properties and various methods
+for computing thermodynamic and transport properties.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.compute_density">
+<span class="sig-name descname"><span class="pre">compute_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air.compute_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_density" title="Link to this definition">#</a></dt>
+<dd><p>Computes air density using the ideal gas law.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – air                   [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure              [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>density               [kg/m^3]</p>
+<dd class="field-even"><p><strong>rho</strong> – Density in kg/m³</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>rho (float)</p>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Air behaves as an ideal gas</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -564,27 +652,28 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.compute_speed_of_sound">
 <span class="sig-name descname"><span class="pre">compute_speed_of_sound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air.compute_speed_of_sound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_speed_of_sound" title="Link to this definition">#</a></dt>
-<dd><p>Computes speed of sound given temperature and pressure</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Ideal gas with gamma = 1.4 if variable gamma is False</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Computes speed of sound in air.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – air           [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature   [K]</p></li>
-<li><p><strong>p</strong> (<em>float</em>) – Pressure      [Pa]</p></li>
-<li><p><strong>variable_gamma</strong> (<em>boolean</em>) – [unitless]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
+<li><p><strong>variable_gamma</strong> (<em>bool</em>) – If True, uses temperature-dependent specific heat ratio</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>speed of sound [m/s]</p>
+<dd class="field-even"><p><strong>a</strong> – Speed of sound in m/s</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a (float)</p>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>If variable_gamma is False, assumes γ = 1.4</p></li>
+<li><p>Air behaves as an ideal gas</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -592,174 +681,161 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.compute_cp">
 <span class="sig-name descname"><span class="pre">compute_cp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air.compute_cp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_cp" title="Link to this definition">#</a></dt>
-<dd><p>Computes Cp by 3rd-order polynomial data fit:
-cp(T) = c1*T^3 + c2*T^2 + c3*T + c4</p>
-<p>Coefficients (with 95% confidence bounds):
-c1 = -7.357e-007  (-9.947e-007, -4.766e-007)
-c2 =    0.001307  (0.0009967, 0.001617)
-c3 =     -0.5558  (-0.6688, -0.4429)
-c4 =        1074  (1061, 1086)</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>123 K &lt; T &lt; 673 K</p>
-</dd>
-<dt>Source:</dt><dd><p>Unknown, possibly Combustion Technologies for a Clean Environment
-(Energy, Combustion and the Environment), Jun 15, 1995, Carvalhoc</p>
-</dd>
-</dl>
+<dd><p>Computes specific heat capacity at constant pressure using a 3rd-order polynomial fit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – air               [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature       [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure          [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>specfic heat capacity [J/(kg K)]</p>
+<dd class="field-even"><p><strong>cp</strong> – Specific heat capacity in J/(kg·K)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>cp (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Valid for temperature range: 123 K &lt; T &lt; 673 K</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c_p</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_1T</span><span class="o">^</span><span class="mi">3</span> <span class="o">+</span> <span class="n">c_2T</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">c_3T</span> <span class="o">+</span> <span class="n">c_4</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<p>[1] Ekin, J. (2006). Experimental techniques for low-temperature measurements: Cryostat design, material properties and superconductor critical-current testing. Oxford University Press.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.compute_gamma">
 <span class="sig-name descname"><span class="pre">compute_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air.compute_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_gamma" title="Link to this definition">#</a></dt>
-<dd><p>Computes Cp by 3rd-order polynomial data fit:
-gamma(T) = c1*T^3 + c2*T^2 + c3*T + c4</p>
-<p>Coefficients (with 95% confidence bounds):
-c1 =  1.629e-010  (1.486e-010, 1.773e-010)
-c2 = -3.588e-007  (-3.901e-007, -3.274e-007)
-c3 =   0.0001418  (0.0001221, 0.0001614)
-c4 =       1.386  (1.382, 1.389)</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>233 K &lt; T &lt; 1273 K</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Computes specific heat ratio using a 3rd-order polynomial fit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – air           [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature   [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure      [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>gamma         [unitless]</p>
+<dd class="field-even"><p><strong>g</strong> – Specific heat ratio (gamma) [unitless]</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>g  (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p><strong>Major Assumptions</strong>
+* Valid for temperature range: 233 K &lt; T &lt; 1273 K</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.compute_absolute_viscosity">
 <span class="sig-name descname"><span class="pre">compute_absolute_viscosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air.compute_absolute_viscosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_absolute_viscosity" title="Link to this definition">#</a></dt>
-<dd><p>Compute the absolute (dynamic) viscosity</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Ideal gas</p>
-</dd>
-<dt>Source:</dt><dd><p><a class="reference external" href="https://www.cfd-online.com/Wiki/Sutherland's_law">https://www.cfd-online.com/Wiki/Sutherland’s_law</a></p>
-</dd>
-</dl>
+<dd><p>Computes absolute (dynamic) viscosity using Sutherland’s law.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – air                   [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure              [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>absolute viscosity    [kg/(m-s)]</p>
+<dd class="field-even"><p><strong>mu</strong> – Absolute viscosity in kg/(m·s)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>mu (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p><strong>Theory</strong>
+Uses Sutherland’s formula with S = 110.4K and C1 = 1.458e-6 kg/m-s-sqrt(K)</p>
+<p class="rubric">References</p>
+<p>[1] Sutherland’s law</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.compute_thermal_conductivity">
 <span class="sig-name descname"><span class="pre">compute_thermal_conductivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air.compute_thermal_conductivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_thermal_conductivity" title="Link to this definition">#</a></dt>
-<dd><p>Compute the thermal conductivity of air</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>Properties computed at 1 bar (14.5 psia)</p>
-</dd>
-<dt>Source:</dt><dd><p><a class="reference external" href="https://www.engineeringtoolbox.com/air-properties-viscosity-conductivity-heat-capacity-d_1509.html">https://www.engineeringtoolbox.com/air-properties-viscosity-conductivity-heat-capacity-d_1509.html</a></p>
-</dd>
-</dl>
+<dd><p>Computes thermal conductivity of air.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – air                   [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-<li><p><strong>P</strong> (<em>float</em>) – pressure              [Pa]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>thermal conductivity  [W/(m-K)]</p>
+<dd class="field-even"><p><strong>k</strong> – Thermal conductivity in W/(m·K)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>k  (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties computed at 1 bar (14.5 psia)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] The Engineering ToolBox (2009). Air - Thermal Conductivity vs. Temperature and Pressure. [online] Available at: <a class="reference external" href="https://www.engineeringtoolbox.com/air-properties-viscosity-conductivity-heat-capacity-d_1509.html">https://www.engineeringtoolbox.com/air-properties-viscosity-conductivity-heat-capacity-d_1509.html</a> [Accessed 8 January 2025].</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.compute_prandtl_number">
 <span class="sig-name descname"><span class="pre">compute_prandtl_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air.compute_prandtl_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_prandtl_number" title="Link to this definition">#</a></dt>
-<dd><p>Compute the prandtl number</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>None</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Computes Prandtl number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – air                   [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
-</ul>
+<dd class="field-odd"><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Prandtl Number       [unitless]</p>
+<dd class="field-even"><p><strong>Pr</strong> – Prandtl number [unitless]</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Pr  (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p><strong>Theory</strong>
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Pr</span> <span class="o">=</span> \<span class="n">frac</span><span class="p">{</span>\<span class="n">mu</span> <span class="n">C_p</span><span class="p">}{</span><span class="n">k</span><span class="p">}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.Air.Air.compute_R">
 <span class="sig-name descname"><span class="pre">compute_R</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101325.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/Air.html#Air.compute_R"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_R" title="Link to this definition">#</a></dt>
-<dd><p>Compute the prandtl number</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>None</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Computes specific gas constant.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – air                   [unitless]</p></li>
-<li><p><strong>T</strong> (<em>float</em>) – temperature           [K]</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – Temperature in Kelvin</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure in Pascal</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Prandtl Number       [unitless]</p>
+<dd class="field-even"><p><strong>R</strong> – Specific gas constant in J/(kg·K)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Pr  (float)</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p><strong>Theory</strong>
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">R</span> <span class="o">=</span> \<span class="n">frac</span><span class="p">{</span>\<span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">}{</span>\<span class="n">gamma</span><span class="p">}</span><span class="n">c_p</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -814,6 +890,11 @@ c4 =       1.386  (1.382, 1.389)</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Air.Air"><code class="docutils literal notranslate"><span class="pre">Air</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Air.Air.tag"><code class="docutils literal notranslate"><span class="pre">Air.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Air.Air.molecular_mass"><code class="docutils literal notranslate"><span class="pre">Air.molecular_mass</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Air.Air.gas_specific_constant"><code class="docutils literal notranslate"><span class="pre">Air.gas_specific_constant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Air.Air.specific_heat_capacity"><code class="docutils literal notranslate"><span class="pre">Air.specific_heat_capacity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Air.Air.composition"><code class="docutils literal notranslate"><span class="pre">Air.composition</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_density"><code class="docutils literal notranslate"><span class="pre">Air.compute_density()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_speed_of_sound"><code class="docutils literal notranslate"><span class="pre">Air.compute_speed_of_sound()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.Air.Air.compute_cp"><code class="docutils literal notranslate"><span class="pre">Air.compute_cp()</span></code></a></li>

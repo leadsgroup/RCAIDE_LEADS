@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -526,66 +526,87 @@
   <p>RCAIDE.Library.Attributes.Materials</p>
 <section id="module-RCAIDE.Library.Attributes.Materials">
 <span id="materials"></span><h1>Materials<a class="headerlink" href="#module-RCAIDE.Library.Attributes.Materials" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides material handling capabilities for RCAIDE. It includes classes for managing different types of materials
+and their physical properties, with implementations for various structural and aerospace materials including:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Metals (Aluminum, Steel, Nickel, Titanium, Magnesium)</p></li>
+<li><p>Composites (Unidirectional and Bidirectional Carbon Fiber, Carbon Fiber Honeycomb)</p></li>
+<li><p>Polymers (Epoxy, Polyetherimide, Acrylic)</p></li>
+<li><p>Surface Treatments (Paint)</p></li>
+</ul>
+</div></blockquote>
+<p>The Solid class serves as the base class for all material implementations.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Gases.html#module-RCAIDE.Library.Attributes.Gases" title="RCAIDE.Library.Attributes.Gases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Gases</span></code></a></dt><dd><p>Related module for gas properties</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Liquids</span></code></dt><dd><p>Related module for liquid properties</p>
+</dd>
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Cryogens.html#module-RCAIDE.Library.Attributes.Cryogens" title="RCAIDE.Library.Attributes.Cryogens"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Cryogens</span></code></a></dt><dd><p>Related module for cryogenic material properties</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Acrylic.html#module-RCAIDE.Library.Attributes.Materials.Acrylic" title="RCAIDE.Library.Attributes.Materials.Acrylic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Acrylic</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to Polymethyl Methacrylate</p></td>
+<td><p>A class representing Polymethyl Methacrylate (PMMA/Acrylic) material properties.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Aluminum.html#module-RCAIDE.Library.Attributes.Materials.Aluminum" title="RCAIDE.Library.Attributes.Materials.Aluminum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Aluminum</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to 6061-T6 Aluminum</p></td>
+<td><p>A class representing 6061-T6 aluminum and its material properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Aluminum_Alloy.html#module-RCAIDE.Library.Attributes.Materials.Aluminum_Alloy" title="RCAIDE.Library.Attributes.Materials.Aluminum_Alloy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Aluminum_Alloy</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical constants specific to 6061-T6 Aluminum</p></td>
+<td><p>A class representing an aluminum alloy and its material properties.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Bidirectional_Carbon_Fiber.html#module-RCAIDE.Library.Attributes.Materials.Bidirectional_Carbon_Fiber" title="RCAIDE.Library.Attributes.Materials.Bidirectional_Carbon_Fiber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bidirectional_Carbon_Fiber</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to Bidirectional Carbon Fiber</p></td>
+<td><p>A class representing bidirectional carbon fiber composite material properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Carbon_Fiber_Honeycomb.html#module-RCAIDE.Library.Attributes.Materials.Carbon_Fiber_Honeycomb" title="RCAIDE.Library.Attributes.Materials.Carbon_Fiber_Honeycomb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Carbon_Fiber_Honeycomb</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to Carbon Fiber Honeycomb Core Material</p></td>
+<td><p>A class representing carbon fiber honeycomb core material properties.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Copper.html#module-RCAIDE.Library.Attributes.Materials.Copper" title="RCAIDE.Library.Attributes.Materials.Copper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Copper</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to copper RRR=50 OFHC</p></td>
+<td><p>A class representing copper material properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.CrossLinked_Polyethylene.html#module-RCAIDE.Library.Attributes.Materials.CrossLinked_Polyethylene" title="RCAIDE.Library.Attributes.Materials.CrossLinked_Polyethylene"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CrossLinked_Polyethylene</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical constants specific to CrossLinked_Polyethylene (XLPE)</p></td>
+<td><p>A class representing CrossLinked_Polyethylene (XLPE) and its material properties.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Epoxy.html#module-RCAIDE.Library.Attributes.Materials.Epoxy" title="RCAIDE.Library.Attributes.Materials.Epoxy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epoxy</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to Epoxy Resin</p></td>
+<td><p>A class representing hardened epoxy resin material properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Magnesium.html#module-RCAIDE.Library.Attributes.Materials.Magnesium" title="RCAIDE.Library.Attributes.Materials.Magnesium"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Magnesium</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to RZ5 Magnesium Alloy per BS 2L.128</p></td>
+<td><p>A class representing RZ5 magnesium alloy material properties per BS 2L.128 standard.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Nickel.html#module-RCAIDE.Library.Attributes.Materials.Nickel" title="RCAIDE.Library.Attributes.Materials.Nickel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nickel</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to Nickel/Cobalt Chromoly Alloy</p></td>
+<td><p>A class representing nickel alloy material properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Paint.html#module-RCAIDE.Library.Attributes.Materials.Paint" title="RCAIDE.Library.Attributes.Materials.Paint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Paint</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to Paint/Vinyl Surface Coverings</p></td>
+<td><p>A class representing paint and vinyl surface coating material properties.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy.html#module-RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy" title="RCAIDE.Library.Attributes.Materials.Perfluoroalkoxy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Perfluoroalkoxy</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical constants specific to Perfluoroalkoxy(PFA)</p></td>
+<td><p>A class representing Perfluoroalkoxy(PFA) and its material properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Polyetherimide.html#module-RCAIDE.Library.Attributes.Materials.Polyetherimide" title="RCAIDE.Library.Attributes.Materials.Polyetherimide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Polyetherimide</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to Polyetherimide</p></td>
+<td><p>A class representing polyetherimide (PEI) material properties, commonly used in reservoir casings and other high-temperature thermoplastic applications.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Polyimide.html#module-RCAIDE.Library.Attributes.Materials.Polyimide" title="RCAIDE.Library.Attributes.Materials.Polyimide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Polyimide</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical constants specific to Polyimide(PI)</p></td>
+<td><p>A class representing Polyimide(PI) and its material properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Polytetrafluoroethylene.html#module-RCAIDE.Library.Attributes.Materials.Polytetrafluoroethylene" title="RCAIDE.Library.Attributes.Materials.Polytetrafluoroethylene"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Polytetrafluoroethylene</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical constants specific to  Polytetrafluoroethylene (PFTE)</p></td>
+<td><p>A class representing Polytetrafluoroethylene (PFTE) and its material properties.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Solid.html#module-RCAIDE.Library.Attributes.Materials.Solid" title="RCAIDE.Library.Attributes.Materials.Solid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Solid</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Default Template for Solid Attribute Classes</p></td>
+<td><p>Base class for all solid materials in RCAIDE.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Steel.html#module-RCAIDE.Library.Attributes.Materials.Steel" title="RCAIDE.Library.Attributes.Materials.Steel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Steel</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to AISI 4340 Steel</p></td>
+<td><p>A class representing AISI 4340 steel material properties.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Titanium.html#module-RCAIDE.Library.Attributes.Materials.Titanium" title="RCAIDE.Library.Attributes.Materials.Titanium"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Titanium</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to Grade 5 Ti-6AL-4V Alloy, Annealed</p></td>
+<td><p>A class representing Grade 5 Ti-6Al-4V titanium alloy material properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Unidirectional_Carbon_Fiber.html#module-RCAIDE.Library.Attributes.Materials.Unidirectional_Carbon_Fiber" title="RCAIDE.Library.Attributes.Materials.Unidirectional_Carbon_Fiber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Unidirectional_Carbon_Fiber</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Physical Constants Specific to Unidirectional Carbon Fiber</p></td>
+<td><p>A class representing unidirectional carbon fiber composite material properties.</p></td>
 </tr>
 </tbody>
 </table>

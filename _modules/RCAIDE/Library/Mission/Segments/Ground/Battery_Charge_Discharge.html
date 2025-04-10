@@ -390,23 +390,70 @@
 <div class="viewcode-block" id="initialize_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Segments.Ground.Battery_Charge_Discharge.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Ground.Battery_Charge_Discharge.initialize_conditions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">initialize_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>  
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the specified conditions which are given for the segment type.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes conditions for battery charging or discharging on ground</span>
 
-<span class="sd">    Assumptions: </span>
-<span class="sd">    During recharging, the charge time associated with the largest capacity battery pack is used </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">            - cutoff_SOC : float</span>
+<span class="sd">                Target state of charge to reach [-]</span>
+<span class="sd">            - cooling_time : float</span>
+<span class="sd">                Additional time for battery cooling [s]</span>
+<span class="sd">            - initial_battery_state_of_charge : float, optional</span>
+<span class="sd">                Initial SOC if no previous segment [-]</span>
+<span class="sd">            - analyses:</span>
+<span class="sd">                energy:</span>
+<span class="sd">                    vehicle:</span>
+<span class="sd">                        networks : list</span>
+<span class="sd">                            List of power networks</span>
+<span class="sd">                            Each network contains:</span>
+<span class="sd">                            - busses : list</span>
+<span class="sd">                                List of electrical busses</span>
+<span class="sd">                                Each bus contains:</span>
+<span class="sd">                                - charging_c_rate : float</span>
+<span class="sd">                                    Battery charging C-rate [-]</span>
+<span class="sd">                                - battery_modules : list</span>
+<span class="sd">                                    List of battery modules</span>
+<span class="sd">        </span>
+<span class="sd">        For discharging segments:</span>
+<span class="sd">            - time : float</span>
+<span class="sd">                Duration of discharge [s]</span>
 <span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment conditions directly:</span>
+<span class="sd">            - conditions.frames.inertial.time [s]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function sets up the initial conditions for a ground segment involving </span>
+<span class="sd">    battery charging or discharging. For charging segments, the charging time is </span>
+<span class="sd">    determined by the battery with the lowest state of charge.</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    segment.overcharge_contingency              [-]</span>
-<span class="sd">    battery.                                    [-]</span>
+<span class="sd">    **Calculation Process**</span>
+<span class="sd">    For charging:</span>
+<span class="sd">        1. Find lowest battery state of charge</span>
+<span class="sd">        2. Calculate charging time based on:</span>
+<span class="sd">            t = (SOC_target - SOC_current) / C_rate</span>
+<span class="sd">        3. Add cooling time</span>
+<span class="sd">        4. Discretize time points</span>
 
-<span class="sd">    Outputs: </span>
-<span class="sd">    conditions.frames.inertial.time             [seconds]</span>
+<span class="sd">    For discharging:</span>
+<span class="sd">        1. Use specified discharge time</span>
+<span class="sd">        2. Discretize time points</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Charging time determined by lowest SOC battery</span>
+<span class="sd">        * Constant C-rate charging</span>
+<span class="sd">        * Linear SOC increase during charging</span>
+<span class="sd">        * Uniform cooling time added</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">t_nondim</span>   <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">dimensionless</span><span class="o">.</span><span class="n">control_points</span>
 

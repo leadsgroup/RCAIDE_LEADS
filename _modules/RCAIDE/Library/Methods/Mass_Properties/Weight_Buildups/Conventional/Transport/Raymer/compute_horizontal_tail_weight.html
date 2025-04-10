@@ -398,36 +398,80 @@
 <div class="viewcode-block" id="compute_horizontal_tail_weight">
 <a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight.compute_horizontal_tail_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_horizontal_tail_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">wing</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span><span class="n">elevator_fraction</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates horizontal tail weight based on Raymer method</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates horizontal tail weight based on Raymer&#39;s empirical method.</span>
 
-<span class="sd">        Assumptions:</span>
-<span class="sd">            If all-moving horizontal tail, change Kuht to 1.143</span>
-<span class="sd">        Source:</span>
-<span class="sd">            Aircraft Design: A Conceptual Approach</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : RCAIDE.Vehicle()</span>
+<span class="sd">        Vehicle data structure containing:</span>
+<span class="sd">            - mass_properties.max_takeoff : float</span>
+<span class="sd">                Maximum takeoff weight [kg]</span>
+<span class="sd">            - flight_envelope.ultimate_load : float</span>
+<span class="sd">                Ultimate load factor</span>
+<span class="sd">            - wings[&#39;main_wing&#39;] : Data()</span>
+<span class="sd">                Main wing properties including origin and aerodynamic center</span>
+<span class="sd">            - fuselages[&#39;fuselage&#39;].width : float</span>
+<span class="sd">                Width of the fuselage [m]</span>
+<span class="sd">    wing : RCAIDE.Component()</span>
+<span class="sd">        Horizontal tail component containing:</span>
+<span class="sd">            - areas.reference : float</span>
+<span class="sd">                Tail surface area [m^2]</span>
+<span class="sd">            - origin : array</span>
+<span class="sd">                Location of tail measured from nose [m]</span>
+<span class="sd">            - aerodynamic_center : array</span>
+<span class="sd">                Location of ac measured from leading edge [m]</span>
+<span class="sd">            - sweeps.quarter_chord : float</span>
+<span class="sd">                Quarter chord sweep angle [rad]</span>
+<span class="sd">            - thickness_to_chord : float</span>
+<span class="sd">                Thickness-to-chord ratio</span>
+<span class="sd">            - spans.projected : float</span>
+<span class="sd">                Projected span [m]</span>
+<span class="sd">            - aspect_ratio : float</span>
+<span class="sd">                Aspect ratio</span>
+<span class="sd">    elevator_fraction : float, optional</span>
+<span class="sd">        Fraction of horizontal tail area that is elevator, defaults to 0.4</span>
+<span class="sd">    settings.advanced_composites : bool, optional</span>
+<span class="sd">        True if advanced composites are used, False otherwise</span>
 
-<span class="sd">        Inputs:</span>
-<span class="sd">            vehicle - data dictionary with vehicle properties                    [dimensionless]</span>
-<span class="sd">                -.mass_properties.max_takeoff: MTOW                             [kilograms]</span>
-<span class="sd">                -.flight_envelope.ultimate_load: ultimate load factor (default: 3.75)</span>
-<span class="sd">                -.wings[&#39;main_wing&#39;]: data dictionary with properties of main wing</span>
-<span class="sd">                    -.aerodynamic_center: aerodynamic center as measured from root leading edge</span>
-<span class="sd">                    -.origin: root of main wing as measured from nose of aircraft</span>
-<span class="sd">                -.fuselages[&#39;fuselage&#39;].width: width of the fuselage</span>
-<span class="sd">            wing    - data dictionary with specific tail properties              [dimensionless]</span>
-<span class="sd">                -.areas.reference: tail surface area                            [m^2}</span>
-<span class="sd">                -.origin: location of tail measured from nose</span>
-<span class="sd">                -.aerodynamic_center: location of ac measured from leading edge</span>
-<span class="sd">                -.sweeps.quarter_chord: quarter chord sweep of tail             [rad]</span>
-<span class="sd">                -.thickness_to_chord: t/c of tail</span>
-<span class="sd">                -.span.projected: project span of tail                          [m]</span>
-<span class="sd">                -.aspect_ratio: aspect ratio of wing</span>
-<span class="sd">            elevator_fraction - fraction of horizontal tail for elevator = 0.4</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tail_weight : float</span>
+<span class="sd">        Weight of the horizontal tail [kg]</span>
 
-<span class="sd">        Outputs:</span>
-<span class="sd">            tail_weight: horizontal tail weight                                [kilograms]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This method implements Raymer&#39;s correlation for horizontal tail weight estimation,</span>
+<span class="sd">    accounting for geometry, loads, and configuration effects.</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">            N/A</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Not an all-moving horizontal tail (Kuht = 1.0)</span>
+<span class="sd">        * Elevator comprises 40% of tail area by default</span>
+<span class="sd">        * Correlation based on transport category aircraft data</span>
+<span class="sd">        * If advanced composites are used, the tail weight is reduced by 15%</span>
+
+<span class="sd">    **Theory**</span>
+<span class="sd">    The horizontal tail weight is calculated using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{ht} = 0.0379K_{uht}(1 + \frac{F_w}{B_h})^{-0.25}W_{dg}^{0.639}N_{ult}^{0.1}S_{ht}^{0.75}L_t^{-1}K_y^{0.704}\cos(\Lambda)^{-1}AR^{0.166}(1 + \frac{S_e}{S_{ht}})^{0.1}</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        * :math:`K_{uht}` is 1.0 for fixed tails, 1.143 for all-moving</span>
+<span class="sd">        * :math:`F_w` is fuselage width</span>
+<span class="sd">        * :math:`B_h` is horizontal tail span</span>
+<span class="sd">        * :math:`L_t` is tail arm length</span>
+<span class="sd">        * :math:`K_y` is a function of tail arm length</span>
+<span class="sd">        * :math:`\Lambda` is quarter-chord sweep angle</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Raymer, D., &quot;Aircraft Design: A Conceptual Approach&quot;, AIAA </span>
+<span class="sd">        Education Series, 2018. </span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Weights.Correlation_Buildups.Raymer.compute_vertical_tail_weight</span>
+<span class="sd">    RCAIDE.Library.Methods.Weights.Correlation_Buildups.Raymer.compute_operating_empty_weight</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">ref_wing</span> <span class="o">=</span> <span class="kc">None</span> 
@@ -456,7 +500,7 @@
     <span class="n">min_value</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
     <span class="n">min_index</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">min_value</span><span class="p">)</span>
             
-    <span class="n">Kuht</span>    <span class="o">=</span> <span class="mi">1</span> <span class="c1"># not a all-moving unit horizontal tail</span>
+    <span class="n">Kuht</span>    <span class="o">=</span> <span class="mi">1</span> <span class="c1"># not an all-moving unit horizontal tail</span>
     <span class="n">Fw</span>      <span class="o">=</span> <span class="n">ref_fuselage</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">min_index</span><span class="p">]]</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>
     <span class="n">Bh</span>      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">ft</span>
     <span class="n">DG</span>      <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>

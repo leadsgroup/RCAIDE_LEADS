@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Segments" href="RCAIDE.Library.Components.Fuselages.Segments.html" />
-    <link rel="prev" title="Blended_Wing_Body_Fuselage" href="RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage.html" />
+    <link rel="prev" title="Side_Cabin" href="RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -574,39 +574,6 @@ defaults to [0.0, 0.0, 0.0]</p>
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.differential_pressure">
 <span class="sig-name descname"><span class="pre">differential_pressure</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.differential_pressure" title="Link to this definition">#</a></dt>
 <dd><p>Cabin pressurization differential, defaults to 0.0</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.seats_abreast">
-<span class="sig-name descname"><span class="pre">seats_abreast</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.seats_abreast" title="Link to this definition">#</a></dt>
-<dd><p>Number of passenger seats arranged side-by-side, defaults to 0.0</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.seat_pitch">
-<span class="sig-name descname"><span class="pre">seat_pitch</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.seat_pitch" title="Link to this definition">#</a></dt>
-<dd><p>Longitudinal distance between seat rows in meters, defaults to 0.0</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.number_coach_seats">
-<span class="sig-name descname"><span class="pre">number_coach_seats</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.number_coach_seats" title="Link to this definition">#</a></dt>
-<dd><p>Total number of economy class seats, defaults to 0.0</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
@@ -906,6 +873,17 @@ defaults to [0.0, 0.0, 0.0]</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.append_cabin">
+<span class="sig-name descname"><span class="pre">append_cabin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cabin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Fuselages/Fuselage.html#Fuselage.append_cabin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.append_cabin" title="Link to this definition">#</a></dt>
+<dd><p>Adds a new segment to the fuselage’s segment container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – Fuselage segment to be added</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.append_fuel_tank">
 <span class="sig-name descname"><span class="pre">append_fuel_tank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_tank</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Fuselages/Fuselage.html#Fuselage.append_fuel_tank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.append_fuel_tank" title="Link to this definition">#</a></dt>
 <dd><p>Adds a new fuel tank to the fuselage’s fuel tank container.</p>
@@ -955,12 +933,12 @@ defaults to [0.0, 0.0, 0.0]</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage.html"
+       href="RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Blended_Wing_Body_Fuselage</p>
+        <p class="prev-next-title">Side_Cabin</p>
       </div>
     </a>
     <a class="right-next"
@@ -996,9 +974,6 @@ defaults to [0.0, 0.0, 0.0]</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.origin"><code class="docutils literal notranslate"><span class="pre">Fuselage.origin</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.aerodynamic_center"><code class="docutils literal notranslate"><span class="pre">Fuselage.aerodynamic_center</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.differential_pressure"><code class="docutils literal notranslate"><span class="pre">Fuselage.differential_pressure</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.seats_abreast"><code class="docutils literal notranslate"><span class="pre">Fuselage.seats_abreast</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.seat_pitch"><code class="docutils literal notranslate"><span class="pre">Fuselage.seat_pitch</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.number_coach_seats"><code class="docutils literal notranslate"><span class="pre">Fuselage.number_coach_seats</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.areas"><code class="docutils literal notranslate"><span class="pre">Fuselage.areas</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.effective_diameter"><code class="docutils literal notranslate"><span class="pre">Fuselage.effective_diameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.width"><code class="docutils literal notranslate"><span class="pre">Fuselage.width</span></code></a></li>
@@ -1014,6 +989,7 @@ defaults to [0.0, 0.0, 0.0]</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.vsp_data"><code class="docutils literal notranslate"><span class="pre">Fuselage.vsp_data</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.segments"><code class="docutils literal notranslate"><span class="pre">Fuselage.segments</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.append_segment"><code class="docutils literal notranslate"><span class="pre">Fuselage.append_segment()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.append_cabin"><code class="docutils literal notranslate"><span class="pre">Fuselage.append_cabin()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.append_fuel_tank"><code class="docutils literal notranslate"><span class="pre">Fuselage.append_fuel_tank()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Fuselages.Fuselage.Fuselage.compute_moment_of_inertia"><code class="docutils literal notranslate"><span class="pre">Fuselage.compute_moment_of_inertia()</span></code></a></li>
 </ul>

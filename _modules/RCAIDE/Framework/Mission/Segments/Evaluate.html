@@ -390,7 +390,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Segments</span><span class="w">         </span><span class="kn">import</span> <span class="n">Segment</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common.Results</span><span class="w">   </span><span class="kn">import</span> <span class="n">Results</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission</span><span class="w">            </span><span class="kn">import</span> <span class="n">Common</span> <span class="p">,</span> <span class="n">Solver</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission</span><span class="w">                    </span><span class="kn">import</span> <span class="n">Common</span> <span class="p">,</span> <span class="n">Solver</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses</span><span class="w">                 </span><span class="kn">import</span> <span class="n">Process</span>  
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
@@ -445,8 +445,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sideslip_angle</span>                       <span class="o">=</span> <span class="mf">0.0</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">angle_of_attack</span>                      <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span>  <span class="n">Units</span><span class="o">.</span><span class="n">degree</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bank_angle</span>                           <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span>             <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_fuel_cell_power_split_ratio</span>  <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trim_lift_coefficient</span>                <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">Results</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">Results</span><span class="p">())</span>       
         
         <span class="c1"># ---------------------------------------------------------------</span>
         <span class="c1"># Define Flight Controls and Residuals </span>
@@ -464,8 +466,8 @@
         <span class="c1"># --------------------------------------------------------------         </span>
         <span class="c1">#   Converge </span>
         <span class="c1"># -------------------------------------------------------------- </span>
-        <span class="n">converge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">converge</span> 
-        <span class="n">converge</span><span class="o">.</span><span class="n">converge_root</span>             <span class="o">=</span> <span class="n">Solver</span><span class="o">.</span><span class="n">converge_root</span>        
+        <span class="n">converge</span>                           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">converge</span> 
+        <span class="n">converge</span><span class="o">.</span><span class="n">solver</span>                    <span class="o">=</span> <span class="n">Solver</span><span class="o">.</span><span class="n">converge</span>     
 
         <span class="c1"># --------------------------------------------------------------          </span>
         <span class="c1">#   Iterate  </span>
@@ -500,7 +502,7 @@
         <span class="n">iterate</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">planet_position</span>       <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Update</span><span class="o">.</span><span class="n">planet_position</span>
 
         <span class="c1"># Solve Residuals</span>
-        <span class="n">iterate</span><span class="o">.</span><span class="n">residuals</span> <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>
+        <span class="n">iterate</span><span class="o">.</span><span class="n">residuals</span> <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>     
 
         <span class="c1"># --------------------------------------------------------------  </span>
         <span class="c1">#  Post Process   </span>

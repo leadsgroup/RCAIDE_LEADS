@@ -388,26 +388,63 @@
 <div class="viewcode-block" id="planet_position">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Initialize.planet_position.html#RCAIDE.Library.Mission.Common.Initialize.planet_position.planet_position">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">planet_position</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Sets the initial location of the vehicle relative to the planet at the start of the segment</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the vehicle&#39;s planetary position coordinates for mission segment</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function sets up the initial latitude and longitude coordinates</span>
+<span class="sd">    of the vehicle relative to the planet. It handles position initialization</span>
+<span class="sd">    from either previous segment conditions or explicit segment parameters.</span>
+
+<span class="sd">    The function follows this priority for position initialization:</span>
+<span class="sd">        1. Previous segment final position (if initials exist)</span>
+<span class="sd">        2. Explicit segment coordinates (if specified)</span>
+<span class="sd">        3. Default coordinates (0,0)</span>
+
+<span class="sd">    **Required Segment State Variables**</span>
+
+<span class="sd">    If segment.state.initials exists:</span>
+<span class="sd">        state.initials.conditions.frames.planet:</span>
+<span class="sd">            - longitude : array</span>
+<span class="sd">                Previous segment final longitude [rad]</span>
+<span class="sd">            - latitude : array</span>
+<span class="sd">                Previous segment final latitude [rad]</span>
+
+<span class="sd">    state.conditions.frames.planet:</span>
+<span class="sd">        - longitude : array</span>
+<span class="sd">            Current segment longitude array [rad]</span>
+<span class="sd">        - latitude : array</span>
+<span class="sd">            Current segment latitude array [rad]</span>
+
+<span class="sd">    **Optional Segment Parameters**</span>
 <span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">        Only used if there is an initial condition</span>
-<span class="sd">        </span>
-<span class="sd">        Inputs:</span>
-<span class="sd">            segment.state.initials.conditions:</span>
-<span class="sd">                frames.planet.longitude [Radians]</span>
-<span class="sd">                frames.planet.latitude  [Radians]</span>
-<span class="sd">            segment.longitude           [Radians]</span>
-<span class="sd">            segment.latitude            [Radians]</span>
+<span class="sd">    segment:</span>
+<span class="sd">        - longitude : float</span>
+<span class="sd">            Initial longitude [rad]</span>
+<span class="sd">        - latitude : float</span>
+<span class="sd">            Initial latitude [rad]</span>
 
-<span class="sd">        Outputs:</span>
-<span class="sd">            segment.state.conditions:           </span>
-<span class="sd">                frames.planet.latitude  [Radians]</span>
-<span class="sd">                frames.planet.longitude [Radians]</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Spherical planet model</span>
+<span class="sd">        * Continuous position tracking when using initials</span>
+<span class="sd">        * Valid coordinate values</span>
+<span class="sd">        * Radians for angular measurements</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">        N/A</span>
-<span class="sd">                                </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment conditions directly</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
+<span class="sd">    RCAIDE.Library.Mission.Common.Initialize.inertial_position</span>
 <span class="sd">    &quot;&quot;&quot;</span>        
     
     <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="p">:</span>

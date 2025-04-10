@@ -47,7 +47,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Wake" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.html" />
+    <link rel="next" title="Performance" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.html" />
     <link rel="prev" title="procedure_setup" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,20 +541,93 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters.set_optimized_parameters">
 <span class="sig-name descname"><span class="pre">set_optimized_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimization_problem</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Design/set_optimized_parameters.html#set_optimized_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters.set_optimized_parameters" title="Link to this definition">#</a></dt>
-<dd><p>Append parameters of optimized prop-rotor to input prop-rotor</p>
-<dl class="simple">
-<dt>Inputs:</dt><dd><p>rotor                - rotor data structure                        [None]
-optimization_problem      - data struction of optimized parameters [None]</p>
+<dd><p>Appends parameters of optimized rotor to input rotor data structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rotor</strong> (<em>RCAIDE.Library.Components.Powertrain.Converters.Rotor</em>) – Rotor component to be updated with optimized parameters</p></li>
+<li><p><strong>optimization_problem</strong> (<em>RCAIDE.Framework.Optimization.Common.Nexus</em>) – Optimization problem with results and optimized rotor configurations</p></li>
+</ul>
 </dd>
-<dt>Outputs:</dt><dd><p>rotor                - rotor data structure                        [None]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rotor</strong> – Updated rotor with optimized parameters</p>
 </dd>
-<dt>Assumptions:</dt><dd><ol class="arabic simple">
-<li><p>Default noise measurements are taken 135 degrees from prop-rotor plane</p></li>
-</ol>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RCAIDE.Library.Components.Powertrain.Converters.Rotor</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function transfers the optimized rotor parameters from the optimization results
+to the input rotor data structure. It copies geometric properties such as chord and
+twist distributions, as well as performance metrics for different flight conditions.</p>
+<dl class="simple">
+<dt>The function updates the following parameters:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Geometric properties:</dt><dd><ul>
+<li><p>chord_distribution</p></li>
+<li><p>twist_distribution</p></li>
+<li><p>max_thickness_distribution</p></li>
+<li><p>radius_distribution</p></li>
+<li><p>number_of_blades</p></li>
+<li><p>mid_chord_alignment</p></li>
+<li><p>thickness_to_chord</p></li>
+<li><p>blade_solidity</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Hover performance metrics:</dt><dd><ul>
+<li><p>design_power (if not specified)</p></li>
+<li><p>design_thrust (if not specified)</p></li>
+<li><p>design_torque</p></li>
+<li><p>design_angular_velocity</p></li>
+<li><p>design_Cl</p></li>
+<li><p>design_thrust_coefficient</p></li>
+<li><p>design_power_coefficient</p></li>
+<li><p>design_SPL_dBA</p></li>
+<li><p>design_blade_pitch_command</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>OEI (One Engine Inoperative) performance metrics:</dt><dd><ul>
+<li><p>design_thrust</p></li>
+<li><p>design_power</p></li>
+<li><p>design_torque</p></li>
+<li><p>design_angular_velocity</p></li>
+<li><p>design_blade_pitch_command</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Cruise performance metrics (for prop-rotors only):</dt><dd><ul>
+<li><p>design_power (if not specified)</p></li>
+<li><p>design_thrust (if not specified)</p></li>
+<li><p>design_torque</p></li>
+<li><p>design_angular_velocity</p></li>
+<li><p>design_Cl</p></li>
+<li><p>design_thrust_coefficient</p></li>
+<li><p>design_power_coefficient</p></li>
+<li><p>design_SPL_dBA</p></li>
+<li><p>design_blade_pitch_command</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Default noise measurements are taken 135 degrees from rotor plane</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>
@@ -579,11 +652,11 @@ optimization_problem      - data struction of optimized parameters [None]</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.html"
+       href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Wake</p>
+        <p class="prev-next-title">Performance</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

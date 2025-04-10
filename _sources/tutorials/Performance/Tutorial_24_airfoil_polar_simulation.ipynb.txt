@@ -25,10 +25,10 @@
    "execution_count": 1,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-03-04T20:11:19.006931Z",
-     "iopub.status.busy": "2025-03-04T20:11:19.006754Z",
-     "iopub.status.idle": "2025-03-04T20:11:19.368703Z",
-     "shell.execute_reply": "2025-03-04T20:11:19.368041Z"
+     "iopub.execute_input": "2025-04-10T19:14:36.212713Z",
+     "iopub.status.busy": "2025-04-10T19:14:36.212271Z",
+     "iopub.status.idle": "2025-04-10T19:14:36.562864Z",
+     "shell.execute_reply": "2025-04-10T19:14:36.562388Z"
     }
    },
    "outputs": [],
@@ -61,10 +61,10 @@
    "execution_count": 2,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-03-04T20:11:19.371056Z",
-     "iopub.status.busy": "2025-03-04T20:11:19.370791Z",
-     "iopub.status.idle": "2025-03-04T20:11:20.277249Z",
-     "shell.execute_reply": "2025-03-04T20:11:20.276636Z"
+     "iopub.execute_input": "2025-04-10T19:14:36.565112Z",
+     "iopub.status.busy": "2025-04-10T19:14:36.564673Z",
+     "iopub.status.idle": "2025-04-10T19:14:37.471396Z",
+     "shell.execute_reply": "2025-04-10T19:14:37.470805Z"
     }
    },
    "outputs": [],
@@ -89,10 +89,10 @@
    "execution_count": 3,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-03-04T20:11:20.279520Z",
-     "iopub.status.busy": "2025-03-04T20:11:20.279204Z",
-     "iopub.status.idle": "2025-03-04T20:11:20.282881Z",
-     "shell.execute_reply": "2025-03-04T20:11:20.282456Z"
+     "iopub.execute_input": "2025-04-10T19:14:37.473974Z",
+     "iopub.status.busy": "2025-04-10T19:14:37.473413Z",
+     "iopub.status.idle": "2025-04-10T19:14:37.477475Z",
+     "shell.execute_reply": "2025-04-10T19:14:37.476930Z"
     }
    },
    "outputs": [],
@@ -126,10 +126,10 @@
    "execution_count": 4,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-03-04T20:11:20.284589Z",
-     "iopub.status.busy": "2025-03-04T20:11:20.284387Z",
-     "iopub.status.idle": "2025-03-04T20:11:23.563684Z",
-     "shell.execute_reply": "2025-03-04T20:11:23.563177Z"
+     "iopub.execute_input": "2025-04-10T19:14:37.479385Z",
+     "iopub.status.busy": "2025-04-10T19:14:37.479054Z",
+     "iopub.status.idle": "2025-04-10T19:14:40.703750Z",
+     "shell.execute_reply": "2025-04-10T19:14:40.703153Z"
     }
    },
    "outputs": [
@@ -318,7 +318,7 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": ".rcaideenv",
+   "display_name": "testingenv",
    "language": "python",
    "name": "python3"
   },

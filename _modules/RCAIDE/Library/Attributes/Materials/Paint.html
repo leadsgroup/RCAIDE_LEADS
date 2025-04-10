@@ -396,22 +396,43 @@
 <div class="viewcode-block" id="Paint">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Paint.html#RCAIDE.Library.Attributes.Materials.Paint.Paint">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Paint</span><span class="p">(</span><span class="n">Solid</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Physical Constants Specific to Paint/Vinyl Surface Coverings</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing paint and vinyl surface coating material properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ultimate_tensile_strength : float</span>
+<span class="sd">        Maximum tensile stress before failure in Pa (0.0)</span>
+<span class="sd">    ultimate_shear_strength : float</span>
+<span class="sd">        Maximum shear stress before failure in Pa (0.0)</span>
+<span class="sd">    ultimate_bearing_strength : float</span>
+<span class="sd">        Maximum bearing stress before failure in Pa (0.0)</span>
+<span class="sd">    yield_tensile_strength : float</span>
+<span class="sd">        Stress at which material begins to deform plastically in Pa (0.0)</span>
+<span class="sd">    yield_shear_strength : float</span>
+<span class="sd">        Shear stress at which material begins to deform plastically in Pa (0.0)</span>
+<span class="sd">    yield_bearing_strength : float</span>
+<span class="sd">        Bearing stress at which material begins to deform plastically in Pa (0.0)</span>
+<span class="sd">    minimum_gage_thickness : float</span>
+<span class="sd">        Minimum applicable thickness in m (150e-6)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Material density in kg/m³ (1800)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements material properties for paint and vinyl surface coatings. </span>
+<span class="sd">    The zero values for strength properties reflect that these coatings are non </span>
+<span class="sd">    load-bearing elements. The minimum gage thickness represents a typical </span>
+<span class="sd">    coating thickness for aerospace applications.</span>
+
+<span class="sd">    **Definitions**</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    None</span>
+<span class="sd">    &#39;Surface Coating&#39;</span>
+<span class="sd">        A material applied to the surface of another material to provide protection, </span>
+<span class="sd">        decoration, or other functional properties</span>
 <span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">    MatWeb (Median of Mfg. Reported Values)</span>
-<span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Properties Used:</span>
-<span class="sd">    None</span>
+<span class="sd">    &#39;Minimum Gage Thickness&#39;</span>
+<span class="sd">        The minimum thickness required for adequate surface coverage and protection</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

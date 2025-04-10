@@ -1,0 +1,690 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Performance.compute_noise_certification_data &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Performance/compute_noise_certification_data';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Performance/compute_noise_certification_data.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Performance.compute_noise_certification_data</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Performance.compute_noise_certification_data</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Performance/compute_noise_certification_data.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Jul 2023, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+
+<span class="c1"># RCAIDE imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span> <span class="p">,</span> <span class="n">Data</span>   
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.colors</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">colors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+ 
+<span class="c1"># Pacakge imports </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">plotly.graph_objects</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">go</span>
+ 
+<span class="c1"># ----------------------------------------------------------------------</span>
+<span class="c1">#  Compute Aircraft Noise Certification Data  </span>
+<span class="c1"># ----------------------------------------------------------------------  </span>
+<div class="viewcode-block" id="compute_noise_certification_data">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.compute_noise_certification_data.compute_noise_certification_data.html#RCAIDE.Library.Methods.Performance.compute_noise_certification_data.compute_noise_certification_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_noise_certification_data</span><span class="p">(</span><span class="n">approach_mission</span>  <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">takeoff_mission</span>   <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">noise_level</span>       <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">min_noise_level</span>   <span class="o">=</span> <span class="mi">45</span><span class="p">,</span>  
+                                     <span class="n">max_noise_level</span>   <span class="o">=</span> <span class="mi">105</span><span class="p">,</span> 
+                                     <span class="n">noise_scale_label</span> <span class="o">=</span> <span class="s2">&quot;Max. SPL [dbA]&quot;</span><span class="p">,</span>
+                                     <span class="n">save_figure</span>       <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">show_figure</span>       <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                     <span class="n">save_filename</span>     <span class="o">=</span> <span class="s2">&quot;Certification_Noise&quot;</span><span class="p">,</span> 
+                                     <span class="n">colormap</span>          <span class="o">=</span> <span class="s1">&#39;jet&#39;</span><span class="p">,</span>
+                                     <span class="n">file_type</span>         <span class="o">=</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span>
+                                     <span class="n">width</span>             <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> 
+                                     <span class="n">height</span>            <span class="o">=</span> <span class="mi">6</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the noise at certification points as well as the noise contours of approach and takeoff.</span>
+<span class="sd">    A combined approach-takeoff noisec contour is also created </span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+            
+    <span class="k">if</span> <span class="n">approach_mission</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">&#39;Approach mission not specifed!&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">takeoff_mission</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">&#39;Takeoff mission not specifed!&#39;</span><span class="p">)</span>
+     
+    <span class="n">microphone_x_resolution</span>                <span class="o">=</span> <span class="mi">401</span> 
+    <span class="n">microphone_y_resolution</span>                <span class="o">=</span> <span class="mi">9</span>  
+    <span class="n">noise_times_steps</span>                      <span class="o">=</span> <span class="mi">51</span> 
+    <span class="n">number_of_microphone_in_stencil</span>        <span class="o">=</span> <span class="mi">1800</span>
+    
+    <span class="c1"># update weights analysis</span>
+    <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">approach_mission</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">noise</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">&#39;Noise analysis not specifed!&#39;</span><span class="p">)</span>
+        <span class="n">noise_analysis</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">noise</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_x_resolution</span>                <span class="o">=</span> <span class="n">microphone_x_resolution</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_y_resolution</span>                <span class="o">=</span> <span class="n">microphone_y_resolution</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">noise_times_steps</span>                      <span class="o">=</span> <span class="n">noise_times_steps</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_microphone_in_stencil</span>        <span class="o">=</span> <span class="n">number_of_microphone_in_stencil</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_min_y</span>                       <span class="o">=</span> <span class="mf">1E-6</span>   
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_max_y</span>                       <span class="o">=</span> <span class="mi">1800</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_min_x</span>                       <span class="o">=</span> <span class="mf">1E-6</span>   
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_max_x</span>                       <span class="o">=</span> <span class="mi">8000</span>
+    
+    <span class="c1"># update weights analysis</span>
+    <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">takeoff_mission</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">noise</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">&#39;Noise analysis not specifed!&#39;</span><span class="p">)</span>
+        <span class="n">noise_analysis</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">noise</span> 
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_x_resolution</span>                <span class="o">=</span> <span class="n">microphone_x_resolution</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_y_resolution</span>                <span class="o">=</span> <span class="n">microphone_y_resolution</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">noise_times_steps</span>                      <span class="o">=</span> <span class="n">noise_times_steps</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_microphone_in_stencil</span>        <span class="o">=</span> <span class="n">number_of_microphone_in_stencil</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_min_y</span>                       <span class="o">=</span> <span class="mf">1E-6</span>   
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_max_y</span>                       <span class="o">=</span> <span class="mi">1800</span>
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_min_x</span>                       <span class="o">=</span> <span class="o">-</span><span class="mi">2000</span> <span class="o">+</span> <span class="mf">1E-6</span>  
+        <span class="n">noise_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">microphone_max_x</span>                       <span class="o">=</span> <span class="mi">6000</span>
+    
+    <span class="c1"># evaluate both missions</span>
+    <span class="n">approach_results</span> <span class="o">=</span> <span class="n">approach_mission</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span> 
+    <span class="n">takeoff_results</span>  <span class="o">=</span> <span class="n">takeoff_mission</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+    
+    <span class="c1"># post process results</span>
+    <span class="n">noise_data</span>  <span class="o">=</span>  <span class="n">post_process_certification_noise_data</span><span class="p">(</span><span class="n">approach_results</span><span class="p">,</span><span class="n">takeoff_results</span><span class="p">)</span>
+    
+    <span class="c1"># plot diagram</span>
+    <span class="k">if</span> <span class="n">show_figure</span><span class="p">:</span>  
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">save_filename</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">)</span> 
+        
+        <span class="n">noise_levels</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">min_noise_level</span><span class="p">,</span><span class="n">max_noise_level</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span>  
+        <span class="n">noise_cmap</span>     <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;turbo&#39;</span><span class="p">)</span>
+        <span class="n">noise_new_cmap</span> <span class="o">=</span> <span class="n">truncate_colormap</span><span class="p">(</span><span class="n">noise_cmap</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> 
+
+        <span class="n">noise_level</span> <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">certification_SPL_dBA_max</span>           
+        <span class="n">X</span>           <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">certification_microphone_locations</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Y</span>           <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">certification_microphone_locations</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> 
+        
+        <span class="n">ap_noise_level</span> <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">approach_SPL_dBA_max</span>           
+        <span class="n">ap_X</span>           <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">approach_microphone_locations</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ap_Y</span>           <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">approach_microphone_locations</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ap_POS</span>         <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">approach_trajectory</span>
+
+        <span class="n">to_noise_level</span> <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">takeoff_SPL_dBA_max</span>           
+        <span class="n">to_X</span>           <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">takeoff_microphone_locations</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">to_Y</span>           <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">takeoff_microphone_locations</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">to_POS</span>         <span class="o">=</span> <span class="n">noise_data</span><span class="o">.</span><span class="n">takeoff_trajectory</span>
+        
+        <span class="n">axis_0</span>   <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> 
+        <span class="n">axis_0</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x [m]&#39;</span><span class="p">)</span>
+        <span class="n">axis_0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;altitude [m]&#39;</span><span class="p">)</span>   
+        <span class="n">axis_1</span>   <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> 
+        <span class="n">axis_1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x [m]&#39;</span><span class="p">)</span>
+        <span class="n">axis_1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y [m]&#39;</span><span class="p">)</span>   
+        <span class="n">axis_2</span>   <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> 
+        <span class="n">axis_2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x [m]&#39;</span><span class="p">)</span>
+        <span class="n">axis_2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y [m]&#39;</span><span class="p">)</span>   
+        <span class="n">axis_3</span>   <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> 
+        <span class="n">axis_3</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x [m]&#39;</span><span class="p">)</span>
+        <span class="n">axis_3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y [m]&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># plot aircraft position</span>
+        <span class="n">axis_0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ap_POS</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="o">-</span><span class="n">ap_POS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="p">,</span> <span class="n">marker</span> <span class="o">=</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span> <span class="s2">&quot;Approach&quot;</span><span class="p">)</span>
+        <span class="n">axis_0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">to_POS</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="o">-</span><span class="n">to_POS</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="p">,</span> <span class="n">marker</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span> <span class="s2">&quot;Takeoff&quot;</span><span class="p">)</span>
+        <span class="n">axis_0</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">)</span> 
+    
+        <span class="c1"># plot aircraft noise levels   </span>
+        <span class="n">CS_11</span>    <span class="o">=</span> <span class="n">axis_1</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">noise_level</span> <span class="p">,</span><span class="n">noise_levels</span><span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">noise_new_cmap</span><span class="p">,</span><span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>  
+        <span class="n">CS_12</span>    <span class="o">=</span> <span class="n">axis_1</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="o">-</span><span class="n">Y</span><span class="p">,</span><span class="n">noise_level</span> <span class="p">,</span><span class="n">noise_levels</span><span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">noise_new_cmap</span><span class="p">,</span><span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+        <span class="n">CS_21</span>    <span class="o">=</span> <span class="n">axis_2</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">ap_X</span><span class="p">,</span><span class="n">ap_Y</span><span class="p">,</span><span class="n">ap_noise_level</span> <span class="p">,</span><span class="n">noise_levels</span><span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">noise_new_cmap</span><span class="p">,</span><span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>  
+        <span class="n">CS_22</span>    <span class="o">=</span> <span class="n">axis_2</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">ap_X</span><span class="p">,</span><span class="o">-</span><span class="n">ap_Y</span><span class="p">,</span><span class="n">ap_noise_level</span> <span class="p">,</span><span class="n">noise_levels</span><span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">noise_new_cmap</span><span class="p">,</span><span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+        <span class="n">CS_31</span>    <span class="o">=</span> <span class="n">axis_3</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">to_X</span><span class="p">,</span><span class="n">to_Y</span><span class="p">,</span><span class="n">to_noise_level</span> <span class="p">,</span><span class="n">noise_levels</span><span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">noise_new_cmap</span><span class="p">,</span><span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>  
+        <span class="n">CS_32</span>    <span class="o">=</span> <span class="n">axis_3</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">to_X</span><span class="p">,</span><span class="o">-</span><span class="n">to_Y</span><span class="p">,</span><span class="n">to_noise_level</span> <span class="p">,</span><span class="n">noise_levels</span><span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">noise_new_cmap</span><span class="p">,</span><span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+         
+        <span class="n">cbar</span>  <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">CS_11</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axis_1</span><span class="p">)</span>        
+        <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">noise_scale_label</span><span class="p">,</span> <span class="n">rotation</span> <span class="o">=</span>  <span class="mi">90</span><span class="p">)</span>
+
+        <span class="n">cbar</span>  <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">CS_11</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axis_2</span><span class="p">)</span>        
+        <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">noise_scale_label</span><span class="p">,</span> <span class="n">rotation</span> <span class="o">=</span>  <span class="mi">90</span><span class="p">)</span>
+
+        <span class="n">cbar</span>  <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">CS_11</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axis_3</span><span class="p">)</span>        
+        <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">noise_scale_label</span><span class="p">,</span> <span class="n">rotation</span> <span class="o">=</span>  <span class="mi">90</span><span class="p">)</span>     
+
+        <span class="n">run_way_x_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="n">run_way_y_pts</span> <span class="o">=</span> <span class="n">run_way_x_pts</span> <span class="o">*</span> <span class="mi">0</span>
+
+        <span class="n">axis_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">run_way_x_pts</span><span class="p">,</span><span class="n">run_way_y_pts</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">5</span> <span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">axis_2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">run_way_x_pts</span><span class="p">,</span><span class="n">run_way_y_pts</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">5</span> <span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">axis_3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">run_way_x_pts</span><span class="p">,</span><span class="n">run_way_y_pts</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">5</span> <span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_1</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_2</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_3</span><span class="p">)</span>
+
+        <span class="n">axis_0</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Flight Trajectory&#39;</span><span class="p">)</span>        
+        <span class="n">axis_1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Approach and Takeoff Noise&#39;</span><span class="p">)</span>
+        <span class="n">axis_2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Approach Noise&#39;</span><span class="p">)</span>
+        <span class="n">axis_3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Takeoff Noise&#39;</span><span class="p">)</span>
+        
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>  
+        <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span> 
+            <span class="n">figure_title</span>  <span class="o">=</span> <span class="n">save_filename</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">figure_title</span> <span class="o">+</span> <span class="n">file_type</span> <span class="p">)</span>   
+        
+    <span class="k">return</span> <span class="n">noise_data</span> </div>
+
+    
+<div class="viewcode-block" id="post_process_certification_noise_data">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.compute_noise_certification_data.post_process_certification_noise_data.html#RCAIDE.Library.Methods.Performance.compute_noise_certification_data.post_process_certification_noise_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">post_process_certification_noise_data</span><span class="p">(</span><span class="n">approach_results</span><span class="p">,</span><span class="n">takeoff_results</span><span class="p">):</span> 
+   
+    <span class="n">approach_noise_data</span>   <span class="o">=</span> <span class="n">post_process_noise_data</span><span class="p">(</span><span class="n">approach_results</span><span class="p">)</span>
+    <span class="n">takeoff_noise_data</span>    <span class="o">=</span> <span class="n">post_process_noise_data</span><span class="p">(</span><span class="n">takeoff_results</span><span class="p">)</span> 
+    
+    <span class="c1"># append approach noise                                </span>
+    <span class="n">approach_pos</span>         <span class="o">=</span> <span class="n">approach_noise_data</span><span class="o">.</span><span class="n">aircraft_position</span>
+    <span class="n">approach_pos</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>   <span class="o">-=</span> <span class="mi">2000</span> 
+    
+    <span class="c1"># append takeoff noise  </span>
+    <span class="n">cert_SPL_dBA_max</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">approach_noise_data</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">,</span><span class="n">takeoff_noise_data</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">,</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>                      
+    <span class="n">cert_pos</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">approach_pos</span><span class="p">,</span> <span class="n">takeoff_noise_data</span><span class="o">.</span><span class="n">aircraft_position</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>     
+    <span class="n">cert_mic_locs</span>     <span class="o">=</span> <span class="n">takeoff_noise_data</span><span class="o">.</span><span class="n">microphone_locations</span> 
+     
+    <span class="n">res</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span>
+        <span class="n">certification_SPL_dBA_max</span>         <span class="o">=</span> <span class="n">cert_SPL_dBA_max</span><span class="p">,</span> 
+        <span class="n">certification_trajectory</span>          <span class="o">=</span> <span class="n">cert_pos</span><span class="p">,</span>     
+        <span class="n">certification_microphone_locations</span><span class="o">=</span> <span class="n">cert_mic_locs</span><span class="p">,</span>
+
+        <span class="n">approach_SPL_dBA_max</span>              <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">approach_noise_data</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">,</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">approach_SPL_dBA</span>                  <span class="o">=</span> <span class="n">approach_noise_data</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">,</span> 
+        <span class="n">approach_time</span>                     <span class="o">=</span> <span class="n">approach_noise_data</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>   
+        <span class="n">approach_trajectory</span>               <span class="o">=</span> <span class="n">approach_pos</span><span class="p">,</span>     
+        <span class="n">approach_microphone_locations</span>     <span class="o">=</span> <span class="n">takeoff_noise_data</span><span class="o">.</span><span class="n">microphone_locations</span><span class="p">,</span> 
+
+        <span class="n">takeoff_SPL_dBA_max</span>               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">takeoff_noise_data</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">,</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">takeoff_SPL_dBA</span>                   <span class="o">=</span> <span class="n">takeoff_noise_data</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">,</span> 
+        <span class="n">takeoff_time</span>                      <span class="o">=</span> <span class="n">takeoff_noise_data</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>   
+        <span class="n">takeoff_trajectory</span>                <span class="o">=</span> <span class="n">takeoff_noise_data</span><span class="o">.</span><span class="n">aircraft_position</span><span class="p">,</span>     
+        <span class="n">takeoff_microphone_locations</span>      <span class="o">=</span> <span class="n">takeoff_noise_data</span><span class="o">.</span><span class="n">microphone_locations</span>     
+    
+    <span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Certification Noise&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-----------------------------------------------&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;2000 m  Approach Noise   :&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">cert_SPL_dBA_max</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;6000 m  Flyover Noise    :&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">cert_SPL_dBA_max</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;450  m  Sideline Noise   :&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">cert_SPL_dBA_max</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]),</span> <span class="mi">2</span><span class="p">))</span>
+    
+    <span class="n">area_85_dbA</span> <span class="o">=</span>  <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cert_SPL_dBA_max</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">&gt;</span><span class="mi">85</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span><span class="mi">100</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">cert_SPL_dBA_max</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span> 
+    <span class="n">area_65_dbA</span> <span class="o">=</span>  <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cert_SPL_dBA_max</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">&gt;</span><span class="mi">65</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span><span class="mi">100</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">cert_SPL_dBA_max</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;% Area &gt; 85 dBA Threshold:&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">area_85_dbA</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;% Area &gt; 65 dBA Threshold:&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">area_65_dbA</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    
+    <span class="n">res</span><span class="o">.</span><span class="n">approach_noise_2000m</span> <span class="o">=</span> <span class="n">cert_SPL_dBA_max</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> 
+    <span class="n">res</span><span class="o">.</span><span class="n">flyover_noise_6000m</span>  <span class="o">=</span> <span class="n">cert_SPL_dBA_max</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> 
+    <span class="n">res</span><span class="o">.</span><span class="n">sideline_noise_450m</span>  <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cert_SPL_dBA_max</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">area_65_dbA</span> <span class="o">=</span> <span class="n">area_65_dbA</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">area_85_dbA</span> <span class="o">=</span> <span class="n">area_85_dbA</span> 
+    
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<span class="c1"># ------------------------------------------------------------------ </span>
+<span class="c1"># Truncate colormaps</span>
+<span class="c1"># ------------------------------------------------------------------  </span>
+<div class="viewcode-block" id="truncate_colormap">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.compute_noise_certification_data.truncate_colormap.html#RCAIDE.Library.Methods.Performance.compute_noise_certification_data.truncate_colormap">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">truncate_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">new_cmap</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span>
+        <span class="s1">&#39;trunc(</span><span class="si">{n}</span><span class="s1">,</span><span class="si">{a:.2f}</span><span class="s1">,</span><span class="si">{b:.2f}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">minval</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">maxval</span><span class="p">),</span>
+        <span class="n">cmap</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">n</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">new_cmap</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

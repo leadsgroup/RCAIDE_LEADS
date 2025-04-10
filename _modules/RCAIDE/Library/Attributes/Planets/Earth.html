@@ -394,7 +394,24 @@
 <div class="viewcode-block" id="Earth">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Planets.Earth.html#RCAIDE.Library.Attributes.Planets.Earth.Earth">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Earth</span><span class="p">(</span><span class="n">Planet</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for planet Earth with defauk properties  </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing Earth&#39;s physical properties and gravitational characteristics.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the planet (&#39;Earth&#39;)</span>
+<span class="sd">    mass : float</span>
+<span class="sd">        Mass of Earth in kg (5.98e24)</span>
+<span class="sd">    mean_radius : float</span>
+<span class="sd">        Average radius of Earth in m (6.371e6)</span>
+<span class="sd">    sea_level_gravity : float</span>
+<span class="sd">        Gravitational acceleration at sea level in m/s² (9.80665)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements standard Earth properties used in aerospace calculations.</span>
+<span class="sd">    Values are based on internationally accepted standards for Earth&#39;s physical parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This sets the default values.</span>
@@ -413,21 +430,30 @@
 <div class="viewcode-block" id="Earth.compute_gravity">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Planets.Earth.html#RCAIDE.Library.Attributes.Planets.Earth.Earth.compute_gravity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_gravity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the gravitational acceleration at altitude</span>
-<span class="sd">            </span>
-<span class="sd">        Assumptions:       </span>
-<span class="sd">            None </span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            None </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the gravitational acceleration at a given altitude above Earth&#39;s surface.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            self                     : air           [unitless]</span>
-<span class="sd">            H (float)                : altitude      [m]     </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        H : float, optional</span>
+<span class="sd">            Altitude above sea level in meters. Default is 0.0</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            g (float)                : acceleration due to gravity [m/s^2] </span>
-<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        gh : float</span>
+<span class="sd">            Gravitational acceleration at the specified altitude in m/s²</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Theory**</span>
+<span class="sd">        Uses the inverse square law for gravitational acceleration:</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            g(h) = g_0 \\left(\\frac{R_e}{R_e + h}\\right)^2</span>
+
+<span class="sd">        where:</span>
+<span class="sd">            - g₀ is sea level gravity</span>
+<span class="sd">            - Rₑ is Earth&#39;s mean radius</span>
+<span class="sd">            - h is altitude above sea level</span>
 <span class="sd">        &quot;&quot;&quot;</span>          
         <span class="c1"># Unpack</span>
         <span class="n">g0</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sea_level_gravity</span>

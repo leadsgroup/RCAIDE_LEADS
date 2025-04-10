@@ -392,18 +392,59 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="update_lfp_cell_age">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.update_lfp_cell_age.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.update_lfp_cell_age.update_lfp_cell_age">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_lfp_cell_age</span><span class="p">(</span><span class="n">battery_module</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span> <span class="n">battery_conditions</span><span class="p">,</span><span class="n">increment_battery_age_by_one_day</span><span class="p">):</span>  
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; This is an aging model for 26650 A123 LFP cell. </span>
-<span class="sd">   </span>
-<span class="sd">    Source: </span>
-<span class="sd">    Nájera, J., J.R. Arribas, R.M. De Castro, and C.S. Núñez. </span>
-<span class="sd">    “Semi-Empirical Ageing Model for LFP and NMC Li-Ion Battery Chemistries.”</span>
-<span class="sd">    Journal of Energy Storage 72 (November 2023): 108016.</span>
-<span class="sd">    https://doi.org/10.1016/j.est.2023.108016.</span>
-
-<span class="sd">      </span>
-<span class="sd">    Assumptions:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_lfp_cell_age</span><span class="p">(</span><span class="n">battery_module</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">battery_conditions</span><span class="p">,</span> <span class="n">increment_battery_age_by_one_day</span><span class="p">):</span>  
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Updates the aging model for a 26650 A123 LFP cell.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    battery_module : BatteryModule</span>
+<span class="sd">        The battery module containing LFP cells</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment in which the battery is operating</span>
+<span class="sd">    battery_conditions : Conditions</span>
+<span class="sd">        Object containing battery state with the following attributes:</span>
+<span class="sd">            - cell.state_of_charge : numpy.ndarray</span>
+<span class="sd">                State of charge of the cell [unitless, 0-1]</span>
+<span class="sd">            - cell.current : numpy.ndarray</span>
+<span class="sd">                Battery cell current [A]</span>
+<span class="sd">            - cell.cycle_in_day : int</span>
+<span class="sd">                Number of cycles the battery has undergone [days]</span>
+<span class="sd">            - cell.charge_throughput : numpy.ndarray</span>
+<span class="sd">                Cumulative charge throughput [Ah]</span>
+<span class="sd">            - cell.temperature : numpy.ndarray</span>
+<span class="sd">                Battery cell temperature [K]</span>
+<span class="sd">            - cell.capacity_fade_factor : float</span>
+<span class="sd">                Factor representing capacity degradation [unitless, 0-1]</span>
+<span class="sd">    increment_battery_age_by_one_day : bool</span>
+<span class="sd">        Flag to increment the battery age by one day</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    None</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function implements a semi-empirical aging model for LFP cells based on</span>
+<span class="sd">    research by Nájera et al. The model accounts for capacity fade due to:</span>
+<span class="sd">        1. Cycling effects (charge throughput)</span>
+<span class="sd">        2. Calendar aging (time)</span>
+<span class="sd">    </span>
+<span class="sd">    The model considers the effects of:</span>
+<span class="sd">        - Temperature</span>
+<span class="sd">        - C-rate</span>
+<span class="sd">        - State of charge</span>
+<span class="sd">        - Charge throughput</span>
+<span class="sd">        - Time (days)</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Nájera, J., J.R. Arribas, R.M. De Castro, and C.S. Núñez. &quot;Semi-Empirical Ageing Model for LFP and NMC Li-Ion Battery Chemistries.&quot; Journal of Energy Storage 72 (November 2023): 108016. https://doi.org/10.1016/j.est.2023.108016.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">SOC</span>                <span class="o">=</span> <span class="n">battery_conditions</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">state_of_charge</span>
     <span class="n">I</span>                  <span class="o">=</span> <span class="n">battery_conditions</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">current</span>

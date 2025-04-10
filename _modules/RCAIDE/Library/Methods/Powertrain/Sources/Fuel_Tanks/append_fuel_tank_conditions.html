@@ -393,10 +393,42 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="append_fuel_tank_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions.html#RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions.append_fuel_tank_conditions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">append_fuel_tank_conditions</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">fuel_line</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Append initial conditions for fuel tank compoment</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">append_fuel_tank_conditions</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">fuel_line</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Appends initial conditions for fuel tank component during later mission analysis.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fuel_tank : FuelTank</span>
+<span class="sd">        The fuel tank component for which conditions are being initialized.</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment in which the fuel tank is operating.</span>
+<span class="sd">    fuel_line : FuelLine</span>
+<span class="sd">        The fuel line connected to the fuel tank.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function initializes the conditions for a fuel tank component at the start</span>
+<span class="sd">    of a mission segment. It creates a Conditions object for the fuel tank within</span>
+<span class="sd">    the segment&#39;s energy conditions dictionary, indexed by the fuel line tag and tank tag.</span>
+<span class="sd">    </span>
+<span class="sd">    The function initializes arrays for:</span>
+<span class="sd">        - Mass flow rate [kg/s]</span>
+<span class="sd">        - Mass [kg]</span>
+<span class="sd">    </span>
+<span class="sd">    These arrays are initialized with ones of the same length as the segment&#39;s state vector,</span>
+<span class="sd">    which will be updated during mission analysis based on the fuel tank&#39;s performance</span>
+<span class="sd">    and fuel consumption.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Sources.Cryogenic_Tanks.append_cryogenic_tank_conditions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ones_row</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span>                 
     <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                 <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>  
     <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">mass_flow_rate</span>  <span class="o">=</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -529,24 +529,26 @@
   <p>RCAIDE.Library.Methods.Powertrain.Systems</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Systems">
 <span id="systems"></span><h1>Systems<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Systems" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides functionality for setting up and managing systems that draw power from the powertrain system, such as avionics and payloads.
+It includes methods for configuring operating conditions and appending avionics and payload conditions to simulation results.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.html#module-RCAIDE.Library.Methods.Powertrain.Converters" title="RCAIDE.Library.Methods.Powertrain.Converters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.html#module-RCAIDE.Library.Methods.Powertrain.Sources" title="RCAIDE.Library.Methods.Powertrain.Sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions" title="RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_avionics_conditions</span></code></a>(avionics, ...)</p></td>
-<td><p></p></td>
+<td><p>Initializes and appends empty avionics conditions data structures to the segment state conditions.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions" title="RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_payload_conditions</span></code></a>(payload, segment, bus)</p></td>
-<td><p></p></td>
+<td><p>Initializes and appends empty payload conditions data structures to the segment state conditions.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw.html#module-RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw" title="RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_avionics_power_draw</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.html#module-RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw" title="RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_payload_power_draw</span></code></a></p></td>
 <td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Systems.setup_operating_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Systems.setup_operating_conditions" title="RCAIDE.Library.Methods.Powertrain.Systems.setup_operating_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_operating_conditions</span></code></a>(compoment[, ...])</p></td>
-<td><p>Set up operating conditions</p></td>
 </tr>
 </tbody>
 </table>

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,159 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Gaseous_Hydrogen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Gaseous_Hydrogen.html#Gaseous_Hydrogen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Propellant</span></code></a></p>
-<p>Gaseous hydrogen class</p>
+<p>A class representing gaseous hydrogen (H2) fuel properties for propulsion applications.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the propellant (‘hydrogen_gas’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.reactant">
+<span class="sig-name descname"><span class="pre">reactant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.reactant" title="Link to this definition">#</a></dt>
+<dd><p>Oxidizer used for combustion (‘O2’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy content in J/kg (141.86e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Energy density in J/m³ (5591.13e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.max_mass_fraction">
+<span class="sig-name descname"><span class="pre">max_mass_fraction</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.max_mass_fraction" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Maximum fuel-to-oxidizer mass ratios</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Air<span class="classifier">float</span></dt><dd><p>Maximum mass fraction with air (0.013197)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>O2<span class="classifier">float</span></dt><dd><p>Maximum mass fraction with pure oxygen (0.0630)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.molecular_mass">
+<span class="sig-name descname"><span class="pre">molecular_mass</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.molecular_mass" title="Link to this definition">#</a></dt>
+<dd><p>Molar mass in kg/kmol (2.016)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.gas_constant">
+<span class="sig-name descname"><span class="pre">gas_constant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.gas_constant" title="Link to this definition">#</a></dt>
+<dd><p>Specific gas constant in J/kg-K (4124.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.pressure">
+<span class="sig-name descname"><span class="pre">pressure</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.pressure" title="Link to this definition">#</a></dt>
+<dd><p>Storage pressure in Pa (700e5)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.temperature">
+<span class="sig-name descname"><span class="pre">temperature</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.temperature" title="Link to this definition">#</a></dt>
+<dd><p>Reference temperature in K (293.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.compressibility_factor">
+<span class="sig-name descname"><span class="pre">compressibility_factor</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.compressibility_factor" title="Link to this definition">#</a></dt>
+<dd><p>Gas compressibility factor (1.4699)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.density" title="Link to this definition">#</a></dt>
+<dd><p>Gas density at reference conditions in kg/m³ (39.4116)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements properties for gaseous hydrogen fuel at high pressure
+storage conditions. Properties account for real gas behavior through the
+compressibility factor.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Compressibility Factor’</dt><dd><p>Correction factor for real gas behavior deviation from ideal gas law</p>
+</dd>
+<dt>‘Specific Energy’</dt><dd><p>Energy content per unit mass, significantly higher than hydrocarbon fuels</p>
+</dd>
+<dt>‘Max Mass Fraction’</dt><dd><p>Maximum fuel fraction for stoichiometric combustion with different oxidizers</p>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Real gas behavior is accounted for via compressibility factor</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -585,7 +737,20 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.tag"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.reactant"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.reactant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.specific_energy"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.energy_density"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.max_mass_fraction"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.max_mass_fraction</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.molecular_mass"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.molecular_mass</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.gas_constant"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.gas_constant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.pressure"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.pressure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.temperature"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.temperature</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.compressibility_factor"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.compressibility_factor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen.density"><code class="docutils literal notranslate"><span class="pre">Gaseous_Hydrogen.density</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

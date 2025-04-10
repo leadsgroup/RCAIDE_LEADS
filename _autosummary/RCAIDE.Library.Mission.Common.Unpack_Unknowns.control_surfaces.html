@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,7 +535,94 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Unpack_Unknowns.control_surfaces.control_surfaces">
 <span class="sig-name descname"><span class="pre">control_surfaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Unpack_Unknowns/control_surfaces.html#control_surfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Unpack_Unknowns.control_surfaces.control_surfaces" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Updates control surface deflections from solver unknowns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – <dl>
+<dt>The mission segment being analyzed</dt><dd><ul>
+<li><dl>
+<dt>assigned_control_variables<span class="classifier">Data</span></dt><dd><p>Control variable configurations
+- {control_type}.active : bool</p>
+<blockquote>
+<div><p>Whether control is active</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>{control_type}.assigned_surfaces<span class="classifier">list</span></dt><dd><p>Surface names for each control group</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state.unknowns<span class="classifier">Data</span></dt><dd><p>Solver unknown values</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state.conditions.control_surfaces<span class="classifier">Data</span></dt><dd><p>Results data structure</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>analyses<span class="classifier">list</span></dt><dd><p>Analysis modules containing vehicle definition</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updates segment state and vehicle model directly</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function applies control surface deflection values from the solver’s
+unknowns to both the vehicle model and results data structure. It handles
+all types of control surfaces including elevators, slats, rudders, flaps,
+and ailerons.</p>
+<dl class="simple">
+<dt>The function processes:</dt><dd><ol class="arabic simple">
+<li><p>Elevator deflections</p></li>
+<li><p>Slat deflections</p></li>
+<li><p>Rudder deflections</p></li>
+<li><p>Flap deflections</p></li>
+<li><p>Aileron deflections</p></li>
+<li><p>Spoiler deflections</p></li>
+</ol>
+</dd>
+</dl>
+<p><strong>Control Surface Types</strong></p>
+<dl class="simple">
+<dt>Supported controls:</dt><dd><ul class="simple">
+<li><p>Elevator</p></li>
+<li><p>Slat</p></li>
+<li><p>Rudder</p></li>
+<li><p>Flap</p></li>
+<li><p>Aileron</p></li>
+<li><p>Spoiler</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Valid control surface definitions</p></li>
+<li><p>Proper surface assignments</p></li>
+<li><p>Compatible deflection values</p></li>
+<li><p>Well-defined vehicle geometry</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Wings.Control_Surfaces.html#module-RCAIDE.Library.Components.Wings.Control_Surfaces" title="RCAIDE.Library.Components.Wings.Control_Surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Wings.Control_Surfaces</span></code></a>, <a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
+</dd></dl>
 
 </section>
 

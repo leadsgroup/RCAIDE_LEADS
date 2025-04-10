@@ -398,32 +398,80 @@
 <div class="viewcode-block" id="compute_vertical_tail_weight">
 <a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_vertical_tail_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_vertical_tail_weight.compute_vertical_tail_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_vertical_tail_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">wing</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates vertical tail weight based on Raymer method</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates vertical tail weight using Raymer&#39;s empirical method.</span>
 
-<span class="sd">        Assumptions:</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : RCAIDE.Vehicle()</span>
+<span class="sd">        Vehicle data structure containing:</span>
+<span class="sd">            - mass_properties.max_takeoff : float</span>
+<span class="sd">                Maximum takeoff weight [kg]</span>
+<span class="sd">            - flight_envelope.ultimate_load : float</span>
+<span class="sd">                Ultimate load factor</span>
+<span class="sd">            - wings[&#39;main_wing&#39;] : Data()</span>
+<span class="sd">                Main wing properties:</span>
+<span class="sd">                    - origin : array</span>
+<span class="sd">                        Root location [m]</span>
+<span class="sd">                    - aerodynamic_center : array</span>
+<span class="sd">                        Location of aerodynamic center [m]</span>
+<span class="sd">    wing : RCAIDE.Component()</span>
+<span class="sd">        Vertical tail component containing:</span>
+<span class="sd">            - t_tail : bool</span>
+<span class="sd">                T-tail configuration flag</span>
+<span class="sd">            - areas.reference : float</span>
+<span class="sd">                Reference area [m^2]</span>
+<span class="sd">            - origin : array</span>
+<span class="sd">                Root location [m]</span>
+<span class="sd">            - aerodynamic_center : array</span>
+<span class="sd">                Location of aerodynamic center [m]</span>
+<span class="sd">            - sweeps.quarter_chord : float</span>
+<span class="sd">                Quarter chord sweep angle [rad]</span>
+<span class="sd">            - aspect_ratio : float</span>
+<span class="sd">                Aspect ratio</span>
+<span class="sd">            - thickness_to_chord : float</span>
+<span class="sd">                Thickness-to-chord ratio</span>
 
-<span class="sd">        Source:</span>
-<span class="sd">            Aircraft Design: A Conceptual Approach (2nd edition)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tail_weight : float</span>
+<span class="sd">        Weight of the vertical tail [kg]</span>
 
-<span class="sd">        Inputs:</span>
-<span class="sd">            vehicle - data dictionary with vehicle properties                    [dimensionless]</span>
-<span class="sd">                -.mass_properties.max_takeoff: MTOW                             [kilograms]</span>
-<span class="sd">                -.flight_envelope.ultimate_load: ultimate load factor (default: 3.75)</span>
-<span class="sd">                -.wings[&#39;main_wing&#39;]: data dictionary with properties of main wing</span>
-<span class="sd">                    -.aerodynamic_center: aerodynamic center as measured from root leading edge</span>
-<span class="sd">                    -.origin: root of main wing as measured from nose of aircraft</span>
-<span class="sd">            wing    - data dictionary with specific tail properties              [dimensionless]</span>
-<span class="sd">                -.areas.reference: tail surface area                            [m^2}</span>
-<span class="sd">                -.origin: location of tail measured from nose</span>
-<span class="sd">                -.aerodynamic_center: location of ac measured from leading edge</span>
-<span class="sd">                -.sweeps.quarter_chord: quarter chord sweep of tail             [rad]</span>
-<span class="sd">                -.thickness_to_chord: t/c of tail</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This method implements Raymer&#39;s correlation for transport aircraft vertical</span>
+<span class="sd">    tail weight estimation, accounting for geometry, loads, and configuration effects.</span>
 
-<span class="sd">        Outputs:</span>
-<span class="sd">              tail_weight: vertical tail weight                                [kilograms]</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * T-tail configuration handled through multiplier</span>
+<span class="sd">        * Correlation based on transport category aircraft data</span>
+<span class="sd">        * If advanced composites are used, the vertical tail weight is reduced by 15%</span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    The vertical tail weight is calculated using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{vt} = 0.0026(1 + H_t)^{0.225}W_{dg}^{0.556}N_{ult}^{0.536}L_t^{-0.5}S_{vt}^{0.5}K_z^{0.875}\cos(\Lambda)^{-1}AR^{0.35}(t/c)^{-0.5}</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">            N/A</span>
+<span class="sd">    where:</span>
+<span class="sd">        * :math:`H_t` is T-tail factor (0 or 1)</span>
+<span class="sd">        * :math:`W_{dg}` is design gross weight</span>
+<span class="sd">        * :math:`N_{ult}` is ultimate load factor</span>
+<span class="sd">        * :math:`L_t` is tail arm length</span>
+<span class="sd">        * :math:`S_{vt}` is vertical tail area</span>
+<span class="sd">        * :math:`K_z` is vertical tail arm</span>
+<span class="sd">        * :math:`\Lambda` is quarter-chord sweep</span>
+<span class="sd">        * :math:`AR` is aspect ratio</span>
+<span class="sd">        * :math:`t/c` is thickness ratio</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Raymer, D., &quot;Aircraft Design: A Conceptual Approach&quot;, AIAA </span>
+<span class="sd">        Education Series, 2018. </span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">DG</span>          <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>
     <span class="n">t_tail_flag</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">t_tail</span>

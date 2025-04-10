@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,12 +535,25 @@
   <p>RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common</p>
 <section id="module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common">
 <span id="common"></span><h1>Common<a class="headerlink" href="#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>Methods for computing component weights that are common across different aircraft configurations.
+This module provides weight estimation techniques for standard aircraft components and systems
+that share similar design principles regardless of aircraft type.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport</span></code></a></dt><dd><p>Transport-specific weight methods</p>
+</dd>
+<dt><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation</span></code></a></dt><dd><p>General aviation weight methods</p>
+</dd>
+<dt><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB</span></code></a></dt><dd><p>BWB-specific weight methods</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.compute_payload_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.compute_payload_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.compute_payload_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_payload_weight</span></code></a>(vehicle[, ...])</p></td>
-<td><p>Calculate the weight of the payload and the resulting fuel mass</p></td>
+<td><p>Computes the total payload weight including passengers, baggage, and cargo based on FAA standard weights and aircraft configuration.</p></td>
 </tr>
 </tbody>
 </table>

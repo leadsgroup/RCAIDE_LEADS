@@ -378,7 +378,6 @@
                   
   <h1>Source code for RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Converters/Ram/compute_ram_performance.py</span>
-<span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Jun 2024, M. Clarke    </span>
 
@@ -387,39 +386,111 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------     </span>
 <div class="viewcode-block" id="compute_ram_performance">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance.html#RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance.compute_ram_performance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_ram_performance</span><span class="p">(</span><span class="n">ram</span><span class="p">,</span><span class="n">ram_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; This computes the output values from the input values according T0</span>
-<span class="sd">    equations from the source. The following properties are determined </span>
-<span class="sd">        conditions.freestream.</span>
-<span class="sd">          stagnation_temperature              (numpy.ndarray): freestream stagnation_temperature             [K]</span>
-<span class="sd">          stagnation_pressure                 (numpy.ndarray): freestream stagnation_pressure                [Pa]</span>
-<span class="sd">          isentropic_expansion_factor         (numpy.ndarray): freestream isentropic_expansion_factor        [unitless]</span>
-<span class="sd">          specific_heat_at_constant_pressure  (numpy.ndarray): freestream specific_heat_at_constant_pressure [J/(kg K)]</span>
-<span class="sd">          gas_specific_constant               (numpy.ndarray): freestream gas_specific_constant              [J/(kg K)]</span>
-<span class="sd">          speed_of_sound                      (numpy.ndarray): freestream speed_of_sound                     [m/s]</span>
-<span class="sd">        ram.outputs.</span>
-<span class="sd">          stagnation_temperature              (numpy.ndarray): exiting stagnation temperature     [K]</span>
-<span class="sd">          stagnation_pressure                 (numpy.ndarray): exiting stagnation pressure        [Pa]</span>
-<span class="sd">          isentropic_expansion_factor         (numpy.ndarray): isentropic expansion factor        [unitless]</span>
-<span class="sd">          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]</span>
-<span class="sd">          gas_specific_constant               (numpy.ndarray): gas_specific_constant              [J/(kg K)]   </span>
-
-<span class="sd">    Assumptions:</span>
-<span class="sd">        None</span>
-
-<span class="sd">    Source:</span>
-<span class="sd">        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        conditions.freestream.</span>
-<span class="sd">           pressure               (numpy.ndarray): freestream pressure      [Pa]</span>
-<span class="sd">           temperature            (numpy.ndarray): freestream temperature   [K]</span>
-<span class="sd">           mach_number            (numpy.ndarray): freestream Mach number   [unitless]</span>
-<span class="sd">        ram.inputs.working_fluid           (dict): working fluid properties [-]</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None </span>
-<span class="sd">  </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_ram_performance</span><span class="p">(</span><span class="n">ram</span><span class="p">,</span> <span class="n">conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the thermodynamic properties of air at the inlet of a propulsion system.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ram : RCAIDE.Library.Components.Converters.Ram</span>
+<span class="sd">        Ram air converter component with the following attributes:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the ram air converter</span>
+<span class="sd">            - working_fluid : Data</span>
+<span class="sd">                Working fluid properties object</span>
+<span class="sd">    conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Flight conditions with:</span>
+<span class="sd">            - freestream : Data</span>
+<span class="sd">                Freestream properties</span>
+<span class="sd">                    - pressure : numpy.ndarray</span>
+<span class="sd">                        Freestream static pressure [Pa]</span>
+<span class="sd">                    - temperature : numpy.ndarray</span>
+<span class="sd">                        Freestream static temperature [K]</span>
+<span class="sd">                    - mach_number : numpy.ndarray</span>
+<span class="sd">                        Freestream Mach number</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in:</span>
+<span class="sd">            conditions.freestream:</span>
+<span class="sd">                - stagnation_temperature : numpy.ndarray</span>
+<span class="sd">                    Freestream stagnation temperature [K]</span>
+<span class="sd">                - stagnation_pressure : numpy.ndarray</span>
+<span class="sd">                    Freestream stagnation pressure [Pa]</span>
+<span class="sd">                - isentropic_expansion_factor : numpy.ndarray</span>
+<span class="sd">                    Ratio of specific heats (gamma) [unitless]</span>
+<span class="sd">                - specific_heat_at_constant_pressure : numpy.ndarray</span>
+<span class="sd">                    Specific heat at constant pressure [J/(kg·K)]</span>
+<span class="sd">                - gas_specific_constant : numpy.ndarray</span>
+<span class="sd">                    Gas specific constant [J/(kg·K)]</span>
+<span class="sd">                - speed_of_sound : numpy.ndarray</span>
+<span class="sd">                    Speed of sound [m/s]</span>
+<span class="sd">            conditions.energy.converters[ram.tag].outputs:</span>
+<span class="sd">                - stagnation_temperature : numpy.ndarray</span>
+<span class="sd">                    Stagnation temperature [K]</span>
+<span class="sd">                - stagnation_pressure : numpy.ndarray</span>
+<span class="sd">                    Stagnation pressure [Pa]</span>
+<span class="sd">                - isentropic_expansion_factor : numpy.ndarray</span>
+<span class="sd">                    Ratio of specific heats (gamma) [unitless]</span>
+<span class="sd">                - specific_heat_at_constant_pressure : numpy.ndarray</span>
+<span class="sd">                    Specific heat at constant pressure [J/(kg·K)]</span>
+<span class="sd">                - gas_specific_constant : numpy.ndarray</span>
+<span class="sd">                    Gas specific constant [J/(kg·K)]</span>
+<span class="sd">                - static_temperature : numpy.ndarray</span>
+<span class="sd">                    Static temperature [K]</span>
+<span class="sd">                - static_pressure : numpy.ndarray</span>
+<span class="sd">                    Static pressure [Pa]</span>
+<span class="sd">                - mach_number : numpy.ndarray</span>
+<span class="sd">                    Mach number</span>
+<span class="sd">                - velocity : numpy.ndarray</span>
+<span class="sd">                    Velocity [m/s]</span>
+<span class="sd">                - speed_of_sound : numpy.ndarray</span>
+<span class="sd">                    Speed of sound [m/s]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function computes the stagnation (total) properties of the air at the inlet</span>
+<span class="sd">    of a propulsion system based on the freestream conditions. It calculates the</span>
+<span class="sd">    stagnation temperature and pressure using isentropic flow relations, and also</span>
+<span class="sd">    computes various thermodynamic properties of the working fluid.</span>
+<span class="sd">    </span>
+<span class="sd">    The computation follows these steps:</span>
+<span class="sd">        1. Extract freestream conditions (pressure, temperature, Mach number)</span>
+<span class="sd">        2. Compute working fluid properties (gamma, Cp, R, speed of sound)</span>
+<span class="sd">        3. Calculate freestream velocity from Mach number and speed of sound</span>
+<span class="sd">        4. Compute stagnation temperature and pressure using isentropic flow relations</span>
+<span class="sd">        5. Store results in both freestream and ram output conditions</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Isentropic flow from freestream to inlet</span>
+<span class="sd">        * No losses in the inlet</span>
+<span class="sd">        * Working fluid properties are computed at freestream conditions</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    The stagnation temperature and pressure are calculated using the following isentropic relations:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        T_0 = T \\left(1 + \\frac{\\gamma - 1}{2} M^2 \\right)</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        P_0 = P \\left(1 + \\frac{\\gamma - 1}{2} M^2 \\right)^{\\gamma/(\\gamma-1)}</span>
+<span class="sd">    </span>
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`T_0` is the stagnation temperature</span>
+<span class="sd">        - :math:`T` is the static temperature</span>
+<span class="sd">        - :math:`P_0` is the stagnation pressure</span>
+<span class="sd">        - :math:`P` is the static pressure</span>
+<span class="sd">        - :math:`\\gamma` is the ratio of specific heats</span>
+<span class="sd">        - :math:`M` is the Mach number</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Cantwell, B., &quot;AA283 Course Notes&quot;, Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Unpack flight conditions </span>
     <span class="n">M0</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>
@@ -428,6 +499,7 @@
 
     <span class="c1"># Unpack ram inputs</span>
     <span class="n">working_fluid</span>  <span class="o">=</span> <span class="n">ram</span><span class="o">.</span><span class="n">working_fluid</span>
+    <span class="n">ram_conditions</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">ram</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
  
     <span class="c1"># Compute the working fluid properties</span>
     <span class="n">R</span>        <span class="o">=</span> <span class="n">working_fluid</span><span class="o">.</span><span class="n">gas_specific_constant</span>

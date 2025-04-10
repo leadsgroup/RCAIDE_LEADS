@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -544,55 +544,185 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_items_weight.compute_operating_items_weight">
 <span class="sig-name descname"><span class="pre">compute_operating_items_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/compute_operating_items_weight.html#compute_operating_items_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_items_weight.compute_operating_items_weight" title="Link to this definition">#</a></dt>
-<dd><p>Calculate the weight of operating items, including:
-- crew
-- baggage
-- unusable fuel
-- engine oil
-- passenger service
-- ammunition and non-fixed weapons
-- cargo containers</p>
-<dl>
-<dt>Assumptions:</dt><dd><p>If no tanks are specified, 5 fuel tanks are assumed (includes main and auxiliary tanks)
-If the number of coach seats is not defined, then it assumed that 5% of</p>
-<blockquote>
-<div><p>of the seats are first class and an additional 10 % are business class.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>If the number of coach seats is defined, then the additional seats are 1/4 first class</dt><dd><p>and 3/4 business class</p>
+<dd><p>Computes the weight of operating items using NASA FLOPS weight estimation method.
+Includes crew, baggage, unusable fuel, engine oil, passenger service items, weapons, and cargo containers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – <dl class="simple">
+<dt>The vehicle instance containing:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>networks<span class="classifier">list</span></dt><dd><dl class="simple">
+<dt>Propulsion systems with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>propulsors<span class="classifier">list</span></dt><dd><p>Engine data for thrust and count</p>
 </dd>
 </dl>
-</dd>
-<dt>Source:</dt><dd><p>The Flight Optimization System Weight Estimation Method</p>
-</dd>
-<dt>Inputs:</dt><dd><dl>
-<dt>vehicle - data dictionary with vehicle properties                   [dimensionless]</dt><dd><dl class="simple">
-<dt>-.networks: data dictionary containing all propulsion properties</dt><dd><p>-.number_of_engines: number of engines
--.sealevel_static_thrust: thrust at sea level               [N]</p>
+</li>
+<li><dl class="simple">
+<dt>fuel_lines<span class="classifier">list</span></dt><dd><p>Fuel tank data</p>
 </dd>
 </dl>
-<p>-.reference_area: wing surface area                             [m^2]
--.mass_properties.max_takeoff: MTOW                             [kilograms]
--.passengers: number of passengers in aircraft
--.design_mach_number: design mach number for cruise flight
--.design_range: design range of aircraft                        [nmi]
--.mass_properties.cargo: weight of cargo carried                [kilograms]</p>
-</dd>
-</dl>
-</dd>
-<dt>Outputs:</dt><dd><dl class="simple">
-<dt>output - data dictionary with weights                               [kilograms]</dt><dd><ul class="simple">
-<li><p>output.oper_items: unusable fuel, engine oil, passenger service weight and cargo containers</p></li>
-<li><p>output.flight_crew: flight crew weight</p></li>
-<li><p>output.flight_attendants: flight attendants weight</p></li>
-<li><p>output.total: total operating items weight</p></li>
+</li>
 </ul>
 </dd>
 </dl>
 </dd>
-<dt>Properties Used:</dt><dd><p>N/A</p>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>reference_area<span class="classifier">float</span></dt><dd><p>Wing reference area [m²]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>mass_properties.max_zero_fuel<span class="classifier">float</span></dt><dd><p>Maximum zero fuel weight [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flight_envelope.design_range<span class="classifier">float</span></dt><dd><p>Design range [nmi]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flight_envelope.design_mach_number<span class="classifier">float</span></dt><dd><p>Design cruise Mach number</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mass_properties.cargo<span class="classifier">float</span></dt><dd><p>Cargo weight [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>passengers<span class="classifier">int</span></dt><dd><p>Total passenger count</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuselages<span class="classifier">list</span></dt><dd><dl class="simple">
+<dt>Fuselage data with optional:</dt><dd><ul>
+<li><dl class="simple">
+<dt>number_coach_seats<span class="classifier">int</span></dt><dd><p>Number of economy seats</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>output</strong> –</p>
+<dl class="simple">
+<dt>Container with weight breakdown:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>misc<span class="classifier">float</span></dt><dd><p>Weight of unusable fuel, engine oil, passenger service, cargo containers [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flight_crew<span class="classifier">float</span></dt><dd><p>Flight crew and baggage weight [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flight_attendants<span class="classifier">float</span></dt><dd><p>Flight attendant and galley crew weight [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>total<span class="classifier">float</span></dt><dd><p>Total operating items weight [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses FLOPS correlations developed from commercial transport aircraft data. For more details,
+please refer to the FLOPS documentation: <a class="reference external" href="https://ntrs.nasa.gov/citations/20170005851">https://ntrs.nasa.gov/citations/20170005851</a></p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>If no tanks specified, assumes 5 fuel tanks</p></li>
+<li><dl class="simple">
+<dt>Default seat class distribution if not specified:</dt><dd><ul>
+<li><p>5% first class</p></li>
+<li><p>10% business class</p></li>
+<li><p>85% economy class</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>If coach seats specified:</dt><dd><ul>
+<li><p>Remaining seats split 1/4 first class, 3/4 business</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Crew requirements based on passenger count:</dt><dd><ul>
+<li><p>2-3 flight crew (&gt;150 pax = 3)</p></li>
+<li><p>1 attendant per 40 pax (min 1)</p></li>
+<li><p>Additional galley crew for &gt;250 pax</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+Component weights computed using empirical correlations:</p>
+<p>Unusable fuel weight:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">UF</span><span class="p">}</span> <span class="o">=</span> <span class="mf">11.5</span><span class="n">N_</span><span class="p">{</span><span class="n">eng</span><span class="p">}</span><span class="n">T_</span><span class="p">{</span><span class="n">SLS</span><span class="p">}</span><span class="o">^</span><span class="p">{</span><span class="mf">0.2</span><span class="p">}</span> <span class="o">+</span> <span class="mf">0.07</span><span class="n">S_</span><span class="p">{</span><span class="n">ref</span><span class="p">}</span> <span class="o">+</span> <span class="mf">1.6</span><span class="n">N_</span><span class="p">{</span><span class="n">tank</span><span class="p">}</span><span class="n">W_</span><span class="p">{</span><span class="n">ZF</span><span class="p">}</span><span class="o">^</span><span class="p">{</span><span class="mf">0.28</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Engine oil weight:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">oil</span><span class="p">}</span> <span class="o">=</span> <span class="mf">0.082</span><span class="n">N_</span><span class="p">{</span><span class="n">eng</span><span class="p">}</span><span class="n">T_</span><span class="p">{</span><span class="n">SLS</span><span class="p">}</span><span class="o">^</span><span class="p">{</span><span class="mf">0.65</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Passenger service weight:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">srv</span><span class="p">}</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.164</span><span class="n">N_</span><span class="p">{</span><span class="mi">1</span><span class="n">st</span><span class="p">}</span> <span class="o">+</span> <span class="mf">3.846</span><span class="n">N_</span><span class="p">{</span><span class="n">bus</span><span class="p">}</span> <span class="o">+</span> <span class="mf">2.529</span><span class="n">N_</span><span class="p">{</span><span class="n">eco</span><span class="p">})(</span><span class="n">R</span><span class="o">/</span><span class="n">M</span><span class="p">)</span><span class="o">^</span><span class="p">{</span><span class="mf">0.255</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Cargo container weight:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">con</span><span class="p">}</span> <span class="o">=</span> <span class="mi">175</span> \<span class="n">lceil</span> \<span class="n">frac</span><span class="p">{</span><span class="n">W_</span><span class="p">{</span><span class="n">cargo</span><span class="p">}}{</span><span class="mi">950</span><span class="p">}</span> \<span class="n">rceil</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>N_eng = number of engines</p></li>
+<li><p>T_SLS = sea level static thrust</p></li>
+<li><p>S_ref = wing reference area</p></li>
+<li><p>N_tank = number of fuel tanks</p></li>
+<li><p>W_ZF = zero fuel weight</p></li>
+<li><p>N_1st/bus/eco = number of seats by class</p></li>
+<li><p>R = design range</p></li>
+<li><p>M = design Mach number</p></li>
+<li><p>W_{cargo} = cargo weight</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] NASA Flight Optimization System (FLOPS)</p>
 </dd></dl>
 
 </section>

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,287 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Liquid_Hydrogen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Cryogens/Liquid_Hydrogen.html#Liquid_Hydrogen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Cryogens.Cryogen.html#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen" title="RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cryogen</span></code></a></p>
-<p>Liquid Hydrogen Cryogen Class</p>
+<p>A class representing liquid hydrogen cryogenic fuel and its thermodynamic properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the cryogen type (‘Liquid_Hydrogen’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.density" title="Link to this definition">#</a></dt>
+<dd><p>Density of liquid hydrogen in kg/m³</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy content in J/kg</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Energy density in J/m³</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.temperatures">
+<span class="sig-name descname"><span class="pre">temperatures</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.temperatures" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Temperature thresholds for the cryogen</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>freeze<span class="classifier">float</span></dt><dd><p>Freezing point temperature in Kelvin</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>boiling<span class="classifier">float</span></dt><dd><p>Boiling point temperature in Kelvin</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Analyses.Analysis.html#RCAIDE.Framework.Analyses.Analysis.Analysis.Container" title="RCAIDE.Framework.Analyses.Analysis.Analysis.Container">Container</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.vaporization_enthalpy">
+<span class="sig-name descname"><span class="pre">vaporization_enthalpy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.vaporization_enthalpy" title="Link to this definition">#</a></dt>
+<dd><p>Enthalpy of vaporization in kJ/kg</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.specific_heat">
+<span class="sig-name descname"><span class="pre">specific_heat</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.specific_heat" title="Link to this definition">#</a></dt>
+<dd><p>Specific heat capacity in kJ/kg·K</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.liquid_cp_coefficients">
+<span class="sig-name descname"><span class="pre">liquid_cp_coefficients</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.liquid_cp_coefficients" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Coefficients for liquid specific heat capacity polynomial</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>LCP_C0<span class="classifier">float</span></dt><dd><p>Constant term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>LCP_C1<span class="classifier">float</span></dt><dd><p>Linear term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>LCP_C2<span class="classifier">float</span></dt><dd><p>Quadratic term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>LCP_C3<span class="classifier">float</span></dt><dd><p>Cubic term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>LCP_minT<span class="classifier">float</span></dt><dd><p>Minimum valid temperature in Kelvin</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>LCP_maxT<span class="classifier">float</span></dt><dd><p>Maximum valid temperature in Kelvin</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.gas_cp_coefficients">
+<span class="sig-name descname"><span class="pre">gas_cp_coefficients</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.gas_cp_coefficients" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Coefficients for gas specific heat capacity polynomial</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>GCP_C0<span class="classifier">float</span></dt><dd><p>Constant term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>GCP_C1<span class="classifier">float</span></dt><dd><p>Linear term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>GCP_C2<span class="classifier">float</span></dt><dd><p>Quadratic term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>GCP_C3<span class="classifier">float</span></dt><dd><p>Cubic term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>GCP_minT<span class="classifier">float</span></dt><dd><p>Minimum valid temperature in Kelvin</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>GCP_maxT<span class="classifier">float</span></dt><dd><p>Maximum valid temperature in Kelvin</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.antoine_coefficients">
+<span class="sig-name descname"><span class="pre">antoine_coefficients</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.antoine_coefficients" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Antoine equation coefficients for vapor pressure calculation</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>antoine_A<span class="classifier">float</span></dt><dd><p>A coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>antoine_B<span class="classifier">float</span></dt><dd><p>B coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>antoine_C<span class="classifier">float</span></dt><dd><p>C coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>antoine_minT<span class="classifier">float</span></dt><dd><p>Minimum valid temperature in Kelvin</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>antoine_maxT<span class="classifier">float</span></dt><dd><p>Maximum valid temperature in Kelvin</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.vaporization_coefficients">
+<span class="sig-name descname"><span class="pre">vaporization_coefficients</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.vaporization_coefficients" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Coefficients for vaporization enthalpy polynomial</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>H_C0<span class="classifier">float</span></dt><dd><p>Constant term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H_C1<span class="classifier">float</span></dt><dd><p>Linear term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H_C2<span class="classifier">float</span></dt><dd><p>Quadratic term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H_C3<span class="classifier">float</span></dt><dd><p>Cubic term coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H_minP<span class="classifier">float</span></dt><dd><p>Minimum valid pressure in Pascal</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H_maxP<span class="classifier">float</span></dt><dd><p>Maximum valid pressure in Pascal</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The class implements various thermodynamic properties using polynomial fits and the Antoine equation.
+Specific heat capacity calculations are provided for both liquid and gas phases.
+Valid temperature and pressure ranges are specified for each correlation.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Antoine Equation’</dt><dd><p>An equation relating vapor pressure to temperature: log10(P) = A - (B/(T+C))</p>
+</dd>
+<dt>‘Specific Heat Capacity’</dt><dd><p>The amount of heat required to raise the temperature of 1 kg of the substance by 1 Kelvin</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Ekin, J. (2006). Experimental techniques for low-temperature measurements: Cryostat design, material properties and superconductor critical-current testing. Oxford University Press.
+[2] National Institute of Standards and Technology. (2023). NIST Chemistry Webbook, SRD 69. Thermophysical Properties of Fluid Systems. <a class="reference external" href="https://webbook.nist.gov/chemistry/fluid/">https://webbook.nist.gov/chemistry/fluid/</a></p>
 </dd></dl>
 
 </section>
@@ -585,7 +865,20 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.tag"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.density"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.specific_energy"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.energy_density"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.temperatures"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.temperatures</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.vaporization_enthalpy"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.vaporization_enthalpy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.specific_heat"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.specific_heat</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.liquid_cp_coefficients"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.liquid_cp_coefficients</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.gas_cp_coefficients"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.gas_cp_coefficients</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.antoine_coefficients"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.antoine_coefficients</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Liquid_Hydrogen.Liquid_Hydrogen.vaporization_coefficients"><code class="docutils literal notranslate"><span class="pre">Liquid_Hydrogen.vaporization_coefficients</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

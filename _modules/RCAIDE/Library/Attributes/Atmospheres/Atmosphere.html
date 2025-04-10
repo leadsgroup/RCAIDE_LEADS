@@ -394,7 +394,31 @@
 <div class="viewcode-block" id="Atmosphere">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Atmospheres.Atmosphere.html#RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Atmosphere</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default atmosphere class </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for atmospheric models providing a framework for defining atmospheric properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the atmospheric model type</span>
+<span class="sd">    composition : Data</span>
+<span class="sd">        Container for atmospheric composition information</span>
+<span class="sd">            - gas : float</span>
+<span class="sd">                Mass fraction of gas in the atmosphere (default: 1.0)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class serves as a template for specific atmospheric implementations (e.g., Earth&#39;s atmosphere)</span>
+<span class="sd">    and provides basic structure for atmospheric composition data.</span>
+
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Constant-property atmosphere&#39;</span>
+<span class="sd">        An atmospheric model where properties remain constant and do not vary with altitude or other parameters</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Attributes.Atmospheres.Earth : Earth-specific atmospheric models</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,7 +535,177 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Unpack_Unknowns.orientation.orientation">
 <span class="sig-name descname"><span class="pre">orientation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Unpack_Unknowns/orientation.html#orientation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Unpack_Unknowns.orientation.orientation" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Updates vehicle orientation states from solver unknowns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – <dl>
+<dt>The mission segment being analyzed</dt><dd><ul>
+<li><dl class="simple">
+<dt>assigned_control_variables<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Control configurations</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>body_angle<span class="classifier">Control</span></dt><dd><p>Body angle control settings</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>bank_angle<span class="classifier">Control</span></dt><dd><p>Bank angle control settings</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>velocity<span class="classifier">Control</span></dt><dd><p>Velocity control settings</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>altitude<span class="classifier">Control</span></dt><dd><p>Altitude control settings</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>trim_lift_coefficient<span class="classifier">float, optional</span></dt><dd><p>Target lift coefficient for trim</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>angle_of_attack<span class="classifier">float</span></dt><dd><p>Fixed angle of attack [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>bank_angle<span class="classifier">float</span></dt><dd><p>Fixed bank angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>state<span class="classifier">Data</span></dt><dd><p>Current segment state
+- conditions : Data</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Flight conditions</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>frames.body.inertial_rotations<span class="classifier">array</span></dt><dd><p>Body orientation angles [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>frames.planet.true_heading<span class="classifier">array</span></dt><dd><p>Vehicle heading [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>frames.inertial.velocity_vector<span class="classifier">array</span></dt><dd><p>Vehicle velocity [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>frames.inertial.position_vector<span class="classifier">array</span></dt><dd><p>Vehicle position [m]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>unknowns<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Solver variables</dt><dd><ul>
+<li><dl class="simple">
+<dt>body_angle<span class="classifier">array</span></dt><dd><p>Body angle values [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>bank_angle<span class="classifier">array</span></dt><dd><p>Bank angle values [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>velocity<span class="classifier">array</span></dt><dd><p>Velocity values [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>altitude<span class="classifier">array</span></dt><dd><p>Altitude values [m]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ones_row<span class="classifier">function</span></dt><dd><p>Creates array of ones with specified columns</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updates segment conditions directly</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function applies orientation-related solver values to the segment state,
+handling body angles, trim conditions, and trajectory controls. It manages
+both active control and fixed orientation cases.</p>
+<dl class="simple">
+<dt>The function processes:</dt><dd><ol class="arabic simple">
+<li><dl class="simple">
+<dt>Body angle control</dt><dd><ul class="simple">
+<li><p>Trim conditions</p></li>
+<li><p>Active angle control</p></li>
+<li><p>Fixed angle of attack</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Bank angle control</dt><dd><ul class="simple">
+<li><p>Active bank control</p></li>
+<li><p>Fixed bank angle</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Heading alignment</p></li>
+<li><p>Velocity control</p></li>
+<li><p>Altitude control</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Valid angle definitions</p></li>
+<li><p>Proper control assignments</p></li>
+<li><p>Compatible trim conditions</p></li>
+<li><p>Well-defined reference frames</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
+</dd></dl>
 
 </section>
 

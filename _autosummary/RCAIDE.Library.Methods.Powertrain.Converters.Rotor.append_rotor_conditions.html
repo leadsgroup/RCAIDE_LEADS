@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="compute_rotor_performance" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.html" />
-    <link rel="prev" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Perscribed_Vortex_Wake.compute_wake_induced_velocity.vortex" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Perscribed_Vortex_Wake.compute_wake_induced_velocity.vortex.html" />
+    <link rel="prev" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.wake_convergence" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.wake_convergence.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -538,7 +538,47 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions.append_rotor_conditions">
 <span class="sig-name descname"><span class="pre">append_rotor_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/append_rotor_conditions.html#append_rotor_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions.append_rotor_conditions" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Initializes and appends rotor conditions to the energy and noise conditions dictionaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rotor</strong> (<a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Rotor.html#RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor" title="RCAIDE.Library.Components.Powertrain.Converters.Rotor.Rotor"><em>Rotor</em></a>) – The rotor component for which conditions are being initialized.</p></li>
+<li><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment in which the rotor is operating.</p></li>
+<li><p><strong>energy_conditions</strong> (<em>dict</em>) – Dictionary containing energy-related conditions for all propulsion components.</p></li>
+<li><p><strong>noise_conditions</strong> (<em>dict</em>) – Dictionary containing noise-related conditions for all propulsion components.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function modifies the energy_conditions and noise_conditions dictionaries in-place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function creates empty Conditions objects for the rotor’s energy and noise
+characteristics within the respective dictionaries. These conditions will be populated
+during the mission analysis process.</p>
+<dl class="simple">
+<dt>The energy conditions include various performance metrics such as:</dt><dd><ul class="simple">
+<li><p>Orientation and thrust vector angle</p></li>
+<li><p>Blade pitch command</p></li>
+<li><p>Torque, thrust, and throttle settings</p></li>
+<li><p>RPM and angular velocity</p></li>
+<li><p>Disc and power loading</p></li>
+<li><p>Tip Mach number</p></li>
+<li><p>Efficiency and figure of merit</p></li>
+<li><p>Power coefficient</p></li>
+</ul>
+</dd>
+</dl>
+<p>All values are initialized as zero or one arrays (as appropriate) with the same
+length as the segment’s state vector.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance</span></code></a></p>
+</div>
+</dd></dl>
 
 </section>
 
@@ -553,12 +593,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Perscribed_Vortex_Wake.compute_wake_induced_velocity.vortex.html"
+       href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.wake_convergence.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.Perscribed_Vortex_Wake.compute_wake_induced_velocity.vortex</p>
+        <p class="prev-next-title">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.wake_convergence</p>
       </div>
     </a>
     <a class="right-next"

@@ -420,7 +420,7 @@
     <span class="n">S_ref</span>          <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">reference_area</span>
     <span class="n">Mach</span>           <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span> 
    
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">((</span><span class="n">Mach</span><span class="o">&lt;=</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span> 
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">((</span><span class="n">Mach</span><span class="o">&lt;=</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>  <span class="c1"># subsonic</span>
         <span class="n">swet_tot</span>       <span class="o">=</span> <span class="mf">0.</span>
         <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
             <span class="n">swet_tot</span> <span class="o">+=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> 
@@ -431,13 +431,12 @@
         <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span> 
             <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>  
                 <span class="k">if</span> <span class="s1">&#39;nacelle&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span>
-                    <span class="n">swet_tot</span> <span class="o">+=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>  
+                    <span class="n">swet_tot</span> <span class="o">+=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
                             
         <span class="c1"># total miscellaneous drag </span>
-        <span class="n">miscellaneous_drag</span> <span class="o">=</span>  <span class="p">(</span><span class="mf">0.40</span><span class="o">*</span> <span class="p">(</span><span class="mf">0.0184</span> <span class="o">+</span> <span class="mf">0.000469</span> <span class="o">*</span> <span class="n">swet_tot</span> <span class="o">-</span> <span class="mf">1.13</span><span class="o">*</span><span class="mi">10</span><span class="o">**-</span><span class="mi">7</span> <span class="o">*</span> <span class="n">swet_tot</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">S_ref</span>
+        <span class="n">miscellaneous_drag</span> <span class="o">=</span>  <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.40</span><span class="o">*</span> <span class="p">(</span><span class="mf">0.0184</span> <span class="o">+</span> <span class="mf">0.000469</span> <span class="o">*</span> <span class="n">swet_tot</span> <span class="o">-</span> <span class="mf">1.13</span><span class="o">*</span><span class="mi">10</span><span class="o">**-</span><span class="mi">7</span> <span class="o">*</span> <span class="n">swet_tot</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">S_ref</span>
         <span class="n">total_miscellaneous_drag</span> <span class="o">=</span> <span class="n">miscellaneous_drag</span> <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span>    
-    <span class="k">else</span><span class="p">:</span>
-
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># supersonic</span>
         <span class="c1"># Initialize drag</span>
         <span class="n">total_nacelle_base_drag</span>   <span class="o">=</span> <span class="mf">0.0</span>  
         <span class="n">nacelle_base_drag_results</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span> 
@@ -446,7 +445,7 @@
         <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span>  <span class="n">geometry</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span> 
             <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>  
                 <span class="k">if</span> <span class="s1">&#39;nacelle&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span> 
-                    <span class="n">nacelle_base_drag</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">/</span><span class="mf">12.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="o">.</span><span class="n">diameter</span> <span class="o">*</span> <span class="mf">0.2</span><span class="o">/</span><span class="n">S_ref</span> 
+                    <span class="n">nacelle_base_drag</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span>  <span class="mf">0.5</span><span class="o">/</span><span class="mf">12.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="o">.</span><span class="n">diameter</span> <span class="o">*</span> <span class="mf">0.2</span><span class="o">/</span><span class="n">S_ref</span>
                     <span class="n">nacelle_base_drag_results</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">nacelle_base_drag</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span>   
                     <span class="n">total_nacelle_base_drag</span> <span class="o">+=</span> <span class="n">nacelle_base_drag</span>     
 
@@ -459,8 +458,7 @@
         
     <span class="c1"># Store results </span>
     <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">miscellaneous</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span> 
-        <span class="n">total</span>            <span class="o">=</span> <span class="n">total_miscellaneous_drag</span>  <span class="p">,</span>
-    <span class="p">)</span> 
+        <span class="n">total</span>            <span class="o">=</span> <span class="n">total_miscellaneous_drag</span><span class="p">,)</span>
     <span class="k">return</span>  </div>
 
     

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,59 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Aviation_Gasoline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Aviation_Gasoline.html#Aviation_Gasoline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Propellant</span></code></a></p>
-<p>Aviation gasoline class</p>
+<p>A class representing aviation gasoline (avgas) fuel properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the propellant (‘Aviation_Gasoline’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline.density" title="Link to this definition">#</a></dt>
+<dd><p>Fuel density in kg/m³ (721.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy content in J/kg (43.71e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements properties for aviation gasoline (avgas), commonly used in
+piston-engine aircraft.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Avgas’</dt><dd><p>Aviation gasoline, a high-octane fuel specifically formulated for
+aircraft piston engines</p>
+</dd>
+<dt>‘Specific Energy’</dt><dd><p>The amount of energy per unit mass of fuel, indicating the fuel’s
+energy content</p>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties are for standard temperature and pressure conditions</p></li>
+<li><p>Fuel is assumed to be in liquid phase</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Chevron Products Company. (n.d.). Aviation fuels. Chevron. <a class="reference external" href="https://www.chevron.com/-/media/chevron/operations/documents/aviation-tech-review.pdf">https://www.chevron.com/-/media/chevron/operations/documents/aviation-tech-review.pdf</a></p>
 </dd></dl>
 
 </section>
@@ -585,7 +637,12 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline"><code class="docutils literal notranslate"><span class="pre">Aviation_Gasoline</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline"><code class="docutils literal notranslate"><span class="pre">Aviation_Gasoline</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline.tag"><code class="docutils literal notranslate"><span class="pre">Aviation_Gasoline.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline.density"><code class="docutils literal notranslate"><span class="pre">Aviation_Gasoline.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline.specific_energy"><code class="docutils literal notranslate"><span class="pre">Aviation_Gasoline.specific_energy</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

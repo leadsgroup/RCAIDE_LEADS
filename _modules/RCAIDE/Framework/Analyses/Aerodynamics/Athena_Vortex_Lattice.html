@@ -445,16 +445,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span>                                     <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>  
                    
         <span class="c1"># correction factors           </span>
-        <span class="n">settings</span>                                                     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> 
+        <span class="n">settings</span>                                                     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
         <span class="n">settings</span><span class="o">.</span><span class="n">fuselage_lift_correction</span>                            <span class="o">=</span> <span class="mf">1.14</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">trim_drag_correction_factor</span>                         <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">wing_parasite_drag_form_factor</span>                      <span class="o">=</span> <span class="mf">1.1</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">fuselage_parasite_drag_form_factor</span>                  <span class="o">=</span> <span class="mf">2.3</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">maximum_lift_coefficient_factor</span>                     <span class="o">=</span> <span class="mf">1.0</span>        
-        <span class="n">settings</span><span class="o">.</span><span class="n">lift_to_drag_adjustment</span>                             <span class="o">=</span> <span class="mf">0.0</span>   
+        <span class="n">settings</span><span class="o">.</span><span class="n">trim_drag_correction_factor</span>                         <span class="o">=</span> <span class="mf">1.1</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">wing_parasite_drag_form_factor</span>                      <span class="o">=</span> <span class="mf">1.2</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">fuselage_parasite_drag_form_factor</span>                  <span class="o">=</span> <span class="mf">2.4</span>  
+        <span class="n">settings</span><span class="o">.</span><span class="n">maximum_lift_coefficient_factor</span>                     <span class="o">=</span> <span class="mf">1.0</span>
         <span class="n">settings</span><span class="o">.</span><span class="n">viscous_lift_dependent_drag_factor</span>                  <span class="o">=</span> <span class="mf">0.38</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span>                              <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">parasite_drag</span>                <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># Reduction factors are proportional (.1 is a 10% weight reduction)</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">induced_drag</span>                 <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># Reduction factors are proportional (.1 is a 10% weight reduction)</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">compressibility_drag</span>         <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># Reduction factors are proportional (.1 is a 10% weight reduction)</span>
         <span class="n">settings</span><span class="o">.</span><span class="n">drag_coefficient_increment</span>                          <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">spoiler_drag_increment</span>                              <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">settings</span><span class="o">.</span><span class="n">maximum_lift_coefficient</span>                            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>  
         <span class="n">settings</span><span class="o">.</span><span class="n">recalculate_total_wetted_area</span>                       <span class="o">=</span> <span class="kc">False</span>  
         <span class="n">settings</span><span class="o">.</span><span class="n">oswald_efficiency_factor</span>                            <span class="o">=</span> <span class="kc">None</span>

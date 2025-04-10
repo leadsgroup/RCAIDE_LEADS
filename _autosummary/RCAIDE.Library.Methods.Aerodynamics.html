@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -526,7 +526,34 @@
   <p>RCAIDE.Library.Methods.Aerodynamics</p>
 <section id="module-RCAIDE.Library.Methods.Aerodynamics">
 <span id="aerodynamics"></span><h1>Aerodynamics<a class="headerlink" href="#module-RCAIDE.Library.Methods.Aerodynamics" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides methods for aerodynamic analysis and computation within the RCAIDE framework.</p>
+<p>The Aerodynamics module contains several submodules implementing different approaches to aerodynamic analysis:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Athena_Vortex_Lattice: Implementation of Drela’s AVL (Athena Vortex Lattice) method for</p></li>
+</ul>
+<p>analyzing aerodynamic characteristics of aircraft configurations.</p>
+<ul class="simple">
+<li><p>Airfoil_Panel_Method: Panel method implementation for 2D airfoil analysis,</p></li>
+</ul>
+<p>providing pressure distributions and aerodynamic coefficients.</p>
+<ul class="simple">
+<li><p>AERODAS: Implementation of the AERODAS (Aerodynamic Data Analysis System) model</p></li>
+</ul>
+<p>for high angle of attack aerodynamics and stall prediction.</p>
+<ul class="simple">
+<li><p>Vortex_Lattice_Method: General vortex lattice method implementation for</p></li>
+</ul>
+<p>analyzing lifting surfaces and complete aircraft configurations.</p>
+<ul class="simple">
+<li><p>Common: Shared utilities and functions used across different aerodynamic methods,</p></li>
+</ul>
+<p>including coefficient transformations and atmospheric calculations.</p>
+</div></blockquote>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Analyses.Aerodynamics</span></code>, <a class="reference internal" href="RCAIDE.Library.Components.Wings.html#module-RCAIDE.Library.Components.Wings" title="RCAIDE.Library.Components.Wings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Wings</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>

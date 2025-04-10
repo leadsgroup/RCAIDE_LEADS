@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="estimate_landing_field_length" href="RCAIDE.Library.Methods.Performance.estimate_landing_field_length.html" />
-    <link rel="prev" title="aircraft_aerodynamic_analysis" href="RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis.html" />
+    <link rel="prev" title="RCAIDE.Library.Methods.Performance.compute_noise_certification_data.truncate_colormap" href="RCAIDE.Library.Methods.Performance.compute_noise_certification_data.truncate_colormap.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -531,26 +531,102 @@
 <span id="compute-payload-range-diagram"></span><h1>compute_payload_range_diagram<a class="headerlink" href="#module-RCAIDE.Library.Methods.Performance.compute_payload_range_diagram" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.compute_payload_range_diagram">
-<span class="sig-name descname"><span class="pre">compute_payload_range_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assigned_propulsors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_analysis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aerodynamics_analysis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cruise_airspeed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">230.2256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cruise_altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10668.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_range_guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1852000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reserves</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_diagram</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/compute_payload_range_diagram.html#compute_payload_range_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.compute_payload_range_diagram" title="Link to this definition">#</a></dt>
-<dd><p>Calculates and plots the payload range diagram for an aircraft by modifying the cruise segment and weights of the aicraft .</p>
-<p>Sources:
-N/A</p>
-<p>Assumptions:
-None</p>
-<dl class="simple">
-<dt>Inputs:</dt><dd><p>vehicle             data structure for aircraft                  [-]
-mission             data structure for mission                   [-]
-cruise_segment_tag  string of cruise segment                     [string]
-reserves            reserve fuel                                 [unitless]</p>
+<span class="sig-name descname"><span class="pre">compute_payload_range_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mission</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cruise_segment_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cruise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_reserve_percentage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_diagram</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/compute_payload_range_diagram.html#compute_payload_range_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.compute_payload_range_diagram" title="Link to this definition">#</a></dt>
+<dd><p>Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mission</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – Data structure containing the mission to be analyzed</p></li>
+<li><p><strong>cruise_segment_tag</strong> (<em>str</em><em>, </em><em>optional</em>) – String identifier for the cruise segment in the mission
+Default: “cruise”</p></li>
+<li><p><strong>fuel_reserve_percentage</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of maximum fuel to be reserved (not used for range)
+Default: 0.0</p></li>
+<li><p><strong>plot_diagram</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag to generate payload-range plots
+Default: True</p></li>
+<li><p><strong>fuel_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of fuel for plot title
+Default: None</p></li>
+</ul>
 </dd>
-<dt>Outputs:</dt><dd><p>payload_range       data structure of payload range properties   [m/s]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>payload_range</strong> – Data structure containing payload range properties
+- range : ndarray</p>
+<blockquote>
+<div><p>Range values for each point [m]</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>payload<span class="classifier">ndarray</span></dt><dd><p>Payload values for each point [kg]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>oew_plus_payload<span class="classifier">ndarray</span></dt><dd><p>Operating empty weight plus payload for each point [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuel<span class="classifier">ndarray</span></dt><dd><p>Fuel weight for each point [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>takeoff_weight<span class="classifier">ndarray</span></dt><dd><p>Takeoff weight for each point [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuel_reserve_percentage<span class="classifier">float</span></dt><dd><p>Fraction of fuel reserved</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>Computes three key points for conventional aircraft:</dt><dd><ol class="arabic simple">
+<li><p>Maximum payload at maximum takeoff weight</p></li>
+<li><p>Maximum fuel with maximum takeoff weight</p></li>
+<li><p>Maximum fuel with zero payload (ferry range)</p></li>
+</ol>
+</dd>
+<dt>For electric aircraft computes:</dt><dd><ol class="arabic simple">
+<li><p>Maximum payload range</p></li>
+<li><p>Ferry range (zero payload)</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant cruise speed and altitude</p></li>
+<li><p>Fixed reserve fuel fraction</p></li>
+<li><p>Linear interpolation between payload-range points</p></li>
+<li><p>Battery energy content remains constant (electric aircraft)</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+The payload-range diagram shows the trade-off between how much payload an aircraft
+can carry versus how far it can fly. For conventional aircraft, the diagram typically
+has three segments:</p>
+<ol class="arabic simple">
+<li><p>Maximum payload segment: Range increases by burning fuel initially loaded</p></li>
+<li><p>Maximum fuel segment: Range increases by trading payload for fuel</p></li>
+<li><p>Ferry range segment: Maximum range with zero payload</p></li>
+</ol>
+<p>For electric aircraft, the diagram is simpler with just two points connected by
+a straight line, as there is no fuel weight to trade for payload.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Performance.conventional_payload_range_diagram</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Performance.electric_payload_range_diagram</span></code></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.conventional_payload_range_diagram">
-<span class="sig-name descname"><span class="pre">conventional_payload_range_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mission</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cruise_segment_tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reserves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_diagram</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/compute_payload_range_diagram.html#conventional_payload_range_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.conventional_payload_range_diagram" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">conventional_payload_range_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mission</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cruise_segment_tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_reserve_percentage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_diagram</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/compute_payload_range_diagram.html#conventional_payload_range_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.conventional_payload_range_diagram" title="Link to this definition">#</a></dt>
 <dd><p>Calculates and plots the payload range diagram for a fuel-bases aircraft by modifying the
 cruise segment range and weights of the aicraft .</p>
 <blockquote>
@@ -562,7 +638,7 @@ None</p>
 <dt>Inputs:</dt><dd><p>vehicle             data structure for aircraft                  [-]
 mission             data structure for mission                   [-]
 cruise_segment_tag  string of cruise segment                     [string]
-reserves            reserve fuel                                 [unitless]</p>
+fuel_reserve_percentage            reserve fuel                                 [unitless]</p>
 </dd>
 <dt>Outputs:</dt><dd><p>payload_range       data structure of payload range properties   [m/s]</p>
 </dd>
@@ -584,38 +660,13 @@ None</p>
 <dt>Inputs:</dt><dd><p>vehicle             data structure for aircraft                  [-]
 mission             data structure for mission                   [-]
 cruise_segment_tag  string of cruise segment                     [string]
-reserves            reserve fuel                                 [unitless]</p>
+fuel_reserve_percentage            reserve fuel                                 [unitless]</p>
 </dd>
 <dt>Outputs:</dt><dd><p>payload_range       data structure of payload range properties   [m/s]</p>
 </dd>
 </dl>
 </div></blockquote>
 </dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.configs_setup">
-<span class="sig-name descname"><span class="pre">configs_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/compute_payload_range_diagram.html#configs_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.configs_setup" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.analyses_setup">
-<span class="sig-name descname"><span class="pre">analyses_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aerodynamics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/compute_payload_range_diagram.html#analyses_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.analyses_setup" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.base_analysis">
-<span class="sig-name descname"><span class="pre">base_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aerodynamics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/compute_payload_range_diagram.html#base_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.base_analysis" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.mission_setup">
-<span class="sig-name descname"><span class="pre">mission_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electric_aircraft</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assigned_propulsors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cruise_airspeed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cruise_altitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_range_guess</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/compute_payload_range_diagram.html#mission_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.mission_setup" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.missions_setup">
-<span class="sig-name descname"><span class="pre">missions_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mission</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/compute_payload_range_diagram.html#missions_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.missions_setup" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
 
 </section>
 
@@ -630,12 +681,12 @@ reserves            reserve fuel                                 [unitless]</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis.html"
+       href="RCAIDE.Library.Methods.Performance.compute_noise_certification_data.truncate_colormap.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">aircraft_aerodynamic_analysis</p>
+        <p class="prev-next-title">RCAIDE.Library.Methods.Performance.compute_noise_certification_data.truncate_colormap</p>
       </div>
     </a>
     <a class="right-next"
@@ -669,11 +720,6 @@ reserves            reserve fuel                                 [unitless]</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.compute_payload_range_diagram"><code class="docutils literal notranslate"><span class="pre">compute_payload_range_diagram()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.conventional_payload_range_diagram"><code class="docutils literal notranslate"><span class="pre">conventional_payload_range_diagram()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.electric_payload_range_diagram"><code class="docutils literal notranslate"><span class="pre">electric_payload_range_diagram()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.configs_setup"><code class="docutils literal notranslate"><span class="pre">configs_setup()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.analyses_setup"><code class="docutils literal notranslate"><span class="pre">analyses_setup()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.base_analysis"><code class="docutils literal notranslate"><span class="pre">base_analysis()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.mission_setup"><code class="docutils literal notranslate"><span class="pre">mission_setup()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.missions_setup"><code class="docutils literal notranslate"><span class="pre">missions_setup()</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,29 +533,82 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Planets.Earth.Earth">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Earth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Planets/Earth.html#Earth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Planets.Planet.html#RCAIDE.Library.Attributes.Planets.Planet.Planet" title="RCAIDE.Library.Attributes.Planets.Planet.Planet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Planet</span></code></a></p>
-<p>Class for planet Earth with defauk properties</p>
+<p>A class representing Earth’s physical properties and gravitational characteristics.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Planets.Earth.Earth.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the planet (‘Earth’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Planets.Earth.Earth.mass">
+<span class="sig-name descname"><span class="pre">mass</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.mass" title="Link to this definition">#</a></dt>
+<dd><p>Mass of Earth in kg (5.98e24)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Planets.Earth.Earth.mean_radius">
+<span class="sig-name descname"><span class="pre">mean_radius</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.mean_radius" title="Link to this definition">#</a></dt>
+<dd><p>Average radius of Earth in m (6.371e6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Planets.Earth.Earth.sea_level_gravity">
+<span class="sig-name descname"><span class="pre">sea_level_gravity</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.sea_level_gravity" title="Link to this definition">#</a></dt>
+<dd><p>Gravitational acceleration at sea level in m/s² (9.80665)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements standard Earth properties used in aerospace calculations.
+Values are based on internationally accepted standards for Earth’s physical parameters.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Planets.Earth.Earth.compute_gravity">
 <span class="sig-name descname"><span class="pre">compute_gravity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Planets/Earth.html#Earth.compute_gravity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.compute_gravity" title="Link to this definition">#</a></dt>
-<dd><p>Compute the gravitational acceleration at altitude</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>None</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Compute the gravitational acceleration at a given altitude above Earth’s surface.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – air           [unitless]</p></li>
-<li><p><strong>H</strong> (<em>float</em>) – altitude      [m]</p></li>
-</ul>
+<dd class="field-odd"><p><strong>H</strong> (<em>float</em><em>, </em><em>optional</em>) – Altitude above sea level in meters. Default is 0.0</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>acceleration due to gravity [m/s^2]</p>
+<dd class="field-even"><p><strong>gh</strong> – Gravitational acceleration at the specified altitude in m/s²</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>g (float)</p>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><strong>Theory</strong>
+Uses the inverse square law for gravitational acceleration:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">=</span> <span class="n">g_0</span> \<span class="n">left</span><span class="p">(</span>\<span class="n">frac</span><span class="p">{</span><span class="n">R_e</span><span class="p">}{</span><span class="n">R_e</span> <span class="o">+</span> <span class="n">h</span><span class="p">}</span>\<span class="n">right</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>g₀ is sea level gravity</p></li>
+<li><p>Rₑ is Earth’s mean radius</p></li>
+<li><p>h is altitude above sea level</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -612,6 +665,10 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth"><code class="docutils literal notranslate"><span class="pre">Earth</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.tag"><code class="docutils literal notranslate"><span class="pre">Earth.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.mass"><code class="docutils literal notranslate"><span class="pre">Earth.mass</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.mean_radius"><code class="docutils literal notranslate"><span class="pre">Earth.mean_radius</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.sea_level_gravity"><code class="docutils literal notranslate"><span class="pre">Earth.sea_level_gravity</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Planets.Earth.Earth.compute_gravity"><code class="docutils literal notranslate"><span class="pre">Earth.compute_gravity()</span></code></a></li>
 </ul>
 </li>

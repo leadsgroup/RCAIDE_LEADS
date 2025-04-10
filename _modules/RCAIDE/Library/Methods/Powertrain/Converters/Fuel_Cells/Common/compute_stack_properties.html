@@ -400,28 +400,59 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="compute_stack_properties">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties.html#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties.compute_stack_properties">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_stack_properties</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">):</span>  
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate fuel_cell_stack level properties of battery module using cell </span>
-<span class="sd">    properties and module configuraton</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_stack_properties</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates fuel cell stack properties based on individual cell characteristics and stack configuration.</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions: </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    mass              </span>
-<span class="sd">    fuel_cell_stack.cell</span>
-<span class="sd">      nominal_capacity        [amp-hours]            </span>
-<span class="sd">      nominal_voltage         [volts]</span>
-<span class="sd">      pack_config             [unitless]</span>
-<span class="sd">      mass                    [kilograms]</span>
-<span class="sd">                          </span>
-<span class="sd">    Outputs:              </span>
-<span class="sd">     fuel_cell_stack.             </span>
-<span class="sd">       maximum_energy         [watt-hours]</span>
-<span class="sd">       maximum_power              [watts]</span>
-<span class="sd">       initial_maximum_energy [watt-hours]</span>
-<span class="sd">       specific_energy        [watt-hours/kilogram]</span>
-<span class="sd">       charging_voltage       [volts]</span>
-<span class="sd">       mass_properties.    </span>
-<span class="sd">        mass                  [kilograms] </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fuel_cell_stack : RCAIDE.Components.Powertrain.Converters.Fuel_Cell_Stack</span>
+<span class="sd">        The fuel cell stack component for which properties are being computed</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function computes geometric, electrical, and performance properties of a fuel cell stack</span>
+<span class="sd">    based on individual cell properties and stack configuration. It handles both generic fuel cell</span>
+<span class="sd">    stacks and proton exchange membrane (PEM) fuel cell stacks with different calculation methods.</span>
+<span class="sd">    </span>
+<span class="sd">    For generic fuel cells, optimization is used to find the maximum power point.</span>
+<span class="sd">    For PEM fuel cells, specialized performance models are used that account for</span>
+<span class="sd">    operating conditions like temperature and pressure.</span>
+<span class="sd">    </span>
+<span class="sd">    The function calculates:</span>
+<span class="sd">        - Physical dimensions (length, width, height) based on cell arrangement</span>
+<span class="sd">        - Maximum power, voltage, and current</span>
+<span class="sd">        - Fuel consumption rates</span>
+<span class="sd">        - Mass properties</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Cell properties are uniform across the stack</span>
+<span class="sd">        * Cells are arranged in a regular geometric pattern</span>
+<span class="sd">        * For PEM cells, standard atmospheric conditions are used if not specified</span>
+<span class="sd">        * Thermal effects within the stack are simplified</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    </span>
+<span class="sd">    For generic fuel cells, the maximum power point is found by optimizing:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        P_{max} = \\max_{j \\in [j_{min}, j_{max}]} P(j)</span>
+<span class="sd">    </span>
+<span class="sd">    where j is the current density and P is the power function.</span>
+<span class="sd">    </span>
+<span class="sd">    For PEM fuel cells, detailed electrochemical models account for:</span>
+<span class="sd">        - Activation losses</span>
+<span class="sd">        - Ohmic losses</span>
+<span class="sd">        - Concentration losses</span>
+<span class="sd">        </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
      
     
@@ -503,9 +534,11 @@
         <span class="n">atmosphere</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Atmospheric</span><span class="o">.</span><span class="n">US_Standard_1976</span><span class="p">()</span>
         <span class="n">atmo_data</span>  <span class="o">=</span> <span class="n">atmosphere</span><span class="o">.</span><span class="n">compute_values</span><span class="p">(</span><span class="n">design_altitude</span><span class="p">)</span> 
          
-        <span class="n">segment</span>                  <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>  
-        <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">Results</span><span class="p">()</span>   
-        <span class="n">bus</span>     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span> 
+        <span class="n">segment</span>                                     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span>            <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">battery_fuel_cell_power_split_ratio</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">Results</span><span class="p">()</span>   
+        <span class="n">bus</span>                                         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span> 
         <span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">)</span>   
         
         <span class="n">bus</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
@@ -520,13 +553,13 @@
             <span class="n">cryogenic_tank</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">bus</span><span class="p">)</span>
       
         <span class="c1"># compute fuel cell performance             </span>
-        <span class="n">t_idx</span>                      <span class="o">=</span>  <span class="mi">0</span>
-        <span class="n">fuel_cell_stack_conditions</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">[</span><span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+        <span class="n">t_idx</span>                                                                    <span class="o">=</span>  <span class="mi">0</span>
+        <span class="n">fuel_cell_stack_conditions</span>                                               <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">[</span><span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
         <span class="n">fuel_cell_stack_conditions</span><span class="o">.</span><span class="n">fuel_cell</span><span class="o">.</span><span class="n">stagnation_temperature</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>    <span class="o">=</span> <span class="n">atmo_data</span><span class="o">.</span><span class="n">temperature</span>   
         <span class="n">fuel_cell_stack_conditions</span><span class="o">.</span><span class="n">fuel_cell</span><span class="o">.</span><span class="n">stagnation_pressure</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>       <span class="o">=</span> <span class="n">atmo_data</span><span class="o">.</span><span class="n">pressure</span>   
         <span class="n">fuel_cell_stack_conditions</span><span class="o">.</span><span class="n">fuel_cell</span><span class="o">.</span><span class="n">pressure_drop</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>             <span class="o">=</span> <span class="n">fuel_cell</span><span class="o">.</span><span class="n">rated_p_drop_fc</span>
         <span class="n">fuel_cell_stack_conditions</span><span class="o">.</span><span class="n">fuel_cell</span><span class="o">.</span><span class="n">stack_temperature</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>         <span class="o">=</span> <span class="n">fuel_cell</span><span class="o">.</span><span class="n">stack_temperature</span> 
-        <span class="n">rated_current_density</span><span class="p">,</span> <span class="n">rated_power_density</span> <span class="o">=</span> <span class="n">evaluate_max_gross_power</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">,</span><span class="n">fuel_cell_stack_conditions</span><span class="p">,</span><span class="n">t_idx</span><span class="p">)</span>
+        <span class="n">rated_current_density</span><span class="p">,</span> <span class="n">rated_power_density</span>                               <span class="o">=</span> <span class="n">evaluate_max_gross_power</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">,</span><span class="n">fuel_cell_stack_conditions</span><span class="p">,</span><span class="n">t_idx</span><span class="p">)</span>
         <span class="n">set_rated_current_density</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">,</span> <span class="n">rated_current_density</span><span class="p">,</span> <span class="n">rated_power_density</span><span class="p">)</span>
         
         <span class="n">fuel_cell_stack_conditions</span><span class="o">.</span><span class="n">fuel_cell</span><span class="o">.</span><span class="n">current_density</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">rated_current_density</span>

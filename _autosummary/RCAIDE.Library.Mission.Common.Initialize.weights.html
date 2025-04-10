@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,22 +535,90 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Initialize.weights.weights">
 <span class="sig-name descname"><span class="pre">weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Initialize/weights.html#weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Initialize.weights.weights" title="Link to this definition">#</a></dt>
-<dd><p>Initializes weight of vehicle</p>
+<dd><p>Initializes vehicle mass properties for mission segment analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up the initial mass values for the vehicle. It determines
+the initial mass through a priority system and maintains mass continuity
+between segments.</p>
 <dl class="simple">
-<dt>Assumptions:</dt><dd><p>Uses max takeoff weight if no weight analysis is performed</p>
+<dt>The function follows this priority for mass initialization:</dt><dd><ol class="arabic simple">
+<li><p>Previous segment final mass (if initials exist)</p></li>
+<li><p>Vehicle takeoff mass (if weight analysis exists)</p></li>
+<li><p>Network mass properties (fallback option)</p></li>
+</ol>
 </dd>
-<dt>Inputs:</dt><dd><dl class="simple">
-<dt>state.</dt><dd><p>initials.conditions.weights.total_mass  [kg]</p>
+</dl>
+<p><strong>Required Segment State Variables</strong></p>
+<dl class="simple">
+<dt>If segment.state.initials exists:</dt><dd><dl class="simple">
+<dt>state.initials.conditions.weights:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>total_mass<span class="classifier">array</span></dt><dd><p>Previous segment final mass [kg]</p>
 </dd>
-<dt>state.conditions:</dt><dd><p>conditions.weights.total_mass           [kg]</p>
+</dl>
+</li>
+</ul>
 </dd>
 </dl>
 </dd>
-<dt>Outputs:</dt><dd><p>state.conditions.weights.total_mass         [kg]</p>
+<dt>state.conditions.weights:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>total_mass<span class="classifier">array</span></dt><dd><p>Current segment mass array [kg]</p>
 </dd>
 </dl>
-<p>Properties Used:
-N/A</p>
+</li>
+</ul>
+</dd>
+</dl>
+<p><strong>Required Analysis Components</strong></p>
+<p>Either:
+segment.analyses.weights:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>vehicle.mass_properties.takeoff<span class="classifier">float</span></dt><dd><p>Vehicle takeoff mass [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>Or:
+segment.analyses.energy.vehicle.networks:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>mass_properties.mass<span class="classifier">float</span></dt><dd><p>Network mass properties [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Continuous mass tracking when using initials</p></li>
+<li><p>Valid mass values (positive)</p></li>
+<li><p>At least one mass property source available</p></li>
+<li><p>Mass measured in kilograms</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Updates segment conditions directly</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

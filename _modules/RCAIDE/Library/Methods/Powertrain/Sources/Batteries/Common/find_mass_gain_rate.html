@@ -387,22 +387,40 @@
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- -Common</span>
 <div class="viewcode-block" id="find_mass_gain_rate">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_mass_gain_rate.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_mass_gain_rate.find_mass_gain_rate">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_mass_gain_rate</span><span class="p">(</span><span class="n">battery</span><span class="p">,</span><span class="n">power</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;finds the mass gain rate of the battery from the ambient air</span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Earth Atmospheric composition</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_mass_gain_rate</span><span class="p">(</span><span class="n">battery</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the mass gain rate of the battery from the ambient air.</span>
 <span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    power              [W]</span>
-<span class="sd">    battery.</span>
-<span class="sd">      mass_gain_factor [kg/W]</span>
-<span class="sd">      </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">      mdot             [kg/s]</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    battery : Battery</span>
+<span class="sd">        The battery component with the following attributes:</span>
+<span class="sd">            - mass_gain_factor : float</span>
+<span class="sd">                Mass of air gained per unit of energy [kg/J]</span>
+<span class="sd">    power : float or numpy.ndarray</span>
+<span class="sd">        Power being drawn from the battery [W]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mdot : float or numpy.ndarray</span>
+<span class="sd">        Mass gain rate [kg/s]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the rate at which a battery gains mass from the ambient air</span>
+<span class="sd">    during discharge. This is relevant for metal-air batteries (such as aluminum-air or </span>
+<span class="sd">    zinc-air) where oxygen from the air is consumed during the discharge process, </span>
+<span class="sd">    resulting in a mass increase.</span>
+<span class="sd">    </span>
+<span class="sd">    The calculation is based on a linear relationship between power output and</span>
+<span class="sd">    mass gain rate, using the mass_gain_factor property of the battery.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Earth atmospheric composition</span>
+<span class="sd">        * Linear relationship between power output and mass gain rate</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="c1">#weight gain of battery (positive means mass loss)</span>
-    <span class="n">mdot</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">power</span><span class="p">)</span> <span class="o">*</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">mass_gain_factor</span><span class="p">)</span>  
+    <span class="c1">#weight gain of battery (positive means mass gain)</span>
+    <span class="n">mdot</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">power</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">mass_gain_factor</span><span class="p">)</span>  
                 
     <span class="k">return</span> <span class="n">mdot</span></div>
 

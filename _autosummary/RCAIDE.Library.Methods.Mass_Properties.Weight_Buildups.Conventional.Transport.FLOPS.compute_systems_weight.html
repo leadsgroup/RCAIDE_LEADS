@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -544,75 +544,207 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_systems_weight.compute_systems_weight">
 <span class="sig-name descname"><span class="pre">compute_systems_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/compute_systems_weight.html#compute_systems_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_systems_weight.compute_systems_weight" title="Link to this definition">#</a></dt>
-<dd><dl>
-<dt>Calculate the system weight of the aircraft including:</dt><dd><blockquote>
-<div><ul class="simple">
-<li><p>flight control system</p></li>
-<li><p>apu weight</p></li>
-<li><p>hydraulics and pneumatics weight</p></li>
-<li><p>intstrumentation weight</p></li>
-<li><p>avionics weight</p></li>
-<li><p>electrical system weight</p></li>
-<li><p>air-condtioning weight</p></li>
-<li><p>furnishing weight</p></li>
-<li><p>anti-ice weight</p></li>
+<dd><p>Calculate the system weight of the aircraft using the FLOPS methodology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – <dl>
+<dt>Data dictionary with vehicle properties</dt><dd><ul>
+<li><dl>
+<dt>networks<span class="classifier">list</span></dt><dd><p>List of network objects containing propulsion properties
+- propulsors : list</p>
+<blockquote>
+<div><p>List of propulsor objects
+- wing_mounted : bool</p>
+<blockquote>
+<div><p>Flag indicating if propulsor is wing-mounted</p>
+</div></blockquote>
+<ul>
+<li><dl>
+<dt>nacelle<span class="classifier">Data, optional</span></dt><dd><p>Nacelle properties
+- diameter : float</p>
+<blockquote>
+<div><p>Nacelle diameter [m]</p>
+</div></blockquote>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><ol class="arabic simple">
-<li><p>No variable sweep, change VARSWP to 1 is variable sweep in aicraft</p></li>
-<li><p>Hydraulic pressure is 3000 psf (HYDR)</p></li>
-<li><p>1 fuselage named fuselage. Function could be modified to allow multiple fuselages by
-relaxing this assumption.</p></li>
-</ol>
-</dd>
-<dt>Source:</dt><dd><p>The Flight Optimization System Weight Estimation Method</p>
 </dd>
 </dl>
-</dd>
-<dt>Inputs:</dt><dd><dl>
-<dt>vehicle - data dictionary with vehicle properties                   [dimensionless]</dt><dd><dl class="simple">
-<dt>-.networks: data dictionary containing all propulsion properties</dt><dd><p>-.number_of_engines: number of engines
--.sealevel_static_thrust: thrust at sea level               [N]</p>
+</li>
+</ul>
 </dd>
 </dl>
-<p>-.fuselages[‘fuselage’].lengths.total: fuselage total length    [meters]
--.fuselages[‘fuselage’].width: fuselage width                   [meters]
--.fuselages[‘fuselage’].heights.maximum: fuselage maximum height[meters]
--.mass_properties.max_takeoff: MTOW                             [kilograms]
--.design_mach_number: design mach number for cruise flight
--.design_range: design range of aircraft                        [nmi]
--.passengers: number of passengers in aircraft
--.wings[‘main_wing’]: data dictionary with main wing properties</p>
+<ul>
+<li><dl>
+<dt>wings<span class="classifier">list</span></dt><dd><p>List of wing objects
+- areas.reference : float</p>
 <blockquote>
-<div><p>-.sweeps.quarter_chord: quarter chord sweep                 [deg]
--.areas.reference: wing surface area                        [m^2]
--.spans.projected: projected span of wing                   [m]
--.flap_ratio: flap surface area over wing surface area</p>
+<div><p>Wing reference area [m²]</p>
 </div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>flap_ratio<span class="classifier">float</span></dt><dd><p>Flap surface area over wing surface area</p>
 </dd>
 </dl>
-</dd>
-<dt>Outputs:</dt><dd><blockquote>
-<div><dl class="simple">
-<dt>output - a data dictionary with fields:</dt><dd><p>W_flight_controls - weight of the flight control system                                [kilograms]
-W_apu - weight of the apu                                                       [kilograms]
-W_hyd_pnu - weight of the hydraulics and pneumatics                             [kilograms]
-W_instruments - weight of the instruments and navigational equipment            [kilograms]
-W_avionics - weight of the avionics                                             [kilograms]
-W_electrical - weight of the electrical items                                         [kilograms]
-W_ac - weight of the air conditioning and anti-ice system                       [kilograms]
-W_furnish - weight of the furnishings in the fuselage                           [kilograms]
-W_anti_ice - weight of anti-ice system                                          [kilograms]</p>
+</li>
+<li><dl class="simple">
+<dt>spans.projected<span class="classifier">float</span></dt><dd><p>Projected span of wing [m]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>sweeps.quarter_chord<span class="classifier">float</span></dt><dd><p>Quarter chord sweep [deg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>fuselages<span class="classifier">list</span></dt><dd><p>List of fuselage objects
+- lengths.total : float</p>
+<blockquote>
+<div><p>Fuselage total length [m]</p>
 </div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>width<span class="classifier">float</span></dt><dd><p>Fuselage width [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>heights.maximum<span class="classifier">float</span></dt><dd><p>Fuselage maximum height [m]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mass_properties.max_takeoff<span class="classifier">float</span></dt><dd><p>Maximum takeoff weight [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flight_envelope.design_mach_number<span class="classifier">float</span></dt><dd><p>Design mach number for cruise flight</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flight_envelope.design_range<span class="classifier">float</span></dt><dd><p>Design range of aircraft [nmi]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>passengers<span class="classifier">int</span></dt><dd><p>Number of passengers in aircraft</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NPF<span class="classifier">int</span></dt><dd><p>Number of first class passengers</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NPB<span class="classifier">int</span></dt><dd><p>Number of business class passengers</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NPT<span class="classifier">int</span></dt><dd><p>Number of tourist/economy class passengers</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>reference_area<span class="classifier">float</span></dt><dd><p>Aircraft reference area [m²]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>output</strong> – Data dictionary containing system weight components
+- W_flight_control : float</p>
+<blockquote>
+<div><p>Weight of the flight control system [kg]</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>W_apu<span class="classifier">float</span></dt><dd><p>Weight of the auxiliary power unit [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>W_hyd_pnu<span class="classifier">float</span></dt><dd><p>Weight of the hydraulics and pneumatics [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>W_instruments<span class="classifier">float</span></dt><dd><p>Weight of the instruments and navigational equipment [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>W_avionics<span class="classifier">float</span></dt><dd><p>Weight of the avionics [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>W_electrical<span class="classifier">float</span></dt><dd><p>Weight of the electrical items [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>W_ac<span class="classifier">float</span></dt><dd><p>Weight of the air conditioning system [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>W_furnish<span class="classifier">float</span></dt><dd><p>Weight of the furnishings in the fuselage [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>W_anti_ice<span class="classifier">float</span></dt><dd><p>Weight of anti-ice system [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>W_systems<span class="classifier">float</span></dt><dd><p>Total systems weight [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function implements the Flight Optimization System (FLOPS) weight estimation
+methodology for aircraft systems. The calculations are performed in imperial units
+and converted to metric for output.</p>
 <dl class="simple">
-<dt>Properties Used:</dt><dd><p>N/A</p>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>No variable sweep (VARSWP = 0)</p></li>
+<li><p>Hydraulic pressure is 3000 psf (HYDR)</p></li>
+<li><p>Flight crew is 2 for aircraft with less than 150 passengers, 3 otherwise</p></li>
+</ul>
 </dd>
 </dl>
-</dd>
-</dl>
+<p class="rubric">References</p>
+<p>[1] McCullers, L. A. (1984). “Aircraft Configuration Optimization Including Optimized Flight Profiles”, NASA Symposium on Recent Experiences in Multidisciplinary Analysis and Optimization.
+[2] Ardema, M. D., Chambers, M. C., Patron, A. P., Hahn, A. S., Miura, H., &amp; Moore, M. D. (1996). “Analytical Fuselage and Wing Weight Estimation of Transport Aircraft”, NASA Technical Memorandum 110392.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

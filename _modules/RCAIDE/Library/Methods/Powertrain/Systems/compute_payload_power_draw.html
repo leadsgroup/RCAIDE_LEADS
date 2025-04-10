@@ -378,7 +378,6 @@
                   
   <h1>Source code for RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Systems/compute_payload_power_draw.py</span>
-<span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Jul 2024, RCAIDE Team </span>
 
@@ -388,8 +387,62 @@
 <span class="c1"># package imports  </span>
 <div class="viewcode-block" id="compute_payload_power_draw">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw.html#RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw.compute_payload_power_draw">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_payload_power_draw</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span><span class="n">payload_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_payload_power_draw</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">bus</span><span class="p">,</span> <span class="n">conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the power draw of a payload component on an electrical bus.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    payload : RCAIDE.Library.Components.Systems.Payload</span>
+<span class="sd">        Payload component with the following attributes:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the payload</span>
+<span class="sd">            - power_draw : float</span>
+<span class="sd">                Power required by the payload [W]</span>
+<span class="sd">    bus : RCAIDE.Library.Components.Systems.Electrical_Bus</span>
+<span class="sd">        Electrical bus component with the following attributes:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the electrical bus</span>
+<span class="sd">            - power_split_ratio : float</span>
+<span class="sd">                Ratio of power allocation to this bus</span>
+<span class="sd">            - efficiency : float</span>
+<span class="sd">                Efficiency of the bus [0-1]</span>
+<span class="sd">    conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Flight conditions with:</span>
+<span class="sd">            - energy : dict</span>
+<span class="sd">                Energy conditions indexed by component tag</span>
+<span class="sd">                    - [bus.tag] : Data</span>
+<span class="sd">                        Bus-specific conditions</span>
+<span class="sd">                            - [payload.tag] : Data</span>
+<span class="sd">                                Payload-specific conditions</span>
+<span class="sd">                                - power : numpy.ndarray</span>
+<span class="sd">                                    Power draw of the payload [W]</span>
+<span class="sd">                            - power_draw : numpy.ndarray</span>
+<span class="sd">                                Total power draw on the bus [W]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the power draw of a payload component on an electrical bus</span>
+<span class="sd">    and updates the total power draw on the bus. The power draw is adjusted by the</span>
+<span class="sd">    bus power split ratio and efficiency.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Constant payload power draw</span>
+<span class="sd">        * Constant bus efficiency</span>
+<span class="sd">        * Power draw is independent of flight conditions</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bus_conditions</span>                <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+    <span class="n">payload_conditions</span>            <span class="o">=</span> <span class="n">bus_conditions</span><span class="p">[</span><span class="n">payload</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>    
     <span class="n">payload_conditions</span><span class="o">.</span><span class="n">power</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">power_draw</span>  
+    <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span>     <span class="o">+=</span> <span class="n">payload_conditions</span><span class="o">.</span><span class="n">power</span><span class="o">*</span><span class="n">bus</span><span class="o">.</span><span class="n">power_split_ratio</span> <span class="o">/</span><span class="n">bus</span><span class="o">.</span><span class="n">efficiency</span>
     <span class="k">return</span> </div>
 
 </pre></div>

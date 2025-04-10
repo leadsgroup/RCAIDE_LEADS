@@ -386,8 +386,10 @@
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
  <span class="c1"># RCAIDE imports   </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.Converter</span><span class="w">  </span><span class="kn">import</span> <span class="n">Converter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions</span><span class="w"> </span><span class="kn">import</span>  <span class="n">append_combustor_conditions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Attributes.Gases.Air</span><span class="w"> </span><span class="kn">import</span> <span class="n">Air</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="c1">#  Combustor</span>
@@ -517,42 +519,42 @@
 <span class="sd">        None </span>
 <span class="sd">        &quot;&quot;&quot;</span>         
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                               <span class="o">=</span> <span class="s1">&#39;Combustor&#39;</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">alphac</span>                            <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">turbine_inlet_temperature</span>         <span class="o">=</span> <span class="mi">1500</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">area_ratio</span>                        <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axial_fuel_velocity_ratio</span>         <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_velocity_ratio</span>               <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">burner_drag_coefficient</span>           <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">absolute_sensible_enthalpy</span>        <span class="o">=</span> <span class="mf">0.0</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span>                          <span class="o">=</span> <span class="mf">0.2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">length</span>                            <span class="o">=</span> <span class="mf">0.3</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_equivalency_ratio</span>            <span class="o">=</span> <span class="mf">0.3</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_combustors</span>              <span class="o">=</span> <span class="mi">30</span> 
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">f_air_PZ</span>                          <span class="o">=</span> <span class="mf">0.18</span>                                                  <span class="c1"># [-]       Fraction of total air present in the combustor that enters the Primary Zone         </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">FAR_st</span>                            <span class="o">=</span> <span class="mf">0.068</span>                                                 <span class="c1"># [-]       Stoichiometric Fuel to Air ratio</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">N_comb</span>                            <span class="o">=</span> <span class="mi">10</span>                                                    <span class="c1"># [-]       Number of can-annular combustors</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">N_PZ</span>                              <span class="o">=</span> <span class="mi">8</span>                                                     <span class="c1"># [-]       Number of PSR (EVEN, must match the number of PSR below)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">A_PZ</span>                              <span class="o">=</span> <span class="mf">0.15</span>                                                  <span class="c1"># [m**2]    Primary Zone cross-sectional area     </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">L_PZ</span>                              <span class="o">=</span> <span class="mf">0.0153</span>                                                <span class="c1"># [m]       Primary Zone length  </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">N_SZ</span>                              <span class="o">=</span> <span class="mi">3</span>                                                     <span class="c1"># [-]       Number of dilution air inlets        </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">A_SZ</span>                              <span class="o">=</span> <span class="mf">0.15</span>                                                  <span class="c1"># [m**2]    Secondary Zone cross-sectional area</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">L_SZ</span>                              <span class="o">=</span> <span class="mf">0.075</span>                                                 <span class="c1"># [m]       Secondary Zone length  </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">phi_SZ</span>                            <span class="o">=</span> <span class="mf">0.2</span>                                                   <span class="c1"># [-]       Equivalence Ratio for PFR    phi_PZ_des              = 0.6                                                   # [-]       Primary Zone Design Equivalence Ratio</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">S_PZ</span>                              <span class="o">=</span> <span class="mf">0.6</span>                                                   <span class="c1"># [-]       Mixing parameter, used to define the Equivalence Ratio standard deviation  </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">F_SC</span>                              <span class="o">=</span> <span class="mf">0.425</span>                                                 <span class="c1"># [-]       Fuel scaler</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_assigned_PSR_1st_mixers</span> <span class="o">=</span> <span class="mi">2</span>                                                     <span class="c1"># [-]       Number of assigned PSRs to each mixer in the first row of mixers (CRN network model)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_assigned_PSR_2nd_mixers</span> <span class="o">=</span> <span class="mi">2</span>                                                     <span class="c1"># [-]       Number of assigned mixers to each mixer in the second row of mixers (CRN network model)</span>
-    
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                     <span class="o">=</span> <span class="s1">&#39;Combustor&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">alphac</span>                                  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turbine_inlet_temperature</span>               <span class="o">=</span> <span class="mi">1500</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">area_ratio</span>                              <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axial_fuel_velocity_ratio</span>               <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_velocity_ratio</span>                     <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">burner_drag_coefficient</span>                 <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">absolute_sensible_enthalpy</span>              <span class="o">=</span> <span class="mf">0.0</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                     <span class="o">=</span> <span class="s1">&#39;CFM56-7B&#39;</span>     <span class="c1"># [-] Combustor tag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span>                                  <span class="o">=</span> <span class="mf">0.0023</span>         <span class="c1"># [m**3] Combustor volume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span>                                  <span class="o">=</span> <span class="mf">0.2</span>            <span class="c1"># [m] Combustor Length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_combustors</span>                    <span class="o">=</span> <span class="mi">1</span>              <span class="c1"># [-] Number of Combustors for one engine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F_SC</span>                                    <span class="o">=</span> <span class="mi">1</span>              <span class="c1"># [-] Fuel scale factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N_PZ</span>                                    <span class="o">=</span> <span class="mi">21</span>             <span class="c1"># [-] Number of PSR in the Primary Zone</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L_PZ</span>                                    <span class="o">=</span> <span class="mf">0.05</span>           <span class="c1"># [m] Primary Zone length  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">S_PZ</span>                                    <span class="o">=</span> <span class="mf">0.39</span>           <span class="c1"># [-] Mixing parameter in the Primary Zone  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">design_equivalence_ratio_PZ</span>             <span class="o">=</span> <span class="mf">1.71</span>           <span class="c1"># [-] Design Equivalence Ratio in Primary Zone at Maximum Throttle  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N_SZ</span>                                    <span class="o">=</span> <span class="mi">500</span>            <span class="c1"># [-] Number of discritizations in the Secondary Zone</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_SM</span>                                    <span class="o">=</span> <span class="mf">0.6</span>            <span class="c1"># [-] Slow mode fraction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_SA_SM</span>                                 <span class="o">=</span> <span class="mf">0.4</span>            <span class="c1"># [-] Secondary air length fraction (of L_SZ) in slow mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_SA_FM</span>                                 <span class="o">=</span> <span class="mf">0.05</span>           <span class="c1"># [-] Secondary air length fraction (of L_SZ) in fast mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_DA_start</span>                              <span class="o">=</span> <span class="mf">0.95</span>           <span class="c1"># [-] Dilution air start length fraction (of L_SZ)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_DA_end</span>                                <span class="o">=</span> <span class="mf">1.0</span>            <span class="c1"># [-] Dilution air end length fraction (of L_SZ)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_mixing_fraction</span>                   <span class="o">=</span> <span class="mf">0.6</span>            <span class="c1"># [-] Joint mixing fraction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">design_equivalence_ratio_SZ</span>             <span class="o">=</span> <span class="mf">0.61</span>            <span class="c1"># [-] Design Equivalence Ratio in Secondary Zone at Maximum Throttle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">air_mass_flow_rate_take_off</span>             <span class="o">=</span> <span class="mi">40</span>             <span class="c1"># [kg/s] Air mass flow rate at take-off</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_to_air_ratio_take_off</span>              <span class="o">=</span> <span class="mf">0.025</span>          <span class="c1"># [-] Fuel to air ratio at take-off</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">air_data</span>                                <span class="o">=</span> <span class="n">Air</span><span class="p">()</span>          <span class="c1"># [-] Air object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_data</span>                               <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A1</span><span class="p">()</span>       <span class="c1"># [-] Fuel object</span>
 <div class="viewcode-block" id="Combustor.append_operating_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Combustor.html#RCAIDE.Library.Components.Powertrain.Converters.Combustor.Combustor.append_operating_conditions">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">,</span><span class="n">noise_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Appends operating conditions to the combustor.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">propulsor_conditions</span> <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
-        <span class="n">append_combustor_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">append_combustor_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">)</span>
         <span class="k">return</span></div>
 </div>
 

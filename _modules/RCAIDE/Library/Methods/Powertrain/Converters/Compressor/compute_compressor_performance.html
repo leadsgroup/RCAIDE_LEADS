@@ -384,55 +384,118 @@
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="c1"># Imports </span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span>  <span class="n">deepcopy</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="c1"># compute_compression_nozzle_performance</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="compute_compressor_performance">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance.html#RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance.compute_compressor_performance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_compressor_performance</span><span class="p">(</span><span class="n">compressor</span><span class="p">,</span><span class="n">compressor_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Computes the performance of a compressor bases on its polytropic efficiency.</span>
-<span class="sd">        The following properties are computed: </span>
-<span class="sd">       compressor.outputs.</span>
-<span class="sd">         stagnation_temperature  (numpy.ndarray): exit stagnation_temperature   [K]  </span>
-<span class="sd">         stagnation_pressure     (numpy.ndarray): exit stagnation_pressure      [Pa]</span>
-<span class="sd">         stagnation_enthalpy     (numpy.ndarray): exit stagnation_enthalpy      [J/kg]</span>
-<span class="sd">         work_done               (numpy.ndarray): work done                     [J/kg] </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_compressor_performance</span><span class="p">(</span><span class="n">compressor</span><span class="p">,</span> <span class="n">conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the performance of a compressor based on its polytropic efficiency.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">        Constant polytropic efficiency and pressure ratio</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    compressor : RCAIDE.Library.Components.Converters.Compressor</span>
+<span class="sd">        Compressor component with the following attributes:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the compressor</span>
+<span class="sd">            - pressure_ratio : float</span>
+<span class="sd">                Pressure ratio across compressor</span>
+<span class="sd">            - polytropic_efficiency : float</span>
+<span class="sd">                Polytropic efficiency of compression</span>
+<span class="sd">            - working_fluid : Data</span>
+<span class="sd">                Working fluid properties object</span>
+<span class="sd">    conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Flight conditions with:</span>
+<span class="sd">            - energy.converters[compressor.tag].inputs : Data</span>
+<span class="sd">                Input conditions</span>
+<span class="sd">                    - stagnation_temperature : numpy.ndarray</span>
+<span class="sd">                        Inlet stagnation temperature [K]</span>
+<span class="sd">                    - stagnation_pressure : numpy.ndarray</span>
+<span class="sd">                        Inlet stagnation pressure [Pa]</span>
+<span class="sd">                    - static_temperature : numpy.ndarray</span>
+<span class="sd">                        Inlet static temperature [K]</span>
+<span class="sd">                    - static_pressure : numpy.ndarray</span>
+<span class="sd">                        Inlet static pressure [Pa]</span>
+<span class="sd">                    - mach_number : numpy.ndarray</span>
+<span class="sd">                        Inlet Mach number</span>
+<span class="sd">            - energy.hybrid_power_split_ratio : float</span>
+<span class="sd">                Ratio of power split for hybrid systems</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in conditions.energy.converters[compressor.tag].outputs:</span>
+<span class="sd">            - work_done : numpy.ndarray</span>
+<span class="sd">                Specific work done by compressor [J/kg]</span>
+<span class="sd">            - stagnation_temperature : numpy.ndarray</span>
+<span class="sd">                Exit stagnation temperature [K]</span>
+<span class="sd">            - stagnation_pressure : numpy.ndarray</span>
+<span class="sd">                Exit stagnation pressure [Pa]</span>
+<span class="sd">            - stagnation_enthalpy : numpy.ndarray</span>
+<span class="sd">                Exit stagnation enthalpy [J/kg]</span>
+<span class="sd">            - static_temperature : numpy.ndarray</span>
+<span class="sd">                Exit static temperature [K]</span>
+<span class="sd">            - static_pressure : numpy.ndarray</span>
+<span class="sd">                Exit static pressure [Pa]</span>
+<span class="sd">            - mach_number : numpy.ndarray</span>
+<span class="sd">                Exit Mach number</span>
+<span class="sd">            - gas_constant : numpy.ndarray</span>
+<span class="sd">                Gas constant [J/(kg·K)]</span>
+<span class="sd">            - gamma : numpy.ndarray</span>
+<span class="sd">                Ratio of specific heats</span>
+<span class="sd">            - cp : numpy.ndarray</span>
+<span class="sd">                Specific heat at constant pressure [J/(kg·K)]</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        conditions.freestream.</span>
-<span class="sd">          isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor        [unitless]</span>
-<span class="sd">          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]</span>
-<span class="sd">        compressor.</span>
-<span class="sd">           inputs.stagnation_temperature      (numpy.ndarray): entering stagnation temperature [K]</span>
-<span class="sd">           inputs.stagnation_pressure         (numpy.ndarray): entering stagnation pressure    [Pa] </span>
-<span class="sd">           pressure_ratio                             (float): pressure ratio                  [unitless]</span>
-<span class="sd">           polytropic_efficiency                      (float): polytropic efficiency           [unitless]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function implements the thermodynamic calculations for a compressor with</span>
+<span class="sd">    a specified pressure ratio and polytropic efficiency. The work done is adjusted</span>
+<span class="sd">    by the hybrid power split ratio if applicable.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Constant polytropic efficiency</span>
+<span class="sd">        * Constant pressure ratio</span>
+<span class="sd">        * Ideal gas behavior</span>
+<span class="sd">        * Adiabatic process</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        None </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    The compression process follows the polytropic relation:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        T_{t,out}/T_{t,in} = (P_{t,out}/P_{t,in})^{(\\gamma-1)/(\\gamma \\eta_{p})}</span>
+
+<span class="sd">    where :math:`\\eta_{p}` is the polytropic efficiency.</span>
+
+<span class="sd">    Enthalpy is calculated using the specific heat at constant pressure and the stagnation temperature.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        h_{t} = C_{p} T_{t}</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Cantwell, B., &quot;AA283 Course Notes&quot;, Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_BOOK/AA283_Aircraft_and_Rocket_Propulsion_BOOK_Brian_J_Cantwell_May_28_2024.pdf</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions</span>
 <span class="sd">    &quot;&quot;&quot;</span>          
     
     <span class="c1"># Unpack component inputs</span>
-    <span class="n">Tt_in</span>    <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>
-    <span class="n">Pt_in</span>    <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_pressure</span> 
-    <span class="n">PR</span>       <span class="o">=</span> <span class="n">compressor</span><span class="o">.</span><span class="n">pressure_ratio</span>
-    <span class="n">etapold</span>  <span class="o">=</span> <span class="n">compressor</span><span class="o">.</span><span class="n">polytropic_efficiency</span> 
-    <span class="n">T0</span>       <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">static_temperature</span>
-    <span class="n">P0</span>       <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">static_pressure</span>  
-    <span class="n">M0</span>       <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mach_number</span>    
-    
-    <span class="c1"># Unpack ram inputs</span>
-    <span class="n">working_fluid</span>           <span class="o">=</span> <span class="n">compressor</span><span class="o">.</span><span class="n">working_fluid</span>
- 
+    <span class="n">PR</span>                    <span class="o">=</span> <span class="n">compressor</span><span class="o">.</span><span class="n">pressure_ratio</span>
+    <span class="n">etapold</span>               <span class="o">=</span> <span class="n">compressor</span><span class="o">.</span><span class="n">polytropic_efficiency</span>
+    <span class="n">working_fluid</span>         <span class="o">=</span> <span class="n">compressor</span><span class="o">.</span><span class="n">working_fluid</span>
+    <span class="n">compressor_conditions</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">compressor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+    <span class="n">Tt_in</span>                 <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>
+    <span class="n">Pt_in</span>                 <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_pressure</span> 
+    <span class="n">T0</span>                    <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">static_temperature</span>
+    <span class="n">P0</span>                    <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">static_pressure</span>  
+    <span class="n">M0</span>                    <span class="o">=</span> <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mach_number</span> 
+     
     <span class="c1"># Compute the working fluid properties </span>
     <span class="n">gamma</span>  <span class="o">=</span> <span class="n">working_fluid</span><span class="o">.</span><span class="n">compute_gamma</span><span class="p">(</span><span class="n">T0</span><span class="p">,</span><span class="n">P0</span><span class="p">)</span> 
     <span class="n">Cp</span>     <span class="o">=</span> <span class="n">working_fluid</span><span class="o">.</span><span class="n">compute_cp</span><span class="p">(</span><span class="n">T0</span><span class="p">,</span><span class="n">P0</span><span class="p">)</span>    
@@ -445,12 +508,15 @@
     <span class="n">ht_out</span>    <span class="o">=</span> <span class="n">Tt_out</span><span class="o">*</span><span class="n">Cp</span>
     <span class="n">T_out</span>     <span class="o">=</span> <span class="n">Tt_out</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="n">M0</span><span class="o">*</span><span class="n">M0</span><span class="p">)</span>
     <span class="n">P_out</span>     <span class="o">=</span> <span class="n">Pt_out</span><span class="o">/</span><span class="p">((</span><span class="mf">1.</span><span class="o">+</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="n">M0</span><span class="o">*</span><span class="n">M0</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mf">1.</span><span class="p">)))</span> 
-    <span class="n">M_out</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(((</span><span class="n">Pt_out</span><span class="o">/</span><span class="n">P_out</span><span class="p">)</span><span class="o">**</span><span class="p">((</span><span class="n">gamma</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="n">gamma</span><span class="p">))</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span> <span class="o">*</span><span class="mf">2.</span><span class="o">/</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span> <span class="p">)</span> 
+    <span class="n">M_out</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(((</span><span class="n">Pt_out</span><span class="o">/</span><span class="n">P_out</span><span class="p">)</span><span class="o">**</span><span class="p">((</span><span class="n">gamma</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="n">gamma</span><span class="p">))</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span> <span class="o">*</span><span class="mf">2.</span><span class="o">/</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span> <span class="p">)</span>
+    
     <span class="c1"># Compute the work done by the compressor (normalized by mass flow i.e. J/(kg/s)</span>
     <span class="n">work_done</span> <span class="o">=</span> <span class="n">ht_out</span> <span class="o">-</span> <span class="n">ht_in</span>
     
+    <span class="n">phi</span>       <span class="o">=</span>  <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span> 
+
     <span class="c1"># Pack results  </span>
-    <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">work_done</span>               <span class="o">=</span> <span class="n">work_done</span> 
+    <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">work_done</span>               <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">work_done</span>
     <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>  <span class="o">=</span> <span class="n">Tt_out</span>
     <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">stagnation_pressure</span>     <span class="o">=</span> <span class="n">Pt_out</span>
     <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">stagnation_enthalpy</span>     <span class="o">=</span> <span class="n">ht_out</span>
@@ -459,7 +525,7 @@
     <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">mach_number</span>             <span class="o">=</span> <span class="n">M_out</span>
     <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">gas_constant</span>            <span class="o">=</span> <span class="n">R</span>
     <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">gamma</span>                   <span class="o">=</span> <span class="n">gamma</span> 
-    <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">cp</span>                      <span class="o">=</span> <span class="n">Cp</span>   
+    <span class="n">compressor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">cp</span>                      <span class="o">=</span> <span class="n">Cp</span>
     
     <span class="k">return</span> </div>
 

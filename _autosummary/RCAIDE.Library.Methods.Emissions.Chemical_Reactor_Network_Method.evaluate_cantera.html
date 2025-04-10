@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -534,35 +534,34 @@
 <span id="evaluate-cantera"></span><h1>evaluate_cantera<a class="headerlink" href="#module-RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.evaluate_cantera">
-<span class="sig-name descname"><span class="pre">evaluate_cantera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combustor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FAR</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_cantera.html#evaluate_cantera"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.evaluate_cantera" title="Link to this definition">#</a></dt>
-<dd><p>Evaluates emission indices using Chemical Reactor Network (CRN) built in Cantera.</p>
+<span class="sig-name descname"><span class="pre">evaluate_cantera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combustor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdot_air</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FAR</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_cantera.html#evaluate_cantera"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.evaluate_cantera" title="Link to this definition">#</a></dt>
+<dd><p>Evaluates emission indices using a Chemical Reactor Network (CRN) built in Cantera.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>combustor</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – <p>Combustor configuration data</p>
+<li><p><strong>combustor</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – <p>Combustor configuration data
+- diameter : float</p>
+<blockquote>
+<div><p>Combustor diameter [m]</p>
+</div></blockquote>
 <ul>
 <li><dl class="simple">
-<dt>f_air_PZ<span class="classifier">float</span></dt><dd><p>Fraction of total air entering Primary Zone [-]</p>
+<dt>length<span class="classifier">float</span></dt><dd><p>Combustor length [m]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>FAR_st<span class="classifier">float</span></dt><dd><p>Stoichiometric Fuel to Air ratio [-]</p>
+<dt>number_of_combustors<span class="classifier">int</span></dt><dd><p>Number of combustors for one engine [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>N_comb<span class="classifier">int</span></dt><dd><p>Number of can-annular combustors [-]</p>
+<dt>F_SC<span class="classifier">float</span></dt><dd><p>Fuel scale factor [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>N_PZ<span class="classifier">int</span></dt><dd><p>Number of PSR (Perfectly Stirred Reactors) [-]</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>A_PZ<span class="classifier">float</span></dt><dd><p>Primary Zone cross-sectional area [m^2]</p>
+<dt>N_PZ<span class="classifier">int</span></dt><dd><p>Number of PSR in the Primary Zone [-]</p>
 </dd>
 </dl>
 </li>
@@ -572,47 +571,72 @@
 </dl>
 </li>
 <li><dl class="simple">
-<dt>N_SZ<span class="classifier">int</span></dt><dd><p>Number of dilution air inlets [-]</p>
+<dt>S_PZ<span class="classifier">float</span></dt><dd><p>Mixing parameter in the Primary Zone [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>A_SZ<span class="classifier">float</span></dt><dd><p>Secondary Zone cross-sectional area [m^2]</p>
+<dt>design_equivalence_ratio_PZ<span class="classifier">float</span></dt><dd><p>Design Equivalence Ratio in Primary Zone at Maximum Throttle [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>L_SZ<span class="classifier">float</span></dt><dd><p>Secondary Zone length [m]</p>
+<dt>N_SZ<span class="classifier">int</span></dt><dd><p>Number of discretizations in the Secondary Zone [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>phi_SZ<span class="classifier">float</span></dt><dd><p>Equivalence Ratio in the Secondary Zone [-]</p>
+<dt>f_SM<span class="classifier">float</span></dt><dd><p>Slow mode fraction [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>S_PZ<span class="classifier">float</span></dt><dd><p>Mixing parameter for Primary Zone [-]</p>
+<dt>l_SA_SM<span class="classifier">float</span></dt><dd><p>Secondary air length fraction (of L_SZ) in slow mode [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>F_SC<span class="classifier">float</span></dt><dd><p>Fuel scaler [-]</p>
+<dt>l_SA_FM<span class="classifier">float</span></dt><dd><p>Secondary air length fraction (of L_SZ) in fast mode [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>number_of_assigned_PSR_1st_mixers<span class="classifier">int</span></dt><dd><p>Number of PSR assigned to first row of mixers [-]</p>
+<dt>l_DA_start<span class="classifier">float</span></dt><dd><p>Dilution air start length fraction (of L_SZ) [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>number_of_assigned_PSR_2nd_mixers<span class="classifier">int</span></dt><dd><p>Number of PSR assigned to second row of mixers [-]</p>
+<dt>l_DA_end<span class="classifier">float</span></dt><dd><p>Dilution air end length fraction (of L_SZ) [-]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>fuel_data<span class="classifier">Data</span></dt><dd><p>Fuel chemical properties and kinetics data</p>
+<dt>joint_mixing_fraction<span class="classifier">float</span></dt><dd><p>Joint mixing fraction [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_equivalence_ratio_SZ<span class="classifier">float</span></dt><dd><p>Design Equivalence Ratio in Secondary Zone [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>air_mass_flow_rate_take_off<span class="classifier">float</span></dt><dd><p>Air mass flow rate at take-off [kg/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuel_to_air_ratio_take_off<span class="classifier">float</span></dt><dd><p>Fuel to air ratio at take-off [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>air_data<span class="classifier">Data</span></dt><dd><p>Air object containing air surrogate species</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>fuel_data<span class="classifier">Data</span></dt><dd><p>Fuel object containing fuel properties and kinetics</p>
 </dd>
 </dl>
 </li>
@@ -620,18 +644,17 @@
 </p></li>
 <li><p><strong>T</strong> (<em>float</em>) – Stagnation Temperature entering combustors [K]</p></li>
 <li><p><strong>P</strong> (<em>float</em>) – Stagnation Pressure entering combustors [Pa]</p></li>
-<li><p><strong>mdot</strong> (<em>float</em>) – Air mass flow enetring the combustor [kg/s]</p></li>
+<li><p><strong>mdot_air</strong> (<em>float</em>) – Air mass flow entering the combustor [kg/s]</p></li>
 <li><p><strong>FAR</strong> (<em>float</em>) – Fuel-to-Air ratio [-]</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p><strong>results</strong> – Container for emission indices</p>
+<dd class="field-even"><p><p><strong>results</strong> – Container for emission indices
+- EI_CO2 : float</p>
+<blockquote>
+<div><p>CO2 emission index [kg_CO2/kg_fuel]</p>
+</div></blockquote>
 <ul class="simple">
-<li><dl class="simple">
-<dt>EI_CO2<span class="classifier">float</span></dt><dd><p>CO2 emission index [kg_CO2/kg_fuel]</p>
-</dd>
-</dl>
-</li>
 <li><dl class="simple">
 <dt>EI_CO<span class="classifier">float</span></dt><dd><p>CO emission index [kg_CO/kg_fuel]</p>
 </dd>
@@ -643,12 +666,157 @@
 </dl>
 </li>
 <li><dl class="simple">
-<dt>EI_NO<span class="classifier">float</span></dt><dd><p>NO emission index [kg_NO/kg_fuel]</p>
+<dt>EI_NOx<span class="classifier">float</span></dt><dd><p>NOx emission index [kg_NOx/kg_fuel]</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>EI_NO2<span class="classifier">float</span></dt><dd><p>NO2 emission index [kg_NO2/kg_fuel]</p>
+<dt>final_phi<span class="classifier">float</span></dt><dd><p>Final equivalence ratio [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>final_T<span class="classifier">float</span></dt><dd><p>Final temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>PZ_phi<span class="classifier">list</span></dt><dd><p>Equivalence ratio in the Primary Zone [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>PZ_T<span class="classifier">list</span></dt><dd><p>Temperature in the Primary Zone [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>PZ_f_psr<span class="classifier">list</span></dt><dd><p>Fraction of mass flow entering each PSR [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>PZ_EI_CO2<span class="classifier">list</span></dt><dd><p>CO2 emission index in the Primary Zone [kg_CO2/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>PZ_EI_CO<span class="classifier">list</span></dt><dd><p>CO emission index in the Primary Zone [kg_CO/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>PZ_EI_H2O<span class="classifier">list</span></dt><dd><p>H2O emission index in the Primary Zone [kg_H2O/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>PZ_EI_NOx<span class="classifier">list</span></dt><dd><p>NOx emission index in the Primary Zone [kg_NOx/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_sm_z<span class="classifier">list</span></dt><dd><p>Positions in the Secondary Zone slow mode [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_sm_phi<span class="classifier">list</span></dt><dd><p>Equivalence ratio in the Secondary Zone slow mode [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_sm_T<span class="classifier">list</span></dt><dd><p>Temperature in the Secondary Zone slow mode [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_sm_EI_CO2<span class="classifier">list</span></dt><dd><p>CO2 emission index in the Secondary Zone slow mode [kg_CO2/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_sm_EI_CO<span class="classifier">list</span></dt><dd><p>CO emission index in the Secondary Zone slow mode [kg_CO/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_sm_EI_H2O<span class="classifier">list</span></dt><dd><p>H2O emission index in the Secondary Zone slow mode [kg_H2O/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_sm_EI_NOx<span class="classifier">list</span></dt><dd><p>NOx emission index in the Secondary Zone slow mode [kg_NOx/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_fm_z<span class="classifier">list</span></dt><dd><p>Positions in the Secondary Zone fast mode [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_fm_phi<span class="classifier">list</span></dt><dd><p>Equivalence ratio in the Secondary Zone fast mode [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_fm_T<span class="classifier">list</span></dt><dd><p>Temperature in the Secondary Zone fast mode [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_fm_EI_CO2<span class="classifier">list</span></dt><dd><p>CO2 emission index in the Secondary Zone fast mode [kg_CO2/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_fm_EI_CO<span class="classifier">list</span></dt><dd><p>CO emission index in the Secondary Zone fast mode [kg_CO/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_fm_EI_H2O<span class="classifier">list</span></dt><dd><p>H2O emission index in the Secondary Zone fast mode [kg_H2O/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_fm_EI_NOx<span class="classifier">list</span></dt><dd><p>NOx emission index in the Secondary Zone fast mode [kg_NOx/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_joint_z<span class="classifier">list</span></dt><dd><p>Positions in the Secondary Zone joint mode [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_joint_phi<span class="classifier">list</span></dt><dd><p>Equivalence ratio in the Secondary Zone joint mode [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_joint_T<span class="classifier">list</span></dt><dd><p>Temperature in the Secondary Zone joint mode [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_joint_EI_CO2<span class="classifier">list</span></dt><dd><p>CO2 emission index in the Secondary Zone joint mode [kg_CO2/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_joint_EI_CO<span class="classifier">list</span></dt><dd><p>CO emission index in the Secondary Zone joint mode [kg_CO/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_joint_EI_H2O<span class="classifier">list</span></dt><dd><p>H2O emission index in the Secondary Zone joint mode [kg_H2O/kg_fuel]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SZ_joint_EI_NOx<span class="classifier">list</span></dt><dd><p>NOx emission index in the Secondary Zone joint mode [kg_NOx/kg_fuel]</p>
 </dd>
 </dl>
 </li>
@@ -660,40 +828,41 @@
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This model estimates emission indices using a Chemical Reactor Network built with Cantera.
-The network consists of Perfectly Stirred Reactors (PSRs) in the Primary Zone and
-Plug Flow Reactors (PFRs) in the Secondary Zone.</p>
+<p>This function uses Cantera to simulate the chemical kinetics and thermodynamics of the combustor. It requires the Cantera module to be installed.</p>
 <p><strong>Extra modules required</strong></p>
 <ul class="simple">
 <li><p>Cantera</p></li>
-<li><p>pandas</p></li>
-<li><p>numpy</p></li>
 </ul>
-<p><strong>Major Assumptions</strong></p>
-<ul class="simple">
-<li><p>PSRs represent the Primary Zone</p></li>
-<li><p>Air is added between different PFRs in Secondary Zone</p></li>
-<li><p>Primary Zone has a normal Equivalence Ratio distribution</p></li>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>The combustor operates under steady-state conditions.</p></li>
+<li><p>The fuel and air are perfectly mixed before entering the combustor.</p></li>
 </ul>
-<p><strong>Theory</strong>
-The model uses a network of reactors to simulate combustion:</p>
-<ol class="arabic simple">
-<li><p>Primary Zone: Multiple PSRs with varying equivalence ratios</p></li>
-<li><p>Mixing Zones: Ideal mixing between reactor outputs</p></li>
-<li><p>Secondary Zone: PFRs with dilution air addition</p></li>
-</ol>
+</dd>
+</dl>
+<p><strong>Theory</strong></p>
+<p>The function evaluates the emission indices by simulating the chemical reactions in the combustor using Cantera. The emissions are calculated based on the chemical kinetics and thermodynamics of the fuel and air mixture.</p>
+<p class="rubric">References</p>
+<p>[1] Goodwin, D. G., Speth, R. L., Moffat, H. K., &amp; Weber, B. W. (2023). Cantera: An object-oriented software toolkit for chemical kinetics, thermodynamics, and transport processes (Version 3.0.0) [Computer software]. <a class="reference external" href="https://www.cantera.org">https://www.cantera.org</a>
+[2] Brink, L. F. J. (2020). Modeling the impact of fuel composition on aircraft engine NOₓ, CO, and soot emissions. Master’s thesis, Massachusetts Institute of Technology.
+[3] Allaire, D. L. (2006). A physics-based emissions model for aircraft gas turbine combustors. Master’s thesis, Massachusetts Institute of Technology.
+[4] Lefebvre, A. H., &amp; Ballal, D. R. (2010). Gas turbine combustion: Alternative fuels and emissions (3rd ed.). CRC Press.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices.html#module-RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices" title="RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Combustor.html#module-RCAIDE.Library.Components.Powertrain.Converters.Combustor" title="RCAIDE.Library.Components.Powertrain.Converters.Combustor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Converters.Combustor</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices_no_surrogate</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emission_indices_surrogate</span></code></p>
 </div>
-<p class="rubric">References</p>
-<p>[1] Goodwin, D. G., Speth, R. L., Moffat, H. K., &amp; Weber, B. W. (2023). Cantera: An object-oriented software toolkit for chemical kinetics, thermodynamics, and transport processes (Version 3.0.0) [Computer software]. <a class="reference external" href="https://www.cantera.org">https://www.cantera.org</a></p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.combustor_model">
-<span class="sig-name descname"><span class="pre">combustor_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kinetics_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oxidizer_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_fidelity_kin_mech</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_fuel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_oxy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_stag_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_stag_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FAR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_dot_fuel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_dot_air</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_PZ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_PZ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_PZ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_sign</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_SZ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_SZ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_SZ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_air_PZ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_SZ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PSR_1st_mixers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PSR_2nd_mixers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_cantera.html#combustor_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.combustor_model" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.compute_combustor_performance">
+<span class="sig-name descname"><span class="pre">compute_combustor_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combustor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Temp_air</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Pres_air</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdot_air_tot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FAR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_cantera.html#compute_combustor_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.compute_combustor_performance" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.calculate_emission_indices">
+<span class="sig-name descname"><span class="pre">calculate_emission_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdot_total</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdot_fuel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_cantera.html#calculate_emission_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.calculate_emission_indices" title="Link to this definition">#</a></dt>
+<dd><p>Calculate emission indices for combustion products</p>
+</dd></dl>
 
 </section>
 
@@ -745,7 +914,8 @@ The model uses a network of reactors to simulate combustion:</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.evaluate_cantera"><code class="docutils literal notranslate"><span class="pre">evaluate_cantera()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.combustor_model"><code class="docutils literal notranslate"><span class="pre">combustor_model()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.compute_combustor_performance"><code class="docutils literal notranslate"><span class="pre">compute_combustor_performance()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.calculate_emission_indices"><code class="docutils literal notranslate"><span class="pre">calculate_emission_indices()</span></code></a></li>
 </ul>
   </nav></div>
 

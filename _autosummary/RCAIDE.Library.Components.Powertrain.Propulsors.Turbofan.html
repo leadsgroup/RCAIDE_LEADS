@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -681,8 +681,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.engine_diameter">
-<span class="sig-name descname"><span class="pre">engine_diameter</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.engine_diameter" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.diameter">
+<span class="sig-name descname"><span class="pre">diameter</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.diameter" title="Link to this definition">#</a></dt>
 <dd><p>Diameter of the engine [m]. Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -692,8 +692,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.engine_length">
-<span class="sig-name descname"><span class="pre">engine_length</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.engine_length" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.length">
+<span class="sig-name descname"><span class="pre">length</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.length" title="Link to this definition">#</a></dt>
 <dd><p>Length of the engine [m]. Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -703,8 +703,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.engine_height">
-<span class="sig-name descname"><span class="pre">engine_height</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.engine_height" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.height">
+<span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.height" title="Link to this definition">#</a></dt>
 <dd><p>Engine centerline height above the ground plane [m]. Default is 0.5.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -802,8 +802,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.SFC_adjustment">
-<span class="sig-name descname"><span class="pre">SFC_adjustment</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.SFC_adjustment" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.specific_fuel_consumption_reduction_factor">
+<span class="sig-name descname"><span class="pre">specific_fuel_consumption_reduction_factor</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.specific_fuel_consumption_reduction_factor" title="Link to this definition">#</a></dt>
 <dd><p>Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -857,8 +857,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.mass_flow_rate_design">
-<span class="sig-name descname"><span class="pre">mass_flow_rate_design</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.mass_flow_rate_design" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.design_mass_flow_rate">
+<span class="sig-name descname"><span class="pre">design_mass_flow_rate</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.design_mass_flow_rate" title="Link to this definition">#</a></dt>
 <dd><p>Design mass flow rate [kg/s]. Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -893,11 +893,11 @@ for handling different operating conditions and performance calculations.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor" title="RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet" title="RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop" title="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft" title="RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft</span></code></a></p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor" title="RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet" title="RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.html#module-RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop" title="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft</span></code></p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.append_operating_conditions">
-<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Turbofan.html#Turbofan.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.append_operating_conditions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Turbofan.html#Turbofan.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.append_operating_conditions" title="Link to this definition">#</a></dt>
 <dd><p>Appends operating conditions to the segment.</p>
 </dd></dl>
 
@@ -924,7 +924,7 @@ for handling different operating conditions and performance calculations.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.reuse_stored_data">
-<span class="sig-name descname"><span class="pre">reuse_stored_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_propulsor_tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Turbofan.html#Turbofan.reuse_stored_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.reuse_stored_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reuse_stored_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_propulsor_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Turbofan.html#Turbofan.reuse_stored_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.reuse_stored_data" title="Link to this definition">#</a></dt>
 <dd><p>Reuses stored turbofan data for performance calculations.</p>
 </dd></dl>
 
@@ -993,9 +993,9 @@ for handling different operating conditions and performance calculations.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.core_nozzle"><code class="docutils literal notranslate"><span class="pre">Turbofan.core_nozzle</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.fan_nozzle"><code class="docutils literal notranslate"><span class="pre">Turbofan.fan_nozzle</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.active_crypgenic_tanks_tanks"><code class="docutils literal notranslate"><span class="pre">Turbofan.active_crypgenic_tanks_tanks</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.engine_diameter"><code class="docutils literal notranslate"><span class="pre">Turbofan.engine_diameter</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.engine_length"><code class="docutils literal notranslate"><span class="pre">Turbofan.engine_length</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.engine_height"><code class="docutils literal notranslate"><span class="pre">Turbofan.engine_height</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.diameter"><code class="docutils literal notranslate"><span class="pre">Turbofan.diameter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.length"><code class="docutils literal notranslate"><span class="pre">Turbofan.length</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.height"><code class="docutils literal notranslate"><span class="pre">Turbofan.height</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.exa"><code class="docutils literal notranslate"><span class="pre">Turbofan.exa</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.plug_diameter"><code class="docutils literal notranslate"><span class="pre">Turbofan.plug_diameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.geometry_xe"><code class="docutils literal notranslate"><span class="pre">Turbofan.geometry_xe</span></code></a></li>
@@ -1004,12 +1004,12 @@ for handling different operating conditions and performance calculations.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.bypass_ratio"><code class="docutils literal notranslate"><span class="pre">Turbofan.bypass_ratio</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.design_isa_deviation"><code class="docutils literal notranslate"><span class="pre">Turbofan.design_isa_deviation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.design_altitude"><code class="docutils literal notranslate"><span class="pre">Turbofan.design_altitude</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.SFC_adjustment"><code class="docutils literal notranslate"><span class="pre">Turbofan.SFC_adjustment</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.specific_fuel_consumption_reduction_factor"><code class="docutils literal notranslate"><span class="pre">Turbofan.specific_fuel_consumption_reduction_factor</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.compressor_nondimensional_massflow"><code class="docutils literal notranslate"><span class="pre">Turbofan.compressor_nondimensional_massflow</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.reference_temperature"><code class="docutils literal notranslate"><span class="pre">Turbofan.reference_temperature</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.reference_pressure"><code class="docutils literal notranslate"><span class="pre">Turbofan.reference_pressure</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.design_thrust"><code class="docutils literal notranslate"><span class="pre">Turbofan.design_thrust</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.mass_flow_rate_design"><code class="docutils literal notranslate"><span class="pre">Turbofan.mass_flow_rate_design</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.design_mass_flow_rate"><code class="docutils literal notranslate"><span class="pre">Turbofan.design_mass_flow_rate</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.OpenVSP_flow_through"><code class="docutils literal notranslate"><span class="pre">Turbofan.OpenVSP_flow_through</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.append_operating_conditions"><code class="docutils literal notranslate"><span class="pre">Turbofan.append_operating_conditions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.unpack_propulsor_unknowns"><code class="docutils literal notranslate"><span class="pre">Turbofan.unpack_propulsor_unknowns()</span></code></a></li>

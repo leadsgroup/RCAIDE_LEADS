@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,8 +537,29 @@
 <span id="append-compressor-conditions"></span><h1>append_compressor_conditions<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions.append_compressor_conditions">
-<span class="sig-name descname"><span class="pre">append_compressor_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compressor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor_conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Compressor/append_compressor_conditions.html#append_compressor_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions.append_compressor_conditions" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">append_compressor_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compressor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Compressor/append_compressor_conditions.html#append_compressor_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions.append_compressor_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Initializes empty condition containers for compressor analysis in the propulsion system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compressor</strong> (<a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Compressor.html#RCAIDE.Library.Components.Powertrain.Converters.Compressor.Compressor" title="RCAIDE.Library.Components.Powertrain.Converters.Compressor.Compressor"><em>Compressor</em></a>) – The compressor component being analyzed</p></li>
+<li><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p></li>
+<li><p><strong>energy_conditions</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Common.Conditions.html#RCAIDE.Framework.Mission.Common.Conditions.Conditions" title="RCAIDE.Framework.Mission.Common.Conditions.Conditions"><em>Conditions</em></a>) – Container for storing energy system conditions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function creates empty Conditions containers that will be populated
+during compressor performance calculations with thermodynamic states
+and operating parameters.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance</span></code></a></p>
+</div>
+</dd></dl>
 
 </section>
 

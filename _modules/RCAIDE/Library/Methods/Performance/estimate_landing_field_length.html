@@ -400,31 +400,65 @@
 <div class="viewcode-block" id="estimate_landing_field_length">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.estimate_landing_field_length.html#RCAIDE.Library.Methods.Performance.estimate_landing_field_length.estimate_landing_field_length">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">estimate_landing_field_length</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">analyses</span><span class="p">,</span> <span class="n">altitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delta_isa</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Computes the landing field length for a given vehicle configuration in a given airport.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the landing field length required for a given vehicle configuration at specified airport conditions.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    See source</span>
-<span class="sd">    Two wheel trucks (code needed for four wheel trucks also included)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : Vehicle</span>
+<span class="sd">        The vehicle instance containing:</span>
+<span class="sd">            - mass_properties.landing : float</span>
+<span class="sd">                Landing weight [kg]</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Wing reference area [m^2]</span>
+<span class="sd">            - maximum_lift_coefficient : float, optional</span>
+<span class="sd">                Maximum lift coefficient if pre-computed</span>
+<span class="sd">            - Vref_VS_ratio : float, optional</span>
+<span class="sd">                Ratio of approach to stall speed, default 1.23</span>
+<span class="sd">    analyses : Analyses</span>
+<span class="sd">        Container with aerodynamic analyses for computing maximum lift coefficient</span>
+<span class="sd">    altitude : float, optional</span>
+<span class="sd">        Airport altitude [ft], default 0</span>
+<span class="sd">    delta_isa : float, optional</span>
+<span class="sd">        Temperature offset from ISA conditions [K], default 0</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    Torenbeek, E., &quot;Advanced Aircraft Design&quot;, 2013 (equation 9.25)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landing_field_length : float</span>
+<span class="sd">      Required landing field length [m]</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    airport.</span>
-<span class="sd">      atmosphere                           [RCAIDE data type]</span>
-<span class="sd">      altitude                             [m]</span>
-<span class="sd">      delta_isa                            [K]</span>
-<span class="sd">    vehicle.</span>
-<span class="sd">      mass_properties.landing              [kg]</span>
-<span class="sd">      reference_area                       [m^2]</span>
-<span class="sd">      maximum_lift_coefficient (optional)  [Unitless]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The landing distance is computed using a semi-empirical approach:</span>
 
-<span class="sd">    Outputs:</span>
-<span class="sd">    landing_field_length                   [m]</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        LFL = k_1 + k_2 V_{ref}^2</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    &quot;&quot;&quot;</span>       
+<span class="sd">    where:</span>
+<span class="sd">      * k₁ = 250 (constant)</span>
+<span class="sd">      * k₂ = 2.485/g for two-wheel trucks</span>
+<span class="sd">      * Vref = 1.23 * Vstall (default)</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">      * Two-wheel truck landing gear configuration</span>
+<span class="sd">      * Sea level standard atmospheric conditions unless specified</span>
+<span class="sd">      * Standard approach speed ratio (1.23 × stall speed)</span>
+<span class="sd">      * No wind conditions</span>
+
+<span class="sd">    **Theory**</span>
+<span class="sd">    The stall speed is computed as:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        V_{stall} = \sqrt{\\frac{2W}{\\rho S C_{L_{max}}}}</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Torenbeek, E. (2013). Advanced Aircraft Design: Conceptual Design, Analysis and Optimization of Subsonic Civil Airplanes. Equation 9.25.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff</span>
+<span class="sd">    &quot;&quot;&quot;</span>            
    
     <span class="c1"># ==============================================</span>
     <span class="c1"># Unpack</span>

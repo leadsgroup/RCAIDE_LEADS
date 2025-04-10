@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,22 +537,106 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Cruise.Constant_Dynamic_Pressure_Constant_Altitude_Loiter.initialize_conditions">
 <span class="sig-name descname"><span class="pre">initialize_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Cruise/Constant_Dynamic_Pressure_Constant_Altitude_Loiter.html#initialize_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Cruise.Constant_Dynamic_Pressure_Constant_Altitude_Loiter.initialize_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Sets the specified conditions which are given for the segment type.</p>
-<p>Assumptions:
-Constant dynamic pressure and constant altitude with set loiter time</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-segment.altitude                [meters]
-segment.time                    [seconds]
-segment.dynamic_pressure        [pascals]</p>
-<p>Outputs:
-conditions.frames.inertial.velocity_vector  [meters/second]
-conditions.frames.inertial.position_vector  [meters]
-conditions.freestream.altitude              [meters]
-conditions.frames.inertial.time             [seconds]</p>
-<p>Properties Used:
-N/A</p>
+<dd><p>Initializes conditions for constant dynamic pressure loiter at fixed altitude</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – <dl class="simple">
+<dt>The mission segment being analyzed</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>altitude<span class="classifier">float</span></dt><dd><p>Loiter altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>time<span class="classifier">float</span></dt><dd><p>Loiter duration [s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>dynamic_pressure<span class="classifier">float</span></dt><dd><p>Dynamic pressure to maintain [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sideslip_angle<span class="classifier">float</span></dt><dd><p>Aircraft sideslip angle [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state:</dt><dd><dl class="simple">
+<dt>numerics.dimensionless.control_points<span class="classifier">array</span></dt><dd><p>Discretization points [-]</p>
+</dd>
+<dt>conditions<span class="classifier">Data</span></dt><dd><p>State conditions container</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>analyses:</dt><dd><dl class="simple">
+<dt>atmosphere<span class="classifier">Model</span></dt><dd><p>Atmospheric model for property calculations</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Updates segment conditions directly:</dt><dd><ul class="simple">
+<li><p>conditions.frames.inertial.velocity_vector [m/s]</p></li>
+<li><p>conditions.frames.inertial.position_vector [m]</p></li>
+<li><p>conditions.freestream.altitude [m]</p></li>
+<li><p>conditions.frames.inertial.time [s]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up the initial conditions for a loiter segment with constant
+dynamic pressure and constant altitude. The airspeed is determined from the
+dynamic pressure constraint.</p>
+<dl class="simple">
+<dt><strong>Calculation Process</strong></dt><dd><ol class="arabic simple">
+<li><p>Get atmospheric properties at altitude</p></li>
+<li><dl class="simple">
+<dt>Calculate true airspeed from dynamic pressure:</dt><dd><dl class="simple">
+<dt>V = sqrt(2q/ρ) where:</dt><dd><ul class="simple">
+<li><p>q is dynamic pressure</p></li>
+<li><p>ρ is air density</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><p>Discretize time points</p></li>
+<li><p>Decompose velocity into components using sideslip angle</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant dynamic pressure</p></li>
+<li><p>Constant altitude</p></li>
+<li><p>Standard atmosphere model</p></li>
+<li><p>Small angle approximations</p></li>
+<li><p>Quasi-steady flight</p></li>
+<li><p>No wind effects</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Mission.Common.Update.atmosphere.html#module-RCAIDE.Library.Mission.Common.Update.atmosphere" title="RCAIDE.Library.Mission.Common.Update.atmosphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Mission.Common.Update.atmosphere</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

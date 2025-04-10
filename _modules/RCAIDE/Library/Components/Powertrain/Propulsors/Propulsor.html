@@ -387,7 +387,10 @@
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 
 <span class="c1"># RCAIDE imports  </span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components</span><span class="w">                   </span><span class="kn">import</span> <span class="n">Component</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components</span><span class="w">           </span><span class="kn">import</span> <span class="n">Component</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common</span><span class="w">     </span><span class="kn">import</span> <span class="n">Conditions</span>
+
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  Propusor</span>
@@ -413,9 +416,9 @@
 <span class="sd">    -----</span>
 <span class="sd">    This class serves as the foundation for all propulsion system implementations </span>
 <span class="sd">    in RCAIDE. It provides the basic structure and common attributes needed for:</span>
-<span class="sd">    - Electric propulsion systems (rotors, ducted fans)</span>
-<span class="sd">    - Internal combustion engine systems (fixed and constant-speed propellers)</span>
-<span class="sd">    - Gas turbine systems (turbofans, turbojets, turboprops)</span>
+<span class="sd">        * Electric propulsion systems (rotors, ducted fans)</span>
+<span class="sd">        * Internal combustion engine systems (fixed and constant-speed propellers)</span>
+<span class="sd">        * Gas turbine systems (turbofans, turbojets, turboprops)</span>
 <span class="sd">    </span>
 <span class="sd">    The class inherits from Component, providing basic component functionality</span>
 <span class="sd">    while adding propulsion-specific features. Derived classes must implement</span>
@@ -461,10 +464,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>          
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                          <span class="o">=</span> <span class="s1">&#39;propulsor&#39;</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">active</span>                       <span class="o">=</span> <span class="kc">True</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">wing_mounted</span>                 <span class="o">=</span> <span class="kc">True</span> </div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wing_mounted</span>                 <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sealevel_static_thrust</span>       <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_fluid</span>                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Gases</span><span class="o">.</span><span class="n">Air</span><span class="p">()</span></div>
 
-        
-    
 </pre></div>
 
                 </article>

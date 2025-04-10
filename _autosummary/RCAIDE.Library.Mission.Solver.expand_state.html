@@ -47,8 +47,8 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Mission.Solver.expand_state.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="optimize" href="RCAIDE.Library.Mission.Solver.optimize.html" />
-    <link rel="prev" title="converge_root" href="RCAIDE.Library.Mission.Solver.converge_root.html" />
+    <link rel="next" title="Plots" href="RCAIDE.Library.Plots.html" />
+    <link rel="prev" title="converge" href="RCAIDE.Library.Mission.Solver.converge.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,17 +532,63 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Solver.expand_state.expand_state">
 <span class="sig-name descname"><span class="pre">expand_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Solver/expand_state.html#expand_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Solver.expand_state.expand_state" title="Link to this definition">#</a></dt>
-<dd><p>Makes all vectors in the state the same size.</p>
-<p>Assumptions:
-N/A</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-state.numerics.number_of_control_points  [Unitless]</p>
-<p>Outputs:
-N/A</p>
-<p>Properties Used:
-N/A</p>
+<dd><p>Expands all state vectors to match number of control points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – <dl class="simple">
+<dt>The mission segment being analyzed</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>state:</dt><dd><dl class="simple">
+<dt>numerics:</dt><dd><dl class="simple">
+<dt>number_of_control_points<span class="classifier">int</span></dt><dd><p>Number of discretization points [-]</p>
+</dd>
+</dl>
+</dd>
+<dt>expand_rows<span class="classifier">function</span></dt><dd><p>Method to expand state containers</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function ensures all state vectors in the segment have consistent dimensions
+by expanding them to match the number of control points used for discretization.</p>
+<dl class="simple">
+<dt><strong>Calculation Process</strong></dt><dd><ol class="arabic simple">
+<li><p>Get required vector size from numerics</p></li>
+<li><dl class="simple">
+<dt>Call expand_rows to resize all state containers:</dt><dd><ul class="simple">
+<li><p>conditions</p></li>
+<li><p>unknowns</p></li>
+<li><p>residuals</p></li>
+<li><p>differentials</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>All state vectors should have same length</p></li>
+<li><p>Expansion preserves vector values</p></li>
+<li><p>State containers support expand_rows method</p></li>
+<li><p>Control points already properly set</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>
@@ -558,20 +604,20 @@ N/A</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Mission.Solver.converge_root.html"
+       href="RCAIDE.Library.Mission.Solver.converge.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">converge_root</p>
+        <p class="prev-next-title">converge</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Mission.Solver.optimize.html"
+       href="RCAIDE.Library.Plots.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">optimize</p>
+        <p class="prev-next-title">Plots</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

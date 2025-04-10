@@ -401,7 +401,7 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="broadband_noise">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Noise.Frequency_Domain_Buildup.Rotor.broadband_noise.html#RCAIDE.Library.Methods.Noise.Frequency_Domain_Buildup.Rotor.broadband_noise.broadband_noise">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">broadband_noise</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">,</span><span class="n">coordinates</span><span class="p">,</span><span class="n">rotor</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">Noise</span><span class="p">,</span><span class="n">cpt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">broadband_noise</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span><span class="n">coordinates</span><span class="p">,</span><span class="n">rotor</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">Noise</span><span class="p">,</span><span class="n">cpt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;This computes the trailing edge noise compoment of broadband noise of a propeller or </span>
 <span class="sd">    lift-rotor in the frequency domain. Boundary layer properties are computed using RCAIDE&#39;s </span>
 <span class="sd">    panel method.</span>
@@ -438,7 +438,7 @@
 <span class="sd">    Properties Used:</span>
 <span class="sd">        N/A   </span>
 <span class="sd">    &#39;&#39;&#39;</span>     
-    <span class="n">aeroacoustic_data</span>       <span class="o">=</span> <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+    <span class="n">aeroacoustic_data</span>       <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
     <span class="n">num_cpt</span>                 <span class="o">=</span> <span class="mi">1</span>
     <span class="n">num_mic</span>                 <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coordinates</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>  
     <span class="n">num_blades</span>              <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coordinates</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>

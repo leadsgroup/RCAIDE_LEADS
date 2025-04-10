@@ -47,8 +47,8 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Framework.Networks.Network.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Solar" href="RCAIDE.Framework.Networks.Solar.html" />
-    <link rel="prev" title="Human_Powered" href="RCAIDE.Framework.Networks.Human_Powered.html" />
+    <link rel="next" title="Optimization" href="RCAIDE.Framework.Optimization.html" />
+    <link rel="prev" title="Hybrid" href="RCAIDE.Framework.Networks.Hybrid.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -530,7 +530,123 @@
 <dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Network.Network">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Network.html#Network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Network.Network" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Components.Component.html#RCAIDE.Library.Components.Component.Component" title="RCAIDE.Library.Components.Component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
-<p>The top-level network class.</p>
+<p>Generalized Hybrid Energy Network (powertrain) Class capable of creating all derivatives of hybrid
+networks, the conventional fuel network and the all-electric network.</p>
+<blockquote>
+<div><blockquote>
+<div><p>GENERIC NETWORK</p>
+</div></blockquote>
+<p>…………………………………..:……………………………………
+:                        :                                :                        :</p>
+</div></blockquote>
+<p>.————-.         .————-.                 .————-.           .————-.
+| propulsor 1 |         | propulsor 2 |                 | propulsor 2 |           | propulsor 3 |
+‘————-’         ‘————-’                 ‘————-’           ‘————-’</p>
+<blockquote>
+<div><p>||                       ||                              ||                        ||
+||   .————-.     ||                              ||  .————-.       ||
+||== | converter 1 <a href="#id1"><span class="problematic" id="id2">|====== electric bus / fuel line =========|</span></a> converter 2 <a href="#id3"><span class="problematic" id="id4">|=======||</span></a></p>
+<blockquote>
+<div><p>‘————-’                                         ‘————-’</p>
+</div></blockquote>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Network.Network.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Framework.Networks.Network.Network.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The evaluate function is broken into three sections: Section 1 computes all the forces and moments
+from propulsors regardless of if they are powered by fuel or an electrochemical energy storage system;
+Section 2 computees the perfomrance of any converters on the distrution lines, for example,
+turboshafts, motors, pumps etc; and Section 3 computes the thermal mangement of the system as
+well as energy consumtion of the powertrain. The state of storage devices such as covnentional fuel tanks,
+cryogenic tanks and batteries are also updates. Propulsor groups can be “active” or “inactive” to simulate
+engine out conditions. Energy consumtion from payload and avionics is also modeled</p>
+<p><strong>Definitions</strong>
+‘Propulsor Group’</p>
+<blockquote>
+<div><p>Any single or group of compoments that work together to provide thrust.</p>
+</div></blockquote>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Framework.Networks.Fuel</span></code></dt><dd><p>Fuel network class</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Framework.Networks.Fuel_Cell</span></code></dt><dd><p>Fuel_Cell network class</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Framework.Networks.Electric</span></code></dt><dd><p>All-Electric network class</p>
+</dd>
+</dl>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Network.Network.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Network.html#Network.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Network.Network.evaluate" title="Link to this definition">#</a></dt>
+<dd><p>Computes the performance of the network</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Network.Network.unpack_unknowns">
+<span class="sig-name descname"><span class="pre">unpack_unknowns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Network.html#Network.unpack_unknowns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Network.Network.unpack_unknowns" title="Link to this definition">#</a></dt>
+<dd><p>Unpacks the unknowns set in the mission to be available for the mission.</p>
+<p>Assumptions:
+N/A</p>
+<p>Source:
+N/A</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><p>segment   - data structure of mission segment [-]</p>
+</dd>
+</dl>
+<p>Outputs:</p>
+<p>Properties Used:
+N/A</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Network.Network.residuals">
+<span class="sig-name descname"><span class="pre">residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Network.html#Network.residuals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Network.Network.residuals" title="Link to this definition">#</a></dt>
+<dd><p>This packs the residuals to be sent to the mission solver.</p>
+<p>Assumptions:
+None</p>
+<p>Source:
+N/A</p>
+<p>Inputs:
+state.conditions.energy:</p>
+<blockquote>
+<div><p>motor(s).torque                      [N-m]
+rotor(s).torque                      [N-m]</p>
+</div></blockquote>
+<p>residuals soecific to the battery cell</p>
+<p>Outputs:
+residuals specific to battery cell and network</p>
+<p>Properties Used:
+N/A</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Network.Network.add_unknowns_and_residuals_to_segment">
+<span class="sig-name descname"><span class="pre">add_unknowns_and_residuals_to_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Network.html#Network.add_unknowns_and_residuals_to_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Network.Network.add_unknowns_and_residuals_to_segment" title="Link to this definition">#</a></dt>
+<dd><p>This function sets up the information that the mission needs to run a mission segment using this network</p>
+<p>Assumptions:
+None</p>
+<p>Source:
+N/A</p>
+<p>Inputs:
+segment
+eestimated_throttles           [-]
+estimated_propulsor_group_rpms [-]</p>
+<p>Outputs:
+segment</p>
+<p>Properties Used:
+N/A</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Network.Network.Container">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Container</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RCAIDE.Framework.Networks.Network.Network.Container" title="Link to this definition">#</a></dt>
@@ -539,22 +655,11 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Network.Network.Container.evaluate">
 <span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RCAIDE.Framework.Networks.Network.Network.Container.evaluate" title="Link to this definition">#</a></dt>
-<dd><p>This is used to evaluate the thrust produced by the network.</p>
+<dd><p>This is used to evaluate the thrust and moments produced by the network.</p>
 <dl class="simple">
 <dt>Assumptions:</dt><dd><p>If multiple networks are attached their performances will be summed</p>
 </dd>
 <dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>State</strong> (<em>dict</em>) – flight conditions</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Results of the evaluate method</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>results (dict)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -571,22 +676,11 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Framework.Networks.Network.Container.evaluate">
 <span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Networks/Network.html#Container.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Networks.Network.Container.evaluate" title="Link to this definition">#</a></dt>
-<dd><p>This is used to evaluate the thrust produced by the network.</p>
+<dd><p>This is used to evaluate the thrust and moments produced by the network.</p>
 <dl class="simple">
 <dt>Assumptions:</dt><dd><p>If multiple networks are attached their performances will be summed</p>
 </dd>
 <dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>State</strong> (<em>dict</em>) – flight conditions</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Results of the evaluate method</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>results (dict)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -606,20 +700,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Framework.Networks.Human_Powered.html"
+       href="RCAIDE.Framework.Networks.Hybrid.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Human_Powered</p>
+        <p class="prev-next-title">Hybrid</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Framework.Networks.Solar.html"
+       href="RCAIDE.Framework.Optimization.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Solar</p>
+        <p class="prev-next-title">Optimization</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -643,6 +737,11 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Network.Network.tag"><code class="docutils literal notranslate"><span class="pre">Network.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Network.Network.evaluate"><code class="docutils literal notranslate"><span class="pre">Network.evaluate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Network.Network.unpack_unknowns"><code class="docutils literal notranslate"><span class="pre">Network.unpack_unknowns()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Network.Network.residuals"><code class="docutils literal notranslate"><span class="pre">Network.residuals()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Network.Network.add_unknowns_and_residuals_to_segment"><code class="docutils literal notranslate"><span class="pre">Network.add_unknowns_and_residuals_to_segment()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Network.Network.Container"><code class="docutils literal notranslate"><span class="pre">Network.Container</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Networks.Network.Network.Container.evaluate"><code class="docutils literal notranslate"><span class="pre">Network.Container.evaluate()</span></code></a></li>
 </ul>

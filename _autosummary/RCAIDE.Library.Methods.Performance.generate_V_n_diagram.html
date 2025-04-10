@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,36 +534,137 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Performance.generate_V_n_diagram.generate_V_n_diagram">
 <span class="sig-name descname"><span class="pre">generate_V_n_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_ISA</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Performance/generate_V_n_diagram.html#generate_V_n_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.generate_V_n_diagram" title="Link to this definition">#</a></dt>
-<dd><p>Computes a V-n diagram for a given aircraft and given regulations for ISA conditions</p>
-<p>Source:
-S. Gudmundsson “General Aviation Aircraft Design: Applied Methods and Procedures”, Butterworth-Heinemann; 1 edition
-CFR FAR Part 23: <a class="reference external" href="https://www.ecfr.gov/cgi-bin/text-idx?SID=0e6a13c7c1de7f501d0eb0a4d71418bd&amp;mc=true&amp;tpl=/ecfrbrowse/Title14/14cfr23_main_02.tpl">https://www.ecfr.gov/cgi-bin/text-idx?SID=0e6a13c7c1de7f501d0eb0a4d71418bd&amp;mc=true&amp;tpl=/ecfrbrowse/Title14/14cfr23_main_02.tpl</a>
-CFR FAR Part 25: <a class="reference external" href="https://www.ecfr.gov/cgi-bin/text-idx?tpl=/ecfrbrowse/Title14/14cfr25_main_02.tpl">https://www.ecfr.gov/cgi-bin/text-idx?tpl=/ecfrbrowse/Title14/14cfr25_main_02.tpl</a></p>
-<p>Inputs:
-analyses.base.atmosphere               [RCAIDE data type]
-vehicle.</p>
-<blockquote>
-<div><p>reference_area                       [m^2]
-maximum_lift_coefficient             [Unitless]
-minimum_lift_coefficient             [Unitless]
-chords.mean_aerodynamic              [m]
-envelope.FARpart_number              [Unitless]</p>
-<blockquote>
-<div><p>positive_limit_load               [Unitless]
-negative_limit_load               [Unitless]
-cruise_mach                        [Unitless]</p>
-</div></blockquote>
-</div></blockquote>
-<p>weight                                 [kg]
-altitude                               [m]
-delta_ISA                              [deg C]</p>
-<p>Outputs:
-V_n_data</p>
-<p>Properties Used:
-N/A</p>
-<p>Description:
-The script creates an aircraft V-n diagram based on the input parameters specified by the user.
-Depending on the certification flag, an appropriate diagram, output and log files are created.</p>
+<dd><p>Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – <dl class="simple">
+<dt>The vehicle instance containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>reference_area<span class="classifier">float</span></dt><dd><p>Wing reference area [m²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maximum_lift_coefficient<span class="classifier">float</span></dt><dd><p>Maximum lift coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>minimum_lift_coefficient<span class="classifier">float</span></dt><dd><p>Minimum lift coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>chords.mean_aerodynamic<span class="classifier">float</span></dt><dd><p>Mean aerodynamic chord [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flight_envelope<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Container with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>FAR_part_number<span class="classifier">str</span></dt><dd><p>’23’ or ‘25’ for certification category</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>category<span class="classifier">str</span></dt><dd><p>For Part 23: ‘normal’, ‘utility’, ‘acrobatic’, or ‘commuter’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_mach_number<span class="classifier">float</span></dt><dd><p>Cruise Mach number</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>positive_limit_load<span class="classifier">float</span></dt><dd><p>Positive load factor limit</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>negative_limit_load<span class="classifier">float</span></dt><dd><p>Negative load factor limit</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>analyses</strong> (<em>Analyses</em>) – Container with atmosphere and aerodynamic analyses</p></li>
+<li><p><strong>altitude</strong> (<em>float</em>) – Analysis altitude [m]</p></li>
+<li><p><strong>delta_ISA</strong> (<em>float</em>) – Temperature offset from ISA conditions [K]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>V_n_data</strong> –</p>
+<dl class="simple">
+<dt>Container of V-n diagram data including:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>limit_loads<span class="classifier">Data</span></dt><dd><p>Positive and negative load factor limits</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>airspeeds<span class="classifier">Data</span></dt><dd><p>Critical airspeeds (Vs, Va, Vb, Vc, Vd)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>gust_load_factors<span class="classifier">Data</span></dt><dd><p>Load factors from gust conditions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>load_factors<span class="classifier">Data</span></dt><dd><p>Complete set of load factors vs velocity</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>Computes the following critical speeds and conditions:</dt><dd><ul class="simple">
+<li><p>Vs1: Stall speed</p></li>
+<li><p>Va: Maneuvering speed</p></li>
+<li><p>Vb: Design speed for maximum gust intensity</p></li>
+<li><p>Vc: Design cruise speed</p></li>
+<li><p>Vd: Design diving speed</p></li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Quasi-steady aerodynamics</p></li>
+<li><p>Linear lift curve slope</p></li>
+<li><p>Rigid aircraft structure</p></li>
+<li><p>Standard atmosphere modified by altitude and delta_ISA</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+Load factor limits are determined by:</p>
+<div class="math notranslate nohighlight">
+\[n = \frac{L}{W} = \frac{\rho V^2 S C_L}{2W}\]</div>
+<p>Gust loads are computed using:</p>
+<div class="math notranslate nohighlight">
+\[\Delta n = \frac{K_g U_de V a C_{L_\alpha}}{498 W/S}\]</div>
+<p class="rubric">References</p>
+<p>[1] FAR Part 23: <a class="reference external" href="https://www.ecfr.gov/current/title-14/part-23">https://www.ecfr.gov/current/title-14/part-23</a>
+[2] FAR Part 25: <a class="reference external" href="https://www.ecfr.gov/current/title-14/part-25">https://www.ecfr.gov/current/title-14/part-25</a>
+[3] Gudmundsson, S. (2022). General Aviation Aircraft Design: Applied Methods and procedures. Elsevier.</p>
 </dd></dl>
 
 <dl class="py function">

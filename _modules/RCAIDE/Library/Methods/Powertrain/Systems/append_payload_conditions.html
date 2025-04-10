@@ -378,18 +378,47 @@
                   
   <h1>Source code for RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Systems/append_payload_conditions.py</span>
-<span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Jun 2024, M. Clarke  </span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common</span><span class="w">     </span><span class="kn">import</span>   <span class="n">Conditions</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<span class="c1">#  append_motor_conditions</span>
+<span class="c1">#  append_payload_conditions</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="append_payload_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions.html#RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions.append_payload_conditions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">append_payload_conditions</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">bus</span><span class="p">):</span>  
+<span class="k">def</span><span class="w"> </span><span class="nf">append_payload_conditions</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">bus</span><span class="p">):</span>  
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes and appends empty payload conditions data structures to the segment state conditions.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    payload : Payload</span>
+<span class="sd">        The payload component for which conditions are being initialized.</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment in which the payload is operating.</span>
+<span class="sd">    bus : ElectricalBus</span>
+<span class="sd">        The electrical bus that powers the payload system.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        This function modifies the segment.state.conditions.energy dictionary in-place.</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function creates an empty Conditions object for the payload system within</span>
+<span class="sd">    the segment&#39;s energy conditions dictionary, indexed by the bus tag and payload tag.</span>
+<span class="sd">    </span>
+<span class="sd">    The payload power consumption is initialized as a zero array with the same</span>
+<span class="sd">    length as the segment&#39;s state vector. This will be updated during mission analysis</span>
+<span class="sd">    based on the payload power requirements.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ones_row</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span> 
     <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">payload</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>       <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">payload</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  

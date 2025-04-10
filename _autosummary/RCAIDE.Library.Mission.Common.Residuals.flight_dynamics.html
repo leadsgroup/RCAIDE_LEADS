@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,16 +535,124 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Residuals.flight_dynamics.flight_dynamics">
 <span class="sig-name descname"><span class="pre">flight_dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Residuals/flight_dynamics.html#flight_dynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Residuals.flight_dynamics.flight_dynamics" title="Link to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>Packs the residuals related to the flight dynamics.</dt><dd><p>This includes the force and moment equations about x,y and z</p>
+<dd><p>Evaluates flight dynamics residuals for mission segment analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p>
 </dd>
-<dt>Assumptions:</dt><dd><p>N/A</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updates segment residuals directly</p>
 </dd>
-<dt>Inputs:</dt><dd><p>segment</p>
-</dd>
-<dt>Outputs:</dt><dd><p>None</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the residuals for force and moment equations
+in all three axes. It handles special cases for transition and ground
+segments, including acceleration calculations and final velocity constraints.</p>
+<dl class="simple">
+<dt>The function processes:</dt><dd><ol class="arabic simple">
+<li><p>Force equation residuals (F = ma)</p></li>
+<li><p>Moment equation residuals (M = Iα)</p></li>
+<li><dl class="simple">
+<dt>Special handling for:</dt><dd><ul class="simple">
+<li><p>Transition segments</p></li>
+<li><p>Ground operations (takeoff, landing)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+</dl>
+<p><strong>Required Segment State Variables</strong></p>
+<dl class="simple">
+<dt>state.conditions.frames.inertial:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>velocity_vector<span class="classifier">array</span></dt><dd><p>Vehicle velocity [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>acceleration_vector<span class="classifier">array</span></dt><dd><p>Vehicle acceleration [m/s²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>total_force_vector<span class="classifier">array</span></dt><dd><p>Net forces [N]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>total_moment_vector<span class="classifier">array</span></dt><dd><p>Net moments [N⋅m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>angular_velocity_vector<span class="classifier">array</span></dt><dd><p>Angular rates [rad/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>angular_acceleration_vector<span class="classifier">array</span></dt><dd><p>Angular accelerations [rad/s²]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>state.conditions.weights:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>total_mass<span class="classifier">array</span></dt><dd><p>Vehicle mass [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>analyses.aerodynamics.vehicle.mass_properties:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>moments_of_inertia.tensor<span class="classifier">array</span></dt><dd><p>Inertia tensor [kg⋅m²]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p><strong>Segment Types</strong></p>
+<p>Special handling for:
+- Transition segments</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Constant acceleration</p></li>
+<li><p>Constant angle</p></li>
+<li><p>Linear climb</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Ground segments</dt><dd><ul>
+<li><p>Takeoff</p></li>
+<li><p>Landing</p></li>
+<li><p>Ground operations</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Rigid body dynamics</p></li>
+<li><p>Principal axes aligned with body axes</p></li>
+<li><p>Constant inertia properties</p></li>
+<li><p>Valid mass properties</p></li>
+<li><p>Non-zero final velocity for ground segments</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a>, <a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Transition.html#module-RCAIDE.Framework.Mission.Segments.Transition" title="RCAIDE.Framework.Mission.Segments.Transition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments.Transition</span></code></a>, <a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Ground.html#module-RCAIDE.Framework.Mission.Segments.Ground" title="RCAIDE.Framework.Mission.Segments.Ground"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments.Ground</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

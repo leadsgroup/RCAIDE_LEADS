@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -538,33 +538,85 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions.append_bus_conditions">
 <span class="sig-name descname"><span class="pre">append_bus_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Distributors/Electrical_Bus/append_bus_conditions.html#append_bus_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions.append_bus_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Appends the initial bus conditions</p>
-<p>Assumptions:
-N/A</p>
-<p>Source:
-N/A</p>
-<p>Inputs:</p>
-<p>Outputs:</p>
-<p>Properties Used:
-None</p>
+<dd><p>Appends conditions for the electrical bus to the segment’s energy conditions dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bus</strong> (<em>RCAIDE.Library.Components.Distributors.ElectricalBus</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function modifies the segment.state.conditions.energy dictionary in-place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function creates a Conditions object for the electrical bus within the segment’s
+energy conditions dictionary, indexed by the bus tag. It initializes various bus
+properties as zero arrays with the same length as the segment’s state vector.</p>
+<dl class="simple">
+<dt>The initialized properties include:</dt><dd><ul class="simple">
+<li><p>Battery module conditions</p></li>
+<li><p>Fuel cell stack conditions</p></li>
+<li><p>Power draw</p></li>
+<li><p>State of charge and depth of discharge</p></li>
+<li><p>Current draw and charging current</p></li>
+<li><p>Voltage (open circuit and under load)</p></li>
+<li><p>Heat energy generated</p></li>
+<li><p>Efficiency</p></li>
+<li><p>Temperature</p></li>
+<li><p>Energy</p></li>
+<li><p>Regenerative power</p></li>
+</ul>
+</dd>
+</dl>
+<p>For segments with an initial battery state of charge specified, the function also
+sets the initial energy and state of charge values accordingly.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions" title="RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions.append_bus_segment_conditions">
 <span class="sig-name descname"><span class="pre">append_bus_segment_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Distributors/Electrical_Bus/append_bus_conditions.html#append_bus_segment_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions.append_bus_segment_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Sets the initial bus properties at the start of each segment as the last point from the previous segment</p>
-<p>Assumptions:
-None</p>
-<p>Source:
-N/A</p>
-<dl class="simple">
-<dt>Inputs:</dt><dd><p>cross_flow_hex            (data structure)              [None]</p>
+<dd><p>Sets the initial bus properties at the start of each segment based on the last point from the previous segment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bus</strong> (<em>ElectricalBus</em>) – The electrical bus component for which conditions are being initialized.</p></li>
+<li><p><strong>conditions</strong> (<em>dict</em>) – Dictionary containing conditions from the previous segment.</p></li>
+<li><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The current mission segment in which the bus is operating.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
-<p>Outputs:
-None</p>
-<p>Properties Used:
-None</p>
+<p class="rubric">Notes</p>
+<p>This function initializes the power draw for the electrical bus at the start of a new segment
+by transferring thermal power draw information from the previous segment. It handles power
+requirements from battery thermal management systems (BTMS) and heat exchangers.</p>
+<dl class="simple">
+<dt>For segments with initial conditions from a previous segment, the function also:</dt><dd><ol class="arabic simple">
+<li><p>Sets the battery discharge flag based on the segment type (false for recharge segments)</p></li>
+<li><p>Transfers the final energy state from the previous segment to the initial state of the current segment</p></li>
+</ol>
+</dd>
+</dl>
+<p>This ensures continuity of energy states between mission segments.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Battery recharge segments are identified by their class type</p></li>
+<li><p>Power draw is initialized from thermal management components</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#module-RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions" title="RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions" title="RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

@@ -385,11 +385,11 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
- <span class="c1"># RCAIDE imports  </span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">      </span><span class="kn">import</span> <span class="n">Container</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w">                          </span><span class="kn">import</span> <span class="n">Propulsor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor.append_turbofan_conditions</span><span class="w">     </span><span class="kn">import</span> <span class="n">append_turbofan_conditions</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor.compute_turbofan_performance</span><span class="w">   </span><span class="kn">import</span> <span class="n">compute_turbofan_performance</span><span class="p">,</span> <span class="n">reuse_stored_turbofan_data</span>
+ <span class="c1"># RCAIDE imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">     </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w">                         </span><span class="kn">import</span> <span class="n">Propulsor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan</span>          <span class="o">.</span><span class="n">append_turbofan_conditions</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">append_turbofan_conditions</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan</span>          <span class="o">.</span><span class="n">compute_turbofan_performance</span>   <span class="kn">import</span><span class="w"> </span><span class="nn">compute_turbofan_performance</span><span class="o">,</span><span class="w"> </span><span class="nn">reuse_stored_turbofan_data</span>
  
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="c1">#  Fan Component</span>
@@ -441,13 +441,13 @@
 <span class="sd">    active_crypgenic_tanks_tanks : None or list</span>
 <span class="sd">        Collection of active cryogenoc tanks. Default is None.</span>
 <span class="sd">        </span>
-<span class="sd">    engine_diameter : float</span>
+<span class="sd">    diameter : float</span>
 <span class="sd">        Diameter of the engine [m]. Default is 0.0.</span>
 <span class="sd">        </span>
-<span class="sd">    engine_length : float</span>
+<span class="sd">    length : float</span>
 <span class="sd">        Length of the engine [m]. Default is 0.0.</span>
 <span class="sd">        </span>
-<span class="sd">    engine_height : float</span>
+<span class="sd">    height : float</span>
 <span class="sd">        Engine centerline height above the ground plane [m]. Default is 0.5.</span>
 <span class="sd">        </span>
 <span class="sd">    exa : float</span>
@@ -474,7 +474,7 @@
 <span class="sd">    design_altitude : float</span>
 <span class="sd">        Design altitude of the engine [m]. Default is 0.0.</span>
 <span class="sd">        </span>
-<span class="sd">    SFC_adjustment : float</span>
+<span class="sd">    specific_fuel_consumption_reduction_factor : float</span>
 <span class="sd">        Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.</span>
 <span class="sd">        </span>
 <span class="sd">    compressor_nondimensional_massflow : float</span>
@@ -489,7 +489,7 @@
 <span class="sd">    design_thrust : float</span>
 <span class="sd">        Design thrust of the engine [N]. Default is 0.0.</span>
 <span class="sd">        </span>
-<span class="sd">    mass_flow_rate_design : float</span>
+<span class="sd">    design_mass_flow_rate : float</span>
 <span class="sd">        Design mass flow rate [kg/s]. Default is 0.0.</span>
 <span class="sd">        </span>
 <span class="sd">    OpenVSP_flow_through : bool</span>
@@ -521,44 +521,52 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    
         <span class="c1"># setting the default values</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                      <span class="o">=</span> <span class="s1">&#39;Turbofan&#39;</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">nacelle</span>                                  <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fan</span>                                      <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">ram</span>                                      <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">inlet_nozzle</span>                             <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">low_pressure_compressor</span>                  <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">high_pressure_compressor</span>                 <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">low_pressure_turbine</span>                     <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">high_pressure_turbine</span>                    <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">combustor</span>                                <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">core_nozzle</span>                              <span class="o">=</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fan_nozzle</span>                               <span class="o">=</span> <span class="kc">None</span>       
-        <span class="bp">self</span><span class="o">.</span><span class="n">engine_diameter</span>                          <span class="o">=</span> <span class="mf">0.0</span>      
-        <span class="bp">self</span><span class="o">.</span><span class="n">engine_length</span>                            <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">engine_height</span>                            <span class="o">=</span> <span class="mf">0.5</span>     <span class="c1"># Engine centerline heigh above the ground plane</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exa</span>                                      <span class="o">=</span> <span class="mi">1</span>       <span class="c1"># distance from fan face to fan exit/ fan diameter)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plug_diameter</span>                            <span class="o">=</span> <span class="mf">0.1</span>     <span class="c1"># dimater of the engine plug</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">geometry_xe</span>                              <span class="o">=</span> <span class="mf">1.</span>      <span class="c1"># Geometry information for the installation effects function</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">geometry_ye</span>                              <span class="o">=</span> <span class="mf">1.</span>      <span class="c1"># Geometry information for the installation effects function</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">geometry_Ce</span>                              <span class="o">=</span> <span class="mf">2.</span>      <span class="c1"># Geometry information for the installation effects function</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bypass_ratio</span>                             <span class="o">=</span> <span class="mf">0.0</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">design_isa_deviation</span>                     <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">design_altitude</span>                          <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">SFC_adjustment</span>                           <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># Less than 1 is a reduction</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">compressor_nondimensional_massflow</span>       <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_temperature</span>                    <span class="o">=</span> <span class="mf">288.15</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_pressure</span>                       <span class="o">=</span> <span class="mf">1.01325</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="mi">5</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">design_thrust</span>                            <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mass_flow_rate_design</span>                    <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">OpenVSP_flow_through</span>                     <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                        <span class="o">=</span> <span class="s1">&#39;Turbofan&#39;</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">nacelle</span>                                    <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">fan</span>                                        <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">ram</span>                                        <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">inlet_nozzle</span>                               <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">low_pressure_compressor</span>                    <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">high_pressure_compressor</span>                   <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">low_pressure_turbine</span>                       <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">high_pressure_turbine</span>                      <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">combustor</span>                                  <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_nozzle</span>                                <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">fan_nozzle</span>                                 <span class="o">=</span> <span class="kc">None</span>       
+        <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span>                                   <span class="o">=</span> <span class="mf">0.0</span>      
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span>                                     <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span>                                     <span class="o">=</span> <span class="mf">0.0</span>     <span class="c1"># Engine centerline heigh above the ground plane </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plug_diameter</span>                              <span class="o">=</span> <span class="mf">0.1</span>     <span class="c1"># dimater of the engine plug</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geometry_xe</span>                                <span class="o">=</span> <span class="mf">1.</span>      <span class="c1"># Geometry information for the installation effects function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geometry_ye</span>                                <span class="o">=</span> <span class="mf">1.</span>      <span class="c1"># Geometry information for the installation effects function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geometry_Ce</span>                                <span class="o">=</span> <span class="mf">2.</span>      <span class="c1"># Geometry information for the installation effects function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bypass_ratio</span>                               <span class="o">=</span> <span class="mf">0.0</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">design_isa_deviation</span>                       <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">design_altitude</span>                            <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">specific_fuel_consumption_reduction_factor</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># Less than 1 is a reduction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compressor_nondimensional_massflow</span>         <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_temperature</span>                      <span class="o">=</span> <span class="mf">288.15</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_pressure</span>                         <span class="o">=</span> <span class="mf">1.01325</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="mi">5</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">design_thrust</span>                              <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass_flow_rate_design</span>                      <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span>                           <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">NOx</span>                       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">CO2</span>                       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">CO</span>                        <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">H2O</span>                       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">SO2</span>                       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">Soot</span>                      <span class="o">=</span> <span class="kc">None</span>  
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">OpenVSP_flow_through</span>                       <span class="o">=</span> <span class="kc">False</span>
     
 <div class="viewcode-block" id="Turbofan.append_operating_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.html#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.append_operating_conditions">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">,</span><span class="n">noise_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Appends operating conditions to the segment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">append_turbofan_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">)</span>
+        <span class="n">append_turbofan_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">,</span><span class="n">noise_conditions</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -586,18 +594,18 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes turbofan performance including thrust, moment, and power.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span>  <span class="n">compute_turbofan_performance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span></div>
+        <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power_mech</span><span class="p">,</span><span class="n">power_elec</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span>  <span class="n">compute_turbofan_performance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power_mech</span><span class="p">,</span><span class="n">power_elec</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span></div>
 
     
 <div class="viewcode-block" id="Turbofan.reuse_stored_data">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.html#RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan.Turbofan.reuse_stored_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">reuse_stored_data</span><span class="p">(</span><span class="n">turbofan</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span><span class="p">,</span><span class="n">center_of_gravity</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reuse_stored_data</span><span class="p">(</span><span class="n">turbofan</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="n">center_of_gravity</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reuses stored turbofan data for performance calculations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power</span>  <span class="o">=</span> <span class="n">reuse_stored_turbofan_data</span><span class="p">(</span><span class="n">turbofan</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power</span> </div>
+        <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power_mech</span><span class="p">,</span><span class="n">power_elec</span>  <span class="o">=</span> <span class="n">reuse_stored_turbofan_data</span><span class="p">(</span><span class="n">turbofan</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power_mech</span><span class="p">,</span><span class="n">power_elec</span></div>
 </div>
 
 </pre></div>

@@ -394,21 +394,63 @@
 <div class="viewcode-block" id="Aviation_Gasoline">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.html#RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.Aviation_Gasoline">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Aviation_Gasoline</span><span class="p">(</span><span class="n">Propellant</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aviation gasoline class</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing aviation gasoline (avgas) fuel properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the propellant (&#39;Aviation_Gasoline&#39;)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Fuel density in kg/m³ (721.0)</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy content in J/kg (43.71e6)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements properties for aviation gasoline (avgas), commonly used in </span>
+<span class="sd">    piston-engine aircraft.</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Avgas&#39;</span>
+<span class="sd">        Aviation gasoline, a high-octane fuel specifically formulated for </span>
+<span class="sd">        aircraft piston engines</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Specific Energy&#39;</span>
+<span class="sd">        The amount of energy per unit mass of fuel, indicating the fuel&#39;s </span>
+<span class="sd">        energy content</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Properties are for standard temperature and pressure conditions</span>
+<span class="sd">        * Fuel is assumed to be in liquid phase</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Chevron Products Company. (n.d.). Aviation fuels. Chevron. https://www.chevron.com/-/media/chevron/operations/documents/aviation-tech-review.pdf </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This sets the default values. </span>
-<span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            None</span>
-<span class="sd">        </span>
-<span class="sd">        Source:</span>
-<span class="sd">            None</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets default values for aviation gasoline properties.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Initializes standard properties for AVGAS including density and specific </span>
+<span class="sd">        energy content. Values are based on industry standard specifications for </span>
+<span class="sd">        AVGAS 100LL.</span>
 <span class="sd">        &quot;&quot;&quot;</span>    
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>             <span class="o">=</span><span class="s1">&#39;Aviation_Gasoline&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">density</span>         <span class="o">=</span> <span class="mf">721.0</span>            <span class="c1"># kg/m^3</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span> <span class="o">=</span> <span class="mf">43.71e6</span>          <span class="c1"># J/kg     </span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span> <span class="o">=</span> <span class="mf">43.71e6</span>          <span class="c1"># J/kg     </span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
 
         
 </pre></div>

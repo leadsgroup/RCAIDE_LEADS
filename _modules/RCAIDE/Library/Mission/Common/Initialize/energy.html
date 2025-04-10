@@ -383,62 +383,104 @@
 <span class="c1"># Created:  Jul 2023, M. Clarke</span>
 <span class="c1"># Modified: Sep 2024, S. Shekar</span>
 
-
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  energy</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="energy">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Initialize.energy.html#RCAIDE.Library.Mission.Common.Initialize.energy.energy">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">energy</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Sets the initial battery energy at the start of the mission</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes energy states for vehicle networks at mission segment start</span>
 
-<span class="sd">        Assumptions:</span>
-<span class="sd">        N/A</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
 
-<span class="sd">        Inputs:</span>
-<span class="sd">            segment</span>
-<span class="sd">            </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">            None</span>
-<span class="sd">           </span>
-<span class="sd">        Properties Used:</span>
-<span class="sd">        N/A</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function initializes energy-related conditions for all energy networks</span>
+<span class="sd">    in the vehicle, including batteries, fuel systems, and thermal management</span>
+<span class="sd">    systems. It handles both electrical and fuel-based energy storage systems.</span>
 
+<span class="sd">    The function processes:</span>
+<span class="sd">    1. Electrical networks with busses</span>
+<span class="sd">        - Battery module conditions</span>
+<span class="sd">        - Thermal management systems</span>
+<span class="sd">            * Battery cooling systems</span>
+<span class="sd">            * Heat exchangers</span>
+<span class="sd">            * Coolant reservoirs</span>
+<span class="sd">    2. Fuel-based networks</span>
+<span class="sd">        - Fuel tank conditions</span>
+<span class="sd">        - Fuel mass tracking</span>
+
+<span class="sd">    **Required Segment Components**</span>
+
+<span class="sd">    segment.analyses.energy.vehicle.networks:</span>
+<span class="sd">        Network configurations containing:</span>
+<span class="sd">        - Electrical busses with battery modules</span>
+<span class="sd">        - Cooling systems and heat exchangers</span>
+<span class="sd">        - Fuel lines and tanks</span>
+
+<span class="sd">    **State Variables**</span>
+
+<span class="sd">    conditions.energy:</span>
+<span class="sd">        For electrical systems:</span>
+<span class="sd">        - Battery states</span>
+<span class="sd">        - Thermal conditions</span>
+<span class="sd">        - Coolant properties</span>
+
+<span class="sd">        For fuel systems:</span>
+<span class="sd">        - Fuel mass</span>
+<span class="sd">        - Tank conditions</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Well-defined network architecture</span>
+<span class="sd">        * Valid initial conditions</span>
+<span class="sd">        * Compatible energy storage systems</span>
+<span class="sd">        * Proper thermal management setup</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment conditions directly</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
 
     <span class="n">conditions</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span>
     
     <span class="c1"># loop through battery modules in networks</span>
     <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>  
-        <span class="c1"># if network has busses </span>
-        <span class="k">if</span> <span class="s1">&#39;busses&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">busses</span><span class="p">:</span>
-                <span class="n">bus</span><span class="o">.</span><span class="n">append_segment_conditions</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="n">segment</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">battery_module</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">:</span>
-                    <span class="n">battery_module</span><span class="o">.</span><span class="n">append_battery_segment_conditions</span><span class="p">(</span><span class="n">bus</span><span class="p">,</span> <span class="n">conditions</span><span class="p">,</span> <span class="n">segment</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">coolant_line</span> <span class="ow">in</span>  <span class="n">network</span><span class="o">.</span><span class="n">coolant_lines</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span>  <span class="n">coolant_line</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> 
-                        <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;battery_modules&#39;</span><span class="p">:</span>
-                            <span class="k">for</span> <span class="n">battery</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
-                                <span class="k">for</span> <span class="n">btms</span> <span class="ow">in</span>  <span class="n">battery</span><span class="p">:</span>
-                                    <span class="n">btms</span><span class="o">.</span><span class="n">append_segment_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">coolant_line</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;heat_exchangers&#39;</span><span class="p">:</span>
-                            <span class="k">for</span> <span class="n">heat_exchanger</span> <span class="ow">in</span>  <span class="n">item</span><span class="p">:</span>
-                                <span class="n">heat_exchanger</span><span class="o">.</span><span class="n">append_segment_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">coolant_line</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;reservoirs&#39;</span><span class="p">:</span>
-                            <span class="k">for</span> <span class="n">reservoir</span> <span class="ow">in</span>  <span class="n">item</span><span class="p">:</span>
-                                <span class="n">reservoir</span><span class="o">.</span><span class="n">append_segment_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">coolant_line</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span> 
+        <span class="c1"># if network has busses  </span>
+        <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">busses</span><span class="p">:</span>
+            <span class="n">bus</span><span class="o">.</span><span class="n">append_segment_conditions</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="n">segment</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">battery_module</span> <span class="ow">in</span>  <span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">:</span>
+                <span class="n">battery_module</span><span class="o">.</span><span class="n">append_battery_segment_conditions</span><span class="p">(</span><span class="n">bus</span><span class="p">,</span> <span class="n">conditions</span><span class="p">,</span> <span class="n">segment</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">coolant_line</span> <span class="ow">in</span>  <span class="n">network</span><span class="o">.</span><span class="n">coolant_lines</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span>  <span class="n">coolant_line</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> 
+                    <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;battery_modules&#39;</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">battery</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                            <span class="k">for</span> <span class="n">btms</span> <span class="ow">in</span>  <span class="n">battery</span><span class="p">:</span>
+                                <span class="n">btms</span><span class="o">.</span><span class="n">append_segment_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">coolant_line</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;heat_exchangers&#39;</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">heat_exchanger</span> <span class="ow">in</span>  <span class="n">item</span><span class="p">:</span>
+                            <span class="n">heat_exchanger</span><span class="o">.</span><span class="n">append_segment_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">coolant_line</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;reservoirs&#39;</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">reservoir</span> <span class="ow">in</span>  <span class="n">item</span><span class="p">:</span>
+                            <span class="n">reservoir</span><span class="o">.</span><span class="n">append_segment_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">coolant_line</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span> 
                     
-         <span class="c1"># if network has fuel lines                        </span>
-        <span class="k">elif</span> <span class="s1">&#39;fuel_lines&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="p">:</span> 
-            <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span>  <span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">fuel_tank</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">:</span> 
-                    <span class="n">fuel_tank_conditions</span>   <span class="o">=</span> <span class="n">conditions</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
-                    <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="p">:</span>  
-                        <span class="n">fuel_tank_initials</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
-                        <span class="n">fuel_tank_conditions</span><span class="o">.</span><span class="n">mass</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>   <span class="o">=</span> <span class="n">fuel_tank_initials</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span> 
-                        <span class="n">fuel_tank_conditions</span><span class="o">.</span><span class="n">mass</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>   <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">[</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span></div>
+        <span class="c1"># if network has fuel lines             </span>
+        <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span>  <span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">fuel_tank</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">:</span> 
+                <span class="n">fuel_tank_conditions</span>   <span class="o">=</span> <span class="n">conditions</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
+                <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="p">:</span>  
+                    <span class="n">fuel_tank_initials</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
+                    <span class="n">fuel_tank_conditions</span><span class="o">.</span><span class="n">mass</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>   <span class="o">=</span> <span class="n">fuel_tank_initials</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span> 
+                    <span class="n">fuel_tank_conditions</span><span class="o">.</span><span class="n">mass</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>   <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">[</span><span class="n">fuel_line</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">[</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span></div>
 
 </pre></div>
 

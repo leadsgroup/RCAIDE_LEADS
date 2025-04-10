@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -536,7 +536,7 @@
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Segments.Ground.Landing.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Ground.Landing.initialize_conditions" title="RCAIDE.Library.Mission.Segments.Ground.Landing.initialize_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_conditions</span></code></a>(segment)</p></td>
-<td><p>Sets the specified conditions which are given for the segment type.</p></td>
+<td><p>Initializes conditions for aircraft landing segment</p></td>
 </tr>
 </tbody>
 </table>
@@ -544,17 +544,111 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Ground.Landing.initialize_conditions">
 <span class="sig-name descname"><span class="pre">initialize_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Ground/Landing.html#initialize_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Ground.Landing.initialize_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Sets the specified conditions which are given for the segment type.</p>
-<p>Assumptions:
-Builds on the initialize conditions for common</p>
-<p>Source:
-None</p>
-<p>Args:
-segment.throttle                                         [unitless]
-segment.analyses.weights.vehicle.mass_properties.landing [kilogram]</p>
-<p>Returns:
-conditions.weights.total_mass   [kilogram]
-conditions.propulsion.throttle  [unitless]</p>
+<dd><p>Initializes conditions for aircraft landing segment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – <dl class="simple">
+<dt>The mission segment being analyzed</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>altitude<span class="classifier">float</span></dt><dd><p>Ground altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>velocity_start<span class="classifier">float</span></dt><dd><p>Initial velocity at touchdown [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>velocity_end<span class="classifier">float</span></dt><dd><p>Final velocity after landing roll [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>friction_coefficient<span class="classifier">float</span></dt><dd><p>Ground friction coefficient [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state:</dt><dd><dl class="simple">
+<dt>numerics:</dt><dd><dl class="simple">
+<dt>dimensionless:</dt><dd><dl class="simple">
+<dt>control_points<span class="classifier">array</span></dt><dd><p>Discretization points [-]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>conditions<span class="classifier">Data</span></dt><dd><p>State conditions container</p>
+</dd>
+<dt>unknowns:</dt><dd><dl class="simple">
+<dt>ground_velocity<span class="classifier">array</span></dt><dd><p>Ground velocity profile [m/s]</p>
+</dd>
+</dl>
+</dd>
+<dt>initials<span class="classifier">Data, optional</span></dt><dd><p>Initial conditions from previous segment</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Updates segment conditions directly:</dt><dd><ul class="simple">
+<li><p>conditions.frames.inertial.velocity_vector [m/s]</p></li>
+<li><p>conditions.ground.friction_coefficient [-]</p></li>
+<li><p>conditions.freestream.altitude [m]</p></li>
+<li><p>conditions.frames.inertial.position_vector [m]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up the initial conditions for a ground landing segment with
+deceleration from touchdown to final speed. The segment handles ground effects
+and friction during the landing roll.</p>
+<dl class="simple">
+<dt><strong>Calculation Process</strong></dt><dd><ol class="arabic simple">
+<li><p>Check initial conditions</p></li>
+<li><dl class="simple">
+<dt>Initialize velocity profile:</dt><dd><dl class="simple">
+<dt>v = v0 + (vf - v0)*t where:</dt><dd><ul class="simple">
+<li><p>v0 is touchdown speed</p></li>
+<li><p>vf is final speed</p></li>
+<li><p>t is normalized time/distance</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><p>Set ground friction coefficient</p></li>
+<li><p>Set position and altitude</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant friction coefficient</p></li>
+<li><p>Linear velocity decrease</p></li>
+<li><p>No bouncing or porpoising</p></li>
+<li><p>Quasi-steady deceleration</p></li>
+<li><p>Small minimum velocity for numerical stability</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

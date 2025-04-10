@@ -394,7 +394,57 @@
 <div class="viewcode-block" id="JP7">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.JP7.html#RCAIDE.Library.Attributes.Propellants.JP7.JP7">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">JP7</span><span class="p">(</span><span class="n">Propellant</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;JP7 Jet fuel class</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing JP-7 high thermal stability jet fuel properties. This specialized </span>
+<span class="sd">    fuel was developed for high-speed aircraft operating at elevated temperatures.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the propellant (&#39;JP7&#39;)</span>
+<span class="sd">    reactant : str</span>
+<span class="sd">        Oxidizer used for combustion (&#39;O2&#39;)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Fuel density in kg/m³ (803.0)</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy content in J/kg (43.50e6)</span>
+<span class="sd">    energy_density : float</span>
+<span class="sd">        Energy density in J/m³ (34930.5e6)</span>
+<span class="sd">    stoichiometric_fuel_to_air : float</span>
+<span class="sd">        Stoichiometric fuel-to-air ratio (0.0674)</span>
+<span class="sd">    temperatures : Data</span>
+<span class="sd">        Critical temperatures in K</span>
+<span class="sd">            - flash : float</span>
+<span class="sd">                Flash point (333.15)</span>
+<span class="sd">            - autoignition : float</span>
+<span class="sd">                Autoignition temperature (555.15)</span>
+<span class="sd">            - freeze : float</span>
+<span class="sd">                Freezing point (514.15)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    JP-7 is a specialized jet fuel developed for the SR-71 Blackbird and similar </span>
+<span class="sd">    high-speed aircraft. It features high thermal stability and low volatility for </span>
+<span class="sd">    operation at elevated temperatures.</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Flash Point&#39;</span>
+<span class="sd">        Lowest temperature at which fuel vapors will ignite (60°C, significantly </span>
+<span class="sd">        higher than conventional jet fuels)</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Thermal Stability&#39;</span>
+<span class="sd">        Resistance to thermal decomposition at elevated temperatures</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Stoichiometric Fuel-to-Air Ratio&#39;</span>
+<span class="sd">        Ideal fuel-to-air mass ratio for complete combustion</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Properties are for standard temperature and pressure conditions (15C, 1atm)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Roberts, K. (2008). ANALYSIS AND DESIGN OF A HYPERSONIC SCRAMJET ENGINE WITH A STARTING MACH NUMBER OF 4.00 (thesis). UTA. University of Texas at Austin. Retrieved December 30, 2024, from https://arc.uta.edu/publications/td_files/Kristen%20Roberts%20MS.pdf. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -416,7 +466,15 @@
         <span class="c1"># critical temperatures</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">flash</span>        <span class="o">=</span> <span class="mf">333.15</span>                 <span class="c1"># K</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">autoignition</span> <span class="o">=</span> <span class="mf">555.15</span>                 <span class="c1"># K</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">freeze</span>       <span class="o">=</span> <span class="mf">514.15</span>                 <span class="c1"># K</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">freeze</span>       <span class="o">=</span> <span class="mf">514.15</span>                 <span class="c1"># K</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
 
 </pre></div>
 

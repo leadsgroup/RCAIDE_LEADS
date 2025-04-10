@@ -398,8 +398,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        settings.</span>
-<span class="sd">          drag_coefficient_increment                          (float): drag_coefficient_increment [Unitless]</span>
-<span class="sd">          lift_to_drag_adjustment                             (float): lift_to_drag_adjustment    [Unitless]  </span>
+<span class="sd">          drag_coefficient_increment                          (float): drag_coefficient_increment [Unitless] </span>
 <span class="sd">        state.conditions.aerodynamics.coefficients.drag.</span>
 <span class="sd">          trim_corrected_drag                         (numpy.ndarray): trim corrected drag        [Unitless]</span>
 <span class="sd">          spoiler_drag                                (numpy.ndarray): spoiler drag               [Unitless]</span>
@@ -411,8 +410,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># unpack inputs  </span>
-    <span class="n">trim_correction_factor</span>  <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">trim_drag_correction_factor</span>    
-    <span class="n">drag</span>                    <span class="o">=</span>  <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span>
+    <span class="n">trim_correction_factor</span>     <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">trim_drag_correction_factor</span>    
+    <span class="n">drag_coefficient_increment</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">drag_coefficient_increment</span>  
+    <span class="n">drag</span>                       <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span>
 
     <span class="c1"># various drag components</span>
     <span class="n">parasite_total</span>        <span class="o">=</span> <span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">total</span>            
@@ -420,25 +420,16 @@
     <span class="n">compressibility_total</span> <span class="o">=</span> <span class="n">drag</span><span class="o">.</span><span class="n">compressible</span><span class="o">.</span><span class="n">total</span>     
     <span class="n">miscellaneous_drag</span>    <span class="o">=</span> <span class="n">drag</span><span class="o">.</span><span class="n">miscellaneous</span><span class="o">.</span><span class="n">total</span>
     <span class="n">cooling_drag</span>          <span class="o">=</span> <span class="n">drag</span><span class="o">.</span><span class="n">cooling</span><span class="o">.</span><span class="n">total</span> 
+    <span class="n">spoiler_drag</span>          <span class="o">=</span> <span class="n">drag</span><span class="o">.</span><span class="n">spoiler</span><span class="o">.</span><span class="n">total</span> 
 
     <span class="c1"># untrimmed drag </span>
-    <span class="n">untrimmed_drag</span>  <span class="o">=</span>  <span class="n">parasite_total</span> <span class="o">+</span> <span class="n">induced_total</span>  <span class="o">+</span> <span class="n">compressibility_total</span> <span class="o">+</span> <span class="n">miscellaneous_drag</span> <span class="o">+</span> <span class="n">cooling_drag</span>
+    <span class="n">untrimmed_drag</span>  <span class="o">=</span>  <span class="n">parasite_total</span> <span class="o">+</span> <span class="n">induced_total</span>  <span class="o">+</span> <span class="n">compressibility_total</span> <span class="o">+</span> <span class="n">miscellaneous_drag</span> <span class="o">+</span> <span class="n">cooling_drag</span> <span class="o">+</span> <span class="n">spoiler_drag</span>
     
     <span class="c1"># trim correction</span>
-    <span class="n">corrected_aircraft_total_trim_drag</span> <span class="o">=</span> <span class="n">trim_correction_factor</span> <span class="o">*</span> <span class="n">untrimmed_drag</span> 
-    <span class="n">drag</span><span class="o">.</span><span class="n">miscellaneous</span><span class="o">.</span><span class="n">trim_correction_factor</span> <span class="o">=</span> <span class="n">trim_correction_factor</span>    
-
-    <span class="c1"># Unpack inputs </span>
-
-    <span class="n">drag_coefficient_increment</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">drag_coefficient_increment</span> 
-    <span class="n">spoiler_drag</span>               <span class="o">=</span> <span class="n">drag</span><span class="o">.</span><span class="n">spoiler_drag</span> 
-
-    <span class="c1"># Add drag_coefficient_increment</span>
-    <span class="n">aircraft_total_drag</span> <span class="o">=</span>  <span class="n">corrected_aircraft_total_trim_drag</span>   <span class="o">+</span> <span class="n">drag_coefficient_increment</span> <span class="o">+</span> <span class="n">spoiler_drag</span>
-    <span class="n">drag</span><span class="o">.</span><span class="n">drag_coefficient_increment</span> <span class="o">=</span> <span class="n">drag_coefficient_increment</span>
-    
-    <span class="c1"># Add L/D correction</span>
-    <span class="n">aircraft_total_drag</span>  <span class="o">=</span> <span class="n">aircraft_total_drag</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">settings</span><span class="o">.</span><span class="n">lift_to_drag_adjustment</span><span class="p">)</span> 
+    <span class="n">corrected_aircraft_total_trim_drag</span> <span class="o">=</span> <span class="n">trim_correction_factor</span> <span class="o">*</span> <span class="n">untrimmed_drag</span>   
+     
+    <span class="c1"># total drag </span>
+    <span class="n">aircraft_total_drag</span> <span class="o">=</span>  <span class="n">corrected_aircraft_total_trim_drag</span>   <span class="o">+</span> <span class="n">drag_coefficient_increment</span>
 
     <span class="c1"># Store to results </span>
     <span class="n">drag</span><span class="o">.</span><span class="n">total</span>           <span class="o">=</span> <span class="n">aircraft_total_drag</span>

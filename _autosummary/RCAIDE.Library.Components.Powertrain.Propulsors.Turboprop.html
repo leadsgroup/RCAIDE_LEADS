@@ -47,7 +47,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Turboshaft" href="RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft.html" />
+    <link rel="next" title="Sources" href="RCAIDE.Library.Components.Powertrain.Sources.html" />
     <link rel="prev" title="Turbojet" href="RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -593,8 +593,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.engine_diameter">
-<span class="sig-name descname"><span class="pre">engine_diameter</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.engine_diameter" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.diameter">
+<span class="sig-name descname"><span class="pre">diameter</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.diameter" title="Link to this definition">#</a></dt>
 <dd><p>Diameter of the engine [m]. Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -604,8 +604,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.engine_length">
-<span class="sig-name descname"><span class="pre">engine_length</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.engine_length" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.length">
+<span class="sig-name descname"><span class="pre">length</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.length" title="Link to this definition">#</a></dt>
 <dd><p>Length of the engine [m]. Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -615,8 +615,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.engine_height">
-<span class="sig-name descname"><span class="pre">engine_height</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.engine_height" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.height">
+<span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.height" title="Link to this definition">#</a></dt>
 <dd><p>Engine centerline height above the ground plane [m]. Default is 0.5.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -637,6 +637,17 @@
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.specific_fuel_consumption_reduction_factor">
+<span class="sig-name descname"><span class="pre">specific_fuel_consumption_reduction_factor</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.specific_fuel_consumption_reduction_factor" title="Link to this definition">#</a></dt>
+<dd><p>Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_altitude">
 <span class="sig-name descname"><span class="pre">design_altitude</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_altitude" title="Link to this definition">#</a></dt>
 <dd><p>Design altitude of the engine [m]. Default is 0.0.</p>
@@ -648,8 +659,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_propeller_efficiency">
-<span class="sig-name descname"><span class="pre">design_propeller_efficiency</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_propeller_efficiency" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.propeller_efficiency">
+<span class="sig-name descname"><span class="pre">propeller_efficiency</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.propeller_efficiency" title="Link to this definition">#</a></dt>
 <dd><p>Design point propeller efficiency. Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -659,8 +670,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_gearbox_efficiency">
-<span class="sig-name descname"><span class="pre">design_gearbox_efficiency</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_gearbox_efficiency" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.gearbox.efficiency">
+<span class="sig-prename descclassname"><span class="pre">gearbox.</span></span><span class="sig-name descname"><span class="pre">efficiency</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.gearbox.efficiency" title="Link to this definition">#</a></dt>
 <dd><p>Design point gearbox efficiency. Default is 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -731,7 +742,7 @@ the efficiency of a propeller at low speeds with the power of a turbine engine.<
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.append_operating_conditions">
-<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Turboprop.html#Turboprop.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.append_operating_conditions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">append_operating_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Turboprop.html#Turboprop.append_operating_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.append_operating_conditions" title="Link to this definition">#</a></dt>
 <dd><p>Appends operating conditions to the segment.</p>
 </dd></dl>
 
@@ -758,7 +769,7 @@ the efficiency of a propeller at low speeds with the power of a turbine engine.<
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.reuse_stored_data">
-<span class="sig-name descname"><span class="pre">reuse_stored_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_propulsor_tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Turboprop.html#Turboprop.reuse_stored_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.reuse_stored_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reuse_stored_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_propulsor_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">0,</span> <span class="pre">0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Components/Powertrain/Propulsors/Turboprop.html#Turboprop.reuse_stored_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.reuse_stored_data" title="Link to this definition">#</a></dt>
 <dd><p>Reuses stored turboprop data for performance calculations.</p>
 </dd></dl>
 
@@ -786,11 +797,11 @@ the efficiency of a propeller at low speeds with the power of a turbine engine.<
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft.html"
+       href="RCAIDE.Library.Components.Powertrain.Sources.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Turboshaft</p>
+        <p class="prev-next-title">Sources</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -819,13 +830,14 @@ the efficiency of a propeller at low speeds with the power of a turbine engine.<
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.compressor"><code class="docutils literal notranslate"><span class="pre">Turboprop.compressor</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.turbine"><code class="docutils literal notranslate"><span class="pre">Turboprop.turbine</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.combustor"><code class="docutils literal notranslate"><span class="pre">Turboprop.combustor</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.engine_diameter"><code class="docutils literal notranslate"><span class="pre">Turboprop.engine_diameter</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.engine_length"><code class="docutils literal notranslate"><span class="pre">Turboprop.engine_length</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.engine_height"><code class="docutils literal notranslate"><span class="pre">Turboprop.engine_height</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.diameter"><code class="docutils literal notranslate"><span class="pre">Turboprop.diameter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.length"><code class="docutils literal notranslate"><span class="pre">Turboprop.length</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.height"><code class="docutils literal notranslate"><span class="pre">Turboprop.height</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_isa_deviation"><code class="docutils literal notranslate"><span class="pre">Turboprop.design_isa_deviation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.specific_fuel_consumption_reduction_factor"><code class="docutils literal notranslate"><span class="pre">Turboprop.specific_fuel_consumption_reduction_factor</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_altitude"><code class="docutils literal notranslate"><span class="pre">Turboprop.design_altitude</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_propeller_efficiency"><code class="docutils literal notranslate"><span class="pre">Turboprop.design_propeller_efficiency</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_gearbox_efficiency"><code class="docutils literal notranslate"><span class="pre">Turboprop.design_gearbox_efficiency</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.propeller_efficiency"><code class="docutils literal notranslate"><span class="pre">Turboprop.propeller_efficiency</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.gearbox.efficiency"><code class="docutils literal notranslate"><span class="pre">Turboprop.gearbox.efficiency</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.design_mach_number"><code class="docutils literal notranslate"><span class="pre">Turboprop.design_mach_number</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.compressor_nondimensional_massflow"><code class="docutils literal notranslate"><span class="pre">Turboprop.compressor_nondimensional_massflow</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop.Turboprop.reference_temperature"><code class="docutils literal notranslate"><span class="pre">Turboprop.reference_temperature</span></code></a></li>

@@ -395,48 +395,102 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="compute_compression_nozzle_performance">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle.compute_compression_nozzle_performance.html#RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle.compute_compression_nozzle_performance.compute_compression_nozzle_performance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_compression_nozzle_performance</span><span class="p">(</span><span class="n">compression_nozzle</span><span class="p">,</span><span class="n">nozzle_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;  Computes the performance of a compression nozzle bases on its polytropic efficiency.</span>
-<span class="sd">         The following properties are computed: </span>
-<span class="sd">        compression_nozzle.outputs.</span>
-<span class="sd">          stagnation_temperature             (numpy.ndarray): exit stagnation temperature [K]</span>
-<span class="sd">          stagnation_pressure                (numpy.ndarray): exit stagnation pressure    [Pa]</span>
-<span class="sd">          stagnation_enthalpy                (numpy.ndarray): exit stagnation enthalpy    [J/kg]</span>
-<span class="sd">          mach_number                        (numpy.ndarray): exit Mach number            [unitless]</span>
-<span class="sd">          static_temperature                 (numpy.ndarray): exit static temperature     [K]</span>
-<span class="sd">          static_enthalpy                    (numpy.ndarray): exit static enthalpy        [J/kg]</span>
-<span class="sd">          velocity                           (numpy.ndarray): exit nozzle velocity        [m/s]</span>
-<span class="sd">          </span>
-
-<span class="sd">    Assumptions:  </span>
-<span class="sd">        1. Pressure ratio and polytropic efficiency do not change with varying conditions.</span>
-<span class="sd">        2. Adiabatic</span>
-<span class="sd">        3. Subsonic or choked output.</span>
-
-<span class="sd">    Source:</span>
-<span class="sd">        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        conditions.freestream.</span>
-<span class="sd">          isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor        [unitless]</span>
-<span class="sd">          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]</span>
-<span class="sd">          pressure                            (numpy.ndarray): pressure                           [Pa]</span>
-<span class="sd">          gas_specific_constant               (numpy.ndarray): gas_specific_constant              [J/(kg K)]</span>
-<span class="sd">        compression_nozzle.</span>
-<span class="sd">          inputs.stagnation_temperature       (numpy.ndarra): entering stagnation_temperature     [K]</span>
-<span class="sd">          inputs.stagnation_pressure          (numpy.ndarra): entering stagnation_pressure        [Pa] </span>
-<span class="sd">          pressure_ratio                             (float): pressure_ratio                      [unitless]</span>
-<span class="sd">          polytropic_efficiency                      (float): polytropic_efficiency               [unitless]</span>
-<span class="sd">          pressure_recovery                          (float): pressure_recovery                   [unitless]</span>
-
-<span class="sd">    Returns:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_compression_nozzle_performance</span><span class="p">(</span><span class="n">compression_nozzle</span><span class="p">,</span> <span class="n">conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the performance of a compression nozzle based on its polytropic efficiency.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    compression_nozzle : Data</span>
+<span class="sd">        Data dictionary with compression nozzle properties</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the compression nozzle</span>
+<span class="sd">            - pressure_ratio : float</span>
+<span class="sd">                Pressure ratio across the nozzle [unitless]</span>
+<span class="sd">            - polytropic_efficiency : float</span>
+<span class="sd">                Polytropic efficiency of the nozzle [unitless]</span>
+<span class="sd">            - pressure_recovery : float</span>
+<span class="sd">                Pressure recovery factor [unitless]</span>
+<span class="sd">            - compressibility_effects : bool</span>
+<span class="sd">                Flag to include compressibility effects</span>
+<span class="sd">            - working_fluid : Data</span>
+<span class="sd">                Working fluid object with methods to compute properties</span>
+<span class="sd">    conditions : Data</span>
+<span class="sd">        Data dictionary with flow conditions</span>
+<span class="sd">            - freestream : Data</span>
+<span class="sd">                Freestream flow properties</span>
+<span class="sd">                - pressure : ndarray</span>
+<span class="sd">                    Freestream pressure [Pa]</span>
+<span class="sd">                - mach_number : ndarray</span>
+<span class="sd">                    Freestream Mach number [unitless]</span>
+<span class="sd">            - energy : Data</span>
+<span class="sd">                Energy conditions</span>
+<span class="sd">                    - converters : dict</span>
+<span class="sd">                        Dictionary of converter conditions indexed by tag</span>
+<span class="sd">                        - inputs : Data</span>
+<span class="sd">                            Input conditions</span>
+<span class="sd">                            - stagnation_temperature : ndarray</span>
+<span class="sd">                                Entering stagnation temperature [K]</span>
+<span class="sd">                            - stagnation_pressure : ndarray</span>
+<span class="sd">                                Entering stagnation pressure [Pa]</span>
+<span class="sd">                            - static_temperature : ndarray</span>
+<span class="sd">                                Entering static temperature [K]</span>
+<span class="sd">                            - static_pressure : ndarray</span>
+<span class="sd">                                Entering static pressure [Pa]</span>
+<span class="sd">                            - mach_number : ndarray</span>
+<span class="sd">                                Entering Mach number [unitless]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in conditions.energy.converters[compression_nozzle.tag].outputs:</span>
+<span class="sd">            - stagnation_temperature : ndarray</span>
+<span class="sd">                Exit stagnation temperature [K]</span>
+<span class="sd">            - stagnation_pressure : ndarray</span>
+<span class="sd">                Exit stagnation pressure [Pa]</span>
+<span class="sd">            - stagnation_enthalpy : ndarray</span>
+<span class="sd">                Exit stagnation enthalpy [J/kg]</span>
+<span class="sd">            - mach_number : ndarray</span>
+<span class="sd">                Exit Mach number [unitless]</span>
+<span class="sd">            - static_temperature : ndarray</span>
+<span class="sd">                Exit static temperature [K]</span>
+<span class="sd">            - static_enthalpy : ndarray</span>
+<span class="sd">                Exit static enthalpy [J/kg]</span>
+<span class="sd">            - velocity : ndarray</span>
+<span class="sd">                Exit nozzle velocity [m/s]</span>
+<span class="sd">            - static_pressure : ndarray</span>
+<span class="sd">                Exit static pressure [Pa]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function computes the thermodynamic properties at the exit of a compression nozzle</span>
+<span class="sd">    based on the inlet conditions and nozzle characteristics. It handles both subsonic and</span>
+<span class="sd">    supersonic flows with appropriate relations.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Pressure ratio and polytropic efficiency do not change with varying conditions</span>
+<span class="sd">        * Adiabatic process</span>
+<span class="sd">        * Subsonic or choked output</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    The compression nozzle performance is calculated using gas dynamics relations for</span>
+<span class="sd">    compressible flow. For subsonic flow, isentropic relations are used. For supersonic flow,</span>
+<span class="sd">    normal shock relations are applied. The stagnation properties are transformed to static</span>
+<span class="sd">    properties based on the exit Mach number.</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Stanford University, &quot;AA283 Course Notes&quot;, https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Unpack conditions</span>
-    <span class="c1">#gamma   = conditions.freestream.isentropic_expansion_factor</span>
-    <span class="c1">#Cp      = conditions.freestream.specific_heat_at_constant_pressure</span>
-    <span class="n">P0</span>      <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">pressure</span>
-    <span class="n">M0</span>      <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span> 
+    <span class="c1"># Unpack conditions </span>
+    <span class="n">P0</span>                <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">pressure</span>
+    <span class="n">M0</span>                <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>
+    <span class="n">nozzle_conditions</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">compression_nozzle</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
 
     <span class="c1"># Unpack inpust</span>
     <span class="n">Tt_in</span>                   <span class="o">=</span> <span class="n">nozzle_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>

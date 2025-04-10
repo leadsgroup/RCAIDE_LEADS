@@ -398,32 +398,71 @@
 <div class="viewcode-block" id="compute_fuselage_weight">
 <a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_fuselage_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_fuselage_weight.compute_fuselage_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_fuselage_weight</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">fuselage</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the weight of the fuselage of a transport aircraft based on the Raymer method</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the weight of the fuselage for transport aircraft using Raymer&#39;s method.</span>
 
-<span class="sd">        Assumptions:</span>
-<span class="sd">            No fuselage mounted landing gear</span>
-<span class="sd">            1 cargo door</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : RCAIDE.Vehicle()</span>
+<span class="sd">        Vehicle data structure containing:</span>
+<span class="sd">            - mass_properties.max_takeoff : float</span>
+<span class="sd">                Maximum takeoff weight [kg]</span>
+<span class="sd">            - flight_envelope.ultimate_load : float</span>
+<span class="sd">                Ultimate load factor (default: 3.75)</span>
+<span class="sd">            - wings[&#39;main_wing&#39;] : Data()</span>
+<span class="sd">                Main wing properties including taper and sweep</span>
+<span class="sd">    fuselage : RCAIDE.Component()</span>
+<span class="sd">        Fuselage component containing:</span>
+<span class="sd">            - lengths.total : float</span>
+<span class="sd">                Total fuselage length [m]</span>
+<span class="sd">            - width : float</span>
+<span class="sd">                Maximum fuselage width [m]</span>
+<span class="sd">            - heights.maximum : float</span>
+<span class="sd">                Maximum fuselage height [m]</span>
+<span class="sd">    settings : Data()</span>
+<span class="sd">        Configuration settings containing:</span>
+<span class="sd">            - Raymer.fuselage_mounted_landing_gear_factor : float</span>
+<span class="sd">                Factor for fuselage-mounted landing gear</span>
+<span class="sd">            - Raymer.cargo_doors_number : int</span>
+<span class="sd">                Number of cargo doors</span>
+<span class="sd">            - Raymer.cargo_doors_clamshell : bool</span>
+<span class="sd">                True if cargo doors are clamshell doors, False otherwise</span>
 
-<span class="sd">        Source:</span>
-<span class="sd">            Aircraft Design: A ConceptualengthApproach (2nd edition)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    weight_fuselage : float</span>
+<span class="sd">        Weight of the fuselage structure [kg]</span>
 
-<span class="sd">        Inputs:</span>
-<span class="sd">            vehicle - data dictionary with vehicle properties                   [dimensionless]</span>
-<span class="sd">                -.mass_properties.max_takeoff: MTOW                             [kg]</span>
-<span class="sd">                -.flight_envelope.ultimate_load: ultimate load factor (default: 3.75)</span>
-<span class="sd">                -.wings[&#39;main_wing&#39;]: data dictionary with main wing properties</span>
-<span class="sd">                    -.taper: wing taper ratio</span>
-<span class="sd">                    -.sweeps.quarter_chord: quarter chord sweep                 [rad]</span>
-<span class="sd">            fuselage - data dictionary with specific fuselage properties            [dimensionless]</span>
-<span class="sd">                -.lenghts.total: totalengthlength                                   [m]</span>
-<span class="sd">                -.width: fuselage width                                         [m]</span>
-<span class="sd">                -.heights.maximum: maximum height of the fuselage               [m]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This method implements Raymer&#39;s semi-empirical correlation for transport aircraft</span>
+<span class="sd">    fuselage weight estimation. The correlation accounts for size, loads, and wing-body</span>
+<span class="sd">    intersection effects. It also accounts for the number of cargo doors and their type (if present).</span>
 
-<span class="sd">        Outputs:</span>
-<span class="sd">            weight_fuselage - weight of the fuselage                                [kilograms]</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * No fuselage-mounted landing gear by default</span>
+<span class="sd">        * One cargo door (Kdoor = 1.06)</span>
+<span class="sd">        * Correlation based on transport category aircraft data</span>
 
-<span class="sd">        Properties Used:</span>
-<span class="sd">            N/A</span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    The fuselage weight is calculated using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{fus} = 0.328K_{door}K_{lg}(W_{dg}N_{ult})^{0.5}L^{0.25}S_f^{0.302}(1+K_{ws})^{0.04}(L/D)^{0.1}</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        * :math:`K_{ws}` accounts for wing-body intersection effects</span>
+<span class="sd">        * :math:`S_f` is the fuselage wetted area</span>
+<span class="sd">        * :math:`L/D` is the fuselage fineness ratio</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Raymer, D., &quot;Aircraft Design: A Conceptual Approach&quot;, AIAA </span>
+<span class="sd">        Education Series, 2018. </span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Klg</span>         <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">fuselage_mounted_landing_gear_factor</span>
     <span class="n">DG</span>          <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">lbs</span>

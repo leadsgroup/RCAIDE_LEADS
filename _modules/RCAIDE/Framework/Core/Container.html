@@ -386,7 +386,7 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------        </span>
-
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w">               </span><span class="kn">import</span> <span class="n">Data</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w">        </span><span class="kn">import</span> <span class="n">warn</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
@@ -403,58 +403,58 @@
 <div class="viewcode-block" id="Container">
 <a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Core.Container.html#RCAIDE.Framework.Core.Container.Container">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Container</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
-    <span class="c1"># &quot;&quot;&quot; A dict-type container with attribute, item and index style access</span>
-    <span class="c1">#     intended to hold a attribute-accessible list of Data(). This is unordered.</span>
-        
-    <span class="c1">#     Assumptions:</span>
-    <span class="c1">#     N/A</span>
-        
-    <span class="c1">#     Source:</span>
-    <span class="c1">#     N/A</span>
-        
-    <span class="c1"># &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A dict-type container with attribute, item and index style access</span>
+<span class="sd">        intended to hold a attribute-accessible list of Data(). This is unordered.</span>
+<span class="sd">        </span>
+<span class="sd">        Assumptions:</span>
+<span class="sd">        N/A</span>
+<span class="sd">        </span>
+<span class="sd">        Source:</span>
+<span class="sd">        N/A</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
             
         
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># &quot;&quot;&quot; Defaults function</span>
-    
-        <span class="c1">#     Assumptions:</span>
-        <span class="c1">#     None</span>
-        
-        <span class="c1">#     Source:</span>
-        <span class="c1">#     N/A</span>
-        
-        <span class="c1">#     Inputs:</span>
-        <span class="c1">#     N/A</span>
-        
-        <span class="c1">#     Outputs:</span>
-        <span class="c1">#     N/A</span>
-            
-        <span class="c1">#     Properties Used:</span>
-        <span class="c1">#     N/A</span>
-        <span class="c1"># &quot;&quot;&quot;          </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Defaults function</span>
+<span class="sd">    </span>
+<span class="sd">            Assumptions:</span>
+<span class="sd">            None</span>
+<span class="sd">        </span>
+<span class="sd">            Source:</span>
+<span class="sd">            N/A</span>
+<span class="sd">        </span>
+<span class="sd">            Inputs:</span>
+<span class="sd">            N/A</span>
+<span class="sd">        </span>
+<span class="sd">            Outputs:</span>
+<span class="sd">            N/A</span>
+<span class="sd">            </span>
+<span class="sd">            Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">        &quot;&quot;&quot;</span>          
         <span class="k">pass</span>
     
 <div class="viewcode-block" id="Container.__init__">
 <a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Core.Container.html#RCAIDE.Framework.Core.Container.Container.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
-        <span class="c1"># &quot;&quot;&quot; Initialization that builds the container</span>
-        
-        <span class="c1">#     Assumptions:</span>
-        <span class="c1">#     None</span>
-        
-        <span class="c1">#     Source:</span>
-        <span class="c1">#     N/A</span>
-        
-        <span class="c1">#     Inputs:</span>
-        <span class="c1">#     self</span>
-        
-        <span class="c1">#     Outputs:</span>
-        <span class="c1">#     N/A</span>
-            
-        <span class="c1">#     Properties Used:</span>
-        <span class="c1">#     N/A</span>
-        <span class="c1"># &quot;&quot;&quot;          </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialization that builds the container</span>
+<span class="sd">        </span>
+<span class="sd">            Assumptions:</span>
+<span class="sd">            None</span>
+<span class="sd">        </span>
+<span class="sd">            Source:</span>
+<span class="sd">            N/A</span>
+<span class="sd">        </span>
+<span class="sd">            Inputs:</span>
+<span class="sd">            self</span>
+<span class="sd">        </span>
+<span class="sd">            Outputs:</span>
+<span class="sd">            N/A</span>
+<span class="sd">            </span>
+<span class="sd">            Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">        &quot;&quot;&quot;</span>          
         <span class="nb">super</span><span class="p">(</span><span class="n">Container</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwarg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__defaults__</span><span class="p">()</span></div>
 
@@ -462,41 +462,34 @@
 <div class="viewcode-block" id="Container.append">
 <a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Core.Container.html#RCAIDE.Framework.Core.Container.Container.append">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
-        <span class="c1"># &quot;&quot;&quot; Appends the value to the containers</span>
-        <span class="c1">#     This overrides the Data class append by allowing for duplicate named components</span>
-        <span class="c1">#     The following components will get new names.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Appends the value to the containers</span>
+<span class="sd">            This overrides the Data class append by allowing for duplicate named components</span>
+<span class="sd">            The following components will get new names.</span>
+<span class="sd">        </span>
+<span class="sd">            Assumptions:</span>
+<span class="sd">            None</span>
+<span class="sd">        </span>
+<span class="sd">            Source:</span>
+<span class="sd">            N/A</span>
+<span class="sd">        </span>
+<span class="sd">            Inputs:</span>
+<span class="sd">            self</span>
+<span class="sd">        </span>
+<span class="sd">            Outputs:</span>
+<span class="sd">            N/A</span>
+<span class="sd">            </span>
+<span class="sd">            Properties Used:</span>
+<span class="sd">            N/A</span>
+<span class="sd">        &quot;&quot;&quot;</span>           
         
-        <span class="c1">#     Assumptions:</span>
-        <span class="c1">#     None</span>
-        
-        <span class="c1">#     Source:</span>
-        <span class="c1">#     N/A</span>
-        
-        <span class="c1">#     Inputs:</span>
-        <span class="c1">#     self</span>
-        
-        <span class="c1">#     Outputs:</span>
-        <span class="c1">#     N/A</span>
-            
-        <span class="c1">#     Properties Used:</span>
-        <span class="c1">#     N/A</span>
-        <span class="c1"># &quot;&quot;&quot;           </span>
-        
-        <span class="c1"># See if the item tag exists, if it does modify the name</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        
-        <span class="n">tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-            <span class="n">string_of_keys</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="n">n_comps</span> <span class="o">=</span> <span class="n">string_of_keys</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
-            <span class="n">val</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_comps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-            
-            <span class="c1"># Check again, because theres an outside chance that its duplicate again. Then assign a random</span>
-            <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                <span class="n">val</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_comps</span><span class="o">+</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">))</span>
-        
-        <span class="n">Data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="p">)</span></div>
+        <span class="n">old_tags</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">old_tags</span> <span class="o">=</span> <span class="n">get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">old_tags</span><span class="p">)</span> 
+        <span class="n">check_tags</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="n">old_tags</span><span class="p">)</span>     
+        <span class="n">Data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> 
+         
+        <span class="k">return</span></div>
 
+    
         
 <div class="viewcode-block" id="Container.extend">
 <a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Core.Container.html#RCAIDE.Framework.Core.Container.Container.extend">[docs]</a>
@@ -523,32 +516,86 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;unrecognized data type&#39;</span><span class="p">)</span></div>
-
-        
-<div class="viewcode-block" id="Container.get_children">
-<a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Core.Container.html#RCAIDE.Framework.Core.Container.Container.get_children">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># &quot;&quot;&quot; Returns the components that can go inside</span>
-        
-        <span class="c1"># Assumptions:</span>
-        <span class="c1"># None</span>
-    
-        <span class="c1"># Source:</span>
-        <span class="c1"># N/A</span>
-    
-        <span class="c1"># Inputs:</span>
-        <span class="c1"># None</span>
-    
-        <span class="c1"># Outputs:</span>
-        <span class="c1"># None</span>
-    
-        <span class="c1"># Properties Used:</span>
-        <span class="c1"># N/A</span>
-        <span class="c1"># &quot;&quot;&quot;        </span>
-        
-        <span class="k">return</span> <span class="p">[]</span>    </div>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;unrecognized data type&#39;</span><span class="p">)</span> </div>
 </div>
+
+
+<div class="viewcode-block" id="get_tags">
+<a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Core.Container.html#RCAIDE.Framework.Core.Container.get_tags">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_tags</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="n">tag_list</span><span class="p">):</span>
+        
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">s_tag</span><span class="p">,</span> <span class="n">s_item</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="o">==</span> <span class="n">s_tag</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>
+                <span class="n">tag_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s_item</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span> 
+                <span class="k">for</span> <span class="n">ss_tag</span><span class="p">,</span> <span class="n">ss_item</span> <span class="ow">in</span> <span class="n">s_item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> 
+                    <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="o">==</span> <span class="n">ss_tag</span><span class="p">:</span>
+                        <span class="n">s_item</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">ss_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>
+                        <span class="n">tag_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_item</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ss_item</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">sss_tag</span><span class="p">,</span> <span class="n">sss_item</span> <span class="ow">in</span> <span class="n">ss_item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="o">==</span> <span class="n">sss_tag</span><span class="p">:</span>
+                                <span class="n">ss_item</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">sss_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>
+                                <span class="n">tag_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ss_item</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span> 
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sss_item</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+                                <span class="k">for</span> <span class="n">ssss_tag</span><span class="p">,</span> <span class="n">ssss_item</span> <span class="ow">in</span> <span class="n">sss_item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                                    <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="o">==</span> <span class="n">ssss_tag</span><span class="p">:</span>
+                                        <span class="n">sss_item</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">ssss_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>
+                                        <span class="n">tag_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sss_item</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>                                
+                            
+    <span class="k">return</span> <span class="n">tag_list</span></div>
+
+                            
+<div class="viewcode-block" id="check_tags">
+<a class="viewcode-back" href="../../../../_autosummary/RCAIDE.Framework.Core.Container.html#RCAIDE.Framework.Core.Container.check_tags">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_tags</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="n">tag_list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">s_tag</span><span class="p">,</span> <span class="n">s_item</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="o">==</span> <span class="n">s_tag</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">s_item</span> <span class="ow">in</span> <span class="n">tag_list</span><span class="p">:</span>
+                    <span class="n">unmodified_tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>
+                    <span class="n">string_of_keys</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tag_list</span><span class="p">)</span>
+                    <span class="n">n_comps</span>        <span class="o">=</span> <span class="n">string_of_keys</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">unmodified_tag</span><span class="p">)</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">tag</span>       <span class="o">=</span> <span class="n">unmodified_tag</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_comps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>
+                <span class="n">tag_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s_item</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span> 
+                <span class="k">for</span> <span class="n">ss_tag</span><span class="p">,</span> <span class="n">ss_item</span> <span class="ow">in</span> <span class="n">s_item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> 
+                    <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="o">==</span> <span class="n">ss_tag</span><span class="p">:</span> 
+                        <span class="k">if</span> <span class="n">ss_item</span> <span class="ow">in</span> <span class="n">tag_list</span><span class="p">:</span>
+                            <span class="n">unmodified_tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">ss_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>  
+                            <span class="n">string_of_keys</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tag_list</span><span class="p">)</span>
+                            <span class="n">n_comps</span>        <span class="o">=</span> <span class="n">string_of_keys</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">unmodified_tag</span><span class="p">)</span>
+                            <span class="n">s_item</span><span class="o">.</span><span class="n">tag</span>     <span class="o">=</span> <span class="n">unmodified_tag</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_comps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">s_item</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">ss_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>
+                        <span class="n">tag_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_item</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span> 
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ss_item</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">sss_tag</span><span class="p">,</span> <span class="n">sss_item</span> <span class="ow">in</span> <span class="n">ss_item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="o">==</span> <span class="n">sss_tag</span><span class="p">:</span> 
+                                <span class="k">if</span> <span class="n">sss_item</span> <span class="ow">in</span> <span class="n">tag_list</span><span class="p">:</span>
+                                    <span class="n">unmodified_tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">sss_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>  
+                                    <span class="n">string_of_keys</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tag_list</span><span class="p">)</span>
+                                    <span class="n">n_comps</span>        <span class="o">=</span> <span class="n">string_of_keys</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">unmodified_tag</span><span class="p">)</span>
+                                    <span class="n">ss_item</span><span class="o">.</span><span class="n">tag</span>    <span class="o">=</span> <span class="n">unmodified_tag</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_comps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="n">ss_item</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">sss_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>  
+                                <span class="n">tag_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ss_item</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span> 
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sss_item</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+                                <span class="k">for</span> <span class="n">ssss_tag</span><span class="p">,</span> <span class="n">ssss_item</span> <span class="ow">in</span> <span class="n">sss_item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                                    <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="o">==</span> <span class="n">ssss_tag</span><span class="p">:</span> 
+                                        <span class="k">if</span> <span class="n">ssss_item</span> <span class="ow">in</span> <span class="n">tag_list</span><span class="p">:</span>
+                                            <span class="n">unmodified_tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">ssss_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>  
+                                            <span class="n">string_of_keys</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tag_list</span><span class="p">)</span>
+                                            <span class="n">n_comps</span>        <span class="o">=</span> <span class="n">string_of_keys</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">unmodified_tag</span><span class="p">)</span>
+                                            <span class="n">sss_item</span><span class="o">.</span><span class="n">tag</span>   <span class="o">=</span> <span class="n">unmodified_tag</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_comps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                                        <span class="k">else</span><span class="p">:</span>
+                                            <span class="n">sss_item</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">ssss_item</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">))</span>  
+                                        <span class="n">tag_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sss_item</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>                                   
+    <span class="k">return</span>  </div>
 
 </pre></div>
 

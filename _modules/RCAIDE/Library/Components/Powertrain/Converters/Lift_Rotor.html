@@ -411,10 +411,7 @@
 <span class="sd">        Default is [0., π/2, 0.] for Z-direction thrust up in vehicle frame.</span>
 <span class="sd">        </span>
 <span class="sd">    use_2d_analysis : bool</span>
-<span class="sd">        Flag for using 2D aerodynamic analysis. Default is False.</span>
-<span class="sd">        </span>
-<span class="sd">    variable_pitch : bool</span>
-<span class="sd">        Flag indicating if rotor has variable pitch capability. Default is False.</span>
+<span class="sd">        Flag for using 2D aerodynamic analysis. Default is False. </span>
 <span class="sd">        </span>
 <span class="sd">    hover : Data</span>
 <span class="sd">        Hover performance parameters</span>
@@ -443,7 +440,7 @@
 <span class="sd">        - design_performance : Data</span>
 <span class="sd">            Performance metrics at design point. Default is None.</span>
 
-<span class="sd">        - design_pitch_command : float</span>
+<span class="sd">        - design_blade_pitch_command : float</span>
 <span class="sd">            Design point blade pitch command [rad]. Default is 0.0.</span>
 
 <span class="sd">        - design_SPL_dBA : float</span>
@@ -485,7 +482,7 @@
 <span class="sd">        - design_acoustics : Data</span>
 <span class="sd">            OEI acoustic characteristics. Default is None.</span>
 
-<span class="sd">        - design_pitch_command : float</span>
+<span class="sd">        - design_blade_pitch_command : float</span>
 <span class="sd">            OEI blade pitch command [rad]. Default is 0.0.</span>
 
 <span class="sd">        - design_performance : Data</span>
@@ -507,11 +504,11 @@
 <span class="sd">    -----</span>
 <span class="sd">    The Lift_Rotor class models rotors specifically designed for vertical lift applications.</span>
 <span class="sd">    It includes capabilities for:</span>
-<span class="sd">    * Hover performance analysis</span>
-<span class="sd">    * One engine inoperative (OEI) conditions</span>
-<span class="sd">    * Variable pitch operation</span>
-<span class="sd">    * Acoustic analysis</span>
-<span class="sd">    * Performance coefficient calculations</span>
+<span class="sd">        * Hover performance analysis</span>
+<span class="sd">        * One engine inoperative (OEI) conditions</span>
+<span class="sd">        * Variable pitch operation</span>
+<span class="sd">        * Acoustic analysis</span>
+<span class="sd">        * Performance coefficient calculations</span>
 
 <span class="sd">    **Definitions**</span>
 
@@ -550,8 +547,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                              <span class="o">=</span> <span class="s1">&#39;lift_rotor&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientation_euler_angles</span>         <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]</span> <span class="c1"># This is Z-direction thrust up in vehicle frame</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_2d_analysis</span>                  <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variable_pitch</span>                   <span class="o">=</span> <span class="kc">False</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_2d_analysis</span>                  <span class="o">=</span> <span class="kc">False</span> 
 
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span>                            <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>    
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_thrust</span>              <span class="o">=</span> <span class="kc">None</span>
@@ -562,11 +558,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_freestream_velocity</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_acoustics</span>           <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_performance</span>         <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_pitch_command</span>       <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_blade_pitch_command</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_efficiency</span>          <span class="o">=</span> <span class="mf">0.86</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_SPL_dBA</span>             <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_Cl</span>                  <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_thrust_coefficient</span>  <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_power_coefficient</span>   <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_torque_coefficient</span>  <span class="o">=</span> <span class="kc">None</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span>                              <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_thrust</span>                <span class="o">=</span> <span class="kc">None</span>
@@ -577,7 +575,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_tip_mach</span>              <span class="o">=</span> <span class="kc">None</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_altitude</span>              <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_acoustics</span>             <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_pitch_command</span>         <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_blade_pitch_command</span>         <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_performance</span>           <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_SPL_dBA</span>               <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_Cl</span>                    <span class="o">=</span> <span class="kc">None</span>

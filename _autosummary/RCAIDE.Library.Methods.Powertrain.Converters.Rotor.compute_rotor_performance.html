@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,104 +537,192 @@
 <span id="compute-rotor-performance"></span><h1>compute_rotor_performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.compute_rotor_performance">
-<span class="sig-name descname"><span class="pre">compute_rotor_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propulsor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/compute_rotor_performance.html#compute_rotor_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.compute_rotor_performance" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_rotor_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/compute_rotor_performance.html#compute_rotor_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.compute_rotor_performance" title="Link to this definition">#</a></dt>
 <dd><p>Analyzes a general rotor given geometry and operating conditions.</p>
-<p>Assumptions:
-per source</p>
-<p>Source:
-Drela, M. “Qprop Formulation”, MIT AeroAstro, June 2006
-<a class="reference external" href="http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf">http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf</a></p>
-<p>Leishman, Gordon J. Principles of helicopter aerodynamics
-Cambridge university press, 2006.</p>
-<p>Inputs:
-rotor.inputs.omega                    [radian/s]
-conditions.freestream.</p>
-<blockquote>
-<div><p>density                            [kg/m^3]
-dynamic_viscosity                  [kg/(m-s)]
-speed_of_sound                     [m/s]
-temperature                        [K]</p>
-</div></blockquote>
-<dl class="simple">
-<dt>conditions.frames.</dt><dd><p>body.transform_to_inertial         (rotation matrix)
-inertial.velocity_vector           [m/s]</p>
-</dd>
-<dt>conditions.energy.</dt><dd><p>throttle                           [-]</p>
-</dd>
-</dl>
-<p>Outputs:
-conditions.energy.outputs.</p>
-<blockquote>
-<div><p>number_radial_stations            [-]
-number_azimuthal_stations         [-]
-disc_radial_distribution          [m]
-speed_of_sound                    [m/s]
-density                           [kg/m-3]
-velocity                          [m/s]
-disc_tangential_induced_velocity  [m/s]
-disc_axial_induced_velocity       [m/s]
-disc_tangential_velocity          [m/s]
-disc_axial_velocity               [m/s]
-drag_coefficient                  [-]
-lift_coefficient                  [-]
-omega                             [rad/s]
-disc_circulation                  [-]
-blade_dQ_dR                       [N/m]
-blade_dT_dr                       [N]
-blade_thrust_distribution         [N]
-disc_thrust_distribution          [N]
-thrust_per_blade                  [N]
-thrust_coefficient                [-]
-azimuthal_distribution            [rad]
-disc_azimuthal_distribution       [rad]
-blade_dQ_dR                       [N]
-blade_dQ_dr                       [Nm]
-blade_torque_distribution         [Nm]
-disc_torque_distribution          [Nm]
-torque_per_blade                  [Nm]
-torque_coefficient                [-]
-power                             [W]
-power_coefficient                 [-]</p>
-</div></blockquote>
-<p>Properties Used:
-rotor.</p>
-<blockquote>
-<div><p>number_of_blades                   [-]
-tip_radius                         [m]
-twist_distribution                 [radians]
-chord_distribution                 [m]
-orientation_euler_angles           [rad, rad, rad]</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.BEMT_Helmholts_performance">
-<span class="sig-name descname"><span class="pre">BEMT_Helmholts_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/compute_rotor_performance.html#BEMT_Helmholts_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.BEMT_Helmholts_performance" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.Actuator_Disk_performance">
-<span class="sig-name descname"><span class="pre">Actuator_Disk_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_gravity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/compute_rotor_performance.html#Actuator_Disk_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.Actuator_Disk_performance" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.compute_propeller_efficiency">
-<span class="sig-name descname"><span class="pre">compute_propeller_efficiency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propeller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/compute_rotor_performance.html#compute_propeller_efficiency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.compute_propeller_efficiency" title="Link to this definition">#</a></dt>
-<dd><p>Calculate propeller efficiency based on propeller type and velocity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>propeller_type</strong> (<em>str</em>) – Type of propeller (‘constant_speed’ or ‘fixed_pitch’)</p></li>
-<li><p><strong>u0</strong> (<em>float</em>) – Current velocity</p></li>
+<li><p><strong>rotor</strong> (<em>RCAIDE.Library.Components.Powertrain.Converters.Rotor</em>) – <dl class="simple">
+<dt>Rotor component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>fidelity<span class="classifier">str</span></dt><dd><p>Analysis fidelity level (‘Actuator_Disk_Theory’ or ‘Blade_Element_Momentum_Theory_Helmholtz_Wake’)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the rotor</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>number_of_blades<span class="classifier">int</span></dt><dd><p>Number of blades on the rotor</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tip_radius<span class="classifier">float</span></dt><dd><p>Tip radius of the rotor [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>hub_radius<span class="classifier">float</span></dt><dd><p>Hub radius of the rotor [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>twist_distribution<span class="classifier">array_like</span></dt><dd><p>Blade twist distribution [radians]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>chord_distribution<span class="classifier">array_like</span></dt><dd><p>Blade chord distribution [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>orientation_euler_angles<span class="classifier">list</span></dt><dd><p>Orientation of the rotor [rad, rad, rad]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – <dl class="simple">
+<dt>Flight conditions with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>freestream<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Freestream properties</dt><dd><ul>
+<li><dl class="simple">
+<dt>density<span class="classifier">array_like</span></dt><dd><p>Air density [kg/m³]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>dynamic_viscosity<span class="classifier">array_like</span></dt><dd><p>Dynamic viscosity [kg/(m·s)]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>speed_of_sound<span class="classifier">array_like</span></dt><dd><p>Speed of sound [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>temperature<span class="classifier">array_like</span></dt><dd><p>Temperature [K]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>frames<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Reference frames</dt><dd><ul>
+<li><dl class="simple">
+<dt>body<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Body frame</dt><dd><ul>
+<li><dl class="simple">
+<dt>transform_to_inertial<span class="classifier">array_like</span></dt><dd><p>Rotation matrix from body to inertial frame</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>inertial<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Inertial frame</dt><dd><ul>
+<li><dl class="simple">
+<dt>velocity_vector<span class="classifier">array_like</span></dt><dd><p>Velocity vector in inertial frame [m/s]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>energy<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Energy conditions</dt><dd><ul>
+<li><dl class="simple">
+<dt>converters<span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>Converter energy conditions indexed by tag</dt><dd><ul>
+<li><dl class="simple">
+<dt>throttle<span class="classifier">array_like</span></dt><dd><p>Throttle setting [0-1]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Calculated propeller efficiency</p>
+<dd class="field-even"><p>Results are stored in conditions.energy.converters[rotor.tag] with attributes
+depending on the fidelity level used. See the documentation for the specific
+analysis method for details on the outputs.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function serves as a dispatcher that calls the appropriate rotor analysis method
+based on the specified fidelity level. It supports two fidelity levels:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Actuator_Disk_Theory: A simplified model that treats the rotor as an actuator
+disk, suitable for preliminary design and analysis.</p></li>
+<li><p>Blade_Element_Momentum_Theory_Helmholtz_Wake: A higher-fidelity model that
+combines blade element theory with a Helmholtz wake model, providing more
+accurate predictions of rotor performance.</p></li>
+</ol>
+</div></blockquote>
+<p>The function simply checks the fidelity level and calls the corresponding analysis
+function, passing the rotor and conditions as arguments.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>The assumptions depend on the specific analysis method used</p></li>
+<li><p>See the documentation for Actuator_Disk_performance or BEMT_Helmholtz_performance
+for details on the assumptions made by each method</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Drela, M. “Qprop Formulation”, MIT AeroAstro, June 2006 <a class="reference external" href="http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf">http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf</a>
+[2] Leishman, Gordon J. Principles of helicopter aerodynamics Cambridge university press, 2006.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>
@@ -687,9 +775,6 @@ orientation_euler_angles           [rad, rad, rad]</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.compute_rotor_performance"><code class="docutils literal notranslate"><span class="pre">compute_rotor_performance()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.BEMT_Helmholts_performance"><code class="docutils literal notranslate"><span class="pre">BEMT_Helmholts_performance()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.Actuator_Disk_performance"><code class="docutils literal notranslate"><span class="pre">Actuator_Disk_performance()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.compute_propeller_efficiency"><code class="docutils literal notranslate"><span class="pre">compute_propeller_efficiency()</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -377,7 +377,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions</h1><div class="highlight"><pre>
-<span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Converters/fan/append_fan_conditions.py</span>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Converters/Fan/append_fan_conditions.py</span>
 <span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Jun 2024, M. Clarke  </span>
@@ -389,10 +389,40 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="append_fan_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions.html#RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions.append_fan_conditions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">append_fan_conditions</span><span class="p">(</span><span class="n">fan</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">):</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">fan</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                              <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">fan</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>                       <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">fan</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span>                      <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">append_fan_conditions</span><span class="p">(</span><span class="n">fan</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes and appends fan conditions to the energy conditions dictionary.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fan : Fan</span>
+<span class="sd">        The fan component for which conditions are being initialized.</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment in which the fan is operating.</span>
+<span class="sd">    energy_conditions : dict</span>
+<span class="sd">        Dictionary containing conditions for all propulsion components.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        This function modifies the energy_conditions dictionary in-place.</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function creates empty Conditions objects for the fan&#39;s inputs and outputs</span>
+<span class="sd">    within the energy_conditions dictionary. These conditions will be populated during</span>
+<span class="sd">    the mission analysis process.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ones_row</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span>                  
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">fan</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                              <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">fan</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>                       <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">fan</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span>                      <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">fan</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">rpm</span>                          <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+    
     <span class="k">return</span> </div>
 
 </pre></div>

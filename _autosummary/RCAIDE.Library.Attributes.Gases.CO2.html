@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,71 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.CO2.CO2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CO2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Gases/CO2.html#CO2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Gases.Gas.html#RCAIDE.Library.Attributes.Gases.Gas.Gas" title="RCAIDE.Library.Attributes.Gases.Gas.Gas"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gas</span></code></a></p>
-<p>Generic class for carbon dioxide</p>
+<p>A class representing carbon dioxide gas and its thermodynamic properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.CO2.CO2.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the gas type (‘CO2’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.CO2.CO2.molecular_mass">
+<span class="sig-name descname"><span class="pre">molecular_mass</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2.molecular_mass" title="Link to this definition">#</a></dt>
+<dd><p>Molecular mass of CO2 in kg/kmol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.CO2.CO2.gas_specific_constant">
+<span class="sig-name descname"><span class="pre">gas_specific_constant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2.gas_specific_constant" title="Link to this definition">#</a></dt>
+<dd><p>Specific gas constant in m²/s²-K</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Gases.CO2.CO2.composition">
+<span class="sig-name descname"><span class="pre">composition</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2.composition" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Chemical composition of the gas</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>CO2<span class="classifier">float</span></dt><dd><p>Mass fraction of carbon dioxide (1.0 for pure CO2)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Analyses.Analysis.html#RCAIDE.Framework.Analyses.Analysis.Analysis.Container" title="RCAIDE.Framework.Analyses.Analysis.Analysis.Container">Container</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements basic thermodynamic properties for carbon dioxide gas.
+All properties are for pure CO2 at standard conditions.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Specific Gas Constant’</dt><dd><p>The individual gas constant for CO2, equal to the universal gas constant divided
+by the molecular mass of CO2</p>
+</dd>
+<dt>‘Molecular Mass’</dt><dd><p>The mass of one mole of CO2 molecules</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -585,7 +649,13 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2"><code class="docutils literal notranslate"><span class="pre">CO2</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2"><code class="docutils literal notranslate"><span class="pre">CO2</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2.tag"><code class="docutils literal notranslate"><span class="pre">CO2.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2.molecular_mass"><code class="docutils literal notranslate"><span class="pre">CO2.molecular_mass</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2.gas_specific_constant"><code class="docutils literal notranslate"><span class="pre">CO2.gas_specific_constant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Gases.CO2.CO2.composition"><code class="docutils literal notranslate"><span class="pre">CO2.composition</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

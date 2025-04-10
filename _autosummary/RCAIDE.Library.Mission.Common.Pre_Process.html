@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -534,19 +534,22 @@
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Common.Pre_Process.aerodynamics.html#module-RCAIDE.Library.Mission.Common.Pre_Process.aerodynamics" title="RCAIDE.Library.Mission.Common.Pre_Process.aerodynamics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aerodynamics</span></code></a>(mission)</p></td>
-<td><p>Runs aerdoynamics model and build surrogate</p></td>
+<td><p>Initializes and processes aerodynamic models for mission segments</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Common.Pre_Process.emissions.html#module-RCAIDE.Library.Mission.Common.Pre_Process.emissions" title="RCAIDE.Library.Mission.Common.Pre_Process.emissions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">emissions</span></code></a>(mission)</p></td>
-<td><p>Runs emissions model and build surrogate</p></td>
+<td><p>Initializes and processes emissions models for mission segments</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Common.Pre_Process.energy.html#module-RCAIDE.Library.Mission.Common.Pre_Process.energy" title="RCAIDE.Library.Mission.Common.Pre_Process.energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">energy</span></code></a>(mission)</p></td>
-<td><p>Appends all unknows and residuals to the network</p></td>
+<td><p>Pre-processes energy network by appending all unknowns and residuals</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns.html#module-RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns" title="RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_residuals_and_unknowns</span></code></a>(mission)</p></td>
-<td><p>Sets the flight dynamics residuals and fligth controls of the aircraft</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.html#module-RCAIDE.Library.Mission.Common.Pre_Process.mass_properties" title="RCAIDE.Library.Mission.Common.Pre_Process.mass_properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mass_properties</span></code></a>(mission)</p></td>
+<td><p>Performances mass property analysis</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Common.Pre_Process.stability.html#module-RCAIDE.Library.Mission.Common.Pre_Process.stability" title="RCAIDE.Library.Mission.Common.Pre_Process.stability"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stability</span></code></a>(mission)</p></td>
-<td><p>Runs stability model and build surrogate</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns.html#module-RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns" title="RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_residuals_and_unknowns</span></code></a>(mission)</p></td>
+<td><p>Sets up flight dynamics residuals and control variables for mission segments</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Common.Pre_Process.stability.html#module-RCAIDE.Library.Mission.Common.Pre_Process.stability" title="RCAIDE.Library.Mission.Common.Pre_Process.stability"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stability</span></code></a>(mission)</p></td>
+<td><p>Initializes and processes stability models for mission segments</p></td>
 </tr>
 </tbody>
 </table>

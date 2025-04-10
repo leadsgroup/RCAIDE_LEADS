@@ -394,7 +394,39 @@
 <div class="viewcode-block" id="Cryogen">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Cryogens.Cryogen.html#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Cryogen</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Defauly cryogenic liquid class </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for defining cryogenic fluid properties used in aerospace applications.</span>
+
+<span class="sd">    This class serves as a template for specific cryogenic fluid implementations and provides</span>
+<span class="sd">    structure for essential thermophysical properties required for cryogenic system analysis.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the cryogenic fluid type, defaults to &#39;Cryogen&#39;</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Density of the cryogenic fluid [kg/m^3]</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy of the cryogenic fluid [MJ/kg]</span>
+<span class="sd">    energy_density : float</span>
+<span class="sd">        Energy density of the cryogenic fluid [MJ/m^3]</span>
+<span class="sd">    temperatures : Data</span>
+<span class="sd">        Temperatures of the cryogenic fluid [K]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This base class provides a minimal framework for implementing specific cryogenic fluids.</span>
+<span class="sd">    Derived classes should implement additional properties and methods specific to each</span>
+<span class="sd">    cryogenic fluid type.</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Properties are initially undefined</span>
+<span class="sd">        * Additional properties to be defined in derived classes</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Energy: Energy storage systems components</span>
+<span class="sd">    RCAIDE.Library.Components.Thermal_Management: Thermal management systems components</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

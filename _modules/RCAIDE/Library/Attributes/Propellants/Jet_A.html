@@ -394,7 +394,99 @@
 <div class="viewcode-block" id="Jet_A">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Jet_A.html#RCAIDE.Library.Attributes.Propellants.Jet_A.Jet_A">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Jet_A</span><span class="p">(</span><span class="n">Propellant</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Jet A class propellant</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing Jet A aviation kerosene fuel properties and emissions characteristics.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the propellant (&#39;Jet_A&#39;)</span>
+<span class="sd">    reactant : str</span>
+<span class="sd">        Oxidizer used for combustion (&#39;O2&#39;)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Fuel density in kg/m³ (820.0)</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy content in J/kg (43.02e6)</span>
+<span class="sd">    energy_density : float</span>
+<span class="sd">        Energy density in J/m³ (35276.4e6)</span>
+<span class="sd">    lower_heating_value : float</span>
+<span class="sd">        Lower heating value in J/kg (43.24e6)</span>
+<span class="sd">    max_mass_fraction : Data</span>
+<span class="sd">        Maximum fuel-to-oxidizer mass ratios</span>
+<span class="sd">            - Air : float</span>
+<span class="sd">                Maximum mass fraction with air (0.0633)</span>
+<span class="sd">            - O2 : float</span>
+<span class="sd">            Maximum mass fraction with pure oxygen (0.3022)</span>
+<span class="sd">    use_high_fidelity_kinetics_model : bool</span>
+<span class="sd">        Flag for using detailed chemical kinetics (True)</span>
+<span class="sd">    fuel_surrogate_chemical_properties : dict</span>
+<span class="sd">        Simplified surrogate composition</span>
+<span class="sd">            - N-C12H26 : float</span>
+<span class="sd">                Dodecane fraction (0.6)</span>
+<span class="sd">            - A1CH3 : float</span>
+<span class="sd">                Toluene fraction (0.2)</span>
+<span class="sd">            - A1 : float</span>
+<span class="sd">                Benzene fraction (0.2)</span>
+<span class="sd">    fuel_chemical_properties : dict</span>
+<span class="sd">        Detailed chemical composition for high-fidelity model</span>
+<span class="sd">    emission_indices : Data</span>
+<span class="sd">        Emission indices in kg/kg fuel</span>
+<span class="sd">            - Production : float</span>
+<span class="sd">                CO2 production rate (0.4656)</span>
+<span class="sd">            - CO2 : float</span>
+<span class="sd">                Carbon dioxide (3.16)</span>
+<span class="sd">            - CO : float</span>
+<span class="sd">                Carbon monoxide (0.00201)</span>
+<span class="sd">            - H2O : float</span>
+<span class="sd">                Water vapor (1.34)</span>
+<span class="sd">            - SO2 : float</span>
+<span class="sd">                Sulfur dioxide (0.0012)</span>
+<span class="sd">            - NOx : float</span>
+<span class="sd">                Nitrogen oxides (0.01514)</span>
+<span class="sd">            - Soot : float</span>
+<span class="sd">                Particulate matter (0.0012)</span>
+<span class="sd">    global_warming_potential_100 : Data</span>
+<span class="sd">        100-year global warming potentials</span>
+<span class="sd">            - CO2 : float</span>
+<span class="sd">                Carbon dioxide (1)</span>
+<span class="sd">            - H2O : float</span>
+<span class="sd">                Water vapor (0.06)</span>
+<span class="sd">            - SO2 : float</span>
+<span class="sd">                Sulfur dioxide (-226)</span>
+<span class="sd">            - NOx : float</span>
+<span class="sd">                Nitrogen oxides (52)</span>
+<span class="sd">            - Soot : float</span>
+<span class="sd">                Particulate matter (1166)</span>
+<span class="sd">            - Contrails : float</span>
+<span class="sd">                Contrail formation (11)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements properties for Jet A aviation kerosene, including both </span>
+<span class="sd">    simplified and detailed chemical kinetics options. Properties are specified at </span>
+<span class="sd">    standard conditions (15°C, 1 atm).</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Emission Index&#39;</span>
+<span class="sd">        Mass of pollutant produced per mass of fuel burned</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Global Warming Potential&#39;</span>
+<span class="sd">        Relative measure of heat trapped in atmosphere compared to CO2</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Surrogate Model&#39;</span>
+<span class="sd">        Simplified three-component representation of complex fuel mixture</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Properties are for standard temperature and pressure conditions (15C, 1atm)</span>
+<span class="sd">        * Surrogate model uses three-component representation</span>
+<span class="sd">        * Detailed model includes complex hydrocarbon mixture</span>
+<span class="sd">        * Emission indices are for typical aircraft cruise conditions</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] D.S. Lee, D.W. Fahey, A. Skowron, M.R. Allen, U. Burkhardt, Q. Chen, S.J. Doherty, S. Freeman, P.M. Forster, J. Fuglestvedt, A. Gettelman, R.R. De León, L.L. Lim, M.T. Lund, R.J. Millar, B. Owen, J.E. Penner, G. Pitari, M.J. Prather, R. Sausen, L.J. Wilcox, &quot;The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018,&quot; Atmospheric Environment, Volume 244, 2021, 117834, ISSN 1352-2310, https://doi.org/10.1016/j.atmosenv.2020.117834.</span>
+<span class="sd">    [2] Chevron Products Company. (n.d.). Aviation fuels. Chevron. https://www.chevron.com/-/media/chevron/operations/documents/aviation-tech-review.pdf </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -411,23 +503,23 @@
 <span class="sd">            </span>
 <span class="sd">            </span>
 <span class="sd">        &quot;&quot;&quot;</span>    
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                          <span class="o">=</span> <span class="s1">&#39;Jet_A&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span>                     <span class="o">=</span> <span class="s1">&#39;O2&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>                      <span class="o">=</span> <span class="mf">820.0</span>                          <span class="c1"># kg/m^3 (15 C, 1 atm)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span>              <span class="o">=</span> <span class="mf">43.02e6</span>                        <span class="c1"># J/kg</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>               <span class="o">=</span> <span class="mf">35276.4e6</span>                      <span class="c1"># J/m^3</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lower_heating_value</span>          <span class="o">=</span> <span class="mf">43.24e6</span>                          <span class="c1"># J/kg </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_mass_fraction</span>            <span class="o">=</span> <span class="n">Data</span><span class="p">({</span><span class="s1">&#39;Air&#39;</span> <span class="p">:</span> <span class="mf">0.0633</span><span class="p">,</span><span class="s1">&#39;O2&#39;</span> <span class="p">:</span> <span class="mf">0.3022</span><span class="p">})</span>   <span class="c1"># kg propellant / kg oxidizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                           <span class="o">=</span> <span class="s1">&#39;Jet_A&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span>                      <span class="o">=</span> <span class="s1">&#39;O2&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>                       <span class="o">=</span> <span class="mf">820.0</span>                          <span class="c1"># kg/m^3 (15 C, 1 atm)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span>               <span class="o">=</span> <span class="mf">43.02e6</span>                        <span class="c1"># J/kg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>                <span class="o">=</span> <span class="mf">35276.4e6</span>                      <span class="c1"># J/m^3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower_heating_value</span>           <span class="o">=</span> <span class="mf">43.24e6</span>                        <span class="c1"># J/kg </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">300000</span>                         <span class="c1"># J/kg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mf">0.068</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_mass_fraction</span>             <span class="o">=</span> <span class="n">Data</span><span class="p">({</span><span class="s1">&#39;Air&#39;</span> <span class="p">:</span> <span class="mf">0.0633</span><span class="p">,</span><span class="s1">&#39;O2&#39;</span> <span class="p">:</span> <span class="mf">0.3022</span><span class="p">})</span>   <span class="c1"># kg propellant / kg oxidizer</span>
    
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_high_fidelity_kinetics_model</span>      <span class="o">=</span>  <span class="kc">True</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_chemical_properties</span>    <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;N-C12H26&#39;</span><span class="p">:</span><span class="mf">0.6</span><span class="p">,</span> <span class="s1">&#39;A1CH3&#39;</span><span class="p">:</span><span class="mf">0.2</span><span class="p">,</span> <span class="s1">&#39;A1&#39;</span><span class="p">:</span><span class="mf">0.2</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_chemical_properties</span>              <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;NC10H22&#39;</span><span class="p">:</span><span class="mf">0.16449</span><span class="p">,</span> <span class="s1">&#39;NC12H26&#39;</span><span class="p">:</span><span class="mf">0.34308</span><span class="p">,</span> <span class="s1">&#39;NC16H34&#39;</span><span class="p">:</span><span class="mf">0.10335</span><span class="p">,</span> <span class="s1">&#39;IC8H18&#39;</span><span class="p">:</span><span class="mf">0.08630</span><span class="p">,</span> <span class="s1">&#39;NC7H14&#39;</span><span class="p">:</span><span class="mf">0.07945</span><span class="p">,</span> <span class="s1">&#39;C6H5C2H5&#39;</span><span class="p">:</span> <span class="mf">0.07348</span><span class="p">,</span> <span class="s1">&#39;C6H5C4H9&#39;</span><span class="p">:</span> <span class="mf">0.05812</span><span class="p">,</span> <span class="s1">&#39;C10H7CH3&#39;</span><span class="p">:</span> <span class="mf">0.10972</span><span class="p">}</span>      <span class="c1"># [2] More accurate kinetic mechanism, slower simulation    </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">air_chemical_properties</span>               <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;O2&#39;</span><span class="p">:</span><span class="mf">0.2095</span><span class="p">,</span> <span class="s1">&#39;N2&#39;</span><span class="p">:</span><span class="mf">0.7809</span><span class="p">,</span> <span class="s1">&#39;AR&#39;</span><span class="p">:</span><span class="mf">0.0096</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">surrogate_species_list</span>                <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">,</span> <span class="s1">&#39;H2O&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">species_list</span>                          <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">,</span> <span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="s1">&#39;NO&#39;</span><span class="p">,</span> <span class="s1">&#39;NO2&#39;</span><span class="p">,</span> <span class="s1">&#39;CSOLID&#39;</span><span class="p">]</span>   
-        <span class="bp">self</span><span class="o">.</span><span class="n">surrogate_chemical_kinetics</span>           <span class="o">=</span> <span class="s1">&#39;Fuel_Surrogate.yaml&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chemical_kinetics</span>                     <span class="o">=</span> <span class="s1">&#39;Fuel.yaml&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                              <span class="o">=</span> <span class="s1">&#39;Air.yaml&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
         <span class="c1"># critical temperatures   </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">flash</span>           <span class="o">=</span> <span class="mf">311.15</span>                 <span class="c1"># K</span>
@@ -438,7 +530,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">Production</span>  <span class="o">=</span> <span class="mf">0.4656</span>   <span class="c1"># kg/kg Greet </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">CO2</span>         <span class="o">=</span> <span class="mf">3.16</span>    <span class="c1"># kg/kg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">CO</span>          <span class="o">=</span> <span class="mf">0.00201</span> <span class="c1"># kg/kg</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">H2O</span>         <span class="o">=</span> <span class="mf">1.34</span>    <span class="c1"># kg/kg  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">H2O</span>         <span class="o">=</span> <span class="mf">1.23</span>    <span class="c1"># kg/kg  </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">SO2</span>         <span class="o">=</span> <span class="mf">0.0012</span>  <span class="c1"># kg/kg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">NOx</span>         <span class="o">=</span> <span class="mf">0.01514</span> <span class="c1"># kg/kg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">Soot</span>        <span class="o">=</span> <span class="mf">0.0012</span>  <span class="c1"># kg/kg</span>

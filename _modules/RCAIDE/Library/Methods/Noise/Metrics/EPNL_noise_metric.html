@@ -414,38 +414,40 @@
 <span class="sd">        N/A  </span>
 <span class="sd">    &quot;&quot;&quot;</span>           
     <span class="c1"># Maximum PNLT on the time history data    </span>
-    <span class="n">n_mic</span>    <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">PNLT</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span>
     <span class="n">PNLT_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">PNLT</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">n_mic_x</span>  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">PNLT</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">n_mic_y</span>  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">PNLT</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:])</span>
     
     <span class="c1"># Calculates the number of discrete points on the trajectory</span>
     <span class="n">nsteps</span>   <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">PNLT</span><span class="p">)</span>    
-    <span class="n">EPNL</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_mic</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_mic</span><span class="p">):</span>
-        <span class="c1"># Finding the time duration for the noise history where PNL is higher than the maximum PNLT - 10 dB</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span> <span class="n">PNLT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&lt;=</span><span class="p">(</span><span class="n">PNLT_max</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span><span class="o">&lt;=</span><span class="n">nsteps</span><span class="p">:</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">i</span> <span class="c1">#t1 is the first time interval</span>
-        <span class="n">i</span>  <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
-    
-        <span class="c1"># Correction for PNLTM-10 when it falls outside the limit of the data</span>
-        <span class="k">if</span> <span class="n">PNLT</span><span class="p">[</span><span class="n">nsteps</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;=</span><span class="p">(</span><span class="n">PNLT_max</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mi">10</span><span class="p">):</span>
-            <span class="n">t2</span><span class="o">=</span><span class="n">nsteps</span><span class="o">-</span><span class="mi">2</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">while</span> <span class="n">i</span><span class="o">&lt;=</span><span class="n">nsteps</span> <span class="ow">and</span> <span class="n">PNLT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;=</span><span class="p">(</span><span class="n">PNLT_max</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">EPNL</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_mic_x</span><span class="p">,</span><span class="n">n_mic_y</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">n_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_mic_x</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_mic_y</span><span class="p">):</span>
+            <span class="c1"># Finding the time duration for the noise history where PNL is higher than the maximum PNLT - 10 dB</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">PNLT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span><span class="o">&lt;=</span><span class="p">(</span><span class="n">PNLT_max</span><span class="p">[</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span><span class="o">&lt;=</span><span class="n">nsteps</span><span class="p">:</span>
                 <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
-            <span class="n">t2</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span> <span class="c1">#t2 is the last time interval </span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="n">i</span> <span class="c1">#t1 is the first time interval</span>
+            <span class="n">i</span>  <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
         
-        <span class="c1"># Calculates the integral of the PNLT which between t1 and t2 points</span>
-        <span class="n">sumation</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="n">t1</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">t2</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">sumation</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">PNLT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="n">sumation</span>
+            <span class="c1"># Correction for PNLTM-10 when it falls outside the limit of the data</span>
+            <span class="k">if</span> <span class="n">PNLT</span><span class="p">[</span><span class="n">nsteps</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span><span class="o">&gt;=</span><span class="p">(</span><span class="n">PNLT_max</span><span class="p">[</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span><span class="o">-</span><span class="mi">10</span><span class="p">):</span>
+                <span class="n">t2</span><span class="o">=</span><span class="n">nsteps</span><span class="o">-</span><span class="mi">2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">while</span> <span class="n">i</span><span class="o">&lt;=</span><span class="n">nsteps</span> <span class="ow">and</span> <span class="n">PNLT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span><span class="o">&gt;=</span><span class="p">(</span><span class="n">PNLT_max</span><span class="p">[</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span><span class="o">-</span><span class="mi">10</span><span class="p">):</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+                <span class="n">t2</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span> <span class="c1">#t2 is the last time interval </span>
             
-        <span class="c1"># Duration Correction calculation</span>
-        <span class="n">duration_correction</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">sumation</span><span class="p">)</span><span class="o">-</span><span class="n">PNLT_max</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mi">13</span>
-                    
-        <span class="c1"># Final EPNL calculation</span>
-        <span class="n">EPNL</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">PNLT_max</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">duration_correction</span>
+            <span class="c1"># Calculates the integral of the PNLT which between t1 and t2 points</span>
+            <span class="n">sumation</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="n">t1</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">t2</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">sumation</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">PNLT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="n">sumation</span>
+                
+            <span class="c1"># Duration Correction calculation</span>
+            <span class="n">duration_correction</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">sumation</span><span class="p">)</span><span class="o">-</span><span class="n">PNLT_max</span><span class="p">[</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span><span class="o">-</span><span class="mi">13</span>
+                        
+            <span class="c1"># Final EPNL calculation</span>
+            <span class="n">EPNL</span><span class="p">[</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span> <span class="o">=</span> <span class="n">PNLT_max</span><span class="p">[</span><span class="n">n_x</span><span class="p">][</span><span class="n">n_y</span><span class="p">]</span><span class="o">+</span><span class="n">duration_correction</span>
     
     <span class="k">return</span> <span class="n">EPNL</span>   </div>
 

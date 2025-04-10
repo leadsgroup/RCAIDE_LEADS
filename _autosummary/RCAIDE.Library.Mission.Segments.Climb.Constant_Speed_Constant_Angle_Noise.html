@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -539,11 +539,51 @@
 <td><p>Makes all vectors in the state the same size.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions" title="RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_conditions</span></code></a>(segment)</p></td>
-<td><p>Gets the overall time step for the segment type.</p></td>
+<td><p>Expands state array for noise certification analysis</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions">
+<span class="sig-name descname"><span class="pre">initialize_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Climb/Constant_Speed_Constant_Angle_Noise.html#initialize_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Expands state array for noise certification analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function determines the minimum number of points needed for noise
+certification analysis and expands the state arrays accordingly.</p>
+<p><strong>Required Segment Components</strong></p>
+<dl class="simple">
+<dt>segment:</dt><dd><dl class="simple">
+<dt>state:</dt><dd><dl class="simple">
+<dt>numerics:</dt><dd><dl class="simple">
+<dt>number_of_control_points<span class="classifier">int</span></dt><dd><p>Number of discretization points</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p><strong>Major Assumptions</strong>
+* Half-second time intervals required for certification
+* Fixed microphone position at 6500m
+* Continuous noise characteristics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Updates segment state arrays directly</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.expand_state">
 <span class="sig-name descname"><span class="pre">expand_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Climb/Constant_Speed_Constant_Angle_Noise.html#expand_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.expand_state" title="Link to this definition">#</a></dt>
@@ -558,29 +598,6 @@ state.numerics.number_of_control_points  [Unitless]</p>
 N/A</p>
 <p>Properties Used:
 Position of the flyover microphone is 6500 meters</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions">
-<span class="sig-name descname"><span class="pre">initialize_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Climb/Constant_Speed_Constant_Angle_Noise.html#initialize_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Gets the overall time step for the segment type.</p>
-<p>Assumptions:
-Constant true airspeed, with a constant climb angle. This segment is specically created for noise calculations.</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-segment.climb_angle                         [radians]
-segment.air_speed                           [meter/second]
-segment.altitude_start                      [meters]
-segment.altitude_end                        [meters]
-state.numerics.dimensionless.control_points [Unitless]
-conditions.freestream.density               [kilograms/meter^3]</p>
-<p>Outputs:
-conditions.frames.inertial.velocity_vector  [meters/second]
-conditions.frames.inertial.position_vector  [meters]
-conditions.freestream.altitude              [meters]</p>
-<p>Properties Used:
-N/A</p>
 </dd></dl>
 
 </section>
@@ -632,8 +649,8 @@ N/A</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.expand_state"><code class="docutils literal notranslate"><span class="pre">expand_state()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions"><code class="docutils literal notranslate"><span class="pre">initialize_conditions()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.expand_state"><code class="docutils literal notranslate"><span class="pre">expand_state()</span></code></a></li>
 </ul>
   </nav></div>
 

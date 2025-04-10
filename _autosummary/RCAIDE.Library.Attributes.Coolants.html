@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -526,15 +526,27 @@
   <p>RCAIDE.Library.Attributes.Coolants</p>
 <section id="module-RCAIDE.Library.Attributes.Coolants">
 <span id="coolants"></span><h1>Coolants<a class="headerlink" href="#module-RCAIDE.Library.Attributes.Coolants" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>RCAIDE Coolants module provides models and properties for various cooling fluids used in aircraft systems.</p>
+<p>These models provide essential thermodynamic and physical properties needed for heat
+transfer calculations and thermal management system analysis, including Specific heat capacity,
+Thermal conductivity, Density, Viscosity, and Heat transfer coefficients.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Cryogens.html#module-RCAIDE.Library.Attributes.Cryogens" title="RCAIDE.Library.Attributes.Cryogens"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Cryogens</span></code></a></dt><dd><p>Cryogenic fluid properties</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Energy</span></code></dt><dd><p>Energy system components</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Coolants.Coolant.html#module-RCAIDE.Library.Attributes.Coolants.Coolant" title="RCAIDE.Library.Attributes.Coolants.Coolant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Coolant</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Default class of a liquid coolant.</p></td>
+<td><p>Base class for defining liquid coolant properties used in thermal management systems.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Coolants.Glycol_Water.html#module-RCAIDE.Library.Attributes.Coolants.Glycol_Water" title="RCAIDE.Library.Attributes.Coolants.Glycol_Water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Glycol_Water</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Generic class of ethelyne glycol-water mixture coolant.</p></td>
+<td><p>Implementation of a 50-50 ethylene glycol-water mixture coolant properties.</p></td>
 </tr>
 </tbody>
 </table>

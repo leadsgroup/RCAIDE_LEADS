@@ -396,24 +396,43 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------       </span>
 <div class="viewcode-block" id="save">
 <a class="viewcode-back" href="../../_autosummary/RCAIDE.save.html#RCAIDE.save.save">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">filename</span><span class="p">,</span><span class="n">pickle_format</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a RCAIDE data structure to a JSON file for storage. </span>
-
-<span class="sd">    Assumptions:</span>
-<span class="sd">        Data must be numpy arrays, strings, booleans, floats, ints, or lists.</span>
-<span class="sd">        Functions are ignored and all other data raises an error.</span>
-
-<span class="sd">    Source:</span>
-<span class="sd">        None</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        data                   : RCAIDE data structure [unitless]</span>
-<span class="sd">        filename (string)      : file to be output     [unitless] </span>
-<span class="sd">        pickle_format (boolean): pickle file format flag  [unitless]</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None </span>
-<span class="sd">    &quot;&quot;&quot;</span>      
+<span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">pickle_format</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a RCAIDE data structure to a JSON or Pickle file for storage.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : RCAIDE.Framework.Core.Data</span>
+<span class="sd">        RCAIDE data structure to be saved</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        Path where the file will be saved, without extension for pickle files</span>
+<span class="sd">    pickle_format : bool, optional</span>
+<span class="sd">        Flag indicating whether to save as a pickle file (True) or JSON file (False)</span>
+<span class="sd">        Default is False (JSON format)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function supports two file formats:</span>
+<span class="sd">    </span>
+<span class="sd">    1. JSON format (default): Converts the RCAIDE data structure to a JSON string</span>
+<span class="sd">       using the build_dict_base and build_dict_r helper functions, then writes it to a file.</span>
+<span class="sd">       </span>
+<span class="sd">    2. Pickle format: Serializes the Python object directly to a binary file.</span>
+<span class="sd">       The .pkl extension is automatically added to the filename.</span>
+<span class="sd">    </span>
+<span class="sd">    JSON format is human-readable and more portable across different Python versions,</span>
+<span class="sd">    while pickle format is more efficient for large data structures but less portable.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.load</span>
+<span class="sd">    RCAIDE.build_dict_base</span>
+<span class="sd">    RCAIDE.build_dict_r</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">pickle_format</span><span class="p">:</span>
         <span class="n">pickle_file</span>  <span class="o">=</span>  <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>

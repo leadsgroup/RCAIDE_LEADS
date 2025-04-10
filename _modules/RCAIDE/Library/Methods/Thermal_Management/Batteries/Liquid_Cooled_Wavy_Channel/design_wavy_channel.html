@@ -394,6 +394,8 @@
 <span class="c1"># Python package imports  </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  Wavy Channel Design</span>
@@ -436,17 +438,28 @@
     <span class="k">elif</span> <span class="n">HAS</span><span class="o">.</span><span class="n">design_heat_removed</span>  <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
         <span class="k">assert</span><span class="p">(</span><span class="s1">&#39;specify heat generated&#39;</span><span class="p">)</span> 
 
-    <span class="c1"># start optimization </span>
-    <span class="n">ti</span>                   <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>   
+    <span class="c1"># start optimization  </span>
     <span class="n">optimization_problem</span> <span class="o">=</span> <span class="n">wavy_channel_design_problem_setup</span><span class="p">(</span><span class="n">HAS</span><span class="p">,</span><span class="n">battery</span><span class="p">,</span><span class="n">print_iterations</span><span class="p">)</span>
-    <span class="n">output</span>               <span class="o">=</span> <span class="n">scipy_setup</span><span class="o">.</span><span class="n">SciPy_Solve</span><span class="p">(</span><span class="n">optimization_problem</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_name</span><span class="p">,</span> <span class="nb">iter</span> <span class="o">=</span> <span class="n">iterations</span> <span class="p">,</span> <span class="n">sense_step</span> <span class="o">=</span> <span class="n">solver_sense_step</span><span class="p">,</span><span class="n">tolerance</span> <span class="o">=</span> <span class="n">solver_tolerance</span><span class="p">)</span>  
+    
+    <span class="c1"># Commense suppression of console window output  </span>
+    <span class="n">devnull</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">devnull</span>
+     
+    <span class="n">output</span>               <span class="o">=</span> <span class="n">scipy_setup</span><span class="o">.</span><span class="n">SciPy_Solve</span><span class="p">(</span><span class="n">optimization_problem</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_name</span><span class="p">,</span>
+                                                   <span class="nb">iter</span> <span class="o">=</span> <span class="n">iterations</span> <span class="p">,</span>
+                                                   <span class="n">sense_step</span> <span class="o">=</span> <span class="n">solver_sense_step</span><span class="p">,</span>
+                                                   <span class="n">tolerance</span> <span class="o">=</span> <span class="n">solver_tolerance</span><span class="p">)</span>  
 
-    <span class="n">tf</span>                   <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">elapsed_time</span>         <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">tf</span><span class="o">-</span><span class="n">ti</span><span class="p">)</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Channel Cooling hex Optimization Simulation Time: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; mins&#39;</span><span class="p">)</span>   
+    <span class="c1"># Terminate suppression of console window output   </span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
 
-    <span class="c1"># print optimization results </span>
-    <span class="nb">print</span> <span class="p">(</span><span class="n">output</span><span class="p">)</span>   
+    <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Wavy-channel desing optimization failed: &quot;</span><span class="p">,</span><span class="n">output</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+        
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Sizing &#39;</span><span class="p">,</span> <span class="n">HAS</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+
+    <span class="c1"># print optimization results  </span>
     <span class="n">HAS_opt</span> <span class="o">=</span> <span class="n">optimization_problem</span><span class="o">.</span><span class="n">hrs_configurations</span><span class="o">.</span><span class="n">optimized</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">electric</span><span class="o">.</span><span class="n">coolant_lines</span><span class="o">.</span><span class="n">coolant_line</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">[</span><span class="n">battery</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">thermal_management_system</span><span class="o">.</span><span class="n">heat_acquisition_system</span>
     <span class="n">HAS</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>       <span class="o">=</span> <span class="n">HAS_opt</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>      
     <span class="n">HAS</span><span class="o">.</span><span class="n">design_power_draw</span>          <span class="o">=</span> <span class="n">HAS_opt</span><span class="o">.</span><span class="n">design_power_draw</span>         

@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_landing_gear_weight';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_landing_gear_weight.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -544,38 +546,115 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_landing_gear_weight.compute_landing_gear_weight">
 <span class="sig-name descname"><span class="pre">compute_landing_gear_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/Raymer/compute_landing_gear_weight.html#compute_landing_gear_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_landing_gear_weight.compute_landing_gear_weight" title="Link to this definition">#</a></dt>
-<dd><p>Calculate the weight of the landing gear of a transport aircraft based on the Raymer method</p>
-<dl>
-<dt>Assumptions:</dt><dd><p>No fuselage mounted landing gear
-1 cargo door
-gear load factor = 3
-number of main gear shock struts = 2
-stall speed is estimated with a Cl max of 2.5 and at sea level
-Not a reciprocating engine</p>
-</dd>
-<dt>Source:</dt><dd><p>Aircraft Design: A Conceptual Approach (2nd edition)</p>
-</dd>
-<dt>Inputs:</dt><dd><dl>
-<dt>vehicle - data dictionary with vehicle properties                   [dimensionless]</dt><dd><p>-.design_range: design range of aircraft                        [m]
--.mass_properties.max_takeoff: MTOW                             [kg]
--.systems.accessories: type of aircraft (short-range, commuter</p>
-<blockquote>
-<div><p>medium-range, long-range,
-sst, cargo)</p>
-</div></blockquote>
-<p>-.landing_gear.main_strut_length: main strut length              [m]
--.landing_gear.main_wheels: number of wheels on main landing gear
--.landing_gear.nose_strut_length: nose strut length              [m]
--.landing_gear.nose_wheels: number of wheels on nose landing gear</p>
+<dd><p>Calculates the weight of main and nose landing gear for transport aircraft using Raymer’s method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<em>RCAIDE.Vehicle</em><em>(</em><em>)</em>) – <dl class="simple">
+<dt>Vehicle data structure containing:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>design_range<span class="classifier">float</span></dt><dd><p>Design range of aircraft [m]</p>
 </dd>
 </dl>
-<p>fuse - data dictionary with specific fuselage properties            [dimensionless]</p>
-</dd>
-<dt>Outputs:</dt><dd><p>weight_fuse - weight of the fuselage                                [kilograms]</p>
-</dd>
-<dt>Properties Used:</dt><dd><p>N/A</p>
+</li>
+<li><dl class="simple">
+<dt>mass_properties.max_takeoff<span class="classifier">float</span></dt><dd><p>Maximum takeoff weight [kg]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>systems.accessories<span class="classifier">str</span></dt><dd><p>Aircraft type (‘short-range’, ‘commuter’, ‘medium-range’,
+‘long-range’, ‘sst’, ‘cargo’)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>landing_gears<span class="classifier">list</span></dt><dd><dl class="simple">
+<dt>List of landing gear components containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>strut_length<span class="classifier">float</span></dt><dd><p>Length of strut [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>wheels<span class="classifier">int</span></dt><dd><p>Number of wheels per strut</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>output</strong> –</p>
+<dl class="simple">
+<dt>Landing gear weights:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>main<span class="classifier">float</span></dt><dd><p>Weight of main landing gear [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>nose<span class="classifier">float</span></dt><dd><p>Weight of nose landing gear [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a>()</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method implements Raymer’s empirical correlations for transport aircraft
+landing gear weight estimation. Separate correlations are used for main and
+nose gear.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Gear load factor = 3</p></li>
+<li><p>Number of main gear shock struts = 2</p></li>
+<li><p>Stall speed assumes max Cl of 2.5, density of 1.225 kg/m^3</p></li>
+<li><p>All main landing gear is assumed to be of the same type</p></li>
+<li><p>All nose landing gear is assumed to be of the same type</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+The landing gear weights are calculated using:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">main</span><span class="p">}</span> <span class="o">=</span> <span class="mf">0.0106</span><span class="n">K_</span><span class="p">{</span><span class="n">mp</span><span class="p">}</span><span class="n">W_</span><span class="p">{</span><span class="n">l</span><span class="p">}</span><span class="o">^</span><span class="p">{</span><span class="mf">0.888</span><span class="p">}</span><span class="n">N_l</span><span class="o">^</span><span class="p">{</span><span class="mf">0.25</span><span class="p">}</span><span class="n">L_m</span><span class="o">^</span><span class="p">{</span><span class="mf">0.4</span><span class="p">}</span><span class="n">N_</span><span class="p">{</span><span class="n">mw</span><span class="p">}</span><span class="o">^</span><span class="p">{</span><span class="mf">0.321</span><span class="p">}</span><span class="n">N_</span><span class="p">{</span><span class="n">mss</span><span class="p">}</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mf">0.5</span><span class="p">}</span><span class="n">V_</span><span class="p">{</span><span class="n">stall</span><span class="p">}</span><span class="o">^</span><span class="p">{</span><span class="mf">0.1</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[W_{nose} = 0.032K_{np}W_{l}^{0.646}N_l^{0.2}L_n^{0.5}N_{nw}^{0.45}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(W_l\)</span> is landing weight</p></li>
+<li><p><span class="math notranslate nohighlight">\(N_l\)</span> is ultimate landing load factor</p></li>
+<li><p><span class="math notranslate nohighlight">\(L_m, L_n\)</span> are strut lengths</p></li>
+<li><p><span class="math notranslate nohighlight">\(N_{mw}, N_{nw}\)</span> are number of wheels</p></li>
+<li><p><span class="math notranslate nohighlight">\(N_{mss}\)</span> is number of main gear shock struts</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Raymer, D., “Aircraft Design: A Conceptual Approach”, AIAA</dt><dd><p>Education Series, 2018.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

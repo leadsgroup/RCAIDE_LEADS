@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -538,38 +538,124 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_prop_rotor.design_prop_rotor">
 <span class="sig-name descname"><span class="pre">design_prop_rotor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_stations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SLSQP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_sense_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/design_prop_rotor.html#design_prop_rotor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_prop_rotor.design_prop_rotor" title="Link to this definition">#</a></dt>
-<dd><p>Optimizes prop-rotor chord and twist given input parameters to meet either design power or thurst.
-This scrip adopts RCAIDE’s native optimization style where the objective function is expressed
-as an aeroacoustic function, considering both efficiency and radiated noise.</p>
-<blockquote>
-<div><p>Inputs:
-prop_attributes.</p>
-<blockquote>
-<div><p>hub radius                             [m]
-tip radius                             [m]
-rotation rate                          [rad/s]
-freestream velocity                    [m/s]
-number of blades                       [None]
-number of stations                     [None]
-design lift coefficient                [None]
-airfoil data                           [None]
-optimization_parameters.</p>
-<blockquote>
-<div><p>slack_constaint                     [None]
-ideal_SPL_dbA                       [dBA]
-multiobjective_aeroacoustic_weight  [None]</p>
-</div></blockquote>
-</div></blockquote>
-<p>Outputs:
-Twist distribution                   [array of radians]
-Chord distribution                   [array of meters]</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>N/A</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
+<dd><p>Optimizes prop-rotor chord and twist distribution to meet design power or thrust requirements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rotor</strong> (<em>RCAIDE.Library.Components.Powertrain.Converters.Rotor</em>) – <dl class="simple">
+<dt>Rotor component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the rotor</p>
 </dd>
 </dl>
-</div></blockquote>
+</li>
+<li><dl class="simple">
+<dt>hub_radius<span class="classifier">float</span></dt><dd><p>Hub radius of the rotor [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tip_radius<span class="classifier">float</span></dt><dd><p>Tip radius of the rotor [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>rotation_rate<span class="classifier">float</span></dt><dd><p>Rotation rate [rad/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>freestream_velocity<span class="classifier">float</span></dt><dd><p>Freestream velocity [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>number_of_blades<span class="classifier">int</span></dt><dd><p>Number of blades on the rotor</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>design_lift_coefficient<span class="classifier">float</span></dt><dd><p>Design lift coefficient</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>airfoil_data<span class="classifier">dict</span></dt><dd><p>Dictionary of airfoil data</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>optimization_parameters<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Optimization parameters</dt><dd><ul>
+<li><dl class="simple">
+<dt>slack_constraint<span class="classifier">float</span></dt><dd><p>Slack constraint value</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ideal_SPL_dbA<span class="classifier">float</span></dt><dd><p>Ideal sound pressure level [dBA]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>multiobjective_aeroacoustic_weight<span class="classifier">float</span></dt><dd><p>Weight for multiobjective aeroacoustic optimization</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>number_of_stations</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of radial stations for blade discretization, default 20</p></li>
+<li><p><strong>solver_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the optimization solver, default ‘SLSQP’</p></li>
+<li><p><strong>iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations, default 200</p></li>
+<li><p><strong>solver_sense_step</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for finite difference gradient calculation, default 1E-6</p></li>
+<li><p><strong>solver_tolerance</strong> (<em>float</em><em>, </em><em>optional</em>) – Convergence tolerance for the optimizer, default 1E-5</p></li>
+<li><p><strong>print_iterations</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag to print optimization iterations, default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rotor</strong> – Optimized rotor with updated chord and twist distributions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RCAIDE.Library.Components.Powertrain.Converters.Rotor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function optimizes the chord and twist distributions of a prop-rotor to meet
+either design power or thrust requirements. It uses RCAIDE’s native optimization
+framework with an objective function that balances aerodynamic performance and
+acoustic characteristics.</p>
+<dl class="simple">
+<dt>The optimization process follows these steps:</dt><dd><ol class="arabic simple">
+<li><p>Set up the optimization problem using the optimization_setup function</p></li>
+<li><p>Solve the optimization problem using the specified solver</p></li>
+<li><p>Report optimization results</p></li>
+<li><p>Update the rotor with the optimized parameters</p></li>
+</ol>
+</dd>
+</dl>
+<p>The objective function is formulated as an aeroacoustic function that considers
+both efficiency and radiated noise, with the balance controlled by the
+multiobjective_aeroacoustic_weight parameter.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Prop-rotor design considers both hover and cruise conditions</p></li>
+<li><p>Either design power or thrust must be specified (not both)</p></li>
+<li><p>The optimization balances aerodynamic performance and acoustic characteristics</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.optimization_setup</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters</span></code></a>, <a class="reference internal" href="RCAIDE.Framework.Optimization.Packages.scipy.scipy_setup.html#module-RCAIDE.Framework.Optimization.Packages.scipy.scipy_setup" title="RCAIDE.Framework.Optimization.Packages.scipy.scipy_setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Optimization.Packages.scipy.scipy_setup</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

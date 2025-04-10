@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,17 +541,43 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_mass_gain_rate.find_mass_gain_rate">
 <span class="sig-name descname"><span class="pre">find_mass_gain_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Common/find_mass_gain_rate.html#find_mass_gain_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_mass_gain_rate.find_mass_gain_rate" title="Link to this definition">#</a></dt>
-<dd><p>finds the mass gain rate of the battery from the ambient air
-Assumptions:
-Earth Atmospheric composition</p>
-<p>Inputs:
-power              [W]
-battery.</p>
-<blockquote>
-<div><p>mass_gain_factor [kg/W]</p>
-</div></blockquote>
+<dd><p>Calculates the mass gain rate of the battery from the ambient air.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery</strong> (<em>Battery</em>) – <dl class="simple">
+<dt>The battery component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>mass_gain_factor<span class="classifier">float</span></dt><dd><p>Mass of air gained per unit of energy [kg/J]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>power</strong> (<em>float</em><em> or </em><em>numpy.ndarray</em>) – Power being drawn from the battery [W]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>mdot</strong> – Mass gain rate [kg/s]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the rate at which a battery gains mass from the ambient air
+during discharge. This is relevant for metal-air batteries (such as aluminum-air or
+zinc-air) where oxygen from the air is consumed during the discharge process,
+resulting in a mass increase.</p>
+<p>The calculation is based on a linear relationship between power output and
+mass gain rate, using the mass_gain_factor property of the battery.</p>
 <dl class="simple">
-<dt>Outputs:</dt><dd><p>mdot             [kg/s]</p>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Earth atmospheric composition</p></li>
+<li><p>Linear relationship between power output and mass gain rate</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

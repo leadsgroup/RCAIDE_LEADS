@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,51 +539,194 @@
 <span id="compute-expansion-nozzle-performance"></span><h1>compute_expansion_nozzle_performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance.compute_expansion_nozzle_performance">
-<span class="sig-name descname"><span class="pre">compute_expansion_nozzle_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expansion_nozzle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nozzle_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Expansion_Nozzle/compute_expansion_nozzle_performance.html#compute_expansion_nozzle_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance.compute_expansion_nozzle_performance" title="Link to this definition">#</a></dt>
-<dd><p>This computes the output values from the input values according to
-equations from the source. The following properties are computed:
-expansion_nozzle.outputs.</p>
-<blockquote>
-<div><p>stagnation_temperature  (numpy.ndarray): [K]
-stagnation_pressure     (numpy.ndarray): [Pa]
-stagnation_enthalpy     (numpy.ndarray): [J/kg]
-mach_number             (numpy.ndarray): [-]
-static_temperature      (numpy.ndarray): [K]
-static_enthalpy         (numpy.ndarray): [J/kg]
-velocity                (numpy.ndarray): [m/s]
-static_pressure         (numpy.ndarray): [Pa]
-area_ratio              (numpy.ndarray): [-]
-denisty                 (numpy.ndarray): [kg/m^3]</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><ol class="arabic simple">
-<li><p>Constant polytropic efficiency and pressure ratio</p></li>
-<li><p>If pressures make the Mach number go negative, these values are corrected</p></li>
-</ol>
-</dd>
-<dt>Source:</dt><dd><p><a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/">https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</a></p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">compute_expansion_nozzle_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expansion_nozzle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Expansion_Nozzle/compute_expansion_nozzle_performance.html#compute_expansion_nozzle_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance.compute_expansion_nozzle_performance" title="Link to this definition">#</a></dt>
+<dd><p>Computes the thermodynamic performance of an expansion nozzle in a propulsion system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>conditions.freestream.</strong> – isentropic_expansion_factor         (numpy.ndarray): [-]
-specific_heat_at_constant_pressure  (numpy.ndarray): [J/(kg K)]
-pressure                            (numpy.ndarray): [Pa]
-stagnation_pressure                 (numpy.ndarray): [Pa]
-stagnation_temperature              (numpy.ndarray): [K]
-specific_gas_constant               (numpy.ndarray): [J/(kg K)]
-mach_number                         (numpy.ndarray): [-]</p></li>
-<li><p><strong>expansion_nozzle</strong> – .inputs.stagnation_temperature       (numpy.ndarray): [K]
-.inputs.stagnation_pressure          (numpy.ndarray): [Pa]
-.pressure_ratio                      (numpy.ndarray): [-]
-.polytropic_efficiency               (numpy.ndarray): [-]</p></li>
+<li><p><strong>expansion_nozzle</strong> (<em>RCAIDE.Library.Components.Converters.Expansion_Nozzle</em>) – <dl class="simple">
+<dt>Expansion nozzle component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the nozzle</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>working_fluid<span class="classifier">Data</span></dt><dd><p>Working fluid properties object</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pressure_ratio<span class="classifier">float</span></dt><dd><p>Pressure ratio across the nozzle</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>polytropic_efficiency<span class="classifier">float</span></dt><dd><p>Polytropic efficiency of the expansion process</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – <dl>
+<dt>Flight conditions with:</dt><dd><ul>
+<li><dl>
+<dt>freestream<span class="classifier">Data</span></dt><dd><p>Freestream properties
+- isentropic_expansion_factor : numpy.ndarray</p>
+<blockquote>
+<div><p>Ratio of specific heats (gamma)</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>specific_heat_at_constant_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Specific heat at constant pressure [J/(kg·K)]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Freestream pressure [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Freestream stagnation pressure [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Freestream stagnation temperature [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>specific_gas_constant<span class="classifier">numpy.ndarray</span></dt><dd><p>Specific gas constant [J/(kg·K)]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number<span class="classifier">numpy.ndarray</span></dt><dd><p>Freestream Mach number</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>energy<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Energy conditions</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>converters<span class="classifier">dict</span></dt><dd><p>Converter energy conditions indexed by tag</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Results are stored in conditions.energy.converters[expansion_nozzle.tag].outputs:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>stagnation_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation temperature at nozzle exit [K]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation pressure at nozzle exit [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>stagnation_enthalpy<span class="classifier">numpy.ndarray</span></dt><dd><p>Stagnation enthalpy at nozzle exit [J/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mach_number<span class="classifier">numpy.ndarray</span></dt><dd><p>Mach number at nozzle exit</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_temperature<span class="classifier">numpy.ndarray</span></dt><dd><p>Static temperature at nozzle exit [K]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_enthalpy<span class="classifier">numpy.ndarray</span></dt><dd><p>Static enthalpy at nozzle exit [J/kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>velocity<span class="classifier">numpy.ndarray</span></dt><dd><p>Exit velocity [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>static_pressure<span class="classifier">numpy.ndarray</span></dt><dd><p>Static pressure at nozzle exit [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>area_ratio<span class="classifier">numpy.ndarray</span></dt><dd><p>Exit to freestream area ratio</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function computes the thermodynamic properties at the expansion nozzle exit based on
+the inlet conditions and nozzle characteristics. It calculates the exit velocity, pressure,
+temperature, and other properties for both subsonic and supersonic flow regimes.</p>
+<dl class="simple">
+<dt>The computation follows these steps:</dt><dd><ol class="arabic simple">
+<li><p>Extract freestream and inlet conditions</p></li>
+<li><p>Compute working fluid properties (gamma, Cp)</p></li>
+<li><p>Calculate stagnation conditions at exit using pressure ratio</p></li>
+<li><p>Compute exit Mach number based on pressure ratio</p></li>
+<li><p>Handle subsonic (M &lt; 1.0) and supersonic (M ≥ 1.0) cases separately</p></li>
+<li><p>Calculate static conditions (temperature, pressure) at exit</p></li>
+<li><p>Compute exit velocity from energy conservation</p></li>
+<li><p>Calculate area ratio between freestream and nozzle exit</p></li>
+<li><p>Store all results in the conditions data structure</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant polytropic efficiency and pressure ratio</p></li>
+<li><p>If pressures make the Mach number go negative, these values are corrected</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+For subsonic flow (M &lt; 1.0), the exit pressure equals the ambient pressure, and the
+Mach number is calculated from the pressure ratio. For supersonic flow (M ≥ 1.0),
+the nozzle is choked, and the exit pressure is calculated from the Mach number.</p>
+<p>The exit velocity is calculated from the conservation of energy:</p>
+<div class="math notranslate nohighlight">
+\[u_{out} = \sqrt{2(h_{t,out} - h_{out})}\]</div>
+<p>where h_{t,out} is the exit stagnation enthalpy and h_{out} is the exit static enthalpy.</p>
+<p class="rubric">References</p>
+<p>[1] Cantwell, B., “AA283 Course Notes”, Stanford University <a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/">https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</a></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Gas_Dynamics.fm_id.html#module-RCAIDE.Library.Methods.Gas_Dynamics.fm_id" title="RCAIDE.Library.Methods.Gas_Dynamics.fm_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Gas_Dynamics.fm_id</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

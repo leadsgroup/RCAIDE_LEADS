@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -526,21 +526,31 @@
   <p>RCAIDE.Library.Attributes.Gases</p>
 <section id="module-RCAIDE.Library.Attributes.Gases">
 <span id="gases"></span><h1>Gases<a class="headerlink" href="#module-RCAIDE.Library.Attributes.Gases" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides gas handling capabilities for RCAIDE.</p>
+<p>It includes classes for managing different types of gases and their thermodynamic properties,
+with specific implementations for air, carbon dioxide (CO2), and steam. The Gas class serves
+as the base class for all gas implementations.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Cryogens.html#module-RCAIDE.Library.Attributes.Cryogens" title="RCAIDE.Library.Attributes.Cryogens"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Cryogens</span></code></a></dt><dd><p>Related module for cryogenic fluid handling</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Gases.Air.html#module-RCAIDE.Library.Attributes.Gases.Air" title="RCAIDE.Library.Attributes.Gases.Air"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Air</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Generic class of air gas.</p></td>
+<td><p>A class representing air and its thermodynamic properties.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Gases.CO2.html#module-RCAIDE.Library.Attributes.Gases.CO2" title="RCAIDE.Library.Attributes.Gases.CO2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CO2</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Generic class for carbon dioxide</p></td>
+<td><p>A class representing carbon dioxide gas and its thermodynamic properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Gases.Gas.html#module-RCAIDE.Library.Attributes.Gases.Gas" title="RCAIDE.Library.Attributes.Gases.Gas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gas</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Default class for all gases.</p></td>
+<td><p>Base class for all gas implementations in RCAIDE.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Gases.Steam.html#module-RCAIDE.Library.Attributes.Gases.Steam" title="RCAIDE.Library.Attributes.Gases.Steam"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Steam</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Holds constants and functions that compute gas properties for steam.</p></td>
+<td><p>A class representing water vapor (steam) and its thermodynamic properties.</p></td>
 </tr>
 </tbody>
 </table>

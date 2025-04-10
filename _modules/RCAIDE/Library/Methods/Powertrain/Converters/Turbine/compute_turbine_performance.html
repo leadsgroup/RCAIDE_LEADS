@@ -378,7 +378,6 @@
                   
   <h1>Source code for RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Converters/Turbine/compute_turbine_performance.py</span>
-<span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Jun 2024, M. Clarke    </span>
 
@@ -387,41 +386,148 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------     </span>
 <div class="viewcode-block" id="compute_turbine_performance">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance.html#RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance.compute_turbine_performance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_turbine_performance</span><span class="p">(</span><span class="n">turbine</span><span class="p">,</span><span class="n">turbine_conditions</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This computes the output values from the input values according to</span>
-<span class="sd">    equations from the source. The following properties are computed: </span>
-<span class="sd">    turbine.outputs.</span>
-<span class="sd">      stagnation_temperature   (numpy.ndarray): exiting stagnation_temperature [K]  </span>
-<span class="sd">      stagnation_pressure      (numpy.ndarray): exiting stagnation_pressure    [Pa]</span>
-<span class="sd">      stagnation_enthalpy      (numpy.ndarray): exiting stagnation_enthalpy    [J/kg]</span>
-
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Constant polytropic efficiency and pressure ratio</span>
-
-<span class="sd">    Source:</span>
-<span class="sd">    https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        conditions.freestream.</span>
-<span class="sd">          isentropic_expansion_factor             (numpy.ndarray): isentropic_expansion_factor         [unitless]</span>
-<span class="sd">          specific_heat_at_constant_pressure      (numpy.ndarray): specific_heat_at_constant_pressure  [J/(kg K)]</span>
-<span class="sd">        turbine</span>
-<span class="sd">          .inputs.stagnation_temperature          (numpy.ndarray): entering stagnation_temperature     [K]</span>
-<span class="sd">          .inputs.stagnation_pressure             (numpy.ndarray): entering stagnation_pressure        [Pa]</span>
-<span class="sd">          .inputs.bypass_ratio                    (numpy.ndarray): bypass_ratio                        [unitless]</span>
-<span class="sd">          .inputs.fuel_to_air_ratio               (numpy.ndarray): fuel-to-air ratio                   [unitless]</span>
-<span class="sd">          .inputs.compressor.work_done            (numpy.ndarray): compressor work                     [J/(kg/s)]</span>
-<span class="sd">          .inputs.fan.work_done                   (numpy.ndarray): fan work done                       [J/(kg/s)]</span>
-<span class="sd">          .inputs.shaft_power_off_take.work_done  (numpy.ndarray): shaft power off take                [J/(kg/s)] </span>
-<span class="sd">          .mechanical_efficiency                          (float): mechanical efficiency               [unitless]</span>
-<span class="sd">          .polytropic_efficiency                          (float): polytropic efficiency               [unitless]</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_turbine_performance</span><span class="p">(</span><span class="n">turbine</span><span class="p">,</span><span class="n">conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes turbine performance parameters based on input conditions and component characteristics.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    turbine : RCAIDE.Library.Components.Powertrain.Converters.Turbine</span>
+<span class="sd">        Turbine component with the following attributes:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the turbine</span>
+<span class="sd">            - working_fluid : Data</span>
+<span class="sd">                Working fluid object with methods to compute properties</span>
+<span class="sd">                    - compute_gamma : function</span>
+<span class="sd">                        Computes ratio of specific heats</span>
+<span class="sd">                    - compute_cp : function</span>
+<span class="sd">                        Computes specific heat at constant pressure</span>
+<span class="sd">                    - compute_R : function</span>
+<span class="sd">                        Computes gas constant</span>
+<span class="sd">            - mechanical_efficiency : float</span>
+<span class="sd">                Mechanical efficiency [unitless]</span>
+<span class="sd">            - polytropic_efficiency : float</span>
+<span class="sd">                Polytropic efficiency [unitless]</span>
+<span class="sd">    conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Flight conditions with:</span>
+<span class="sd">            - energy : Data</span>
+<span class="sd">                Energy conditions</span>
+<span class="sd">                    - converters : dict</span>
+<span class="sd">                        Converter energy conditions indexed by tag</span>
+<span class="sd">                            - inputs : Data</span>
+<span class="sd">                                Input conditions</span>
+<span class="sd">                                    - static_temperature : array_like</span>
+<span class="sd">                                        Static temperature [K]</span>
+<span class="sd">                                    - static_pressure : array_like</span>
+<span class="sd">                                        Static pressure [Pa]</span>
+<span class="sd">                                    - mach_number : array_like</span>
+<span class="sd">                                        Mach number [unitless]</span>
+<span class="sd">                                    - stagnation_temperature : array_like</span>
+<span class="sd">                                        Entering stagnation temperature [K]</span>
+<span class="sd">                                    - stagnation_pressure : array_like</span>
+<span class="sd">                                        Entering stagnation pressure [Pa]</span>
+<span class="sd">                                    - bypass_ratio : array_like</span>
+<span class="sd">                                        Bypass ratio [unitless]</span>
+<span class="sd">                                    - fuel_to_air_ratio : array_like</span>
+<span class="sd">                                        Fuel-to-air ratio [unitless]</span>
+<span class="sd">                                    - compressor : Data</span>
+<span class="sd">                                        Compressor data</span>
+<span class="sd">                                            - work_done : array_like</span>
+<span class="sd">                                                Compressor work [J/(kg/s)]</span>
+<span class="sd">                                            - external_shaft_work_done : array_like</span>
+<span class="sd">                                                Shaft power off take [J/(kg/s)]</span>
+<span class="sd">                                    - fan : Data</span>
+<span class="sd">                                        Fan data</span>
+<span class="sd">                                            - work_done : array_like</span>
+<span class="sd">                                                Fan work done [J/(kg/s)]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in conditions.energy.converters[turbine.tag].outputs:</span>
+<span class="sd">            - stagnation_pressure : array_like</span>
+<span class="sd">                Exiting stagnation pressure [Pa]</span>
+<span class="sd">            - stagnation_temperature : array_like</span>
+<span class="sd">                Exiting stagnation temperature [K]</span>
+<span class="sd">            - stagnation_enthalpy : array_like</span>
+<span class="sd">                Exiting stagnation enthalpy [J/kg]</span>
+<span class="sd">            - static_temperature : array_like</span>
+<span class="sd">                Exiting static temperature [K]</span>
+<span class="sd">            - static_pressure : array_like</span>
+<span class="sd">                Exiting static pressure [Pa]</span>
+<span class="sd">            - mach_number : array_like</span>
+<span class="sd">                Exiting Mach number [unitless]</span>
+<span class="sd">            - gas_constant : array_like</span>
+<span class="sd">                Gas constant [J/(kg·K)]</span>
+<span class="sd">            - pressure_ratio : array_like</span>
+<span class="sd">                Pressure ratio across turbine [unitless]</span>
+<span class="sd">            - temperature_ratio : array_like</span>
+<span class="sd">                Temperature ratio across turbine [unitless]</span>
+<span class="sd">            - gamma : array_like</span>
+<span class="sd">                Ratio of specific heats [unitless]</span>
+<span class="sd">            - cp : array_like</span>
+<span class="sd">                Specific heat at constant pressure [J/(kg·K)]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the performance of a turbine by computing the energy</span>
+<span class="sd">    extraction required to drive the compressor, fan, and any external power loads.</span>
+<span class="sd">    It then determines the resulting thermodynamic properties at the turbine exit.</span>
+<span class="sd">    </span>
+<span class="sd">    The computation follows these steps:</span>
+<span class="sd">        1. Extract turbine parameters and working fluid properties</span>
+<span class="sd">        2. Compute the working fluid properties (gamma, Cp, R) at inlet conditions</span>
+<span class="sd">        3. Calculate the energy drop across the turbine based on compressor/fan work</span>
+<span class="sd">           and mechanical efficiency</span>
+<span class="sd">        4. Compute the exit stagnation temperature, enthalpy, and pressure</span>
+<span class="sd">        5. Calculate the exit static temperature and pressure</span>
+<span class="sd">        6. Compute performance ratios (pressure ratio, temperature ratio)</span>
+<span class="sd">        7. Store all results in the conditions data structure</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Constant polytropic efficiency throughout the turbine</span>
+<span class="sd">        * Constant pressure ratio across the turbine</span>
+<span class="sd">        * The working fluid behaves as a perfect gas</span>
+<span class="sd">        * Mechanical losses are accounted for through a constant efficiency factor</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    The energy balance across the turbine is:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\Delta h_t = -\\frac{1}{1+f} \\cdot \\frac{W_{comp} + W_{ext} + \\alpha W_{fan}}{\\eta_{mech}}</span>
+<span class="sd">    </span>
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`\\Delta h_t` is the enthalpy drop across the turbine</span>
+<span class="sd">        - :math:`f` is the fuel-to-air ratio</span>
+<span class="sd">        - :math:`W_{comp}` is the compressor work</span>
+<span class="sd">        - :math:`W_{ext}` is the external shaft work</span>
+<span class="sd">        - :math:`W_{fan}` is the fan work</span>
+<span class="sd">        - :math:`\\alpha` is the bypass ratio</span>
+<span class="sd">        - :math:`\\eta_{mech}` is the mechanical efficiency</span>
+<span class="sd">    </span>
+<span class="sd">    The exit stagnation temperature is:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        T_{t,out} = T_{t,in} + \\frac{\\Delta h_t}{C_p}</span>
+<span class="sd">    </span>
+<span class="sd">    The exit stagnation pressure is calculated using the polytropic efficiency:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        P_{t,out} = P_{t,in} \\cdot \\left(\\frac{T_{t,out}}{T_{t,in}}\\right)^{\\frac{\\gamma}{(\\gamma-1)\\eta_{poly}}}</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Mattingly, J.D., &quot;Elements of Gas Turbine Propulsion&quot;, AIAA Education Series, 2005</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Fan.compute_fan_performance</span>
 <span class="sd">    &quot;&quot;&quot;</span>              
                              
     <span class="c1"># Unpack ram inputs       </span>
-    <span class="n">working_fluid</span>   <span class="o">=</span> <span class="n">turbine</span><span class="o">.</span><span class="n">working_fluid</span>
+    <span class="n">working_fluid</span>      <span class="o">=</span> <span class="n">turbine</span><span class="o">.</span><span class="n">working_fluid</span>
+    <span class="n">turbine_conditions</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">turbine</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
 
     <span class="c1"># Compute the working fluid properties</span>
     <span class="n">T0</span>              <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">static_temperature</span>
@@ -432,18 +538,18 @@
     <span class="n">R</span>               <span class="o">=</span> <span class="n">working_fluid</span><span class="o">.</span><span class="n">compute_R</span><span class="p">(</span><span class="n">T0</span><span class="p">,</span><span class="n">P0</span><span class="p">)</span>    
     
     <span class="c1">#Unpack turbine entering properties </span>
-    <span class="n">eta_mech</span>        <span class="o">=</span> <span class="n">turbine</span><span class="o">.</span><span class="n">mechanical_efficiency</span>
-    <span class="n">etapolt</span>         <span class="o">=</span> <span class="n">turbine</span><span class="o">.</span><span class="n">polytropic_efficiency</span>
-    <span class="n">alpha</span>           <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bypass_ratio</span>
-    <span class="n">Tt_in</span>           <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>
-    <span class="n">Pt_in</span>           <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_pressure</span>
-    <span class="n">compressor_work</span> <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">compressor</span><span class="o">.</span><span class="n">work_done</span>
-    <span class="n">fan_work</span>        <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fan</span><span class="o">.</span><span class="n">work_done</span>
-    <span class="n">f</span>               <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fuel_to_air_ratio</span> 
-    <span class="n">shaft_takeoff</span>   <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">shaft_power_off_take</span><span class="o">.</span><span class="n">work_done</span> 
+    <span class="n">eta_mech</span>              <span class="o">=</span> <span class="n">turbine</span><span class="o">.</span><span class="n">mechanical_efficiency</span>
+    <span class="n">etapolt</span>               <span class="o">=</span> <span class="n">turbine</span><span class="o">.</span><span class="n">polytropic_efficiency</span>
+    <span class="n">alpha</span>                 <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bypass_ratio</span>
+    <span class="n">Tt_in</span>                 <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>
+    <span class="n">Pt_in</span>                 <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_pressure</span>
+    <span class="n">compressor_work</span>       <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">compressor</span><span class="o">.</span><span class="n">work_done</span>
+    <span class="n">fan_work</span>              <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fan</span><span class="o">.</span><span class="n">work_done</span>
+    <span class="n">f</span>                     <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fuel_to_air_ratio</span>  
+    <span class="n">external_power</span>        <span class="o">=</span> <span class="n">turbine_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">compressor</span><span class="o">.</span><span class="n">external_shaft_work_done</span>  
   
     <span class="c1"># Using the work done by the compressors/fan and the fuel to air ratio to compute the energy drop across the turbine</span>
-    <span class="n">deltah_ht</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">compressor_work</span> <span class="o">+</span> <span class="n">shaft_takeoff</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">fan_work</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="o">/</span><span class="n">eta_mech</span>
+    <span class="n">deltah_ht</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">compressor_work</span> <span class="o">+</span> <span class="n">external_power</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">fan_work</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="o">/</span><span class="n">eta_mech</span>
     
     <span class="c1"># Compute the output stagnation quantities from the inputs and the energy drop computed above</span>
     <span class="n">Tt_out</span>    <span class="o">=</span> <span class="n">Tt_in</span><span class="o">+</span><span class="n">deltah_ht</span><span class="o">/</span><span class="n">Cp</span>

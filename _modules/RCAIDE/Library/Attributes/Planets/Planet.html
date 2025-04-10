@@ -394,7 +394,36 @@
 <div class="viewcode-block" id="Planet">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Planets.Planet.html#RCAIDE.Library.Attributes.Planets.Planet.Planet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Planet</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default planet class </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for planetary bodies in RCAIDE. Provides fundamental planetary properties </span>
+<span class="sd">    and gravitational calculations.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mass : float</span>
+<span class="sd">        Total mass of the planetary body in kg (defaults to 0.0)</span>
+<span class="sd">    mean_radius : float</span>
+<span class="sd">        Average radius of the planetary body in m (defaults to 0.0)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class serves as the parent class for all specific planetary implementations.</span>
+<span class="sd">    The default values are zero and should be overridden by child classes with </span>
+<span class="sd">    specific planetary properties.</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Mean Radius&#39;</span>
+<span class="sd">        The average radius of a planetary body, accounting for polar flattening </span>
+<span class="sd">        and equatorial bulge</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Mass&#39;</span>
+<span class="sd">        The total mass of the planetary body, including all components </span>
+<span class="sd">        (core, mantle, crust, atmosphere)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Attributes.Planets.Earth : Earth-specific implementation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This sets the default values.</span>

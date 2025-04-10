@@ -31,7 +31,7 @@ Rotor
    :recursive:
 
    Design
-   Wake
+   Performance
    append_rotor_conditions
    compute_rotor_performance
    design_lift_rotor

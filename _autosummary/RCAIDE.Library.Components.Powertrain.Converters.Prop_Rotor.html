@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -572,21 +572,10 @@ Default is [0., 0., 0.] for X-direction thrust in vehicle frame.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.variable_pitch">
-<span class="sig-name descname"><span class="pre">variable_pitch</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.variable_pitch" title="Link to this definition">#</a></dt>
-<dd><p>Flag indicating if rotor has variable pitch capability. Default is True.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.hover">
 <span class="sig-name descname"><span class="pre">hover</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.hover" title="Link to this definition">#</a></dt>
-<dd><p>Hover mode performance parameters</p>
-<ul class="simple">
+<dd><dl class="simple">
+<dt>Hover mode performance parameters</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt>design_thrust<span class="classifier">float</span></dt><dd><p>Design point thrust [N]. Default is None.</p>
 </dd>
@@ -633,7 +622,7 @@ Default is [0., 0., 0.] for X-direction thrust in vehicle frame.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>design_pitch_command<span class="classifier">float</span></dt><dd><p>Design point blade pitch command [rad]. Default is 0.0.</p>
+<dt>design_blade_pitch_command<span class="classifier">float</span></dt><dd><p>Design point blade pitch command [rad]. Default is 0.0.</p>
 </dd>
 </dl>
 </li>
@@ -653,6 +642,8 @@ Default is [0., 0., 0.] for X-direction thrust in vehicle frame.</p>
 </dl>
 </li>
 </ul>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
@@ -663,8 +654,8 @@ Default is [0., 0., 0.] for X-direction thrust in vehicle frame.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.cruise">
 <span class="sig-name descname"><span class="pre">cruise</span></span><a class="headerlink" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.cruise" title="Link to this definition">#</a></dt>
-<dd><p>Cruise mode performance parameters</p>
-<ul class="simple">
+<dd><dl class="simple">
+<dt>Cruise mode performance parameters</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt>design_thrust<span class="classifier">float</span></dt><dd><p>Design point thrust [N]. Default is None.</p>
 </dd>
@@ -706,7 +697,7 @@ Default is [0., 0., 0.] for X-direction thrust in vehicle frame.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>design_pitch_command<span class="classifier">float</span></dt><dd><p>Design point blade pitch command [rad]. Default is 0.0.</p>
+<dt>design_blade_pitch_command<span class="classifier">float</span></dt><dd><p>Design point blade pitch command [rad]. Default is 0.0.</p>
 </dd>
 </dl>
 </li>
@@ -726,6 +717,8 @@ Default is [0., 0., 0.] for X-direction thrust in vehicle frame.</p>
 </dl>
 </li>
 </ul>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
@@ -765,7 +758,8 @@ Default is [0., 0., 0.] for X-direction thrust in vehicle frame.</p>
 <p class="rubric">Notes</p>
 <p>The Prop_Rotor class models rotors designed for both hover and forward flight,
 typical of tiltrotor aircraft. It includes capabilities for:</p>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li><p>Hover and cruise performance analysis</p></li>
 <li><p>One engine inoperative (OEI) conditions</p></li>
 <li><p>Variable pitch operation</p></li>
@@ -773,6 +767,7 @@ typical of tiltrotor aircraft. It includes capabilities for:</p>
 <li><p>Performance optimization</p></li>
 <li><p>Multi-mode operation</p></li>
 </ul>
+</div></blockquote>
 <p><strong>Definitions</strong></p>
 <dl class="simple">
 <dt>‘OEI’</dt><dd><p>One Engine Inoperative - emergency condition where one engine fails</p>
@@ -843,7 +838,6 @@ typical of tiltrotor aircraft. It includes capabilities for:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.tag"><code class="docutils literal notranslate"><span class="pre">Prop_Rotor.tag</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.orientation_euler_angles"><code class="docutils literal notranslate"><span class="pre">Prop_Rotor.orientation_euler_angles</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.use_2d_analysis"><code class="docutils literal notranslate"><span class="pre">Prop_Rotor.use_2d_analysis</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.variable_pitch"><code class="docutils literal notranslate"><span class="pre">Prop_Rotor.variable_pitch</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.hover"><code class="docutils literal notranslate"><span class="pre">Prop_Rotor.hover</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.cruise"><code class="docutils literal notranslate"><span class="pre">Prop_Rotor.cruise</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor.Prop_Rotor.oei"><code class="docutils literal notranslate"><span class="pre">Prop_Rotor.oei</span></code></a></li>

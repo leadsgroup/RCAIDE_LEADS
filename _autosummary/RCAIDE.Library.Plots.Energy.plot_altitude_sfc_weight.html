@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -531,7 +531,7 @@
 <span id="plot-altitude-sfc-weight"></span><h1>plot_altitude_sfc_weight<a class="headerlink" href="#module-RCAIDE.Library.Plots.Energy.plot_altitude_sfc_weight" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Plots.Energy.plot_altitude_sfc_weight.plot_altitude_sfc_weight">
-<span class="sig-name descname"><span class="pre">plot_altitude_sfc_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Altitude_SFC_Weight'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">11</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Plots/Energy/plot_altitude_sfc_weight.html#plot_altitude_sfc_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Plots.Energy.plot_altitude_sfc_weight.plot_altitude_sfc_weight" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot_altitude_sfc_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Weight_Fuel_Consumption'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">11</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Plots/Energy/plot_altitude_sfc_weight.html#plot_altitude_sfc_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Plots.Energy.plot_altitude_sfc_weight.plot_altitude_sfc_weight" title="Link to this definition">#</a></dt>
 <dd><p>Creates a four-panel plot showing throttle settings, vehicle weight, specific fuel consumption (SFC),
 and fuel consumption rate over time.</p>
 <dl class="field-list simple">
@@ -555,12 +555,10 @@ and fuel consumption rate over time.</p>
 </dl>
 <p class="rubric">Notes</p>
 <dl class="simple">
-<dt>The function creates a 2x2 subplot containing:</dt><dd><ol class="arabic simple">
-<li><p>Throttle settings vs time</p></li>
-<li><p>Vehicle weight vs time</p></li>
-<li><p>Specific fuel consumption vs time</p></li>
-<li><p>Fuel consumption rate vs time</p></li>
-</ol>
+<dt>The function creates a 2x2 subplot containing:</dt><dd><p>2. Vehicle weight vs time
+1. Fuel consumption vs time
+3. Specific fuel consumption vs time
+4. Fuel consumption rate vs time</p>
 </dd>
 </dl>
 <p>Each segment is plotted with a different color from the inferno colormap.</p>

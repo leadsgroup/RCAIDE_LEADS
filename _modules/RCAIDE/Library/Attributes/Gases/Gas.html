@@ -394,7 +394,40 @@
 <div class="viewcode-block" id="Gas">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Gas.html#RCAIDE.Library.Attributes.Gases.Gas.Gas">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Gas</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default class for all gases.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all gas implementations in RCAIDE. Provides fundamental gas properties and </span>
+<span class="sd">    composition tracking.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the gas type (&#39;gas&#39; by default)</span>
+<span class="sd">    molecular_mass : float</span>
+<span class="sd">        Molecular mass of the gas in kg/kmol</span>
+<span class="sd">    gas_specific_constant : float</span>
+<span class="sd">        Specific gas constant in m²/s²-K</span>
+<span class="sd">    composition : Data</span>
+<span class="sd">        Chemical composition container for tracking gas components</span>
+<span class="sd">            - gas : float</span>
+<span class="sd">                Default mass fraction of primary gas component (1.0 by default)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class serves as the parent class for all specific gas implementations.</span>
+<span class="sd">    The default values represent a generic gas and should be overridden by child classes</span>
+<span class="sd">    with specific gas properties.</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Molecular Mass&#39;</span>
+<span class="sd">        The mass of one mole of the gas molecules in kg/kmol</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Specific Gas Constant&#39;</span>
+<span class="sd">        The individual gas constant for the specific gas, calculated as the universal </span>
+<span class="sd">        gas constant divided by the molecular mass</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Mass Fraction&#39;</span>
+<span class="sd">        The ratio of the mass of a component to the total mass of the gas mixture</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

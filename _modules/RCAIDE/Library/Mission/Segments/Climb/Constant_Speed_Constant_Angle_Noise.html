@@ -388,10 +388,80 @@
 
 <span class="c1"># Package imports  </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
- 
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+
+<span class="c1"># ----------------------------------------------------------------------</span>
 <span class="c1">#  Initialize Conditions</span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------- </span>
+<div class="viewcode-block" id="initialize_conditions">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">initialize_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expands state array for noise certification analysis</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function determines the minimum number of points needed for noise</span>
+<span class="sd">    certification analysis and expands the state arrays accordingly.</span>
+
+<span class="sd">    **Required Segment Components**</span>
+
+<span class="sd">    segment:</span>
+<span class="sd">        state:</span>
+<span class="sd">            numerics:</span>
+<span class="sd">                number_of_control_points : int</span>
+<span class="sd">                    Number of discretization points</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">    * Half-second time intervals required for certification</span>
+<span class="sd">    * Fixed microphone position at 6500m</span>
+<span class="sd">    * Continuous noise characteristics</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment state arrays directly</span>
+<span class="sd">    &quot;&quot;&quot;</span>     
+    
+    <span class="n">dt</span><span class="o">=</span><span class="mf">0.5</span>  <span class="c1">#time step in seconds for noise calculation</span>
+    
+    <span class="c1"># unpack</span>
+    <span class="n">climb_angle</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">climb_angle</span>
+    <span class="n">air_speed</span>   <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">air_speed</span>     
+    <span class="n">beta</span>        <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">sideslip_angle</span>
+    <span class="n">t_nondim</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">dimensionless</span><span class="o">.</span><span class="n">control_points</span>
+    <span class="n">conditions</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>  
+
+    <span class="c1"># check for initial velocity</span>
+    <span class="k">if</span> <span class="n">air_speed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;airspeed not set&#39;</span><span class="p">)</span>
+        <span class="n">air_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        
+    <span class="c1"># process velocity vector</span>
+    <span class="n">v_mag</span> <span class="o">=</span> <span class="n">air_speed</span>
+    <span class="n">v_x</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="n">v_mag</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">climb_angle</span><span class="p">)</span>
+    <span class="n">v_y</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="n">v_mag</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">climb_angle</span><span class="p">)</span>
+    <span class="n">v_z</span>   <span class="o">=</span> <span class="o">-</span><span class="n">v_mag</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">climb_angle</span><span class="p">)</span>    
+
+    <span class="c1">#initial altitude</span>
+    <span class="n">alt0</span> <span class="o">=</span> <span class="mf">10.668</span>   <span class="c1">#(35ft)</span>
+    <span class="n">altf</span> <span class="o">=</span> <span class="n">alt0</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">v_z</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">t_nondim</span><span class="p">)</span>
+
+    <span class="c1"># discretize on altitude</span>
+    <span class="n">alt</span> <span class="o">=</span> <span class="n">t_nondim</span> <span class="o">*</span> <span class="p">(</span><span class="n">altf</span><span class="o">-</span><span class="n">alt0</span><span class="p">)</span> <span class="o">+</span> <span class="n">alt0</span>    
+    
+    <span class="c1"># pack conditions    </span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_x</span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_y</span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_z</span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">position_vector</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alt</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># z points down</span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">altitude</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>             <span class="o">=</span>  <span class="n">alt</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># positive altitude in this context</span></div>
+
+
 <div class="viewcode-block" id="expand_state">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.expand_state.html#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.expand_state">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">expand_state</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
@@ -435,72 +505,6 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">expand_rows</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span><span class="n">override</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>      
     
     <span class="k">return</span></div>
-
-
-<span class="c1"># ----------------------------------------------------------------------</span>
-<span class="c1">#  Initialize Conditions</span>
-<span class="c1"># ---------------------------------------------------------------------- </span>
-<div class="viewcode-block" id="initialize_conditions">
-<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions.html#RCAIDE.Library.Mission.Segments.Climb.Constant_Speed_Constant_Angle_Noise.initialize_conditions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">initialize_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the overall time step for the segment type.</span>
-<span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Constant true airspeed, with a constant climb angle. This segment is specically created for noise calculations.</span>
-
-<span class="sd">    Source:</span>
-<span class="sd">    N/A</span>
-
-<span class="sd">    Inputs:</span>
-<span class="sd">    segment.climb_angle                         [radians]</span>
-<span class="sd">    segment.air_speed                           [meter/second]</span>
-<span class="sd">    segment.altitude_start                      [meters]</span>
-<span class="sd">    segment.altitude_end                        [meters]</span>
-<span class="sd">    state.numerics.dimensionless.control_points [Unitless]</span>
-<span class="sd">    conditions.freestream.density               [kilograms/meter^3]</span>
-
-<span class="sd">    Outputs:</span>
-<span class="sd">    conditions.frames.inertial.velocity_vector  [meters/second]</span>
-<span class="sd">    conditions.frames.inertial.position_vector  [meters]</span>
-<span class="sd">    conditions.freestream.altitude              [meters]</span>
-
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    &quot;&quot;&quot;</span>     
-    
-    <span class="n">dt</span><span class="o">=</span><span class="mf">0.5</span>  <span class="c1">#time step in seconds for noise calculation</span>
-    
-    <span class="c1"># unpack</span>
-    <span class="n">climb_angle</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">climb_angle</span>
-    <span class="n">air_speed</span>   <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">air_speed</span>     
-    <span class="n">beta</span>        <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">sideslip_angle</span>
-    <span class="n">t_nondim</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">dimensionless</span><span class="o">.</span><span class="n">control_points</span>
-    <span class="n">conditions</span>  <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>  
-
-    <span class="c1"># check for initial velocity</span>
-    <span class="k">if</span> <span class="n">air_speed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;airspeed not set&#39;</span><span class="p">)</span>
-        <span class="n">air_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        
-    <span class="c1"># process velocity vector</span>
-    <span class="n">v_mag</span> <span class="o">=</span> <span class="n">air_speed</span>
-    <span class="n">v_x</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="n">v_mag</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">climb_angle</span><span class="p">)</span>
-    <span class="n">v_y</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="n">v_mag</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">climb_angle</span><span class="p">)</span>
-    <span class="n">v_z</span>   <span class="o">=</span> <span class="o">-</span><span class="n">v_mag</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">climb_angle</span><span class="p">)</span>    
-
-    <span class="c1">#initial altitude</span>
-    <span class="n">alt0</span> <span class="o">=</span> <span class="mf">10.668</span>   <span class="c1">#(35ft)</span>
-    <span class="n">altf</span> <span class="o">=</span> <span class="n">alt0</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">v_z</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">t_nondim</span><span class="p">)</span>
-
-    <span class="c1"># discretize on altitude</span>
-    <span class="n">alt</span> <span class="o">=</span> <span class="n">t_nondim</span> <span class="o">*</span> <span class="p">(</span><span class="n">altf</span><span class="o">-</span><span class="n">alt0</span><span class="p">)</span> <span class="o">+</span> <span class="n">alt0</span>    
-    
-    <span class="c1"># pack conditions    </span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_x</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_y</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_z</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">position_vector</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">alt</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># z points down</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">altitude</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>             <span class="o">=</span>  <span class="n">alt</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># positive altitude in this context</span></div>
 
 </pre></div>
 

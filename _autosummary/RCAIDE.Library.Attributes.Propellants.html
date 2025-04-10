@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -526,66 +526,114 @@
   <p>RCAIDE.Library.Attributes.Propellants</p>
 <section id="module-RCAIDE.Library.Attributes.Propellants">
 <span id="propellants"></span><h1>Propellants<a class="headerlink" href="#module-RCAIDE.Library.Attributes.Propellants" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides propellant definitions for RCAIDE simulations. It includes classes
+for various propellant types categorized as follows:</p>
+<dl class="simple">
+<dt><strong>Aviation Fuels</strong></dt><dd><ul class="simple">
+<li><p>Aviation_Gasoline : Aviation gasoline properties</p></li>
+<li><p>Jet_A : Commercial aviation kerosene</p></li>
+<li><p>Jet_A1 : International spec aviation kerosene</p></li>
+<li><p>JP7 : Advanced high thermal stability jet fuel</p></li>
+</ul>
+</dd>
+<dt><strong>Rocket Propellants</strong></dt><dd><ul class="simple">
+<li><p>Rocket_LH2 : Rocket-grade liquid hydrogen</p></li>
+<li><p>Rocket_RP1 : Rocket-grade kerosene</p></li>
+</ul>
+</dd>
+<dt><strong>Cryogenic Fuels</strong></dt><dd><ul class="simple">
+<li><p>Liquid_Hydrogen : LH2 for aviation applications</p></li>
+<li><p>Liquid_Natural_Gas : LNG fuel properties</p></li>
+<li><p>Gaseous_Hydrogen : GH2 properties</p></li>
+</ul>
+</dd>
+<dt><strong>Hydrocarbon Fuels</strong></dt><dd><ul class="simple">
+<li><p>Methane : CH4 properties</p></li>
+<li><p>Propane : C3H8 properties</p></li>
+<li><p>Ethane : C2H6 properties</p></li>
+<li><p>Alkane_Mixture : Customizable alkane blend properties</p></li>
+</ul>
+</dd>
+<dt><strong>Alcohols</strong></dt><dd><ul class="simple">
+<li><p>Ethanol : C2H5OH properties</p></li>
+<li><p>Butanol : C4H9OH properties</p></li>
+<li><p>Propanol : C3H7OH properties</p></li>
+<li><p>Alcohol_Mixture : Customizable alcohol blend properties</p></li>
+</ul>
+</dd>
+<dt><strong>Base Classes</strong></dt><dd><ul class="simple">
+<li><p>Propellant : Base class defining standard propellant interfaces</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Propulsors</span></code></dt><dd><p>Propulsion analysis tools</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Propulsors</span></code></dt><dd><p>Propulsion system components</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture.html#module-RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture" title="RCAIDE.Library.Attributes.Propellants.Alcohol_Mixture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Alcohol_Mixture</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Alcohol_Mixture class propellant</p></td>
+<td><p>A class representing a binary mixture of alcohol fuels with customizable composition.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Alkane_Mixture.html#module-RCAIDE.Library.Attributes.Propellants.Alkane_Mixture" title="RCAIDE.Library.Attributes.Propellants.Alkane_Mixture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Alkane_Mixture</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Alkane_Mixture class propellant</p></td>
+<td><p>A class representing a binary mixture of alkane fuels with customizable composition.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline.html#module-RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline" title="RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Aviation_Gasoline</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Aviation gasoline class</p></td>
+<td><p>A class representing aviation gasoline (avgas) fuel properties.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Butanol.html#module-RCAIDE.Library.Attributes.Propellants.Butanol" title="RCAIDE.Library.Attributes.Propellants.Butanol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Butanol</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Butanol class propellant</p></td>
+<td><p>A class representing butanol (C4H9OH) fuel properties for propulsion applications.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Ethane.html#module-RCAIDE.Library.Attributes.Propellants.Ethane" title="RCAIDE.Library.Attributes.Propellants.Ethane"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ethane</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Ethane class propellant</p></td>
+<td><p>A class representing ethane (C2H6) fuel properties for propulsion applications.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Ethanol.html#module-RCAIDE.Library.Attributes.Propellants.Ethanol" title="RCAIDE.Library.Attributes.Propellants.Ethanol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ethanol</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Ethanol class propellant</p></td>
+<td><p>A class representing ethanol (C2H5OH) fuel properties for propulsion applications.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.html#module-RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen" title="RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaseous_Hydrogen</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Gaseous hydrogen class</p></td>
+<td><p>A class representing gaseous hydrogen (H2) fuel properties for propulsion applications.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.JP7.html#module-RCAIDE.Library.Attributes.Propellants.JP7" title="RCAIDE.Library.Attributes.Propellants.JP7"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JP7</span></code></a>(*args, **kwarg)</p></td>
-<td><p>JP7 Jet fuel class</p></td>
+<td><p>A class representing JP-7 high thermal stability jet fuel properties.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Jet_A.html#module-RCAIDE.Library.Attributes.Propellants.Jet_A" title="RCAIDE.Library.Attributes.Propellants.Jet_A"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Jet_A</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Jet A class propellant</p></td>
+<td><p>A class representing Jet A aviation kerosene fuel properties and emissions characteristics.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Jet_A1.html#module-RCAIDE.Library.Attributes.Propellants.Jet_A1" title="RCAIDE.Library.Attributes.Propellants.Jet_A1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Jet_A1</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Jet A1 class propellant</p></td>
+<td><p>A class representing Jet A-1 aviation kerosene fuel properties and emissions characteristics.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.html#module-RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen" title="RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Liquid_Hydrogen</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Liquid hydrogen fuel class</p></td>
+<td><p>A class representing liquid hydrogen (LH2) fuel properties for aviation applications.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas.html#module-RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas" title="RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Liquid_Natural_Gas</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Liquid natural gas fuel class,</p></td>
+<td><p>A class representing Liquid Natural Gas (LNG) fuel properties and composition for propulsion applications.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas.html#module-RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas" title="RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Liquid_Petroleum_Gas</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Liquid petroleum gas fuel class,</p></td>
+<td><p>A class representing Liquid Petroleum Gas (LPG) fuel properties and composition for propulsion applications.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Methane.html#module-RCAIDE.Library.Attributes.Propellants.Methane" title="RCAIDE.Library.Attributes.Propellants.Methane"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Methane</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Methane class propellant</p></td>
+<td><p>A class representing methane (CH4) fuel properties and emissions characteristics for propulsion applications.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propane.html#module-RCAIDE.Library.Attributes.Propellants.Propane" title="RCAIDE.Library.Attributes.Propellants.Propane"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Propane</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Propane class propellant</p></td>
+<td><p>A class representing propane (C3H8) fuel properties and emissions characteristics for propulsion applications.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propanol.html#module-RCAIDE.Library.Attributes.Propellants.Propanol" title="RCAIDE.Library.Attributes.Propellants.Propanol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Propanol</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Propanol class propellant</p></td>
+<td><p>A class representing propanol (C3H7OH) fuel properties and emissions characteristics for propulsion applications.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#module-RCAIDE.Library.Attributes.Propellants.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Propellant</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Generic class for propellant</p></td>
+<td><p>Base class for defining propellant properties and characteristics in propulsion systems.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Rocket_LH2.html#module-RCAIDE.Library.Attributes.Propellants.Rocket_LH2" title="RCAIDE.Library.Attributes.Propellants.Rocket_LH2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rocket_LH2</span></code></a>(*args, **kwarg)</p></td>
-<td><p>LH2 Rocket Fuel Class</p></td>
+<td><p>A class representing liquid hydrogen (LH2) fuel properties specifically for rocket propulsion applications.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Rocket_RP1.html#module-RCAIDE.Library.Attributes.Propellants.Rocket_RP1" title="RCAIDE.Library.Attributes.Propellants.Rocket_RP1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rocket_RP1</span></code></a>(*args, **kwarg)</p></td>
-<td><p>Rocket_RP1 Rocket Fuel Class</p></td>
+<td><p>A class representing Rocket Propellant-1 (RP-1) properties for rocket propulsion applications.</p></td>
 </tr>
 </tbody>
 </table>

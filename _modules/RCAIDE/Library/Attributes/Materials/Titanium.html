@@ -396,23 +396,48 @@
 <div class="viewcode-block" id="Titanium">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Titanium.html#RCAIDE.Library.Attributes.Materials.Titanium.Titanium">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Titanium</span><span class="p">(</span><span class="n">Solid</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Physical Constants Specific to Grade 5 Ti-6AL-4V Alloy, Annealed</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing Grade 5 Ti-6Al-4V titanium alloy material properties.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    None</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ultimate_tensile_strength : float</span>
+<span class="sd">        Maximum tensile stress before failure in Pa (950e6)</span>
+<span class="sd">    ultimate_shear_strength : float</span>
+<span class="sd">        Maximum shear stress before failure in Pa (550e6)</span>
+<span class="sd">    ultimate_bearing_strength : float</span>
+<span class="sd">        Maximum bearing stress before failure in Pa (1860e6)</span>
+<span class="sd">    yield_tensile_strength : float</span>
+<span class="sd">        Stress at which material begins to deform plastically in Pa (880e6)</span>
+<span class="sd">    yield_shear_strength : float</span>
+<span class="sd">        Shear stress at which material begins to deform plastically in Pa (550e6)</span>
+<span class="sd">    yield_bearing_strength : float</span>
+<span class="sd">        Bearing stress at which material begins to deform plastically in Pa (1480e6)</span>
+<span class="sd">    minimum_gage_thickness : float</span>
+<span class="sd">        Minimum manufacturable thickness in m (0.0)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Material density in kg/m³ (4430)</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    ASM, Inc.</span>
-<span class="sd">    https://asm.matweb.com/search/SpecificMaterial.asp?bassnum=mtp641</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements material properties for Ti-6Al-4V (Grade 5) titanium alloy </span>
+<span class="sd">    in the annealed condition. This alloy is widely used in aerospace applications </span>
+<span class="sd">    due to its excellent strength-to-weight ratio and corrosion resistance.</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Ti-6Al-4V&#39;</span>
+<span class="sd">        A titanium alloy containing 6% aluminum and 4% vanadium, also known as Grade 5</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Ultimate Strength&#39;</span>
+<span class="sd">        The maximum stress that a material can withstand before failure</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Yield Strength&#39;</span>
+<span class="sd">        The stress at which a material begins to deform plastically</span>
 
-<span class="sd">    Outputs:</span>
-<span class="sd">    N/A</span>
-
-<span class="sd">    Properties Used:</span>
-<span class="sd">    None</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Aerospace Specification Metals, Inc. (n.d.). Titanium Ti-6Al-4V (Grade 5), Annealed. ASM material data sheet. https://asm.matweb.com/search/SpecificMaterial.asp?bassnum=mtp641 </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

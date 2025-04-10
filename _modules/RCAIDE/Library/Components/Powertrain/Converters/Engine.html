@@ -422,16 +422,16 @@
 <span class="sd">    -----</span>
 <span class="sd">    The Engine class models an internal combustion engine&#39;s performance characteristics</span>
 <span class="sd">    including:</span>
-<span class="sd">    * Sea level power rating</span>
-<span class="sd">    * Power lapse with altitude</span>
-<span class="sd">    * Fuel consumption characteristics</span>
-<span class="sd">    * Power distribution capabilities</span>
-<span class="sd">    * Operating speed effects</span>
+<span class="sd">        * Sea level power rating</span>
+<span class="sd">        * Power lapse with altitude</span>
+<span class="sd">        * Fuel consumption characteristics</span>
+<span class="sd">        * Power distribution capabilities</span>
+<span class="sd">        * Operating speed effects</span>
 
 <span class="sd">    **Major Assumptions**</span>
-<span class="sd">    * Constant power specific fuel consumption</span>
-<span class="sd">    * Fuel properties remain constant</span>
-<span class="sd">    * Steady-state operation (no transient effects)</span>
+<span class="sd">        * Constant power specific fuel consumption</span>
+<span class="sd">        * Fuel properties remain constant</span>
+<span class="sd">        * Steady-state operation (no transient effects)</span>
 
 <span class="sd">    **Definitions**</span>
 <span class="sd">    </span>
@@ -466,9 +466,8 @@
 
 <div class="viewcode-block" id="Engine.append_operating_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Engine.html#RCAIDE.Library.Components.Powertrain.Converters.Engine.Engine.append_operating_conditions">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor</span><span class="p">):</span>  
-        <span class="n">propulsor_conditions</span> <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
-        <span class="n">append_engine_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">)</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">,</span><span class="n">noise_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>   
+        <span class="n">append_engine_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">,</span><span class="n">noise_conditions</span><span class="p">)</span> 
         <span class="k">return</span>                </div>
 </div>
 

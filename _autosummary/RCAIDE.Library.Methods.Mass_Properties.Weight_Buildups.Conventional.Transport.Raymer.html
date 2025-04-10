@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -538,33 +540,40 @@
   <p>RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer</p>
 <section id="module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer">
 <span id="raymer"></span><h1>Raymer<a class="headerlink" href="#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>Collection of aircraft weight estimation methods based on Raymer’s empirical correlations for a transport aircraft.
+This module provides component weight estimation functions including wing, tail, fuselage, landing gear,
+and systems weights. The correlations are primarily derived from historical aircraft data as presented in
+Raymer’s “Aircraft Design: A Conceptual Approach”.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_fuselage_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_fuselage_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_fuselage_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_fuselage_weight</span></code></a>(vehicle, fuselage, ...)</p></td>
-<td><p>Calculate the weight of the fuselage of a transport aircraft based on the Raymer method</p></td>
+<td><p>Calculates the weight of the fuselage for transport aircraft using Raymer's method.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_horizontal_tail_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_horizontal_tail_weight</span></code></a>(vehicle, ...)</p></td>
-<td><p>Calculates horizontal tail weight based on Raymer method</p></td>
+<td><p>Calculates horizontal tail weight based on Raymer's empirical method.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_landing_gear_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_landing_gear_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_landing_gear_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_landing_gear_weight</span></code></a>(vehicle)</p></td>
-<td><p>Calculate the weight of the landing gear of a transport aircraft based on the Raymer method</p></td>
+<td><p>Calculates the weight of main and nose landing gear for transport aircraft using Raymer's method.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_main_wing_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_main_wing_weight</span></code></a>(vehicle, wing, settings)</p></td>
-<td><p>Calculate the wing weight of the aircraft based the Raymer method</p></td>
+<td><p>Calculates the wing weight for transport aircraft using Raymer's empirical method.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_operating_empty_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_operating_empty_weight</span></code></a>(vehicle[, ...])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_propulsion_system_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_propulsion_system_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_propulsion_system_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_propulsion_system_weight</span></code></a>(vehicle, ...)</p></td>
-<td><p>Calculate the weight of propulsion system using Raymer method, including: - fuel system weight - thurst reversers weight - electrical system weight - starter engine weight - nacelle weight - cargo containers The dry engine weight comes from the FLOPS relations since it is not listed in Raymer</p></td>
+<td><p>Calculates the total propulsion system weight using Raymer's method, including subsystems.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_systems_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_systems_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_systems_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_systems_weight</span></code></a>(vehicle)</p></td>
 <td><p>Calculates the system weight based on the Raymer method</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_vertical_tail_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_vertical_tail_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.compute_vertical_tail_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_vertical_tail_weight</span></code></a>(vehicle, wing, ...)</p></td>
-<td><p>Calculates vertical tail weight based on Raymer method</p></td>
+<td><p>Calculates vertical tail weight using Raymer's empirical method.</p></td>
 </tr>
 </tbody>
 </table>

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,31 +541,95 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.compute_payload_weight.compute_payload_weight">
 <span class="sig-name descname"><span class="pre">compute_payload_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W_passenger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">88.45051215000001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W_baggage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">13.6077711</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Common/compute_payload_weight.html#compute_payload_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.compute_payload_weight.compute_payload_weight" title="Link to this definition">#</a></dt>
-<dd><p>Calculate the weight of the payload and the resulting fuel mass</p>
+<dd><p>Computes the total payload weight including passengers, baggage, and cargo based on
+FAA standard weights and aircraft configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – <dl class="simple">
+<dt>The vehicle instance containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>passengers<span class="classifier">int</span></dt><dd><p>Number of passengers</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mass_properties.cargo<span class="classifier">float</span></dt><dd><p>Mass of cargo [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>W_passenger</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard passenger weight [kg], default 195 lbs</p></li>
+<li><p><strong>W_baggage</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard baggage weight per passenger [kg], default 30 lbs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>output</strong> –</p>
 <dl class="simple">
-<dt>Assumptions:</dt><dd><p>based on FAA guidelines for weight of passengers</p>
-</dd>
-<dt>Source:</dt><dd><p>N/A</p>
-</dd>
-<dt>Inputs:</dt><dd><p>TOW -                                                              [kilograms]
-W_empty - Operating empty weight of the aircraft                  [kilograms]
-num_pax - number of passengers on the aircraft                     [dimensionless]
-W_cargo - weight of cargo being carried on the aircraft           [kilogram]
-W_passenger - weight of each passenger on the aircraft            [kilogram]
-W_baggage - weight of the baggage for each passenger              [kilogram]</p>
-</dd>
-<dt>Outputs:</dt><dd><dl class="simple">
-<dt>output - a data dictionary with fields:</dt><dd><p>payload - weight of the passengers plus baggage and paid cargo [kilograms]
-pax - weight of all the passengers                             [kilogram]
-bag - weight of all the baggage                                [kilogram]
-fuel - weight of the fuel carried                              [kilogram]
-empty - operating empty weight of the aircraft                 [kilograms]</p>
+<dt>Container with payload breakdown:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>total<span class="classifier">float</span></dt><dd><p>Total payload weight [kg]</p>
 </dd>
 </dl>
-</dd>
-<dt>Properties Used:</dt><dd><p>N/A</p>
+</li>
+<li><dl class="simple">
+<dt>passengers<span class="classifier">float</span></dt><dd><p>Total passenger weight [kg]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>baggage<span class="classifier">float</span></dt><dd><p>Total baggage weight [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cargo<span class="classifier">float</span></dt><dd><p>Bulk cargo weight [kg]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses FAA standard weights for passengers and baggage in commercial operations.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Standard passenger weights</p></li>
+<li><p>Fixed baggage allowance per passenger</p></li>
+<li><p>Uniform passenger distribution</p></li>
+<li><p>No special cargo requirements</p></li>
+<li><p>No seasonal weight variations</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong>
+Total payload weight is computed as:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">payload</span><span class="p">}</span> <span class="o">=</span> <span class="n">n_</span><span class="p">{</span><span class="n">pax</span><span class="p">}(</span><span class="n">W_</span><span class="p">{</span><span class="n">pax</span><span class="p">}</span> <span class="o">+</span> <span class="n">W_</span><span class="p">{</span><span class="n">bag</span><span class="p">})</span> <span class="o">+</span> <span class="n">W_</span><span class="p">{</span><span class="n">cargo</span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>n_pax = number of passengers</p></li>
+<li><p>W_pax = standard passenger weight</p></li>
+<li><p>W_bag = standard baggage allowance</p></li>
+<li><p>W_cargo = bulk cargo weight</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

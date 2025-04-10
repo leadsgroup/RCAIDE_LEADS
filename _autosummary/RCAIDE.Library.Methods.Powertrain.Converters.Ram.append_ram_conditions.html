@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,8 +537,76 @@
 <span id="append-ram-conditions"></span><h1>append_ram_conditions<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions.append_ram_conditions">
-<span class="sig-name descname"><span class="pre">append_ram_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ram</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propulsor_conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Ram/append_ram_conditions.html#append_ram_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions.append_ram_conditions" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">append_ram_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ram</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Ram/append_ram_conditions.html#append_ram_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions.append_ram_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Initializes ram air converter operating conditions for a mission segment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ram</strong> (<em>RCAIDE.Library.Components.Converters.Ram</em>) – <dl class="simple">
+<dt>Ram air converter component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Identifier for the ram air converter</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>segment</strong> (<em>RCAIDE.Framework.Mission.Segments.Segment</em>) – <dl class="simple">
+<dt>Mission segment with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>state<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Segment state</dt><dd><ul>
+<li><dl class="simple">
+<dt>ones_row<span class="classifier">function</span></dt><dd><p>Function to create array of ones with specified length</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>energy_conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – Energy conditions container where ram air converter conditions will be stored</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function initializes the necessary data structures for storing ram air converter
+operating conditions during a mission segment. It creates empty containers for
+input and output conditions that will be populated during the mission analysis.</p>
+<dl class="simple">
+<dt>The function initializes the following in energy_conditions.converters[ram.tag]:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>inputs<span class="classifier">Conditions</span></dt><dd><p>Input conditions container (empty)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>outputs<span class="classifier">Conditions</span></dt><dd><p>Output conditions container (empty)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>The ram air converter is a component that captures the energy of the incoming airflow
+and converts it to a form usable by the propulsion system. It typically represents
+the inlet of a gas turbine engine or other air-breathing propulsion system.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance</span></code></a></p>
+</div>
+</dd></dl>
 
 </section>
 

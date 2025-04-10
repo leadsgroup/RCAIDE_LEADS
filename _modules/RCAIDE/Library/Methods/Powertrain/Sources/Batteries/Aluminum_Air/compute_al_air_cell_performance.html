@@ -388,6 +388,33 @@
 <div class="viewcode-block" id="find_aluminum_mass">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.find_aluminum_mass.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.find_aluminum_mass">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_aluminum_mass</span><span class="p">(</span><span class="n">battery</span><span class="p">,</span> <span class="n">energy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the aluminum mass required for a given energy output from an aluminum-air battery.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    battery : AluminumAirBattery</span>
+<span class="sd">        The aluminum-air battery component with the following attributes:</span>
+<span class="sd">            - cell.aluminum_mass_factor : float</span>
+<span class="sd">                Mass of aluminum required per unit of energy [kg/J]</span>
+<span class="sd">    energy : float</span>
+<span class="sd">        Energy to be produced by the battery [J]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    aluminum_mass : float</span>
+<span class="sd">        Mass of aluminum required [kg]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the mass of aluminum that would be consumed to produce</span>
+<span class="sd">    the specified amount of energy in an aluminum-air battery. The calculation is based</span>
+<span class="sd">    on a linear relationship between energy output and aluminum consumption.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    find_water_mass : Function to calculate water mass gain</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">aluminum_mass</span> <span class="o">=</span> <span class="n">energy</span><span class="o">*</span><span class="n">battery</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">aluminum_mass_factor</span>
     <span class="k">return</span> <span class="n">aluminum_mass</span> </div>
 
@@ -395,6 +422,33 @@
 <div class="viewcode-block" id="find_water_mass">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.find_water_mass.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.find_water_mass">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_water_mass</span><span class="p">(</span><span class="n">battery</span><span class="p">,</span> <span class="n">energy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the water mass gained during operation of an aluminum-air battery for a given energy output.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    battery : AluminumAirBattery</span>
+<span class="sd">        The aluminum-air battery component with the following attributes:</span>
+<span class="sd">            - cell.water_mass_gain_factor : float</span>
+<span class="sd">                Mass of water gained per unit of energy [kg/J]</span>
+<span class="sd">    energy : float</span>
+<span class="sd">        Energy produced by the battery [J]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    water_mass : float</span>
+<span class="sd">        Mass of water gained [kg]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the mass of water that would be produced as a byproduct</span>
+<span class="sd">    during the operation of an aluminum-air battery when generating the specified</span>
+<span class="sd">    amount of energy. The calculation is based on a linear relationship between</span>
+<span class="sd">    energy output and water production.</span>
+<span class="sd">    </span>
+<span class="sd">    In aluminum-air batteries, the electrochemical reaction produces aluminum hydroxide,</span>
+<span class="sd">    which contains water molecules, resulting in a net gain of water mass in the system.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">water_mass</span> <span class="o">=</span> <span class="n">energy</span><span class="o">*</span><span class="n">battery</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">water_mass_gain_factor</span>
     <span class="k">return</span> <span class="n">water_mass</span></div>
 

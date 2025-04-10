@@ -389,10 +389,40 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="append_compressor_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions.html#RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions.append_compressor_conditions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">append_compressor_conditions</span><span class="p">(</span><span class="n">compressor</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">):</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">compressor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>         <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">compressor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>  <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">compressor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">append_compressor_conditions</span><span class="p">(</span><span class="n">compressor</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes empty condition containers for compressor analysis in the propulsion system.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    compressor : Compressor</span>
+<span class="sd">        The compressor component being analyzed</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">    energy_conditions : Conditions</span>
+<span class="sd">        Container for storing energy system conditions</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function creates empty Conditions containers that will be populated</span>
+<span class="sd">    during compressor performance calculations with thermodynamic states</span>
+<span class="sd">    and operating parameters.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">ones_row</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span> 
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">compressor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                                   <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">compressor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>                            <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">compressor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span>                           <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">compressor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">external_shaft_work_done</span>  <span class="o">=</span> <span class="mi">0</span><span class="o">*</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">compressor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">external_electrical_power</span> <span class="o">=</span> <span class="mi">0</span><span class="o">*</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> </div>
 
 </pre></div>

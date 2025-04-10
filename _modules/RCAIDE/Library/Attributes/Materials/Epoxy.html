@@ -396,22 +396,50 @@
 <div class="viewcode-block" id="Epoxy">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Epoxy.html#RCAIDE.Library.Attributes.Materials.Epoxy.Epoxy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Epoxy</span><span class="p">(</span><span class="n">Solid</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Physical Constants Specific to Epoxy Resin</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    A class representing hardened epoxy resin material properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ultimate_tensile_strength : float</span>
+<span class="sd">        Maximum tensile stress before failure in Pa (0.0)</span>
+<span class="sd">    ultimate_shear_strength : float</span>
+<span class="sd">        Maximum shear stress before failure in Pa (0.0)</span>
+<span class="sd">    ultimate_bearing_strength : float</span>
+<span class="sd">        Maximum bearing stress before failure in Pa (0.0)</span>
+<span class="sd">    yield_tensile_strength : float</span>
+<span class="sd">        Stress at which material begins to deform plastically in Pa (0.0)</span>
+<span class="sd">    yield_shear_strength : float</span>
+<span class="sd">        Shear stress at which material begins to deform plastically in Pa (0.0)</span>
+<span class="sd">    yield_bearing_strength : float</span>
+<span class="sd">        Bearing stress at which material begins to deform plastically in Pa (0.0)</span>
+<span class="sd">    minimum_gage_thickness : float</span>
+<span class="sd">        Minimum manufacturable thickness in m (250e-6)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Material density in kg/m³ (1800)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements material properties for cured epoxy resin. The zero values </span>
+<span class="sd">    for strength properties indicate that these should be specified based on the </span>
+<span class="sd">    specific epoxy formulation being used, as properties can vary significantly </span>
+<span class="sd">    between different epoxy systems.</span>
+
+<span class="sd">    **Definitions**</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    None</span>
+<span class="sd">    &#39;Epoxy Resin&#39;</span>
+<span class="sd">        A thermosetting polymer that cures (hardens) when mixed with a catalyst</span>
+<span class="sd">        or hardener</span>
 <span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">    MatWeb (Median of Mfg. Reported Values)</span>
+<span class="sd">    &#39;Ultimate Strength&#39;</span>
+<span class="sd">        The maximum stress that a material can withstand before failure</span>
 <span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Properties Used:</span>
-<span class="sd">    None</span>
+<span class="sd">    &#39;Yield Strength&#39;</span>
+<span class="sd">        The stress at which a material begins to deform plastically</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] MatWeb. (n.d.). Overview of materials for Epoxy, Cast, Unreinforced. Overview of materials for epoxy, cast, unreinforced. https://www.matweb.com/search/DataSheet.aspx?MatGUID=1c74545c91874b13a3e44f400cedfe39 </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -529,12 +529,21 @@
   <p>RCAIDE.Library.Mission.Common.Residuals</p>
 <section id="module-RCAIDE.Library.Mission.Common.Residuals">
 <span id="residuals"></span><h1>Residuals<a class="headerlink" href="#module-RCAIDE.Library.Mission.Common.Residuals" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module contains (a) residual functions used in mission analysis for RCAIDE. It provides
+flight dynamics residual calculations that are essential for solving flight dynamics
+equations during mission simulation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Mission.Segments.html#module-RCAIDE.Library.Mission.Segments" title="RCAIDE.Library.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Mission.Segments</span></code></a></dt><dd><p>Mission segment definitions that may use these residuals</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Mission.Common.Residuals.flight_dynamics.html#module-RCAIDE.Library.Mission.Common.Residuals.flight_dynamics" title="RCAIDE.Library.Mission.Common.Residuals.flight_dynamics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flight_dynamics</span></code></a>(segment)</p></td>
-<td><p>Packs the residuals related to the flight dynamics.</p></td>
+<td><p>Evaluates flight dynamics residuals for mission segment analysis</p></td>
 </tr>
 </tbody>
 </table>

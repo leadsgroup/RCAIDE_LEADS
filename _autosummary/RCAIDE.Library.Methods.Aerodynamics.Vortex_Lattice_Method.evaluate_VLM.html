@@ -47,7 +47,7 @@
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM.html" />
+    <link rel="next" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient.html" />
     <link rel="prev" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.deflect_control_surface.rotate_points_with_quaternion" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.deflect_control_surface.rotate_points_with_quaternion.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,22 +535,19 @@
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">call_VLM</span></code></a>(conditions, settings, vehicle)</p></td>
-<td><p>Calculate aerodynamics coefficients inluding specific wing coefficients using the VLM</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_coefficient</span></code></a>(sub_sur_coef, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_coefficient</span></code></a>(sub_sur_coef, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficients.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficients" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_coefficients</span></code></a>(sub_sur_Clift, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficients.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficients" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_coefficients</span></code></a>(sub_sur_Clift, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_stability_derivative.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_stability_derivative" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_stability_derivative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_stability_derivative</span></code></a>(sub_sur, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_stability_derivative.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_stability_derivative" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_stability_derivative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_stability_derivative</span></code></a>(sub_sur, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_no_surrogate.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_no_surrogate" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_no_surrogate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_no_surrogate</span></code></a>(state, settings, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_no_surrogate.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_no_surrogate" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_no_surrogate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_no_surrogate</span></code></a>(state, settings, ...)</p></td>
 <td><p>Evaluates forces and moments directly using VLM.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_surrogate.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_surrogate" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_surrogate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_surrogate</span></code></a>(state, settings, vehicle)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_surrogate.html#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_surrogate" title="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_surrogate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_surrogate</span></code></a>(state, settings, vehicle)</p></td>
 <td><p>Evaluates surrogates forces and moments using built surrogates</p></td>
 </tr>
 </tbody>
@@ -560,9 +557,8 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_surrogate">
 <span class="sig-name descname"><span class="pre">evaluate_surrogate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/evaluate_VLM.html#evaluate_surrogate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.evaluate_surrogate" title="Link to this definition">#</a></dt>
 <dd><p>Evaluates surrogates forces and moments using built surrogates</p>
+<p>Assumptions:</p>
 <dl class="simple">
-<dt>Assumptions:</dt><dd><p>Aileron deflection is inverted to match convention</p>
-</dd>
 <dt>Source:</dt><dd><p>None</p>
 </dd>
 </dl>
@@ -633,30 +629,6 @@ CLift_delta_e multiplied by 0.5</p>
 <span class="sig-name descname"><span class="pre">compute_coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_sur_coef</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans_sur_coef</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sup_sur_coef</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_sub</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_sup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Mach</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/evaluate_VLM.html#compute_coefficient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM">
-<span class="sig-name descname"><span class="pre">call_VLM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/evaluate_VLM.html#call_VLM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM" title="Link to this definition">#</a></dt>
-<dd><p>Calculate aerodynamics coefficients inluding specific wing coefficients using the VLM</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>None</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>conditions</strong> – flight conditions     [unitless]</p></li>
-<li><p><strong>settings</strong> – VLM analysis settings [unitless]</p></li>
-<li><p><strong>vehicle</strong> – vehicle configuration [unitless]</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 
 
@@ -679,11 +651,11 @@ CLift_delta_e multiplied by 0.5</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM.html"
+       href="RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM</p>
+        <p class="prev-next-title">RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -711,7 +683,6 @@ CLift_delta_e multiplied by 0.5</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_stability_derivative"><code class="docutils literal notranslate"><span class="pre">compute_stability_derivative()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficients"><code class="docutils literal notranslate"><span class="pre">compute_coefficients()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.compute_coefficient"><code class="docutils literal notranslate"><span class="pre">compute_coefficient()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.evaluate_VLM.call_VLM"><code class="docutils literal notranslate"><span class="pre">call_VLM()</span></code></a></li>
 </ul>
   </nav></div>
 

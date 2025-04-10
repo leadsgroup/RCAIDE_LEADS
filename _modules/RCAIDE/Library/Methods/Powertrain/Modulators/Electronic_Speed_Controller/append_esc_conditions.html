@@ -378,24 +378,59 @@
                   
   <h1>Source code for RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.append_esc_conditions</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/append_motor_conditions.py</span>
-<span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Jun 2024, M. Clarke  </span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common</span><span class="w">     </span><span class="kn">import</span>   <span class="n">Conditions</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<span class="c1">#  append_motor_conditions</span>
+<span class="c1">#  append_esc_conditions</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="append_esc_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.append_esc_conditions.html#RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.append_esc_conditions.append_esc_conditions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">append_esc_conditions</span><span class="p">(</span><span class="n">esc</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">):</span> 
-    <span class="n">ones_row</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span> 
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>            <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>     <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span>    <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">propulsor_conditions</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">throttle</span>   <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  
+<span class="k">def</span><span class="w"> </span><span class="nf">append_esc_conditions</span><span class="p">(</span><span class="n">esc</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the Electronic Speed Controller (ESC) condition containers for tracking </span>
+<span class="sd">    electrical state variables. Sets up basic input/output conditions and throttle settings </span>
+<span class="sd">    for ESC performance analysis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    esc : RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller</span>
+<span class="sd">        The electronic speed controller component</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Identifier for the ESC</span>
+<span class="sd">    segment : RCAIDE.Framework.Mission.Segments.Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">            - state : State</span>
+<span class="sd">                Contains the flight condition state variables</span>
+<span class="sd">                    - ones_row : function</span>
+<span class="sd">                        Returns array of ones with specified size</span>
+<span class="sd">    propulsor_conditions : RCAIDE.Framework.Mission.Common.Conditions</span>
+<span class="sd">        Container for propulsor-specific conditions</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Creates and initializes the following state variables:</span>
+<span class="sd">        - inputs : Conditions</span>
+<span class="sd">            Container for input electrical parameters</span>
+<span class="sd">        - outputs : Conditions</span>
+<span class="sd">            Container for output electrical parameters</span>
+<span class="sd">        - throttle : float</span>
+<span class="sd">            Power modulation setting from 0 to 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
+    <span class="n">ones_row</span>    <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span> 
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">modulators</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                  <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">modulators</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span>           <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">modulators</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span>          <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">modulators</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">throttle</span>         <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">modulators</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">voltage</span>  <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  
+    <span class="n">energy_conditions</span><span class="o">.</span><span class="n">modulators</span><span class="p">[</span><span class="n">esc</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">voltage</span>   <span class="o">=</span> <span class="n">esc</span><span class="o">.</span><span class="n">bus_voltage</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>   
     <span class="k">return</span> </div>
 
 </pre></div>

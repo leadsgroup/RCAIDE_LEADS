@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,18 +537,119 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Segments.Ground.Battery_Charge_Discharge.initialize_conditions">
 <span class="sig-name descname"><span class="pre">initialize_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Segments/Ground/Battery_Charge_Discharge.html#initialize_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Segments.Ground.Battery_Charge_Discharge.initialize_conditions" title="Link to this definition">#</a></dt>
-<dd><p>Sets the specified conditions which are given for the segment type.</p>
-<p>Assumptions:
-During recharging, the charge time associated with the largest capacity battery pack is used</p>
-<p>Source:
-N/A</p>
-<p>Inputs:
-segment.overcharge_contingency              [-]
-battery.                                    [-]</p>
-<p>Outputs:
-conditions.frames.inertial.time             [seconds]</p>
-<p>Properties Used:
-N/A</p>
+<dd><p>Initializes conditions for battery charging or discharging on ground</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – <dl>
+<dt>The mission segment being analyzed</dt><dd><ul>
+<li><dl class="simple">
+<dt>cutoff_SOC<span class="classifier">float</span></dt><dd><p>Target state of charge to reach [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cooling_time<span class="classifier">float</span></dt><dd><p>Additional time for battery cooling [s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>initial_battery_state_of_charge<span class="classifier">float, optional</span></dt><dd><p>Initial SOC if no previous segment [-]</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>analyses:</dt><dd><dl>
+<dt>energy:</dt><dd><dl>
+<dt>vehicle:</dt><dd><dl>
+<dt>networks<span class="classifier">list</span></dt><dd><p>List of power networks
+Each network contains:
+- busses : list</p>
+<blockquote>
+<div><p>List of electrical busses
+Each bus contains:
+- charging_c_rate : float</p>
+<blockquote>
+<div><p>Battery charging C-rate [-]</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>battery_modules<span class="classifier">list</span></dt><dd><p>List of battery modules</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>For discharging segments:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>time<span class="classifier">float</span></dt><dd><p>Duration of discharge [s]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Updates segment conditions directly:</dt><dd><ul class="simple">
+<li><p>conditions.frames.inertial.time [s]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up the initial conditions for a ground segment involving
+battery charging or discharging. For charging segments, the charging time is
+determined by the battery with the lowest state of charge.</p>
+<p><strong>Calculation Process</strong>
+For charging:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Find lowest battery state of charge</p></li>
+<li><dl class="simple">
+<dt>Calculate charging time based on:</dt><dd><p>t = (SOC_target - SOC_current) / C_rate</p>
+</dd>
+</dl>
+</li>
+<li><p>Add cooling time</p></li>
+<li><p>Discretize time points</p></li>
+</ol>
+</div></blockquote>
+<dl class="simple">
+<dt>For discharging:</dt><dd><ol class="arabic simple">
+<li><p>Use specified discharge time</p></li>
+<li><p>Discretize time points</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Charging time determined by lowest SOC battery</p></li>
+<li><p>Constant C-rate charging</p></li>
+<li><p>Linear SOC increase during charging</p></li>
+<li><p>Uniform cooling time added</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

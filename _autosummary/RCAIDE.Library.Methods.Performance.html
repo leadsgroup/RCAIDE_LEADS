@@ -43,12 +43,14 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Performance';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="aircraft_aerodynamic_analysis" href="RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis.html" />
-    <link rel="prev" title="compute_noise_metrics" href="RCAIDE.Library.Methods.Noise.Metrics.compute_noise_metrics.html" />
+    <link rel="prev" title="PNL_noise_metric" href="RCAIDE.Library.Methods.Noise.Metrics.PNL_noise_metric.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -526,32 +528,46 @@
   <p>RCAIDE.Library.Methods.Performance</p>
 <section id="module-RCAIDE.Library.Methods.Performance">
 <span id="performance"></span><h1>Performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Performance" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>Methods for analyzing vehicle performance characteristics including aerodynamics, propulsion,
+and flight mechanics.</p>
+<p>This module provides functions for estimating key performance metrics
+such as take-off and landing distances, stall speeds, payload-range capabilities, and flight
+envelope characteristics.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Mission.html#module-RCAIDE.Library.Mission" title="RCAIDE.Library.Mission"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Mission</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.html#module-RCAIDE.Library.Methods.Aerodynamics" title="RCAIDE.Library.Methods.Aerodynamics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Aerodynamics</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis.html#module-RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis" title="RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aircraft_aerodynamic_analysis</span></code></a>(vehicle, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis.html#module-RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis" title="RCAIDE.Library.Methods.Performance.aircraft_aerodynamic_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aircraft_aerodynamic_analysis</span></code></a>([...])</p></td>
+<td><p>Computes aerodynamic coefficients across ranges of angle of attack and Mach numbers using vortex lattice methods.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.compute_noise_certification_data.html#module-RCAIDE.Library.Methods.Performance.compute_noise_certification_data" title="RCAIDE.Library.Methods.Performance.compute_noise_certification_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_noise_certification_data</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.html#module-RCAIDE.Library.Methods.Performance.compute_payload_range_diagram" title="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_payload_range_diagram</span></code></a>(vehicle, ...)</p></td>
-<td><p>Calculates and plots the payload range diagram for an aircraft by modifying the cruise segment and weights of the aicraft .</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram.html#module-RCAIDE.Library.Methods.Performance.compute_payload_range_diagram" title="RCAIDE.Library.Methods.Performance.compute_payload_range_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_payload_range_diagram</span></code></a>([mission, ...])</p></td>
+<td><p>Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.estimate_landing_field_length.html#module-RCAIDE.Library.Methods.Performance.estimate_landing_field_length" title="RCAIDE.Library.Methods.Performance.estimate_landing_field_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_landing_field_length</span></code></a>(vehicle, analyses)</p></td>
-<td><p>Computes the landing field length for a given vehicle configuration in a given airport.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.estimate_landing_field_length.html#module-RCAIDE.Library.Methods.Performance.estimate_landing_field_length" title="RCAIDE.Library.Methods.Performance.estimate_landing_field_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_landing_field_length</span></code></a>(vehicle, analyses)</p></td>
+<td><p>Computes the landing field length required for a given vehicle configuration at specified airport conditions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.estimate_stall_speed.html#module-RCAIDE.Library.Methods.Performance.estimate_stall_speed" title="RCAIDE.Library.Methods.Performance.estimate_stall_speed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_stall_speed</span></code></a>(vehicle_mass, ...)</p></td>
-<td><p>Calculates the stall speed of an aircraft at a given altitude and a maximum lift coefficient.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.estimate_stall_speed.html#module-RCAIDE.Library.Methods.Performance.estimate_stall_speed" title="RCAIDE.Library.Methods.Performance.estimate_stall_speed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_stall_speed</span></code></a>(vehicle_mass, ...)</p></td>
+<td><p>Calculates the stall speed of an aircraft at a given altitude and maximum lift coefficient.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.estimate_take_off_field_length.html#module-RCAIDE.Library.Methods.Performance.estimate_take_off_field_length" title="RCAIDE.Library.Methods.Performance.estimate_take_off_field_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_take_off_field_length</span></code></a>(vehicle, analyses)</p></td>
-<td><p>Computes the takeoff field length for a given vehicle configuration in a given airport.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.estimate_take_off_field_length.html#module-RCAIDE.Library.Methods.Performance.estimate_take_off_field_length" title="RCAIDE.Library.Methods.Performance.estimate_take_off_field_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_take_off_field_length</span></code></a>(vehicle, analyses)</p></td>
+<td><p>Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl.html#module-RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl" title="RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_take_off_weight_given_tofl</span></code></a>(vehicle, ...)</p></td>
-<td><p>Estimates the takeoff weight given a certain takeoff field length.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl.html#module-RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl" title="RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_take_off_weight_given_tofl</span></code></a>(vehicle, ...)</p></td>
+<td><p>Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#module-RCAIDE.Library.Methods.Performance.generate_V_n_diagram" title="RCAIDE.Library.Methods.Performance.generate_V_n_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_V_n_diagram</span></code></a>(vehicle, analyses, ...)</p></td>
-<td><p>Computes a V-n diagram for a given aircraft and given regulations for ISA conditions</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#module-RCAIDE.Library.Methods.Performance.generate_V_n_diagram" title="RCAIDE.Library.Methods.Performance.generate_V_n_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_V_n_diagram</span></code></a>(vehicle, analyses, ...)</p></td>
+<td><p>Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.propeller_aerodynamic_analysis.html#module-RCAIDE.Library.Methods.Performance.propeller_aerodynamic_analysis" title="RCAIDE.Library.Methods.Performance.propeller_aerodynamic_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propeller_aerodynamic_analysis</span></code></a>(propeller, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.propeller_aerodynamic_analysis.html#module-RCAIDE.Library.Methods.Performance.propeller_aerodynamic_analysis" title="RCAIDE.Library.Methods.Performance.propeller_aerodynamic_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propeller_aerodynamic_analysis</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Performance.rotor_aerodynamic_analysis.html#module-RCAIDE.Library.Methods.Performance.rotor_aerodynamic_analysis" title="RCAIDE.Library.Methods.Performance.rotor_aerodynamic_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotor_aerodynamic_analysis</span></code></a>(rotor, velocity_range)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -570,12 +586,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Methods.Noise.Metrics.compute_noise_metrics.html"
+       href="RCAIDE.Library.Methods.Noise.Metrics.PNL_noise_metric.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">compute_noise_metrics</p>
+        <p class="prev-next-title">PNL_noise_metric</p>
       </div>
     </a>
     <a class="right-next"

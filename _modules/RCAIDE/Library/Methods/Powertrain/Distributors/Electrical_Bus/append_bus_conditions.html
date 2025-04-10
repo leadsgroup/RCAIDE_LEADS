@@ -393,38 +393,63 @@
 <div class="viewcode-block" id="append_bus_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions.html#RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions.append_bus_conditions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">append_bus_conditions</span><span class="p">(</span><span class="n">bus</span><span class="p">,</span><span class="n">segment</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Appends the initial bus conditions</span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">        N/A</span>
-<span class="sd">    </span>
-<span class="sd">        Source:</span>
-<span class="sd">        N/A</span>
-<span class="sd">    </span>
-<span class="sd">        Inputs:  </span>
-<span class="sd">       </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">           </span>
-<span class="sd">        Properties Used:</span>
-<span class="sd">        None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-    <span class="n">ones_row</span>                                                       <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Appends conditions for the electrical bus to the segment&#39;s energy conditions dictionary.</span>
 
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                       <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">battery_modules</span>       <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_cell_stacks</span>      <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">power_draw</span>            <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">state_of_charge</span>       <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">depth_of_discharge</span>    <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">current_draw</span>          <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">charging_current</span>      <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">voltage_open_circuit</span>  <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">voltage_under_load</span>    <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">heat_energy_generated</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">efficiency</span>            <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">temperature</span>           <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">energy</span>                <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">regenerative_power</span>    <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bus : RCAIDE.Library.Components.Distributors.ElectricalBus</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        This function modifies the segment.state.conditions.energy dictionary in-place.</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function creates a Conditions object for the electrical bus within the segment&#39;s</span>
+<span class="sd">    energy conditions dictionary, indexed by the bus tag. It initializes various bus</span>
+<span class="sd">    properties as zero arrays with the same length as the segment&#39;s state vector.</span>
+<span class="sd">    </span>
+<span class="sd">    The initialized properties include:</span>
+<span class="sd">        - Battery module conditions</span>
+<span class="sd">        - Fuel cell stack conditions</span>
+<span class="sd">        - Power draw</span>
+<span class="sd">        - State of charge and depth of discharge</span>
+<span class="sd">        - Current draw and charging current</span>
+<span class="sd">        - Voltage (open circuit and under load)</span>
+<span class="sd">        - Heat energy generated</span>
+<span class="sd">        - Efficiency</span>
+<span class="sd">        - Temperature</span>
+<span class="sd">        - Energy</span>
+<span class="sd">        - Regenerative power</span>
+<span class="sd">    </span>
+<span class="sd">    For segments with an initial battery state of charge specified, the function also</span>
+<span class="sd">    sets the initial energy and state of charge values accordingly.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ones_row</span>                                                                     <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span>
+               
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>                                     <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">battery_modules</span>                     <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">fuel_cell_stacks</span>                    <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">power_draw</span>                          <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span>            <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">battery_fuel_cell_power_split_ratio</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">battery_fuel_cell_power_split_ratio</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">state_of_charge</span>                     <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">depth_of_discharge</span>                  <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">current_draw</span>                        <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">charging_current</span>                    <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">voltage_open_circuit</span>                <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">voltage_under_load</span>                  <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">heat_energy_generated</span>               <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">efficiency</span>                          <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">temperature</span>                         <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">energy</span>                              <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">regenerative_power</span>                  <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
      <span class="c1"># first segment  </span>
     <span class="k">if</span> <span class="s1">&#39;initial_battery_state_of_charge&#39;</span> <span class="ow">in</span> <span class="n">segment</span><span class="p">:</span>  
@@ -441,22 +466,42 @@
 <div class="viewcode-block" id="append_bus_segment_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions.html#RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions.append_bus_segment_conditions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">append_bus_segment_conditions</span><span class="p">(</span><span class="n">bus</span><span class="p">,</span><span class="n">conditions</span><span class="p">,</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the initial bus properties at the start of each segment as the last point from the previous segment </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets the initial bus properties at the start of each segment based on the last point from the previous segment.</span>
 <span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">        None</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bus : ElectricalBus</span>
+<span class="sd">        The electrical bus component for which conditions are being initialized.</span>
+<span class="sd">    conditions : dict</span>
+<span class="sd">        Dictionary containing conditions from the previous segment.</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The current mission segment in which the bus is operating.</span>
 <span class="sd">    </span>
-<span class="sd">        Source:</span>
-<span class="sd">        N/A</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
 <span class="sd">    </span>
-<span class="sd">        Inputs:  </span>
-<span class="sd">         cross_flow_hex            (data structure)              [None]</span>
-<span class="sd">               </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">        None</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function initializes the power draw for the electrical bus at the start of a new segment</span>
+<span class="sd">    by transferring thermal power draw information from the previous segment. It handles power</span>
+<span class="sd">    requirements from battery thermal management systems (BTMS) and heat exchangers.</span>
 <span class="sd">    </span>
-<span class="sd">        Properties Used:</span>
-<span class="sd">        None</span>
+<span class="sd">    For segments with initial conditions from a previous segment, the function also:</span>
+<span class="sd">        1. Sets the battery discharge flag based on the segment type (false for recharge segments)</span>
+<span class="sd">        2. Transfers the final energy state from the previous segment to the initial state of the current segment</span>
+<span class="sd">    </span>
+<span class="sd">    This ensures continuity of energy states between mission segments.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Battery recharge segments are identified by their class type</span>
+<span class="sd">        * Power draw is initialized from thermal management components</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">bus_conditions</span>             <span class="o">=</span> <span class="n">conditions</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
     <span class="n">ones_row</span>                   <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ones_row</span>

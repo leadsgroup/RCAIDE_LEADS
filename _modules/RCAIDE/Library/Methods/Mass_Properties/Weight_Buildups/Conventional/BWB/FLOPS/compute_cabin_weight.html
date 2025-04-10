@@ -393,26 +393,57 @@
 <div class="viewcode-block" id="compute_cabin_weight">
 <a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight.html#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight.compute_cabin_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_cabin_weight</span><span class="p">(</span><span class="n">cabin_area</span><span class="p">,</span> <span class="n">TOGW</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Weight estimate for the cabin (forward section of centerbody) of a BWB.</span>
-<span class="sd">    Regression from FEA by K. Bradley (George Washington University).</span>
-<span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">        -The centerbody uses a pressurized sandwich composite structure</span>
-<span class="sd">        -Ultimate cabin pressure differential of 18.6psi</span>
-<span class="sd">        -Critical flight condition: +2.5g maneuver at maximum TOGW</span>
-<span class="sd">    </span>
-<span class="sd">    Sources:</span>
-<span class="sd">        Bradley, K. R., &quot;A Sizing Methodology for the Conceptual Design of </span>
-<span class="sd">        Blended-Wing-Body Transports,&quot; NASA/CR-2004-213016, 2004.</span>
-<span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">        cabin_area - the planform area representing the passenger cabin  [meters**2]</span>
-<span class="sd">        TOGW - Takeoff gross weight of the aircraft                      [kilograms]</span>
-<span class="sd">    Outputs:</span>
-<span class="sd">        W_cabin - the estimated structural weight of the BWB cabin      [kilograms]</span>
-<span class="sd">            </span>
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the structural weight of the pressurized cabin section of a BWB aircraft using </span>
+<span class="sd">    regression-based methods derived from FEA studies.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cabin_area : float</span>
+<span class="sd">        Planform area of pressurized passenger cabin [m²]</span>
+<span class="sd">    TOGW : float</span>
+<span class="sd">        Takeoff gross weight of aircraft [kg]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    W_cabin : float</span>
+<span class="sd">        Estimated structural weight of BWB pressurized cabin section [kg]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses regression equations derived from detailed FEA studies by Bradley to estimate the structural</span>
+<span class="sd">    weight required for the non-circular pressure vessel of a BWB cabin [1].</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Pressurized sandwich composite structure</span>
+<span class="sd">        * Ultimate cabin pressure differential of 18.6 psi</span>
+<span class="sd">        * Critical load case is 2.5g maneuver at maximum TOGW</span>
+<span class="sd">        * Uniform pressure distribution</span>
+<span class="sd">        * Non-buckling design</span>
+<span class="sd">        * Structural efficiency similar to baseline FEA model</span>
+
+<span class="sd">    **Theory**</span>
+<span class="sd">    Weight is computed using:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        W_{cabin} = 5.698865 \\cdot 0.316422 \\cdot W^{0.166552} \\cdot S_{cab}^{1.061158}</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        * W = takeoff weight</span>
+<span class="sd">        * S_cab = cabin planform area</span>
+
+<span class="sd">    The equation coefficients account for:</span>
+<span class="sd">        * Non-circular pressure vessel penalties</span>
+<span class="sd">        * Composite material properties</span>
+<span class="sd">        * Combined pressure and flight loads</span>
+<span class="sd">        * Minimum gauge requirements</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Bradley, K. R., &quot;A Sizing Methodology for the Conceptual Design of Blended-Wing-Body Transports,&quot; NASA/CR-2004-213016, 2004.</span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight</span>
+<span class="sd">    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_operating_empty_weight</span>
 <span class="sd">    &quot;&quot;&quot;</span>       
     
     <span class="c1"># convert to imperial units</span>

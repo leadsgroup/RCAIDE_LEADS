@@ -397,7 +397,41 @@
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Polyetherimide.html#RCAIDE.Library.Attributes.Materials.Polyetherimide.Polyetherimide">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Polyetherimide</span><span class="p">(</span><span class="n">Solid</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Physical Constants Specific to Polyetherimide   </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing polyetherimide (PEI) material properties, commonly used in reservoir casings </span>
+<span class="sd">    and other high-temperature thermoplastic applications.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conductivity : float</span>
+<span class="sd">        Thermal conductivity in W/(m·K) (0.2)</span>
+<span class="sd">    </span>
+<span class="sd">    emissivity : float</span>
+<span class="sd">        Surface emissivity, unitless (0.96)</span>
+<span class="sd">    </span>
+<span class="sd">    specific_heat : float</span>
+<span class="sd">        Specific heat capacity in J/(kg·K) (1100)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements thermal properties for polyetherimide, a high-performance </span>
+<span class="sd">    thermoplastic known for its heat resistance and dimensional stability. The material </span>
+<span class="sd">    is commonly used in aerospace and high-temperature applications.</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Thermal Conductivity&#39;</span>
+<span class="sd">        The property of a material to conduct heat, measured in watts per meter-kelvin</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Emissivity&#39;</span>
+<span class="sd">        The effectiveness of a material&#39;s surface in emitting energy as thermal radiation</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Specific Heat&#39;</span>
+<span class="sd">        The amount of heat required to raise the temperature of 1 kg of the material by 1 Kelvin</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] MatWeb. (n.d.-b).  Overview of materials for Polyetherimide (PEI). MatWeb Material Property Data. https://www.matweb.com/search/DataSheet.aspx?MatGUID=65baf7a4f90c4a54a6ace03e16b1125b&amp;amp%3Bckck=1&amp;ckck=1 </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets material properties at instantiation.</span>

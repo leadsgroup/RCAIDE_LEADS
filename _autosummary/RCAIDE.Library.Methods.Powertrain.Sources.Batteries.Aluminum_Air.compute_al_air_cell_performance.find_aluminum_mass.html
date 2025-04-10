@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -543,7 +543,43 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.find_aluminum_mass">
 <span class="sig-name descname"><span class="pre">find_aluminum_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Aluminum_Air/compute_al_air_cell_performance.html#find_aluminum_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.find_aluminum_mass" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Calculates the aluminum mass required for a given energy output from an aluminum-air battery.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery</strong> (<em>AluminumAirBattery</em>) – <dl class="simple">
+<dt>The aluminum-air battery component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>cell.aluminum_mass_factor<span class="classifier">float</span></dt><dd><p>Mass of aluminum required per unit of energy [kg/J]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>energy</strong> (<em>float</em>) – Energy to be produced by the battery [J]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>aluminum_mass</strong> – Mass of aluminum required [kg]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the mass of aluminum that would be consumed to produce
+the specified amount of energy in an aluminum-air battery. The calculation is based
+on a linear relationship between energy output and aluminum consumption.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.find_water_mass.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.find_water_mass" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.find_water_mass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_water_mass</span></code></a></dt><dd><p>Function to calculate water mass gain</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
 
 </section>
 

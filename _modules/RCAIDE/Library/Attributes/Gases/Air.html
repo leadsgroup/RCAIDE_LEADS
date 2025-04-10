@@ -395,7 +395,37 @@
 <div class="viewcode-block" id="Air">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Air</span><span class="p">(</span><span class="n">Gas</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic class of air gas. </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing air and its thermodynamic properties. Provides methods for computing various </span>
+<span class="sd">    gas properties including density, speed of sound, specific heat, and transport properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the gas type (&#39;air&#39;)</span>
+<span class="sd">    molecular_mass : float</span>
+<span class="sd">        Molecular mass of air in kg/kmol</span>
+<span class="sd">    gas_specific_constant : float</span>
+<span class="sd">        Specific gas constant in m²/s²-K</span>
+<span class="sd">    specific_heat_capacity : float</span>
+<span class="sd">        Specific heat capacity in J/kg·K</span>
+<span class="sd">    composition : Data</span>
+<span class="sd">        Chemical composition of air</span>
+<span class="sd">            - O2 : float</span>
+<span class="sd">                Mass fraction of oxygen (0.20946)</span>
+<span class="sd">            - Ar : float</span>
+<span class="sd">                Mass fraction of argon (0.00934)</span>
+<span class="sd">            - CO2 : float</span>
+<span class="sd">                Mass fraction of carbon dioxide (0.00036)</span>
+<span class="sd">            - N2 : float</span>
+<span class="sd">                Mass fraction of nitrogen (0.78084)</span>
+<span class="sd">            - other : float</span>
+<span class="sd">                Mass fraction of other components (0.00)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements standard atmospheric air properties and various methods</span>
+<span class="sd">    for computing thermodynamic and transport properties.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -416,25 +446,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">composition</span><span class="o">.</span><span class="n">CO2</span>        <span class="o">=</span> <span class="mf">0.00036</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">composition</span><span class="o">.</span><span class="n">N2</span>         <span class="o">=</span> <span class="mf">0.78084</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">composition</span><span class="o">.</span><span class="n">other</span>      <span class="o">=</span> <span class="mf">0.00</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">air_surrogate</span>          <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;O2&#39;</span><span class="p">:</span><span class="mf">0.2095</span><span class="p">,</span> <span class="s1">&#39;N2&#39;</span><span class="p">:</span><span class="mf">0.7809</span><span class="p">,</span> <span class="s1">&#39;AR&#39;</span><span class="p">:</span><span class="mf">0.0096</span><span class="p">}</span> <span class="c1"># [-] Mole fractions of air surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>      <span class="o">=</span> <span class="s1">&#39;Air.yaml&#39;</span>
 
 <div class="viewcode-block" id="Air.compute_density">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air.compute_density">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes air density given temperature and pressure</span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            Ideal gas</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            None</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self       : air                   [unitless]</span>
-<span class="sd">            T (float)  : temperature           [K]</span>
-<span class="sd">            P (float)  : pressure              [Pa]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            rho (float): density               [kg/m^3]       </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes air density using the ideal gas law.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature in Kelvin</span>
+<span class="sd">        p : float</span>
+<span class="sd">            Pressure in Pascal</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rho : float</span>
+<span class="sd">            Density in kg/m³</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * Air behaves as an ideal gas    </span>
 <span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="n">p</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gas_specific_constant</span><span class="o">*</span><span class="n">T</span><span class="p">)</span></div>
 
@@ -442,22 +478,28 @@
 <div class="viewcode-block" id="Air.compute_speed_of_sound">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air.compute_speed_of_sound">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_speed_of_sound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">,</span><span class="n">variable_gamma</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes speed of sound given temperature and pressure </span>
-<span class="sd"> </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            Ideal gas with gamma = 1.4 if variable gamma is False</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes speed of sound in air.</span>
 
-<span class="sd">        Source:</span>
-<span class="sd">            None </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature in Kelvin</span>
+<span class="sd">        p : float</span>
+<span class="sd">            Pressure in Pascal</span>
+<span class="sd">        variable_gamma : bool</span>
+<span class="sd">            If True, uses temperature-dependent specific heat ratio</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            self                     : air           [unitless]</span>
-<span class="sd">            T (float)                : temperature   [K]    </span>
-<span class="sd">            p (float)                : Pressure      [Pa]      </span>
-<span class="sd">            variable_gamma (boolean) :               [unitless]</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        a : float</span>
+<span class="sd">            Speed of sound in m/s</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            a (float)                : speed of sound [m/s] </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * If variable_gamma is False, assumes γ = 1.4</span>
+<span class="sd">            * Air behaves as an ideal gas</span>
 <span class="sd">        &quot;&quot;&quot;</span>                  
 
         <span class="k">if</span> <span class="n">variable_gamma</span><span class="p">:</span>
@@ -471,29 +513,33 @@
 <div class="viewcode-block" id="Air.compute_cp">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air.compute_cp">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_cp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes Cp by 3rd-order polynomial data fit:</span>
-<span class="sd">        cp(T) = c1*T^3 + c2*T^2 + c3*T + c4</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes specific heat capacity at constant pressure using a 3rd-order polynomial fit.</span>
 
-<span class="sd">        Coefficients (with 95% confidence bounds):</span>
-<span class="sd">        c1 = -7.357e-007  (-9.947e-007, -4.766e-007)</span>
-<span class="sd">        c2 =    0.001307  (0.0009967, 0.001617)</span>
-<span class="sd">        c3 =     -0.5558  (-0.6688, -0.4429)</span>
-<span class="sd">        c4 =        1074  (1061, 1086) </span>
-<span class="sd">             </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            123 K &lt; T &lt; 673 K </span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            Unknown, possibly Combustion Technologies for a Clean Environment </span>
-<span class="sd">            (Energy, Combustion and the Environment), Jun 15, 1995, Carvalhoc</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self      : air               [unitless]</span>
-<span class="sd">            T (float) : temperature       [K]</span>
-<span class="sd">            P (float) : pressure          [Pa]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            cp (float): specfic heat capacity [J/(kg K)]         </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature in Kelvin</span>
+<span class="sd">        p : float</span>
+<span class="sd">            Pressure in Pascal</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        cp : float</span>
+<span class="sd">            Specific heat capacity in J/(kg·K)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * Valid for temperature range: 123 K &lt; T &lt; 673 K</span>
+
+<span class="sd">        **Theory**</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            c_p(T) = c_1T^3 + c_2T^2 + c_3T + c_4</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] Ekin, J. (2006). Experimental techniques for low-temperature measurements: Cryostat design, material properties and superconductor critical-current testing. Oxford University Press.         </span>
 <span class="sd">        &quot;&quot;&quot;</span>   
 
         <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">7.357e-007</span><span class="p">,</span> <span class="mf">0.001307</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5558</span><span class="p">,</span> <span class="mf">1074.0</span><span class="p">]</span>
@@ -505,28 +551,25 @@
 <div class="viewcode-block" id="Air.compute_gamma">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air.compute_gamma">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes Cp by 3rd-order polynomial data fit:</span>
-<span class="sd">        gamma(T) = c1*T^3 + c2*T^2 + c3*T + c4</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes specific heat ratio using a 3rd-order polynomial fit.</span>
 
-<span class="sd">        Coefficients (with 95% confidence bounds):</span>
-<span class="sd">        c1 =  1.629e-010  (1.486e-010, 1.773e-010)</span>
-<span class="sd">        c2 = -3.588e-007  (-3.901e-007, -3.274e-007)</span>
-<span class="sd">        c3 =   0.0001418  (0.0001221, 0.0001614)</span>
-<span class="sd">        c4 =       1.386  (1.382, 1.389) </span>
-<span class="sd"> </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">             233 K &lt; T &lt; 1273 K </span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            None</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self      : air           [unitless]</span>
-<span class="sd">            T (float) : temperature   [K]</span>
-<span class="sd">            P (float) : pressure      [Pa]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns: </span>
-<span class="sd">            g  (float): gamma         [unitless] </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature in Kelvin</span>
+<span class="sd">        p : float</span>
+<span class="sd">            Pressure in Pascal</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        g : float</span>
+<span class="sd">            Specific heat ratio (gamma) [unitless]</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">        * Valid for temperature range: 233 K &lt; T &lt; 1273 K</span>
 <span class="sd">        &quot;&quot;&quot;</span>     
 
         <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.629e-010</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.588e-007</span><span class="p">,</span> <span class="mf">0.0001418</span><span class="p">,</span> <span class="mf">1.386</span><span class="p">]</span>
@@ -538,21 +581,29 @@
 <div class="viewcode-block" id="Air.compute_absolute_viscosity">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air.compute_absolute_viscosity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_absolute_viscosity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the absolute (dynamic) viscosity </span>
-<span class="sd">        </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            Ideal gas</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            https://www.cfd-online.com/Wiki/Sutherland&#39;s_law</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self      : air                   [unitless]</span>
-<span class="sd">            T (float) : temperature           [K]</span>
-<span class="sd">            P (float) : pressure              [Pa]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            mu (float): absolute viscosity    [kg/(m-s)]       </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes absolute (dynamic) viscosity using Sutherland&#39;s law.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature in Kelvin</span>
+<span class="sd">        p : float</span>
+<span class="sd">            Pressure in Pascal</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mu : float</span>
+<span class="sd">            Absolute viscosity in kg/(m·s)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Theory**</span>
+<span class="sd">        Uses Sutherland&#39;s formula with S = 110.4K and C1 = 1.458e-6 kg/m-s-sqrt(K)</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] Sutherland&#39;s law   </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
 
         <span class="n">S</span> <span class="o">=</span> <span class="mf">110.4</span>                   <span class="c1"># constant in deg K (Sutherland&#39;s Formula)</span>
@@ -564,21 +615,29 @@
 <div class="viewcode-block" id="Air.compute_thermal_conductivity">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air.compute_thermal_conductivity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_thermal_conductivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the thermal conductivity of air </span>
-<span class="sd"> </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            Properties computed at 1 bar (14.5 psia)</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            https://www.engineeringtoolbox.com/air-properties-viscosity-conductivity-heat-capacity-d_1509.html </span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self      : air                   [unitless]</span>
-<span class="sd">            T (float) : temperature           [K]</span>
-<span class="sd">            P (float) : pressure              [Pa]</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            k  (float): thermal conductivity  [W/(m-K)]   </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes thermal conductivity of air.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature in Kelvin</span>
+<span class="sd">        p : float</span>
+<span class="sd">            Pressure in Pascal</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        k : float</span>
+<span class="sd">            Thermal conductivity in W/(m·K)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * Properties computed at 1 bar (14.5 psia)</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] The Engineering ToolBox (2009). Air - Thermal Conductivity vs. Temperature and Pressure. [online] Available at: https://www.engineeringtoolbox.com/air-properties-viscosity-conductivity-heat-capacity-d_1509.html [Accessed 8 January 2025].    </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="k">return</span> <span class="mf">3.99E-4</span> <span class="o">+</span> <span class="mf">9.89E-5</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">-</span><span class="mf">4.57E-8</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.4E-11</span><span class="o">*</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
 
@@ -587,20 +646,24 @@
 <div class="viewcode-block" id="Air.compute_prandtl_number">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air.compute_prandtl_number">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_prandtl_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the prandtl number </span>
-<span class="sd">             </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            None</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            None</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self      : air                   [unitless]</span>
-<span class="sd">            T (float) : temperature           [K] </span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            Pr  (float): Prandtl Number       [unitless]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes Prandtl number.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature in Kelvin</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Pr : float</span>
+<span class="sd">            Prandtl number [unitless]</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Theory**</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            Pr = \\frac{\\mu C_p}{k}</span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         
         <span class="n">Cp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">specific_heat_capacity</span> 
@@ -612,20 +675,26 @@
 <div class="viewcode-block" id="Air.compute_R">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air.compute_R">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mf">101325.</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the prandtl number </span>
-<span class="sd">             </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">            None</span>
-<span class="sd">            </span>
-<span class="sd">        Source:</span>
-<span class="sd">            None</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            self      : air                   [unitless]</span>
-<span class="sd">            T (float) : temperature           [K] </span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            Pr  (float): Prandtl Number       [unitless]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes specific gas constant.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature in Kelvin</span>
+<span class="sd">        p : float</span>
+<span class="sd">            Pressure in Pascal</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        R : float</span>
+<span class="sd">            Specific gas constant in J/(kg·K)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Theory**</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            R = \\frac{\\gamma - 1}{\\gamma}c_p</span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         
         <span class="n">gamma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_gamma</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>

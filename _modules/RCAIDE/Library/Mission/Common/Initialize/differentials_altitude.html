@@ -395,23 +395,56 @@
 <div class="viewcode-block" id="differentials_altitude">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Initialize.differentials_altitude.html#RCAIDE.Library.Mission.Common.Initialize.differentials_altitude.differentials_altitude">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">differentials_altitude</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Initializes the differntial altitude</span>
-<span class="sd">    </span>
-<span class="sd">        Assumptions: </span>
-<span class="sd">            None</span>
-<span class="sd">        </span>
-<span class="sd">        Inputs: </span>
-<span class="sd">            state.conditions:           </span>
-<span class="sd">                numerics.dimensionless.integrate        [-]</span>
-<span class="sd">                numerics.dimensionless.control_points   [s]</span>
-<span class="sd">                frames.position_vector                  [m]</span>
-<span class="sd">                inertial.velocity_vector                [m/s]</span>
-<span class="sd">            </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">            state.conditions.frames.inertial.time       [s]</span>
-<span class="sd">           </span>
-<span class="sd">        Properties Used:</span>
-<span class="sd">        N/A </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the differential altitude for mission segment time calculations</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the time differentials based on altitude changes</span>
+<span class="sd">    in the mission segment. It uses the vertical component of velocity and</span>
+<span class="sd">    position to determine appropriate time steps for integration.</span>
+
+<span class="sd">    The function performs the following steps:</span>
+<span class="sd">        1. Extracts control points and integration operators</span>
+<span class="sd">        2. Calculates total altitude change</span>
+<span class="sd">        3. Determines time step based on vertical velocity</span>
+<span class="sd">        4. Rescales time operators</span>
+<span class="sd">        5. Updates segment time vector</span>
+
+<span class="sd">    **Required Segment State Variables**</span>
+
+<span class="sd">    state.numerics.dimensionless:</span>
+<span class="sd">        - integrate : array</span>
+<span class="sd">            Integration operator matrix</span>
+<span class="sd">        - control_points : array</span>
+<span class="sd">            Normalized time points</span>
+
+<span class="sd">    state.conditions.frames.inertial:</span>
+<span class="sd">        - position_vector : array</span>
+<span class="sd">            Vehicle position in inertial frame [m]</span>
+<span class="sd">        - velocity_vector : array</span>
+<span class="sd">            Vehicle velocity in inertial frame [m/s]</span>
+<span class="sd">        - time : array</span>
+<span class="sd">            Segment time vector [s]</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Continuous vertical velocity</span>
+<span class="sd">        * Well-defined altitude change</span>
+<span class="sd">        * No singularities in vertical velocity</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment state directly</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># unpack</span>

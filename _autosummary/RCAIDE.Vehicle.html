@@ -376,9 +376,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -523,7 +523,31 @@
 <dt class="sig sig-object py" id="RCAIDE.Vehicle.Vehicle">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Vehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Vehicle.html#Vehicle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Vehicle.Vehicle" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
-<p>RCAIDE Vehicle container class with database + input / output functionality</p>
+<p>RCAIDE Vehicle container class with database and input/output functionality.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Vehicle.Vehicle.Data">
+<span class="sig-name descname"><span class="pre">Data</span></span><a class="headerlink" href="#RCAIDE.Vehicle.Vehicle.Data" title="Link to this definition">#</a></dt>
+<dd><p>RCAIDE data structure containing the loaded information. See defualts for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The Vehicle class serves as the top-level container for all aircraft components
+and systems. It provides methods for adding components to the appropriate containers
+and maintains the hierarchical structure of the aircraft model.</p>
+<p>The class uses a component mapping system to automatically place new components
+in their appropriate containers based on their type.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Component Root Map’</dt><dd><p>Internal mapping that associates component types with their container locations</p>
+</dd>
+<dt>‘Energy Network Root Map’</dt><dd><p>Internal mapping that associates energy network types with their container locations</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Vehicle.Vehicle.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Vehicle.html#Vehicle.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Vehicle.Vehicle.__init__" title="Link to this definition">#</a></dt>
@@ -666,6 +690,7 @@ None</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Vehicle.Vehicle"><code class="docutils literal notranslate"><span class="pre">Vehicle</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Vehicle.Vehicle.Data"><code class="docutils literal notranslate"><span class="pre">Vehicle.Data</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Vehicle.Vehicle.__init__"><code class="docutils literal notranslate"><span class="pre">Vehicle.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Vehicle.Vehicle.find_component_root"><code class="docutils literal notranslate"><span class="pre">Vehicle.find_component_root()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Vehicle.Vehicle.append_component"><code class="docutils literal notranslate"><span class="pre">Vehicle.append_component()</span></code></a></li>

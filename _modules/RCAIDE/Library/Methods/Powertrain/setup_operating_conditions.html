@@ -388,77 +388,120 @@
 
 <span class="c1"># RCAIDE Imports</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>   
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common</span><span class="w"> </span><span class="kn">import</span>  <span class="n">Conditions</span><span class="p">,</span> <span class="n">Results</span><span class="p">,</span> <span class="n">Residuals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">Results</span><span class="p">,</span> <span class="n">Residuals</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission.Common.Update.orientations</span><span class="w"> </span><span class="kn">import</span> <span class="n">orientations</span>
 
 <span class="c1"># Python package imports</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  Operating Test Conditions Set-up</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="setup_operating_conditions">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.setup_operating_conditions.html#RCAIDE.Library.Methods.Powertrain.setup_operating_conditions.setup_operating_conditions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">setup_operating_conditions</span><span class="p">(</span><span class="n">compoment</span><span class="p">,</span> <span class="n">altitude</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="n">velocity_vector</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Set up operating conditions </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_operating_conditions</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">altitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">velocity_range</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">]),</span> <span class="n">angle_of_attack</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets up operating conditions for single component analysis.</span>
 <span class="sd">    </span>
-<span class="sd">    &#39;&#39;&#39;</span> 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    component : RCAIDE.Library.Components.Component</span>
+<span class="sd">        Component to set up operating conditions for</span>
+<span class="sd">            - working_fluid : Data</span>
+<span class="sd">                Working fluid properties object (will be set by this function)</span>
+<span class="sd">    altitude : float, optional</span>
+<span class="sd">        Altitude for analysis [m]</span>
+<span class="sd">        Default: 0 (sea level)</span>
+<span class="sd">    velocity_range : numpy.ndarray, optional</span>
+<span class="sd">        Array of velocities to analyze [m/s]</span>
+<span class="sd">        Default: np.array([10])</span>
+<span class="sd">    angle_of_attack : float, optional</span>
+<span class="sd">        Angle of attack for analysis [deg]Default: 0</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    state : RCAIDE.Framework.Mission.Common.State</span>
+<span class="sd">        State object containing:</span>
+<span class="sd">            - conditions : Data</span>
+<span class="sd">                Flight conditions</span>
+<span class="sd">                    - freestream : Data</span>
+<span class="sd">                        Freestream properties</span>
+<span class="sd">                            - altitude : numpy.ndarray</span>
+<span class="sd">                                Altitude [m]</span>
+<span class="sd">                            - mach_number : numpy.ndarray</span>
+<span class="sd">                                Mach number</span>
+<span class="sd">                            - pressure : numpy.ndarray</span>
+<span class="sd">                                Atmospheric pressure [Pa]</span>
+<span class="sd">                            - temperature : numpy.ndarray</span>
+<span class="sd">                                Atmospheric temperature [K]</span>
+<span class="sd">                            - density : numpy.ndarray</span>
+<span class="sd">                                Air density [kg/m³]</span>
+<span class="sd">                            - dynamic_viscosity : numpy.ndarray</span>
+<span class="sd">                                Air dynamic viscosity [kg/(m·s)]</span>
+<span class="sd">                            - gravity : numpy.ndarray</span>
+<span class="sd">                                Gravitational acceleration [m/s²]</span>
+<span class="sd">                            - isentropic_expansion_factor : numpy.ndarray</span>
+<span class="sd">                                Ratio of specific heats (gamma)</span>
+<span class="sd">                            - Cp : numpy.ndarray</span>
+<span class="sd">                                Specific heat at constant pressure [J/(kg·K)]</span>
+<span class="sd">                            - R : numpy.ndarray</span>
+<span class="sd">                                Gas constant [J/(kg·K)]</span>
+<span class="sd">                            - speed_of_sound : numpy.ndarray</span>
+<span class="sd">                                Speed of sound [m/s]</span>
+<span class="sd">                            - velocity : numpy.ndarray</span>
+<span class="sd">                                Freestream velocity [m/s]</span>
+<span class="sd">                    - frames : Data</span>
+<span class="sd">                        Reference frames</span>
+<span class="sd">                            - body : Data</span>
+<span class="sd">                                Body-fixed frame</span>
+<span class="sd">                                    - inertial_rotations : numpy.ndarray</span>
+<span class="sd">                                        Rotation angles [rad]</span>
+<span class="sd">                            - inertial : Data</span>
+<span class="sd">                                Inertial frame</span>
+<span class="sd">                                    - velocity_vector : numpy.ndarray</span>
+<span class="sd">                                        Velocity vector [m/s]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function creates a standardized set of operating conditions for component analysis.</span>
+<span class="sd">    It sets up atmospheric conditions based on the US Standard Atmosphere 1976 model and</span>
+<span class="sd">    initializes all necessary parameters for component performance evaluation.</span>
+<span class="sd">    </span>
+<span class="sd">    The function:</span>
+<span class="sd">        1. Sets up Earth as the planet and air as the working fluid</span>
+<span class="sd">        2. Computes atmospheric properties at the specified altitude</span>
+<span class="sd">        3. Creates a conditions data structure with all necessary parameters</span>
+<span class="sd">        4. Sets up reference frames and orientations</span>
+<span class="sd">        5. Appends component-specific operating conditions</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * US Standard Atmosphere 1976</span>
+<span class="sd">        * Earth gravity</span>
+<span class="sd">        * Air as working fluid</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976</span>
+<span class="sd">    RCAIDE.Library.Mission.Common.Update.orientations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">working_fluid</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Gases</span><span class="o">.</span><span class="n">Air</span><span class="p">()</span>
-    
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">compoment</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Converter</span><span class="p">):</span>
-        <span class="c1"># assign generatic propulsor </span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">compoment</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">DC_Motor</span><span class="p">:</span>  
-            <span class="n">propulsor</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
-            <span class="n">distributor</span>       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span> 
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">motor</span>   <span class="o">=</span> <span class="n">compoment</span>  
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">compoment</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">PMSM_Motor</span><span class="p">:</span> 
-            <span class="n">propulsor</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span> 
-            <span class="n">distributor</span>       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span> 
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">motor</span>   <span class="o">=</span> <span class="n">compoment</span>   
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">compoment</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Rotor</span><span class="p">):</span>  
-            <span class="n">propulsor</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Electric_Rotor</span><span class="p">()</span>
-            <span class="n">distributor</span>       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Electrical_Bus</span><span class="p">()</span> 
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span>   <span class="o">=</span> <span class="n">compoment</span>   
-            
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">compoment</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Propulsor</span><span class="p">):</span> 
-        <span class="n">propulsor</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">compoment</span><span class="p">)</span>
-        <span class="n">propulsor</span><span class="o">.</span><span class="n">working_fluid</span> <span class="o">=</span>  <span class="n">working_fluid</span>
-        
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbofan</span><span class="p">:</span>
-            <span class="n">distributor</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Fuel_Line</span><span class="p">()</span>
-    
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbojet</span><span class="p">:</span>
-            <span class="n">distributor</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Fuel_Line</span><span class="p">()</span>
-    
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turboprop</span><span class="p">:</span>
-            <span class="n">distributor</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Fuel_Line</span><span class="p">()</span>
-    
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turboshaft</span><span class="p">:</span>
-            <span class="n">distributor</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Fuel_Line</span><span class="p">()</span>
-    
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">ICE_Propeller</span><span class="p">:</span>
-            <span class="n">distributor</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Distributors</span><span class="o">.</span><span class="n">Fuel_Line</span><span class="p">()</span>
-            
-        
     <span class="n">planet</span>                                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Planets</span><span class="o">.</span><span class="n">Earth</span><span class="p">()</span>
-    <span class="n">working_fluid</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Gases</span><span class="o">.</span><span class="n">Air</span><span class="p">()</span>
+    <span class="n">working_fluid</span>                                     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Gases</span><span class="o">.</span><span class="n">Air</span><span class="p">()</span> 
+    
+    <span class="c1"># append working fluid properties </span>
+    <span class="n">component</span><span class="o">.</span><span class="n">working_fluid</span>                           <span class="o">=</span> <span class="n">working_fluid</span>     
+    
     <span class="n">atmosphere_sls</span>                                    <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Atmospheric</span><span class="o">.</span><span class="n">US_Standard_1976</span><span class="p">()</span>
-    <span class="n">atmo_data</span>                                         <span class="o">=</span> <span class="n">atmosphere_sls</span><span class="o">.</span><span class="n">compute_values</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">)</span>
-                                                      
+    <span class="n">atmo_data</span>                                         <span class="o">=</span> <span class="n">atmosphere_sls</span><span class="o">.</span><span class="n">compute_values</span><span class="p">(</span><span class="n">altitude</span><span class="p">,</span><span class="mf">0.0</span><span class="p">)</span> 
     <span class="n">p</span>                                                 <span class="o">=</span> <span class="n">atmo_data</span><span class="o">.</span><span class="n">pressure</span>          
     <span class="n">T</span>                                                 <span class="o">=</span> <span class="n">atmo_data</span><span class="o">.</span><span class="n">temperature</span>       
     <span class="n">rho</span>                                               <span class="o">=</span> <span class="n">atmo_data</span><span class="o">.</span><span class="n">density</span>          
     <span class="n">a</span>                                                 <span class="o">=</span> <span class="n">atmo_data</span><span class="o">.</span><span class="n">speed_of_sound</span>    
-    <span class="n">mu</span>                                                <span class="o">=</span> <span class="n">atmo_data</span><span class="o">.</span><span class="n">dynamic_viscosity</span>
-     
-    <span class="n">speed</span>                                             <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">velocity_vector</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">mu</span>                                                <span class="o">=</span> <span class="n">atmo_data</span><span class="o">.</span><span class="n">dynamic_viscosity</span> 
                                                       
     <span class="n">conditions</span>                                        <span class="o">=</span> <span class="n">Results</span><span class="p">()</span> 
     <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">altitude</span>                    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">altitude</span><span class="p">)</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>                 <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">speed</span><span class="o">/</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>                 <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">velocity_range</span><span class="o">/</span><span class="n">a</span><span class="p">)</span>
     <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">pressure</span>                    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">temperature</span>                 <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
     <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">density</span>                     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">rho</span><span class="p">)</span>
@@ -468,32 +511,29 @@
     <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">Cp</span>                          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">working_fluid</span><span class="o">.</span><span class="n">compute_cp</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">p</span><span class="p">))</span>
     <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">R</span>                           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">working_fluid</span><span class="o">.</span><span class="n">gas_specific_constant</span><span class="p">)</span>
     <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">speed_of_sound</span>              <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">velocity</span>                    <span class="o">=</span> <span class="n">velocity_vector</span> 
-    
-    <span class="n">AoA</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">velocity_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">velocity_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
-    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">inertial_rotations</span>        <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="n">AoA</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span> 
-    <span class="n">conditions</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">roll_rate</span>            <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">]])</span>  
-    <span class="n">conditions</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">pitch_rate</span>           <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">]])</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">yaw_rate</span>             <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">]])</span> 
+    <span class="n">num_ctrl_pts</span>      <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">velocity_range</span><span class="p">)</span>    
+    <span class="n">conditions</span><span class="o">.</span><span class="n">_size</span>  <span class="o">=</span> <span class="n">num_ctrl_pts</span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">expand_rows</span><span class="p">(</span><span class="n">num_ctrl_pts</span><span class="p">)</span>
+     
+    <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">velocity</span>                    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">velocity_range</span><span class="p">)</span> 
+    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">inertial_rotations</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>   <span class="o">=</span> <span class="n">angle_of_attack</span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">velocity_range</span><span class="p">)</span>
 
     <span class="c1"># setup conditions   </span>
-    <span class="n">segment</span>                                           <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>  
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                          <span class="o">=</span> <span class="n">conditions</span>    
-    <span class="n">orientations</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+    <span class="n">segment</span>                                          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>  
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                         <span class="o">=</span> <span class="n">conditions</span>    
+    <span class="n">orientations</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> 
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">residuals</span><span class="o">.</span><span class="n">network</span>                  <span class="o">=</span> <span class="n">Residuals</span><span class="p">()</span>
     
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">residuals</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">Residuals</span><span class="p">()</span>
-    <span class="n">propulsor</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> 
-    <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span>  <span class="n">propulsor</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> 
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">),</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
-            <span class="n">item</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor</span><span class="p">)</span> 
-      
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">distributor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span> 
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="p">[</span><span class="n">distributor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>  <span class="o">=</span> <span class="n">Conditions</span><span class="p">()</span>    
-    <span class="n">propulsor</span><span class="o">.</span><span class="n">append_propulsor_unknowns_and_residuals</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
-         
-    <span class="k">return</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span> <span class="p">,</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span></div>
+    <span class="c1"># append component-specific operating conditions </span>
+    <span class="n">component</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>    
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">expand_rows</span><span class="p">(</span><span class="n">num_ctrl_pts</span><span class="p">)</span>              
+    <span class="k">return</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span></div>
 
+ 
+    
+    
 </pre></div>
 
                 </article>

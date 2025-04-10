@@ -436,7 +436,7 @@
         <span class="c1"># Divergence Mach number, fit to Concorde data </span>
         <span class="n">Mcc</span>    <span class="o">=</span>  <span class="mf">0.95</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span>  
     <span class="k">else</span><span class="p">:</span>  
-        <span class="c1"># Get effective Cl_wings and sweep </span>
+        <span class="c1"># Get effective CLift_wings and sweep</span>
         <span class="n">tc</span> <span class="o">=</span> <span class="n">t_c_w</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">sweep_w</span><span class="p">)</span>
         <span class="n">cl</span> <span class="o">=</span> <span class="n">Cl</span><span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">sweep_w</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 

@@ -389,23 +389,47 @@
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Mission.Solver.expand_state.html#RCAIDE.Library.Mission.Solver.expand_state.expand_state">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">expand_state</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
 <span class="w">    </span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Makes all vectors in the state the same size.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expands all state vectors to match number of control points</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">             - state:</span>
+<span class="sd">                numerics:</span>
+<span class="sd">                    number_of_control_points : int</span>
+<span class="sd">                        Number of discretization points [-]</span>
+<span class="sd">                expand_rows : function</span>
+<span class="sd">                    Method to expand state containers</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    state.numerics.number_of_control_points  [Unitless]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function ensures all state vectors in the segment have consistent dimensions</span>
+<span class="sd">    by expanding them to match the number of control points used for discretization.</span>
+<span class="sd">       </span>
+<span class="sd">    **Calculation Process**</span>
+<span class="sd">        1. Get required vector size from numerics</span>
+<span class="sd">        2. Call expand_rows to resize all state containers:</span>
+<span class="sd">            - conditions</span>
+<span class="sd">            - unknowns</span>
+<span class="sd">            - residuals</span>
+<span class="sd">            - differentials</span>
 
-<span class="sd">    Outputs:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * All state vectors should have same length</span>
+<span class="sd">        * Expansion preserves vector values</span>
+<span class="sd">        * State containers support expand_rows method</span>
+<span class="sd">        * Control points already properly set</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    &quot;&quot;&quot;</span>       
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments</span>
+<span class="sd">    &quot;&quot;&quot;</span>     
 
     <span class="n">n_points</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">number_of_control_points</span>
     

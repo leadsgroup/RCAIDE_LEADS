@@ -403,37 +403,84 @@
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.generate_V_n_diagram">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_V_n_diagram</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">analyses</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">delta_ISA</span><span class="p">):</span>
 <span class="w">    </span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Computes a V-n diagram for a given aircraft and given regulations for ISA conditions</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    S. Gudmundsson &quot;General Aviation Aircraft Design: Applied Methods and Procedures&quot;, Butterworth-Heinemann; 1 edition</span>
-<span class="sd">    CFR FAR Part 23: https://www.ecfr.gov/cgi-bin/text-idx?SID=0e6a13c7c1de7f501d0eb0a4d71418bd&amp;mc=true&amp;tpl=/ecfrbrowse/Title14/14cfr23_main_02.tpl</span>
-<span class="sd">    CFR FAR Part 25: https://www.ecfr.gov/cgi-bin/text-idx?tpl=/ecfrbrowse/Title14/14cfr25_main_02.tpl</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vehicle : Vehicle</span>
+<span class="sd">        The vehicle instance containing:</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Wing reference area [m²]</span>
+<span class="sd">            - maximum_lift_coefficient : float</span>
+<span class="sd">                Maximum lift coefficient</span>
+<span class="sd">            - minimum_lift_coefficient : float</span>
+<span class="sd">                Minimum lift coefficient</span>
+<span class="sd">            - chords.mean_aerodynamic : float</span>
+<span class="sd">                Mean aerodynamic chord [m]</span>
+<span class="sd">            - flight_envelope : Data</span>
+<span class="sd">                Container with:</span>
+<span class="sd">                    - FAR_part_number : str</span>
+<span class="sd">                        &#39;23&#39; or &#39;25&#39; for certification category</span>
+<span class="sd">                    - category : str</span>
+<span class="sd">                        For Part 23: &#39;normal&#39;, &#39;utility&#39;, &#39;acrobatic&#39;, or &#39;commuter&#39;</span>
+<span class="sd">                    - design_mach_number : float</span>
+<span class="sd">                        Cruise Mach number</span>
+<span class="sd">                    - positive_limit_load : float</span>
+<span class="sd">                        Positive load factor limit</span>
+<span class="sd">                    - negative_limit_load : float</span>
+<span class="sd">                        Negative load factor limit</span>
+<span class="sd">    analyses : Analyses</span>
+<span class="sd">        Container with atmosphere and aerodynamic analyses</span>
+<span class="sd">    altitude : float</span>
+<span class="sd">        Analysis altitude [m]</span>
+<span class="sd">    delta_ISA : float</span>
+<span class="sd">        Temperature offset from ISA conditions [K]</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    analyses.base.atmosphere               [RCAIDE data type]</span>
-<span class="sd">    vehicle.</span>
-<span class="sd">      reference_area                       [m^2]</span>
-<span class="sd">      maximum_lift_coefficient             [Unitless]</span>
-<span class="sd">      minimum_lift_coefficient             [Unitless]</span>
-<span class="sd">      chords.mean_aerodynamic              [m]</span>
-<span class="sd">      envelope.FARpart_number              [Unitless]</span>
-<span class="sd">        positive_limit_load               [Unitless]</span>
-<span class="sd">        negative_limit_load               [Unitless]</span>
-<span class="sd">        cruise_mach                        [Unitless]</span>
-<span class="sd">    weight                                 [kg]</span>
-<span class="sd">    altitude                               [m]</span>
-<span class="sd">    delta_ISA                              [deg C]</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    V_n_data : Data</span>
+<span class="sd">        Container of V-n diagram data including:</span>
+<span class="sd">            - limit_loads : Data</span>
+<span class="sd">                Positive and negative load factor limits</span>
+<span class="sd">            - airspeeds : Data</span>
+<span class="sd">                Critical airspeeds (Vs, Va, Vb, Vc, Vd)</span>
+<span class="sd">            - gust_load_factors : Data</span>
+<span class="sd">                Load factors from gust conditions</span>
+<span class="sd">            - load_factors : Data</span>
+<span class="sd">                Complete set of load factors vs velocity</span>
 
-<span class="sd">    Outputs:</span>
-<span class="sd">    V_n_data</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes the following critical speeds and conditions:</span>
+<span class="sd">        * Vs1: Stall speed</span>
+<span class="sd">        * Va: Maneuvering speed</span>
+<span class="sd">        * Vb: Design speed for maximum gust intensity</span>
+<span class="sd">        * Vc: Design cruise speed</span>
+<span class="sd">        * Vd: Design diving speed</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Quasi-steady aerodynamics</span>
+<span class="sd">        * Linear lift curve slope</span>
+<span class="sd">        * Rigid aircraft structure</span>
+<span class="sd">        * Standard atmosphere modified by altitude and delta_ISA</span>
 
-<span class="sd">    Description:</span>
-<span class="sd">    The script creates an aircraft V-n diagram based on the input parameters specified by the user.</span>
-<span class="sd">    Depending on the certification flag, an appropriate diagram, output and log files are created.</span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    Load factor limits are determined by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        n = \\frac{L}{W} = \\frac{\\rho V^2 S C_L}{2W}</span>
+
+<span class="sd">    Gust loads are computed using:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \\Delta n = \\frac{K_g U_de V a C_{L_\\alpha}}{498 W/S}</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] FAR Part 23: https://www.ecfr.gov/current/title-14/part-23</span>
+<span class="sd">    [2] FAR Part 25: https://www.ecfr.gov/current/title-14/part-25</span>
+<span class="sd">    [3] Gudmundsson, S. (2022). General Aviation Aircraft Design: Applied Methods and procedures. Elsevier. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">weight</span> <span class="o">=</span>  <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>

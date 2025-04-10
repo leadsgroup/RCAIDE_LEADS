@@ -395,7 +395,48 @@
 <div class="viewcode-block" id="Rocket_LH2">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Rocket_LH2.html#RCAIDE.Library.Attributes.Propellants.Rocket_LH2.Rocket_LH2">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Rocket_LH2</span><span class="p">(</span><span class="n">Propellant</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;LH2 Rocket Fuel Class</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing liquid hydrogen (LH2) fuel properties specifically for rocket </span>
+<span class="sd">    propulsion applications. Optimized for high-performance rocket engines with </span>
+<span class="sd">    oxygen as oxidizer.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the propellant (&#39;Rocket_LH2&#39;)</span>
+<span class="sd">    molecular_weight : float</span>
+<span class="sd">        Molecular weight in kg/kmol (12.644)</span>
+<span class="sd">    isentropic_expansion_factor : float</span>
+<span class="sd">        Ratio of specific heats (1.145)</span>
+<span class="sd">    combustion_temperature : float</span>
+<span class="sd">        Adiabatic flame temperature in K (3331.0)</span>
+<span class="sd">    gas_specific_constant : float</span>
+<span class="sd">        Specific gas constant in J/(kg*K) (8314.45986/molecular_weight)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements properties for rocket-grade liquid hydrogen, focusing on </span>
+<span class="sd">    parameters relevant to high-performance rocket engine applications. Properties </span>
+<span class="sd">    are optimized for use with liquid oxygen in bipropellant rocket engines.</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Isentropic Expansion Factor&#39;</span>
+<span class="sd">        Ratio of specific heats (cp/cv) for exhaust products</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Combustion Temperature&#39;</span>
+<span class="sd">        Theoretical maximum temperature achieved in the combustion chamber</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Gas Specific Constant&#39;</span>
+<span class="sd">        Individual gas constant for combustion products</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Properties are for rocket engine operating conditions</span>
+<span class="sd">        * O/F ratio of 5.50 (oxygen to fuel mass ratio)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Sutton, G. P., &amp; Biblarz, O. (2017). Rocket Propulsion Elements. John Wiley &amp; Sons Inc. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -411,7 +452,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">molecular_weight</span>            <span class="o">=</span> <span class="mf">12.644</span>                             <span class="c1"># [kg/kmol]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">isentropic_expansion_factor</span> <span class="o">=</span> <span class="mf">1.145</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combustion_temperature</span>      <span class="o">=</span> <span class="mf">3331.0</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">kelvin</span>                <span class="c1"># [K]                      </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gas_specific_constant</span>       <span class="o">=</span> <span class="p">(</span><span class="mf">8314.45986</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">molecular_weight</span><span class="p">)</span><span class="o">*</span><span class="n">Units</span><span class="p">[</span><span class="s1">&#39;J/(kg*K)&#39;</span><span class="p">]</span> <span class="c1"># [J/(kg-K)]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gas_specific_constant</span>       <span class="o">=</span> <span class="p">(</span><span class="mf">8314.45986</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">molecular_weight</span><span class="p">)</span><span class="o">*</span><span class="n">Units</span><span class="p">[</span><span class="s1">&#39;J/(kg*K)&#39;</span><span class="p">]</span> <span class="c1"># [J/(kg-K)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
 
 </pre></div>
 

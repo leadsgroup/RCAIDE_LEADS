@@ -1,0 +1,990 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Performance/Blade_Element_Momentum_Theory_Helmholtz_Wake/BEMT_Helmholtz_performance';</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Performance/Blade_Element_Momentum_Theory_Helmholtz_Wake/BEMT_Helmholtz_performance.html" />
+    <link rel="index" title="Index" href="../../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Performance/BEMT_Hemholtz_Vortex_Theory/BEMT_Helmholtz_performance.py</span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Jul 2024, RCAIDE Team </span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+ <span class="c1"># RCAIDE imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                              </span><span class="kn">import</span> <span class="n">Data</span> <span class="p">,</span> <span class="n">Units</span><span class="p">,</span> <span class="n">orientation_product</span><span class="p">,</span> <span class="n">orientation_transpose</span>  
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aerodynamics.Common.Lift</span><span class="w">    </span><span class="kn">import</span> <span class="n">compute_airfoil_aerodynamics</span><span class="p">,</span><span class="n">compute_inflow_and_tip_loss</span> 
+
+<span class="c1"># package imports</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w">  </span><span class="nn">np</span> 
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="c1">#  BEMT_Helmholtz_performance</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
+<div class="viewcode-block" id="BEMT_Helmholtz_performance">
+<a class="viewcode-back" href="../../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance.html#RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance.BEMT_Helmholtz_performance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">BEMT_Helmholtz_performance</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span> <span class="n">conditions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analyzes a general rotor given geometry and operating conditions using</span>
+<span class="sd">    Blade Element Momentum Theory with a Helmholtz Vortex Wake Prescription.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rotor : Data</span>
+<span class="sd">        Rotor component with the following attributes:</span>
+<span class="sd">            - number_of_blades : int</span>
+<span class="sd">                Number of blades on the rotor</span>
+<span class="sd">            - tip_radius : float</span>
+<span class="sd">                Tip radius of the rotor [m]</span>
+<span class="sd">            - hub_radius : float</span>
+<span class="sd">                Hub radius of the rotor [m]</span>
+<span class="sd">            - twist_distribution : array_like</span>
+<span class="sd">                Blade twist distribution [radians]</span>
+<span class="sd">            - chord_distribution : array_like</span>
+<span class="sd">                Blade chord distribution [m]</span>
+<span class="sd">            - sweep_distribution : array_like</span>
+<span class="sd">                Blade sweep distribution [m]</span>
+<span class="sd">            - radius_distribution : array_like</span>
+<span class="sd">                Radial station positions [m]</span>
+<span class="sd">            - thickness_to_chord : array_like</span>
+<span class="sd">                Thickness-to-chord ratio at each radial station</span>
+<span class="sd">            - airfoil_polar_stations : array_like</span>
+<span class="sd">                Indices of airfoil polars for each radial station</span>
+<span class="sd">            - airfoils : dict</span>
+<span class="sd">                Dictionary of airfoil objects</span>
+<span class="sd">            - number_azimuthal_stations : int</span>
+<span class="sd">                Number of azimuthal stations for 2D analysis</span>
+<span class="sd">            - nonuniform_freestream : bool</span>
+<span class="sd">                Flag for nonuniform freestream velocity</span>
+<span class="sd">            - use_2d_analysis : bool</span>
+<span class="sd">                Flag to use 2D (azimuthal) analysis</span>
+<span class="sd">            - body_to_prop_vel : function</span>
+<span class="sd">                Function to transform velocity from body to propeller frame</span>
+<span class="sd">            - orientation_euler_angles : list</span>
+<span class="sd">                Orientation of the rotor [rad, rad, rad]</span>
+<span class="sd">    conditions : Data</span>
+<span class="sd">        Flight conditions with:</span>
+<span class="sd">            - freestream : Data</span>
+<span class="sd">                Freestream properties</span>
+<span class="sd">                    - density : array_like</span>
+<span class="sd">                        Air density [kg/m³]</span>
+<span class="sd">                    - dynamic_viscosity : array_like</span>
+<span class="sd">                        Dynamic viscosity [kg/(m·s)]</span>
+<span class="sd">                    - speed_of_sound : array_like</span>
+<span class="sd">                        Speed of sound [m/s]</span>
+<span class="sd">                    - temperature : array_like</span>
+<span class="sd">                        Temperature [K]</span>
+<span class="sd">            - frames : Data</span>
+<span class="sd">                Reference frames</span>
+<span class="sd">                    - body : Data</span>
+<span class="sd">                        Body frame</span>
+<span class="sd">                        - transform_to_inertial : array_like</span>
+<span class="sd">                            Rotation matrix from body to inertial frame</span>
+<span class="sd">                    - inertial : Data</span>
+<span class="sd">                        Inertial frame</span>
+<span class="sd">                        - velocity_vector : array_like</span>
+<span class="sd">                            Velocity vector in inertial frame [m/s]</span>
+<span class="sd">            - energy : Data</span>
+<span class="sd">                Energy conditions</span>
+<span class="sd">                    - converters : dict</span>
+<span class="sd">                        Converter energy conditions indexed by tag</span>
+<span class="sd">                        - commanded_thrust_vector_angle : array_like</span>
+<span class="sd">                            Commanded thrust vector angle [rad]</span>
+<span class="sd">                        - blade_pitch_command : array_like</span>
+<span class="sd">                            Blade pitch command [rad]</span>
+<span class="sd">                        - omega : array_like</span>
+<span class="sd">                            Angular velocity [rad/s]</span>
+<span class="sd">                        - throttle : array_like</span>
+<span class="sd">                            Throttle setting [0-1]</span>
+<span class="sd">                        - design_flag : bool</span>
+<span class="sd">                            Flag indicating design condition</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function implements the Blade Element Momentum Theory (BEMT) with a Helmholtz</span>
+<span class="sd">    Vortex Wake model to analyze rotor performance. It calculates detailed aerodynamic</span>
+<span class="sd">    properties at each blade element and azimuthal position, accounting for 3D wake effects.</span>
+<span class="sd">    </span>
+<span class="sd">    The computation follows these steps:</span>
+<span class="sd">        1. Extract rotor parameters and operating conditions</span>
+<span class="sd">        2. Transform velocity from inertial to rotor frame</span>
+<span class="sd">        3. Set up the blade geometry (radial and azimuthal distributions)</span>
+<span class="sd">        4. Initialize induced velocities</span>
+<span class="sd">        5. Include effects of rotor incidence and external velocity fields if specified</span>
+<span class="sd">        6. Compute wake-induced inflow velocities using the Helmholtz wake model</span>
+<span class="sd">        7. Calculate aerodynamic forces (lift, drag) at each blade element</span>
+<span class="sd">        8. Compute circulation, thrust, and torque distributions</span>
+<span class="sd">        9. Apply tip loss corrections</span>
+<span class="sd">        10. Calculate integrated performance metrics (thrust, power, efficiency)</span>
+<span class="sd">        11. Store results in the conditions data structure</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * The wake is modeled using Helmholtz vortex filaments</span>
+<span class="sd">        * Blade element theory is used to compute local aerodynamic forces</span>
+<span class="sd">        * Tip losses are modeled using the Prandtl tip loss function</span>
+<span class="sd">        * Compressibility effects are accounted for through Mach number corrections</span>
+<span class="sd">        * Reynolds number effects on airfoil performance are included</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    The Helmholtz wake model represents the wake as a system of vortex filaments that</span>
+<span class="sd">    satisfy Helmholtz&#39;s vortex theorems. The induced velocities at each blade element</span>
+<span class="sd">    are computed by applying the Biot-Savart law to these vortex filaments.</span>
+<span class="sd">    </span>
+<span class="sd">    The blade forces are calculated using:</span>
+<span class="sd">        - Lift: :math:`L = 0.5\\cdot\\rho\\cdot W^2\\cdot c\\cdot Cl`</span>
+<span class="sd">        - Drag: :math:`D = 0.5\\cdot\\rho\\cdot W^2\\cdot c\\cdot Cd`</span>
+<span class="sd">        - Circulation: :math:`\\Gamma = 0.5\\cdot W\\cdot c\\cdot Cl`</span>
+<span class="sd">    </span>
+<span class="sd">    where:</span>
+<span class="sd">        - ρ is density</span>
+<span class="sd">        - W is relative velocity</span>
+<span class="sd">        - c is chord</span>
+<span class="sd">        - Cl is lift coefficient</span>
+<span class="sd">        - Cd is drag coefficient</span>
+<span class="sd">        - Γ is circulation</span>
+<span class="sd">    </span>
+<span class="sd">    The thrust and torque are then computed by resolving these forces perpendicular</span>
+<span class="sd">    and parallel to the rotor plane, respectively.</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Drela, M. &quot;Qprop Formulation&quot;, MIT AeroAstro, June 2006 http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf</span>
+<span class="sd">    [2] Leishman, Gordon J. Principles of helicopter aerodynamicsCambridge university press, 2006.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">commanded_TV</span>          <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">commanded_thrust_vector_angle</span>
+    <span class="n">pitch_c</span>               <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">blade_pitch_command</span>
+    <span class="n">eta</span>                   <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">throttle</span> 
+    <span class="n">omega</span>                 <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">omega</span>  
+    <span class="n">design_flag</span>           <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">design_flag</span>
+    <span class="n">B</span>                     <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">number_of_blades</span>
+    <span class="n">R</span>                     <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">tip_radius</span>
+    <span class="n">beta_0</span>                <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">twist_distribution</span>
+    <span class="n">c</span>                     <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">chord_distribution</span>
+    <span class="n">sweep</span>                 <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">sweep_distribution</span>     
+    <span class="n">r_1d</span>                  <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">radius_distribution</span>
+    <span class="n">tc</span>                    <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+    <span class="n">a_loc</span>                 <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">airfoil_polar_stations</span>
+    <span class="n">airfoils</span>              <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">airfoils</span> 
+    <span class="n">Na</span>                    <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">number_azimuthal_stations</span>
+    <span class="n">nonuniform_freestream</span> <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">nonuniform_freestream</span>
+    <span class="n">use_2d_analysis</span>       <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">use_2d_analysis</span>
+ 
+    <span class="c1"># Unpack freestream conditions</span>
+    <span class="n">rho</span>     <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">density</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">mu</span>      <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">dynamic_viscosity</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">a</span>       <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">T</span>       <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">temperature</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">Vv</span>      <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">velocity_vector</span>
+    <span class="n">nu</span>      <span class="o">=</span> <span class="n">mu</span><span class="o">/</span><span class="n">rho</span>
+    <span class="n">rho_0</span>   <span class="o">=</span> <span class="n">rho</span> 
+
+    <span class="c1"># Number of radial stations and segment control points</span>
+    <span class="n">Nr</span>       <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">ctrl_pts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Vv</span><span class="p">)</span>
+    
+    <span class="c1"># Helpful shorthands</span>
+    <span class="n">pi</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> 
+
+    <span class="c1"># Velocity in the rotor frame</span>
+    <span class="n">T_body2inertial</span>         <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">transform_to_inertial</span>
+    <span class="n">T_inertial2body</span>         <span class="o">=</span> <span class="n">orientation_transpose</span><span class="p">(</span><span class="n">T_body2inertial</span><span class="p">)</span>
+    <span class="n">V_body</span>                  <span class="o">=</span> <span class="n">orientation_product</span><span class="p">(</span><span class="n">T_inertial2body</span><span class="p">,</span><span class="n">Vv</span><span class="p">)</span>
+    <span class="n">body2thrust</span><span class="p">,</span><span class="n">orientation</span> <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">body_to_prop_vel</span><span class="p">(</span><span class="n">commanded_TV</span><span class="p">)</span> 
+    <span class="n">T_body2thrust</span>           <span class="o">=</span> <span class="n">orientation_transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">T_body2inertial</span><span class="p">[:])</span><span class="o">*</span><span class="n">body2thrust</span><span class="p">)</span>
+    <span class="n">V_thrust</span>                <span class="o">=</span> <span class="n">orientation_product</span><span class="p">(</span><span class="n">T_body2thrust</span><span class="p">,</span><span class="n">V_body</span><span class="p">)</span>
+
+    <span class="c1"># Check and correct for hover</span>
+    <span class="n">V</span>         <span class="o">=</span> <span class="n">V_thrust</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">V</span><span class="p">[</span><span class="n">V</span><span class="o">==</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1E-6</span> 
+
+    <span class="c1"># Non-dimensional radial distribution and differential radius</span>
+    <span class="n">chi</span>           <span class="o">=</span> <span class="n">r_1d</span><span class="o">/</span><span class="n">R</span>
+    <span class="n">diff_r</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">r_1d</span><span class="p">)</span>
+    <span class="n">deltar</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">r_1d</span><span class="p">))</span>
+    <span class="n">deltar</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="o">=</span> <span class="n">diff_r</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">diff_r</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">deltar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>     <span class="o">=</span> <span class="n">diff_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">deltar</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>    <span class="o">=</span> <span class="n">diff_r</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+
+    <span class="c1"># Calculating rotational parameters</span>
+    <span class="n">omegar</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span><span class="n">r_1d</span><span class="p">)</span>
+    <span class="n">n</span>        <span class="o">=</span> <span class="n">omega</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span>   <span class="c1"># Rotations per second</span>
+
+    <span class="c1"># 2 dimensional radial distribution non dimensionalized</span>
+    <span class="n">chi_2d</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">chi</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],(</span><span class="mi">1</span><span class="p">,</span><span class="n">Na</span><span class="p">))</span>
+    <span class="n">chi_2d</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">chi_2d</span><span class="p">[</span><span class="kc">None</span><span class="p">,:,:],</span> <span class="n">ctrl_pts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">r_dim_2d</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">r_1d</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="n">Na</span><span class="p">))</span>
+    <span class="n">r_dim_2d</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">r_dim_2d</span><span class="p">[</span><span class="kc">None</span><span class="p">,:,:],</span> <span class="n">ctrl_pts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">c_2d</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">c</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="n">Na</span><span class="p">))</span>
+    <span class="n">c_2d</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">c_2d</span><span class="p">[</span><span class="kc">None</span><span class="p">,:,:],</span> <span class="n">ctrl_pts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Azimuthal distribution of stations (in direction of rotation)</span>
+    <span class="n">psi</span>            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="n">Na</span><span class="o">+</span><span class="mi">1</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">psi_2d</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">psi</span><span class="p">),(</span><span class="n">Nr</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">psi_2d</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">psi_2d</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">ctrl_pts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+ 
+    <span class="n">total_blade_pitch</span> <span class="o">=</span> <span class="n">beta_0</span>  <span class="o">+</span>  <span class="n">pitch_c</span>
+    
+    <span class="c1"># apply blade sweep to azimuthal position</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sweep</span><span class="p">])</span><span class="o">!=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">use_2d_analysis</span>     <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">sweep_2d</span>            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">sweep</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">Na</span><span class="p">))</span>
+        <span class="n">sweep_offset_angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">sweep_2d</span><span class="o">/</span><span class="n">r_dim_2d</span><span class="p">)</span>
+        <span class="n">psi_2d</span>             <span class="o">+=</span> <span class="n">sweep_offset_angles</span>
+
+    <span class="c1"># Starting with uniform freestream</span>
+    <span class="n">ua</span>       <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ut</span>       <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ur</span>       <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Include velocities introduced by rotor incidence angles</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">V_thrust</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span><span class="mf">1e-3</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">V_thrust</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span> <span class="o">&gt;</span><span class="mf">1e-3</span><span class="p">))</span> <span class="ow">and</span> <span class="n">use_2d_analysis</span><span class="p">:</span>
+
+        <span class="c1"># y-component of freestream in the propeller cartesian plane</span>
+        <span class="n">Vy</span>  <span class="o">=</span> <span class="n">V_thrust</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+        <span class="n">Vy</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Vy</span><span class="p">,</span> <span class="n">Nr</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">Vy</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Vy</span><span class="p">,</span> <span class="n">Na</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># z-component of freestream in the propeller cartesian plane</span>
+        <span class="n">Vz</span>  <span class="o">=</span> <span class="n">V_thrust</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+        <span class="n">Vz</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Vz</span><span class="p">,</span> <span class="n">Nr</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">Vz</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Vz</span><span class="p">,</span> <span class="n">Na</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># compute resulting radial and tangential velocities in polar frame</span>
+        <span class="n">utz</span> <span class="o">=</span>  <span class="o">-</span><span class="n">Vz</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">psi_2d</span><span class="p">)</span>
+        <span class="n">urz</span> <span class="o">=</span>   <span class="n">Vz</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">psi_2d</span><span class="p">)</span>
+        <span class="n">uty</span> <span class="o">=</span>  <span class="o">-</span><span class="n">Vy</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">psi_2d</span><span class="p">)</span>
+        <span class="n">ury</span> <span class="o">=</span>   <span class="n">Vy</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">psi_2d</span><span class="p">)</span>
+
+        <span class="n">ut</span> <span class="o">+=</span>  <span class="p">(</span><span class="n">utz</span> <span class="o">+</span> <span class="n">uty</span><span class="p">)</span>  <span class="c1"># tangential velocity in direction of rotor rotation</span>
+        <span class="n">ur</span> <span class="o">+=</span>  <span class="p">(</span><span class="n">urz</span> <span class="o">+</span> <span class="n">ury</span><span class="p">)</span>  <span class="c1"># radial velocity (positive toward tip)</span>
+        <span class="n">ua</span> <span class="o">+=</span>  <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ut</span><span class="p">)</span> 
+    
+    <span class="c1"># Include external velocities introduced by user</span>
+    <span class="k">if</span> <span class="n">nonuniform_freestream</span><span class="p">:</span>
+        <span class="n">use_2d_analysis</span>   <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># include additional influences specified at rotor sections, shape=(ctrl_pts,Nr,Na)</span>
+        <span class="n">ua</span> <span class="o">+=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">axial_velocities_2d</span>
+        <span class="n">ut</span> <span class="o">+=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">tangential_velocities_2d</span>
+        <span class="n">ur</span> <span class="o">+=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">radial_velocities_2d</span>
+
+    <span class="k">if</span> <span class="n">use_2d_analysis</span><span class="p">:</span>
+        <span class="c1"># make everything 2D with shape (ctrl_pts,Nr,Na)</span>
+
+        <span class="c1"># 2-D freestream velocity and omega*r</span>
+        <span class="n">V_2d</span>   <span class="o">=</span> <span class="n">V_thrust</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+        <span class="n">V_2d</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">V_2d</span><span class="p">,</span> <span class="n">Na</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">V_2d</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">V_2d</span><span class="p">,</span> <span class="n">Nr</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">omegar</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span><span class="n">r_1d</span><span class="p">)[:,:,</span><span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="c1"># total velocities</span>
+        <span class="n">Ua</span>     <span class="o">=</span> <span class="n">V_2d</span> <span class="o">+</span> <span class="n">ua</span>
+
+        <span class="c1"># 2-D blade pitch and radial distributions</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">pitch_c</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># control variable is the blade pitch, repeat around azimuth</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">total_blade_pitch</span><span class="p">[:,:,</span><span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">total_blade_pitch</span><span class="p">[:,:,</span><span class="kc">None</span><span class="p">],(</span><span class="n">ctrl_pts</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Na</span> <span class="p">))</span>
+
+        <span class="n">r</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">r_1d</span><span class="p">[</span><span class="kc">None</span><span class="p">,:,</span><span class="kc">None</span><span class="p">],</span> <span class="p">(</span><span class="n">ctrl_pts</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Na</span><span class="p">))</span>
+        <span class="n">c</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="kc">None</span><span class="p">,:,</span><span class="kc">None</span><span class="p">],</span> <span class="p">(</span><span class="n">ctrl_pts</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Na</span><span class="p">))</span>
+        <span class="n">deltar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">deltar</span><span class="p">[</span><span class="kc">None</span><span class="p">,:,</span><span class="kc">None</span><span class="p">],</span> <span class="p">(</span><span class="n">ctrl_pts</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Na</span><span class="p">))</span>
+
+        <span class="c1"># 2-D atmospheric properties</span>
+        <span class="n">a</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">a</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="n">Nr</span><span class="p">))</span>
+        <span class="n">a</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">a</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">nu</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">nu</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="n">Nr</span><span class="p">))</span>
+        <span class="n">nu</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">nu</span><span class="p">[:,</span>  <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">rho</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="n">Nr</span><span class="p">))</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">rho</span><span class="p">[:,</span>  <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">T</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">T</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="n">Nr</span><span class="p">))</span>
+        <span class="n">T</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">T</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># total velocities</span>
+        <span class="n">r</span>      <span class="o">=</span> <span class="n">r_1d</span>
+        <span class="n">Ua</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">((</span><span class="n">V</span> <span class="o">+</span> <span class="n">ua</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+        <span class="n">beta</span>   <span class="o">=</span> <span class="n">total_blade_pitch</span>
+
+    <span class="c1"># Total velocities</span>
+    <span class="n">Ut</span>     <span class="o">=</span> <span class="n">omegar</span> <span class="o">-</span> <span class="n">ut</span>
+    <span class="n">U</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Ua</span><span class="o">*</span><span class="n">Ua</span> <span class="o">+</span> <span class="n">Ut</span><span class="o">*</span><span class="n">Ut</span> <span class="o">+</span> <span class="n">ur</span><span class="o">*</span><span class="n">ur</span><span class="p">)</span>
+
+    <span class="c1">#---------------------------------------------------------------------------</span>
+    <span class="c1"># COMPUTE WAKE-INDUCED INFLOW VELOCITIES AND RESULTING ROTOR PERFORMANCE</span>
+    <span class="c1">#---------------------------------------------------------------------------</span>
+    <span class="c1"># pack inputs</span>
+    <span class="n">wake_inputs</span>                       <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">velocity_total</span>        <span class="o">=</span> <span class="n">U</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">velocity_axial</span>        <span class="o">=</span> <span class="n">Ua</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">velocity_tangential</span>   <span class="o">=</span> <span class="n">Ut</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">ctrl_pts</span>              <span class="o">=</span> <span class="n">ctrl_pts</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">Nr</span>                    <span class="o">=</span> <span class="n">Nr</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">Na</span>                    <span class="o">=</span> <span class="n">Na</span>        
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">use_2d_analysis</span>       <span class="o">=</span> <span class="n">use_2d_analysis</span>        
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">twist_distribution</span>    <span class="o">=</span> <span class="n">beta</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">chord_distribution</span>    <span class="o">=</span> <span class="n">c</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">radius_distribution</span>   <span class="o">=</span> <span class="n">r</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">speed_of_sounds</span>       <span class="o">=</span> <span class="n">a</span>
+    <span class="n">wake_inputs</span><span class="o">.</span><span class="n">dynamic_viscosities</span>   <span class="o">=</span> <span class="n">nu</span>
+     
+    <span class="n">va</span><span class="p">,</span> <span class="n">vt</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Methods</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Rotor</span><span class="o">.</span><span class="n">Performance</span><span class="o">.</span><span class="n">Blade_Element_Momentum_Theory_Helmholtz_Wake</span><span class="o">.</span><span class="n">wake_model</span><span class="o">.</span><span class="n">evaluate_wake</span><span class="p">(</span><span class="n">rotor</span><span class="p">,</span><span class="n">wake_inputs</span><span class="p">,</span><span class="n">conditions</span><span class="p">)</span>
+    
+    <span class="c1"># compute new blade velocities</span>
+    <span class="n">Wa</span>   <span class="o">=</span> <span class="n">va</span> <span class="o">+</span> <span class="n">Ua</span>
+    <span class="n">Wt</span>   <span class="o">=</span> <span class="n">Ut</span> <span class="o">-</span> <span class="n">vt</span>
+
+    <span class="n">lamdaw</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_inflow_and_tip_loss</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">Wa</span><span class="p">,</span><span class="n">Wt</span><span class="p">,</span><span class="n">B</span><span class="p">)</span>
+
+    <span class="c1"># Compute aerodynamic forces based on specified input airfoil or surrogate</span>
+    <span class="n">Cl</span><span class="p">,</span> <span class="n">Cdval</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">alpha_disc</span><span class="p">,</span><span class="n">Ma</span><span class="p">,</span><span class="n">W</span><span class="p">,</span><span class="n">Re</span><span class="p">,</span><span class="n">Re_disc</span> <span class="o">=</span> <span class="n">compute_airfoil_aerodynamics</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">Wa</span><span class="p">,</span><span class="n">Wt</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">nu</span><span class="p">,</span><span class="n">airfoils</span><span class="p">,</span><span class="n">a_loc</span><span class="p">,</span><span class="n">ctrl_pts</span><span class="p">,</span><span class="n">Nr</span><span class="p">,</span><span class="n">Na</span><span class="p">,</span><span class="n">tc</span><span class="p">,</span><span class="n">use_2d_analysis</span><span class="p">)</span> 
+    
+    <span class="c1"># compute HFW circulation at the blade</span>
+    <span class="n">Gamma</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">W</span><span class="o">*</span><span class="n">c</span><span class="o">*</span><span class="n">Cl</span>  
+
+    <span class="c1">#---------------------------------------------------------------------------      </span>
+    <span class="c1"># tip loss correction for velocities, since tip loss correction is only applied to loads in prior BET iteration</span>
+    <span class="n">va</span>     <span class="o">=</span> <span class="n">F</span><span class="o">*</span><span class="n">va</span>
+    <span class="n">vt</span>     <span class="o">=</span> <span class="n">F</span><span class="o">*</span><span class="n">vt</span>
+    <span class="n">lamdaw</span> <span class="o">=</span> <span class="n">r</span><span class="o">*</span><span class="p">(</span><span class="n">va</span><span class="o">+</span><span class="n">Ua</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">*</span><span class="p">(</span><span class="n">Ut</span><span class="o">-</span><span class="n">vt</span><span class="p">))</span>
+
+    <span class="c1"># More Cd scaling from Mach from AA241ab notes for turbulent skin friction</span>
+    <span class="n">Tw_Tinf</span>     <span class="o">=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="mf">1.78</span><span class="o">*</span><span class="p">(</span><span class="n">Ma</span><span class="o">*</span><span class="n">Ma</span><span class="p">)</span>
+    <span class="n">Tp_Tinf</span>     <span class="o">=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="mf">0.035</span><span class="o">*</span><span class="p">(</span><span class="n">Ma</span><span class="o">*</span><span class="n">Ma</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.45</span><span class="o">*</span><span class="p">(</span><span class="n">Tw_Tinf</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span>
+    <span class="n">Tp</span>          <span class="o">=</span> <span class="p">(</span><span class="n">Tp_Tinf</span><span class="p">)</span><span class="o">*</span><span class="n">T</span>
+    <span class="n">Rp_Rinf</span>     <span class="o">=</span> <span class="p">(</span><span class="n">Tp_Tinf</span><span class="o">**</span><span class="mf">2.5</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Tp</span><span class="o">+</span><span class="mf">110.4</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mf">110.4</span><span class="p">)</span>
+    <span class="n">Cd</span>          <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="o">/</span><span class="n">Tp_Tinf</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">Rp_Rinf</span><span class="p">)</span><span class="o">**</span><span class="mf">0.2</span><span class="p">)</span><span class="o">*</span><span class="n">Cdval</span>
+
+    <span class="n">epsilon</span>                  <span class="o">=</span> <span class="n">Cd</span><span class="o">/</span><span class="n">Cl</span>
+    <span class="n">epsilon</span><span class="p">[</span><span class="n">epsilon</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.</span>
+
+    <span class="c1"># thrust and torque and their derivatives on the blade.</span>
+    <span class="n">blade_T_distribution</span>     <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="p">(</span><span class="n">Gamma</span><span class="o">*</span><span class="p">(</span><span class="n">Wt</span><span class="o">-</span><span class="n">epsilon</span><span class="o">*</span><span class="n">Wa</span><span class="p">))</span><span class="o">*</span><span class="n">deltar</span>
+    <span class="n">blade_Q_distribution</span>     <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="p">(</span><span class="n">Gamma</span><span class="o">*</span><span class="p">(</span><span class="n">Wa</span><span class="o">+</span><span class="n">epsilon</span><span class="o">*</span><span class="n">Wt</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">)</span><span class="o">*</span><span class="n">deltar</span>
+    <span class="n">blade_dT_dr</span>              <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="p">(</span><span class="n">Gamma</span><span class="o">*</span><span class="p">(</span><span class="n">Wt</span><span class="o">-</span><span class="n">epsilon</span><span class="o">*</span><span class="n">Wa</span><span class="p">))</span>
+    <span class="n">blade_dQ_dr</span>              <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="p">(</span><span class="n">Gamma</span><span class="o">*</span><span class="p">(</span><span class="n">Wa</span><span class="o">+</span><span class="n">epsilon</span><span class="o">*</span><span class="n">Wt</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">use_2d_analysis</span><span class="p">:</span>
+        <span class="n">blade_T_distribution_2d</span> <span class="o">=</span> <span class="n">blade_T_distribution</span>
+        <span class="n">blade_Q_distribution_2d</span> <span class="o">=</span> <span class="n">blade_Q_distribution</span>
+        <span class="n">blade_dT_dr_2d</span>          <span class="o">=</span> <span class="n">blade_dT_dr</span>
+        <span class="n">blade_dQ_dr_2d</span>          <span class="o">=</span> <span class="n">blade_dQ_dr</span>
+        <span class="n">blade_Gamma_2d</span>          <span class="o">=</span> <span class="n">Gamma</span>
+        <span class="n">alpha_2d</span>                <span class="o">=</span> <span class="n">alpha</span>
+
+        <span class="n">Va_2d</span> <span class="o">=</span> <span class="n">Wa</span>
+        <span class="n">Vt_2d</span> <span class="o">=</span> <span class="n">Wt</span>
+        <span class="n">V_disc</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Va_2d</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Vt_2d</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">M_disc</span>  <span class="o">=</span> <span class="n">Ma</span>
+        
+        <span class="n">Va_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">Wa</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>      <span class="c1"># averaged around the azimuth</span>
+        <span class="n">Vt_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">Wt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>      <span class="c1"># averaged around the azimuth</span>
+
+        <span class="n">Va_ind_2d</span>  <span class="o">=</span> <span class="n">va</span>
+        <span class="n">Vt_ind_2d</span>  <span class="o">=</span> <span class="n">vt</span>
+        <span class="n">Vt_ind_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">vt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Va_ind_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># set 1d blade loadings to be the average:</span>
+        <span class="n">blade_T_distribution</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">blade_T_distribution_2d</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">blade_Q_distribution</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">blade_Q_distribution_2d</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">blade_dT_dr</span>             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">blade_dT_dr_2d</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">blade_dQ_dr</span>             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">blade_dQ_dr_2d</span><span class="p">),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># compute the hub force / rotor drag distribution along the blade</span>
+        <span class="n">dL_2d</span>    <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">c_2d</span><span class="o">*</span><span class="n">Cd</span><span class="o">*</span><span class="n">omegar</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">deltar</span>
+        <span class="n">dD_2d</span>    <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">c_2d</span><span class="o">*</span><span class="n">Cl</span><span class="o">*</span><span class="n">omegar</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">deltar</span>
+
+        <span class="n">rotor_drag_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dL_2d</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">psi_2d</span><span class="p">)</span> <span class="o">+</span> <span class="n">dD_2d</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">psi_2d</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Va_2d</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Wa</span><span class="p">[</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Vt_2d</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Wt</span><span class="p">[</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">blade_T_distribution_2d</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">blade_T_distribution</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">blade_Q_distribution_2d</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">blade_Q_distribution</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">blade_dT_dr_2d</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">blade_dT_dr</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">blade_dQ_dr_2d</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">blade_dQ_dr</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">blade_Gamma_2d</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Gamma</span><span class="p">[</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">alpha_2d</span>                 <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">alpha</span><span class="p">[</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">V_disc</span>                   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Va_2d</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Vt_2d</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">M_disc</span>                   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Ma</span><span class="p">[</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="n">Vt_avg</span>                  <span class="o">=</span> <span class="n">Wt</span>
+        <span class="n">Va_avg</span>                  <span class="o">=</span> <span class="n">Wa</span>
+        <span class="n">Vt_ind_avg</span>              <span class="o">=</span> <span class="n">vt</span>
+        <span class="n">Va_ind_avg</span>              <span class="o">=</span> <span class="n">va</span>
+        <span class="n">Va_ind_2d</span>               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">va</span><span class="p">[</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Vt_ind_2d</span>               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">vt</span><span class="p">[</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># compute the hub force / rotor drag distribution along the blade</span>
+        <span class="n">dL</span>    <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">c</span><span class="o">*</span><span class="n">Cd</span><span class="o">*</span><span class="n">omegar</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">deltar</span>
+        <span class="n">dL_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">dL</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">dD</span>    <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">c</span><span class="o">*</span><span class="n">Cl</span><span class="o">*</span><span class="n">omegar</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">deltar</span>
+        <span class="n">dD_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">dD</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Na</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">rotor_drag_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dL_2d</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">psi_2d</span><span class="p">)</span> <span class="o">+</span> <span class="n">dD_2d</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">psi_2d</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># forces</span>
+    <span class="n">thrust</span>                  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">((</span><span class="n">B</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">blade_T_distribution</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">torque</span>                  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">((</span><span class="n">B</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">blade_Q_distribution</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">rotor_drag</span>              <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">((</span><span class="n">B</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rotor_drag_distribution</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">power</span>                   <span class="o">=</span> <span class="n">omega</span><span class="o">*</span><span class="n">torque</span>
+
+    <span class="c1"># calculate coefficients</span>
+    <span class="n">D</span>        <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">R</span>
+    <span class="n">Cq</span>       <span class="o">=</span> <span class="n">torque</span><span class="o">/</span><span class="p">(</span><span class="n">rho_0</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="p">))</span>
+    <span class="n">Ct</span>       <span class="o">=</span> <span class="n">thrust</span><span class="o">/</span><span class="p">(</span><span class="n">rho_0</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="p">))</span>
+    <span class="n">Cp</span>       <span class="o">=</span> <span class="n">power</span><span class="o">/</span><span class="p">(</span><span class="n">rho_0</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="p">))</span>
+    <span class="n">Crd</span>      <span class="o">=</span> <span class="n">rotor_drag</span><span class="o">/</span><span class="p">(</span><span class="n">rho_0</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="p">))</span>
+    <span class="n">etap</span>     <span class="o">=</span> <span class="n">V</span><span class="o">*</span><span class="n">thrust</span><span class="o">/</span><span class="n">power</span>
+    <span class="n">A</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">rotor</span><span class="o">.</span><span class="n">hub_radius</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">FoM</span>      <span class="o">=</span> <span class="n">thrust</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">thrust</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">rho_0</span><span class="o">*</span><span class="n">A</span><span class="p">))</span><span class="o">/</span><span class="n">power</span>  
+
+    <span class="c1"># prevent things from breaking</span>
+    <span class="n">Cq</span><span class="p">[</span><span class="n">Cq</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">]</span>                   <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">Ct</span><span class="p">[</span><span class="n">Ct</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">]</span>                   <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">Cp</span><span class="p">[</span><span class="n">Cp</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">]</span>                   <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">thrust</span><span class="p">[</span><span class="n">omega</span><span class="o">&lt;</span><span class="mf">0.0</span><span class="p">]</span>          <span class="o">=</span> <span class="o">-</span><span class="n">thrust</span><span class="p">[</span><span class="n">omega</span><span class="o">&lt;</span><span class="mf">0.0</span><span class="p">]</span>
+    <span class="n">thrust</span><span class="p">[</span><span class="n">omega</span><span class="o">==</span><span class="mf">0.0</span><span class="p">]</span>         <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">power</span><span class="p">[</span><span class="n">omega</span><span class="o">==</span><span class="mf">0.0</span><span class="p">]</span>          <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">torque</span><span class="p">[</span><span class="n">omega</span><span class="o">==</span><span class="mf">0.0</span><span class="p">]</span>         <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">rotor_drag</span><span class="p">[</span><span class="n">omega</span><span class="o">==</span><span class="mf">0.0</span><span class="p">]</span>     <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">Ct</span><span class="p">[</span><span class="n">omega</span><span class="o">==</span><span class="mf">0.0</span><span class="p">]</span>             <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">Cp</span><span class="p">[</span><span class="n">omega</span><span class="o">==</span><span class="mf">0.0</span><span class="p">]</span>             <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">etap</span><span class="p">[</span><span class="n">omega</span><span class="o">==</span><span class="mf">0.0</span><span class="p">]</span>           <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">thrust</span><span class="p">[</span><span class="n">eta</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>  <span class="o">&lt;=</span><span class="mf">0.0</span><span class="p">]</span>    <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">power</span><span class="p">[</span><span class="n">eta</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>  <span class="o">&lt;=</span><span class="mf">0.0</span><span class="p">]</span>     <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">torque</span><span class="p">[</span><span class="n">eta</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>  <span class="o">&lt;=</span><span class="mf">0.0</span><span class="p">]</span>    <span class="o">=</span> <span class="mf">0.0</span>  
+    <span class="n">power</span><span class="p">[</span><span class="n">eta</span><span class="o">&gt;</span><span class="mf">1.0</span><span class="p">]</span>             <span class="o">=</span> <span class="n">power</span><span class="p">[</span><span class="n">eta</span><span class="o">&gt;</span><span class="mf">1.0</span><span class="p">]</span><span class="o">*</span><span class="n">eta</span><span class="p">[</span><span class="n">eta</span><span class="o">&gt;</span><span class="mf">1.0</span><span class="p">]</span>
+    <span class="n">thrust</span><span class="p">[</span><span class="n">eta</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="mf">1.0</span><span class="p">,:]</span>     <span class="o">=</span> <span class="n">thrust</span><span class="p">[</span><span class="n">eta</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="mf">1.0</span><span class="p">,:]</span><span class="o">*</span><span class="n">eta</span><span class="p">[</span><span class="n">eta</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="mf">1.0</span><span class="p">,:]</span> 
+
+    <span class="n">disc_loading</span>           <span class="o">=</span> <span class="n">thrust</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">power_loading</span>          <span class="o">=</span> <span class="n">thrust</span><span class="o">/</span><span class="p">(</span><span class="n">power</span><span class="p">)</span>
+
+    <span class="c1"># Make the thrust a 3D vector</span>
+    <span class="n">thrust_prop_frame</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ctrl_pts</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">thrust_prop_frame</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">thrust</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">thrust_vector</span>          <span class="o">=</span> <span class="n">orientation_product</span><span class="p">(</span><span class="n">orientation_transpose</span><span class="p">(</span><span class="n">T_body2thrust</span><span class="p">),</span><span class="n">thrust_prop_frame</span><span class="p">)</span>
+     
+    <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>  <span class="o">=</span> <span class="n">Data</span><span class="p">(</span> 
+                <span class="n">torque</span>                            <span class="o">=</span> <span class="n">torque</span><span class="p">,</span>
+                <span class="n">thrust</span>                            <span class="o">=</span> <span class="n">thrust_vector</span><span class="p">,</span>  
+                <span class="n">power</span>                             <span class="o">=</span> <span class="n">power</span><span class="p">,</span> 
+                <span class="n">azimuthal_distribution</span>            <span class="o">=</span> <span class="n">psi</span><span class="p">,</span>  
+                <span class="n">design_flag</span>                       <span class="o">=</span> <span class="n">design_flag</span><span class="p">,</span>             
+                <span class="n">rpm</span>                               <span class="o">=</span> <span class="n">omega</span> <span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">rpm</span> <span class="p">,</span>   
+                <span class="n">tip_mach</span>                          <span class="o">=</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">R</span> <span class="o">/</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="p">,</span> 
+                <span class="n">efficiency</span>                        <span class="o">=</span> <span class="n">etap</span><span class="p">,</span>         
+                <span class="n">number_radial_stations</span>            <span class="o">=</span> <span class="n">Nr</span><span class="p">,</span>
+                <span class="n">orientation</span>                       <span class="o">=</span> <span class="n">orientation</span><span class="p">,</span>  
+                <span class="n">number_azimuthal_stations</span>         <span class="o">=</span> <span class="n">Na</span><span class="p">,</span>
+                <span class="n">advance_ratio</span>                     <span class="o">=</span> <span class="n">V</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">D</span><span class="p">),</span> 
+                <span class="n">disc_radial_distribution</span>          <span class="o">=</span> <span class="n">r_dim_2d</span><span class="p">,</span>
+                <span class="n">speed_of_sound</span>                    <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="p">,</span>
+                <span class="n">density</span>                           <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">density</span><span class="p">,</span>
+                <span class="n">velocity</span>                          <span class="o">=</span> <span class="n">Vv</span><span class="p">,</span>
+                <span class="n">blade_tangential_induced_velocity</span> <span class="o">=</span> <span class="n">Vt_ind_avg</span><span class="p">,</span>
+                <span class="n">blade_axial_induced_velocity</span>      <span class="o">=</span> <span class="n">Va_ind_avg</span><span class="p">,</span>
+                <span class="n">blade_reynolds_number</span>             <span class="o">=</span> <span class="n">Re</span><span class="p">,</span>
+                <span class="n">blade_effective_angle_of_attack</span>   <span class="o">=</span> <span class="n">alpha</span><span class="p">,</span>
+                <span class="n">disc_reynolds_number</span>              <span class="o">=</span> <span class="n">Re_disc</span><span class="p">,</span>
+                <span class="n">disc_effective_angle_of_attack</span>    <span class="o">=</span> <span class="n">alpha_disc</span><span class="p">,</span>
+                <span class="n">blade_tangential_velocity</span>         <span class="o">=</span> <span class="n">Vt_avg</span><span class="p">,</span>
+                <span class="n">blade_axial_velocity</span>              <span class="o">=</span> <span class="n">Va_avg</span><span class="p">,</span>
+                <span class="n">blade_velocity</span>                    <span class="o">=</span> <span class="n">W</span><span class="p">,</span>
+                <span class="n">blade_Mach_number</span>                 <span class="o">=</span> <span class="n">Ma</span><span class="p">,</span>
+                <span class="n">disc_tangential_induced_velocity</span>  <span class="o">=</span> <span class="n">Vt_ind_2d</span><span class="p">,</span>
+                <span class="n">disc_axial_induced_velocity</span>       <span class="o">=</span> <span class="n">Va_ind_2d</span><span class="p">,</span>
+                <span class="n">disc_tangential_velocity</span>          <span class="o">=</span> <span class="n">Vt_2d</span><span class="p">,</span>
+                <span class="n">disc_axial_velocity</span>               <span class="o">=</span> <span class="n">Va_2d</span><span class="p">,</span>
+                <span class="n">disc_velocity</span>                     <span class="o">=</span> <span class="n">V_disc</span><span class="p">,</span>
+                <span class="n">disc_Mach_number</span>                  <span class="o">=</span> <span class="n">M_disc</span><span class="p">,</span>
+                <span class="n">drag_coefficient</span>                  <span class="o">=</span> <span class="n">Cd</span><span class="p">,</span>
+                <span class="n">lift_coefficient</span>                  <span class="o">=</span> <span class="n">Cl</span><span class="p">,</span> 
+                <span class="n">disc_loading</span>                      <span class="o">=</span> <span class="n">disc_loading</span><span class="p">,</span> 
+                <span class="n">power_loading</span>                     <span class="o">=</span> <span class="n">power_loading</span><span class="p">,</span>      
+                <span class="n">omega</span>                             <span class="o">=</span> <span class="n">omega</span><span class="p">,</span>
+                <span class="n">disc_circulation</span>                  <span class="o">=</span> <span class="n">blade_Gamma_2d</span><span class="p">,</span>
+                <span class="n">blade_dT_dr</span>                       <span class="o">=</span> <span class="n">blade_dT_dr</span><span class="p">,</span>
+                <span class="n">disc_dT_dr</span>                        <span class="o">=</span> <span class="n">blade_dT_dr_2d</span><span class="p">,</span>
+                <span class="n">blade_thrust_distribution</span>         <span class="o">=</span> <span class="n">blade_T_distribution</span><span class="p">,</span>
+                <span class="n">disc_thrust_distribution</span>          <span class="o">=</span> <span class="n">blade_T_distribution_2d</span><span class="p">,</span> 
+                <span class="n">thrust_per_blade</span>                  <span class="o">=</span> <span class="n">thrust</span><span class="o">/</span><span class="n">B</span><span class="p">,</span>
+                <span class="n">thrust_coefficient</span>                <span class="o">=</span> <span class="n">Ct</span><span class="p">,</span>
+                <span class="n">disc_azimuthal_distribution</span>       <span class="o">=</span> <span class="n">psi_2d</span><span class="p">,</span>
+                <span class="n">blade_dQ_dr</span>                       <span class="o">=</span> <span class="n">blade_dQ_dr</span><span class="p">,</span>
+                <span class="n">disc_dQ_dr</span>                        <span class="o">=</span> <span class="n">blade_dQ_dr_2d</span><span class="p">,</span>
+                <span class="n">blade_torque_distribution</span>         <span class="o">=</span> <span class="n">blade_Q_distribution</span><span class="p">,</span>
+                <span class="n">disc_torque_distribution</span>          <span class="o">=</span> <span class="n">blade_Q_distribution_2d</span><span class="p">,</span>
+                <span class="n">torque_per_blade</span>                  <span class="o">=</span> <span class="n">torque</span><span class="o">/</span><span class="n">B</span><span class="p">,</span>
+                <span class="n">torque_coefficient</span>                <span class="o">=</span> <span class="n">Cq</span><span class="p">,</span>
+                <span class="n">power_coefficient</span>                 <span class="o">=</span> <span class="n">Cp</span><span class="p">,</span> 
+                <span class="n">converged_inflow_ratio</span>            <span class="o">=</span> <span class="n">lamdaw</span><span class="p">,</span> 
+                <span class="n">blade_H_distribution</span>              <span class="o">=</span> <span class="n">rotor_drag_distribution</span><span class="p">,</span>
+                <span class="n">rotor_drag</span>                        <span class="o">=</span> <span class="n">rotor_drag</span><span class="p">,</span>
+                <span class="n">rotor_drag_coefficient</span>            <span class="o">=</span> <span class="n">Crd</span><span class="p">,</span>
+                <span class="n">blade_pitch_command</span>               <span class="o">=</span> <span class="n">pitch_c</span><span class="p">,</span>
+                <span class="n">commanded_thrust_vector_angle</span>     <span class="o">=</span> <span class="n">commanded_TV</span><span class="p">,</span> 
+                <span class="n">figure_of_merit</span>                   <span class="o">=</span> <span class="n">FoM</span><span class="p">,</span> 
+        <span class="p">)</span>  
+
+    <span class="k">return</span> </div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

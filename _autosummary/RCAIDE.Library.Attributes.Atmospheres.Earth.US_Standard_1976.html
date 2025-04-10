@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -536,7 +536,90 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">US_Standard_1976</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Atmospheres/Earth/US_Standard_1976.html#US_Standard_1976"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.Atmosphere.html#RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere" title="RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere"><code class="xref py py-class docutils literal notranslate"><span class="pre">Atmosphere</span></code></a></p>
-<p>Contains US Standard 1976 values.</p>
+<p>Implementation of the 1976 U.S. Standard Atmosphere model.</p>
+<p>This class provides a complete implementation of the U.S. Standard Atmosphere (1976),
+defining atmospheric properties at various altitudes based on empirical data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976.fluid_properties">
+<span class="sig-name descname"><span class="pre">fluid_properties</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976.fluid_properties" title="Link to this definition">#</a></dt>
+<dd><p>Air properties object containing gas characteristics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Library.Attributes.Gases.Air.html#RCAIDE.Library.Attributes.Gases.Air.Air" title="RCAIDE.Library.Attributes.Gases.Air.Air">Air</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976.planet">
+<span class="sig-name descname"><span class="pre">planet</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976.planet" title="Link to this definition">#</a></dt>
+<dd><p>Earth properties object containing planetary parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Analyses.Planets.Earth.html#RCAIDE.Framework.Analyses.Planets.Earth.Earth" title="RCAIDE.Framework.Analyses.Planets.Earth.Earth">Earth</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976.breaks">
+<span class="sig-name descname"><span class="pre">breaks</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976.breaks" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Container for atmospheric property breakpoints</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>altitude<span class="classifier">array</span></dt><dd><p>Geopotential altitude points in kilometers, ranging from -2 km to 84.852 km</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>temperature<span class="classifier">array</span></dt><dd><p>Temperature values at break points in Kelvin</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pressure<span class="classifier">array</span></dt><dd><p>Pressure values at break points in Pascal</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>density<span class="classifier">array</span></dt><dd><p>Density values at break points in kg/m³</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The U.S. Standard Atmosphere 1976 is a model defining atmospheric properties
+up to 1000 km. This implementation covers the range from -2 km to 84.852 km,
+which encompasses the primary region of interest for most aircraft operations.</p>
+<p>The model divides the atmosphere into layers with different temperature gradients
+and provides standardized values for Temperature, Pressure, Density, Speed of sound, and Viscosity.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Hydrostatic equilibrium</p></li>
+<li><p>Perfect gas behavior</p></li>
+<li><p>Homogeneous composition below 80 km</p></li>
+<li><p>Gravity variation with geometric height</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] NOAA, NASA, USAF, U.S. Standard Atmosphere, 1976 (1976). Retrieved December 30, 2024, from <a class="reference external" href="https://www.ngdc.noaa.gov/stp/space-weather/online-publications/miscellaneous/us-standard-atmosphere-1976/us-standard-atmosphere_st76-1562_noaa.pdf">https://www.ngdc.noaa.gov/stp/space-weather/online-publications/miscellaneous/us-standard-atmosphere-1976/us-standard-atmosphere_st76-1562_noaa.pdf</a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.Earth.Constant_Temperature.html#module-RCAIDE.Library.Attributes.Atmospheres.Earth.Constant_Temperature" title="RCAIDE.Library.Attributes.Atmospheres.Earth.Constant_Temperature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Atmospheres.Earth.Constant_Temperature</span></code></a></dt><dd><p>Simplified constant temperature model</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </section>
@@ -588,7 +671,12 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976"><code class="docutils literal notranslate"><span class="pre">US_Standard_1976</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976"><code class="docutils literal notranslate"><span class="pre">US_Standard_1976</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976.fluid_properties"><code class="docutils literal notranslate"><span class="pre">US_Standard_1976.fluid_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976.planet"><code class="docutils literal notranslate"><span class="pre">US_Standard_1976.planet</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976.breaks"><code class="docutils literal notranslate"><span class="pre">US_Standard_1976.breaks</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

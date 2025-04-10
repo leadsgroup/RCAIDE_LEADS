@@ -387,6 +387,7 @@
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
  <span class="c1"># RCAIDE imports   </span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.Converter</span><span class="w">  </span><span class="kn">import</span> <span class="n">Converter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span><span class="p">,</span><span class="n">Units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Fan.append_fan_conditions</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_fan_conditions</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
@@ -416,18 +417,18 @@
 <span class="sd">    -----</span>
 <span class="sd">    The Fan class models the compression and energy addition process in a fan stage.</span>
 <span class="sd">    The model:</span>
-<span class="sd">    * Calculates work input required for given pressure ratio</span>
-<span class="sd">    * Accounts for losses through polytropic efficiency</span>
-<span class="sd">    * Handles variable speed operation</span>
-<span class="sd">    * Assumes axial flow conditions</span>
-<span class="sd">    * Models both subsonic and transonic fan operation</span>
+<span class="sd">        * Calculates work input required for given pressure ratio</span>
+<span class="sd">        * Accounts for losses through polytropic efficiency</span>
+<span class="sd">        * Handles variable speed operation</span>
+<span class="sd">        * Assumes axial flow conditions</span>
+<span class="sd">        * Models both subsonic and transonic fan operation</span>
 
 <span class="sd">    **Major Assumptions**</span>
-<span class="sd">    * Pressure ratio and efficiency do not change with varying conditions</span>
-<span class="sd">    * Uniform flow at inlet and exit</span>
-<span class="sd">    * No radial variations in flow properties</span>
-<span class="sd">    * Adiabatic process (no heat transfer with surroundings)</span>
-<span class="sd">    * Steady flow conditions</span>
+<span class="sd">        * Pressure ratio and efficiency do not change with varying conditions</span>
+<span class="sd">        * Uniform flow at inlet and exit</span>
+<span class="sd">        * No radial variations in flow properties</span>
+<span class="sd">        * Adiabatic process (no heat transfer with surroundings)</span>
+<span class="sd">        * Steady flow conditions</span>
 
 <span class="sd">    **Definitions**</span>
 
@@ -465,15 +466,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                            <span class="o">=</span> <span class="s1">&#39;Fan&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">polytropic_efficiency</span>          <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mechanical_efficiency</span>          <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pressure_ratio</span>                 <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">angular_velocity</span>               <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure_ratio</span>                 <span class="o">=</span> <span class="mf">1.0</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">design_angular_velocity</span>        <span class="o">=</span> <span class="mi">3000</span> <span class="o">*</span>  <span class="n">Units</span><span class="o">.</span><span class="n">rpm</span>
 
 
 <div class="viewcode-block" id="Fan.append_operating_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Fan.html#RCAIDE.Library.Components.Powertrain.Converters.Fan.Fan.append_operating_conditions">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor</span><span class="p">):</span> 
-        <span class="n">propulsor_conditions</span> <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
-        <span class="n">append_fan_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">,</span><span class="n">noise_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  
+        <span class="n">append_fan_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">)</span>
         <span class="k">return</span>                                </div>
 </div>
 

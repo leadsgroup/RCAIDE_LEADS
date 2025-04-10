@@ -388,22 +388,42 @@
 <div class="viewcode-block" id="find_total_mass_gain">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_total_mass_gain.html#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_total_mass_gain.find_total_mass_gain">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_total_mass_gain</span><span class="p">(</span><span class="n">battery</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;finds the total mass of air that the battery </span>
-<span class="sd">    accumulates when discharged fully</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the total mass of air that the battery accumulates when discharged fully.</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Earth Atmospheric composition</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    battery : Battery</span>
+<span class="sd">        The battery component with the following attributes:</span>
+<span class="sd">            - maximum_energy : float</span>
+<span class="sd">                Maximum energy capacity of the battery [J]</span>
+<span class="sd">            - mass_gain_factor : float</span>
+<span class="sd">                Mass of air gained per unit of energy [kg/J]</span>
 <span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    battery.maximum_energy [J]</span>
-<span class="sd">    battery.</span>
-<span class="sd">      mass_gain_factor [kg/W]</span>
-<span class="sd">      </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">      mdot             [kg]</span>
-<span class="sd">    &quot;&quot;&quot;</span> 
-    
-    <span class="n">mgain</span><span class="o">=</span><span class="n">battery</span><span class="o">.</span><span class="n">maximum_energy</span><span class="o">*</span><span class="n">battery</span><span class="o">.</span><span class="n">mass_gain_factor</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mgain : float</span>
+<span class="sd">        Total mass gain when the battery is fully discharged [kg]</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the total mass of air that a battery would accumulate</span>
+<span class="sd">    when discharged from full capacity to zero. This is relevant for metal-air batteries</span>
+<span class="sd">    (such as aluminum-air or zinc-air) where oxygen from the air is consumed during</span>
+<span class="sd">    the discharge process, resulting in a mass increase.</span>
+<span class="sd">    </span>
+<span class="sd">    The calculation is based on a linear relationship between energy output and</span>
+<span class="sd">    air mass gain, using the mass_gain_factor property of the battery.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Linear relationship between energy output and mass gain</span>
+<span class="sd">        * Complete discharge from maximum energy to zero</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mgain</span> <span class="o">=</span> <span class="n">battery</span><span class="o">.</span><span class="n">maximum_energy</span> <span class="o">*</span> <span class="n">battery</span><span class="o">.</span><span class="n">mass_gain_factor</span>
     
     <span class="k">return</span> <span class="n">mgain</span></div>
 

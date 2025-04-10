@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -544,33 +544,89 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_horizontal_tail_weight.compute_horizontal_tail_weight">
 <span class="sig-name descname"><span class="pre">compute_horizontal_tail_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wing</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/compute_horizontal_tail_weight.html#compute_horizontal_tail_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_horizontal_tail_weight.compute_horizontal_tail_weight" title="Link to this definition">#</a></dt>
-<dd><p>Calculate the horizontal tail weight</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Assumptions:</dt><dd><p>Conventional tail configuration</p>
-</dd>
-<dt>Source:</dt><dd><p>The Flight Optimization System Weight Estimation Method</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl>
-<dt>Inputs:</dt><dd><dl class="simple">
-<dt>vehicle - data dictionary with vehicle properties                   [dimensionless]</dt><dd><p>-.mass_properties.max_takeoff: MTOW                             [kilograms]</p>
-</dd>
-<dt>wing - data dictionary with vertical tail properties                [dimensionless]</dt><dd><p>-.taper: taper of wing
--.areas.reference: surface area of wing                         [m^2]</p>
+<dd><p>Computes the horizontal tail weight using NASA FLOPS weight estimation method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Analyses.Vehicle.html#RCAIDE.Framework.Analyses.Vehicle.Vehicle" title="RCAIDE.Framework.Analyses.Vehicle.Vehicle"><em>Vehicle</em></a>) – <dl class="simple">
+<dt>The vehicle instance containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>mass_properties.max_takeoff<span class="classifier">float</span></dt><dd><p>Maximum takeoff weight [kg]</p>
 </dd>
 </dl>
+</li>
+</ul>
 </dd>
-<dt>Outputs:</dt><dd><blockquote>
-<div><p>WHT - vertical tail weight                                          [kilograms]</p>
-</div></blockquote>
+</dl>
+</p></li>
+<li><p><strong>wing</strong> (<a class="reference internal" href="RCAIDE.Library.Components.Wings.Wing.html#RCAIDE.Library.Components.Wings.Wing.Wing" title="RCAIDE.Library.Components.Wings.Wing.Wing"><em>Wing</em></a>) – <dl class="simple">
+<dt>The horizontal tail instance containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>areas.reference<span class="classifier">float</span></dt><dd><p>Planform area [m²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>taper<span class="classifier">float</span></dt><dd><p>Taper ratio</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>WHT</strong> – Horizontal tail weight [kg]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses FLOPS correlation developed from transport aircraft database. The method accounts
+for tail size, aircraft weight, and planform effects.</p>
 <dl class="simple">
-<dt>Properties Used:</dt><dd><p>N/A</p>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Conventional tail configuration</p></li>
+<li><p>All-moving or fixed stabilizer with elevator</p></li>
+<li><p>Standard aluminum construction</p></li>
+<li><p>Conventional aerodynamic loads</p></li>
+<li><p>No special design features (e.g., folding)</p></li>
+</ul>
 </dd>
 </dl>
+<p><strong>Theory</strong>
+Weight is computed using:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">HT</span><span class="p">}</span> <span class="o">=</span> <span class="mf">0.53</span> <span class="n">S_</span><span class="p">{</span><span class="n">HT</span><span class="p">}</span> <span class="p">(</span><span class="n">TOGW</span><span class="p">)</span><span class="o">^</span><span class="p">{</span><span class="mf">0.2</span><span class="p">}</span> <span class="p">(</span>\<span class="n">lambda_</span><span class="p">{</span><span class="n">HT</span><span class="p">}</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>S_HT = horizontal tail area</p></li>
+<li><p>TOGW = takeoff gross weight</p></li>
+<li><p>λ_HT = horizontal tail taper ratio</p></li>
+</ul>
+</dd>
+<dt>The correlation accounts for:</dt><dd><ul class="simple">
+<li><p>Bending and torsional stiffness requirements</p></li>
+<li><p>Control surface integration</p></li>
+<li><p>Attachment structure</p></li>
+<li><p>Standard design margins</p></li>
+</ul>
 </dd>
 </dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] NASA Langley Research Center, “Flight Optimization System, Release 8.23,</dt><dd><p>User’s Guide”, 2011.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_vertical_tail_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_vertical_tail_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_vertical_tail_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_vertical_tail_weight</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

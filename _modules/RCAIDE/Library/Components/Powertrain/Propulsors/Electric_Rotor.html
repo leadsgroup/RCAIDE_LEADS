@@ -387,11 +387,11 @@
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
  <span class="c1"># RCAIDE imports </span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w">   </span><span class="kn">import</span> <span class="n">Propulsor</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.unpack_electric_rotor_unknowns</span><span class="w">             </span><span class="kn">import</span> <span class="n">unpack_electric_rotor_unknowns</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.pack_electric_rotor_residuals</span><span class="w">              </span><span class="kn">import</span> <span class="n">pack_electric_rotor_residuals</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.append_electric_rotor_conditions</span><span class="w">           </span><span class="kn">import</span> <span class="n">append_electric_rotor_conditions</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.compute_electric_rotor_performance</span><span class="w">         </span><span class="kn">import</span> <span class="n">compute_electric_rotor_performance</span><span class="p">,</span> <span class="n">reuse_stored_electric_rotor_data</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor_Propulsor.append_electric_rotor_residual_and_unknown</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_electric_rotor_residual_and_unknown</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.unpack_electric_rotor_unknowns</span><span class="w">             </span><span class="kn">import</span> <span class="n">unpack_electric_rotor_unknowns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.pack_electric_rotor_residuals</span><span class="w">              </span><span class="kn">import</span> <span class="n">pack_electric_rotor_residuals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.append_electric_rotor_conditions</span><span class="w">           </span><span class="kn">import</span> <span class="n">append_electric_rotor_conditions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.compute_electric_rotor_performance</span><span class="w">         </span><span class="kn">import</span> <span class="n">compute_electric_rotor_performance</span><span class="p">,</span> <span class="n">reuse_stored_electric_rotor_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.append_electric_rotor_residual_and_unknown</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_electric_rotor_residual_and_unknown</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="c1">#  Electric_Rotor</span>
@@ -426,15 +426,15 @@
 <span class="sd">    controller (ESC) to regulate power delivery from the electrical system to the motor.</span>
 <span class="sd">    </span>
 <span class="sd">    The class provides methods for:</span>
-<span class="sd">    - Computing rotor performance (thrust, moment, power)</span>
-<span class="sd">    - Managing operating conditions</span>
-<span class="sd">    - Handling system states and residuals</span>
-<span class="sd">    - Reusing stored performance data for computational efficiency</span>
+<span class="sd">        * Computing rotor performance (thrust, moment, power)</span>
+<span class="sd">        * Managing operating conditions</span>
+<span class="sd">        * Handling system states and residuals</span>
+<span class="sd">        * Reusing stored performance data for computational efficiency</span>
 <span class="sd">    </span>
 <span class="sd">    This propulsor type is commonly used in:</span>
-<span class="sd">    - Multicopters</span>
-<span class="sd">    - eVTOL aircraft</span>
-<span class="sd">    - Hybrid helicopters</span>
+<span class="sd">        * Multicopters</span>
+<span class="sd">        * eVTOL aircraft</span>
+<span class="sd">        * Hybrid helicopters</span>
 <span class="sd">    </span>
 <span class="sd">    **Definitions**</span>
 
@@ -449,7 +449,8 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor</span>
-<span class="sd">    RCAIDE.Library.Components.Energy</span>
+<span class="sd">    RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan</span>
+<span class="sd">    RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_ICE_Propeller</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    
         <span class="c1"># setting the default values</span>
@@ -461,11 +462,11 @@
 
 <div class="viewcode-block" id="Electric_Rotor.append_operating_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.html#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.append_operating_conditions">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">,</span><span class="n">noise_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Appends operating conditions to the segment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">append_electric_rotor_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">)</span>
+        <span class="n">append_electric_rotor_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">,</span><span class="n">noise_conditions</span><span class="p">)</span>
         <span class="k">return</span></div>
 
     
@@ -501,22 +502,22 @@
     
 <div class="viewcode-block" id="Electric_Rotor.compute_performance">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.html#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.compute_performance">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_performance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">voltage</span><span class="p">,</span><span class="n">center_of_gravity</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_performance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes propulsor performance including thrust, moment, and power. </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span>  <span class="n">compute_electric_rotor_performance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">voltage</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span></div>
+        <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power_mech</span><span class="p">,</span><span class="n">power_elec</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span>  <span class="n">compute_electric_rotor_performance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power_mech</span><span class="p">,</span><span class="n">power_elec</span><span class="p">,</span><span class="n">stored_results_flag</span><span class="p">,</span><span class="n">stored_propulsor_tag</span></div>
 
     
 <div class="viewcode-block" id="Electric_Rotor.reuse_stored_data">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.html#RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor.Electric_Rotor.reuse_stored_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">reuse_stored_data</span><span class="p">(</span><span class="n">electric_rotor</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span><span class="p">,</span><span class="n">center_of_gravity</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reuse_stored_data</span><span class="p">(</span><span class="n">electric_rotor</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="n">center_of_gravity</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reuses stored propulsor data for performance calculations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power</span> <span class="o">=</span> <span class="n">reuse_stored_electric_rotor_data</span><span class="p">(</span><span class="n">electric_rotor</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power</span></div>
+        <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power_mech</span><span class="p">,</span><span class="n">power_elec</span> <span class="o">=</span> <span class="n">reuse_stored_electric_rotor_data</span><span class="p">(</span><span class="n">electric_rotor</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">stored_propulsor_tag</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">thrust</span><span class="p">,</span><span class="n">moment</span><span class="p">,</span><span class="n">power_mech</span><span class="p">,</span><span class="n">power_elec</span></div>
 </div>
 
 </pre></div>

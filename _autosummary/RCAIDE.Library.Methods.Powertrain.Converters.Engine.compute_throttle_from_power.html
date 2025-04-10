@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,37 +539,100 @@
 <span id="compute-throttle-from-power"></span><h1>compute_throttle_from_power<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power.compute_throttle_from_power">
-<span class="sig-name descname"><span class="pre">compute_throttle_from_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Engine/compute_throttle_from_power.html#compute_throttle_from_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power.compute_throttle_from_power" title="Link to this definition">#</a></dt>
-<dd><p>The internal combustion engine output power and specific power consumption.
-The following perperties are computed:
-engine</p>
-<blockquote>
-<div><p>.outputs.power_specific_fuel_consumption (numpy.ndarray): Power (brake) SFC [lbf/(HP · h) ]
-.outputs.fuel_flow_rate                  (numpy.ndarray): Fuel flow rate    [kg/s]
-.outputs.throttle                        (numpy.ndarray): throttle setting  [unitless]</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Source:</dt><dd><p>Gagg and Ferrar model (ref: S. Gudmundsson, 2014 - eq. 7-16)</p>
-</dd>
-<dt>Assumtions:</dt><dd><p>None</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">compute_throttle_from_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Engine/compute_throttle_from_power.html#compute_throttle_from_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_throttle_from_power.compute_throttle_from_power" title="Link to this definition">#</a></dt>
+<dd><p>Computes engine throttle setting and fuel consumption based on required power output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> – .sea_level_power                        (float): sea-level power      [W]
-.flat_rate_altitude                     (float): flat rate altitude   [m]
-.power_specific_fuel_consumption        (float): PSFC                 [RPM]
-.throttle setting               (numpy.ndarray): throttle             [unitless]
-.inputs.speed                   (numpy.ndarray): angular velocity     [rad/s]</p></li>
-<li><p><strong>conditions</strong> (<em>freestream</em>) – .altitude                               (float): altitde              [m]
-.delta_isa                              (float): altitude offset      [m]</p></li>
+<li><p><strong>engine</strong> (<em>RCAIDE.Library.Components.Propulsors</em>) – <dl class="simple">
+<dt>Engine instance with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>sea_level_power<span class="classifier">float</span></dt><dd><p>Maximum power output at sea level [W]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flat_rate_altitude<span class="classifier">float</span></dt><dd><p>Altitude below which power remains constant [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>power_specific_fuel_consumption<span class="classifier">float</span></dt><dd><p>Power specific fuel consumption [kg/(W·s)]</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+</dl>
+</p></li>
+<li><p><strong>engine_conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – <dl class="simple">
+<dt>Engine operating conditions with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>power<span class="classifier">numpy.ndarray</span></dt><dd><p>Required power output [W]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – <dl class="simple">
+<dt>Flight conditions with:</dt><dd><ul>
+<li><dl class="simple">
+<dt>freestream.altitude<span class="classifier">numpy.ndarray</span></dt><dd><p>Current altitude [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>freestream.delta_ISA<span class="classifier">numpy.ndarray</span></dt><dd><p>Temperature offset from standard atmosphere [K]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function is the inverse of compute_power_from_throttle, calculating the
+required throttle setting to achieve a desired power output considering
+atmospheric conditions.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Power varies linearly with density ratio above flat-rate altitude</p></li>
+<li><p>Power remains constant below flat-rate altitude</p></li>
+<li><p>Standard atmosphere conditions apply except for ISA temperature offset</p></li>
+<li><p>Minimum power output is zero (negative values are clipped)</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong></p>
+<p>The power available is computed using:</p>
+<div class="math notranslate nohighlight">
+\[P_{available} = P_{SL} \frac{\sigma - 0.117}{0.883}\]</div>
+<p>Then throttle is determined by:</p>
+<div class="math notranslate nohighlight">
+\[\text{throttle} = \frac{P_{required}}{P_{available}}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P_{SL}\)</span> is sea-level power</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma\)</span> is the density ratio</p></li>
+<li><p><span class="math notranslate nohighlight">\(P_{required}\)</span> is the requested power output</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Gudmundsson, S. (2014). General Aviation Aircraft Design: Applied Methods and Procedures. Butterworth-Heinemann.
+[2] Gagg and Ferrar</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_power_from_throttle.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_power_from_throttle" title="RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_power_from_throttle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_power_from_throttle</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.html#module-RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976" title="RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

@@ -385,7 +385,8 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
- <span class="c1"># RCAIDE imports   </span>
+<span class="c1"># RCAIDE imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span>  <span class="n">Units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.Converter</span><span class="w">  </span><span class="kn">import</span> <span class="n">Converter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_compressor_conditions</span>
 
@@ -443,12 +444,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                             <span class="o">=</span> <span class="s1">&#39;Compressor&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">polytropic_efficiency</span>           <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pressure_ratio</span>                  <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">design_angular_velocity</span>         <span class="o">=</span> <span class="mi">12000</span> <span class="o">*</span>  <span class="n">Units</span><span class="o">.</span><span class="n">rpm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">motor</span>                           <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator</span>                       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nondimensional_massflow</span>         <span class="o">=</span> <span class="mf">0.0</span>
 
 <div class="viewcode-block" id="Compressor.append_operating_conditions">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Converters.Compressor.html#RCAIDE.Library.Components.Powertrain.Converters.Compressor.Compressor.append_operating_conditions">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor</span><span class="p">):</span> 
-        <span class="n">propulsor_conditions</span> <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
-        <span class="n">append_compressor_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">propulsor_conditions</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">,</span><span class="n">noise_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  
+        <span class="n">append_compressor_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">energy_conditions</span><span class="p">)</span>
         <span class="k">return</span>        </div>
 </div>
 

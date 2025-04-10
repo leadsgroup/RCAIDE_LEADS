@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,18 +534,26 @@
   <p>RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells">
 <span id="fuel-cells"></span><h1>Fuel_Cells<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides methods for modeling and analyzing fuel cell systems in aircraft powertrains.</p>
+<p>It includes functionality for different fuel cell types and modeling approaches. The module
+contains specialized submodules for common fuel cell operations, Larminie-Dicks model implementation,
+and Proton Exchange Membrane (PEM) fuel cell modeling. These methods support the design, performance
+analysis, and mission simulation of fuel cell-powered aircraft.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack.html#module-RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack" title="RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.html#module-RCAIDE.Library.Methods.Powertrain.Converters" title="RCAIDE.Library.Methods.Powertrain.Converters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Common</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides a common method for modeling and analyzing fuel cell stacks in aircraft powertrain systems.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Larminie_Model</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides methods for modeling fuel cell performance using the Larminie-Dicks model.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane" title="RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proton_Exchange_Membrane</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides methods for modeling and analyzing Proton Exchange Membrane (PEM) fuel cells in aircraft powertrain systems.</p></td>
 </tr>
 </tbody>
 </table>

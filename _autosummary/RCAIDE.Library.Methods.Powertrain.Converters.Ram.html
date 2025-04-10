@@ -43,12 +43,14 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Ram';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Ram.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="append_ram_conditions" href="RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions.html" />
-    <link rel="prev" title="compute_offtake_shaft_performance" href="RCAIDE.Library.Methods.Powertrain.Converters.Offtake_Shaft.compute_offtake_shaft_performance.html" />
+    <link rel="prev" title="design_optimal_motor" href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,15 +534,20 @@
   <p>RCAIDE.Library.Methods.Powertrain.Converters.Ram</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Converters.Ram">
 <span id="ram"></span><h1>Ram<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Ram" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides functionality for modeling ram air compression in powertrains. It includes methods for computing
+ram compression performance and appending ram conditions to simulation results.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.html#module-RCAIDE.Library.Methods.Powertrain.Converters" title="RCAIDE.Library.Methods.Powertrain.Converters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Converters</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions" title="RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_ram_conditions</span></code></a>(ram, segment, ...)</p></td>
-<td><p></p></td>
+<td><p>Initializes ram air converter operating conditions for a mission segment.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_ram_performance</span></code></a>(ram, ram_conditions, ...)</p></td>
-<td><p>This computes the output values from the input values according T0 equations from the source. The following properties are determined     conditions.freestream. stagnation_temperature              (numpy.ndarray): freestream stagnation_temperature             [K]       stagnation_pressure                 (numpy.ndarray): freestream stagnation_pressure                [Pa]       isentropic_expansion_factor         (numpy.ndarray): freestream isentropic_expansion_factor        [unitless]       specific_heat_at_constant_pressure  (numpy.ndarray): freestream specific_heat_at_constant_pressure [J/(kg K)]       gas_specific_constant               (numpy.ndarray): freestream gas_specific_constant              [J/(kg K)]       speed_of_sound                      (numpy.ndarray): freestream speed_of_sound                     [m/s]     ram.outputs. stagnation_temperature              (numpy.ndarray): exiting stagnation temperature     [K]       stagnation_pressure                 (numpy.ndarray): exiting stagnation pressure        [Pa]       isentropic_expansion_factor         (numpy.ndarray): isentropic expansion factor        [unitless]       specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]       gas_specific_constant               (numpy.ndarray): gas_specific_constant              [J/(kg K)].</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_ram_performance</span></code></a>(ram, conditions)</p></td>
+<td><p>Computes the thermodynamic properties of air at the inlet of a propulsion system.</p></td>
 </tr>
 </tbody>
 </table>
@@ -558,12 +565,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Methods.Powertrain.Converters.Offtake_Shaft.compute_offtake_shaft_performance.html"
+       href="RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">compute_offtake_shaft_performance</p>
+        <p class="prev-next-title">design_optimal_motor</p>
       </div>
     </a>
     <a class="right-next"

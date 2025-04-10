@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,23 +535,78 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Initialize.differentials_altitude.differentials_altitude">
 <span class="sig-name descname"><span class="pre">differentials_altitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Initialize/differentials_altitude.html#differentials_altitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Initialize.differentials_altitude.differentials_altitude" title="Link to this definition">#</a></dt>
-<dd><p>Initializes the differntial altitude</p>
+<dd><p>Initializes the differential altitude for mission segment time calculations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the time differentials based on altitude changes
+in the mission segment. It uses the vertical component of velocity and
+position to determine appropriate time steps for integration.</p>
 <dl class="simple">
-<dt>Assumptions:</dt><dd><p>None</p>
-</dd>
-<dt>Inputs:</dt><dd><dl class="simple">
-<dt>state.conditions:</dt><dd><p>numerics.dimensionless.integrate        [-]
-numerics.dimensionless.control_points   [s]
-frames.position_vector                  [m]
-inertial.velocity_vector                [m/s]</p>
-</dd>
-</dl>
-</dd>
-<dt>Outputs:</dt><dd><p>state.conditions.frames.inertial.time       [s]</p>
+<dt>The function performs the following steps:</dt><dd><ol class="arabic simple">
+<li><p>Extracts control points and integration operators</p></li>
+<li><p>Calculates total altitude change</p></li>
+<li><p>Determines time step based on vertical velocity</p></li>
+<li><p>Rescales time operators</p></li>
+<li><p>Updates segment time vector</p></li>
+</ol>
 </dd>
 </dl>
-<p>Properties Used:
-N/A</p>
+<p><strong>Required Segment State Variables</strong></p>
+<dl class="simple">
+<dt>state.numerics.dimensionless:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>integrate<span class="classifier">array</span></dt><dd><p>Integration operator matrix</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>control_points<span class="classifier">array</span></dt><dd><p>Normalized time points</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>state.conditions.frames.inertial:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>position_vector<span class="classifier">array</span></dt><dd><p>Vehicle position in inertial frame [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>velocity_vector<span class="classifier">array</span></dt><dd><p>Vehicle velocity in inertial frame [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>time<span class="classifier">array</span></dt><dd><p>Segment time vector [s]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Continuous vertical velocity</p></li>
+<li><p>Well-defined altitude change</p></li>
+<li><p>No singularities in vertical velocity</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Updates segment state directly</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

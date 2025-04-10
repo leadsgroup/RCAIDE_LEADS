@@ -30,12 +30,11 @@ Propulsors
    :template: custom-module-template.rst
    :recursive:
 
-   Constant_Speed_ICE_Propulsor
-   Electric_Ducted_Fan_Propulsor
-   Electric_Rotor_Propulsor
-   ICE_Propulsor
-   Turbofan_Propulsor
-   Turbojet_Propulsor
-   Turboprop_Propulsor
-   Turboshaft_Propulsor
+   Constant_Speed_Internal_Combustion_Engine
+   Electric_Ducted_Fan
+   Electric_Rotor
+   Internal_Combustion_Engine
+   Turbofan
+   Turbojet
+   Turboprop
 

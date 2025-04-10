@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,27 +535,91 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Initialize.planet_position.planet_position">
 <span class="sig-name descname"><span class="pre">planet_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Initialize/planet_position.html#planet_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Initialize.planet_position.planet_position" title="Link to this definition">#</a></dt>
-<dd><p>Sets the initial location of the vehicle relative to the planet at the start of the segment</p>
-<p>Assumptions:
-Only used if there is an initial condition</p>
-<dl>
-<dt>Inputs:</dt><dd><dl class="simple">
-<dt>segment.state.initials.conditions:</dt><dd><p>frames.planet.longitude [Radians]
-frames.planet.latitude  [Radians]</p>
+<dd><p>Initializes the vehicle’s planetary position coordinates for mission segment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p>
 </dd>
 </dl>
-<p>segment.longitude           [Radians]
-segment.latitude            [Radians]</p>
+<p class="rubric">Notes</p>
+<p>This function sets up the initial latitude and longitude coordinates
+of the vehicle relative to the planet. It handles position initialization
+from either previous segment conditions or explicit segment parameters.</p>
+<dl class="simple">
+<dt>The function follows this priority for position initialization:</dt><dd><ol class="arabic simple">
+<li><p>Previous segment final position (if initials exist)</p></li>
+<li><p>Explicit segment coordinates (if specified)</p></li>
+<li><p>Default coordinates (0,0)</p></li>
+</ol>
 </dd>
-<dt>Outputs:</dt><dd><dl class="simple">
-<dt>segment.state.conditions:</dt><dd><p>frames.planet.latitude  [Radians]
-frames.planet.longitude [Radians]</p>
+</dl>
+<p><strong>Required Segment State Variables</strong></p>
+<dl class="simple">
+<dt>If segment.state.initials exists:</dt><dd><dl class="simple">
+<dt>state.initials.conditions.frames.planet:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>longitude<span class="classifier">array</span></dt><dd><p>Previous segment final longitude [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>latitude<span class="classifier">array</span></dt><dd><p>Previous segment final latitude [rad]</p>
+</dd>
+</dl>
+</li>
+</ul>
 </dd>
 </dl>
 </dd>
+<dt>state.conditions.frames.planet:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>longitude<span class="classifier">array</span></dt><dd><p>Current segment longitude array [rad]</p>
+</dd>
 </dl>
-<p>Properties Used:
-N/A</p>
+</li>
+<li><dl class="simple">
+<dt>latitude<span class="classifier">array</span></dt><dd><p>Current segment latitude array [rad]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p><strong>Optional Segment Parameters</strong></p>
+<dl class="simple">
+<dt>segment:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>longitude<span class="classifier">float</span></dt><dd><p>Initial longitude [rad]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>latitude<span class="classifier">float</span></dt><dd><p>Initial latitude [rad]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Spherical planet model</p></li>
+<li><p>Continuous position tracking when using initials</p></li>
+<li><p>Valid coordinate values</p></li>
+<li><p>Radians for angular measurements</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Updates segment conditions directly</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Mission.Common.Initialize.inertial_position.html#module-RCAIDE.Library.Mission.Common.Initialize.inertial_position" title="RCAIDE.Library.Mission.Common.Initialize.inertial_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Mission.Common.Initialize.inertial_position</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

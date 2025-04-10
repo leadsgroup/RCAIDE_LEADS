@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,30 +541,86 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_energy_and_power.size_module_from_energy_and_power">
 <span class="sig-name descname"><span class="pre">size_module_from_energy_and_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Common/size_module_from_energy_and_power.html#size_module_from_energy_and_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_energy_and_power.size_module_from_energy_and_power" title="Link to this definition">#</a></dt>
-<dd><p>Uses a soft_max function to calculate the batter mass, maximum energy, and maximum power
-from the energy and power requirements, as well as the specific energy and specific power</p>
-<p>Assumptions:
-None</p>
-<p>Inputs:
-energy            [J]
-power             [W]
-battery.</p>
-<blockquote>
-<div><p>specific_energy [J/kg]
-specific_power  [W/kg]</p>
-</div></blockquote>
-<dl>
-<dt>Outputs:</dt><dd><dl>
-<dt>battery.</dt><dd><p>maximum_energy
-maximum_power
-mass_properties.</p>
-<blockquote>
-<div><p>mass</p>
-</div></blockquote>
+<dd><p>Calculates the battery mass, maximum energy, and maximum power based on energy and power requirements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery</strong> (<em>BatteryModule</em>) – <dl class="simple">
+<dt>The battery module with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>cell.specific_energy<span class="classifier">float</span></dt><dd><p>Specific energy of the cell [J/kg]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>cell.specific_power<span class="classifier">float</span></dt><dd><p>Specific power of the cell [W/kg]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>mass_properties<span class="classifier">MassProperties</span></dt><dd><p>Object to store the calculated mass</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>energy</strong> (<em>float</em>) – Required energy capacity [J]</p></li>
+<li><p><strong>power</strong> (<em>float</em>) – Required power output [W]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>This function modifies the battery object in-place, setting the following attributes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>mass_properties.mass<span class="classifier">float</span></dt><dd><p>Calculated mass of the battery module [kg]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maximum_energy<span class="classifier">float</span></dt><dd><p>Maximum energy capacity of the battery module [J]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maximum_power<span class="classifier">float</span></dt><dd><p>Maximum power output of the battery module [W]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function determines the battery mass needed to meet both energy and power
+requirements. It calculates two potential masses:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Energy-limited mass: The mass required to meet the energy requirement</p></li>
+<li><p>Power-limited mass: The mass required to meet the power requirement</p></li>
+</ol>
+</div></blockquote>
+<p>The function then selects the larger of these two masses to ensure that both
+requirements are satisfied. The maximum energy and power capabilities are then
+calculated based on the selected mass and the specific energy/power characteristics.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant specific energy and power values</p></li>
+<li><p>Linear scaling of energy and power with mass</p></li>
+<li><p>No temperature or state-of-charge effects on performance</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

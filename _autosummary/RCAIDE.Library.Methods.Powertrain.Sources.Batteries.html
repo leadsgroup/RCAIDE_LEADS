@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,21 +534,27 @@
   <p>RCAIDE.Library.Methods.Powertrain.Sources.Batteries</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries">
 <span id="batteries"></span><h1>Batteries<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides functionality for modeling battery systems in powertrains. It includes methods for
+different battery chemistries such as Lithium-Ion LFP, Lithium-Ion NMC, and Aluminum-Air batteries,
+as well as common battery functions.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.html#module-RCAIDE.Library.Methods.Powertrain.Sources" title="RCAIDE.Library.Methods.Powertrain.Sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Aluminum_Air</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides functionality for modeling aluminum-air batteries in powertrains.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Common</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides common functionality for modeling battery systems in powertrains.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lithium_Ion_LFP</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides functionality for modeling lithium-ion LFP (lithium iron phosphate) batteries in powertrains.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lithium_Ion_NMC</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>This module provides functionality for modeling lithium-ion NMC (nickel manganese cobalt) batteries in powertrains.</p></td>
 </tr>
 </tbody>
 </table>

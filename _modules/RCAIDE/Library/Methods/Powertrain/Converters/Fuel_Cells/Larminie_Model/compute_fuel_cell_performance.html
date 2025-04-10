@@ -395,35 +395,79 @@
 <span class="c1"># ---------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="compute_fuel_cell_performance">
 <a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_fuel_cell_performance.html#RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_fuel_cell_performance.compute_fuel_cell_performance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_fuel_cell_performance</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">bus</span><span class="p">,</span><span class="n">coolant_lines</span><span class="p">,</span><span class="n">t_idx</span><span class="p">,</span><span class="n">delta_t</span><span class="p">):</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_fuel_cell_performance</span><span class="p">(</span><span class="n">fuel_cell_stack</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">bus</span><span class="p">,</span> <span class="n">coolant_lines</span><span class="p">,</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the performance of a fuel cell using Larminie model</span>
+<span class="sd">    Computes the performance of a fuel cell stack using the Larminie-Dicks model.</span>
 <span class="sd">    </span>
-<span class="sd">     Parameters</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fuel_cell_stack : fuel_cell_stack</span>
-<span class="sd">        The fuel_cell_stack object containing cell properties and configuration.</span>
-<span class="sd">    state : MissionState</span>
-<span class="sd">        The current state of the mission.</span>
-<span class="sd">    bus : ElectricBus</span>
-<span class="sd">        The electric bus to which the battery_module is connected.</span>
+<span class="sd">    fuel_cell_stack : RCAIDE.Components.Energy.Converters.Fuel_Cell_Stack</span>
+<span class="sd">        The fuel cell stack component containing cell properties and electrical configuration</span>
+<span class="sd">    state : RCAIDE.Framework.Mission.Common.State</span>
+<span class="sd">        Container for mission segment conditions</span>
+<span class="sd">    bus : RCAIDE.Components.Energy.Distribution.Electric_Bus</span>
+<span class="sd">        The electric bus to which the fuel cell stack is connected</span>
 <span class="sd">    coolant_lines : list</span>
-<span class="sd">        List of coolant lines for thermal management.</span>
+<span class="sd">        List of coolant line components for thermal management</span>
 <span class="sd">    t_idx : int</span>
-<span class="sd">        Current time index in the simulation.</span>
+<span class="sd">        Current time index in the simulation</span>
 <span class="sd">    delta_t : float</span>
-<span class="sd">        Time step size.</span>
+<span class="sd">        Time step size [s]</span>
 <span class="sd">         </span>
-<span class="sd">    Returns: </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    stored_results_flag : bool</span>
+<span class="sd">        Flag indicating that results have been stored for potential reuse</span>
+<span class="sd">    stored_fuel_cell_stack_tag : str</span>
+<span class="sd">        Tag identifier of the fuel cell stack with stored results</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function implements the Larminie-Dicks model to calculate fuel cell performance</span>
+<span class="sd">    based on current operating conditions. It determines the optimal current density</span>
+<span class="sd">    that matches the required power output, then calculates voltage, efficiency,</span>
+<span class="sd">    and fuel consumption.</span>
+<span class="sd">    </span>
+<span class="sd">    The function handles both series and parallel electrical configurations for</span>
+<span class="sd">    connecting the fuel cell stack to the electric bus.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Uniform temperature distribution across all cells</span>
+<span class="sd">        * No transient effects (steady-state operation at each time step)</span>
+<span class="sd">        * Hydrogen is the only fuel considered</span>
+<span class="sd">        * Ideal gas behavior</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+<span class="sd">    </span>
+<span class="sd">    The Larminie-Dicks model calculates cell voltage as:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        V = E_0 - A\\ln(j) - Rj - m\\exp(nj)</span>
+<span class="sd">    </span>
+<span class="sd">    where:</span>
+<span class="sd">        - E₀ is the open circuit voltage</span>
+<span class="sd">        - A is the activation loss coefficient</span>
+<span class="sd">        - R is the ohmic resistance</span>
+<span class="sd">        - m and n are mass transport loss coefficients</span>
+<span class="sd">        - j is the current density</span>
+<span class="sd">    </span>
+<span class="sd">    The efficiency is calculated as:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\eta = \\frac{V}{E_{ideal}}</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    stored_results_flag: bool</span>
-<span class="sd">        Stored results boolean</span>
-<span class="sd">    stored_fuel_cell_stack_tag: string </span>
-<span class="sd">        Tag of fuel cell</span>
+<span class="sd">    [1] Larminie, J., &amp; Dicks, A. (2003). Fuel Cell Systems Explained (2nd ed.). John Wiley &amp; Sons Ltd.</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage</span>
+<span class="sd">    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power_difference</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># ---------------------------------------------------------------------------------    </span>
     <span class="c1"># fuel cell stack properties </span>
-    <span class="c1"># ---------------------------------------------------------------------------------</span>
+    <span class="c1"># --------------------------------------------------------------------------------- </span>
     <span class="n">fuel_cell</span>         <span class="o">=</span> <span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">fuel_cell</span> 
     <span class="n">n_series</span>          <span class="o">=</span> <span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">electrical_configuration</span><span class="o">.</span><span class="n">series</span>
     <span class="n">n_parallel</span>        <span class="o">=</span> <span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">electrical_configuration</span><span class="o">.</span><span class="n">parallel</span> 
@@ -435,11 +479,10 @@
     <span class="c1"># ---------------------------------------------------------------------------------</span>
     <span class="n">bus_conditions</span>              <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">bus</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
     <span class="n">fuel_cell_stack_conditions</span>  <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">[</span><span class="n">fuel_cell_stack</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
-    <span class="n">P_bus</span>                       <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> 
-     
-    
-    <span class="n">P_stack</span>  <span class="o">=</span> <span class="n">P_bus</span> <span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">)</span> 
-    <span class="n">P_cell</span>   <span class="o">=</span> <span class="n">P_stack</span> <span class="o">/</span> <span class="n">n_total</span>  
+    <span class="n">phi</span>                         <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">hybrid_power_split_ratio</span> 
+    <span class="n">P_bus</span>                       <span class="o">=</span> <span class="n">bus_conditions</span><span class="o">.</span><span class="n">power_draw</span><span class="o">*</span><span class="n">phi</span>     
+    <span class="n">P_stack</span>                     <span class="o">=</span> <span class="n">P_bus</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">fuel_cell_stacks</span><span class="p">)</span> 
+    <span class="n">P_cell</span>                      <span class="o">=</span> <span class="n">P_stack</span><span class="o">/</span> <span class="n">n_total</span>  
 
     <span class="c1"># ---------------------------------------------------------------------------------</span>
     <span class="c1"># Compute fuel cell performance  </span>

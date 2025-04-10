@@ -398,7 +398,51 @@
 <div class="viewcode-block" id="US_Standard_1976">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.html#RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976.US_Standard_1976">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">US_Standard_1976</span><span class="p">(</span><span class="n">Atmosphere</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Contains US Standard 1976 values.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of the 1976 U.S. Standard Atmosphere model.</span>
+
+<span class="sd">    This class provides a complete implementation of the U.S. Standard Atmosphere (1976),</span>
+<span class="sd">    defining atmospheric properties at various altitudes based on empirical data.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fluid_properties : Air</span>
+<span class="sd">        Air properties object containing gas characteristics</span>
+<span class="sd">    planet : Earth</span>
+<span class="sd">        Earth properties object containing planetary parameters</span>
+<span class="sd">    breaks : Data</span>
+<span class="sd">        Container for atmospheric property breakpoints</span>
+<span class="sd">            - altitude : array</span>
+<span class="sd">                Geopotential altitude points in kilometers, ranging from -2 km to 84.852 km</span>
+<span class="sd">            - temperature : array</span>
+<span class="sd">                Temperature values at break points in Kelvin</span>
+<span class="sd">            - pressure : array</span>
+<span class="sd">                Pressure values at break points in Pascal</span>
+<span class="sd">            - density : array</span>
+<span class="sd">                Density values at break points in kg/m³</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The U.S. Standard Atmosphere 1976 is a model defining atmospheric properties </span>
+<span class="sd">    up to 1000 km. This implementation covers the range from -2 km to 84.852 km, </span>
+<span class="sd">    which encompasses the primary region of interest for most aircraft operations.</span>
+
+<span class="sd">    The model divides the atmosphere into layers with different temperature gradients</span>
+<span class="sd">    and provides standardized values for Temperature, Pressure, Density, Speed of sound, and Viscosity.</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Hydrostatic equilibrium</span>
+<span class="sd">        * Perfect gas behavior</span>
+<span class="sd">        * Homogeneous composition below 80 km</span>
+<span class="sd">        * Gravity variation with geometric height</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] NOAA, NASA, USAF, U.S. Standard Atmosphere, 1976 (1976). Retrieved December 30, 2024, from https://www.ngdc.noaa.gov/stp/space-weather/online-publications/miscellaneous/us-standard-atmosphere-1976/us-standard-atmosphere_st76-1562_noaa.pdf. </span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Attributes.Atmospheres.Earth.Constant_Temperature : Simplified constant temperature model</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

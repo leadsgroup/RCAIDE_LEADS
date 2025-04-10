@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Rotor';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Rotor.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -532,30 +534,49 @@
   <p>RCAIDE.Library.Methods.Powertrain.Converters.Rotor</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor">
 <span id="rotor"></span><h1>Rotor<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>Methods for analyzing and designing rotors in aircraft propulsion systems.</p>
+<p>This module provides a comprehensive set of functions for the design, analysis, and
+performance evaluation of various types of rotors, including propellers, lift rotors,
+and prop rotors. It implements different analysis methods such as Blade Element Momentum
+Theory (BEMT) with Helmholtz wake modeling and Actuator Disc Theory.</p>
+<dl class="simple">
+<dt>The module includes functions for:</dt><dd><ul class="simple">
+<li><p>Designing optimal rotor geometries for different applications</p></li>
+<li><p>Computing rotor performance across various flight conditions</p></li>
+<li><p>Analyzing wake interactions and induced velocities</p></li>
+<li><p>Setting up rotor operating conditions for mission analysis</p></li>
+</ul>
+</dd>
+</dl>
+<p>These methods support both conventional and advanced aircraft configurations, including
+fixed-wing aircraft, helicopters, multicopters, and hybrid VTOL concepts.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Converters.Rotor.html#module-RCAIDE.Library.Components.Powertrain.Converters.Rotor" title="RCAIDE.Library.Components.Powertrain.Converters.Rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Converters.Rotor</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.Common.Lift.html#module-RCAIDE.Library.Methods.Aerodynamics.Common.Lift" title="RCAIDE.Library.Methods.Aerodynamics.Common.Lift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Aerodynamics.Common.Lift</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Methods.Geometry.Airfoil.html#module-RCAIDE.Library.Methods.Geometry.Airfoil" title="RCAIDE.Library.Methods.Geometry.Airfoil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Geometry.Airfoil</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Design</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<td><p>Methods for designing rotors in aircraft propulsion systems.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Wake</span></code></a></p></td>
-<td><p>RCAIDE Package Setup</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Performance</span></code></a></p></td>
+<td><p>Methods for analyzing and computing the performance of rotors in aircraft propulsion systems.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_rotor_conditions</span></code></a>(rotor, segment, ...)</p></td>
-<td><p></p></td>
+<td><p>Initializes and appends rotor conditions to the energy and noise conditions dictionaries.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_rotor_performance</span></code></a>(propulsor, state)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_rotor_performance</span></code></a>(rotor, conditions)</p></td>
 <td><p>Analyzes a general rotor given geometry and operating conditions.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_lift_rotor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_lift_rotor" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_lift_rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">design_lift_rotor</span></code></a>(rotor[, ...])</p></td>
-<td><p>Optimizes rotor chord and twist given input parameters to meet either design power or thurst.</p></td>
+<td><p>Optimizes rotor chord and twist distribution to meet design power or thrust requirements.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_prop_rotor.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_prop_rotor" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_prop_rotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">design_prop_rotor</span></code></a>(rotor[, ...])</p></td>
-<td><p>Optimizes prop-rotor chord and twist given input parameters to meet either design power or thurst.</p></td>
+<td><p>Optimizes prop-rotor chord and twist distribution to meet design power or thrust requirements.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller.html#module-RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller" title="RCAIDE.Library.Methods.Powertrain.Converters.Rotor.design_propeller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">design_propeller</span></code></a>(prop[, number_of_stations])</p></td>
-<td><p>Optimizes propeller chord and twist given input parameters.</p></td>
+<td><p>Optimizes propeller chord and twist distribution given input parameters.</p></td>
 </tr>
 </tbody>
 </table>

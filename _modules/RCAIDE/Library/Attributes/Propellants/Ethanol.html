@@ -393,7 +393,71 @@
 <div class="viewcode-block" id="Ethanol">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Ethanol.html#RCAIDE.Library.Attributes.Propellants.Ethanol.Ethanol">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Ethanol</span><span class="p">(</span><span class="n">Propellant</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ethanol class propellant  </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing ethanol (C2H5OH) fuel properties for propulsion applications.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the propellant (&#39;Ethanol&#39;)</span>
+<span class="sd">    reactant : str</span>
+<span class="sd">        Oxidizer used for combustion (&#39;O2&#39;)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Fuel density in kg/m³ (793.67)</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy content in J/kg (2.68e7)</span>
+<span class="sd">    energy_density : float</span>
+<span class="sd">        Energy density in J/m³ (2.13e10)</span>
+<span class="sd">    lower_heating_value : float</span>
+<span class="sd">        Lower heating value in J/kg (2.67e7)</span>
+<span class="sd">    use_high_fidelity_kinetics_model : bool</span>
+<span class="sd">        Flag for using detailed chemical kinetics (False)</span>
+<span class="sd">    fuel_surrogate_chemical_properties : dict</span>
+<span class="sd">        Simplified chemical composition for surrogate model {&#39;C2H5OH&#39;: 1.0}</span>
+<span class="sd">    fuel_chemical_properties : dict</span>
+<span class="sd">        Detailed chemical composition for high-fidelity model</span>
+<span class="sd">    air_chemical_properties : dict</span>
+<span class="sd">        Air composition for combustion calculations {&#39;O2&#39;:0.2095, &#39;N2&#39;:0.7809, &#39;AR&#39;:0.0096}</span>
+<span class="sd">    surrogate_species_list : list</span>
+<span class="sd">        Species considered in surrogate model [&#39;CO&#39;, &#39;CO2&#39;, &#39;H2O&#39;]</span>
+<span class="sd">    species_list : list</span>
+<span class="sd">        Species considered in detailed model [&#39;CO&#39;, &#39;CO2&#39;, &#39;H2O&#39;, &#39;NO&#39;, &#39;NO2&#39;, &#39;CSOLID&#39;]</span>
+<span class="sd">    global_warming_potential_100 : Data</span>
+<span class="sd">        100-year global warming potential for emissions</span>
+<span class="sd">            - CO2 : float</span>
+<span class="sd">                GWP for carbon dioxide (1)</span>
+<span class="sd">            - H2O : float</span>
+<span class="sd">                GWP for water vapor (0.06)</span>
+<span class="sd">            - SO2 : float</span>
+<span class="sd">                GWP for sulfur dioxide (-226)</span>
+<span class="sd">            - NOx : float</span>
+<span class="sd">                GWP for nitrogen oxides (52)</span>
+<span class="sd">            - Soot : float</span>
+<span class="sd">                GWP for particulate matter (1166)</span>
+<span class="sd">            - Contrails : float</span>
+<span class="sd">                GWP for contrail formation (11)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements properties for ethanol fuel, a renewable biofuel commonly </span>
+<span class="sd">    used in both pure form and as a gasoline additive. Properties are specified at </span>
+<span class="sd">    standard conditions (15°C, 1 atm).</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Lower Heating Value&#39;</span>
+<span class="sd">        Heat of combustion excluding latent heat of water vapor</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Global Warming Potential&#39;</span>
+<span class="sd">        Relative measure of heat trapped in atmosphere compared to CO2</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Surrogate Model&#39;</span>
+<span class="sd">        Simplified chemical kinetics model using pure ethanol</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Properties are for anhydrous (pure) ethanol</span>
+<span class="sd">        * Properties are for standard temperature and pressure conditions (15C, 1atm)</span>
+<span class="sd">        * Air composition is standard atmospheric</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -412,16 +476,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>            <span class="o">=</span> <span class="mf">2.13e10</span>                          <span class="c1"># J/m^3</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lower_heating_value</span>       <span class="o">=</span> <span class="mf">2.67e7</span>                           <span class="c1"># J/kg  </span>
         
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_high_fidelity_kinetics_model</span>      <span class="o">=</span>  <span class="kc">False</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_chemical_properties</span>    <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;C2H5OH&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">}</span>        
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_chemical_properties</span>              <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;NC10H22&#39;</span><span class="p">:</span><span class="mf">0.16449</span><span class="p">,</span> <span class="s1">&#39;NC12H26&#39;</span><span class="p">:</span><span class="mf">0.34308</span><span class="p">,</span> <span class="s1">&#39;NC16H34&#39;</span><span class="p">:</span><span class="mf">0.10335</span><span class="p">,</span> <span class="s1">&#39;IC8H18&#39;</span><span class="p">:</span><span class="mf">0.08630</span><span class="p">,</span> <span class="s1">&#39;NC7H14&#39;</span><span class="p">:</span><span class="mf">0.07945</span><span class="p">,</span> <span class="s1">&#39;C6H5C2H5&#39;</span><span class="p">:</span> <span class="mf">0.07348</span><span class="p">,</span> <span class="s1">&#39;C6H5C4H9&#39;</span><span class="p">:</span> <span class="mf">0.05812</span><span class="p">,</span> <span class="s1">&#39;C10H7CH3&#39;</span><span class="p">:</span> <span class="mf">0.10972</span><span class="p">}</span>      <span class="c1"># [2] More accurate kinetic mechanism, slower simulation    </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">air_chemical_properties</span>               <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;O2&#39;</span><span class="p">:</span><span class="mf">0.2095</span><span class="p">,</span> <span class="s1">&#39;N2&#39;</span><span class="p">:</span><span class="mf">0.7809</span><span class="p">,</span> <span class="s1">&#39;AR&#39;</span><span class="p">:</span><span class="mf">0.0096</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">surrogate_species_list</span>                <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">,</span> <span class="s1">&#39;H2O&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">species_list</span>                          <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">,</span> <span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="s1">&#39;NO&#39;</span><span class="p">,</span> <span class="s1">&#39;NO2&#39;</span><span class="p">,</span> <span class="s1">&#39;CSOLID&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">surrogate_chemical_kinetics</span>           <span class="o">=</span> <span class="s1">&#39;Fuel_Surrogate.yaml&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chemical_kinetics</span>                     <span class="o">=</span> <span class="s1">&#39;Fuel.yaml&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                              <span class="o">=</span> <span class="s1">&#39;Air.yaml&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO2</span>       <span class="o">=</span> <span class="mi">1</span>     <span class="c1"># CO2e/kg  </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">H2O</span>       <span class="o">=</span> <span class="mf">0.06</span>  <span class="c1"># CO2e/kg  </span>

@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -523,27 +523,36 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.load.load">
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickle_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/load.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.load.load" title="Link to this definition">#</a></dt>
-<dd><p>Converts a JSON file into a RCAIDE data structure.</p>
-<dl class="simple">
-<dt>Assumptions:</dt><dd><p>None</p>
-</dd>
-<dt>Source:</dt><dd><p>None</p>
-</dd>
-</dl>
+<dd><p>Imports a Pickle or JSON file into a RCAIDE data structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>string</em>) – file to be loaded        [unitless]</p></li>
-<li><p><strong>pickle_format</strong> (<em>boolean</em>) – pickle file format flag  [unitless]</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Path to the file to be loaded, without extension for pickle files</p></li>
+<li><p><strong>pickle_format</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag indicating whether to load a pickle file (True) or JSON file (False)
+Default is False (JSON format)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>RCAIDE data structure [unitless]</p>
+<dd class="field-even"><p><strong>data</strong> – RCAIDE data structure containing the loaded information</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>data</p>
+<dd class="field-odd"><p>RCAIDE.Framework.Core.Data</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function supports two file formats:</p>
+<ol class="arabic simple">
+<li><p>JSON format (default): Loads a JSON file and converts it to a RCAIDE data structure
+using the read_RCAIDE_json_dict function.</p></li>
+<li><p>Pickle format: Loads a binary pickle file directly into a Python object.
+The .pkl extension is automatically added to the filename.</p></li>
+</ol>
+<p>JSON format is human-readable and more portable across different Python versions,
+while pickle format is more efficient for large data structures but less portable.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.save.html#module-RCAIDE.save" title="RCAIDE.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.save</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py function">

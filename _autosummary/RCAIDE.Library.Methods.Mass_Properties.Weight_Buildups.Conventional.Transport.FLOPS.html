@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -538,36 +540,47 @@
   <p>RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS</p>
 <section id="module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS">
 <span id="flops"></span><h1>FLOPS<a class="headerlink" href="#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>Methods for computing component weights for a transport aircraft using NASA’s Flight Optimization System (FLOPS)
+correlations. This module provides weight estimation techniques derived from NASA’s
+extensive aircraft database and analysis tools.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Raymer</span></code></a></dt><dd><p>Raymer’s weight estimation methods</p>
+</dd>
+<dt><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport</span></code></a></dt><dd><p>Transport aircraft weight methods</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_fuselage_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_fuselage_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_fuselage_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_fuselage_weight</span></code></a>(vehicle)</p></td>
-<td><p>Calculate the weight of the fuselage of a transport aircraft</p></td>
+<td><p>Computes the fuselage weight using NASA FLOPS weight estimation method.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_horizontal_tail_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_horizontal_tail_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_horizontal_tail_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_horizontal_tail_weight</span></code></a>(vehicle, wing)</p></td>
-<td><p>Calculate the horizontal tail weight</p></td>
+<td><p>Computes the horizontal tail weight using NASA FLOPS weight estimation method.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_landing_gear_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_landing_gear_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_landing_gear_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_landing_gear_weight</span></code></a>(vehicle)</p></td>
-<td><p>Calculate the weight of the main and nose landing gear of a transport aircraft</p></td>
+<td><p>Computes the landing gear weight using NASA FLOPS weight estimation method.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_operating_empty_weight</span></code></a>(vehicle[, ...])</p></td>
 <td><p>Main function that estimates the zero-fuel weight of a transport aircraft:</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_items_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_items_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_items_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_operating_items_weight</span></code></a>(vehicle)</p></td>
-<td><p>Calculate the weight of operating items, including: - crew - baggage - unusable fuel - engine oil - passenger service - ammunition and non-fixed weapons - cargo containers</p></td>
+<td><p>Computes the weight of operating items using NASA FLOPS weight estimation method.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_propulsion_system_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_propulsion_system_weight</span></code></a>(vehicle, ...)</p></td>
-<td><p>Calculate the weight of propulsion system, including: - dry engine weight - fuel system weight - thurst reversers weight - electrical system weight - starter engine weight - nacelle weight - cargo containers</p></td>
+<td><p>Computes the complete propulsion system weight using NASA FLOPS weight estimation method.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_systems_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_systems_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_systems_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_systems_weight</span></code></a>(vehicle)</p></td>
-<td><p>Calculate the system weight of the aircraft including:</p></td>
+<td><p>Calculate the system weight of the aircraft using the FLOPS methodology.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_vertical_tail_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_vertical_tail_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_vertical_tail_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_vertical_tail_weight</span></code></a>(vehicle, wing)</p></td>
-<td><p>Calculate the vertical tail weight</p></td>
+<td><p>Computes the vertical tail weight using NASA FLOPS weight estimation method.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_wing_weight.html#module-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_wing_weight" title="RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_wing_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_wing_weight</span></code></a>(vehicle, wing, WPOD, ...)</p></td>
-<td><p>Calculate the wing weight based on the flops method. The wing weight consists of:</p></td>
+<td><p>Calculate the wing weight based on the FLOPS method.</p></td>
 </tr>
 </tbody>
 </table>

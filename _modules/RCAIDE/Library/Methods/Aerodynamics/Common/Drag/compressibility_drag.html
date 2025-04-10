@@ -460,10 +460,10 @@
     
     <span class="n">peak_volume_total</span> <span class="o">=</span> <span class="n">high_cutoff_volume_total</span><span class="o">*</span><span class="n">peak_factor</span>
      
-    <span class="c1"># subsonic side</span>
+    <span class="c1"># subsonic side smoothing function</span>
     <span class="n">a1</span> <span class="o">=</span> <span class="p">(</span><span class="n">low_cutoff_volume_total</span><span class="o">-</span><span class="n">peak_volume_total</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">low_mach_cutoff</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">low_mach_cutoff</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span>
     
-    <span class="c1"># supersonic side</span>
+    <span class="c1"># supersonic side smoothing function</span>
     <span class="n">a2</span> <span class="o">=</span> <span class="p">(</span><span class="n">high_cutoff_volume_total</span><span class="o">-</span><span class="n">peak_volume_total</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">high_mach_cutoff</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">high_mach_cutoff</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span> 
     
     <span class="c1"># Shorten cubic Hermite spline</span>

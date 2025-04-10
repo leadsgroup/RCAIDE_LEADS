@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,53 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Atmosphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Atmospheres/Atmosphere.html#Atmosphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
-<p>Default atmosphere class</p>
+<p>Base class for atmospheric models providing a framework for defining atmospheric properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the atmospheric model type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere.composition">
+<span class="sig-name descname"><span class="pre">composition</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere.composition" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Container for atmospheric composition information</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>gas<span class="classifier">float</span></dt><dd><p>Mass fraction of gas in the atmosphere (default: 1.0)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class serves as a template for specific atmospheric implementations (e.g., Earth’s atmosphere)
+and provides basic structure for atmospheric composition data.</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Constant-property atmosphere’</dt><dd><p>An atmospheric model where properties remain constant and do not vary with altitude or other parameters</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="RCAIDE.Library.Attributes.Atmospheres.Earth.html#module-RCAIDE.Library.Attributes.Atmospheres.Earth" title="RCAIDE.Library.Attributes.Atmospheres.Earth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Attributes.Atmospheres.Earth</span></code></a></dt><dd><p>Earth-specific atmospheric models</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </section>
@@ -585,7 +631,11 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere"><code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere"><code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere.tag"><code class="docutils literal notranslate"><span class="pre">Atmosphere.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Atmospheres.Atmosphere.Atmosphere.composition"><code class="docutils literal notranslate"><span class="pre">Atmosphere.composition</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

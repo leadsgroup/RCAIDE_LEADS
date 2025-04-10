@@ -30,13 +30,12 @@ Propulsors
    :template: custom-module-template.rst
    :recursive:
 
-   Constant_Speed_ICE_Propeller
+   Constant_Speed_Internal_Combustion_Engine
    Electric_Ducted_Fan
    Electric_Rotor
-   ICE_Propeller
+   Internal_Combustion_Engine
    Propulsor
    Turbofan
    Turbojet
    Turboprop
-   Turboshaft
 

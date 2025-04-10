@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -536,8 +536,54 @@
 <h1>RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw.compute_avionics_power_draw<a class="headerlink" href="#rcaide-library-methods-powertrain-systems-compute-avionics-power-draw-compute-avionics-power-draw" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw.compute_avionics_power_draw">
-<span class="sig-name descname"><span class="pre">compute_avionics_power_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avionics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avionics_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Systems/compute_avionics_power_draw.html#compute_avionics_power_draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw.compute_avionics_power_draw" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">compute_avionics_power_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avionics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Systems/compute_avionics_power_draw.html#compute_avionics_power_draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw.compute_avionics_power_draw" title="Link to this definition">#</a></dt>
+<dd><p>Computes the power draw of an avionics system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>avionics</strong> (<a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Systems.Avionics.html#RCAIDE.Library.Components.Powertrain.Systems.Avionics.Avionics" title="RCAIDE.Library.Components.Powertrain.Systems.Avionics.Avionics"><em>Avionics</em></a>) – <dl class="simple">
+<dt>The avionics component with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>power_draw<span class="classifier">float</span></dt><dd><p>Power consumption of the avionics component [W]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>avionics_conditions</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Common.Conditions.html#RCAIDE.Framework.Mission.Common.Conditions.Conditions" title="RCAIDE.Framework.Mission.Common.Conditions.Conditions"><em>Conditions</em></a>) – <dl class="simple">
+<dt>Object to store avionics power conditions with the following attributes:</dt><dd><ul>
+<li><dl class="simple">
+<dt>power<span class="classifier">numpy.ndarray</span></dt><dd><p>Array to store the computed power draw values [W]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>conditions</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Common.Conditions.html#RCAIDE.Framework.Mission.Common.Conditions.Conditions" title="RCAIDE.Framework.Mission.Common.Conditions.Conditions"><em>Conditions</em></a>) – Object containing mission conditions (not directly used in this function)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function modifies the avionics_conditions.power array in-place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function assigns the constant power draw value from the avionics component
+to the power array in the avionics_conditions object. The power draw is assumed
+to be constant throughout the mission segment.</p>
+<p>For more complex avionics models, this function could be extended to calculate
+power draw based on operating mode, altitude, or other mission parameters.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions" title="RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions</span></code></a></p>
+</div>
+</dd></dl>
 
 </section>
 

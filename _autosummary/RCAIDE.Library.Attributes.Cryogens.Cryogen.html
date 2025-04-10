@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,84 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Cryogen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Cryogens/Cryogen.html#Cryogen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
-<p>Defauly cryogenic liquid class</p>
+<p>Base class for defining cryogenic fluid properties used in aerospace applications.</p>
+<p>This class serves as a template for specific cryogenic fluid implementations and provides
+structure for essential thermophysical properties required for cryogenic system analysis.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the cryogenic fluid type, defaults to ‘Cryogen’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.density" title="Link to this definition">#</a></dt>
+<dd><p>Density of the cryogenic fluid [kg/m^3]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy of the cryogenic fluid [MJ/kg]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Energy density of the cryogenic fluid [MJ/m^3]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.temperatures">
+<span class="sig-name descname"><span class="pre">temperatures</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.temperatures" title="Link to this definition">#</a></dt>
+<dd><p>Temperatures of the cryogenic fluid [K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This base class provides a minimal framework for implementing specific cryogenic fluids.
+Derived classes should implement additional properties and methods specific to each
+cryogenic fluid type.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties are initially undefined</p></li>
+<li><p>Additional properties to be defined in derived classes</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Energy</span></code></dt><dd><p>Energy storage systems components</p>
+</dd>
+<dt><a class="reference internal" href="RCAIDE.Library.Components.Thermal_Management.html#module-RCAIDE.Library.Components.Thermal_Management" title="RCAIDE.Library.Components.Thermal_Management"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Thermal_Management</span></code></a></dt><dd><p>Thermal management systems components</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </section>
@@ -585,7 +662,14 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen"><code class="docutils literal notranslate"><span class="pre">Cryogen</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen"><code class="docutils literal notranslate"><span class="pre">Cryogen</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.tag"><code class="docutils literal notranslate"><span class="pre">Cryogen.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.density"><code class="docutils literal notranslate"><span class="pre">Cryogen.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.specific_energy"><code class="docutils literal notranslate"><span class="pre">Cryogen.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.energy_density"><code class="docutils literal notranslate"><span class="pre">Cryogen.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Cryogens.Cryogen.Cryogen.temperatures"><code class="docutils literal notranslate"><span class="pre">Cryogen.temperatures</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

@@ -388,24 +388,55 @@
 <div class="viewcode-block" id="ground">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Unpack_Unknowns.ground.html#RCAIDE.Library.Mission.Common.Unpack_Unknowns.ground.ground">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ground</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Unpacks the times and velocities from the solver to the mission</span>
-<span class="sd">    </span>
-<span class="sd">        Assumptions:</span>
-<span class="sd">        Overrides the velocities if they go to zero</span>
-<span class="sd">        </span>
-<span class="sd">        Inputs:</span>
-<span class="sd">            segment.state.unknowns:</span>
-<span class="sd">                ground_velocity         [meters/second]</span>
-<span class="sd">                time               [second]</span>
-<span class="sd">            segment.velocity_start [meters/second]</span>
-<span class="sd">            </span>
-<span class="sd">        Outputs:</span>
-<span class="sd">            segment.state.conditions:</span>
-<span class="sd">                frames.inertial.velocity_vector [meters/second]</span>
-<span class="sd">                frames.inertial.time            [second]</span>
-<span class="sd">        Properties Used:</span>
-<span class="sd">        N/A</span>
-<span class="sd">                                </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Updates ground segment states from solver unknowns</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Segment</span>
+<span class="sd">        The mission segment being analyzed</span>
+<span class="sd">            - state:</span>
+<span class="sd">                - unknowns:</span>
+<span class="sd">                    - ground_velocity : array</span>
+<span class="sd">                        Solved ground velocity [m/s]</span>
+<span class="sd">                    - elapsed_time : float</span>
+<span class="sd">                        Segment duration [s]</span>
+<span class="sd">                - conditions.frames.inertial:</span>
+<span class="sd">                    - velocity_vector : array</span>
+<span class="sd">                        Vehicle velocity [m/s]</span>
+<span class="sd">                    - time : array</span>
+<span class="sd">                        Segment time points [s]</span>
+<span class="sd">                - numerics.dimensionless:</span>
+<span class="sd">                    - control_points : array</span>
+<span class="sd">                        Normalized time points [-]</span>
+<span class="sd">            - air_speed_start : float</span>
+<span class="sd">                Initial airspeed [m/s]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Updates segment conditions directly</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function applies ground-specific solver values to the segment state,</span>
+<span class="sd">    handling velocity and time variables for ground operations. It ensures</span>
+<span class="sd">    proper velocity transitions and time scaling.</span>
+
+<span class="sd">    The function processes:</span>
+<span class="sd">        1. Ground velocity application</span>
+<span class="sd">        2. Time vector computation</span>
+<span class="sd">        3. Initial velocity preservation</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Continuous velocity transitions</span>
+<span class="sd">        * Valid time scaling</span>
+<span class="sd">        * Non-negative velocities</span>
+<span class="sd">        * Well-defined initial conditions</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Framework.Mission.Segments.Ground</span>
 <span class="sd">    &quot;&quot;&quot;</span>       
     
     <span class="c1"># unpack unknowns </span>

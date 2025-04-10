@@ -32,5 +32,5 @@ Motor
 
    append_motor_conditions
    compute_motor_performance
-   design_DC_motor
+   design_optimal_motor
 

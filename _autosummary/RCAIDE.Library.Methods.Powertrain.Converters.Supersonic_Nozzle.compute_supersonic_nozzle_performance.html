@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.compute_supersonic_nozzle_performance';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.compute_supersonic_nozzle_performance.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -537,49 +539,54 @@
 <span id="compute-supersonic-nozzle-performance"></span><h1>compute_supersonic_nozzle_performance<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.compute_supersonic_nozzle_performance" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.compute_supersonic_nozzle_performance.compute_supersonic_nozzle_performance">
-<span class="sig-name descname"><span class="pre">compute_supersonic_nozzle_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supersonic_nozzle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_nozzle_conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Supersonic_Nozzle/compute_supersonic_nozzle_performance.html#compute_supersonic_nozzle_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.compute_supersonic_nozzle_performance.compute_supersonic_nozzle_performance" title="Link to this definition">#</a></dt>
-<dd><p>This computes the output values from the input values according to
-equations from the source.</p>
-<p>Assumptions:
-Constant polytropic efficiency and pressure ratio</p>
-<p>Source:
-<a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/">https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</a></p>
-<p>Inputs:
-conditions.freestream.</p>
-<blockquote>
-<div><p>isentropic_expansion_factor         [-]
-specific_heat_at_constant_pressure  [J/(kg K)]
-pressure                            [Pa]
-stagnation_pressure                 [Pa]
-stagnation_temperature              [K]
-gas_specific_constant               [J/(kg K)]
-mach_number                         [-]</p>
-</div></blockquote>
-<dl class="simple">
-<dt>self.inputs.</dt><dd><p>stagnation_temperature              [K]
-stagnation_pressure                 [Pa]</p>
+<span class="sig-name descname"><span class="pre">compute_supersonic_nozzle_performance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supersonic_nozzle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Converters/Supersonic_Nozzle/compute_supersonic_nozzle_performance.html#compute_supersonic_nozzle_performance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.compute_supersonic_nozzle_performance.compute_supersonic_nozzle_performance" title="Link to this definition">#</a></dt>
+<dd><p>Computes the performance parameters of a supersonic nozzle based on input conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>supersonic_nozzle</strong> (<em>RCAIDE.Components.Energy.Converters.Supersonic_Nozzle</em>) – The supersonic nozzle component for which performance is being computed</p></li>
+<li><p><strong>conditions</strong> (<em>RCAIDE.Framework.Mission.Common.Conditions</em>) – Container for flight conditions and energy system states</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function modifies the conditions object in-place</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
-<p>Outputs:
-s_nozzle_conditions.</p>
-<blockquote>
-<div><p>stagnation_temperature              [K]
-stagnation_pressure                 [Pa]
-stagnation_enthalpy                 [J/kg]
-mach_number                         [-]
-static_temperature                  [K]
-static_enthalpy                     [J/kg]
-velocity                            [m/s]
-static_pressure                     [Pa]
-area_ratio                          [-]</p>
-</div></blockquote>
-<p>Properties Used:
-self.</p>
-<blockquote>
-<div><p>pressure_ratio                      [-]
-polytropic_efficiency               [-]
-pressure_recovery                   [-]</p>
-</div></blockquote>
+<p class="rubric">Notes</p>
+<p>This function calculates output values from input conditions according to
+gas dynamics equations for supersonic nozzles.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Constant polytropic efficiency and pressure ratio</p></li>
+<li><p>Isentropic flow except for losses accounted by efficiency terms</p></li>
+<li><p>Perfect gas behavior</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong></p>
+<p>The nozzle performance is calculated using isentropic flow relations. For supersonic flow,
+the Mach number is calculated from the pressure ratio:</p>
+<div class="math notranslate nohighlight">
+\[M = \sqrt{\frac{2}{\gamma-1}\left[\left(\frac{P_t}{P_0}\right)^{\frac{\gamma-1}{\gamma}}-1\right]}\]</div>
+<p>The static temperature is related to stagnation temperature by:</p>
+<div class="math notranslate nohighlight">
+\[T = \frac{T_t}{1+\frac{\gamma-1}{2}M^2}\]</div>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Pressure ratio’</dt><dd><p>Ratio of exit pressure to inlet pressure in the nozzle</p>
+</dd>
+<dt>‘Polytropic efficiency’</dt><dd><p>Measure of the nozzle’s thermodynamic efficiency accounting for irreversibilities</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Cantwell, B. “AA283 Course Material: Course Notes.” Stanford University. <a class="reference external" href="https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/">https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/</a></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Gas_Dynamics.fm_id.html#module-RCAIDE.Library.Methods.Gas_Dynamics.fm_id" title="RCAIDE.Library.Methods.Gas_Dynamics.fm_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Gas_Dynamics.fm_id</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

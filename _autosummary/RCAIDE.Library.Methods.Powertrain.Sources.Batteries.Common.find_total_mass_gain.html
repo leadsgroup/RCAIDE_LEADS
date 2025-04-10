@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,20 +541,51 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_total_mass_gain.find_total_mass_gain">
 <span class="sig-name descname"><span class="pre">find_total_mass_gain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Powertrain/Sources/Batteries/Common/find_total_mass_gain.html#find_total_mass_gain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_total_mass_gain.find_total_mass_gain" title="Link to this definition">#</a></dt>
-<dd><p>finds the total mass of air that the battery
-accumulates when discharged fully</p>
-<p>Assumptions:
-Earth Atmospheric composition</p>
-<p>Inputs:
-battery.maximum_energy [J]
-battery.</p>
-<blockquote>
-<div><p>mass_gain_factor [kg/W]</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Outputs:</dt><dd><p>mdot             [kg]</p>
+<dd><p>Calculates the total mass of air that the battery accumulates when discharged fully.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>battery</strong> (<em>Battery</em>) – <dl class="simple">
+<dt>The battery component with the following attributes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>maximum_energy<span class="classifier">float</span></dt><dd><p>Maximum energy capacity of the battery [J]</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>mass_gain_factor<span class="classifier">float</span></dt><dd><p>Mass of air gained per unit of energy [kg/J]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>mgain</strong> – Total mass gain when the battery is fully discharged [kg]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the total mass of air that a battery would accumulate
+when discharged from full capacity to zero. This is relevant for metal-air batteries
+(such as aluminum-air or zinc-air) where oxygen from the air is consumed during
+the discharge process, resulting in a mass increase.</p>
+<p>The calculation is based on a linear relationship between energy output and
+air mass gain, using the mass_gain_factor property of the battery.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Linear relationship between energy output and mass gain</p></li>
+<li><p>Complete discharge from maximum energy to zero</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air.compute_al_air_cell_performance</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

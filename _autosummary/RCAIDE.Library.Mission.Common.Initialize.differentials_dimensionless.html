@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,26 +535,81 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Initialize.differentials_dimensionless.differentials_dimensionless">
 <span class="sig-name descname"><span class="pre">differentials_dimensionless</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Initialize/differentials_dimensionless.html#differentials_dimensionless"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Initialize.differentials_dimensionless.differentials_dimensionless" title="Link to this definition">#</a></dt>
-<dd><p>Discretizes the differential operators</p>
-<p>Assumptions:
-N/A</p>
+<dd><p>Initializes dimensionless differential operators for mission segment discretization</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Mission.Segments.Segment.html#RCAIDE.Framework.Mission.Segments.Segment.Segment" title="RCAIDE.Framework.Mission.Segments.Segment.Segment"><em>Segment</em></a>) – The mission segment being analyzed</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function sets up the numerical discretization operators used for
+solving differential equations in mission segments. It creates the
+control points and differential/integral operators based on the
+specified discretization method.</p>
 <dl class="simple">
-<dt>Inputs:</dt><dd><dl class="simple">
-<dt>state.numerics:</dt><dd><p>number_of_control_points [int]
-discretization_method    [function]</p>
+<dt>The function performs the following steps:</dt><dd><ol class="arabic simple">
+<li><p>Gets number of control points and discretization method</p></li>
+<li><p>Generates control points and operators</p></li>
+<li><p>Ensures proper dimensioning of arrays</p></li>
+<li><p>Stores results in segment numerics</p></li>
+</ol>
 </dd>
 </dl>
-</dd>
-<dt>Outputs:</dt><dd><dl class="simple">
-<dt>numerics.dimensionless:</dt><dd><p>control_points           [array]
-differentiate            [array]
-integrate                [array]</p>
-</dd>
-</dl>
+<p><strong>Required Segment State Variables</strong></p>
+<dl class="simple">
+<dt>state.numerics:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>number_of_control_points<span class="classifier">int</span></dt><dd><p>Number of points for discretization</p>
 </dd>
 </dl>
-<p>Properties Used:
-N/A</p>
+</li>
+<li><dl class="simple">
+<dt>discretization_method<span class="classifier">function</span></dt><dd><p>Method to generate discretization operators</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p><strong>Generated Operators</strong></p>
+<dl class="simple">
+<dt>numerics.dimensionless:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>control_points<span class="classifier">array</span></dt><dd><p>Normalized points for evaluation</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>differentiate<span class="classifier">array</span></dt><dd><p>Differentiation operator matrix</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>integrate<span class="classifier">array</span></dt><dd><p>Integration operator matrix</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Valid discretization method provided</p></li>
+<li><p>Number of control points &gt; 1</p></li>
+<li><p>Method generates consistent operators</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Updates segment state directly</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Core.Arrays.html#module-RCAIDE.Framework.Core.Arrays" title="RCAIDE.Framework.Core.Arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Core.Arrays</span></code></a>, <a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

@@ -399,23 +399,40 @@
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Materials.Copper.html#RCAIDE.Library.Attributes.Materials.Copper.Copper">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Copper</span><span class="p">(</span><span class="n">Solid</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Physical Constants Specific to copper RRR=50 OFHC</span>
-<span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    None</span>
-<span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">    &quot;PROPERTIES OF SELECTED MATERIALS AT CRYOGENIC TEMPERATURES&quot; Peter E. Bradley and Ray Radebaugh</span>
-<span class="sd">    &quot;A copper resistance temperature scale&quot; Dauphinee, TM and Preston-Thomas, H</span>
-<span class="sd">    </span>
-<span class="sd">    Inputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Outputs:</span>
-<span class="sd">    N/A</span>
-<span class="sd">    </span>
-<span class="sd">    Properties Used:</span>
-<span class="sd">    None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    A class representing copper material properties.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Material density in kg/m³ (8960.0)</span>
+<span class="sd">    conductivity_electrical : float</span>
+<span class="sd">        Electrical conductivity in mhos/m (58391886.09)</span>
+<span class="sd">    conductivity_thermal : float</span>
+<span class="sd">        Thermal conductivity at room temperature in W/(m·K) (392.4)</span>
+<span class="sd">    interpolate : bool</span>
+<span class="sd">        Flag to enable interpolation of temperature-dependent properties</span>
+<span class="sd">    c_thermal : function</span>
+<span class="sd">        Interpolation function for temperature-dependent thermal conductivity</span>
+<span class="sd">            - Input: Temperature in K</span>
+<span class="sd">            - Output: Thermal conductivity in W/(m·K)</span>
+<span class="sd">            - Valid range: 4K to 300K</span>
+<span class="sd">    c_electrical : function</span>
+<span class="sd">        Interpolation function for temperature-dependent electrical conductivity</span>
+<span class="sd">            - Input: Temperature in K</span>
+<span class="sd">            - Output: Electrical conductivity in mhos/m</span>
+<span class="sd">            - Valid range: 4.2K to 320K</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements temperature-dependent properties for copper,</span>
+<span class="sd">    particularly focused on cryogenic applications.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Bradley, P. and Radebaugh, R. (2013), Properties of Selected Materials at Cryogenic Temperatures, CRC Press, Boca Raton, FL, [online], https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=913059 (Accessed January 8, 2025)</span>
+<span class="sd">    [2] T. M. Dauphinee, H. Preston‐Thomas; A Copper Resistance Temperature Scale. Rev. Sci. Instrum. 1 September 1954; 25 (9): 884–886. https://doi.org/10.1063/1.1771200</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

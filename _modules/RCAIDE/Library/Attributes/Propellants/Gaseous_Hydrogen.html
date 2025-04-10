@@ -395,7 +395,57 @@
 <div class="viewcode-block" id="Gaseous_Hydrogen">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.html#RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen.Gaseous_Hydrogen">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Gaseous_Hydrogen</span><span class="p">(</span><span class="n">Propellant</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gaseous hydrogen class</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing gaseous hydrogen (H2) fuel properties for propulsion applications.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the propellant (&#39;hydrogen_gas&#39;)</span>
+<span class="sd">    reactant : str</span>
+<span class="sd">        Oxidizer used for combustion (&#39;O2&#39;)</span>
+<span class="sd">    specific_energy : float</span>
+<span class="sd">        Specific energy content in J/kg (141.86e6)</span>
+<span class="sd">    energy_density : float</span>
+<span class="sd">        Energy density in J/m³ (5591.13e6)</span>
+<span class="sd">    max_mass_fraction : Data</span>
+<span class="sd">        Maximum fuel-to-oxidizer mass ratios</span>
+<span class="sd">            - Air : float</span>
+<span class="sd">                Maximum mass fraction with air (0.013197)</span>
+<span class="sd">            - O2 : float</span>
+<span class="sd">                Maximum mass fraction with pure oxygen (0.0630)</span>
+<span class="sd">    molecular_mass : float</span>
+<span class="sd">        Molar mass in kg/kmol (2.016)</span>
+<span class="sd">    gas_constant : float</span>
+<span class="sd">        Specific gas constant in J/kg-K (4124.0)</span>
+<span class="sd">    pressure : float</span>
+<span class="sd">        Storage pressure in Pa (700e5)</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        Reference temperature in K (293.0)</span>
+<span class="sd">    compressibility_factor : float</span>
+<span class="sd">        Gas compressibility factor (1.4699)</span>
+<span class="sd">    density : float</span>
+<span class="sd">        Gas density at reference conditions in kg/m³ (39.4116)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class implements properties for gaseous hydrogen fuel at high pressure </span>
+<span class="sd">    storage conditions. Properties account for real gas behavior through the </span>
+<span class="sd">    compressibility factor.</span>
+
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Compressibility Factor&#39;</span>
+<span class="sd">        Correction factor for real gas behavior deviation from ideal gas law</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Specific Energy&#39;</span>
+<span class="sd">        Energy content per unit mass, significantly higher than hydrocarbon fuels</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Max Mass Fraction&#39;</span>
+<span class="sd">        Maximum fuel fraction for stoichiometric combustion with different oxidizers</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Real gas behavior is accounted for via compressibility factor</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -419,7 +469,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                  <span class="o">=</span> <span class="mf">700e5</span>                             <span class="c1"># Pa</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>               <span class="o">=</span> <span class="mf">293.0</span>                             <span class="c1"># K</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compressibility_factor</span>    <span class="o">=</span> <span class="mf">1.4699</span>                            <span class="c1"># compressibility factor</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>                   <span class="o">=</span> <span class="mf">39.4116</span>                           <span class="c1"># kg/m^3</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>                   <span class="o">=</span> <span class="mf">39.4116</span>                           <span class="c1"># kg/m^3</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
 
 </pre></div>
 

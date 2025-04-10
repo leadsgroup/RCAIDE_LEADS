@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="stability" href="RCAIDE.Library.Mission.Common.Pre_Process.stability.html" />
-    <link rel="prev" title="energy" href="RCAIDE.Library.Mission.Common.Pre_Process.energy.html" />
+    <link rel="prev" title="mass_properties" href="RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,16 +535,99 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns.set_residuals_and_unknowns">
 <span class="sig-name descname"><span class="pre">set_residuals_and_unknowns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mission</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Mission/Common/Pre_Process/set_residuals_and_unknowns.html#set_residuals_and_unknowns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Mission.Common.Pre_Process.set_residuals_and_unknowns.set_residuals_and_unknowns" title="Link to this definition">#</a></dt>
-<dd><p>Sets the flight dynamics residuals and fligth controls of the aircraft</p>
-<p>Assumptions:
-N/A</p>
-<dl class="simple">
-<dt>Inputs:</dt><dd><p>mission     - data structure of mission  [-]</p>
+<dd><p>Sets up flight dynamics residuals and control variables for mission segments</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mission</strong> (<em>Mission</em>) – <dl class="simple">
+<dt>The mission containing segments to be analyzed</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>state.ones_row<span class="classifier">function</span></dt><dd><p>Creates array of ones</p>
 </dd>
 </dl>
-<p>Outputs:</p>
-<p>Properties Used:
-N/A</p>
+</li>
+<li><dl class="simple">
+<dt>assigned_control_variables<span class="classifier">Data</span></dt><dd><p>Control variable configurations</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>flight_dynamics<span class="classifier">Data</span></dt><dd><p>Force/moment flags</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state.residuals<span class="classifier">Data</span></dt><dd><p>Storage for residuals</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>state.unknowns<span class="classifier">Data</span></dt><dd><p>Storage for unknowns</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updates mission segment states directly</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function configures the flight dynamics problem for each segment by
+setting up force/moment residuals and initializing control variables.
+It handles a comprehensive set of flight controls and dynamics states.</p>
+<p>The function processes:
+1. Force and moment residuals (degrees of freedom)
+2. Control variable initialization including:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Body angles</p></li>
+<li><p>Bank angles</p></li>
+<li><p>Wind angles</p></li>
+<li><p>Throttle settings</p></li>
+<li><p>Velocity and acceleration</p></li>
+<li><p>Time parameters</p></li>
+<li><dl class="simple">
+<dt>Control surface deflections</dt><dd><ul>
+<li><p>Elevator</p></li>
+<li><p>Rudder</p></li>
+<li><p>Flaps</p></li>
+<li><p>Slats</p></li>
+<li><p>Ailerons</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Thrust vectoring</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Control Variable Initialization</strong></p>
+<dl class="simple">
+<dt>For each control:</dt><dd><ol class="arabic simple">
+<li><p>Check if active</p></li>
+<li><p>Use provided initial values if available</p></li>
+<li><p>Apply default values if needed</p></li>
+<li><p>Track number of controls</p></li>
+</ol>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Valid control configurations</p></li>
+<li><p>Proper degrees of freedom setup</p></li>
+<li><p>Compatible control assignments</p></li>
+<li><p>Valid initial guess values</p></li>
+<li><p>Units in standard format</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Framework.Mission.Segments.html#module-RCAIDE.Framework.Mission.Segments" title="RCAIDE.Framework.Mission.Segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Framework.Mission.Segments</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>
@@ -560,12 +643,12 @@ N/A</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="RCAIDE.Library.Mission.Common.Pre_Process.energy.html"
+       href="RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">energy</p>
+        <p class="prev-next-title">mass_properties</p>
       </div>
     </a>
     <a class="right-next"

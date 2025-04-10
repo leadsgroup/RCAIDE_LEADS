@@ -43,6 +43,8 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common';</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -377,9 +379,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -535,33 +537,49 @@
   <p>RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common</p>
 <section id="module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common">
 <span id="common"></span><h1>Common<a class="headerlink" href="#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common" title="Link to this heading">#</a></h1>
-<p>RCAIDE Package Setup</p>
+<p>This module provides common functionality for modeling battery systems in powertrains. It includes methods for
+battery sizing, performance calculation, condition management, and property computation that are shared across
+different battery chemistries.</p>
+<dl class="simple">
+<dt>The module contains functions for:</dt><dd><ul class="simple">
+<li><p>Appending and managing battery conditions during mission segments</p></li>
+<li><p>Finding battery properties using Ragone curves</p></li>
+<li><p>Calculating power and energy characteristics</p></li>
+<li><p>Computing mass changes for metal-air batteries</p></li>
+<li><p>Sizing battery modules based on mass or energy/power requirements</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP.html#module-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP" title="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC.html#module-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC" title="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC</span></code></a>, <a class="reference internal" href="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Aluminum_Air.html#module-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Aluminum_Air" title="RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Aluminum_Air"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Aluminum_Air</span></code></a></p>
+</div>
 <p class="rubric">Modules</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_battery_conditions</span></code></a>(battery, segment, bus)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_battery_conditions</span></code></a>(battery_module, ...)</p></td>
 <td><p>Appends the initial battery conditions</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_module_properties</span></code></a>(battery_module)</p></td>
-<td><p>Calculate module level properties of battery module using cell properties and module configuraton</p></td>
+<td><p>Calculates module level properties of battery module using cell properties and module configuration.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_mass_gain_rate.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_mass_gain_rate" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_mass_gain_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_mass_gain_rate</span></code></a>(battery, power)</p></td>
-<td><p>finds the mass gain rate of the battery from the ambient air Assumptions: Earth Atmospheric composition</p></td>
+<td><p>Calculates the mass gain rate of the battery from the ambient air.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_ragone_properties.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_ragone_properties" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_ragone_properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_ragone_properties</span></code></a>(specific_energy, ...)</p></td>
-<td><p>determines mass of a battery based on the specific energy, energy required, and power required, works by calling find_specific_power and size_module_from_energy_and_power Assumptions: None</p></td>
+<td><p>Determines battery mass based on specific energy, energy required, and power required.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_specific_power</span></code></a>(battery, specific_energy)</p></td>
-<td><p>determines specific specific power from a ragone curve correlation Assumptions: None</p></td>
+<td><p>Determines specific power from a Ragone curve correlation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_total_mass_gain.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_total_mass_gain" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_total_mass_gain"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_total_mass_gain</span></code></a>(battery)</p></td>
-<td><p>finds the total mass of air that the battery accumulates when discharged fully</p></td>
+<td><p>Calculates the total mass of air that the battery accumulates when discharged fully.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_energy_and_power.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_energy_and_power" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_energy_and_power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_module_from_energy_and_power</span></code></a>(battery, ...)</p></td>
-<td><p>Uses a soft_max function to calculate the batter mass, maximum energy, and maximum power from the energy and power requirements, as well as the specific energy and specific power</p></td>
+<td><p>Calculates the battery mass, maximum energy, and maximum power based on energy and power requirements.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass.html#module-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass" title="RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_module_from_mass</span></code></a>(battery_module)</p></td>
-<td><p>Calculate the max energy and power based of the mass Assumptions: A constant value of specific energy and power</p></td>
+<td><p>Calculates the maximum energy and power of a battery module based on its mass.</p></td>
 </tr>
 </tbody>
 </table>

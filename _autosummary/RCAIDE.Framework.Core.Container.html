@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -530,24 +530,40 @@
 <dt class="sig sig-object py" id="RCAIDE.Framework.Core.Container.Container">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Container</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Core/Container.html#Container"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Core.Container.Container" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
+<p>A dict-type container with attribute, item and index style access
+intended to hold a attribute-accessible list of Data(). This is unordered.</p>
+<p>Assumptions:
+N/A</p>
+<p>Source:
+N/A</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Framework.Core.Container.Container.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Core/Container.html#Container.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Core.Container.Container.__init__" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-</dl>
+<dd><p>Initialization that builds the container</p>
+<p>Assumptions:
+None</p>
+<p>Source:
+N/A</p>
+<p>Inputs:
+self</p>
+<p>Outputs:
+N/A</p>
+<p>Properties Used:
+N/A</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Framework.Core.Container.Container.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Core/Container.html#Container.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Core.Container.Container.append" title="Link to this definition">#</a></dt>
-<dd><p>Adds new values to the classes. Can also change an already appended key</p>
+<dd><p>Appends the value to the containers
+This overrides the Data class append by allowing for duplicate named components
+The following components will get new names.</p>
 <p>Assumptions:
-N/A</p>
+None</p>
 <p>Source:
 N/A</p>
 <p>Inputs:
-value
-key</p>
+self</p>
 <p>Outputs:
 N/A</p>
 <p>Properties Used:
@@ -559,12 +575,17 @@ N/A</p>
 <span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Core/Container.html#Container.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Core.Container.Container.extend" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="RCAIDE.Framework.Core.Container.Container.get_children">
-<span class="sig-name descname"><span class="pre">get_children</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Core/Container.html#Container.get_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Core.Container.Container.get_children" title="Link to this definition">#</a></dt>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Framework.Core.Container.get_tags">
+<span class="sig-name descname"><span class="pre">get_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Core/Container.html#get_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Core.Container.get_tags" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="RCAIDE.Framework.Core.Container.check_tags">
+<span class="sig-name descname"><span class="pre">check_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Framework/Core/Container.html#check_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Framework.Core.Container.check_tags" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 </section>
 
@@ -619,9 +640,10 @@ N/A</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Core.Container.Container.__init__"><code class="docutils literal notranslate"><span class="pre">Container.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Core.Container.Container.append"><code class="docutils literal notranslate"><span class="pre">Container.append()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Core.Container.Container.extend"><code class="docutils literal notranslate"><span class="pre">Container.extend()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Core.Container.Container.get_children"><code class="docutils literal notranslate"><span class="pre">Container.get_children()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Core.Container.get_tags"><code class="docutils literal notranslate"><span class="pre">get_tags()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Framework.Core.Container.check_tags"><code class="docutils literal notranslate"><span class="pre">check_tags()</span></code></a></li>
 </ul>
   </nav></div>
 

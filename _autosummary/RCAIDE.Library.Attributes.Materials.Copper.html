@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,18 +533,93 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Copper.Copper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Copper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Materials/Copper.html#Copper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Materials.Solid.html#RCAIDE.Library.Attributes.Materials.Solid.Solid" title="RCAIDE.Library.Attributes.Materials.Solid.Solid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solid</span></code></a></p>
-<p>Physical Constants Specific to copper RRR=50 OFHC</p>
-<p>Assumptions:
-None</p>
-<p>Source:
-“PROPERTIES OF SELECTED MATERIALS AT CRYOGENIC TEMPERATURES” Peter E. Bradley and Ray Radebaugh
-“A copper resistance temperature scale” Dauphinee, TM and Preston-Thomas, H</p>
-<p>Inputs:
-N/A</p>
-<p>Outputs:
-N/A</p>
-<p>Properties Used:
-None</p>
+<p>A class representing copper material properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Copper.Copper.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.density" title="Link to this definition">#</a></dt>
+<dd><p>Material density in kg/m³ (8960.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Copper.Copper.conductivity_electrical">
+<span class="sig-name descname"><span class="pre">conductivity_electrical</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.conductivity_electrical" title="Link to this definition">#</a></dt>
+<dd><p>Electrical conductivity in mhos/m (58391886.09)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Copper.Copper.conductivity_thermal">
+<span class="sig-name descname"><span class="pre">conductivity_thermal</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.conductivity_thermal" title="Link to this definition">#</a></dt>
+<dd><p>Thermal conductivity at room temperature in W/(m·K) (392.4)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Copper.Copper.interpolate">
+<span class="sig-name descname"><span class="pre">interpolate</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.interpolate" title="Link to this definition">#</a></dt>
+<dd><p>Flag to enable interpolation of temperature-dependent properties</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Copper.Copper.c_thermal">
+<span class="sig-name descname"><span class="pre">c_thermal</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.c_thermal" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Interpolation function for temperature-dependent thermal conductivity</dt><dd><ul class="simple">
+<li><p>Input: Temperature in K</p></li>
+<li><p>Output: Thermal conductivity in W/(m·K)</p></li>
+<li><p>Valid range: 4K to 300K</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Copper.Copper.c_electrical">
+<span class="sig-name descname"><span class="pre">c_electrical</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.c_electrical" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Interpolation function for temperature-dependent electrical conductivity</dt><dd><ul class="simple">
+<li><p>Input: Temperature in K</p></li>
+<li><p>Output: Electrical conductivity in mhos/m</p></li>
+<li><p>Valid range: 4.2K to 320K</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements temperature-dependent properties for copper,
+particularly focused on cryogenic applications.</p>
+<p class="rubric">References</p>
+<p>[1] Bradley, P. and Radebaugh, R. (2013), Properties of Selected Materials at Cryogenic Temperatures, CRC Press, Boca Raton, FL, [online], <a class="reference external" href="https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=913059">https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=913059</a> (Accessed January 8, 2025)
+[2] T. M. Dauphinee, H. Preston‐Thomas; A Copper Resistance Temperature Scale. Rev. Sci. Instrum. 1 September 1954; 25 (9): 884–886. <a class="reference external" href="https://doi.org/10.1063/1.1771200">https://doi.org/10.1063/1.1771200</a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Materials.Copper.Copper.thermal_conductivity">
 <span class="sig-name descname"><span class="pre">thermal_conductivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Materials/Copper.html#Copper.thermal_conductivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.thermal_conductivity" title="Link to this definition">#</a></dt>
@@ -607,6 +682,12 @@ None</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper"><code class="docutils literal notranslate"><span class="pre">Copper</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.density"><code class="docutils literal notranslate"><span class="pre">Copper.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.conductivity_electrical"><code class="docutils literal notranslate"><span class="pre">Copper.conductivity_electrical</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.conductivity_thermal"><code class="docutils literal notranslate"><span class="pre">Copper.conductivity_thermal</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.interpolate"><code class="docutils literal notranslate"><span class="pre">Copper.interpolate</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.c_thermal"><code class="docutils literal notranslate"><span class="pre">Copper.c_thermal</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.c_electrical"><code class="docutils literal notranslate"><span class="pre">Copper.c_electrical</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.thermal_conductivity"><code class="docutils literal notranslate"><span class="pre">Copper.thermal_conductivity()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Materials.Copper.Copper.electrical_conductivity"><code class="docutils literal notranslate"><span class="pre">Copper.electrical_conductivity()</span></code></a></li>
 </ul>

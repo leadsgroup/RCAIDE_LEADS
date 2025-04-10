@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -541,20 +541,22 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – <p>Mission segment data container</p>
-<ul>
+<li><p><strong>segment</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – <dl class="simple">
+<dt>Mission segment data container</dt><dd><ul>
 <li><dl class="simple">
-<dt>state<span class="classifier">Data</span></dt><dd><p>Current state</p>
-<ul>
+<dt>state<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Current state</dt><dd><ul>
 <li><dl class="simple">
-<dt>numerics<span class="classifier">Data</span></dt><dd><p>Numerical integration parameters</p>
-<ul>
+<dt>numerics<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Numerical integration parameters</dt><dd><ul>
 <li><dl class="simple">
 <dt>time<span class="classifier">Data</span></dt><dd><p>Time integration settings</p>
 </dd>
 </dl>
 </li>
 </ul>
+</dd>
+</dl>
 </dd>
 </dl>
 </li>
@@ -571,15 +573,19 @@
 </ul>
 </dd>
 </dl>
+</dd>
+</dl>
 </li>
 </ul>
+</dd>
+</dl>
 </p></li>
 <li><p><strong>settings</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – Configuration settings for the simulation</p></li>
-<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – <p>Vehicle configuration data</p>
-<ul>
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – <dl class="simple">
+<dt>Vehicle configuration data</dt><dd><ul>
 <li><dl class="simple">
-<dt>networks<span class="classifier">list</span></dt><dd><p>List of propulsion system networks</p>
-<ul>
+<dt>networks<span class="classifier">list</span></dt><dd><dl class="simple">
+<dt>List of propulsion system networks</dt><dd><ul>
 <li><dl class="simple">
 <dt>fuel_lines<span class="classifier">list</span></dt><dd><p>Fuel distribution systems</p>
 </dd>
@@ -593,16 +599,19 @@
 </ul>
 </dd>
 </dl>
+</dd>
+</dl>
 </li>
 </ul>
+</dd>
+</dl>
 </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>Updates segment.state.conditions.emissions with</em></p></li>
-<li><p><strong>total</strong> (<em>Data</em>) – Total emissions over segment</p>
-<ul>
+<dd class="field-even"><p><dl class="simple">
+<dt>total<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Total emissions over segment</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt>CO2<span class="classifier">float</span></dt><dd><p>Total CO2 emissions [kg]</p>
 </dd>
@@ -619,9 +628,11 @@
 </dl>
 </li>
 </ul>
-</li>
-<li><p><strong>index</strong> (<em>Data</em>) – Emission indices</p>
-<ul>
+</dd>
+</dl>
+</dd>
+<dt>index<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Emission indices</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt>CO2<span class="classifier">ndarray</span></dt><dd><p>CO2 emission index [kg_CO2/kg_fuel]</p>
 </dd>
@@ -648,19 +659,26 @@
 </dl>
 </li>
 </ul>
-</li>
-</ul>
+</dd>
+</dl>
+</dd>
+</dl>
 </p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Updates segment.state.conditions.emissions with</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Computes emissions by directly evaluating the chemical kinetics at each time step
 using Cantera.</p>
-<p><strong>Extra modules required</strong></p>
-<ul class="simple">
+<dl class="simple">
+<dt><strong>Extra modules required</strong></dt><dd><ul class="simple">
 <li><p>numpy</p></li>
 <li><p>Cantera (through evaluate_cantera function)</p></li>
 </ul>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera.html#module-RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera" title="RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera</span></code></a></p>

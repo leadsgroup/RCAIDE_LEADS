@@ -377,9 +377,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Networks.html">Networks</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Electric.html">Electric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Human_Powered.html">Human_Powered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Solar.html">Solar</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -533,7 +533,201 @@
 <dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Butanol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Attributes/Propellants/Butanol.html#Butanol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="RCAIDE.Library.Attributes.Propellants.Propellant.html#RCAIDE.Library.Attributes.Propellants.Propellant.Propellant" title="RCAIDE.Library.Attributes.Propellants.Propellant.Propellant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Propellant</span></code></a></p>
-<p>Butanol class propellant</p>
+<p>A class representing butanol (C4H9OH) fuel properties for propulsion applications.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.tag" title="Link to this definition">#</a></dt>
+<dd><p>Identifier for the propellant (‘Butanol’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.reactant">
+<span class="sig-name descname"><span class="pre">reactant</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.reactant" title="Link to this definition">#</a></dt>
+<dd><p>Oxidizer used for combustion (‘O2’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.density">
+<span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.density" title="Link to this definition">#</a></dt>
+<dd><p>Fuel density in kg/m³ (809.56)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.specific_energy">
+<span class="sig-name descname"><span class="pre">specific_energy</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.specific_energy" title="Link to this definition">#</a></dt>
+<dd><p>Specific energy content in J/kg (3.61e7)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.energy_density">
+<span class="sig-name descname"><span class="pre">energy_density</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.energy_density" title="Link to this definition">#</a></dt>
+<dd><p>Energy density in J/m³ (2.92e10)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.lower_heating_value">
+<span class="sig-name descname"><span class="pre">lower_heating_value</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.lower_heating_value" title="Link to this definition">#</a></dt>
+<dd><p>Lower heating value in J/kg (3.44e7)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.use_high_fidelity_kinetics_model">
+<span class="sig-name descname"><span class="pre">use_high_fidelity_kinetics_model</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.use_high_fidelity_kinetics_model" title="Link to this definition">#</a></dt>
+<dd><p>Flag for using detailed chemical kinetics (False)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.fuel_surrogate_chemical_properties">
+<span class="sig-name descname"><span class="pre">fuel_surrogate_chemical_properties</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.fuel_surrogate_chemical_properties" title="Link to this definition">#</a></dt>
+<dd><p>Simplified chemical composition for surrogate model {‘N1C4H9OH’: 1.0}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.fuel_chemical_properties">
+<span class="sig-name descname"><span class="pre">fuel_chemical_properties</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.fuel_chemical_properties" title="Link to this definition">#</a></dt>
+<dd><p>Detailed chemical composition for high-fidelity model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.air_chemical_properties">
+<span class="sig-name descname"><span class="pre">air_chemical_properties</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.air_chemical_properties" title="Link to this definition">#</a></dt>
+<dd><p>Air composition for combustion calculations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.surrogate_species_list">
+<span class="sig-name descname"><span class="pre">surrogate_species_list</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.surrogate_species_list" title="Link to this definition">#</a></dt>
+<dd><p>Species considered in surrogate model [‘CO’, ‘CO2’, ‘H2O’]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.species_list">
+<span class="sig-name descname"><span class="pre">species_list</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.species_list" title="Link to this definition">#</a></dt>
+<dd><p>Species considered in detailed model [‘CO’, ‘CO2’, ‘H2O’, ‘NO’, ‘NO2’, ‘CSOLID’]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.global_warming_potential_100">
+<span class="sig-name descname"><span class="pre">global_warming_potential_100</span></span><a class="headerlink" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.global_warming_potential_100" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>100-year global warming potential for emissions</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>CO2<span class="classifier">float</span></dt><dd><p>GWP for carbon dioxide (1)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>H2O<span class="classifier">float</span></dt><dd><p>GWP for water vapor (0.06)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SO2<span class="classifier">float</span></dt><dd><p>GWP for sulfur dioxide (-226)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>NOx<span class="classifier">float</span></dt><dd><p>GWP for nitrogen oxides (52)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Soot<span class="classifier">float</span></dt><dd><p>GWP for particulate matter (1166)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Contrails<span class="classifier">float</span></dt><dd><p>GWP for contrail formation (11)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data">Data</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>This class implements properties for butanol fuel, including options forboth simplified and
+detailed chemical kinetics. Properties are specified at standard conditions
+(15°C, 1 atm).</p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Lower Heating Value’</dt><dd><p>Heat of combustion excluding latent heat of water vapor</p>
+</dd>
+<dt>‘Global Warming Potential’</dt><dd><p>Relative measure of heat trapped in atmosphere compared to CO2</p>
+</dd>
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Properties are for standard temperature and pressure conditions (20C, 1atm)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] IEA. (n.d.). Properties. AMF. <a class="reference external" href="https://www.iea-amf.org/content/fuel_information/butanol/properties#:~:text=Isobutanol%20or%20n%2Dbutanol%20are,from%20gasoline%20in%20normal%20conditions.&amp;text=Viscosities%20of%20butanol%20isomers%20are,to%20viscosities%20of%20diesel%20fuel">https://www.iea-amf.org/content/fuel_information/butanol/properties#:~:text=Isobutanol%20or%20n%2Dbutanol%20are,from%20gasoline%20in%20normal%20conditions.&amp;text=Viscosities%20of%20butanol%20isomers%20are,to%20viscosities%20of%20diesel%20fuel</a>.</p>
 </dd></dl>
 
 </section>
@@ -585,7 +779,22 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol"><code class="docutils literal notranslate"><span class="pre">Butanol</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol"><code class="docutils literal notranslate"><span class="pre">Butanol</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.tag"><code class="docutils literal notranslate"><span class="pre">Butanol.tag</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.reactant"><code class="docutils literal notranslate"><span class="pre">Butanol.reactant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.density"><code class="docutils literal notranslate"><span class="pre">Butanol.density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.specific_energy"><code class="docutils literal notranslate"><span class="pre">Butanol.specific_energy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.energy_density"><code class="docutils literal notranslate"><span class="pre">Butanol.energy_density</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.lower_heating_value"><code class="docutils literal notranslate"><span class="pre">Butanol.lower_heating_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.use_high_fidelity_kinetics_model"><code class="docutils literal notranslate"><span class="pre">Butanol.use_high_fidelity_kinetics_model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.fuel_surrogate_chemical_properties"><code class="docutils literal notranslate"><span class="pre">Butanol.fuel_surrogate_chemical_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.fuel_chemical_properties"><code class="docutils literal notranslate"><span class="pre">Butanol.fuel_chemical_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.air_chemical_properties"><code class="docutils literal notranslate"><span class="pre">Butanol.air_chemical_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.surrogate_species_list"><code class="docutils literal notranslate"><span class="pre">Butanol.surrogate_species_list</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.species_list"><code class="docutils literal notranslate"><span class="pre">Butanol.species_list</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Attributes.Propellants.Butanol.Butanol.global_warming_potential_100"><code class="docutils literal notranslate"><span class="pre">Butanol.global_warming_potential_100</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

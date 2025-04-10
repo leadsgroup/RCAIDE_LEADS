@@ -394,7 +394,44 @@
 <div class="viewcode-block" id="Coolant">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Coolants.Coolant.html#RCAIDE.Library.Attributes.Coolants.Coolant.Coolant">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Coolant</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default class of a liquid coolant.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for defining liquid coolant properties used in thermal management systems.</span>
+
+<span class="sd">    This class serves as a template for specific coolant implementations and provides</span>
+<span class="sd">    structure for essential thermophysical properties required for heat transfer calculations.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        Identifier for the coolant type </span>
+<span class="sd">    density : float</span>
+<span class="sd">        Mass per unit volume of the coolant [kg/m³] </span>
+<span class="sd">    specific_heat_capacity : float</span>
+<span class="sd">        Amount of heat required to raise temperature by one degree [J/kg·K]</span>
+<span class="sd">    thermal_conductivity : float</span>
+<span class="sd">        Ability to conduct heat [W/m·K]</span>
+<span class="sd">    dynamic_viscosity : float</span>
+<span class="sd">        Resistance to flow [Pa·s]</span>
+<span class="sd">    temperatures : Data</span>
+<span class="sd">        Container for temperature-dependent properties</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This base class provides a framework for implementing specific coolants.</span>
+<span class="sd">    All properties are initialized to 0.0 and should be properly defined in</span>
+<span class="sd">    derived classes for specific coolants.</span>
+
+<span class="sd">    Temperature dependence of properties can be implemented through the</span>
+<span class="sd">    temperatures Data container for more sophisticated models.</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Properties are initially set as constants</span>
+<span class="sd">        * All properties are for liquid phase</span>
+<span class="sd">        * Standard atmospheric pressure conditions</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Attributes.Coolants.Glycol_Water : Glycol-water mixture implementation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
