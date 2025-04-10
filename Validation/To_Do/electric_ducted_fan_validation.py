@@ -1,203 +1,132 @@
-# Regression/scripts/Tests/network_ducted_fan/electric_ducted_fan_netowrk.py
 # 
-# Created:  Jul 2023, M. Clarke 
+# Created:  April 2025, M. Clarke, M. Guidotti
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports  
+#----------------------------------------------------------------------
+#   Imports
+# ----------------------------------------------------------------------
+
 import RCAIDE
-from RCAIDE.Framework.Core                          import Units , Data 
-from RCAIDE.Library.Plots                           import *        
+from RCAIDE.Framework.Core import Units
+from   RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan import design_electric_ducted_fan
+from RCAIDE.Library.Methods.Powertrain                  import setup_operating_conditions  
+import numpy as np
 
-# python imports     
-import numpy as np  
-import sys
-import matplotlib.pyplot as plt  
-import os
+#----------------------------------------------------------------------
+#   Reference Values
+# ----------------------------------------------------------------------
 
-# local imports 
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), 'RCAIDE', 'Regressions', 'Vehicles'))
-from NASA_X48 import vehicle_setup as vehicle_setup
-from NASA_X48    import configs_setup as configs_setup 
+# Ducted Fan: 
 
-# ----------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------
 #   Main
-# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------
+def main():  
 
-def main():
+    altitude            = np.array([5000])*Units.feet
+    mach_number         = np.array([0.8])
 
-    regression_flag = True # Keep true for regression on Appveyor
-    ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
+    bus                 = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    bus.voltage         = 110 
+                        
+    literature_values_Electric_Ducted_Fan = {
+            "Compressor Exit Temperature [K]":0, # [K]
+            "Compressor Exit Pressure [MPa]": 0, # [MPa]
+            "Turbine Inlet Temperature [K]":  0, # [K]
+            "Turbine Inlet Pressure [MPa]":   0, # [MPa]
+            "Fuel Mass Flow Rate [kg/s]":     0, # [kg/s]
+            "TSFC [mg/(N s)]":                0  # [mg/(N s)]
+        }
+
+    literature_values = {
+        "Electric_Ducted_Fan": literature_values_Electric_Ducted_Fan,
+    }
+
+    thrust              = np.zeros((len(altitude),len(mach_number)))
+    overall_efficiency  = np.zeros((len(altitude),len(mach_number)))
+    thermal_efficiency  = np.zeros((len(altitude),len(mach_number)))
+    Tt_3                = np.zeros((len(altitude),len(mach_number)))
+    Pt_3                = np.zeros((len(altitude),len(mach_number)))
+    Tt_4                = np.zeros((len(altitude),len(mach_number)))
+    Pt_4                = np.zeros((len(altitude),len(mach_number))) 
     
-    # truth values 
-    thrust_truth         = [57.356384455604505, 57.35638445528938]
-   
-    for i in range(len(ducted_fan_type)):  
-        # vehicle data
-        vehicle  = vehicle_setup(regression_flag, ducted_fan_type[i]) 
-        # Set up vehicle configs
-        configs  = configs_setup(vehicle)
-    
-        # create analyses
-        analyses = analyses_setup(configs)
-    
-        # mission analyses 
-        mission = mission_setup(analyses)
-        
-        # create mission instances (for multiple types of missions)
-        missions = missions_setup(mission) 
+
+    electric_ducted_fan = Electric_Ducted_Fan(bus, 'Rankine_Froude_Momentum_Theory')
+    operating_state = setup_operating_conditions(electric_ducted_fan, altitude = altitude,velocity_range= np.array([20]), angle_of_attack=0)
          
-        # mission analysis 
-        results = missions.base_mission.evaluate()   
-        
-        
-        if ducted_fan_type[i] ==  'Blade_Element_Momentum_Theory':  
-            if regression_flag: # if regression skip test since we cannot run DFDC 
-                error = Data()
-                error.thrust   = 0
-            else:  
-                thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.center_propulsor.thrust, axis=1)  
-                error          = Data()
-                error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))        
-                
-        elif ducted_fan_type[i] ==  'Rankine_Froude_Momentum_Theory':  
-            thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.starboard_propulsor.thrust, axis=1)  
-            error          = Data()
-            error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))   
-        
-        print('Errors:')
-        print(error)
-        
-        for k,v in list(error.items()):
-            assert(np.abs(v)<1e-6) 
+    ducted_fan_conditions =  operating_state.conditions.energy.converters[electric_ducted_fan.ducted_fan.tag]
+    ducted_fan_conditions.throttle = 1
+    operating_state.conditions.energy.modulators[electric_ducted_fan.electronic_speed_controller.tag].outputs.voltage = 110
+    
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.compute_electric_ducted_fan_performance(electric_ducted_fan,operating_state)
+     
+    results = operating_state.conditions.energy.converters[electric_ducted_fan.ducted_fan.tag] 
 
-    return 
-
-# ----------------------------------------------------------------------
-#   Define the Vehicle Analyses
-# ----------------------------------------------------------------------
-
-def analyses_setup(configs):
+    thrust[i,j]                                       = np.linalg.norm(thrust_vector)
+    overall_efficiency[i,j]                           = turbojet_conditions.propulsors[turbojet.tag].overall_efficiency[0,0]
+    thermal_efficiency[i,j]                           = turbojet_conditions.propulsors[turbojet.tag].thermal_efficiency[0,0]
+    Tt_3[i,j]                                         = hpc_conditions.outputs.stagnation_temperature 
+    Pt_3[i,j]                                         = hpc_conditions.outputs.stagnation_pressure
+    Tt_4[i,j]                                         = hpt_conditions.inputs.stagnation_temperature 
+    Pt_4[i,j]                                         = hpt_conditions.inputs.stagnation_pressure 
+    m_dot_core[i,j]                                   = turbojet_conditions.propulsors[turbojet.tag].core_mass_flow_rate   
+    fuel_flow_rate[i,j]                               = turbojet_conditions.propulsors[turbojet.tag].fuel_flow_rate
+    TSFC[i,j]                                         = turbojet_conditions.propulsors[turbojet.tag].thrust_specific_fuel_consumption 
+      
+    print(df.to_markdown(index=False))
     
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-    
-    # build a base analysis for each config
-    for tag,config in list(configs.items()):
-        analysis = base_analysis(config)
-        analyses[tag] = analysis
-    
-    return analyses
-
-def plot_results(results):
-    # Plots fligh conditions 
-    plot_flight_conditions(results) 
-    
-    
-    plot_battery_cell_conditions(results) 
-    
-    plot_aerodynamic_forces(results)
-
     return
 
-def base_analysis(vehicle):
+def Electric_Ducted_Fan(bus, ducted_fan_type):
 
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
-    
-    # ------------------------------------------------------------------
-    #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.vehicle = vehicle
-    analyses.append(weights)
-    
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle                               = vehicle   
-    aerodynamics.settings.model_fuselage               = False
-    analyses.append(aerodynamics)
- 
+    center_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan()  
   
-    # ------------------------------------------------------------------
-    #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
-    analyses.append(energy)
-    
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-    
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
-    analyses.append(atmosphere)   
-    
-    # done!
-    return analyses    
-
-# ----------------------------------------------------------------------
-#   Define the Mission
-# ----------------------------------------------------------------------
-    
-def mission_setup(analyses):
-    
-    # ------------------------------------------------------------------
-    #   Initialize the Mission
-    # ------------------------------------------------------------------
-    
-    mission = RCAIDE.Framework.Mission.Sequential_Segments()
-    mission.tag = 'the_mission'
-     
-    # unpack Segments module
-    Segments = RCAIDE.Framework.Mission.Segments 
-    base_segment = Segments.Segment()
-    base_segment.state.numerics.number_of_control_points = 16 
-    
-    # ------------------------------------------------------------------
-    #   First Climb Segment: constant Mach, constant segment angle 
-    # ------------------------------------------------------------------
-    
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag = "cruise" 
-    segment.analyses.extend( analyses.base ) 
-    segment.altitude       = 5000  * Units.feet
-    segment.air_speed      = 90 *  Units.mph
-    segment.distance       = 5000  
-    segment.initial_battery_state_of_charge                          = 1.0 
-                
-    # define flight dynamics to model             
-    segment.flight_dynamics.force_x                                  = True  
-    segment.flight_dynamics.force_z                                  = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active                  = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors     = [['center_propulsor','starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.throttle.initial_guess_values    = [[0.905]]    
-    segment.assigned_control_variables.body_angle.active                = True        
-    segment.assigned_control_variables.body_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
-      
-    mission.append_segment(segment) 
-    return mission
-
-def missions_setup(mission):
-
-    missions     = RCAIDE.Framework.Mission.Missions() 
-    mission.tag  = 'base_mission'
-    missions.append(mission)
-    
-    # done!
-    return missions
-
-
-if __name__ == '__main__': 
-    main()    
-    plt.show()
+    # Electronic Speed Controller       
+    esc                                           = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
+    esc.tag                                       = 'esc_1'
+    esc.efficiency                                = 0.95 
+    esc.bus_voltage                               = bus.voltage   
+    center_propulsor.electronic_speed_controller  = esc   
         
-    
-        
+
+    # Ducted_fan                            
+    ducted_fan                                   = RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan()
+    ducted_fan.tag                               = 'ducted_fan'
+    ducted_fan.number_of_radial_stations         = 20
+    ducted_fan.tip_radius                        = 0.07 * Units.meters
+    ducted_fan.hub_radius                        = 0.025 * Units.meters
+    # ducted_fan.exit_radius                       = 1.1 * ducted_fan.tip_radius
+    # ducted_fan.blade_clearance                   = 0.001
+    # ducted_fan.length                            = 10. * Units.inches 
+    # ducted_fan.fan_effectiveness                 = 1.1  
+    # ducted_fan.rotor_percent_x_location          = 0.4
+    # ducted_fan.origin                            = [[2.,  0, 0.95]]
+    # ducted_fan.stator_percent_x_location         = 0.7
+    # ducted_fan.fidelity                          = ducted_fan_type  
+    # ducted_fan.cruise.design_thrust              = 75
+    ducted_fan.cruise.design_altitude            = 3000  * Units.m
+    # ducted_fan.cruise.design_angular_velocity    = (0.8* 339.709) /  ducted_fan.tip_radius
+    ducted_fan.cruise.design_freestream_velocity = 40 *  Units.mps
+    # ducted_fan.cruise.design_reference_velocity  = 90 *  Units.mph 
+
+    center_propulsor.ducted_fan                  = ducted_fan    
+              
+    # DC_Motor       
+    motor                                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    motor.efficiency                              = 0.98
+    motor.origin                                  = [[2.,  0, 0.95]]
+    motor.nominal_voltage                         = bus.voltage 
+    motor.no_load_current                         = 0.001
+    center_propulsor.motor                        = motor  
+
+    # design center propulsor 
+    design_electric_ducted_fan(center_propulsor, new_regression_results = True,keep_files = True)
+
+    return center_propulsor
+
+# ----------------------------------------------------------------------        
+#   Call Main
+# ----------------------------------------------------------------------    
+
+if __name__ == '__main__':
+    main()
+
