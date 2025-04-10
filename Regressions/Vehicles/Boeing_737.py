@@ -42,7 +42,7 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude    = 35000*Units.feet
     vehicle.flight_envelope.design_range              = 3500 * Units.nmi
     vehicle.reference_area                            = 124.862 * Units['meters**2']   
-    vehicle.passengers                                = 170  
+    vehicle.passengers                                = 170
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "medium range"
 
@@ -580,10 +580,7 @@ def vehicle_setup():
     combustor.alphac                               = 1.0     
     combustor.turbine_inlet_temperature            = 1500
     combustor.pressure_ratio                       = 0.95
-    combustor.air_mass_flow_rate_take_off          = 40       # [kg/s  ]
-    combustor.fuel_to_air_ratio_take_off           = 0.025    # [-]
-    combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()
-    combustor.air_data                             = RCAIDE.Library.Attributes.Gases.Air()
+    combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()  
     turbofan.combustor                             = combustor
 
     # core nozzle
@@ -655,8 +652,7 @@ def vehicle_setup():
     net.fuel_lines.append(fuel_line)        
     
     # Append energy network to aircraft 
-    vehicle.append_energy_network(net)      
-
+    vehicle.append_energy_network(net)       
     #------------------------------------------------------------------------------------------------------------------------- 
     # Done ! 
     #------------------------------------------------------------------------------------------------------------------------- 
