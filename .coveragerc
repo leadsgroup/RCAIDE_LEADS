@@ -2,6 +2,7 @@
 omit = 
     */RCAIDE/Framework/External_Interfaces/*
     */RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/*
+     */RCAIDE/Library/MethodsMethods/Emissions/Chemical_Reactor_Network_Method/*
 
 [report]
 exclude_lines =

@@ -248,11 +248,8 @@ def evaluate_cantera(combustor,T,P,mdot_air,FAR):
     data.SZ.joint.EI.H2O  = [] # [kg/kg_fuel] 
     data.SZ.joint.EI.NOx  = [] # [kg/kg_fuel]  
 
-    try: 
-        compute_combustor_performance(data, combustor, T, P, mdot_air, FAR, gas) # [-] Run combustor function
-
-    except ImportError:
-        print('cantera required: run pip install cantera')                                                                
+    
+    compute_combustor_performance(data, combustor, T, P, mdot_air, FAR, gas) # [-] Run combustor function                                                           
      
     return data
 
