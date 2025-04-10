@@ -55,18 +55,6 @@ def build_surrogate(aerodynamics, training):
     mach_data      = training.Mach
     vehicle        = aerodynamics.vehicle
     AoA_data       = aerodynamics.training.angle_of_attack           
-    Beta_data      = aerodynamics.training.sideslip_angle  
-    u_data         = aerodynamics.training.u
-    v_data         = aerodynamics.training.v
-    w_data         = aerodynamics.training.w
-    p_data         = aerodynamics.training.roll_rate
-    q_data         = aerodynamics.training.pitch_rate
-    r_data         = aerodynamics.training.yaw_rate
-    aileron_data   = aerodynamics.training.aileron_deflection           
-    elevator_data  = aerodynamics.training.elevator_deflection          
-    rudder_data    = aerodynamics.training.rudder_deflection            
-    flap_data      = aerodynamics.training.flap_deflection              
-    slat_data      = aerodynamics.training.slat_deflection
     
     surrogates.Clift_wing_alpha = Data()
     surrogates.Cdrag_wing_alpha = Data() 
@@ -75,78 +63,7 @@ def build_surrogate(aerodynamics, training):
         surrogates.Cdrag_wing_alpha[wing.tag] = RegularGridInterpolator((AoA_data ,mach_data),training.Cdrag_wing_alpha[wing.tag],method = 'linear',   bounds_error=False, fill_value=None) 
      
     # Pack the outputs     
-    surrogates.Clift_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.Clift_alpha        ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Clift_beta        = RegularGridInterpolator((Beta_data,mach_data),training.Clift_beta         ,method = 'linear',   bounds_error=False, fill_value=None) 
-    surrogates.Clift_u           = RegularGridInterpolator((u_data,mach_data),training.Clift_u               ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Clift_v           = RegularGridInterpolator((v_data,mach_data),training.Clift_v               ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Clift_w           = RegularGridInterpolator((w_data,mach_data),training.Clift_w               ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Clift_p           = RegularGridInterpolator((p_data,mach_data),training.Clift_p               ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Clift_q           = RegularGridInterpolator((q_data,mach_data),training.Clift_q               ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Clift_r           = RegularGridInterpolator((r_data,mach_data),training.Clift_r               ,method = 'linear',   bounds_error=False, fill_value=None)      
     
-    surrogates.Cdrag_alpha       = RegularGridInterpolator((AoA_data,mach_data),training.Cdrag_alpha         ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Cdrag_beta        = RegularGridInterpolator((Beta_data,mach_data),training.Cdrag_beta         ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.Cdrag_u        = RegularGridInterpolator((u_data,mach_data),training.Cdrag_u        ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Cdrag_v        = RegularGridInterpolator((v_data,mach_data),training.Cdrag_v        ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Cdrag_w        = RegularGridInterpolator((w_data,mach_data),training.Cdrag_w        ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Cdrag_p        = RegularGridInterpolator((p_data,mach_data),training.Cdrag_p        ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Cdrag_q        = RegularGridInterpolator((q_data,mach_data),training.Cdrag_q        ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Cdrag_r        = RegularGridInterpolator((r_data,mach_data),training.Cdrag_r        ,method = 'linear',   bounds_error=False, fill_value=None)      
-    
-    surrogates.CX_alpha       = RegularGridInterpolator((AoA_data,mach_data),training.CX_alpha     ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CX_beta        = RegularGridInterpolator((Beta_data,mach_data),training.CX_beta     ,method = 'linear',   bounds_error=False, fill_value=None) 
-    surrogates.CX_u           = RegularGridInterpolator((u_data,mach_data),training.CX_u           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CX_v           = RegularGridInterpolator((v_data,mach_data),training.CX_v           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CX_w           = RegularGridInterpolator((w_data,mach_data),training.CX_w           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CX_p           = RegularGridInterpolator((p_data,mach_data),training.CX_p           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CX_q           = RegularGridInterpolator((q_data,mach_data),training.CX_q           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CX_r           = RegularGridInterpolator((r_data,mach_data),training.CX_r           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    
-    surrogates.CY_alpha       = RegularGridInterpolator((AoA_data,mach_data),training.CY_alpha     ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CY_beta        = RegularGridInterpolator((Beta_data,mach_data),training.CY_beta     ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.CY_u           = RegularGridInterpolator((u_data,mach_data),training.CY_u           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CY_v           = RegularGridInterpolator((v_data,mach_data),training.CY_v           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CY_w           = RegularGridInterpolator((w_data,mach_data),training.CY_w           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CY_p           = RegularGridInterpolator((p_data,mach_data),training.CY_p           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CY_q           = RegularGridInterpolator((q_data,mach_data),training.CY_q           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CY_r           = RegularGridInterpolator((r_data,mach_data),training.CY_r           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    
-    surrogates.CZ_alpha       = RegularGridInterpolator((AoA_data,mach_data),training.CZ_alpha     ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CZ_beta        = RegularGridInterpolator((Beta_data,mach_data),training.CZ_beta     ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.CZ_u           = RegularGridInterpolator((u_data,mach_data),training.CZ_u           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CZ_v           = RegularGridInterpolator((v_data,mach_data),training.CZ_v           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CZ_w           = RegularGridInterpolator((w_data,mach_data),training.CZ_w           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CZ_p           = RegularGridInterpolator((p_data,mach_data),training.CZ_p           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CZ_q           = RegularGridInterpolator((q_data,mach_data),training.CZ_q           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CZ_r           = RegularGridInterpolator((r_data,mach_data),training.CZ_r           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    
-    surrogates.CL_alpha       = RegularGridInterpolator((AoA_data,mach_data),training.CL_alpha     ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CL_beta        = RegularGridInterpolator((Beta_data,mach_data),training.CL_beta     ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.CL_u           = RegularGridInterpolator((u_data,mach_data),training.CL_u           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CL_v           = RegularGridInterpolator((v_data,mach_data),training.CL_v           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CL_w           = RegularGridInterpolator((w_data,mach_data),training.CL_w           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CL_p           = RegularGridInterpolator((p_data,mach_data),training.CL_p           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CL_q           = RegularGridInterpolator((q_data,mach_data),training.CL_q           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CL_r           = RegularGridInterpolator((r_data,mach_data),training.CL_r           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    
-    surrogates.CM_alpha       = RegularGridInterpolator((AoA_data,mach_data),training.CM_alpha     ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CM_beta        = RegularGridInterpolator((Beta_data,mach_data),training.CM_beta     ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.CM_u           = RegularGridInterpolator((u_data,mach_data),training.CM_u           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CM_v           = RegularGridInterpolator((v_data,mach_data),training.CM_v           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CM_w           = RegularGridInterpolator((w_data,mach_data),training.CM_w           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CM_p           = RegularGridInterpolator((p_data,mach_data),training.CM_p           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CM_q           = RegularGridInterpolator((q_data,mach_data),training.CM_q           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CM_r           = RegularGridInterpolator((r_data,mach_data),training.CM_r           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    
-    surrogates.CN_alpha       = RegularGridInterpolator((AoA_data,mach_data),training.CN_alpha     ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CN_beta        = RegularGridInterpolator((Beta_data,mach_data),training.CN_beta     ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.CN_u           = RegularGridInterpolator((u_data,mach_data),training.CN_u           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CN_v           = RegularGridInterpolator((v_data,mach_data),training.CN_v           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CN_w           = RegularGridInterpolator((w_data,mach_data),training.CN_w           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CN_p           = RegularGridInterpolator((p_data,mach_data),training.CN_p           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CN_q           = RegularGridInterpolator((q_data,mach_data),training.CN_q           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CN_r           = RegularGridInterpolator((r_data,mach_data),training.CN_r           ,method = 'linear',   bounds_error=False, fill_value=None)
-      
     surrogates.dCX_dalpha       = interpolate.interp1d(mach_data,training.dCX_dalpha       ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCX_du           = interpolate.interp1d(mach_data,training.dCX_du           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     
@@ -171,96 +88,22 @@ def build_surrogate(aerodynamics, training):
    
 
     if aerodynamics.aileron_flag: 
-        surrogates.Clift_delta_a    = RegularGridInterpolator((aileron_data,mach_data),training.Clift_delta_a  ,method = 'linear',   bounds_error=False, fill_value=None)
-        surrogates.Cdrag_delta_a    = RegularGridInterpolator((aileron_data,mach_data),training.Cdrag_delta_a  ,method = 'linear',   bounds_error=False, fill_value=None)
-        surrogates.CX_delta_a       = RegularGridInterpolator((aileron_data,mach_data),training.CX_delta_a  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CY_delta_a       = RegularGridInterpolator((aileron_data,mach_data),training.CY_delta_a  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CZ_delta_a       = RegularGridInterpolator((aileron_data,mach_data),training.CZ_delta_a  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CL_delta_a       = RegularGridInterpolator((aileron_data,mach_data),training.CL_delta_a  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CM_delta_a       = RegularGridInterpolator((aileron_data,mach_data),training.CM_delta_a  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CN_delta_a       = RegularGridInterpolator((aileron_data,mach_data),training.CN_delta_a  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.dClift_ddelta_a  = interpolate.interp1d(mach_data,training.dClift_ddelta_a     , kind = 'linear',   bounds_error=False, fill_value="extrapolate")
-        surrogates.dCdrag_ddelta_a  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_a     , kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCX_ddelta_a     = interpolate.interp1d(mach_data,training.dCX_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
         surrogates.dCY_ddelta_a     = interpolate.interp1d(mach_data,training.dCY_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value="extrapolate")  
-        surrogates.dCZ_ddelta_a     = interpolate.interp1d(mach_data,training.dCZ_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
         surrogates.dCL_ddelta_a     = interpolate.interp1d(mach_data,training.dCL_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCM_ddelta_a     = interpolate.interp1d(mach_data,training.dCM_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
         surrogates.dCN_ddelta_a     = interpolate.interp1d(mach_data,training.dCN_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value="extrapolate")             
     
     if aerodynamics.elevator_flag: 
-        surrogates.Clift_delta_e    = RegularGridInterpolator((elevator_data,mach_data),training.Clift_delta_e  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.Cdrag_delta_e    = RegularGridInterpolator((elevator_data,mach_data),training.Cdrag_delta_e  ,method = 'linear',   bounds_error=False, fill_value=None)
-        surrogates.CX_delta_e       = RegularGridInterpolator((elevator_data,mach_data),training.CX_delta_e  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CY_delta_e       = RegularGridInterpolator((elevator_data,mach_data),training.CY_delta_e  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CZ_delta_e       = RegularGridInterpolator((elevator_data,mach_data),training.CZ_delta_e  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CL_delta_e       = RegularGridInterpolator((elevator_data,mach_data),training.CL_delta_e  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CM_delta_e       = RegularGridInterpolator((elevator_data,mach_data),training.CM_delta_e  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CN_delta_e       = RegularGridInterpolator((elevator_data,mach_data),training.CN_delta_e  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.dClift_ddelta_e  = interpolate.interp1d(mach_data,training.dClift_ddelta_e  ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")
-        surrogates.dCdrag_ddelta_e  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_e  ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate") 
-        surrogates.dCX_ddelta_e     = interpolate.interp1d(mach_data,training.dCX_ddelta_e     ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate") 
-        surrogates.dCY_ddelta_e     = interpolate.interp1d(mach_data,training.dCY_ddelta_e     ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")  
-        surrogates.dCZ_ddelta_e     = interpolate.interp1d(mach_data,training.dCZ_ddelta_e     ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate") 
-        surrogates.dCL_ddelta_e     = interpolate.interp1d(mach_data,training.dCL_ddelta_e     ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate") 
         surrogates.dCM_ddelta_e     = interpolate.interp1d(mach_data,training.dCM_ddelta_e     ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate") 
-        surrogates.dCN_ddelta_e     = interpolate.interp1d(mach_data,training.dCN_ddelta_e     ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")   
-    
+        
     
     if aerodynamics.rudder_flag: 
-        surrogates.Clift_delta_r    = RegularGridInterpolator((rudder_data,mach_data),training.Clift_delta_r  ,method = 'linear',   bounds_error=False, fill_value=None)  
-        surrogates.Cdrag_delta_r    = RegularGridInterpolator((rudder_data,mach_data),training.Cdrag_delta_r  ,method = 'linear',   bounds_error=False, fill_value=None)
-        surrogates.CX_delta_r       = RegularGridInterpolator((rudder_data,mach_data),training.CX_delta_r  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CY_delta_r       = RegularGridInterpolator((rudder_data,mach_data),training.CY_delta_r  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CZ_delta_r       = RegularGridInterpolator((rudder_data,mach_data),training.CZ_delta_r  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CL_delta_r       = RegularGridInterpolator((rudder_data,mach_data),training.CL_delta_r  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CM_delta_r       = RegularGridInterpolator((rudder_data,mach_data),training.CM_delta_r  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CN_delta_r       = RegularGridInterpolator((rudder_data,mach_data),training.CN_delta_r  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.dClift_ddelta_r  = interpolate.interp1d(mach_data,training.dClift_ddelta_r    ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCdrag_ddelta_r  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_r    ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")  
-        surrogates.dCX_ddelta_r     = interpolate.interp1d(mach_data,training.dCX_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")  
         surrogates.dCY_ddelta_r     = interpolate.interp1d(mach_data,training.dCY_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")   
-        surrogates.dCZ_ddelta_r     = interpolate.interp1d(mach_data,training.dCZ_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")  
         surrogates.dCL_ddelta_r     = interpolate.interp1d(mach_data,training.dCL_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")  
-        surrogates.dCM_ddelta_r     = interpolate.interp1d(mach_data,training.dCM_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")  
         surrogates.dCN_ddelta_r     = interpolate.interp1d(mach_data,training.dCN_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")    
     
     if aerodynamics.flap_flag:
-        surrogates.Clift_delta_f    = RegularGridInterpolator((flap_data,mach_data),training.Clift_delta_f  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.Cdrag_delta_f    = RegularGridInterpolator((flap_data,mach_data),training.Cdrag_delta_f  ,method = 'linear',   bounds_error=False, fill_value=None)
-        surrogates.CX_delta_f       = RegularGridInterpolator((flap_data,mach_data),training.CX_delta_f  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CY_delta_f       = RegularGridInterpolator((flap_data,mach_data),training.CY_delta_f  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CZ_delta_f       = RegularGridInterpolator((flap_data,mach_data),training.CZ_delta_f  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CL_delta_f       = RegularGridInterpolator((flap_data,mach_data),training.CL_delta_f  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CM_delta_f       = RegularGridInterpolator((flap_data,mach_data),training.CM_delta_f  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CN_delta_f       = RegularGridInterpolator((flap_data,mach_data),training.CN_delta_f  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.dClift_ddelta_f  = interpolate.interp1d(mach_data,training.dClift_ddelta_f  ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")
-        surrogates.dCdrag_ddelta_f  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_f  ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCX_ddelta_f     = interpolate.interp1d(mach_data,training.dCX_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCY_ddelta_f     = interpolate.interp1d(mach_data,training.dCY_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")  
-        surrogates.dCZ_ddelta_f     = interpolate.interp1d(mach_data,training.dCZ_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCL_ddelta_f     = interpolate.interp1d(mach_data,training.dCL_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
         surrogates.dCM_ddelta_f     = interpolate.interp1d(mach_data,training.dCM_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCN_ddelta_f     = interpolate.interp1d(mach_data,training.dCN_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")   
     
-    if aerodynamics.slat_flag: 
-        surrogates.Clift_delta_s    = RegularGridInterpolator((slat_data,mach_data),training.Clift_delta_s  ,method = 'linear',   bounds_error=False, fill_value=None)         
-        surrogates.Cdrag_delta_s    = RegularGridInterpolator((slat_data,mach_data),training.Cdrag_delta_s  ,method = 'linear',   bounds_error=False, fill_value=None)
-        surrogates.CX_delta_s       = RegularGridInterpolator((slat_data,mach_data),training.CX_delta_s  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CY_delta_s       = RegularGridInterpolator((slat_data,mach_data),training.CY_delta_s  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CZ_delta_s       = RegularGridInterpolator((slat_data,mach_data),training.CZ_delta_s  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CL_delta_s       = RegularGridInterpolator((slat_data,mach_data),training.CL_delta_s  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CM_delta_s       = RegularGridInterpolator((slat_data,mach_data),training.CM_delta_s  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.CN_delta_s       = RegularGridInterpolator((slat_data,mach_data),training.CN_delta_s  ,method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.dClift_ddelta_s  = interpolate.interp1d(mach_data,training.dClift_ddelta_s  ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")  
-        surrogates.dCdrag_ddelta_s  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_s  ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")   
-        surrogates.dCX_ddelta_s     = interpolate.interp1d(mach_data,training.dCX_ddelta_s     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCY_ddelta_s     = interpolate.interp1d(mach_data,training.dCY_ddelta_s     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")  
-        surrogates.dCZ_ddelta_s     = interpolate.interp1d(mach_data,training.dCZ_ddelta_s     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCL_ddelta_s     = interpolate.interp1d(mach_data,training.dCL_ddelta_s     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCM_ddelta_s     = interpolate.interp1d(mach_data,training.dCM_ddelta_s     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate") 
-        surrogates.dCN_ddelta_s     = interpolate.interp1d(mach_data,training.dCN_ddelta_s     ,kind = 'linear',   bounds_error=False, fill_value="extrapolate")   
-   
     return surrogates
  
  

@@ -73,17 +73,23 @@ def evaluate_surrogate(state,settings,vehicle):
     h_sub            = lambda M:sub_trans_spline.compute(M)          
     sup_trans_spline = Cubic_Spline_Blender(hsup_max, hsup_min) 
     h_sup            = lambda M:sup_trans_spline.compute(M)
-    
-    u           = np.atleast_2d(conditions.freestream.u)
-    v           = np.atleast_2d(conditions.freestream.v)
-    w           = np.atleast_2d(conditions.freestream.w)
-    p           = np.atleast_2d(conditions.static_stability.roll_rate)        
-    q           = np.atleast_2d(conditions.static_stability.pitch_rate)
-    r           = np.atleast_2d(conditions.static_stability.yaw_rate)   
 
     # -----------------------------------------------------------------------------------------------------------------------
     # Query surrogates  
     # ----------------------------------------------------------------------------------------------------------------------- 
+    pts_alpha   = np.hstack((AoA*0.0,Mach))
+    
+    # Alpha 
+    results_zero = compute_coefficients(sub_sur.Clift_alpha,  sub_sur.Cdrag_alpha,  sub_sur.CX_alpha,  sub_sur.CY_alpha,  sub_sur.CZ_alpha,  sub_sur.CL_alpha,  sub_sur.CM_alpha,   sub_sur.CN_alpha,
+                                         trans_sur.Clift_alpha,trans_sur.Cdrag_alpha,trans_sur.CX_alpha,trans_sur.CY_alpha,trans_sur.CZ_alpha,trans_sur.CL_alpha,trans_sur.CM_alpha, trans_sur.CN_alpha,
+                                         sup_sur.Clift_alpha,  sup_sur.Cdrag_alpha,  sup_sur.CX_alpha,  sup_sur.CY_alpha,  sup_sur.CZ_alpha,  sup_sur.CL_alpha,  sup_sur.CM_alpha,   sup_sur.CN_alpha,
+                                         h_sub,h_sup,Mach, pts_alpha)        
+
+    CL_0                      = results_zero.CL
+    CY_0                      = results_zero.CY
+    CM_0                      = results_zero.CM
+    CN_0                      = results_zero.CN
+    
     pts_alpha   = np.hstack((AoA,Mach))
     
     # Alpha 

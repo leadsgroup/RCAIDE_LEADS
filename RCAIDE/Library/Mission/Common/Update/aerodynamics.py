@@ -6,6 +6,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  Update Aerodynamics
 # ----------------------------------------------------------------------------------------------------------------------
+import numpy as np
+
 def aerodynamics(segment):
     """ Gets aerodynamics conditions
     
@@ -54,8 +56,9 @@ def aerodynamics(segment):
 
     # dimensionalize
     F      = segment.state.ones_row(3) * 0.0
-    F[:,2] = ( -CL * q * Sref )[:,0]
-    F[:,1] = ( -CY * q * Sref )[:,0]
+    bank_angle = segment.state.conditions.frames.body.inertial_rotations[:,0]
+    F[:,2] = ( -CL * q * Sref )[:,0]*np.cos(bank_angle)
+    F[:,1] = ( -CY * q * Sref )[:,0] #+ ( -CL * q * Sref )[:,0]*np.cos(bank_angle)
     F[:,0] = ( -CD * q * Sref )[:,0]
 
     # rewrite aerodynamic CL and CD
