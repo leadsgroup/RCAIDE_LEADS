@@ -93,7 +93,7 @@ def main():
         }
 
     def calculate_percentage_difference(simulated, reference):
-        return f"{simulated:.3f} ({((simulated - reference) / reference) * 100:+.2f}%)"
+        return f"{simulated:.6f} ({((simulated - reference) / reference) * 100:+.2f}%)"
     
     data = {
         "Emission Index [kg/kg_fuel]": list(rcaide_values.keys()),
