@@ -85,11 +85,9 @@ def build_CRN_EI_surrogates(emissions):
     temperature_data                      = training.temperature      
     air_mass_flowrate_data                = training.air_mass_flowrate
     fuel_to_air_ratio_data                = training.fuel_to_air_ratio
-
     surrogates.EI_CO2                     = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_CO2 ,method = 'linear',   bounds_error=False, fill_value=None) 
     surrogates.EI_CO                      = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_CO  ,method = 'linear',   bounds_error=False, fill_value=None) 
     surrogates.EI_H2O                     = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_H2O ,method = 'linear',   bounds_error=False, fill_value=None) 
-    surrogates.EI_NO                      = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_NO  ,method = 'linear',   bounds_error=False, fill_value=None) 
-    surrogates.EI_NO2                     = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_NO2 ,method = 'linear',   bounds_error=False, fill_value=None) 
+    surrogates.EI_NOx                     = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_NOx ,method = 'linear',   bounds_error=False, fill_value=None) 
    
     return

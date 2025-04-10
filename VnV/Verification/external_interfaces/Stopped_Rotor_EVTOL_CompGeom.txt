@@ -1,0 +1,93 @@
+...Comp Geom...
+19 Num Comps
+41 Total Num Meshes
+25184 Total Num Tris
+
+Theo_Area   Wet_Area   Theo_Vol    Wet_Vol  Name
+   32.066     30.545      2.042      2.018  main_wing      
+    4.741      3.650      0.140      0.112  horizontal_tail
+    0.327      0.324      0.002      0.002  PropGeom       
+    0.327      0.324      0.002      0.002  PropGeom       
+    0.327      0.324      0.002      0.002  PropGeom       
+    1.155      1.117      0.090      0.090  propeller_nacelle
+    0.327      0.324      0.002      0.002  PropGeom       
+    0.327      0.324      0.002      0.002  PropGeom       
+    0.327      0.324      0.002      0.002  PropGeom       
+    1.155      1.117      0.090      0.090  propeller_nacelle_2
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+    0.370      0.370      0.002      0.002  PropGeom       
+   20.467     19.291      5.496      5.376  fuselage       
+    1.945      1.945      0.071      0.071  boom_1r        
+    1.945      1.945      0.071      0.071  boom_1l        
+    1.926      1.926      0.070      0.070  boom_2r        
+    1.926      1.926      0.070      0.070  boom_2l        
+-------------------------------------------------
+   78.161     74.277      8.208      8.037  Totals         
+
+Tag_Theo_Area   Tag_Wet_Area    Tag_Name
+       16.033         15.273    main_wing_S_Surf0
+       16.033         15.273    main_wing_S_Surf1
+        2.371          1.825    horizontal_tail_S_Surf0
+        2.371          1.825    horizontal_tail_S_Surf1
+        0.327          0.324    PropGeom_S_Surf0
+        0.327          0.324    PropGeom_S_Surf1
+        0.327          0.324    PropGeom_S_Surf2
+        1.155          1.117    propeller_nacelle_S_Surf0
+        0.327          0.324    PropGeom_S_Surf0
+        0.327          0.324    PropGeom_S_Surf1
+        0.327          0.324    PropGeom_S_Surf2
+        1.155          1.117    propeller_nacelle_2_S_Surf0
+        0.370          0.370    PropGeom_S_Surf0
+        0.370          0.370    PropGeom_S_Surf1
+        0.370          0.370    PropGeom_S_Surf2
+        0.370          0.370    PropGeom_S_Surf0
+        0.370          0.370    PropGeom_S_Surf1
+        0.370          0.370    PropGeom_S_Surf2
+        0.370          0.370    PropGeom_S_Surf0
+        0.370          0.370    PropGeom_S_Surf1
+        0.370          0.370    PropGeom_S_Surf2
+        0.370          0.370    PropGeom_S_Surf0
+        0.370          0.370    PropGeom_S_Surf1
+        0.370          0.370    PropGeom_S_Surf2
+        0.370          0.370    PropGeom_S_Surf0
+        0.370          0.370    PropGeom_S_Surf1
+        0.370          0.370    PropGeom_S_Surf2
+        0.370          0.370    PropGeom_S_Surf0
+        0.370          0.370    PropGeom_S_Surf1
+        0.370          0.370    PropGeom_S_Surf2
+        0.370          0.370    PropGeom_S_Surf0
+        0.370          0.370    PropGeom_S_Surf1
+        0.370          0.370    PropGeom_S_Surf2
+        0.370          0.370    PropGeom_S_Surf0
+        0.370          0.370    PropGeom_S_Surf1
+        0.370          0.370    PropGeom_S_Surf2
+       20.467         19.291    fuselage_S_Surf0
+        1.945          1.945    boom_1r_S_Surf0
+        1.945          1.945    boom_1l_S_Surf0
+        1.926          1.926    boom_2r_S_Surf0
+        1.926          1.926    boom_2l_S_Surf0
+WARNING: 2 open meshes merged
+     Merged: main_wing
+     Merged: horizontal_tail

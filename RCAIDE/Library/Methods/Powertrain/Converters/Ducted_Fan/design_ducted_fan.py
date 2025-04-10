@@ -140,7 +140,7 @@ def design_ducted_fan(ducted_fan, new_regression_results = False, keep_files = T
         root_dir = os.path.abspath(os.path.join(current_dir, *['..'] * 6))
     
         # Set the run folder path
-        dfdc_analysis.settings.filenames.run_folder = os.path.join(root_dir, 'Regressions', 'Tests', 'network_electric', 'dfdc_files')
+        dfdc_analysis.settings.filenames.run_folder = os.path.join(root_dir, 'VnV', 'Verification', 'network_electric', 'dfdc_files')
         run_folder = dfdc_analysis.settings.filenames.run_folder
     
         # Ensure the directory exists
