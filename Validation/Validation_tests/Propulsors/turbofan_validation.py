@@ -85,45 +85,22 @@ def main():
     # set throttle
     segment.state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1  
 
-    thrust_vector,_,_,_,_,_                           = turbofan.compute_performance(segment.state,fuel_line)
+    turbofan.compute_performance(segment.state,fuel_line)
 
-    bypass_ratio                                      = turbofan.bypass_ratio
     high_pressure_compressor                          = turbofan.high_pressure_compressor
-    combustor                                         = turbofan.combustor
     high_pressure_turbine                             = turbofan.high_pressure_turbine
-    core_nozzle                                       = turbofan.core_nozzle
-    fan_nozzle                                        = turbofan.fan_nozzle   
 
     # unpack component conditions
     turbofan_conditions                               = conditions.energy
     hpc_conditions                                    = turbofan_conditions.converters[high_pressure_compressor.tag]
-    combustor_conditions                              = turbofan_conditions.converters[combustor.tag]
     hpt_conditions                                    = turbofan_conditions.converters[high_pressure_turbine.tag]
-    core_nozzle_conditions                            = turbofan_conditions.converters[core_nozzle.tag]
-    fan_nozzle_conditions                             = turbofan_conditions.converters[fan_nozzle.tag]
 
     # extract properties
-    mdot_air_core                                     = turbofan_conditions.propulsors[turbofan.tag].core_mass_flow_rate
-    mdot_air_fan                                      = bypass_ratio *  mdot_air_core  
-    fuel_enthalpy                                     = combustor.fuel_data.specific_energy 
-    mdot_fuel                                         = turbofan_conditions.propulsors[turbofan.tag].fuel_flow_rate 
-    U_0                                               = a*mach_number
-    h_e_f                                             = fan_nozzle_conditions.outputs.static_enthalpy
-    h_e_c                                             = core_nozzle_conditions.outputs.static_enthalpy
-    h_0                                               = turbofan.working_fluid.compute_cp(T,p) * T 
-    h_t4                                              = combustor_conditions.outputs.stagnation_enthalpy
-    h_t3                                              = hpc_conditions.outputs.stagnation_enthalpy     
-
-    thrust                                            = np.linalg.norm(thrust_vector)
-    overall_efficiency                                = thrust * U_0 / (mdot_fuel * fuel_enthalpy) # Aircraft and Rocket Propulsion Eqn 2.22 
-    thermal_efficiency                                = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_air_fan*(h_e_f - h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3) # Aircraft and Rocket Propulsion Eqn 5.49 
     Tt_3                                              = hpc_conditions.outputs.stagnation_temperature 
     Pt_3                                              = hpc_conditions.outputs.stagnation_pressure
     Tt_4                                              = hpt_conditions.inputs.stagnation_temperature 
     Pt_4                                              = hpt_conditions.inputs.stagnation_pressure 
-    m_dot_core                                        = turbofan_conditions.propulsors[turbofan.tag].core_mass_flow_rate   
     fuel_flow_rate                                    = turbofan_conditions.propulsors[turbofan.tag].fuel_flow_rate
-    m_dot_air_tot                                     = turbofan_conditions.propulsors[turbofan.tag].core_mass_flow_rate + bypass_ratio * turbofan_conditions.propulsors[turbofan.tag].core_mass_flow_rate
     TSFC                                              = turbofan.TSFC # [N/N-s]
 
     rcaide_values = {

@@ -1,4 +1,6 @@
-
+# CRN_combustor_validation.py
+#
+# Created:  Apr. 2025, M. Guidotti
 
 # ----------------------------------------------------------------------
 #  Imports
@@ -25,6 +27,8 @@ import numpy as np
 #     Institute of Technology.
 # [3] Lefebvre, A. H., & Ballal, D. R. (2010). Gas turbine combustion: 
 #     Alternative fuels and emissions (3rd ed.). CRC Press.
+# [4] ICAO (2024). Aircraft Engine Emissions Databank. International Civil 
+#     Aviation Organization.
 
 # ----------------------------------------------------------------------
 #  Main Function
