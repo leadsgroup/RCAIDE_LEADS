@@ -18,7 +18,7 @@ import sys
 import os
 
 # local imports 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Verification', 'Vehicles', 'Rotors')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Verification', 'Vehicles', 'Rotors')))
 from APC_11x4_Propeller    import APC_11x4_Propeller
 
 # ----------------------------------------------------------------------

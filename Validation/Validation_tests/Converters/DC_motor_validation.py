@@ -99,7 +99,6 @@ def plot_power_and_torque(x_current, y_current, x_rpm, y_rpm, motor_torque_vecto
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines + lines2, labels + labels2, loc='upper center', bbox_to_anchor=(0.5, 1.35), fontsize=label_fontsize, ncol=2)
     fig.tight_layout()
-    fig.savefig('DC_motor_validation.png', dpi=300)
 
 # ----------------------------------------------------------------------        
 #   Call Main

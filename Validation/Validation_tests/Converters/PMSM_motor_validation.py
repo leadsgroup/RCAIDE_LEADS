@@ -97,7 +97,6 @@ def plot_power_and_torque(x_cont_pow, y_cont_pow, motor_rpm_vector, motor_power_
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines + lines2, labels + labels2, loc='upper center', bbox_to_anchor=(0.5, 1.35), fontsize=label_fontsize, ncol=2)
     fig.tight_layout()
-    fig.savefig('PMSM_motor_validation.png', dpi=300)
 
 # ----------------------------------------------------------------------        
 #   Call Main
