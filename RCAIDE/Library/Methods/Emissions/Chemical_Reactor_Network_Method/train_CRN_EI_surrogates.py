@@ -121,7 +121,6 @@ def train_CRN_EI_surrogates(emissions):
     EI_CO  = np.zeros((len_P,len_T,len_mdot,len_far))
     EI_H2O = np.zeros((len_P,len_T,len_mdot,len_far))
     EI_NOx = np.zeros((len_P,len_T,len_mdot,len_far))
-    EI_soot = np.zeros((len_P,len_T,len_mdot,len_far))
     
     if combustor == False:
         emissions.no_combustor = True
@@ -135,16 +134,14 @@ def train_CRN_EI_surrogates(emissions):
                     # Call cantera 
                     results = evaluate_cantera(combustor,T[t_i],P[p_i],mdot[mdot_i],FAR[far_i]) 
                     
-                    EI_CO2[p_i, t_i, mdot_i, far_i] = results.EI_CO2
-                    EI_CO [p_i, t_i, mdot_i, far_i] = results.EI_CO 
-                    EI_H2O[p_i, t_i, mdot_i, far_i] = results.EI_H2O
-                    EI_NOx [p_i, t_i, mdot_i, far_i] = results.EI_NOx 
-                    EI_soot[p_i, t_i, mdot_i, far_i] = results.EI_soot
+                    EI_CO2[p_i, t_i, mdot_i, far_i]  = results.final.EI.CO2
+                    EI_CO [p_i, t_i, mdot_i, far_i]  = results.final.EI.CO 
+                    EI_H2O[p_i, t_i, mdot_i, far_i]  = results.final.EI.H2O
+                    EI_NOx [p_i, t_i, mdot_i, far_i] = results.final.EI.NOx 
     
     emissions.training.EI_CO2 = EI_CO2
     emissions.training.EI_CO =  EI_CO
     emissions.training.EI_H2O = EI_H2O
     emissions.training.EI_NOx =  EI_NOx
-    emissions.training.EI_soot = EI_soot
     
     return 

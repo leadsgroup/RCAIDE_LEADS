@@ -96,7 +96,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     CO_total  = 0 * state.ones_row(1) 
     H2O_total = 0 * state.ones_row(1) 
     NOx_total  = 0 * state.ones_row(1) 
-    Soot_total = 0 * state.ones_row(1) 
+
 
     for network in vehicle.networks:  
         for fuel_line in network.fuel_lines:
@@ -126,7 +126,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                             EI_CO_comb     = 0 * state.ones_row(1)  
                             EI_H2O_comb    = 0 * state.ones_row(1)  
                             EI_NOx_comb    = 0 * state.ones_row(1)  
-                            EI_soot_comb   = 0 * state.ones_row(1)   
+                      
 
                             separate_zones = int(combustor.joint_mixing_fraction * combustor.N_SZ)
                             joint_zones    = int((1 - combustor.joint_mixing_fraction) * combustor.N_SZ)
@@ -138,7 +138,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                             combustor_PZ_EI_CO         = np.zeros((n_cp,combustor.N_PZ)) # [kg/kg_fuel]
                             combustor_PZ_EI_H2O        = np.zeros((n_cp,combustor.N_PZ)) # [kg/kg_fuel]
                             combustor_PZ_EI_NOx        = np.zeros((n_cp,combustor.N_PZ)) # [kg/kg_fuel]
-                            combustor_PZ_EI_soot       = np.zeros((n_cp,combustor.N_PZ)) # [kg/kg_fuel]
                             combustor_SZ_sm_z          = np.zeros((n_cp,separate_zones)) # [-] 
                             combustor_SZ_sm_phi        = np.zeros((n_cp,separate_zones)) # [-] 
                             combustor_SZ_sm_T          = np.zeros((n_cp,separate_zones)) # [K] 
@@ -146,7 +145,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                             combustor_SZ_sm_EI_CO      = np.zeros((n_cp,separate_zones)) # [kg/kg_fuel]
                             combustor_SZ_sm_EI_H2O     = np.zeros((n_cp,separate_zones)) # [kg/kg_fuel]
                             combustor_SZ_sm_EI_NOx     = np.zeros((n_cp,separate_zones)) # [kg/kg_fuel]
-                            combustor_SZ_sm_EI_soot    = np.zeros((n_cp,separate_zones)) # [kg/kg_fuel]
                             combustor_SZ_fm_z          = np.zeros((n_cp,separate_zones)) # [-] 
                             combustor_SZ_fm_phi        = np.zeros((n_cp,separate_zones)) # [-] 
                             combustor_SZ_fm_T          = np.zeros((n_cp,separate_zones)) # [K] 
@@ -154,7 +152,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                             combustor_SZ_fm_EI_CO      = np.zeros((n_cp,separate_zones)) # [kg/kg_fuel]
                             combustor_SZ_fm_EI_H2O     = np.zeros((n_cp,separate_zones)) # [kg/kg_fuel]
                             combustor_SZ_fm_EI_NOx     = np.zeros((n_cp,separate_zones)) # [kg/kg_fuel]
-                            combustor_SZ_fm_EI_soot    = np.zeros((n_cp,separate_zones)) # [kg/kg_fuel]
                             combustor_SZ_joint_z       = np.zeros((n_cp,joint_zones)) # [-] 
                             combustor_SZ_joint_phi     = np.zeros((n_cp,joint_zones)) # [-] 
                             combustor_SZ_joint_T       = np.zeros((n_cp,joint_zones)) # [K] 
@@ -162,14 +159,12 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                             combustor_SZ_joint_EI_CO   = np.zeros((n_cp,joint_zones)) # [kg/kg_fuel]
                             combustor_SZ_joint_EI_H2O  = np.zeros((n_cp,joint_zones)) # [kg/kg_fuel]
                             combustor_SZ_joint_EI_NOx  = np.zeros((n_cp,joint_zones)) # [kg/kg_fuel]
-                            combustor_SZ_joint_EI_soot = np.zeros((n_cp,joint_zones)) # [kg/kg_fuel]         
-
+                           
                             if network.identical_propulsors == True and p_i != 0:
                                 EI_CO2_comb = EI_CO2_prev
                                 EI_CO_comb  = EI_CO_prev
                                 EI_H2O_comb = EI_H2O_prev
                                 EI_NOx_comb  = EI_NOx_prev
-                                EI_soot_comb = EI_soot_prev 
 
                                 combustor_PZ_phi           = combustor_PZ_phi_prev          
                                 combustor_PZ_T             = combustor_PZ_T_prev            
@@ -177,24 +172,21 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                                 combustor_PZ_EI_CO2        = combustor_PZ_EI_CO2_prev       
                                 combustor_PZ_EI_CO         = combustor_PZ_EI_CO_prev        
                                 combustor_PZ_EI_H2O        = combustor_PZ_EI_H2O_prev       
-                                combustor_PZ_EI_NOx        = combustor_PZ_EI_NOx_prev       
-                                combustor_PZ_EI_soot       = combustor_PZ_EI_soot_prev      
+                                combustor_PZ_EI_NOx        = combustor_PZ_EI_NOx_prev            
                                 combustor_SZ_sm_z          = combustor_SZ_sm_z_prev         
                                 combustor_SZ_sm_phi        = combustor_SZ_sm_phi_prev       
                                 combustor_SZ_sm_T          = combustor_SZ_sm_T_prev         
                                 combustor_SZ_sm_EI_CO2     = combustor_SZ_sm_EI_CO2_prev    
                                 combustor_SZ_sm_EI_CO      = combustor_SZ_sm_EI_CO_prev     
                                 combustor_SZ_sm_EI_H2O     = combustor_SZ_sm_EI_H2O_prev    
-                                combustor_SZ_sm_EI_NOx     = combustor_SZ_sm_EI_NOx_prev    
-                                combustor_SZ_sm_EI_soot    = combustor_SZ_sm_EI_soot_prev   
+                                combustor_SZ_sm_EI_NOx     = combustor_SZ_sm_EI_NOx_prev      
                                 combustor_SZ_fm_z          = combustor_SZ_fm_z_prev         
                                 combustor_SZ_fm_phi        = combustor_SZ_fm_phi_prev       
                                 combustor_SZ_fm_T          = combustor_SZ_fm_T_prev         
                                 combustor_SZ_fm_EI_CO2     = combustor_SZ_fm_EI_CO2_prev    
                                 combustor_SZ_fm_EI_CO      = combustor_SZ_fm_EI_CO_prev     
                                 combustor_SZ_fm_EI_H2O     = combustor_SZ_fm_EI_H2O_prev    
-                                combustor_SZ_fm_EI_NOx     = combustor_SZ_fm_EI_NOx_prev    
-                                combustor_SZ_fm_EI_soot    = combustor_SZ_fm_EI_soot_prev     
+                                combustor_SZ_fm_EI_NOx     = combustor_SZ_fm_EI_NOx_prev      
                                 combustor_SZ_joint_z       = combustor_SZ_joint_z_prev      
                                 combustor_SZ_joint_phi     = combustor_SZ_joint_phi_prev    
                                 combustor_SZ_joint_T       = combustor_SZ_joint_T_prev      
@@ -202,56 +194,49 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                                 combustor_SZ_joint_EI_CO   = combustor_SZ_joint_EI_CO_prev  
                                 combustor_SZ_joint_EI_H2O  = combustor_SZ_joint_EI_H2O_prev 
                                 combustor_SZ_joint_EI_NOx  = combustor_SZ_joint_EI_NOx_prev 
-                                combustor_SZ_joint_EI_soot = combustor_SZ_joint_EI_soot_prev
                                 
                             else:     
                                 for t_idx in range(n_cp):
                                     # Call cantera 
                                     results = evaluate_cantera(combustor,T[t_idx,0],P[t_idx,0],mdot[t_idx,0],FAR[t_idx,0])
                                     
-                                    EI_CO2_comb[t_idx,0]                = results.EI_CO2
-                                    EI_CO_comb[t_idx,0]                 = results.EI_CO 
-                                    EI_H2O_comb[t_idx,0]                = results.EI_H2O
-                                    EI_NOx_comb[t_idx,0]                = results.EI_NOx 
-                                    EI_soot_comb[t_idx,0]               = results.EI_soot
-                                    combustor_PZ_phi[t_idx,:]           = results.PZ_phi
-                                    combustor_PZ_T[t_idx,:]             = results.PZ_T
-                                    combustor_PZ_f_psr[t_idx,:]         = results.PZ_f_psr
-                                    combustor_PZ_EI_CO2[t_idx,:]        = results.PZ_EI_CO2
-                                    combustor_PZ_EI_CO[t_idx,:]         = results.PZ_EI_CO
-                                    combustor_PZ_EI_H2O[t_idx,:]        = results.PZ_EI_H2O
-                                    combustor_PZ_EI_NOx[t_idx,:]        = results.PZ_EI_NOx
-                                    combustor_PZ_EI_soot[t_idx,:]       = results.PZ_EI_soot
-                                    combustor_SZ_sm_z[t_idx,:]          = results.SZ_sm_z
-                                    combustor_SZ_sm_phi[t_idx,:]        = results.SZ_sm_phi
-                                    combustor_SZ_sm_T[t_idx,:]          = results.SZ_sm_T
-                                    combustor_SZ_sm_EI_CO2[t_idx,:]     = results.SZ_sm_EI_CO2
-                                    combustor_SZ_sm_EI_CO[t_idx,:]      = results.SZ_sm_EI_CO
-                                    combustor_SZ_sm_EI_H2O[t_idx,:]     = results.SZ_sm_EI_H2O
-                                    combustor_SZ_sm_EI_NOx[t_idx,:]     = results.SZ_sm_EI_NOx
-                                    combustor_SZ_sm_EI_soot[t_idx,:]    = results.SZ_sm_EI_soot
-                                    combustor_SZ_fm_z[t_idx,:]          = results.SZ_fm_z
-                                    combustor_SZ_fm_phi[t_idx,:]        = results.SZ_fm_phi
-                                    combustor_SZ_fm_T[t_idx,:]          = results.SZ_fm_T
-                                    combustor_SZ_fm_EI_CO2[t_idx,:]     = results.SZ_fm_EI_CO2          
-                                    combustor_SZ_fm_EI_CO[t_idx,:]      = results.SZ_fm_EI_CO     
-                                    combustor_SZ_fm_EI_H2O[t_idx,:]     = results.SZ_fm_EI_H2O
-                                    combustor_SZ_fm_EI_NOx[t_idx,:]     = results.SZ_fm_EI_NOx
-                                    combustor_SZ_fm_EI_soot[t_idx,:]    = results.SZ_fm_EI_soot
-                                    combustor_SZ_joint_z[t_idx,:]       = results.SZ_joint_z
-                                    combustor_SZ_joint_phi[t_idx,:]     = results.SZ_joint_phi
-                                    combustor_SZ_joint_T[t_idx,:]       = results.SZ_joint_T
-                                    combustor_SZ_joint_EI_CO2[t_idx,:]  = results.SZ_joint_EI_CO2
-                                    combustor_SZ_joint_EI_CO[t_idx,:]   = results.SZ_joint_EI_CO  
-                                    combustor_SZ_joint_EI_H2O[t_idx,:]  = results.SZ_joint_EI_H2O 
-                                    combustor_SZ_joint_EI_NOx[t_idx,:]  = results.SZ_joint_EI_NOx 
-                                    combustor_SZ_joint_EI_soot[t_idx,:] = results.SZ_joint_EI_soot
+                                    EI_CO2_comb[t_idx,0]                = results.final.EI.CO2
+                                    EI_CO_comb[t_idx,0]                 = results.final.EI.CO 
+                                    EI_H2O_comb[t_idx,0]                = results.final.EI.H2O
+                                    EI_NOx_comb[t_idx,0]                = results.final.EI.NOx 
+                                    combustor_PZ_phi[t_idx,:]           = results.PZ.phi
+                                    combustor_PZ_T[t_idx,:]             = results.PZ.T
+                                    combustor_PZ_f_psr[t_idx,:]         = results.PZ.f_psr
+                                    combustor_PZ_EI_CO2[t_idx,:]        = results.PZ.EI.CO2
+                                    combustor_PZ_EI_CO[t_idx,:]         = results.PZ.EI.CO
+                                    combustor_PZ_EI_H2O[t_idx,:]        = results.PZ.EI.H2O
+                                    combustor_PZ_EI_NOx[t_idx,:]        = results.PZ.EI.NOx
+                                    combustor_SZ_sm_z[t_idx,:]          = results.SZ.sm.z
+                                    combustor_SZ_sm_phi[t_idx,:]        = results.SZ.sm.phi
+                                    combustor_SZ_sm_T[t_idx,:]          = results.SZ.sm.T
+                                    combustor_SZ_sm_EI_CO2[t_idx,:]     = results.SZ.sm.EI.CO2
+                                    combustor_SZ_sm_EI_CO[t_idx,:]      = results.SZ.sm.EI.CO
+                                    combustor_SZ_sm_EI_H2O[t_idx,:]     = results.SZ.sm.EI.H2O
+                                    combustor_SZ_sm_EI_NOx[t_idx,:]     = results.SZ.sm.EI.NOx
+                                    combustor_SZ_fm_z[t_idx,:]          = results.SZ.fm.z
+                                    combustor_SZ_fm_phi[t_idx,:]        = results.SZ.fm.phi
+                                    combustor_SZ_fm_T[t_idx,:]          = results.SZ.fm.T
+                                    combustor_SZ_fm_EI_CO2[t_idx,:]     = results.SZ.fm.EI.CO2          
+                                    combustor_SZ_fm_EI_CO[t_idx,:]      = results.SZ.fm.EI.CO     
+                                    combustor_SZ_fm_EI_H2O[t_idx,:]     = results.SZ.fm.EI.H2O
+                                    combustor_SZ_fm_EI_NOx[t_idx,:]     = results.SZ.fm.EI.NOx
+                                    combustor_SZ_joint_z[t_idx,:]       = results.SZ.joint.z
+                                    combustor_SZ_joint_phi[t_idx,:]     = results.SZ.joint.phi
+                                    combustor_SZ_joint_T[t_idx,:]       = results.SZ.joint.T
+                                    combustor_SZ_joint_EI_CO2[t_idx,:]  = results.SZ.joint.EI.CO2
+                                    combustor_SZ_joint_EI_CO[t_idx,:]   = results.SZ.joint.EI.CO  
+                                    combustor_SZ_joint_EI_H2O[t_idx,:]  = results.SZ.joint.EI.H2O 
+                                    combustor_SZ_joint_EI_NOx[t_idx,:]  = results.SZ.joint.EI.NOx 
                                     
                                     EI_CO2_prev                     = EI_CO2_comb 
                                     EI_CO_prev                      = EI_CO_comb  
                                     EI_H2O_prev                     = EI_H2O_comb 
                                     EI_NOx_prev                     = EI_NOx_comb  
-                                    EI_soot_prev                    = EI_soot_comb
                                     combustor_PZ_phi_prev           = combustor_PZ_phi          
                                     combustor_PZ_T_prev             = combustor_PZ_T            
                                     combustor_PZ_f_psr_prev         = combustor_PZ_f_psr        
@@ -259,7 +244,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                                     combustor_PZ_EI_CO_prev         = combustor_PZ_EI_CO        
                                     combustor_PZ_EI_H2O_prev        = combustor_PZ_EI_H2O       
                                     combustor_PZ_EI_NOx_prev        = combustor_PZ_EI_NOx       
-                                    combustor_PZ_EI_soot_prev       = combustor_PZ_EI_soot      
                                     combustor_SZ_sm_z_prev          = combustor_SZ_sm_z         
                                     combustor_SZ_sm_phi_prev        = combustor_SZ_sm_phi       
                                     combustor_SZ_sm_T_prev          = combustor_SZ_sm_T         
@@ -267,7 +251,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                                     combustor_SZ_sm_EI_CO_prev      = combustor_SZ_sm_EI_CO     
                                     combustor_SZ_sm_EI_H2O_prev     = combustor_SZ_sm_EI_H2O    
                                     combustor_SZ_sm_EI_NOx_prev     = combustor_SZ_sm_EI_NOx    
-                                    combustor_SZ_sm_EI_soot_prev    = combustor_SZ_sm_EI_soot   
                                     combustor_SZ_fm_z_prev          = combustor_SZ_fm_z         
                                     combustor_SZ_fm_phi_prev        = combustor_SZ_fm_phi       
                                     combustor_SZ_fm_T_prev          = combustor_SZ_fm_T         
@@ -275,7 +258,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                                     combustor_SZ_fm_EI_CO_prev      = combustor_SZ_fm_EI_CO     
                                     combustor_SZ_fm_EI_H2O_prev     = combustor_SZ_fm_EI_H2O    
                                     combustor_SZ_fm_EI_NOx_prev     = combustor_SZ_fm_EI_NOx     
-                                    combustor_SZ_fm_EI_soot_prev    = combustor_SZ_fm_EI_soot     
                                     combustor_SZ_joint_z_prev       = combustor_SZ_joint_z      
                                     combustor_SZ_joint_phi_prev     = combustor_SZ_joint_phi    
                                     combustor_SZ_joint_T_prev       = combustor_SZ_joint_T      
@@ -283,13 +265,12 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                                     combustor_SZ_joint_EI_CO_prev   = combustor_SZ_joint_EI_CO  
                                     combustor_SZ_joint_EI_H2O_prev  = combustor_SZ_joint_EI_H2O 
                                     combustor_SZ_joint_EI_NOx_prev  = combustor_SZ_joint_EI_NOx 
-                                    combustor_SZ_joint_EI_soot_prev = combustor_SZ_joint_EI_soot
                                 
                             CO2_total  += np.dot(I,mdot_fuel*EI_CO2_comb)
                             CO_total   += np.dot(I,mdot_fuel *EI_CO_comb )
                             H2O_total  += np.dot(I,mdot_fuel*EI_H2O_comb)
                             NOx_total   += np.dot(I,mdot_fuel *EI_NOx_comb ) 
-                            Soot_total  += np.dot(I,mdot_fuel *EI_soot_comb)
+                           
 
     emissions                        = Data()
     emissions.total                  = Data()
@@ -297,12 +278,10 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     emissions.total.CO2              = CO2_total  * combustor.fuel_data.global_warming_potential_100.CO2 
     emissions.total.H2O              = H2O_total  * combustor.fuel_data.global_warming_potential_100.H2O  
     emissions.total.NOx              = NOx_total * combustor.fuel_data.global_warming_potential_100.NOx 
-    emissions.total.Soot             = Soot_total * combustor.fuel_data.global_warming_potential_100.Soot
     emissions.index.CO2              = EI_CO2_comb
     emissions.index.CO               = EI_CO_comb 
     emissions.index.H2O              = EI_H2O_comb
     emissions.index.NOx              = EI_NOx_comb 
-    emissions.index.Soot             = EI_soot_comb 
     emissions.index.PZ_phi           = combustor_PZ_phi
     emissions.index.PZ_T             = combustor_PZ_T
     emissions.index.PZ_f_psr         = combustor_PZ_f_psr
@@ -310,7 +289,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     emissions.index.PZ_EI_CO         = combustor_PZ_EI_CO
     emissions.index.PZ_EI_H2O        = combustor_PZ_EI_H2O
     emissions.index.PZ_EI_NOx        = combustor_PZ_EI_NOx
-    emissions.index.PZ_EI_soot       = combustor_PZ_EI_soot
     emissions.index.SZ_sm_z          = combustor_SZ_sm_z
     emissions.index.SZ_sm_phi        = combustor_SZ_sm_phi
     emissions.index.SZ_sm_T          = combustor_SZ_sm_T   
@@ -318,7 +296,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     emissions.index.SZ_sm_EI_CO      = combustor_SZ_sm_EI_CO
     emissions.index.SZ_sm_EI_H2O     = combustor_SZ_sm_EI_H2O
     emissions.index.SZ_sm_EI_NOx     = combustor_SZ_sm_EI_NOx
-    emissions.index.SZ_sm_EI_soot    = combustor_SZ_sm_EI_soot
     emissions.index.SZ_fm_z          = combustor_SZ_fm_z
     emissions.index.SZ_fm_phi        = combustor_SZ_fm_phi
     emissions.index.SZ_fm_T          = combustor_SZ_fm_T
@@ -326,7 +303,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     emissions.index.SZ_fm_EI_CO      = combustor_SZ_fm_EI_CO
     emissions.index.SZ_fm_EI_H2O     = combustor_SZ_fm_EI_H2O
     emissions.index.SZ_fm_EI_NOx     = combustor_SZ_fm_EI_NOx
-    emissions.index.SZ_fm_EI_soot    = combustor_SZ_fm_EI_soot
     emissions.index.SZ_joint_z       = combustor_SZ_joint_z
     emissions.index.SZ_joint_phi     = combustor_SZ_joint_phi
     emissions.index.SZ_joint_T       = combustor_SZ_joint_T
@@ -334,7 +310,6 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     emissions.index.SZ_joint_EI_CO   = combustor_SZ_joint_EI_CO
     emissions.index.SZ_joint_EI_H2O  = combustor_SZ_joint_EI_H2O
     emissions.index.SZ_joint_EI_NOx  = combustor_SZ_joint_EI_NOx
-    emissions.index.SZ_joint_EI_soot = combustor_SZ_joint_EI_soot
         
     state.conditions.emissions =  emissions
     return   
@@ -436,7 +411,7 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
     CO_total  = 0 * segment.state.ones_row(1) 
     H2O_total = 0 * segment.state.ones_row(1) 
     NOx_total  = 0 * segment.state.ones_row(1) 
-    Soot_total = 0 * segment.state.ones_row(1) 
+
 
     for network in vehicle.networks:    
         for propulsor in network.propulsors:
@@ -465,13 +440,12 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
                     EI_CO_comb   = np.atleast_2d(surrogates.EI_CO(pts)).T 
                     EI_H2O_comb  = np.atleast_2d(surrogates.EI_H2O(pts)).T 
                     EI_NOx_comb  = np.atleast_2d(surrogates.EI_NOx(pts)).T 
-                    EI_soot_comb = np.atleast_2d(surrogates.EI_soot(pts)).T        
                           
                     CO2_total += np.dot(I,mdot_fuel*EI_CO2_comb)
                     CO_total  += np.dot(I,mdot_fuel *EI_CO_comb )
                     H2O_total += np.dot(I,mdot_fuel*EI_H2O_comb)
                     NOx_total  += np.dot(I,mdot_fuel *EI_NOx_comb ) 
-                    Soot_total += np.dot(I,mdot_fuel *EI_soot_comb)
+
 
     emissions                 = Data()
     emissions.total           = Data()
@@ -479,12 +453,10 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
     emissions.total.CO2       = CO2_total * combustor.fuel_data.global_warming_potential_100.CO2 
     emissions.total.H2O       = H2O_total * combustor.fuel_data.global_warming_potential_100.H2O  
     emissions.total.NOx       = NOx_total * combustor.fuel_data.global_warming_potential_100.NOx 
-    emissions.total.Soot      = Soot_total * combustor.fuel_data.global_warming_potential_100.Soot
     emissions.index.CO2       = EI_CO2_comb
     emissions.index.CO        = EI_CO_comb 
     emissions.index.H2O       = EI_H2O_comb
     emissions.index.NOx       = EI_NOx_comb 
-    emissions.index.Soot      = EI_soot_comb 
  
     segment.state.conditions.emissions =  emissions
     return   

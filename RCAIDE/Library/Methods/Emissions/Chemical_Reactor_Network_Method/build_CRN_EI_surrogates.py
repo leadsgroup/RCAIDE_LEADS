@@ -89,6 +89,5 @@ def build_CRN_EI_surrogates(emissions):
     surrogates.EI_CO                      = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_CO  ,method = 'linear',   bounds_error=False, fill_value=None) 
     surrogates.EI_H2O                     = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_H2O ,method = 'linear',   bounds_error=False, fill_value=None) 
     surrogates.EI_NOx                     = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_NOx ,method = 'linear',   bounds_error=False, fill_value=None) 
-    surrogates.EI_soot                    = RegularGridInterpolator((pressure_data ,temperature_data, air_mass_flowrate_data, fuel_to_air_ratio_data),training.EI_soot ,method = 'linear',   bounds_error=False, fill_value=None) 
    
     return
