@@ -12,6 +12,7 @@ from   RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method import e
 
 # Python imports
 import pandas as pd
+import numpy as np
 
 # ----------------------------------------------------------------------
 #  References
@@ -92,7 +93,7 @@ def main():
         }
 
     def calculate_percentage_difference(simulated, reference):
-        return f"{simulated} ({((simulated - reference) / reference) * 100:+.2f}%)"
+        return f"{simulated:.3f} ({((simulated - reference) / reference) * 100:+.2f}%)"
     
     data = {
         "Emission Index [kg/kg_fuel]": list(rcaide_values.keys()),
@@ -107,6 +108,10 @@ def main():
     print("=" * len(df.to_markdown(index=False).split('\n')[0]))
 
     print(df.to_markdown(index=False))
+
+    error = np.abs((rcaide_values["EI_CO2"] - ICAO_EI["EI_CO2"]) / ICAO_EI["EI_CO2"]) * 100
+    print("\nError in CO2 [%]:", error)
+    assert error < 10
 
     return
 

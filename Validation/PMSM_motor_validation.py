@@ -70,6 +70,10 @@ def main():
 
     plot_power_and_torque(x_cont_pow, y_cont_pow, motor_rpm_vector, motor_power_vector, x_cont_tq, y_cont_tq, motor_torque_vector)
 
+    error = np.abs((motor_power_vector[-1] - y_cont_pow[-1]) / y_cont_pow[-1]) * 100
+    print("\nError in Power [%]:", error)
+    assert error < 10
+
 def plot_power_and_torque(x_cont_pow, y_cont_pow, motor_rpm_vector, motor_power_vector, x_cont_tq, y_cont_tq, motor_torque_vector):
     
     fig, ax1 = plt.subplots(figsize=(10, 5))
