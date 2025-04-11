@@ -55,15 +55,15 @@ def main():
     combustor.S_PZ                                    = 0.39           # [-] Mixing parameter in the Primary Zone  
     combustor.design_equivalence_ratio_PZ             = 1.71           # [-] Design Equivalence Ratio in Primary Zone at Maximum Throttle  
     combustor.N_SZ                                    = 500            # [-] Number of discritizations in the Secondary Zone
-    combustor.f_SM                                    = 0.6            # [-] Slow mode fraction
+    combustor.f_SM                                    = 0.2            # [-] Slow mode fraction
     combustor.l_SA_SM                                 = 0.4            # [-] Secondary air length fraction (of L_SZ) in slow mode
-    combustor.l_SA_FM                                 = 0.05           # [-] Secondary air length fraction (of L_SZ) in fast mode
-    combustor.l_DA_start                              = 0.95           # [-] Dilution air start length fraction (of L_SZ)
+    combustor.l_SA_FM                                 = 0.16           # [-] Secondary air length fraction (of L_SZ) in fast mode  # USED TO BE 0.15
+    combustor.l_DA_start                              = 0.93           # [-] Dilution air start length fraction (of L_SZ) # USED TO BE 0.96
     combustor.l_DA_end                                = 1.0            # [-] Dilution air end length fraction (of L_SZ)
-    combustor.joint_mixing_fraction                   = 0.6            # [-] Joint mixing fraction
-    combustor.design_equivalence_ratio_SZ             = 0.61            # [-] Design Equivalence Ratio in Secondary Zone at Maximum Throttle
-    combustor.air_mass_flow_rate_take_off             = 40             # [kg/s] Air mass flow rate at take-off
-    combustor.fuel_to_air_ratio_take_off              = 0.025          # [-] Fuel to air ratio at take-off
+    combustor.joint_mixing_fraction                   = 0.95           # [-] Joint mixing fraction
+    combustor.design_equivalence_ratio_SZ             = 0.54           # [-] Design Equivalence Ratio in Secondary Zone at Maximum Throttle
+    combustor.air_mass_flow_rate_take_off             = 56.8           # [kg/s] Air mass flow rate at take-off
+    combustor.fuel_to_air_ratio_take_off              = 0.024          # [-] Fuel to air ratio at take-off
 
     # Oxidizer Inputs
     combustor.air_data                                = Air()          # [-] Air object
@@ -76,15 +76,15 @@ def main():
     combustor.fuel_data.temperature                   = 298.15         # [K] Temperature of fuel
     combustor.fuel_data.pressure                      = 101325         # [Pa] Pressure of fuel
 
-    combustor.fuel_data.fuel_surrogate_S1             = {'NC12H26':0.404, 'IC8H18':0.295, 'TMBENZ' : 0.073,'NPBENZ':0.228, 'C10H8':0.02} # [-] Mole fractions of fuel surrogate species
-    combustor.fuel_data.kinetic_mechanism             = 'Fuel.yaml' # [-] Kinetic mechanism for fuel surrogate species
+    combustor.fuel_data.fuel_surrogate_S1             = {'NC12H26':0.404, 'IC8H18':0.295, 'TMBENZ':0.073, 'NPBENZ':0.228, 'C10H8':0.02} # [-] Mole fractions of fuel surrogate species
+    combustor.fuel_data.kinetic_mechanism             = 'Fuel.yaml'    # [-] Kinetic mechanism for fuel surrogate species
 
     # RCAIDE Inputs
-    Temp_air                                          = 710            # [K]    Combustor Inlet Temperature of air
-    Pres_air                                          = 2600000        # [Pa]   Combustor Inlet Pressure of air
+    Temp_air                                          = 872            # [K]    Combustor Inlet Temperature of air
+    Pres_air                                          = 3380000        # [Pa]   Combustor Inlet Pressure of air
     throttle                                          = 1              # [-]    Throttle (Non linear variation with Equivalence Ratio)
     mdot_air_tot                                      = combustor.air_mass_flow_rate_take_off*throttle  # [kg/s] Air mass flow rate 
-    FAR                                               = combustor.fuel_to_air_ratio_take_off *throttle # [-]    Fuel to Air ratio 
+    FAR                                               = combustor.fuel_to_air_ratio_take_off *throttle  # [-]    Fuel to Air ratio 
   
     # RCAIDE Simulation
     results                                           = evaluate_cantera(combustor, Temp_air, Pres_air, mdot_air_tot, FAR)
