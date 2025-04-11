@@ -16,6 +16,10 @@ from RCAIDE.Library.Mission.Common.Unpack_Unknowns import orientation
 import numpy   as np
 from copy      import  deepcopy 
 
+"""Delete this function. This is just a placeholder to avoid errors."""
+def ones_row(n):
+    return n
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -38,7 +42,7 @@ def evaluate_surrogate(state,settings,vehicle):
     """          
     conditions    = state.conditions
     aerodynamics  = state.analyses.aerodynamics
-    ones_row      = state.ones_row
+    #ones_row      = [1,1] #state.ones_row
     trim          = aerodynamics.settings.trim_aircraft
     sub_sur       = aerodynamics.surrogates.subsonic
     sup_sur       = aerodynamics.surrogates.supersonic
@@ -78,28 +82,37 @@ def evaluate_surrogate(state,settings,vehicle):
     # Query surrogates  
     # ----------------------------------------------------------------------------------------------------------------------- 
     pts_alpha   = np.hstack((AoA*0.0,Mach))
-    
-    # Alpha 
-    results_zero = compute_coefficients(sub_sur.Clift_alpha,  sub_sur.Cdrag_alpha,  sub_sur.CX_alpha,  sub_sur.CY_alpha,  sub_sur.CZ_alpha,  sub_sur.CL_alpha,  sub_sur.CM_alpha,   sub_sur.CN_alpha,
-                                         trans_sur.Clift_alpha,trans_sur.Cdrag_alpha,trans_sur.CX_alpha,trans_sur.CY_alpha,trans_sur.CZ_alpha,trans_sur.CL_alpha,trans_sur.CM_alpha, trans_sur.CN_alpha,
-                                         sup_sur.Clift_alpha,  sup_sur.Cdrag_alpha,  sup_sur.CX_alpha,  sup_sur.CY_alpha,  sup_sur.CZ_alpha,  sup_sur.CL_alpha,  sup_sur.CM_alpha,   sup_sur.CN_alpha,
-                                         h_sub,h_sup,Mach, pts_alpha)        
+    pts_beta    = np.hstack((Beta*0.0,Mach))
+    # sup_CM        = np.atleast_2d(sup_sur.CM_alpha(pts_alpha)).T 
+    # trans_CM      = np.atleast_2d(trans_sur.CM_alpha(pts_alpha)).T 
+    # sub_CM        = np.atleast_2d(sub_sur.CM_alpha(pts_alpha)).T   
+    # CM_0    = h_sub(Mach)*sub_CM    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CM     + h_sup(Mach)*sup_CM 
 
-    CL_0                      = results_zero.CL
-    CY_0                      = results_zero.CY
-    CM_0                      = results_zero.CM
-    CN_0                      = results_zero.CN
+    results_alpha = compute_coefficients(sub_sur.CY_beta, sub_sur.CL_beta,  sub_sur.CM_alpha,   sub_sur.CN_beta,
+                                         trans_sur.CY_beta,trans_sur.CL_beta,trans_sur.CM_alpha, trans_sur.CN_beta,
+                                         sup_sur.CY_beta,  sup_sur.CL_beta,  sup_sur.CM_alpha,   sup_sur.CN_beta,
+                                         h_sub,h_sup,Mach, pts_alpha)  
+    CM_0 = results_alpha.CM
+    
+    results_beta = compute_coefficients(sub_sur.CY_beta,  sub_sur.CL_beta,  sub_sur.CM_alpha,   sub_sur.CN_beta,
+                                         trans_sur.CY_beta,trans_sur.CL_beta,trans_sur.CM_alpha, trans_sur.CN_beta,
+                                          sup_sur.CY_beta,  sup_sur.CL_beta,  sup_sur.CM_alpha,   sup_sur.CN_beta,
+                                         h_sub,h_sup,Mach, pts_beta)  
+    
+    CL_0                      = results_beta.CL
+    CY_0                      = results_beta.CY
+    CN_0                      = results_beta.CN
     
     pts_alpha   = np.hstack((AoA,Mach))
     
     # Alpha 
-    results_alpha = compute_coefficients(sub_sur.Clift_alpha,  sub_sur.Cdrag_alpha,  sub_sur.CX_alpha,  sub_sur.CY_alpha,  sub_sur.CZ_alpha,  sub_sur.CL_alpha,  sub_sur.CM_alpha,   sub_sur.CN_alpha,
-                                         trans_sur.Clift_alpha,trans_sur.Cdrag_alpha,trans_sur.CX_alpha,trans_sur.CY_alpha,trans_sur.CZ_alpha,trans_sur.CL_alpha,trans_sur.CM_alpha, trans_sur.CN_alpha,
-                                         sup_sur.Clift_alpha,  sup_sur.Cdrag_alpha,  sup_sur.CX_alpha,  sup_sur.CY_alpha,  sup_sur.CZ_alpha,  sup_sur.CL_alpha,  sup_sur.CM_alpha,   sup_sur.CN_alpha,
-                                         h_sub,h_sup,Mach, pts_alpha)        
+    #results_alpha = compute_coefficients(sub_sur.CX_alpha,  sub_sur.CY_alpha,  sub_sur.CZ_alpha,  sub_sur.CL_alpha,  sub_sur.CM_alpha,   sub_sur.CN_alpha,
+    #                                     trans_sur.CX_alpha,trans_sur.CY_alpha,trans_sur.CZ_alpha,trans_sur.CL_alpha,trans_sur.CM_alpha, trans_sur.CN_alpha,
+    #                                     sup_sur.CX_alpha,  sup_sur.CY_alpha,  sup_sur.CZ_alpha,  sup_sur.CL_alpha,  sup_sur.CM_alpha,   sup_sur.CN_alpha,
+    #                                     h_sub,h_sup,Mach, pts_alpha)        
 
-    Clift_alpha             = results_alpha.Clift   
-    Cdrag_alpha             = results_alpha.Cdrag 
+    #Clift_alpha             = results_alpha.Clift   
+    #Cdrag_alpha             = results_alpha.Cdrag 
     
     
     if aerodynamics.stability_derivatives.dCX_dalpha ==None: # If not user defined than compute. 
@@ -192,8 +205,8 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.Y_ref  = ref_vals.Y_ref
     conditions.Z_ref  = ref_vals.Z_ref 
      
-    conditions.static_stability.coefficients.lift   = Clift_alpha
-    conditions.static_stability.coefficients.drag   = Cdrag_alpha
+    #conditions.static_stability.coefficients.lift   = Clift_alpha
+    #conditions.static_stability.coefficients.drag   = Cdrag_alpha
     conditions.static_stability.coefficients.Y      = CY_0 + conditions.static_stability.derivatives.CY_beta * Beta
     conditions.static_stability.coefficients.L      = CL_0 + conditions.static_stability.derivatives.CL_beta * Beta
     conditions.static_stability.coefficients.M      = CM_0 + conditions.static_stability.derivatives.CM_alpha * AoA
@@ -1102,28 +1115,27 @@ def compute_stability_derivative(sub_sur,trans_sur,sup_sur,h_sub,h_sup,Mach):
     derivative = h_sub(Mach)*sub_sur(Mach) +   (1 - (h_sup(Mach) + h_sub(Mach)))*trans_sur(Mach)  + h_sup(Mach)*sup_sur(Mach) 
     return derivative
 
-def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_sur_CZ,sub_sur_CL,sub_sur_CM,sub_sur_CN,
-                         trans_sur_Clift,trans_sur_Cdrag,trans_sur_CX,trans_sur_CY,trans_sur_CZ,trans_sur_CL,trans_sur_CM,trans_sur_CN,
-                         sup_sur_Clift,sup_sur_Cdrag,sup_sur_CX,sup_sur_CY,sup_sur_CZ,sup_sur_CL,sup_sur_CM,sup_sur_CN,
+
+
+def compute_coefficients(sub_sur_CY,sub_sur_CL,sub_sur_CM,sub_sur_CN,
+                         trans_sur_CY,trans_sur_CL,trans_sur_CM,trans_sur_CN,
+                         sup_sur_CY,sup_sur_CL,sup_sur_CM,sup_sur_CN,
                          h_sub,h_sup,Mach, pts): 
-    
 
      #  subsonic 
-    sub_Clift     = np.atleast_2d(sub_sur_Clift(pts)).T  
-    sub_Cdrag     = np.atleast_2d(sub_sur_Cdrag(pts)).T  
-    sub_CX        = np.atleast_2d(sub_sur_CX(pts)).T 
+    #sub_Clift     = np.atleast_2d(sub_sur_Clift(pts)).T  
+    #sub_Cdrag     = np.atleast_2d(sub_sur_Cdrag(pts)).T  
     sub_CY        = np.atleast_2d(sub_sur_CY(pts)).T     
-    sub_CZ        = np.atleast_2d(sub_sur_CZ(pts)).T     
     sub_CL        = np.atleast_2d(sub_sur_CL(pts)).T     
     sub_CM        = np.atleast_2d(sub_sur_CM(pts)).T     
     sub_CN        = np.atleast_2d(sub_sur_CN(pts)).T
     
     
-    if trans_sur_Clift ==  None and  sup_sur_Clift == None:
+    if trans_sur_CY ==  None and  sup_sur_CY == None:
     
         results       = Data() 
-        results.Clift = h_sub(Mach) 
-        results.Cdrag = h_sub(Mach) 
+        #results.Clift = h_sub(Mach) 
+        #results.Cdrag = h_sub(Mach) 
         results.CX    = h_sub(Mach) 
         results.CY    = h_sub(Mach) 
         results.CZ    = h_sub(Mach) 
@@ -1135,32 +1147,26 @@ def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_s
    
     
     # transonic   
-    trans_Clift   = np.atleast_2d(trans_sur_Clift(pts)).T  
-    trans_Cdrag   = np.atleast_2d(trans_sur_Cdrag(pts)).T  
-    trans_CX      = np.atleast_2d(trans_sur_CX(pts)).T 
-    trans_CY      = np.atleast_2d(trans_sur_CY(pts)).T     
-    trans_CZ      = np.atleast_2d(trans_sur_CZ(pts)).T     
+    #trans_Clift   = np.atleast_2d(trans_sur_Clift(pts)).T  
+    #trans_Cdrag   = np.atleast_2d(trans_sur_Cdrag(pts)).T 
+    trans_CY      = np.atleast_2d(trans_sur_CY(pts)).T        
     trans_CL      = np.atleast_2d(trans_sur_CL(pts)).T     
     trans_CM      = np.atleast_2d(trans_sur_CM(pts)).T     
     trans_CN      = np.atleast_2d(trans_sur_CN(pts)).T
 
     # supersonic 
-    sup_Clift     = np.atleast_2d(sup_sur_Clift(pts)).T  
-    sup_Cdrag     = np.atleast_2d(sup_sur_Cdrag(pts)).T  
-    sup_CX        = np.atleast_2d(sup_sur_CX(pts)).T 
-    sup_CY        = np.atleast_2d(sup_sur_CY(pts)).T     
-    sup_CZ        = np.atleast_2d(sup_sur_CZ(pts)).T     
+    #sup_Clift     = np.atleast_2d(sup_sur_Clift(pts)).T  
+    #sup_Cdrag     = np.atleast_2d(sup_sur_Cdrag(pts)).T 
+    sup_CY        = np.atleast_2d(sup_sur_CY(pts)).T      
     sup_CL        = np.atleast_2d(sup_sur_CL(pts)).T     
     sup_CM        = np.atleast_2d(sup_sur_CM(pts)).T     
     sup_CN        = np.atleast_2d(sup_sur_CN(pts)).T            
 
     # apply 
     results       = Data() 
-    results.Clift = h_sub(Mach)*sub_Clift + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_Clift  + h_sup(Mach)*sup_Clift
-    results.Cdrag = h_sub(Mach)*sub_Cdrag + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_Cdrag  + h_sup(Mach)*sup_Cdrag
-    results.CX    = h_sub(Mach)*sub_CX    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CX     + h_sup(Mach)*sup_CX   
+    #results.Clift = h_sub(Mach)*sub_Clift + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_Clift  + h_sup(Mach)*sup_Clift
+    #results.Cdrag = h_sub(Mach)*sub_Cdrag + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_Cdrag  + h_sup(Mach)*sup_Cdrag
     results.CY    = h_sub(Mach)*sub_CY    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CY     + h_sup(Mach)*sup_CY   
-    results.CZ    = h_sub(Mach)*sub_CZ    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CZ     + h_sup(Mach)*sup_CZ   
     results.CL    = h_sub(Mach)*sub_CL    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CL     + h_sup(Mach)*sup_CL   
     results.CM    = h_sub(Mach)*sub_CM    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CM     + h_sup(Mach)*sup_CM   
     results.CN    = h_sub(Mach)*sub_CN    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CN     + h_sup(Mach)*sup_CN

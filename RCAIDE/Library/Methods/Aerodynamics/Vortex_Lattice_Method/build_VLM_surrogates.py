@@ -62,8 +62,13 @@ def build_surrogate(aerodynamics, training):
         surrogates.Clift_wing_alpha[wing.tag] = RegularGridInterpolator((AoA_data ,mach_data),training.Clift_wing_alpha[wing.tag],method = 'linear',   bounds_error=False, fill_value=None) 
         surrogates.Cdrag_wing_alpha[wing.tag] = RegularGridInterpolator((AoA_data ,mach_data),training.Cdrag_wing_alpha[wing.tag],method = 'linear',   bounds_error=False, fill_value=None) 
      
-    # Pack the outputs     
-    
+    # Pack the outputs
+    surrogates.CM_alpha       = interpolate.interp1d(mach_data,training.CM_alpha       ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
+    surrogates.CY_beta        = interpolate.interp1d(mach_data,training.CY_beta        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
+    surrogates.CL_beta        = interpolate.interp1d(mach_data,training.CL_beta        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
+    surrogates.CN_beta        = interpolate.interp1d(mach_data,training.CN_beta        ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
+
+
     surrogates.dCX_dalpha       = interpolate.interp1d(mach_data,training.dCX_dalpha       ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     surrogates.dCX_du           = interpolate.interp1d(mach_data,training.dCX_du           ,kind = 'linear',   bounds_error=False, fill_value= "extrapolate")      
     
