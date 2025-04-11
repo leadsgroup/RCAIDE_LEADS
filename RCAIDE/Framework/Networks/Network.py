@@ -175,7 +175,7 @@ class Network(Component):
                 # compute power from each componemnt 
                 bus_conditions.power_draw        += (total_elec_power- state.conditions.energy[bus.tag].regenerative_power*bus_voltage ) * bus.power_split_ratio  /bus.efficiency   
                 bus_conditions.current_draw       = bus_conditions.power_draw/bus_voltage 
-                total_elec_power                 += bus_conditions.power_draw  
+                total_elec_power                 = bus_conditions.power_draw  
              
         # ------------------------------------------------------------------------------------------------------------------- 
         # Section 2.0 Converters
@@ -192,13 +192,12 @@ class Network(Component):
                                 generator             = converter.generator   
                                 state.conditions.energy.converters[generator.tag].outputs.power  =  total_elec_power*(1 - state.conditions.energy.hybrid_power_split_ratio ) 
                                 P_mech, P_elec, stored_results_flag,stored_propulsor_tag         = converter.compute_performance(state,fuel_line,bus)  
-                                bus_conditions.power_draw   += P_elec/bus.efficiency
+                                bus_conditions.power_draw   -= P_elec/bus.efficiency
                                 fuel_mdot                   += conditions.energy.converters[converter.tag].fuel_flow_rate  
                  
                             if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft):   
                                 state.conditions.energy.converters[converter.tag].power = total_mech_power*(1 - state.conditions.energy.hybrid_power_split_ratio )   
                                 P_mech, P_elec,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state)   
-                                bus_conditions.power_draw   += P_elec/bus.efficiency
                                 fuel_mdot                   += conditions.energy.converters[converter.tag].fuel_flow_rate   
                     
         # 2.1 Electric Converters                            
@@ -217,7 +216,7 @@ class Network(Component):
                                 
                             if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.DC_Generator) or isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator):                              
                                 compute_generator_performance(converter,conditions) 
-                                bus_conditions.power_draw   += conditions.energy.converters[converter.tag].outputs.power/bus.efficiency
+                                bus_conditions.power_draw   -= conditions.energy.converters[converter.tag].outputs.power/bus.efficiency
                                 bus_conditions.current_draw  = bus_conditions.power_draw/bus.voltage                            
                         
         # ----------------------------------------------------------        
