@@ -208,7 +208,6 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.coefficients.L      = conditions.static_stability.derivatives.CL_beta *Beta 
     conditions.static_stability.coefficients.M      = conditions.static_stability.derivatives.CM_alpha *AoA 
     conditions.static_stability.coefficients.N      = conditions.static_stability.derivatives.CN_beta *Beta
-    
  
     #C_W =  conditions.weights.total_mass * conditions.freestream.gravity / (conditions.freestream.dynamic_pressure * ref_vals.S_ref)    
     #conditions.static_stability.coefficients.Y  += C_W * np.sin(Phi)     

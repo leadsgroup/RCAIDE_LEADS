@@ -323,22 +323,24 @@ class Network(Component):
         Properties Used:
         N/A
         """            
-         
-        unknowns(segment)  
-        for network in segment.analyses.energy.vehicle.networks:
-            # Fuel unknowns 
-            for fuel_line_i, fuel_line in enumerate(network.fuel_lines):    
-                if fuel_line.active:
-                    for propulsor_group in  fuel_line.assigned_propulsors:
-                        propulsor = network.propulsors[propulsor_group[0]]
-                        propulsor.unpack_propulsor_unknowns(segment)
-                        
-            # electric unknowns 
-            for bus_i, bus in enumerate(network.busses):    
-                if bus.active:
-                    for propulsor_group in  bus.assigned_propulsors:
-                        propulsor = network.propulsors[propulsor_group[0]]
-                        propulsor.unpack_propulsor_unknowns(segment) 
+        
+    
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion: 
+            unknowns(segment)  
+            for network in segment.analyses.energy.vehicle.networks:
+                # Fuel unknowns 
+                for fuel_line_i, fuel_line in enumerate(network.fuel_lines):    
+                    if fuel_line.active:
+                        for propulsor_group in  fuel_line.assigned_propulsors:
+                            propulsor = network.propulsors[propulsor_group[0]]
+                            propulsor.unpack_propulsor_unknowns(segment)
+                            
+                # electric unknowns 
+                for bus_i, bus in enumerate(network.busses):    
+                    if bus.active:
+                        for propulsor_group in  bus.assigned_propulsors:
+                            propulsor = network.propulsors[propulsor_group[0]]
+                            propulsor.unpack_propulsor_unknowns(segment) 
         return    
      
     def residuals(self,segment):
@@ -361,18 +363,20 @@ class Network(Component):
     
            Properties Used: 
            N/A
-       """         
-        for network in segment.analyses.energy.vehicle.networks:
-            for fuel_line_i, fuel_line in enumerate(network.fuel_lines):    
-                if fuel_line.active:
-                    for propulsor_group in  fuel_line.assigned_propulsors:
-                        propulsor =  network.propulsors[propulsor_group[0]]
-                        propulsor.pack_propulsor_residuals(segment) 
-            for bus_i, bus in enumerate(network.busses):    
-                if bus.active:
-                    for propulsor_group in  bus.assigned_propulsors:
-                        propulsor =  network.propulsors[propulsor_group[0]]
-                        propulsor.pack_propulsor_residuals(segment)   
+       """
+
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion: 
+            for network in segment.analyses.energy.vehicle.networks:
+                for fuel_line_i, fuel_line in enumerate(network.fuel_lines):    
+                    if fuel_line.active:
+                        for propulsor_group in  fuel_line.assigned_propulsors:
+                            propulsor =  network.propulsors[propulsor_group[0]]
+                            propulsor.pack_propulsor_residuals(segment) 
+                for bus_i, bus in enumerate(network.busses):    
+                    if bus.active:
+                        for propulsor_group in  bus.assigned_propulsors:
+                            propulsor =  network.propulsors[propulsor_group[0]]
+                            propulsor.pack_propulsor_residuals(segment)   
         return      
     
     def add_unknowns_and_residuals_to_segment(self, segment):
@@ -416,8 +420,9 @@ class Network(Component):
                 # ------------------------------------------------------------------------------------------------------
                 if fuel_line.active:
                     for propulsor_group in  fuel_line.assigned_propulsors:
-                        propulsor =  network.propulsors[propulsor_group[0]]
-                        propulsor.append_propulsor_unknowns_and_residuals(segment)
+                        propulsor =  network.propulsors[propulsor_group[0]] 
+                        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:                               
+                            propulsor.append_propulsor_unknowns_and_residuals(segment)
                         
                 # ------------------------------------------------------------------------------------------------------
                 # Assign sub component results data structures
@@ -440,8 +445,9 @@ class Network(Component):
                 # ------------------------------------------------------------------------------------------------------
                 if bus.active:
                     for propulsor_group in  bus.assigned_propulsors:
-                        propulsor =  network.propulsors[propulsor_group[0]]
-                        propulsor.append_propulsor_unknowns_and_residuals(segment)
+                        propulsor =  network.propulsors[propulsor_group[0]] 
+                        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:                        
+                            propulsor.append_propulsor_unknowns_and_residuals(segment)
                         
                 # ------------------------------------------------------------------------------------------------------
                 # Assign sub component results data structures

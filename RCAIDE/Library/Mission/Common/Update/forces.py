@@ -51,8 +51,8 @@ def forces(segment):
     # transform matrices 
     F_aero_i      = orientation_product(T_wind2inertial,F_aero_w) 
     F_thrust_i    = orientation_product(T_body2inertial,F_thrust_body)  
-    F_thrust_wind = orientation_product(T_body2inertial,F_thrust_i)
-    F_weight_wind = orientation_product(T_body2inertial,F_weight_i)
+    F_thrust_wind = orientation_product(T_inertia2wind,F_thrust_i)
+    F_weight_wind = orientation_product(T_inertia2wind,F_weight_i)
     
     if type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Climb:
         F_aero_i =  np.zeros_like(F_thrust_i)
@@ -60,8 +60,6 @@ def forces(segment):
         F_aero_i =  np.zeros_like(F_thrust_i)
     elif type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Descent:
         F_aero_i =  np.zeros_like(F_thrust_i)  
-
-    
     
     F_weight_i[:,1] *= -1        
     F_weight_wind[:,1] *= -1

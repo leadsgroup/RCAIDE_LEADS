@@ -118,7 +118,9 @@ def flight_dynamics(segment):
 
     MT_i      = segment.state.conditions.frames.inertial.total_moment_vector    
     ang_acc_i = segment.state.conditions.frames.inertial.angular_acceleration_vector 
-    MT_w      = segment.state.conditions.frames.wind.total_moment_vector    
+    MT_w      = segment.state.conditions.frames.wind.total_moment_vector
+    
+    
     ang_acc_w = segment.state.conditions.frames.wind.angular_acceleration_vector   
     m         = segment.state.conditions.weights.total_mass
     I         = segment.analyses.aerodynamics.vehicle.mass_properties.moments_of_inertia.tensor  
