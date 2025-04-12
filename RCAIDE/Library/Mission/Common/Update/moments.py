@@ -7,8 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports 
-from RCAIDE.Framework.Core  import  orientation_product  
+# RCAIDE imports  
+from RCAIDE.Framework.Core   import orientation_product, orientation_transpose  
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Update Moments
@@ -35,21 +35,26 @@ def moments(segment):
     """    
 
     # unpack
-    conditions                = segment.state.conditions  
-    wind_moment_vector        = conditions.frames.wind.moment_vector
-    body_thrust_moment_vector = conditions.frames.body.thrust_moment_vector
+    conditions    = segment.state.conditions  
+    M_aero_w      = conditions.frames.wind.moment_vector
+    M_thrust_b    = conditions.frames.body.thrust_moment_vector
     
     # unpack transformation matrices
     T_wind2inertial = conditions.frames.wind.transform_to_inertial 
     T_body2inertial = conditions.frames.body.transform_to_inertial 
+    T_inertial2body = orientation_transpose(T_body2inertial)
+    T_inertia2wind  = orientation_transpose(T_wind2inertial) 
 
-    # to inertial frame 
-    M_t = orientation_product(T_body2inertial,body_thrust_moment_vector) 
-    M_w = orientation_product(T_wind2inertial, wind_moment_vector) 
+    # transform matrices 
+    M_thrust_i = orientation_product(T_body2inertial,M_thrust_b) 
+    M_aero_i   = orientation_product(T_wind2inertial, M_aero_w) 
+    M_thrust_w = orientation_product(T_inertia2wind, M_thrust_i)
     
-    M = M_t + M_w
+    M_tot_i = M_thrust_i + M_aero_i
+    M_tot_w = M_thrust_w + M_aero_w
     
     # pack
-    conditions.frames.inertial.total_moment_vector[:,:] = M[:,:]
+    conditions.frames.inertial.total_moment_vector[:,:] = M_tot_i[:,:]
+    conditions.frames.wind.total_moment_vector[:,:]     = M_tot_w[:,:]
 
     return

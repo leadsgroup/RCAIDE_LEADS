@@ -117,6 +117,8 @@ class Results(Conditions):
         self.frames.wind.velocity_vector                                       = ones_3col * 0
         self.frames.wind.force_vector                                          = ones_3col * 0
         self.frames.wind.moment_vector                                         = ones_3col * 0
+        self.frames.wind.total_force_vector                                    = ones_3col * 0
+        self.frames.wind.total_moment_vector                                   = ones_3col * 0
         self.frames.wind.transform_to_inertial                                 = np.empty([0,0,0]) 
                                                                                
         # planet frame conditions                                              

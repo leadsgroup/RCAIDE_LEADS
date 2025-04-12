@@ -55,16 +55,15 @@ def aerodynamics(segment):
     CL[CL< -CLmax] = -CLmax
 
     # dimensionalize
-    F      = segment.state.ones_row(3) * 0.0
-    bank_angle = segment.state.conditions.frames.body.inertial_rotations[:,0]
-    F[:,2] = ( -CL * q * Sref )[:,0]*np.cos(bank_angle)
-    F[:,1] = ( -CY * q * Sref )[:,0] #+ ( -CL * q * Sref )[:,0]*np.cos(bank_angle)
+    F      = segment.state.ones_row(3) * 0.0 
+    F[:,2] = ( -CL * q * Sref )[:,0] 
+    F[:,1] = (  CY * q * Sref )[:,0]  
     F[:,0] = ( -CD * q * Sref )[:,0]
 
     # rewrite aerodynamic CL and CD
     conditions.aerodynamics.coefficients.lift.total  = CL
     conditions.aerodynamics.coefficients.drag.total  = CD
-    conditions.frames.wind.force_vector[:,:]   = F[:,:]
+    conditions.frames.wind.force_vector[:,:]         = F[:,:]
 
     # -----------------------------------------------------------------
     # Moments
