@@ -16,10 +16,6 @@ from RCAIDE.Library.Mission.Common.Unpack_Unknowns import orientation
 import numpy   as np
 from copy      import  deepcopy 
 
-"""Delete this function. This is just a placeholder to avoid errors."""
-def ones_row(n):
-    return n
-
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -41,8 +37,7 @@ def evaluate_surrogate(state,settings,vehicle):
         None  
     """          
     conditions    = state.conditions
-    aerodynamics  = state.analyses.aerodynamics
-    #ones_row      = [1,1] #state.ones_row
+    aerodynamics  = state.analyses.aerodynamics 
     trim          = aerodynamics.settings.trim_aircraft
     sub_sur       = aerodynamics.surrogates.subsonic
     sup_sur       = aerodynamics.surrogates.supersonic
@@ -51,6 +46,7 @@ def evaluate_surrogate(state,settings,vehicle):
     AoA           = np.atleast_2d(conditions.aerodynamics.angles.alpha)  
     Beta          = np.atleast_2d(conditions.aerodynamics.angles.beta)    
     Mach          = np.atleast_2d(conditions.freestream.mach_number)  
+    ones_row      = np.ones_like(AoA)
      
     # loop through wings to determine what control surfaces are present  
     for wing in vehicle.wings: 
@@ -81,38 +77,38 @@ def evaluate_surrogate(state,settings,vehicle):
     # -----------------------------------------------------------------------------------------------------------------------
     # Query surrogates  
     # ----------------------------------------------------------------------------------------------------------------------- 
-    pts_alpha   = np.hstack((AoA*0.0,Mach))
-    pts_beta    = np.hstack((Beta*0.0,Mach))
+    pts_alpha_0   = np.hstack((AoA*0.0,Mach))
+    pts_beta    = np.hstack((Beta,Mach))
     # sup_CM        = np.atleast_2d(sup_sur.CM_alpha(pts_alpha)).T 
     # trans_CM      = np.atleast_2d(trans_sur.CM_alpha(pts_alpha)).T 
     # sub_CM        = np.atleast_2d(sub_sur.CM_alpha(pts_alpha)).T   
     # CM_0    = h_sub(Mach)*sub_CM    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CM     + h_sup(Mach)*sup_CM 
 
-    results_alpha = compute_coefficients(sub_sur.CY_beta, sub_sur.CL_beta,  sub_sur.CM_alpha,   sub_sur.CN_beta,
-                                         trans_sur.CY_beta,trans_sur.CL_beta,trans_sur.CM_alpha, trans_sur.CN_beta,
-                                         sup_sur.CY_beta,  sup_sur.CL_beta,  sup_sur.CM_alpha,   sup_sur.CN_beta,
-                                         h_sub,h_sup,Mach, pts_alpha)  
-    CM_0 = results_alpha.CM
+    results_alpha_0 = compute_coefficients(sub_sur.Clift_alpha,  sub_sur.Cdrag_alpha,  sub_sur.CX_alpha,  sub_sur.CY_alpha,  sub_sur.CZ_alpha,  sub_sur.CL_alpha,  sub_sur.CM_alpha,   sub_sur.CN_alpha,
+                                         trans_sur.Clift_alpha,trans_sur.Cdrag_alpha,trans_sur.CX_alpha,trans_sur.CY_alpha,trans_sur.CZ_alpha,trans_sur.CL_alpha,trans_sur.CM_alpha, trans_sur.CN_alpha,
+                                         sup_sur.Clift_alpha,  sup_sur.Cdrag_alpha,  sup_sur.CX_alpha,  sup_sur.CY_alpha,  sup_sur.CZ_alpha,  sup_sur.CL_alpha,  sup_sur.CM_alpha,   sup_sur.CN_alpha,
+                                         h_sub,h_sup,Mach, pts_alpha_0)     
+    CM_0 = results_alpha_0.CM
     
-    results_beta = compute_coefficients(sub_sur.CY_beta,  sub_sur.CL_beta,  sub_sur.CM_alpha,   sub_sur.CN_beta,
-                                         trans_sur.CY_beta,trans_sur.CL_beta,trans_sur.CM_alpha, trans_sur.CN_beta,
-                                          sup_sur.CY_beta,  sup_sur.CL_beta,  sup_sur.CM_alpha,   sup_sur.CN_beta,
-                                         h_sub,h_sup,Mach, pts_beta)  
+    results_beta_0 = compute_coefficients(sub_sur.Clift_beta,  sub_sur.Cdrag_beta,  sub_sur.CX_beta,  sub_sur.CY_beta,  sub_sur.CZ_beta,  sub_sur.CL_beta,  sub_sur.CM_beta,   sub_sur.CN_beta,
+                                         trans_sur.Clift_beta,trans_sur.Cdrag_beta,trans_sur.CX_beta,trans_sur.CY_beta,trans_sur.CZ_beta,trans_sur.CL_beta,trans_sur.CM_beta, trans_sur.CN_beta,
+                                         sup_sur.Clift_beta,  sup_sur.Cdrag_beta,  sup_sur.CX_beta,  sup_sur.CY_beta,  sup_sur.CZ_beta,  sup_sur.CL_beta,  sup_sur.CM_beta,   sup_sur.CN_beta,
+                                         h_sub,h_sup,Mach, pts_beta)
     
-    CL_0                      = results_beta.CL
-    CY_0                      = results_beta.CY
-    CN_0                      = results_beta.CN
+    CL_0                      = results_beta_0.CL
+    CY_0                      = results_beta_0.CY
+    CN_0                      = results_beta_0.CN
     
     pts_alpha   = np.hstack((AoA,Mach))
     
-    # Alpha 
-    #results_alpha = compute_coefficients(sub_sur.CX_alpha,  sub_sur.CY_alpha,  sub_sur.CZ_alpha,  sub_sur.CL_alpha,  sub_sur.CM_alpha,   sub_sur.CN_alpha,
-    #                                     trans_sur.CX_alpha,trans_sur.CY_alpha,trans_sur.CZ_alpha,trans_sur.CL_alpha,trans_sur.CM_alpha, trans_sur.CN_alpha,
-    #                                     sup_sur.CX_alpha,  sup_sur.CY_alpha,  sup_sur.CZ_alpha,  sup_sur.CL_alpha,  sup_sur.CM_alpha,   sup_sur.CN_alpha,
-    #                                     h_sub,h_sup,Mach, pts_alpha)        
+    #Alpha 
+    results_alpha = compute_coefficients(sub_sur.Clift_alpha,  sub_sur.Cdrag_alpha,  sub_sur.CX_alpha,  sub_sur.CY_alpha,  sub_sur.CZ_alpha,  sub_sur.CL_alpha,  sub_sur.CM_alpha,   sub_sur.CN_alpha,
+                                         trans_sur.Clift_alpha,trans_sur.Cdrag_alpha,trans_sur.CX_alpha,trans_sur.CY_alpha,trans_sur.CZ_alpha,trans_sur.CL_alpha,trans_sur.CM_alpha, trans_sur.CN_alpha,
+                                         sup_sur.Clift_alpha,  sup_sur.Cdrag_alpha,  sup_sur.CX_alpha,  sup_sur.CY_alpha,  sup_sur.CZ_alpha,  sup_sur.CL_alpha,  sup_sur.CM_alpha,   sup_sur.CN_alpha,
+                                         h_sub,h_sup,Mach, pts_alpha)      
 
-    #Clift_alpha             = results_alpha.Clift   
-    #Cdrag_alpha             = results_alpha.Cdrag 
+    Clift_alpha             = results_alpha.Clift   
+    Cdrag_alpha             = results_alpha.Cdrag 
     
     
     if aerodynamics.stability_derivatives.dCX_dalpha ==None: # If not user defined than compute. 
@@ -128,72 +124,72 @@ def evaluate_surrogate(state,settings,vehicle):
     if aerodynamics.stability_derivatives.dCM_dalpha ==None:
         conditions.static_stability.derivatives.CM_alpha    = compute_stability_derivative(sub_sur.dCM_dalpha    ,trans_sur.dCM_dalpha    ,sup_sur.dCM_dalpha    ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CM_alpha    = aerodynamics.stability_derivatives.dCM_dalpha*ones_row(1)
+        conditions.static_stability.derivatives.CM_alpha    = aerodynamics.stability_derivatives.dCM_dalpha*ones_row
     
     if aerodynamics.stability_derivatives.dCY_dbeta ==None:
         conditions.static_stability.derivatives.CY_beta     = compute_stability_derivative(sub_sur.dCY_dbeta     ,trans_sur.dCY_dbeta     ,sup_sur.dCY_dbeta     ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CY_beta     = aerodynamics.stability_derivatives.dCY_dbeta*ones_row(1)
+        conditions.static_stability.derivatives.CY_beta     = aerodynamics.stability_derivatives.dCY_dbeta*ones_row
     
     if aerodynamics.stability_derivatives.dCL_dbeta ==None:
         conditions.static_stability.derivatives.CL_beta     = compute_stability_derivative(sub_sur.dCL_dbeta     ,trans_sur.dCL_dbeta     ,sup_sur.dCL_dbeta     ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CL_beta     = aerodynamics.stability_derivatives.dCL_dbeta*ones_row(1)
+        conditions.static_stability.derivatives.CL_beta     = aerodynamics.stability_derivatives.dCL_dbeta*ones_row
     
     if aerodynamics.stability_derivatives.dCN_dbeta ==None:
         conditions.static_stability.derivatives.CN_beta     = compute_stability_derivative(sub_sur.dCN_dbeta     ,trans_sur.dCN_dbeta     ,sup_sur.dCN_dbeta     ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CN_beta     = aerodynamics.stability_derivatives.dCN_dbeta*ones_row(1)
+        conditions.static_stability.derivatives.CN_beta     = aerodynamics.stability_derivatives.dCN_dbeta*ones_row
 
     if aerodynamics.stability_derivatives.dCX_du ==None:
         conditions.static_stability.derivatives.CX_u        = compute_stability_derivative(sub_sur.dCX_du        ,trans_sur.dCX_du        ,sup_sur.dCX_du        ,h_sub,h_sup,Mach)   
     else:
-        conditions.static_stability.derivatives.CX_u        = aerodynamics.stability_derivatives.dCX_du*ones_row(1)
+        conditions.static_stability.derivatives.CX_u        = aerodynamics.stability_derivatives.dCX_du*ones_row
     
     if aerodynamics.stability_derivatives.dCZ_du ==None:
         conditions.static_stability.derivatives.CZ_u        = compute_stability_derivative(sub_sur.dCZ_du        ,trans_sur.dCZ_du        ,sup_sur.dCZ_du        ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CZ_u        = aerodynamics.stability_derivatives.dCZ_du*ones_row(1)
+        conditions.static_stability.derivatives.CZ_u        = aerodynamics.stability_derivatives.dCZ_du*ones_row
     
     if aerodynamics.stability_derivatives.dCM_du ==None:
         conditions.static_stability.derivatives.CM_u        = compute_stability_derivative(sub_sur.dCM_du        ,trans_sur.dCM_du        ,sup_sur.dCM_du        ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CM_u        = aerodynamics.stability_derivatives.dCM_du*ones_row(1)
+        conditions.static_stability.derivatives.CM_u        = aerodynamics.stability_derivatives.dCM_du*ones_row
     
     if aerodynamics.stability_derivatives.dCY_dr ==None:
         conditions.static_stability.derivatives.CY_r        = compute_stability_derivative(sub_sur.dCY_dr        ,trans_sur.dCY_dr        ,sup_sur.dCY_dr        ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CY_r        = aerodynamics.stability_derivatives.dCY_dr*ones_row(1)
+        conditions.static_stability.derivatives.CY_r        = aerodynamics.stability_derivatives.dCY_dr*ones_row
     
     if aerodynamics.stability_derivatives.dCZ_dq ==None:
         conditions.static_stability.derivatives.CZ_q        = compute_stability_derivative(sub_sur.dCZ_dq        ,trans_sur.dCZ_dq        ,sup_sur.dCZ_dq        ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CZ_q        = aerodynamics.stability_derivatives.dCZ_dq*ones_row(1)
+        conditions.static_stability.derivatives.CZ_q        = aerodynamics.stability_derivatives.dCZ_dq*ones_row
     
     if aerodynamics.stability_derivatives.dCL_dp ==None:
         conditions.static_stability.derivatives.CL_p        = compute_stability_derivative(sub_sur.dCL_dp        ,trans_sur.dCL_dp        ,sup_sur.dCL_dp        ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CL_p        = aerodynamics.stability_derivatives.dCL_dp*ones_row(1)
+        conditions.static_stability.derivatives.CL_p        = aerodynamics.stability_derivatives.dCL_dp*ones_row
     
     if aerodynamics.stability_derivatives.dCL_dr ==None:
         conditions.static_stability.derivatives.CL_r        = compute_stability_derivative(sub_sur.dCL_dr        ,trans_sur.dCL_dr        ,sup_sur.dCL_dr        ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CL_r        = aerodynamics.stability_derivatives.dCL_dr*ones_row(1)
+        conditions.static_stability.derivatives.CL_r        = aerodynamics.stability_derivatives.dCL_dr*ones_row
     
     if aerodynamics.stability_derivatives.dCM_dq ==None:
         conditions.static_stability.derivatives.CM_q        = compute_stability_derivative(sub_sur.dCM_dq        ,trans_sur.dCM_dq        ,sup_sur.dCM_dq        ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CM_q        = aerodynamics.stability_derivatives.dCM_dq*ones_row(1)
+        conditions.static_stability.derivatives.CM_q        = aerodynamics.stability_derivatives.dCM_dq*ones_row
     
     if aerodynamics.stability_derivatives.dCN_dp ==None:
         conditions.static_stability.derivatives.CN_p        = compute_stability_derivative(sub_sur.dCN_dp        ,trans_sur.dCN_dp        ,sup_sur.dCN_dp        ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CN_p        = aerodynamics.stability_derivatives.dCN_dp*ones_row(1)
+        conditions.static_stability.derivatives.CN_p        = aerodynamics.stability_derivatives.dCN_dp*ones_row
     
     if aerodynamics.stability_derivatives.dCN_dr ==None:
         conditions.static_stability.derivatives.CN_r        = compute_stability_derivative(sub_sur.dCN_dr        ,trans_sur.dCN_dr        ,sup_sur.dCN_dr        ,h_sub,h_sup,Mach)
     else:
-        conditions.static_stability.derivatives.CN_r        = aerodynamics.stability_derivatives.dCN_dr*ones_row(1)
+        conditions.static_stability.derivatives.CN_r        = aerodynamics.stability_derivatives.dCN_dr*ones_row
 
     # -----------------------------------------------------------------------------------------------------------------------
     # Stability Results Without Control Surfaces 
@@ -205,8 +201,8 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.Y_ref  = ref_vals.Y_ref
     conditions.Z_ref  = ref_vals.Z_ref 
      
-    #conditions.static_stability.coefficients.lift   = Clift_alpha
-    #conditions.static_stability.coefficients.drag   = Cdrag_alpha
+    conditions.static_stability.coefficients.lift   = Clift_alpha
+    conditions.static_stability.coefficients.drag   = Cdrag_alpha
     conditions.static_stability.coefficients.Y      = CY_0 + conditions.static_stability.derivatives.CY_beta * Beta
     conditions.static_stability.coefficients.L      = CL_0 + conditions.static_stability.derivatives.CL_beta * Beta
     conditions.static_stability.coefficients.M      = CM_0 + conditions.static_stability.derivatives.CM_alpha * AoA
@@ -246,7 +242,7 @@ def evaluate_surrogate(state,settings,vehicle):
         else:
             conditions.static_stability.derivatives.CM_delta_e = aerodynamics.stability_derivatives.CM_delta_e
         
-        CM_delta_e      = conditions.static_stability.derivatives.CM_delta_e * conditions.control_surfaces.elevator.deflection[:, 0]       
+        CM_delta_e  = conditions.static_stability.derivatives.CM_delta_e * conditions.control_surfaces.elevator.deflection       
         CM_delta_e[conditions.control_surfaces.elevator.deflection==0.0]    = 0 
         
         conditions.static_stability.coefficients.M                                   += CM_delta_e
@@ -268,9 +264,9 @@ def evaluate_surrogate(state,settings,vehicle):
         else:
             conditions.static_stability.derivatives.CN_delta_r = aerodynamics.stability_derivatives.CN_delta_r
               
-        CY_delta_r      =conditions.static_stability.derivatives.CY_delta_r * conditions.control_surfaces.rudder.deflection[:, 0]        
-        CL_delta_r      =conditions.static_stability.derivatives.CL_delta_r * conditions.control_surfaces.rudder.deflection[:, 0]      
-        CN_delta_r      =conditions.static_stability.derivatives.CN_delta_r * conditions.control_surfaces.rudder.deflection[:, 0] 
+        CY_delta_r      =conditions.static_stability.derivatives.CY_delta_r * conditions.control_surfaces.rudder.deflection        
+        CL_delta_r      =conditions.static_stability.derivatives.CL_delta_r * conditions.control_surfaces.rudder.deflection      
+        CN_delta_r      =conditions.static_stability.derivatives.CN_delta_r * conditions.control_surfaces.rudder.deflection 
         CY_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
         CL_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
         CN_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0
@@ -289,7 +285,7 @@ def evaluate_surrogate(state,settings,vehicle):
         else:
             conditions.static_stability.derivatives.CM_delta_f = aerodynamics.stability_derivatives.CM_delta_f
         
-        CM_delta_f      = conditions.static_stability.derivatives.CM_delta_f * conditions.control_surfaces.flap.deflection[:, 0]    
+        CM_delta_f      = conditions.static_stability.derivatives.CM_delta_f * conditions.control_surfaces.flap.deflection    
         CM_delta_f[conditions.control_surfaces.flap.deflection==0.0]    = 0        
         conditions.static_stability.coefficients.M                                   += CM_delta_f
         conditions.control_surfaces.flap.static_stability.coefficients.M             = CM_delta_f          
@@ -1117,25 +1113,28 @@ def compute_stability_derivative(sub_sur,trans_sur,sup_sur,h_sub,h_sup,Mach):
 
 
 
-def compute_coefficients(sub_sur_CY,sub_sur_CL,sub_sur_CM,sub_sur_CN,
-                         trans_sur_CY,trans_sur_CL,trans_sur_CM,trans_sur_CN,
-                         sup_sur_CY,sup_sur_CL,sup_sur_CM,sup_sur_CN,
+def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_sur_CZ,sub_sur_CL,sub_sur_CM,sub_sur_CN,
+                         trans_sur_Clift,trans_sur_Cdrag,trans_sur_CX,trans_sur_CY,trans_sur_CZ,trans_sur_CL,trans_sur_CM,trans_sur_CN,
+                         sup_sur_Clift,sup_sur_Cdrag,sup_sur_CX,sup_sur_CY,sup_sur_CZ,sup_sur_CL,sup_sur_CM,sup_sur_CN,
                          h_sub,h_sup,Mach, pts): 
+    
 
      #  subsonic 
-    #sub_Clift     = np.atleast_2d(sub_sur_Clift(pts)).T  
-    #sub_Cdrag     = np.atleast_2d(sub_sur_Cdrag(pts)).T  
+    sub_Clift     = np.atleast_2d(sub_sur_Clift(pts)).T  
+    sub_Cdrag     = np.atleast_2d(sub_sur_Cdrag(pts)).T  
+    sub_CX        = np.atleast_2d(sub_sur_CX(pts)).T 
     sub_CY        = np.atleast_2d(sub_sur_CY(pts)).T     
+    sub_CZ        = np.atleast_2d(sub_sur_CZ(pts)).T     
     sub_CL        = np.atleast_2d(sub_sur_CL(pts)).T     
     sub_CM        = np.atleast_2d(sub_sur_CM(pts)).T     
     sub_CN        = np.atleast_2d(sub_sur_CN(pts)).T
     
     
-    if trans_sur_CY ==  None and  sup_sur_CY == None:
+    if trans_sur_Clift ==  None and  sup_sur_Clift == None:
     
         results       = Data() 
-        #results.Clift = h_sub(Mach) 
-        #results.Cdrag = h_sub(Mach) 
+        results.Clift = h_sub(Mach) 
+        results.Cdrag = h_sub(Mach) 
         results.CX    = h_sub(Mach) 
         results.CY    = h_sub(Mach) 
         results.CZ    = h_sub(Mach) 
@@ -1147,26 +1146,32 @@ def compute_coefficients(sub_sur_CY,sub_sur_CL,sub_sur_CM,sub_sur_CN,
    
     
     # transonic   
-    #trans_Clift   = np.atleast_2d(trans_sur_Clift(pts)).T  
-    #trans_Cdrag   = np.atleast_2d(trans_sur_Cdrag(pts)).T 
-    trans_CY      = np.atleast_2d(trans_sur_CY(pts)).T        
+    trans_Clift   = np.atleast_2d(trans_sur_Clift(pts)).T  
+    trans_Cdrag   = np.atleast_2d(trans_sur_Cdrag(pts)).T  
+    trans_CX      = np.atleast_2d(trans_sur_CX(pts)).T 
+    trans_CY      = np.atleast_2d(trans_sur_CY(pts)).T     
+    trans_CZ      = np.atleast_2d(trans_sur_CZ(pts)).T     
     trans_CL      = np.atleast_2d(trans_sur_CL(pts)).T     
     trans_CM      = np.atleast_2d(trans_sur_CM(pts)).T     
     trans_CN      = np.atleast_2d(trans_sur_CN(pts)).T
 
     # supersonic 
-    #sup_Clift     = np.atleast_2d(sup_sur_Clift(pts)).T  
-    #sup_Cdrag     = np.atleast_2d(sup_sur_Cdrag(pts)).T 
-    sup_CY        = np.atleast_2d(sup_sur_CY(pts)).T      
+    sup_Clift     = np.atleast_2d(sup_sur_Clift(pts)).T  
+    sup_Cdrag     = np.atleast_2d(sup_sur_Cdrag(pts)).T  
+    sup_CX        = np.atleast_2d(sup_sur_CX(pts)).T 
+    sup_CY        = np.atleast_2d(sup_sur_CY(pts)).T     
+    sup_CZ        = np.atleast_2d(sup_sur_CZ(pts)).T     
     sup_CL        = np.atleast_2d(sup_sur_CL(pts)).T     
     sup_CM        = np.atleast_2d(sup_sur_CM(pts)).T     
     sup_CN        = np.atleast_2d(sup_sur_CN(pts)).T            
 
     # apply 
     results       = Data() 
-    #results.Clift = h_sub(Mach)*sub_Clift + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_Clift  + h_sup(Mach)*sup_Clift
-    #results.Cdrag = h_sub(Mach)*sub_Cdrag + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_Cdrag  + h_sup(Mach)*sup_Cdrag
+    results.Clift = h_sub(Mach)*sub_Clift + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_Clift  + h_sup(Mach)*sup_Clift
+    results.Cdrag = h_sub(Mach)*sub_Cdrag + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_Cdrag  + h_sup(Mach)*sup_Cdrag
+    results.CX    = h_sub(Mach)*sub_CX    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CX     + h_sup(Mach)*sup_CX   
     results.CY    = h_sub(Mach)*sub_CY    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CY     + h_sup(Mach)*sup_CY   
+    results.CZ    = h_sub(Mach)*sub_CZ    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CZ     + h_sup(Mach)*sup_CZ   
     results.CL    = h_sub(Mach)*sub_CL    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CL     + h_sup(Mach)*sup_CL   
     results.CM    = h_sub(Mach)*sub_CM    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CM     + h_sup(Mach)*sup_CM   
     results.CN    = h_sub(Mach)*sub_CN    + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_CN     + h_sup(Mach)*sup_CN
