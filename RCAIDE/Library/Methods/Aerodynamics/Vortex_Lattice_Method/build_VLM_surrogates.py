@@ -95,45 +95,52 @@ def build_surrogate(aerodynamics, training):
 
 
 # Use interpolat.interp1d below
-    surrogates.dCX_dalpha       = RegularGridInterpolator((AoA_data ,mach_data),training.dCX_dalpha       ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.dCX_du           = RegularGridInterpolator((u_data ,mach_data),training.dCX_du           ,method = 'linear',   bounds_error=False, fill_value=None)      
+    surrogates.dCX_dalpha       = interpolate.interp1d(mach_data, training.dCX_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
+    surrogates.dCX_du           = interpolate.interp1d(mach_data, training.dCX_du, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
-    surrogates.dCY_dbeta        = RegularGridInterpolator((Beta_data ,mach_data),training.dCY_dbeta        ,method = 'linear',   bounds_error=False, fill_value=None)  
-    surrogates.dCY_dr           = RegularGridInterpolator((r_data ,mach_data),training.dCY_dr           ,method = 'linear',   bounds_error=False, fill_value=None)      
+    surrogates.dCY_dbeta        = interpolate.interp1d(mach_data,training.dCY_dbeta, kind='linear', bounds_error=False, fill_value='extrapolate')  
+    surrogates.dCY_dr           = interpolate.interp1d(mach_data,training.dCY_dr, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
-    surrogates.dCZ_dalpha       = RegularGridInterpolator((AoA_data ,mach_data),training.dCZ_dalpha       ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.dCZ_du           = RegularGridInterpolator((u_data ,mach_data),training.dCZ_du           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.dCZ_dq           = RegularGridInterpolator((q_data ,mach_data),training.dCZ_dq           ,method = 'linear',   bounds_error=False, fill_value=None)      
+    surrogates.dCZ_dalpha       = interpolate.interp1d(mach_data,training.dCZ_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
+    surrogates.dCZ_du           = interpolate.interp1d(mach_data,training.dCZ_du, kind='linear', bounds_error=False, fill_value='extrapolate')      
+    surrogates.dCZ_dq           = interpolate.interp1d(mach_data,training.dCZ_dq, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
-    surrogates.dCL_dbeta        = RegularGridInterpolator((Beta_data ,mach_data),training.dCL_dbeta        ,method = 'linear',   bounds_error=False, fill_value=None)  
-    surrogates.dCL_dp           = RegularGridInterpolator((p_data ,mach_data),training.dCL_dp           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.dCL_dr           = RegularGridInterpolator((r_data ,mach_data),training.dCL_dr           ,method = 'linear',   bounds_error=False, fill_value=None)      
+    surrogates.dCL_dbeta        = interpolate.interp1d(mach_data,training.dCL_dbeta, kind='linear', bounds_error=False, fill_value='extrapolate')  
+    surrogates.dCL_dp           = interpolate.interp1d(mach_data,training.dCL_dp, kind='linear', bounds_error=False, fill_value='extrapolate')      
+    surrogates.dCL_dr           = interpolate.interp1d(mach_data,training.dCL_dr, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
-    surrogates.dCM_dalpha       = RegularGridInterpolator((AoA_data ,mach_data),training.dCM_dalpha       ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.dCM_du           = RegularGridInterpolator((u_data ,mach_data),training.dCM_du           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.dCM_dq           = RegularGridInterpolator((q_data ,mach_data),training.dCM_dq           ,method = 'linear',   bounds_error=False, fill_value=None)      
+    surrogates.dCM_dalpha       = interpolate.interp1d(mach_data,training.dCM_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
+    surrogates.dCM_du           = interpolate.interp1d(mach_data,training.dCM_du, kind='linear', bounds_error=False, fill_value='extrapolate')      
+    surrogates.dCM_dq           = interpolate.interp1d(mach_data,training.dCM_dq, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
-    surrogates.dCN_dbeta        = RegularGridInterpolator((Beta_data ,mach_data),training.dCN_dbeta        ,method = 'linear',   bounds_error=False, fill_value=None)  
-    surrogates.dCN_dp           = RegularGridInterpolator((p_data ,mach_data),training.dCN_dp           ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.dCN_dr           = RegularGridInterpolator((r_data ,mach_data),training.dCN_dr           ,method = 'linear',   bounds_error=False, fill_value=None)
+    surrogates.dCN_dbeta        = interpolate.interp1d(mach_data,training.dCN_dbeta, kind='linear', bounds_error=False, fill_value='extrapolate')  
+    surrogates.dCN_dp           = interpolate.interp1d(mach_data,training.dCN_dp, kind='linear', bounds_error=False, fill_value='extrapolate')      
+    surrogates.dCN_dr           = interpolate.interp1d(mach_data,training.dCN_dr, kind='linear', bounds_error=False, fill_value='extrapolate')      
    
 
     if aerodynamics.aileron_flag: 
-        surrogates.dCY_ddelta_a     = RegularGridInterpolator((aileron_data ,mach_data),training.dCY_ddelta_a        , method = 'linear',   bounds_error=False, fill_value=None)  
-        surrogates.dCL_ddelta_a     = RegularGridInterpolator((aileron_data ,mach_data),training.dCL_ddelta_a        , method = 'linear',   bounds_error=False, fill_value=None) 
-        surrogates.dCN_ddelta_a     = RegularGridInterpolator((aileron_data ,mach_data),training.dCN_ddelta_a        , method = 'linear',   bounds_error=False, fill_value=None)             
+        surrogates.dCY_ddelta_a     = interpolate.interp1d(mach_data,training.dCY_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value='extrapolate')  
+        surrogates.dCL_ddelta_a     = interpolate.interp1d(mach_data,training.dCL_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
+        surrogates.dCN_ddelta_a     = interpolate.interp1d(mach_data,training.dCN_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value='extrapolate')             
     
     if aerodynamics.elevator_flag: 
-        surrogates.dCM_ddelta_e     = RegularGridInterpolator((elevator_data ,mach_data),training.dCM_ddelta_e     ,method = 'linear',   bounds_error=False, fill_value=None) 
+        surrogates.dCM_ddelta_e     = interpolate.interp1d(mach_data,training.dCM_ddelta_e     ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
         
     
     if aerodynamics.rudder_flag: 
-        surrogates.dCY_ddelta_r     = RegularGridInterpolator((rudder_data ,mach_data),training.dCY_ddelta_r       ,method = 'linear',   bounds_error=False, fill_value=None)   
-        surrogates.dCL_ddelta_r     = RegularGridInterpolator((rudder_data ,mach_data),training.dCL_ddelta_r       ,method = 'linear',   bounds_error=False, fill_value=None)  
-        surrogates.dCN_ddelta_r     = RegularGridInterpolator((rudder_data ,mach_data),training.dCN_ddelta_r       ,method = 'linear',   bounds_error=False, fill_value=None)    
+        surrogates.dCY_ddelta_r     = interpolate.interp1d(mach_data,training.dCY_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')   
+        surrogates.dCN_ddelta_r     = interpolate.interp1d(mach_data,training.dCN_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')    
     
     if aerodynamics.flap_flag:
-        surrogates.dCM_ddelta_f     = RegularGridInterpolator((flap_data ,mach_data),training.dCM_ddelta_f     ,method = 'linear',   bounds_error=False, fill_value=None) 
+        surrogates.dCM_ddelta_f     = interpolate.interp1d(mach_data,training.dCM_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
+    
+    if aerodynamics.slat_flag: 
+        surrogates.dCY_ddelta_s     = interpolate.interp1d(mach_data,training.dCY_ddelta_s       ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')   
+        surrogates.dCL_ddelta_s     = interpolate.interp1d(mach_data,training.dCL_ddelta_s       ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')  
+        surrogates.dCN_ddelta_s     = interpolate.interp1d(mach_data,training.dCN_ddelta_s       ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')             
+    
+    if aerodynamics.flap_flag:
+        surrogates.dCM_ddelta_f     = interpolate.interp1d(mach_data,training.dCM_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
     
     return surrogates
  
