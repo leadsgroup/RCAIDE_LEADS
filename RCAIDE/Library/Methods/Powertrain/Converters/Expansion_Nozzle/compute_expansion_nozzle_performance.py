@@ -146,10 +146,11 @@ def compute_expansion_nozzle_performance(expansion_nozzle, conditions):
     ht_out   = Cp*Tt_out
     
     # A cap so pressure doesn't go negative
+    sup =  Pt_out<P0
     Pt_out[Pt_out<P0] = P0[Pt_out<P0]
     
     # Compute the output Mach number, static quantities and the output velocity
-    Mach          = np.sqrt((((P0/Pt_out)**((gamma-1)/gamma))-1)*2/(gamma-1)) 
+    Mach          = np.sqrt((((Pt_out/P0)**((gamma-1)/gamma))-1)*2/(gamma-1)) 
     
     #initializing the Pout array
     P_out         = np.ones_like(Mach)
@@ -157,17 +158,12 @@ def compute_expansion_nozzle_performance(expansion_nozzle, conditions):
     # Computing output pressure and Mach number for the case Mach <1.0
     i_low         = Mach < 1.0
     P_out[i_low]  = P0[i_low]
-    Mach[i_low]   = np.sqrt((((P0[i_low]/Pt_out[i_low])**((gamma[i_low]-1.)/gamma[i_low]))-1.)*2./(gamma[i_low]-1.))
+    Mach[i_low]   = np.sqrt((((Pt_out[i_low]/P0[i_low])**((gamma[i_low]-1.)/gamma[i_low]))-1.)*2./(gamma[i_low]-1.))
     
-    # Computing output pressure and Mach number for the case Mach >=1.0     
-    i_high        = Mach >=1.0   
-    Mach[i_high]  = Mach[i_high]/Mach[i_high]
-    P_out[i_high] = Pt_out[i_high]/(1.+(gamma[i_high]-1.)/2.*Mach[i_high]*Mach[i_high])**(gamma[i_high]/(gamma[i_high]-1.))
-    
-    # A cap to make sure Mach doesn't go to zero:
-    if np.any(Mach<=0.0):
-        warn('Pressures Result in Negative Mach Number, making positive',RuntimeWarning)
-        Mach[Mach<=0.0] = 0.001
+    # Computing output pressure and Mach number for the case Mach >=1.0 
+    Mach[sup]  = np.sqrt((((Pt_out[sup]/P0[sup])**((gamma[sup]-1)/gamma[sup]))-1)*2/(gamma[sup]-1)) 
+    Mach[sup]  = Mach[sup]/Mach[sup]
+    P_out[sup] = Pt_out[sup]/(1.+((gamma[sup]-1.)/2.)*Mach[sup]**2)**(gamma[sup]/(gamma[sup]-1.)) 
     
     # Compute the output temperature,enthalpy,velocity and density
     T_out         = Tt_out/(1+(gamma-1)/2*Mach*Mach)

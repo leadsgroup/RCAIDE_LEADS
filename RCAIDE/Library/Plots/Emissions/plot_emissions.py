@@ -131,15 +131,28 @@ def plot_emissions(results,
         axis_1.fill_between(time, cum_y0, cum_y1, where=(cum_y0 < cum_y1), color= line_colors[i],  interpolate=True, label = segment_name)   
         cum_y1_0 = cum_y1[-1]  
         axis_1.set_ylabel(r'CO2e Emissions (kg)') 
+        axis_1.set_xlabel(r'Time (mins)') 
         set_axes(axis_1)
          
         axis_2 = plt.subplot(1,2,2)
-        axis_2.plot(time, EI_CO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO_2$") 
-        axis_2.plot(time, EI_CO , color = line_colors[i], marker = ps.markers[1],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO$" ) 
-        axis_2.plot(time, EI_NOx, color = line_colors[i], marker = ps.markers[2],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$NO_x$") 
-        axis_2.plot(time, EI_H2O, color = line_colors[i], marker = ps.markers[3],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$H_2O$") 
-        axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$SO_2$")    
-        
+        if i == 0: 
+            axis_2.plot(time, EI_CO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO_2$") 
+            axis_2.plot(time, EI_CO , color = line_colors[i], marker = ps.markers[1],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO$" ) 
+            axis_2.plot(time, EI_NOx, color = line_colors[i], marker = ps.markers[2],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$NO_x$") 
+            axis_2.plot(time, EI_H2O, color = line_colors[i], marker = ps.markers[3],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$H_2O$") 
+            axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$SO_2$")
+        else:
+
+            axis_2.plot(time, EI_CO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width) 
+            axis_2.plot(time, EI_CO , color = line_colors[i], marker = ps.markers[1],markersize = ps.marker_size, linewidth = ps.line_width)
+            axis_2.plot(time, EI_NOx, color = line_colors[i], marker = ps.markers[2],markersize = ps.marker_size, linewidth = ps.line_width) 
+            axis_2.plot(time, EI_H2O, color = line_colors[i], marker = ps.markers[3],markersize = ps.marker_size, linewidth = ps.line_width) 
+            axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width)             
+    
+        axis_2.set_ylabel(r'Emissions Index') 
+        axis_2.set_xlabel(r'Time (mins)') 
+        set_axes(axis_2)
+                
     if show_legend:
         leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
         leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})    
