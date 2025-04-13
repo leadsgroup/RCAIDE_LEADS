@@ -21,7 +21,7 @@ def plot_emissions(results,
                              show_legend = True,
                              save_filename = "CO2e_Emissions" ,
                              file_type = ".png",
-                             width = 11, height = 7):
+                             width = 11, height = 6):
     """
     Generate plots showing CO2-equivalent emissions over mission segments.
 
@@ -109,13 +109,13 @@ def plot_emissions(results,
     
     for i in range(len(results.segments)): 
         time                = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min 
-        emissions_CO2       = results.segments[i].conditions.emissions.total.CO2[:, 0]  
-        emissions_CO        = results.segments[i].conditions.emissions.total.CO[:, 0]  
-        emissions_NOx       = results.segments[i].conditions.emissions.total.NOx[:, 0] 
-        emissions_H2O       = results.segments[i].conditions.emissions.total.H2O[:, 0] 
-        emissions_SO2       = results.segments[i].conditions.emissions.total.SO2[:, 0] 
-        emissions_Contrails = results.segments[i].conditions.emissions.total.Contrails[:, 0]
-        emissions_Soot      = results.segments[i].conditions.emissions.total.Soot[:, 0]
+        emissions_CO2       = results.segments[i].conditions.emissions.total.CO2[:, 0] /1E9  
+        emissions_CO        = results.segments[i].conditions.emissions.total.CO[:, 0]  /1E9  
+        emissions_NOx       = results.segments[i].conditions.emissions.total.NOx[:, 0] /1E9  
+        emissions_H2O       = results.segments[i].conditions.emissions.total.H2O[:, 0] /1E9  
+        emissions_SO2       = results.segments[i].conditions.emissions.total.SO2[:, 0] /1E9  
+        emissions_Contrails = results.segments[i].conditions.emissions.total.Contrails[:, 0]/1E9  
+        emissions_Soot      = results.segments[i].conditions.emissions.total.Soot[:, 0]/1E9  
         EI_CO2              = results.segments[i].conditions.emissions.index.CO2[:, 0] 
         EI_CO               = results.segments[i].conditions.emissions.index.CO[:, 0] 
         EI_NOx              = results.segments[i].conditions.emissions.index.NOx[:, 0] 
@@ -130,7 +130,7 @@ def plot_emissions(results,
         axis_1 = plt.subplot(1,2,1)    
         axis_1.fill_between(time, cum_y0, cum_y1, where=(cum_y0 < cum_y1), color= line_colors[i],  interpolate=True, label = segment_name)   
         cum_y1_0 = cum_y1[-1]  
-        axis_1.set_ylabel(r'CO2e Emissions (kg)') 
+        axis_1.set_ylabel(r'CO2e Emissions (Metatonnes)') 
         axis_1.set_xlabel(r'Time (mins)') 
         set_axes(axis_1)
          
@@ -143,26 +143,31 @@ def plot_emissions(results,
             axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$SO_2$")
         else:
 
-            axis_2.plot(time, EI_CO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width) 
-            axis_2.plot(time, EI_CO , color = line_colors[i], marker = ps.markers[1],markersize = ps.marker_size, linewidth = ps.line_width)
-            axis_2.plot(time, EI_NOx, color = line_colors[i], marker = ps.markers[2],markersize = ps.marker_size, linewidth = ps.line_width) 
-            axis_2.plot(time, EI_H2O, color = line_colors[i], marker = ps.markers[3],markersize = ps.marker_size, linewidth = ps.line_width) 
-            axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width)             
+            axis_2.semilogy(time, EI_CO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width) 
+            axis_2.semilogy(time, EI_CO , color = line_colors[i], marker = ps.markers[1],markersize = ps.marker_size, linewidth = ps.line_width)
+            axis_2.semilogy(time, EI_NOx, color = line_colors[i], marker = ps.markers[2],markersize = ps.marker_size, linewidth = ps.line_width) 
+            axis_2.semilogy(time, EI_H2O, color = line_colors[i], marker = ps.markers[3],markersize = ps.marker_size, linewidth = ps.line_width) 
+            axis_2.semilogy(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width)             
     
         axis_2.set_ylabel(r'Emissions Index') 
         axis_2.set_xlabel(r'Time (mins)') 
-        set_axes(axis_2)
+        axis_2.minorticks_on()
+        axis_2.grid(which='major', linestyle='-', linewidth=0.5, color='grey')
+        axis_2.grid(which='minor', linestyle=':', linewidth=0.5, color='grey')
+        axis_2.grid(True)         
                 
     if show_legend:
-        leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
+        leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 6) 
         leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})    
     
     # Adjusting the sub-plots for legend 
-    fig.subplots_adjust(top=0.8)
     
     # set title of plot 
-    title_text    = 'CO2e Emissions'      
+    title_text    = 'CO2e Emissions'     
+    fig.tight_layout() 
     fig.suptitle(title_text)
+    
+    fig.subplots_adjust(top=0.8)
     
     if save_figure:
         plt.savefig(save_filename + file_type)   
