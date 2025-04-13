@@ -34,7 +34,7 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
        b) Static (observer on ground)
        c) In-flight or in-flow (observer on airplane or in a wind tunnel)
 
-    Assumptions: 
+    Reference: 
        [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
        [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
 

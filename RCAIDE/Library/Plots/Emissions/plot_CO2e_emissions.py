@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Emissions/plot_CO2e_emissions
+# RCAIDE/Library/Plots/Emissions/plot_emissions
 # 
 # 
 # Created:  Jul 2024, M. Clarke
@@ -16,7 +16,7 @@ import numpy as np
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------   
 ## @ingroup Library-Plots-Performance-Emissions 
-def plot_CO2e_emissions(results,
+def plot_emissions(results,
                              save_figure = False,
                              show_legend = True,
                              save_filename = "CO2e_Emissions" ,
@@ -99,8 +99,7 @@ def plot_CO2e_emissions(results,
     plt.rcParams.update(parameters)
       
     fig   = plt.figure(save_filename)
-    fig.set_size_inches(width,height) 
-    axis_1 = plt.subplot(1,1,1)
+    fig.set_size_inches(width,height)  
 
     line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))
     
@@ -111,22 +110,36 @@ def plot_CO2e_emissions(results,
     for i in range(len(results.segments)): 
         time                = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min 
         emissions_CO2       = results.segments[i].conditions.emissions.total.CO2[:, 0]  
+        emissions_CO        = results.segments[i].conditions.emissions.total.CO[:, 0]  
         emissions_NOx       = results.segments[i].conditions.emissions.total.NOx[:, 0] 
         emissions_H2O       = results.segments[i].conditions.emissions.total.H2O[:, 0] 
+        emissions_SO2       = results.segments[i].conditions.emissions.total.SO2[:, 0] 
         emissions_Contrails = results.segments[i].conditions.emissions.total.Contrails[:, 0]
         emissions_Soot      = results.segments[i].conditions.emissions.total.Soot[:, 0]
-        emissions_SO2       = results.segments[i].conditions.emissions.total.SO2[:, 0]  
+        EI_CO2              = results.segments[i].conditions.emissions.index.CO2[:, 0] 
+        EI_CO               = results.segments[i].conditions.emissions.index.CO[:, 0] 
+        EI_NOx              = results.segments[i].conditions.emissions.index.NOx[:, 0] 
+        EI_H2O              = results.segments[i].conditions.emissions.index.H2O[:, 0] 
+        EI_SO2              = results.segments[i].conditions.emissions.index.SO2[:, 0]       
+        EI_Contrails        = results.segments[i].conditions.emissions.index.Contrails[:, 0]    
 
         cum_y0 = np.zeros_like(emissions_CO2)  
-        cum_y1 = cum_y1_0 + emissions_CO2 +  emissions_NOx  + emissions_H2O  + emissions_Contrails +  emissions_Soot +  emissions_SO2    
+        cum_y1 = cum_y1_0 + emissions_CO2 + emissions_CO + emissions_NOx  + emissions_H2O  + emissions_Contrails +  emissions_Soot +  emissions_SO2    
 
         segment_tag  =  results.segments[i].tag
-        segment_name = segment_tag.replace('_', ' ')    
+        segment_name = segment_tag.replace('_', ' ') 
+        axis_1 = plt.subplot(1,2,1)    
         axis_1.fill_between(time, cum_y0, cum_y1, where=(cum_y0 < cum_y1), color= line_colors[i],  interpolate=True, label = segment_name)   
-        cum_y1_0 = cum_y1[-1] 
-                
+        cum_y1_0 = cum_y1[-1]  
         axis_1.set_ylabel(r'CO2e Emissions (kg)') 
         set_axes(axis_1)
+         
+        axis_2 = plt.subplot(1,2,2)
+        axis_2.plot(time, EI_CO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO_2$") 
+        axis_2.plot(time, EI_CO , color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO$" ) 
+        axis_2.plot(time, EI_NOx, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$NO_x$") 
+        axis_2.plot(time, EI_H2O, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$H_2O$") 
+        axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$SO_2$")    
         
     if show_legend:
         leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
