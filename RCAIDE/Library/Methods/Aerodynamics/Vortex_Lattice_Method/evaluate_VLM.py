@@ -1136,14 +1136,14 @@ def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_s
     if trans_sur_Clift ==  None and  sup_sur_Clift == None:
     
         results       = Data() 
-        results.Clift = h_sub(Mach) 
-        results.Cdrag = h_sub(Mach) 
-        results.CX    = h_sub(Mach) 
-        results.CY    = h_sub(Mach) 
-        results.CZ    = h_sub(Mach) 
-        results.CL    = h_sub(Mach) 
-        results.CM    = h_sub(Mach) 
-        results.CN    = h_sub(Mach) 
+        results.Clift = h_sub(Mach) * sub_Clift
+        results.Cdrag = h_sub(Mach) * sub_Cdrag
+        results.CX    = h_sub(Mach) * sub_CX   
+        results.CY    = h_sub(Mach) * sub_CY   
+        results.CZ    = h_sub(Mach) * sub_CZ   
+        results.CL    = h_sub(Mach) * sub_CL   
+        results.CM    = h_sub(Mach) * sub_CM   
+        results.CN    = h_sub(Mach) * sub_CN   
         
         return results
    
