@@ -168,16 +168,14 @@ def compute_expansion_nozzle_performance(expansion_nozzle, conditions):
     # Compute the output temperature,enthalpy,velocity and density
     T_out         = Tt_out/(1+(gamma-1)/2*Mach*Mach)
     h_out         = T_out * Cp
-    u_out         = np.sqrt(2*(ht_out-h_out))
-    #rho_out       = P_out/(R*T_out)
+    u_out         = np.sqrt(2*(ht_out-h_out)) 
     
     # Compute the freestream to nozzle area ratio  
     area_ratio    = (fm_id(M0,gamma)/fm_id(Mach,gamma)*(1/(Pt_out/Pt0))*(np.sqrt(Tt_out/Tt0)))
     
     #pack computed quantities into outputs
     nozzle_conditions.outputs.area_ratio              = area_ratio
-    nozzle_conditions.outputs.mach_number             = Mach
-    #nozzle_conditions.outputs.density                 = rho_out
+    nozzle_conditions.outputs.mach_number             = Mach 
     nozzle_conditions.outputs.velocity                = u_out
     nozzle_conditions.outputs.static_pressure         = P_out
     nozzle_conditions.outputs.static_temperature      = T_out

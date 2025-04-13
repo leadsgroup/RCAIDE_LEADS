@@ -1,6 +1,8 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Turbine/compute_turbine_performance.py
 # 
-# Created:  Jun 2024, M. Clarke    
+# Created:  Jun 2024, M. Clarke
+
+import numpy as  np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_turbine_performance
@@ -177,7 +179,9 @@ def compute_turbine_performance(turbine,conditions):
     pi_t      = Pt_out/Pt_in
     tau_t     = Tt_out/Tt_in
     T_out     = Tt_out/(1.+(gamma-1.)/2.*M0*M0)
-    P_out     = Pt_out/((1.+(gamma-1.)/2.*M0*M0)**(gamma/(gamma-1.)))         
+    P_out     = Pt_out/((1.+(gamma-1.)/2.*M0*M0)**(gamma/(gamma-1.)))   
+    h_out      = T_out * Cp
+    u_out     = np.sqrt(2*(ht_out-h_out))      
     
     # Pack outputs of turbine 
     turbine_conditions.outputs.stagnation_pressure     = Pt_out
@@ -185,6 +189,7 @@ def compute_turbine_performance(turbine,conditions):
     turbine_conditions.outputs.stagnation_enthalpy     = ht_out
     turbine_conditions.outputs.static_temperature      = T_out
     turbine_conditions.outputs.static_pressure         = P_out 
+    turbine_conditions.outputs.velocity                = u_out 
     turbine_conditions.outputs.mach_number             = M0 
     turbine_conditions.outputs.gas_constant            = R 
     turbine_conditions.outputs.pressure_ratio          = pi_t   
