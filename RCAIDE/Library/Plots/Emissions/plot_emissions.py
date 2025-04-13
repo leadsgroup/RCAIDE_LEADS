@@ -120,8 +120,7 @@ def plot_emissions(results,
         EI_CO               = results.segments[i].conditions.emissions.index.CO[:, 0] 
         EI_NOx              = results.segments[i].conditions.emissions.index.NOx[:, 0] 
         EI_H2O              = results.segments[i].conditions.emissions.index.H2O[:, 0] 
-        EI_SO2              = results.segments[i].conditions.emissions.index.SO2[:, 0]       
-        EI_Contrails        = results.segments[i].conditions.emissions.index.Contrails[:, 0]    
+        EI_SO2              = results.segments[i].conditions.emissions.index.SO2[:, 0]        
 
         cum_y0 = np.zeros_like(emissions_CO2)  
         cum_y1 = cum_y1_0 + emissions_CO2 + emissions_CO + emissions_NOx  + emissions_H2O  + emissions_Contrails +  emissions_Soot +  emissions_SO2    
@@ -136,10 +135,10 @@ def plot_emissions(results,
          
         axis_2 = plt.subplot(1,2,2)
         axis_2.plot(time, EI_CO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO_2$") 
-        axis_2.plot(time, EI_CO , color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO$" ) 
-        axis_2.plot(time, EI_NOx, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$NO_x$") 
-        axis_2.plot(time, EI_H2O, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$H_2O$") 
-        axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$SO_2$")    
+        axis_2.plot(time, EI_CO , color = line_colors[i], marker = ps.markers[1],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO$" ) 
+        axis_2.plot(time, EI_NOx, color = line_colors[i], marker = ps.markers[2],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$NO_x$") 
+        axis_2.plot(time, EI_H2O, color = line_colors[i], marker = ps.markers[3],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$H_2O$") 
+        axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$SO_2$")    
         
     if show_legend:
         leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
