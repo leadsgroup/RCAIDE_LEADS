@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Propulsors/Converters/Ducted_Fan.py
+# RCAIDE/Components/Propulsors/Converters/Ducted_Fan.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 

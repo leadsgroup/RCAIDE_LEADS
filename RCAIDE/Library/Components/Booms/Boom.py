@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Booms/Boom.py
+# RCAIDE/Components/Booms/Boom.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 

@@ -53,7 +53,7 @@ class Network(Component):
     
     **Definitions** 
     'Propulsor Group'
-        Any single or group of compoments that work together to provide thrust.
+        Any single or group of Components that work together to provide thrust.
     
     See Also
     --------
@@ -122,8 +122,7 @@ class Network(Component):
         
                         total_thrust      += T   
                         total_moment      += M   
-                        total_mech_power  += P 
-                        total_elec_power  += P_elec 
+                        total_mech_power  += P   
         
                         # compute total mass flow rate 
                         fuel_mdot     += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
@@ -174,8 +173,7 @@ class Network(Component):
     
                 # compute power from each componemnt 
                 bus_conditions.power_draw        += (total_elec_power- state.conditions.energy[bus.tag].regenerative_power*bus_voltage ) * bus.power_split_ratio  /bus.efficiency   
-                bus_conditions.current_draw       = bus_conditions.power_draw/bus_voltage 
-                total_elec_power                 = bus_conditions.power_draw  
+                bus_conditions.current_draw       = bus_conditions.power_draw/bus_voltage  
              
         # ------------------------------------------------------------------------------------------------------------------- 
         # Section 2.0 Converters

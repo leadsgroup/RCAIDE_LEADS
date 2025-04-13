@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Fuselage/Circle_Segment.py
+# RCAIDE/Library/Components/Fuselage/Circle_Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

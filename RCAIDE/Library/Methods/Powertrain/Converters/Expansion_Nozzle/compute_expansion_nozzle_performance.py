@@ -146,7 +146,6 @@ def compute_expansion_nozzle_performance(expansion_nozzle, conditions):
     ht_out   = Cp*Tt_out
     
     # A cap so pressure doesn't go negative
-    sup =  Pt_out<P0
     Pt_out[Pt_out<P0] = P0[Pt_out<P0]
     
     # Compute the output Mach number, static quantities and the output velocity
@@ -160,22 +159,29 @@ def compute_expansion_nozzle_performance(expansion_nozzle, conditions):
     P_out[i_low]  = P0[i_low]
     Mach[i_low]   = np.sqrt((((Pt_out[i_low]/P0[i_low])**((gamma[i_low]-1.)/gamma[i_low]))-1.)*2./(gamma[i_low]-1.))
     
-    # Computing output pressure and Mach number for the case Mach >=1.0 
-    Mach[sup]  = np.sqrt((((Pt_out[sup]/P0[sup])**((gamma[sup]-1)/gamma[sup]))-1)*2/(gamma[sup]-1)) 
-    Mach[sup]  = Mach[sup]/Mach[sup]
-    P_out[sup] = Pt_out[sup]/(1.+((gamma[sup]-1.)/2.)*Mach[sup]**2)**(gamma[sup]/(gamma[sup]-1.)) 
+    # Computing output pressure and Mach number for the case Mach >=1.0     
+    i_high        = Mach >=1.0   
+    Mach[i_high]  = Mach[i_high]/Mach[i_high]
+    P_out[i_high] = Pt_out[i_high]/(1.+(gamma[i_high]-1.)/2.*Mach[i_high]*Mach[i_high])**(gamma[i_high]/(gamma[i_high]-1.))
+    
+    # A cap to make sure Mach doesn't go to zero:
+    if np.any(Mach<=0.0):
+        warn('Pressures Result in Negative Mach Number, making positive',RuntimeWarning)
+        Mach[Mach<=0.0] = 0.001
     
     # Compute the output temperature,enthalpy,velocity and density
     T_out         = Tt_out/(1+(gamma-1)/2*Mach*Mach)
     h_out         = T_out * Cp
-    u_out         = np.sqrt(2*(ht_out-h_out)) 
+    u_out         = np.sqrt(2*(ht_out-h_out))
+    #rho_out       = P_out/(R*T_out)
     
     # Compute the freestream to nozzle area ratio  
     area_ratio    = (fm_id(M0,gamma)/fm_id(Mach,gamma)*(1/(Pt_out/Pt0))*(np.sqrt(Tt_out/Tt0)))
     
     #pack computed quantities into outputs
     nozzle_conditions.outputs.area_ratio              = area_ratio
-    nozzle_conditions.outputs.mach_number             = Mach 
+    nozzle_conditions.outputs.mach_number             = Mach
+    #nozzle_conditions.outputs.density                 = rho_out
     nozzle_conditions.outputs.velocity                = u_out
     nozzle_conditions.outputs.static_pressure         = P_out
     nozzle_conditions.outputs.static_temperature      = T_out

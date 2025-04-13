@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Nacelles/Segment.py
+# RCAIDE/Library/Components/Nacelles/Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

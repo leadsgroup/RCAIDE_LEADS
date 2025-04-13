@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Converters/Rotor.py
+# RCAIDE/Library/Components/Powertrain/Converters/Rotor.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke

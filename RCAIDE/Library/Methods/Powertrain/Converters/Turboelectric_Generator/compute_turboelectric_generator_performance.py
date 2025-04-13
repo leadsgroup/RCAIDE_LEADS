@@ -71,7 +71,6 @@ def compute_turboelectric_generator_performance(turboelectric_generator, state, 
     compressor                         = turboshaft.compressor
     turboelectric_generator_conditions = conditions.energy.converters[turboelectric_generator.tag] 
     generator_conditions               = conditions.energy.converters[generator.tag]
-    # generator_conditions.outputs.current = generator_conditions.outputs.power / generator_conditions.outputs.voltage
     turboshaft_conditions              = conditions.energy.converters[turboshaft.tag]
     compressor_conditions              = conditions.energy.converters[compressor.tag]
     

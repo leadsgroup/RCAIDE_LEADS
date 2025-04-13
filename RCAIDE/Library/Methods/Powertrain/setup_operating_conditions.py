@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Operating Test Conditions Set-up
 # ---------------------------------------------------------------------------------------------------------------------- 
-def setup_operating_conditions(component, altitude=0, velocity_range=np.array([10]), angle_of_attack=0, temperature_deviation=0):
+def setup_operating_conditions(component, velocity_range=np.array([10]), altitude=0, angle_of_attack=0, temperature_deviation=0):
     """
     Sets up operating conditions for single component analysis.
     

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Thermal_Management/Accessories/Pump.py
+# RCAIDE/Library/Components/Thermal_Management/Accessories/Pump.py
 # 
 # Created: March 2024  S. Shekar 
 

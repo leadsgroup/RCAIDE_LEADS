@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Systems/System.py
+# RCAIDE/Library/Components/Powertrain/Systems/System.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

@@ -16,7 +16,7 @@ import numpy as np
 #  Total Parasite Drag 
 # ----------------------------------------------------------------------------------------------------------------------   
 def parasite_total(state,settings,geometry):
-    """Sums up the parasite drags from all compoments 
+    """Sums up the parasite drags from all Components 
 
     Assumptions:
         None
