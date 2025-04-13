@@ -332,7 +332,7 @@ def design_turbofan(turbofan):
     # Step 23: Static Sea Level Thrust  
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(turbofan, altitude = 0,velocity_range=np.array([V]))  
+    operating_state       = setup_operating_conditions(turbofan, altitude = 0,velocity_range=np.array([V]), angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0  
     sls_T,_,sls_P,_,_,_                          = turbofan.compute_performance(operating_state) 
     turbofan.sealevel_static_thrust              = sls_T[0][0]

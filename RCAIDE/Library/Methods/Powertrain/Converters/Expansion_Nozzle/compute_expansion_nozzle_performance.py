@@ -149,7 +149,7 @@ def compute_expansion_nozzle_performance(expansion_nozzle, conditions):
     Pt_out[Pt_out<P0] = P0[Pt_out<P0]
     
     # Compute the output Mach number, static quantities and the output velocity
-    Mach          = np.sqrt((((Pt_out/P0)**((gamma-1)/gamma))-1)*2/(gamma-1)) 
+    Mach          = np.sqrt((((P0/Pt_out)**((gamma-1)/gamma))-1)*2/(gamma-1)) 
     
     #initializing the Pout array
     P_out         = np.ones_like(Mach)
@@ -157,7 +157,7 @@ def compute_expansion_nozzle_performance(expansion_nozzle, conditions):
     # Computing output pressure and Mach number for the case Mach <1.0
     i_low         = Mach < 1.0
     P_out[i_low]  = P0[i_low]
-    Mach[i_low]   = np.sqrt((((Pt_out[i_low]/P0[i_low])**((gamma[i_low]-1.)/gamma[i_low]))-1.)*2./(gamma[i_low]-1.))
+    Mach[i_low]   = np.sqrt((((P0[i_low]/Pt_out[i_low])**((gamma[i_low]-1.)/gamma[i_low]))-1.)*2./(gamma[i_low]-1.))
     
     # Computing output pressure and Mach number for the case Mach >=1.0     
     i_high        = Mach >=1.0   

@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Operating Test Conditions Set-up
 # ---------------------------------------------------------------------------------------------------------------------- 
-def setup_operating_conditions(component, altitude=0, velocity_range=np.array([10]), angle_of_attack=0):
+def setup_operating_conditions(component, altitude=0, velocity_range=np.array([10]), angle_of_attack=0, temperature_deviation=0):
     """
     Sets up operating conditions for single component analysis.
     
@@ -104,7 +104,6 @@ def setup_operating_conditions(component, altitude=0, velocity_range=np.array([1
     RCAIDE.Library.Mission.Common.Update.orientations
     """
     
-    temperature_deviation                             = 0.0 
     planet                                            = RCAIDE.Library.Attributes.Planets.Earth()
     working_fluid                                     = RCAIDE.Library.Attributes.Gases.Air() 
     

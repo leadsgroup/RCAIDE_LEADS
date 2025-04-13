@@ -145,7 +145,7 @@ def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SL
     atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(electric_rotor, altitude = 0,velocity_range=np.array([V]))  
+    operating_state       = setup_operating_conditions(electric_rotor, altitude = 0,velocity_range=np.array([V]), angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[electric_rotor.tag].throttle[:,0] = 1.0
     operating_state.conditions.energy.converters[motor.tag].inputs.current[:,0] =  motor.design_current
     sls_T,_,sls_P,_,_,_                          = electric_rotor.compute_performance(operating_state) 
