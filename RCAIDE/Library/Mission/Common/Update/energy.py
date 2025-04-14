@@ -26,11 +26,10 @@ def energy(segment):
        N/A 
     """  
     # loop throuh networks in vehicle 
-    for network in segment.analyses.energy.vehicle.networks: 
-        if 'busses' in network: 
-            busses  = network.busses
-            for bus in busses:
-                for battery in bus.battery_modules: 
-                    increment_day = segment.increment_battery_age_by_one_day
-                    battery_conditions  = segment.conditions.energy[bus.tag].battery_modules[battery.tag] 
-                    battery.update_battery_age(segment,battery_conditions,increment_battery_age_by_one_day = increment_day) 
+    for network in segment.analyses.energy.vehicle.networks:  
+        busses  = network.busses
+        for bus in busses:
+            for battery in bus.battery_modules: 
+                increment_day = segment.increment_battery_age_by_one_day
+                battery_conditions  = segment.conditions.energy[bus.tag].battery_modules[battery.tag] 
+                battery.update_battery_age(segment,battery_conditions,increment_battery_age_by_one_day = increment_day) 

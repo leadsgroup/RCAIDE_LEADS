@@ -16,29 +16,69 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
-    
-    Assumptions:
-    Constant Mach number, with a constant rate of climb
+    """
+    Initializes conditions for constant Mach climb with fixed rate
 
-    Source:
-    N/A
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
 
-    Inputs:
-    segment.climb_rate                                  [meters/second]
-    segment.mach_number                                 [Unitless]
-    segment.altitude_start                              [meters]
-    segment.altitude_end                                [meters]
-    segment.state.numerics.dimensionless.control_points [Unitless]
-    conditions.freestream.density                       [kilograms/meter^3]
+    Notes
+    -----
+    This function sets up the initial conditions for a climb segment with constant
+    Mach number and constant rate of climb.
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
+    **Required Segment Components**
 
-    Properties Used:
-    N/A
+    segment:
+        - climb_rate : float
+            Rate of climb [m/s]
+        - mach_number : float
+            Mach number to maintain [-]
+        - altitude_start : float
+            Initial altitude [m]
+        - altitude_end : float
+            Final altitude [m]
+        - sideslip_angle : float
+            Aircraft sideslip angle [rad]
+        - state:
+            numerics.dimensionless.control_points : array
+                Discretization points [-]
+            conditions : Data
+                State conditions container
+        - analyses:
+            atmosphere : Model
+                Atmospheric model for property calculations
+
+    **Calculation Process**
+        1. Discretize altitude profile
+        2. Get atmospheric properties for speed of sound
+        3. Calculate true airspeed from Mach number
+        4. Decompose velocity into components using:
+            - Fixed climb rate
+            - Sideslip angle
+            - Constant Mach requirement
+
+    **Major Assumptions**
+        * Constant Mach number
+        * Constant rate of climb
+        * Standard atmosphere model
+        * Small angle approximations
+        * Quasi-steady flight
+
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+        - conditions.frames.inertial.velocity_vector [m/s]
+        - conditions.frames.inertial.position_vector [m]
+        - conditions.freestream.altitude [m]
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
+    RCAIDE.Library.Mission.Common.Update.atmosphere
     """     
     
     # unpack

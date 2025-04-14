@@ -1,7 +1,17 @@
-# RCAIDE/Methods/Energy/Propulsors/Modulators/__init__.py
+# RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/__init__.py
 # 
 
-""" RCAIDE Package Setup
+"""
+Collection of methods for analyzing Electronic Speed Controller (ESC) performance in electric 
+propulsion systems. These devices, ESCs, handle voltage and current modulation for electric motors, 
+including throttle response, power conversion, and condition tracking. The module provides 
+functionality for computing ESC input/output characteristics and managing electrical state 
+variables throughout mission analysis.
+
+See Also
+--------
+RCAIDE.Library.Components.Powertrain.Converters.DC_Motor
+RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

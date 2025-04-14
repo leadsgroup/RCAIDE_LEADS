@@ -15,22 +15,45 @@ from RCAIDE.Framework.Core import Units
 #-------------------------------------------------------------------------------
 
 class Steel(Solid):
-    """ Physical Constants Specific to AISI 4340 Steel
+    """ 
+    A class representing AISI 4340 steel material properties.
+
+    Attributes
+    ----------
+    ultimate_tensile_strength : float
+        Maximum tensile stress before failure in Pa (1110e6)
+    ultimate_shear_strength : float
+        Maximum shear stress before failure in Pa (825e6)
+    ultimate_bearing_strength : float
+        Maximum bearing stress before failure in Pa (1110e6)
+    yield_tensile_strength : float
+        Stress at which material begins to deform plastically in Pa (710e6)
+    yield_shear_strength : float
+        Shear stress at which material begins to deform plastically in Pa (410e6)
+    yield_bearing_strength : float
+        Bearing stress at which material begins to deform plastically in Pa (710e6)
+    minimum_gage_thickness : float
+        Minimum manufacturable thickness in m (0.0)
+    density : float
+        Material density in kg/m³ (7850)
+
+    Notes
+    -----
+    This class implements material properties for AISI 4340 steel, a high-strength 
+    alloy steel commonly used in aerospace applications. The properties are based on 
+    median values.
+
+    **Definitions**
     
-    Assumptions:
-    None
+    'Ultimate Strength'
+        The maximum stress that a material can withstand before failure
     
-    Source:
-    MatWeb (Median of Mfg. Reported Values)
-    
-    Inputs:
-    N/A
-    
-    Outputs:
-    N/A
-    
-    Properties Used:
-    None
+    'Yield Strength'
+        The stress at which a material begins to deform plastically
+
+    References
+    ----------
+    [1] MatWeb. (n.d.). Crucible Steel AISI 4340 Alloy Steel. Crucible Steel aisi 4340 alloy steel. https://www.matweb.com/search/DataSheet.aspx?MatGUID=32036e9a93d04975bec68fc8ca3a696d 
     """
 
     def __defaults__(self):

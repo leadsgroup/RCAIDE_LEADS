@@ -11,31 +11,60 @@ from RCAIDE.Framework.Core import Units
 # Aft Centerbody Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_aft_centerbody_weight(no_of_engines, aft_centerbody_area, aft_centerbody_taper, TOGW):
-    """ Weight estimate for the aft section of a BWB centerbody.
-        Regression from FEA by K. Bradley (George Washington University).
-        
-        Assumptions:
-            -The engines are mounted on the aft centerbody
-            -The aft centerbody is unpressurized
-        
-        Sources:
-            Bradley, K. R., "A Sizing Methodology for the Conceptual Design of 
-            Blended-Wing-Body Transports," NASA/CR-2004-213016, 2004.
-            
-        Inputs:
-            no_of_engines - the number of engines mounted on the aft centerbody 
-            [dimensionless]
-            aft_centerbody_area - the planform area of the aft centerbody. 
-            Typcially the area behind 70% chord [meters**2]
-            aft_centerbody_taper - the taper ratio of the aft centerbody (exclude
-            the chord taken up by the pressurized passenger cabin) [dimensionless]
-            TOGW - Takeoff gross weight of the aircraft [kilograms]
-        Outputs:
-            W_aft - the estimated structural weight of the BWB aft centerbody
-                
-        Properties Used:
-        N/A
-        """         
+    """
+    Computes the structural weight of the aft section of a BWB centerbody using regression-based methods.
+
+    Parameters
+    ----------
+    no_of_engines : int
+        Number of engines mounted on aft centerbody
+    aft_centerbody_area : float
+        Planform area of aft centerbody section [m²]
+        Typically measured behind 70% chord
+    aft_centerbody_taper : float
+        Taper ratio of aft centerbody section
+        Excludes chord taken up by pressurized cabin
+    TOGW : float
+        Takeoff gross weight of aircraft [kg]
+
+    Returns
+    -------
+    W_aft : float
+        Estimated structural weight of BWB aft centerbody [kg]
+
+    Notes
+    -----
+    Uses regression equations derived from FEA studies to estimate the structural
+    weight required to handle engine loads and aerodynamic forces.
+
+    **Major Assumptions**
+        * Engines are mounted on the aft centerbody
+        * Aft section is unpressurized
+        * Linear relationship with planform area
+        * Engine count affects weight through simple scaling
+        * Structure sized primarily by engine and aerodynamic loads
+
+    **Theory**
+    Weight is computed using:
+    .. math::
+        W_{aft} = (1 + 0.05n_e)\\cdot 0.53\\cdot S_{aft}\\cdot W^{0.2}\\cdot(\\lambda + 0.5)
+
+    where:
+        * n_e = number of engines
+        * S_aft = aft centerbody area
+        * W = takeoff weight
+        * λ = taper ratio
+
+    References
+    ----------
+    [1] Bradley, K. R., "A Sizing Methodology for the Conceptual Design of 
+        Blended-Wing-Body Transports," NASA/CR-2004-213016, 2004.
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_operating_empty_weight
+    """         
     # convert to imperial units and shorten variable names 
     S_aft  = aft_centerbody_area  / Units.feet ** 2.0
     l_aft  = aft_centerbody_taper

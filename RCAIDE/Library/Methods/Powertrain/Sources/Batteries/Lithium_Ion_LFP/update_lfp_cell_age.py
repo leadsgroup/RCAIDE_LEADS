@@ -11,18 +11,59 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # update_lfp_cell_age
 # ----------------------------------------------------------------------------------------------------------------------  
-def update_lfp_cell_age(battery_module,segment, battery_conditions,increment_battery_age_by_one_day):  
-    """ This is an aging model for 26650 A123 LFP cell. 
-   
-    Source: 
-    Nájera, J., J.R. Arribas, R.M. De Castro, and C.S. Núñez. 
-    “Semi-Empirical Ageing Model for LFP and NMC Li-Ion Battery Chemistries.”
-    Journal of Energy Storage 72 (November 2023): 108016.
-    https://doi.org/10.1016/j.est.2023.108016.
-
-      
-    Assumptions:
+def update_lfp_cell_age(battery_module, segment, battery_conditions, increment_battery_age_by_one_day):  
+    """
+    Updates the aging model for a 26650 A123 LFP cell.
+    
+    Parameters
+    ----------
+    battery_module : BatteryModule
+        The battery module containing LFP cells
+    segment : Segment
+        The mission segment in which the battery is operating
+    battery_conditions : Conditions
+        Object containing battery state with the following attributes:
+            - cell.state_of_charge : numpy.ndarray
+                State of charge of the cell [unitless, 0-1]
+            - cell.current : numpy.ndarray
+                Battery cell current [A]
+            - cell.cycle_in_day : int
+                Number of cycles the battery has undergone [days]
+            - cell.charge_throughput : numpy.ndarray
+                Cumulative charge throughput [Ah]
+            - cell.temperature : numpy.ndarray
+                Battery cell temperature [K]
+            - cell.capacity_fade_factor : float
+                Factor representing capacity degradation [unitless, 0-1]
+    increment_battery_age_by_one_day : bool
+        Flag to increment the battery age by one day
+    
+    Returns
+    -------
     None
+    
+    Notes
+    -----
+    This function implements a semi-empirical aging model for LFP cells based on
+    research by Nájera et al. The model accounts for capacity fade due to:
+        1. Cycling effects (charge throughput)
+        2. Calendar aging (time)
+    
+    The model considers the effects of:
+        - Temperature
+        - C-rate
+        - State of charge
+        - Charge throughput
+        - Time (days)
+    
+    References
+    ----------
+    [1] Nájera, J., J.R. Arribas, R.M. De Castro, and C.S. Núñez. "Semi-Empirical Ageing Model for LFP and NMC Li-Ion Battery Chemistries." Journal of Energy Storage 72 (November 2023): 108016. https://doi.org/10.1016/j.est.2023.108016.
+    
+    See Also
+    --------
+    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance
     """
     SOC                = battery_conditions.cell.state_of_charge
     I                  = battery_conditions.cell.current

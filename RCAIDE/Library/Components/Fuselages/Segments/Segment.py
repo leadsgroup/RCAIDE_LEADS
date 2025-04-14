@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Fuselage/Segment.py
+# RCAIDE/Library/Components/Fuselage/Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

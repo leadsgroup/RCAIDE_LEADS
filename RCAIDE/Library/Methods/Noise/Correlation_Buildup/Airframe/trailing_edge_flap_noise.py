@@ -13,30 +13,50 @@ from RCAIDE.Framework.Core import Units
 # ----------------------------------------------------------------------------------------------------------------------  
 # Compute the trailing edge flap noise
 # ----------------------------------------------------------------------------------------------------------------------  
-def trailing_edge_flap_noise(Sf,cf,deltaf,slots,velocity,M,phi,theta,distance,frequency):
-    """ This calculates the noise from the flap trailing edge as a 1/3 octave band sound pressure level.
+def trailing_edge_flap_noise(Sf, cf, deltaf, slots, velocity, M, phi, theta, distance, frequency):
+    """
+    This calculates the noise from the flap trailing edge as a 1/3 octave band sound pressure level.
 
-    Assumptions:
-        Correlation based.
-        
-    Inputs:
-        Sf         - Flap area                                                      [sq.ft]
-        cf         - Flap chord                                                     [ft]
-        deltaf     - Flap deflection                                                [rad]
-        slots      - Number of slots                                                (Flap type)
-        velocity   - Aircraft speed                                                 [kts]
-        M          - Mach number                                                    [Unitless]
-        phi        - Azimuthal angle                                                [rad]
-        theta      - Polar angle                                                    [rad]
-        distance   - Distance from airplane to observer, evaluated at retarded time [ft]
-        frequency  - Frequency array                                                [Hz]
-        
-    Outputs: One Third Octave Band SPL                                              [dB]
-        SPL                
- 
-    Properties Used:
-        N/A 
-    
+    Parameters
+    ----------
+    Sf : float
+        Flap area [sq.ft].
+    cf : float
+        Flap chord [ft].
+    deltaf : float
+        Flap deflection [rad].
+    slots : int
+        Number of slots (Flap type).
+    velocity : float
+        Aircraft speed [kts].
+    M : float
+        Mach number [Unitless].
+    phi : float
+        Azimuthal angle [rad].
+    theta : float
+        Polar angle [rad].
+    distance : float
+        Distance from airplane to observer, evaluated at retarded time [ft].
+    frequency : array_like
+        Frequency array [Hz].
+
+    Returns
+    -------
+    SPL : array_like
+        One Third Octave Band Sound Pressure Level [dB].
+
+    Notes
+    -----
+    The function uses correlation-based methods to compute the noise levels from the trailing edge flap.
+
+    **Definitions**
+
+    'SPL'
+        Sound Pressure Level, a measure of the sound intensity.
+
+    References
+    ----------
+    None
     """
 
     # Process

@@ -16,7 +16,6 @@ evaluate\_VLM
    .. autosummary::
       :toctree:
    
-      call_VLM
       compute_coefficient
       compute_coefficients
       compute_stability_derivative

@@ -35,8 +35,7 @@ def compute_systems_weight(vehicle):
         Inputs:
             vehicle - data dictionary with vehicle properties                   [dimensionless]
                 -.networks: data dictionary containing all propulsion properties
-                -.number_of_engines: number of engines
-                -.sealevel_static_thrust: thrust at sea level               [N]
+                -.number_of_engines: number of engines 
                 -.fuselages['fuselage'].lengths.total: fuselage total length    [meters]
                 -.fuselages['fuselage'].width: fuselage width                   [meters]
                 -.fuselages['fuselage'].heights.maximum: fuselage maximum height[meters]

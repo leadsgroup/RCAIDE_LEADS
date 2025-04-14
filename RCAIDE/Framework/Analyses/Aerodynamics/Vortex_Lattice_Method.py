@@ -65,8 +65,8 @@ class Vortex_Lattice_Method(Aerodynamics):
         # correction factors             
         self.settings.fuselage_lift_correction                            = 1.14
         self.settings.trim_drag_correction_factor                         = 1.1
-        self.settings.wing_parasite_drag_form_factor                      = 1.1
-        self.settings.fuselage_parasite_drag_form_factor                  = 2.3
+        self.settings.wing_parasite_drag_form_factor                      = 1.2
+        self.settings.fuselage_parasite_drag_form_factor                  = 2.4  
         self.settings.drag_reduction_factors                              = Data()
         self.settings.drag_reduction_factors.parasite_drag                = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.drag_reduction_factors.induced_drag                 = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)

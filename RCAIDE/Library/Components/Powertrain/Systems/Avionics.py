@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Systems/Avionics.py
+# RCAIDE/Library/Components/Powertrain/Systems/Avionics.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -28,17 +28,15 @@ class Avionics(Component):
     -----
     The avionics class models the electrical power requirements of aircraft 
     electronics and instruments. This includes:
-    
-    * Flight management systems
-    * Navigation equipment
-    * Communication systems
-    * Display systems
+        * Flight management systems
+        * Navigation equipment
+        * Communication systems
+        * Display systems
     
     **Major Assumptions**
-    
-    * Constant power draw during operation
-    * Instantaneous power availability
-    * No thermal management considerations
+        * Constant power draw during operation
+        * Instantaneous power availability
+        * No thermal management considerations
     
     **Definitions**
 

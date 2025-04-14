@@ -27,49 +27,89 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------     
 #  turbofan engine noise 
 # ----------------------------------------------------------------------------------------------------------------------         
-def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segment,settings):  
-    """This method predicts the free-field 1/3 Octave Band SPL of coaxial subsonic
-       jets for turbofan engines under the following conditions:
-       a) Flyover (observer on ground)
-       b) Static (observer on ground)
-       c) In-flight or in-flow (observer on airplane or in a wind tunnel)
+def turbofan_engine_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings):
+    """
+    This method predicts the free-field 1/3 Octave Band SPL of coaxial subsonic jets for turbofan engines under various conditions.
 
-    Assumptions: 
-       [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
-       [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
+    Parameters
+    ----------
+    microphone_locations : array_like
+        Coordinates of the microphones used to capture noise data.
+    turbofan : RCAIDE type turbofan
+        Contains turbofan engine specifications.
+            - core_nozzle : object
+                Contains attributes like exit_velocity and diameter.
+            - fan_nozzle : object
+                Contains attributes like exit_velocity and diameter.
+            - height : float
+                Engine centerline height above the ground plane.
+            - length : float
+                Length of the turbofan.
+            - diameter : float
+                Diameter of the turbofan.
+            - plug_diameter : float
+                Diameter of the engine external plug.
+            - geometry_xe, geometry_ye, geometry_Ce : float
+                Geometric parameters for jet installation effects.
+    aeroacoustic_data : object
+        Contains aeroacoustic data for the turbofan.
+            - core_nozzle : object
+                Contains attributes like exit_stagnation_temperature and exit_stagnation_pressure.
+            - fan_nozzle : object
+                Contains attributes like exit_stagnation_temperature and exit_stagnation_pressure.
+            - low_pressure_spool : object
+                Contains angular_velocity.
+    segment : RCAIDE type segment
+        Contains flight path data and conditions.
+            - conditions : object
+                Contains freestream velocity, mach number, and speed of sound.
+            - frames : object
+                Contains inertial time data.
+    settings : object
+        Contains settings such as center frequencies for noise calculations.
 
-    Inputs:
-        vehicle	 - RCAIDE type vehicle 
-        includes these fields:
-            Velocity_primary           - Primary jet flow velocity                           [m/s]
-            Temperature_primary        - Primary jet flow temperature                        [m/s]
-            Pressure_primary           - Primary jet flow pressure                           [Pa]
-            Area_primary               - Area of the primary nozzle                          [m^2]
-            Velocity_secondary         - Secondary jet flow velocity                         [m/s]
-            Temperature_secondary      - Secondary jet flow temperature                      [m/s]
-            Pressure_secondary         - Secondary jet flow pressure                         [Pa]
-            Area_secondary             - Area of the secondary nozzle                        [m^2]
-            AOA                        - Angle of attack                                     [rad]
-            Velocity_aircraft          - Aircraft velocity                                   [m/s]
-            Altitude                   - Altitude                                            [m]
-            N1                         - Fan rotational speed                                [rpm]
-            EXA                        - Distance from fan face to fan exit/ fan diameter    [m]
-            Plug_diameter              - Diameter of the engine external plug                [m]
-            Engine_height              - Engine centerline height above the ground plane     [m]
-            distance_microphone        - Distance from the nozzle exhaust to the microphones [m]
-            angles                     - Array containing the desired polar angles           [rad] 
+    Returns
+    -------
+    engine_noise : Data
+        Contains the computed noise data.
+            - SPL_1_3_spectrum : array_like
+                One Third Octave Band SPL spectrum.
+            - SPL : float
+                Sound Pressure Level.
+            - SPL_dBA : float
+                A-weighted Sound Pressure Level.
 
-    Outputs: One Third Octave Band SPL [dB]
-        SPL_p                           - Sound Pressure Level of the primary jet            [dB]
-        SPL_s                           - Sound Pressure Level of the secondary jet          [dB]
-        SPL_m                           - Sound Pressure Level of the mixed jet              [dB]
-        SPL_total                       - Sound Pressure Level of the total jet noise        [dB]
+    Notes
+    -----
+    The function uses semi-empirical methods for coaxial jet noise prediction. It accounts for various conditions such as flyover, static, and in-flight scenarios.
 
+    **Major Assumptions**
+        * Coaxial subsonic jets
+        * Free-field conditions
+
+    **Theory**
+
+    The noise prediction is based on the combination of primary, secondary, and mixed jet components, with adjustments for installation and environmental effects.
+
+    **Definitions**
+
+    'SPL'
+        Sound Pressure Level, a measure of the sound intensity.
+
+    References
+    ----------
+    [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
+    [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Noise.Metrics.A_weighting_metric
+    RCAIDE.Library.Methods.Noise.Common.SPL_arithmetic
     """
     # unpack   
-    Velocity_primary        = turbofan.core_nozzle.noise_speed * np.ones_like(aeroacoustic_data.core_nozzle.exit_velocity)  # aeroacoustic_data.core_nozzle.exit_velocity or use mass flow rate 
-    Velocity_secondary      = turbofan.fan_nozzle.noise_speed * np.ones_like(aeroacoustic_data.core_nozzle.exit_velocity)  # aeroacoustic_data.fan_nozzle.exit_velocity or use mass flow rate 
-    N1                      = aeroacoustic_data.fan.angular_velocity / Units.rpm
+    Velocity_primary        = turbofan.core_nozzle.exit_velocity * np.ones_like(aeroacoustic_data.core_nozzle.exit_velocity)  # aeroacoustic_data.core_nozzle.exit_velocity or use mass flow rate 
+    Velocity_secondary      = turbofan.fan_nozzle.exit_velocity * np.ones_like(aeroacoustic_data.core_nozzle.exit_velocity)  # aeroacoustic_data.fan_nozzle.exit_velocity or use mass flow rate 
+    N1                      = aeroacoustic_data.low_pressure_spool.angular_velocity / Units.rpm
 
     Temperature_secondary  = aeroacoustic_data.fan_nozzle.exit_stagnation_temperature[:,0] 
     Pressure_secondary     = aeroacoustic_data.fan_nozzle.exit_stagnation_pressure[:,0] 
@@ -82,8 +122,8 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
     distance_microphone    = np.linalg.norm(microphone_locations,axis = 1)    
     Diameter_primary       = turbofan.core_nozzle.diameter
     Diameter_secondary     = turbofan.fan_nozzle.diameter
-    engine_height          = turbofan.engine_height
-    EXA                    = turbofan.engine_length /  turbofan.engine_diameter 
+    engine_height          = turbofan.height
+    EXA                    = turbofan.length /  turbofan.diameter 
     Plug_diameter          = turbofan.plug_diameter 
     Xe                     = turbofan.geometry_xe
     Ye                     = turbofan.geometry_ye
@@ -93,13 +133,7 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
     n_cpts                 = len(noise_time)     
     num_f                  = len(frequency) 
     n_mic                  = len(microphone_locations)
-
-    if type(Velocity_primary) == float:
-        Velocity_primary    = np.ones(n_cpts)*Velocity_primary
-
-    if type(Velocity_secondary) == float:
-        Velocity_secondary  = np.ones(n_cpts)*Velocity_secondary
-
+  
     # ==============================================
     # Computing atmospheric conditions
     # ==============================================  
@@ -115,10 +149,7 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
     Area_primary   =  np.pi*(Diameter_primary/2)**2 
     Area_secondary =  np.pi*(Diameter_secondary/2)**2   
 
-    # Defining each array before the main loop
-
-    altitude  = abs(microphone_locations[:,2]) 
-    x_dist    =  microphone_locations[:,0]
+    # Defining each array before the main loop 
     theta     =  np.zeros(n_mic)
     bool_1    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
     bool_2    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
@@ -128,14 +159,7 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
     theta[bool_1] =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
     theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
     theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
-    theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4]
-     
-    
-    #theta = np.arctan(altitude/x_dist)
-    
-    
-    #theta = np.pi - np.arctan(np.abs(altitude/x_dist))  
-    #theta[x_dist< 0] = np.arctan(np.abs(altitude[x_dist< 0]/x_dist[x_dist< 0]))
+    theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4] 
 
     theta_P                = np.tile(theta[None,:],(n_cpts,1))  
     theta_S                = deepcopy(theta_P)
@@ -166,16 +190,17 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
             Cpp = R_gas/(1-1/gamma_primary)
             Cp  = R_gas/(1-1/gamma)
 
-            density_primary   = Pressure_primary[i]/(R_gas*Temperature_primary[i]-(0.5*R_gas*Velocity_primary[i]**2/Cpp))
+            density_primary   = Pressure_primary[i]/(R_gas*Temperature_primary[i]-(0.5*R_gas*Velocity_primary[i]**2/Cpp)) 
             density_secondary = Pressure_secondary[i]/(R_gas*Temperature_secondary[i]-(0.5*R_gas*Velocity_secondary[i]**2/Cp))
 
             mass_flow_primary   = Area_primary*Velocity_primary[i]*density_primary
+             
             mass_flow_secondary = Area_secondary*Velocity_secondary[i]*density_secondary
 
             #Mach number of the external flow - based on the aircraft velocity
             Mach_aircraft[i] = Velocity_aircraft[i]/sound_ambient[i]
 
-            #Calculation Procedure for the Mixed Jet Flow Parameters
+            #Calculation Procedure for the Mixed Jet Flow Parameters 
             Velocity_mixed    = (mass_flow_primary*Velocity_primary[i]+mass_flow_secondary*Velocity_secondary[i])/  (mass_flow_primary+mass_flow_secondary)
             Temperature_mixed = (mass_flow_primary*Temperature_primary[i]+mass_flow_secondary*Temperature_secondary[i])/   (mass_flow_primary+mass_flow_secondary)
             density_mixed     = pressure_amb[i]/(R_gas*Temperature_mixed-(0.5*R_gas*Velocity_mixed**2/Cp))
@@ -197,7 +222,7 @@ def turbofan_engine_noise(microphone_locations,turbofan,aeroacoustic_data,segmen
 
             # Calculation of the Strouhal number for each jet component (p-primary, s-secondary, m-mixed)
             Str_p = frequency*Diameter_primary/(DVPS)  #Primary jet
-            Str_s = frequency*Diameter_mixed/(Velocity_secondary[i]-Velocity_aircraft[i]) #Secondary jet
+            Str_s = frequency*Diameter_secondary/(Velocity_secondary[i]-Velocity_aircraft[i]) #Secondary jet
             Str_m = frequency*Diameter_mixed/(Velocity_mixed-Velocity_aircraft[i]) #Mixed jet
 
             #Calculation of the Excitation adjustment parameter 

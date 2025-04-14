@@ -38,5 +38,6 @@ Geometry
    plot_3d_vehicle_vlm_panelization
    plot_3d_wing
    plot_airfoil
+   plot_layout_of_passenger_accommodations
    plot_rotor
 

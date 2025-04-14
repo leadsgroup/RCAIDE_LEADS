@@ -14,7 +14,27 @@ from array import *
 # CrossLinked_Polyethylene Insulation Material
 #------------------------------------------------------------------------------- 
 class CrossLinked_Polyethylene(Solid): 
-    """ Physical constants specific to CrossLinked_Polyethylene (XLPE)
+    """
+    A class representing CrossLinked_Polyethylene (XLPE) and its material properties.
+
+    Attributes
+    ----------
+    electrical_permittivity : float
+        Material electrical permittivity in kg/m³ (2.3)
+    dielectric_strength_range : list
+        Range of dielectric strength in Pa (3.5E7,5E7)
+    density : float
+        Material density in kg/m³ (930)
+    thermal_conductivity : float
+        Heat conduction coefficient in W/(m·K) (0.29)
+    melting_point : float
+        Material melting point in K (403)
+    temperature_range : list
+        Range of temperature in K (233, 363)
+    modulus_of_elasticity : float
+        Material modulus of elasticity in Pa (0.6E9)
+    yield_tensile_strength : float
+        Stress at which material begins to deform plastically in Pa (18e6)
     """
 
     def __defaults__(self):

@@ -17,29 +17,64 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
-    
-    Assumptions:
-    Constant CAS airspeed with a constant rate of climb
+    """
+    Initializes conditions for constant calibrated airspeed climb segment
 
-    Source:
-    N/A
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
 
-    Inputs:
-    segment.climb_rate                                  [meters/second]
-    segment.calibrated_air_speed                        [meters/second]
-    segment.altitude_start                              [meters]
-    segment.altitude_end                                [meters]
-    segment.state.numerics.dimensionless.control_points [Unitless]
-    conditions.freestream.density                       [kilograms/meter^3]
+    Notes
+    -----
+    This function sets up the initial conditions for a climb segment with constant
+    calibrated airspeed (CAS) and constant rate of climb. It handles the conversion
+    between CAS and true airspeed accounting for atmospheric effects. Also updates segment 
+    conditions with velocity vector, position vector, and altitude. 
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
+    **Required Segment Components**
 
-    Properties Used:
-    N/A
+    segment:
+        - climb_rate : float
+            Rate of climb [m/s]
+        - calibrated_air_speed : float
+            Calibrated airspeed [m/s]
+        - altitude_start : float
+            Initial altitude [m]
+        - altitude_end : float
+            Final altitude [m]
+        - sideslip_angle : float
+            Aircraft sideslip angle [rad]
+        - state:
+            numerics.dimensionless.control_points : array
+                Discretization points [-]
+            conditions : Data
+                State conditions container
+        - analyses:
+            atmosphere : Model
+                Atmospheric model for property calculations
+
+    **Conversion Process**
+        1. Compute atmospheric properties at altitude
+        2. Convert CAS to equivalent airspeed (EAS)
+        3. Convert EAS to true airspeed (TAS)
+        4. Decompose TAS into velocity components
+
+    **Major Assumptions**
+        * Constant calibrated airspeed
+        * Constant rate of climb
+        * Standard atmosphere model
+        * Small angle approximations
+        * Subsonic flow
+
+    Returns
+    -------
+    None
+        
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
+    RCAIDE.Library.Mission.Common.Update.atmosphere
     """         
     
     # unpack

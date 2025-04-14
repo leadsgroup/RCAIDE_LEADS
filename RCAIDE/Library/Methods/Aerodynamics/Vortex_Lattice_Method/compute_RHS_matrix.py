@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
- 
+import RCAIDE
 from RCAIDE.Framework.Core import Data 
 
 # package imports 
@@ -88,8 +88,9 @@ def compute_RHS_matrix(delta,phi,conditions,settings,geometry,propeller_wake_mod
                     rotor =  propulsor.rotor
                 elif 'propeller' in  propulsor :
                     rotor =  propulsor.propeller
-                rotor_conditions =  conditions.energy[propulsor.tag][rotor.tag]
-                rot_V_wake_ind += rotor.Wake.evaluate_slipstream(rotor,rotor_conditions,geometry,num_ctrl_pts) 
+                rotor_conditions =  conditions.energy.converters[rotor.tag]
+                if rotor.fidelity == "Blade_Element_Momentum_Theory_Helmholtz_Wake":                 
+                    rot_V_wake_ind += RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.evaluate_slipstream(rotor,rotor_conditions,geometry,num_ctrl_pts) 
                     
             # update the total induced velocity distribution
             Vx_ind_total = Vx_ind_total  + rot_V_wake_ind[:,:,0]

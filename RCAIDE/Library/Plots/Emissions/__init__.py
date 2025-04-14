@@ -12,4 +12,4 @@ data from vehicle and mission simulations. It focuses on greenhouse gas emission
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .plot_CO2e_emissions      import  plot_CO2e_emissions
+from .plot_emissions      import  plot_emissions

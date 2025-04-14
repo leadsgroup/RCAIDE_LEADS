@@ -8,11 +8,11 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports 
 from .   import Propulsor  
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor.append_electric_ducted_fan_conditions           import append_electric_ducted_fan_conditions
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor.unpack_electric_ducted_fan_unknowns             import unpack_electric_ducted_fan_unknowns
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor.pack_electric_ducted_fan_residuals              import pack_electric_ducted_fan_residuals 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor.compute_electric_ducted_fan_performance         import compute_electric_ducted_fan_performance, reuse_stored_electric_ducted_fan_data
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan_Propulsor.append_electric_ducted_fan_residual_and_unknown import append_electric_ducted_fan_residual_and_unknown
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.append_electric_ducted_fan_conditions           import append_electric_ducted_fan_conditions
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.unpack_electric_ducted_fan_unknowns             import unpack_electric_ducted_fan_unknowns
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.pack_electric_ducted_fan_residuals              import pack_electric_ducted_fan_residuals 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.compute_electric_ducted_fan_performance         import compute_electric_ducted_fan_performance, reuse_stored_electric_ducted_fan_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.append_electric_ducted_fan_residual_and_unknown import append_electric_ducted_fan_residual_and_unknown
 
 # ----------------------------------------------------------------------
 #  Electric Ducted Fan Component
@@ -42,10 +42,10 @@ class Electric_Ducted_Fan(Propulsor):
     (ESC) to regulate power delivery from the electrical system to the motor.
     
     The ducted fan configuration provides several advantages over open propellers:
-    - Higher static thrust efficiency
-    - Reduced tip losses
-    - Lower noise emission
-    - Improved safety through shrouding
+        * Higher static thrust efficiency
+        * Reduced tip losses
+        * Lower noise emission
+        * Improved safety through shrouding
     
     **Definitions**
 
@@ -68,8 +68,8 @@ class Electric_Ducted_Fan(Propulsor):
         self.ducted_fan                   = None 
         self.electronic_speed_controller  = None
 
-    def append_operating_conditions(self,segment):
-        append_electric_ducted_fan_conditions(self,segment)
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+        append_electric_ducted_fan_conditions(self,segment,energy_conditions,noise_conditions)
         return 
 
     def unpack_propulsor_unknowns(self,segment):  
@@ -84,10 +84,10 @@ class Electric_Ducted_Fan(Propulsor):
         append_electric_ducted_fan_residual_and_unknown(self,segment)
         return 
     
-    def compute_performance(self,state,voltage,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power,stored_results_flag,stored_propulsor_tag =  compute_electric_ducted_fan_performance(self,state,voltage,center_of_gravity)
-        return thrust,moment,power,stored_results_flag,stored_propulsor_tag
+    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_electric_ducted_fan_performance(self,state,center_of_gravity)
+        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(EDF,state,bus,stored_propulsor_tag,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power = reuse_stored_electric_ducted_fan_data(EDF,state,bus,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power
+    def reuse_stored_data(EDF,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
+        thrust,moment,power_mech,power_elec = reuse_stored_electric_ducted_fan_data(EDF,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,power_mech,power_elec

@@ -44,7 +44,7 @@ def compute_main_wing_weight(wing, vehicle, m_fuel):
     taper_w    = wing.taper
     t_c_w      = wing.thickness_to_chord
     sweep_w    = wing.sweeps.quarter_chord 
-    q_c        = vehicle.design_dynamic_pressure
+    q_c        = vehicle.flight_envelope.design_dynamic_pressure
     Nult       = vehicle.flight_envelope.ultimate_load 
     TOW        = vehicle.mass_properties.max_takeoff
     

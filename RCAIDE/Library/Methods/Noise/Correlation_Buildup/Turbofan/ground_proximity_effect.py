@@ -13,29 +13,43 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------     
 #  Ground Proximity Effect
 # ----------------------------------------------------------------------------------------------------------------------         
-def ground_proximity_effect (Velocity_mixed,sound_ambient,theta_m,engine_height,Diameter_mixed,frequency):
-    """This function calculates the ground proximity effect, in decibels, and is used for full-scale 
-    engine test stand.
-        
-    Assumptions:
-        N/A
+def ground_proximity_effect(Velocity_mixed, sound_ambient, theta_m, engine_height, Diameter_mixed, frequency):
+    """
+    This function calculates the ground proximity effect, in decibels, for full-scale engine test stands.
 
-    Source:
-        N/A
+    Parameters
+    ----------
+    Velocity_mixed : float
+        Velocity of the mixed jet [m/s].
+    sound_ambient : float
+        Ambient sound level [SPL].
+    theta_m : float
+        Angle for the mixed jet [rad].
+    engine_height : float
+        Height of the engine above the ground [m].
+    Diameter_mixed : float
+        Diameter of the mixed jet [m].
+    frequency : float
+        Frequency of the sound wave [1/s].
 
-    Inputs:
-        Velocity_mixed  [m/s]
-        sound_ambient   [SPL]
-        theta_m         [rad]
-        engine_height   [m]
-        Diameter_mixed  [m]
-        frequency       [1/s]
+    Returns
+    -------
+    GPROX_m : float
+        Ground proximity effect adjustment for the mixed jet [dB].
 
-    Outputs:
-        GPROX_m         [dB]
+    Notes
+    -----
+    The function assumes that the ground proximity effect is significant for the mixed jet component and calculates the noise adjustments accordingly.
 
-    Properties Used:
-        N/A 
+    **Definitions**
+
+    'GPROX_m'
+        Ground Proximity Effect, the adjustment in decibels due to the proximity of the ground.
+
+    References
+    ----------
+    [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
+    [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
     """ 
     # Ground proximity is applied only for the mixed jet component
     GPROX_m = (5*Velocity_mixed/sound_ambient)*np.exp(-(9*(theta_m/np.pi)-6.75)**2- \

@@ -47,39 +47,38 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         
     cell : Data
         Cell-specific properties
-        
-        - chemistry : str
-            Battery chemistry type (default: 'LiFePO4')
-        - diameter : float
-            Cell diameter [m] (default: 0.0185)
-        - height : float
-            Cell height [m] (default: 0.0653)
-        - mass : float
-            Cell mass [kg] (default: 0.03)
-        - surface_area : float
-            Total cell surface area [m^2]
-        - volume : float
-            Cell volume [m^3]
-        - density : float
-            Cell density [kg/m^3]
-        - electrode_area : float
-            Active electrode area [m^2] (default: 0.0342)
-        - maximum_voltage : float
-            Maximum cell voltage [V] (default: 3.6)
-        - nominal_capacity : float
-            Rated capacity [Ah] (default: 2.6)
-        - nominal_voltage : float
-            Nominal operating voltage [V] (default: 3.6)
-        - resistance : float
-            Internal resistance [Ohms] (default: 0.022)
-        - specific_heat_capacity : float
-            Cell specific heat [J/kgK] (default: 1115)
-        - radial_thermal_conductivity : float
-            Radial thermal conductivity [W/mK] (default: 0.475)
-        - axial_thermal_conductivity : float
-            Axial thermal conductivity [W/mK] (default: 37.6)
-        - discharge_performance_map : NearestNDInterpolator
-            Interpolator for voltage vs discharge characteristics
+            - chemistry : str
+                Battery chemistry type (default: 'LiFePO4')
+            - diameter : float
+                Cell diameter [m] (default: 0.0185)
+            - height : float
+                Cell height [m] (default: 0.0653)
+            - mass : float
+                Cell mass [kg] (default: 0.03)
+            - surface_area : float
+                Total cell surface area [m^2]
+            - volume : float
+                Cell volume [m^3]
+            - density : float
+                Cell density [kg/m^3]
+            - electrode_area : float
+                Active electrode area [m^2] (default: 0.0342)
+            - maximum_voltage : float
+                Maximum cell voltage [V] (default: 3.6)
+            - nominal_capacity : float
+                Rated capacity [Ah] (default: 2.6)
+            - nominal_voltage : float
+                Nominal operating voltage [V] (default: 3.6)
+            - resistance : float
+                Internal resistance [Ohms] (default: 0.022)
+            - specific_heat_capacity : float
+                Cell specific heat [J/kgK] (default: 1115)
+            - radial_thermal_conductivity : float
+                Radial thermal conductivity [W/mK] (default: 0.475)
+            - axial_thermal_conductivity : float
+                Axial thermal conductivity [W/mK] (default: 37.6)
+            - discharge_performance_map : NearestNDInterpolator
+                Interpolator for voltage vs discharge characteristics
 
     Notes
     -----

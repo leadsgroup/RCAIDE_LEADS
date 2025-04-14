@@ -39,5 +39,4 @@ Common
    generate_hemisphere_microphone_locations
    generate_terrain_microphone_locations
    generate_zero_elevation_microphone_locations
-   noise_tone_correction
 

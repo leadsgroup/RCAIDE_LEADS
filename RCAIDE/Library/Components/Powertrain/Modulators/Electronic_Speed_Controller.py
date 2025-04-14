@@ -48,9 +48,10 @@ class Electronic_Speed_Controller(Component):
         """         
 
         self.tag              = 'electronic_speed_controller'  
+        self.bus_voltage      = None
         self.efficiency       = 0.0 
 
-    def append_operating_conditions(self,segment,propulsor): 
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
         """
         Append ESC operating conditions for a flight segment
         
@@ -65,7 +66,6 @@ class Electronic_Speed_Controller(Component):
         -----
         Updates the segment conditions with ESC-specific parameters including
         power throughput and losses.
-        """
-        propulsor_conditions =  segment.state.conditions.energy[propulsor.tag]
-        append_esc_conditions(self,segment,propulsor_conditions)
+        """ 
+        append_esc_conditions(self,segment,energy_conditions)
         return 

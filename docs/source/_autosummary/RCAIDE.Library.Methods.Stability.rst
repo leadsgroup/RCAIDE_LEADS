@@ -30,5 +30,5 @@ Stability
    :template: custom-module-template.rst
    :recursive:
 
-   Common
+   compute_dynamic_flight_modes
 

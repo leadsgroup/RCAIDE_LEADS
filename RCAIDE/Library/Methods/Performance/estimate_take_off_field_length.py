@@ -25,34 +25,76 @@ import numpy as np
 #  Compute field length required for takeoff
 # ----------------------------------------------------------------------
 def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
-    """ Computes the takeoff field length for a given vehicle configuration in a given airport.
-    Also optionally computes the second segment climb gradient.
+    """
+    Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.
 
-    Assumptions:
-    For second segment climb gradient:
-    One engine inoperative
-    Only validated for two engine aircraft
+    Parameters
+    ----------
+    vehicle : Vehicle
+        The vehicle instance containing:
+            - mass_properties.takeoff : float
+                Takeoff weight [kg]
+            - reference_area : float
+                Wing reference area [m²]
+            - V2_VS_ratio : float, optional
+                Ratio of V2 to stall speed, default 1.20
+            - networks.*.number_of_engines : int
+                Number of engines per network
+    analyses : Analyses
+        Container with atmosphere and aerodynamic analyses
+    altitude : float, optional
+        Airport altitude [m], default 0
+    delta_isa : float, optional
+        Temperature offset from ISA conditions [K], default 0
+    compute_2nd_seg_climb : bool, optional
+        Flag to compute second segment climb gradient, default False
 
-    Source:
-    http://adg.stanford.edu/aa241/AircraftDesign.html
+    Returns
+    -------
+    takeoff_field_length : float
+        Required takeoff field length [m]
+    second_seg_climb_gradient : float, optional
+        Second segment climb gradient [unitless], only if compute_2nd_seg_climb=True
 
-    Inputs:
-    analyses.base.atmosphere               [RCAIDE data type]
-    airport.
-      altitude                             [m]
-      delta_isa                            [K]
-    vehicle.
-      mass_properties.takeoff              [kg]
-      reference_area                       [m^2]
-      V2_VS_ratio (optional)               [Unitless]
-      maximum_lift_coefficient (optional)  [Unitless]
-      networks.*.number_of_engines       [Unitless]
+    Notes
+    -----
+    The takeoff field length is computed using empirical correlations:
+    .. math::
+        TOFL = k_0 + k_1(V_2^2/T/W) + k_2(V_2^2/T/W)^2
 
-    Outputs:
-    takeoff_field_length                   [m]
+    where k₀, k₁, k₂ depend on number of engines:
+        * 2 engines: [857.4, 2.476, 0.00014]
+        * 3 engines: [667.9, 2.343, 0.000093]
+        * 4 engines: [486.7, 2.282, 0.0000705]
 
-    Properties Used:
-    N/A
+    **Major Assumptions**
+        * Sea level standard conditions unless specified
+        * Standard V2 speed ratio (1.20 × stall speed)
+        * No wind conditions
+        * Dry runway surface
+        * For second segment climb:
+            - One engine inoperative
+            - Only validated for two-engine aircraft
+
+    **Theory**
+    Second segment climb gradient is computed as:
+
+    .. math::
+        \gamma = T/W - 1/L/D
+
+    where L/D includes effects of:
+        * Windmilling drag
+        * Asymmetric drag
+        * High-lift device drag
+
+    References
+    ----------
+    [1] Stanford University AA241 Aircraft Design Course Notes http://adg.stanford.edu/aa241/AircraftDesign.html
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag
+    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag
     """        
 
     # ==============================================
@@ -153,13 +195,10 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     segment.analyses = analysis      
     
     for network in vehicle.networks:
-        network.add_unknowns_and_residuals_to_segment(segment)
-        
+        network.add_unknowns_and_residuals_to_segment(segment) 
         for propulsor in  network.propulsors: 
-            segment.state.conditions.energy[propulsor.tag].throttle = np.array([[1]])
-        
-        network.evaluate(segment.state,center_of_gravity = vehicle.mass_properties.center_of_gravity)
-        
+            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]]) 
+        network.evaluate(segment.state,center_of_gravity = vehicle.mass_properties.center_of_gravity) 
         thrust += conditions.energy.thrust_force_vector
          
     # ==============================================

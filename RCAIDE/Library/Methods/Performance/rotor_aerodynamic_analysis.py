@@ -16,7 +16,7 @@ def rotor_aerodynamic_analysis(rotor,
                            altitude = 0,
                            design_flag=False):
        
-    operating_state = setup_operating_conditions(rotor, altitude = altitude,velocity_range=velocity_range, angle_of_attack=angle_of_attack)
+    operating_state = setup_operating_conditions(rotor,velocity_range=velocity_range, altitude = altitude, angle_of_attack=angle_of_attack, temperature_deviation=0)
          
     rotor_conditions                             = operating_state.conditions.energy.converters[rotor.tag]
     rotor_conditions.design_flag                 = design_flag

@@ -16,27 +16,54 @@ import numpy as np
 #  Find Takeoff Weight Given TOFL
 # ----------------------------------------------------------------------
 def find_take_off_weight_given_tofl(vehicle,analyses,target_tofl,altitude = 0, delta_isa = 0,):
-    """Estimates the takeoff weight given a certain takeoff field length.
+    """
+    Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.
 
-    Assumptions:
-    assumptions per estimate_take_off_field_length()
+    Parameters
+    ----------
+    vehicle : Vehicle
+        The vehicle instance containing:
+            - mass_properties.operating_empty : float
+                Operating empty weight [kg]
+            - mass_properties.max_takeoff : float
+                Maximum takeoff weight [kg]
+    analyses : Analyses
+        Container with atmosphere and aerodynamic analyses
+    target_tofl : float or ndarray
+        Target takeoff field length(s) [m]
+    altitude : float, optional
+        Airport altitude [m], default 0
+    delta_isa : float, optional
+        Temperature offset from ISA conditions [K], default 0
 
-    Source:
-    N/A
+    Returns
+    -------
+    max_tow : ndarray
+        Maximum allowable takeoff weight(s) for given field length(s) [kg]
 
-    Inputs:
-    vehicle.mass_properties.
-      operating_empty         [kg]
-      max_takeoff             [kg]
-      analyses                [RCAIDE data structure]
-      airport                 [RCAIDE data structure]
-      target_tofl             [m]
-      
-    Outputs:
-    max_tow                   [kg]
+    Notes
+    -----
+    Uses an interpolation approach by:
+        1. Creating array of possible takeoff weights between OEW and 110% MTOW
+        2. Computing TOFL for each weight
+        3. Interpolating to find weight that gives target TOFL
 
-    Properties Used:
-    N/A
+    **Major Assumptions**
+        * Linear interpolation between computed points is valid
+        * Target TOFL is within achievable range
+        * Meets assumptions from estimate_take_off_field_length
+
+    **Theory**
+    Takeoff field length varies approximately with W/T where:
+        * W = aircraft weight
+        * T = available thrust
+
+    .. math::
+        TOFL \propto \\frac{W}{T}
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Performance.estimate_take_off_field_length
     """       
 
     #unpack

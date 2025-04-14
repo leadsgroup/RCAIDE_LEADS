@@ -5,7 +5,8 @@
 """
 Reformer Methods Package
 
-This module contains methods for modeling fuel reformer performance and operating conditions. The methods support both steady-state and transient analysis of catalytic fuel reforming processes.
+This module contains methods for modeling fuel reformer performance and operating conditions. 
+The methods support both steady-state and transient analysis of catalytic fuel reforming processes.
 
 See Also
 --------

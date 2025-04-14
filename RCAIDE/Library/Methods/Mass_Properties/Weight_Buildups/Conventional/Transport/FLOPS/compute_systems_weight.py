@@ -18,75 +18,118 @@ import  numpy as  np
 # Systems Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_systems_weight(vehicle):
-    """ Calculate the system weight of the aircraft including:
-        -  flight control system
-        - apu weight
-        - hydraulics and pneumatics weight
-        - intstrumentation weight
-        - avionics weight
-        - electrical system weight
-        - air-condtioning weight
-        - furnishing weight
-        - anti-ice weight
+    """
+    Calculate the system weight of the aircraft using the FLOPS methodology.
+    
+    Parameters
+    ----------
+    vehicle : Data
+        Data dictionary with vehicle properties
+            - networks : list
+                List of network objects containing propulsion properties
+                - propulsors : list
+                    List of propulsor objects
+                    - wing_mounted : bool
+                        Flag indicating if propulsor is wing-mounted
+                    - nacelle : Data, optional
+                        Nacelle properties
+                        - diameter : float
+                            Nacelle diameter [m]
+        - wings : list
+            List of wing objects
+            - areas.reference : float
+                Wing reference area [m²]
+            - flap_ratio : float
+                Flap surface area over wing surface area
+            - spans.projected : float
+                Projected span of wing [m]
+            - sweeps.quarter_chord : float
+                Quarter chord sweep [deg]
+        - fuselages : list
+            List of fuselage objects
+            - lengths.total : float
+                Fuselage total length [m]
+            - width : float
+                Fuselage width [m]
+            - heights.maximum : float
+                Fuselage maximum height [m]
+        - mass_properties.max_takeoff : float
+            Maximum takeoff weight [kg]
+        - flight_envelope.design_mach_number : float
+            Design mach number for cruise flight
+        - flight_envelope.design_range : float
+            Design range of aircraft [nmi]
+        - passengers : int
+            Number of passengers in aircraft
+        - NPF : int
+            Number of first class passengers
+        - NPB : int
+            Number of business class passengers
+        - NPT : int
+            Number of tourist/economy class passengers
+        - reference_area : float
+            Aircraft reference area [m²]
 
-    Assumptions:
-        1) No variable sweep, change VARSWP to 1 is variable sweep in aicraft
-        2) Hydraulic pressure is 3000 psf (HYDR)
-        3) 1 fuselage named fuselage. Function could be modified to allow multiple fuselages by
-           relaxing this assumption.
+    Returns
+    -------
+    output : Data
+        Data dictionary containing system weight components
+        - W_flight_control : float
+            Weight of the flight control system [kg]
+        - W_apu : float
+            Weight of the auxiliary power unit [kg]
+        - W_hyd_pnu : float
+            Weight of the hydraulics and pneumatics [kg]
+        - W_instruments : float
+            Weight of the instruments and navigational equipment [kg]
+        - W_avionics : float
+            Weight of the avionics [kg]
+        - W_electrical : float
+            Weight of the electrical items [kg]
+        - W_ac : float
+            Weight of the air conditioning system [kg]
+        - W_furnish : float
+            Weight of the furnishings in the fuselage [kg]
+        - W_anti_ice : float
+            Weight of anti-ice system [kg]
+        - W_systems : float
+            Total systems weight [kg]
 
-    Source:
-        The Flight Optimization System Weight Estimation Method
-
-   Inputs:
-        vehicle - data dictionary with vehicle properties                   [dimensionless]
-            -.networks: data dictionary containing all propulsion properties
-                -.number_of_engines: number of engines
-                -.sealevel_static_thrust: thrust at sea level               [N]
-            -.fuselages['fuselage'].lengths.total: fuselage total length    [meters]
-            -.fuselages['fuselage'].width: fuselage width                   [meters]
-            -.fuselages['fuselage'].heights.maximum: fuselage maximum height[meters]
-            -.mass_properties.max_takeoff: MTOW                             [kilograms]
-            -.design_mach_number: design mach number for cruise flight
-            -.design_range: design range of aircraft                        [nmi]
-            -.passengers: number of passengers in aircraft
-            -.wings['main_wing']: data dictionary with main wing properties
-                -.sweeps.quarter_chord: quarter chord sweep                 [deg]
-                -.areas.reference: wing surface area                        [m^2]
-                -.spans.projected: projected span of wing                   [m]
-                -.flap_ratio: flap surface area over wing surface area
-
-   Outputs:
-       output - a data dictionary with fields:
-           W_flight_controls - weight of the flight control system                                [kilograms]
-           W_apu - weight of the apu                                                       [kilograms]
-           W_hyd_pnu - weight of the hydraulics and pneumatics                             [kilograms]
-           W_instruments - weight of the instruments and navigational equipment            [kilograms]
-           W_avionics - weight of the avionics                                             [kilograms]
-           W_electrical - weight of the electrical items                                         [kilograms]
-           W_ac - weight of the air conditioning and anti-ice system                       [kilograms]
-           W_furnish - weight of the furnishings in the fuselage                           [kilograms]
-           W_anti_ice - weight of anti-ice system                                          [kilograms]
-
-    Properties Used:
-        N/A
+    Notes
+    -----
+    This function implements the Flight Optimization System (FLOPS) weight estimation
+    methodology for aircraft systems. The calculations are performed in imperial units
+    and converted to metric for output.
+    
+    **Major Assumptions**
+        * No variable sweep (VARSWP = 0)
+        * Hydraulic pressure is 3000 psf (HYDR)
+        * Flight crew is 2 for aircraft with less than 150 passengers, 3 otherwise
+    
+    References
+    ----------
+    [1] McCullers, L. A. (1984). "Aircraft Configuration Optimization Including Optimized Flight Profiles", NASA Symposium on Recent Experiences in Multidisciplinary Analysis and Optimization.
+    [2] Ardema, M. D., Chambers, M. C., Patron, A. P., Hahn, A. S., Miura, H., & Moore, M. D. (1996). "Analytical Fuselage and Wing Weight Estimation of Transport Aircraft", NASA Technical Memorandum 110392.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS
     """ 
     NENG = 0
     FNEW = 0
     FNEF = 0 
     for network in  vehicle.networks:
-        for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
-                NENG += 1 
-                if propulsor.wing_mounted: 
-                    FNEW += 1  
-                else:
-                    FNEF += 1
-                if 'nacelle' in propulsor:
-                    nacelle =  propulsor.nacelle 
-                    FNAC    = nacelle.diameter / Units.ft
-                else:
-                    FNAC    = 0                      
+        for propulsor in network.propulsors: 
+            NENG += 1 
+            if propulsor.wing_mounted: 
+                FNEW += 1  
+            else:
+                FNEF += 1
+            if 'nacelle' in propulsor:
+                nacelle =  propulsor.nacelle 
+                FNAC    = nacelle.diameter / Units.ft
+            else:
+                FNAC    = 0                      
             
     VMAX     = vehicle.flight_envelope.design_mach_number
     SFLAP    = 0

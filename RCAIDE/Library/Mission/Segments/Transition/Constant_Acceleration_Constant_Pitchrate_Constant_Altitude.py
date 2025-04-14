@@ -10,29 +10,82 @@
 import numpy as np
 
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for transition segment with constant acceleration and pitch rate
 
-    Assumptions:
-    Constant acceleration and constant altitude
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - altitude : float
+                Fixed flight altitude [m]
+            - air_speed_start : float
+                Initial true airspeed [m/s]
+            - air_speed_end : float
+                Final true airspeed [m/s]
+            - acceleration : float
+                Constant acceleration [m/s^2]
+            - sideslip_angle : float
+                Aircraft sideslip angle [rad]
+            - pitch_initial : float
+                Initial pitch angle [rad]
+            - pitch_final : float
+                Final pitch angle [rad]
+            - state:
+                numerics:
+                    dimensionless:
+                        control_points : array
+                            Discretization points [-]
+                conditions : Data
+                    State conditions container
+                initials : Data, optional
+                    Initial conditions from previous segment
 
-    Source:
-    N/A
+    
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+            - conditions.freestream.altitude [m]
+            - conditions.frames.inertial.position_vector [m]
+            - conditions.frames.inertial.velocity_vector [m/s]
+            - conditions.frames.body.inertial_rotations [rad]
+            - conditions.frames.inertial.time [s]
+    
+    Notes
+    -----
+    This function sets up the initial conditions for a transition segment with constant
+    acceleration and pitch rate at fixed altitude. The segment handles transitions
+    between different flight phases while maintaining altitude.
 
-    Inputs:
-    segment.altitude                [meters]
-    segment.air_speed_start         [meters/second]
-    segment.air_speed_end           [meters/second]
-    segment.acceleration            [meters/second^2]
-    conditions.frames.inertial.time [seconds]
+    **Calculation Process**
+        1. Check initial conditions
+        2. Calculate time required based on acceleration:
+            t = (Vf - V0)/ax where:
+                - V0 is initial airspeed
+                - Vf is final airspeed
+                - ax is acceleration
+        3. Calculate velocity magnitude profile:
+        V = V0 + ax*t
+        4. Decompose velocity using sideslip:
+            - v_x = V*cos(β)
+            - v_y = V*sin(β)
+        where β is sideslip angle
+        5. Linear pitch transition:
+            θ = θ0 + (θf - θ0)*t/tf for θf > θ0
+            θ = θ0 - (θ0 - θf)*t/tf for θf < θ0
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
-    conditions.frames.inertial.time             [seconds]
+    **Major Assumptions**
+        * Constant acceleration
+        * Constant pitch rate
+        * Fixed altitude
+        * Linear pitch variation
+        * Coordinated flight
+        * Small angle approximations
 
-    Properties Used:
-    N/A
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """      
     
     # unpack

@@ -65,11 +65,13 @@ class Set_Speed_Set_Altitude_AVL_Trimmed(Segment):
         self.bank_angle                              = 0.0 
         self.linear_acceleration_x                   = 0.
         self.linear_acceleration_y                   = 0.  
-        self.linear_acceleration_z                   = 0. # note that down is positive
+        self.linear_acceleration_z                   = 0.  
         self.roll_rate                               = 0.
         self.pitch_rate                              = 0.  
         self.yaw_rate                                = 0.  
-        self.state.numerics.number_of_control_points = 1     
+        self.state.numerics.number_of_control_points = 1
+        self.hybrid_power_split_ratio                = None
+        self.battery_fuel_cell_power_split_ratio     = None 
         self.state.conditions.update(Results())
         
         # ---------------------------------------------------------------
@@ -114,14 +116,12 @@ class Set_Speed_Set_Altitude_AVL_Trimmed(Segment):
         iterate.conditions.thrust                = Common.Update.thrust
         iterate.conditions.aerodynamics          = Common.Update.aerodynamics
         iterate.conditions.stability             = Common.Update.stability
-        iterate.conditions.weights               = skip # Common.Update.weights
+        iterate.conditions.weights               = skip  
         iterate.conditions.forces                = Common.Update.forces
         iterate.conditions.moments               = Common.Update.moments
         iterate.conditions.planet_position       = skip
 
-        # Solve Residuals 
-        #iterate.unknowns.controls                = Common.Unpack_Unknowns.control_surfaces
-        #iterate.unknowns.mission                 = Common.Unpack_Unknowns.orientation  
+        # Solve Residuals  
         iterate.residuals.flight_dynamics        = Common.Residuals.flight_dynamics
 
         # --------------------------------------------------------------  

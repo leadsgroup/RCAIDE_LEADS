@@ -1,6 +1,20 @@
-# 
+"""
+This module provides common functionality for modeling battery systems in powertrains. It includes methods for 
+battery sizing, performance calculation, condition management, and property computation that are shared across
+different battery chemistries.
 
-""" RCAIDE Package Setup
+The module contains functions for:
+    - Appending and managing battery conditions during mission segments
+    - Finding battery properties using Ragone curves
+    - Calculating power and energy characteristics
+    - Computing mass changes for metal-air batteries
+    - Sizing battery modules based on mass or energy/power requirements
+
+See Also
+--------
+RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP
+RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC
+RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Aluminum_Air
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

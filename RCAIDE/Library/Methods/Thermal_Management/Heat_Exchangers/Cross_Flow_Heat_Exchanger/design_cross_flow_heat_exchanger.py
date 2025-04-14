@@ -51,6 +51,9 @@ def design_cross_flow_heat_exchanger(HEX,coolant_line,battery, single_side_conta
     
     # Terminate suppression of console window output   
     sys.stdout = sys.__stdout__ 
+    if output[3] != 0:
+        print("Cross-flow heat-exchanger desing optimization failed: ",output[4])
+        
     print('\nSizing ', HEX.tag)
     print(output[4])   
 

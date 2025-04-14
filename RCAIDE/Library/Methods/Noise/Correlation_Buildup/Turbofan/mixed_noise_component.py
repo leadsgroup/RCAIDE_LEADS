@@ -13,38 +13,57 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------     
 #  Mixed Noise Component
 # ----------------------------------------------------------------------------------------------------------------------       
-def mixed_noise_component(Velocity_primary,theta_m,sound_ambient,Velocity_secondary,
-                          Velocity_aircraft,Area_primary,Area_secondary,DSPL_m,EX_m,Str_m,Velocity_mixed,XBPR):
-    """This function calculates the noise contribution of the mixed jet component
-    
-    Assumptions:
-        N/A
+def mixed_noise_component(Velocity_primary, theta_m, sound_ambient, Velocity_secondary,
+                          Velocity_aircraft, Area_primary, Area_secondary, DSPL_m, EX_m, Str_m, Velocity_mixed, XBPR):
+    """
+    This function calculates the noise contribution of the mixed jet component.
 
-    Source:
-       [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
-       [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
+    Parameters
+    ----------
+    Velocity_primary : float
+        Velocity of the primary jet [m/s].
+    theta_m : float
+        Angle for the mixed jet [rad].
+    sound_ambient : float
+        Ambient sound level [SPL].
+    Velocity_secondary : float
+        Velocity of the secondary jet [m/s].
+    Velocity_aircraft : float
+        Velocity of the aircraft [m/s].
+    Area_primary : float
+        Area of the primary jet [m^2].
+    Area_secondary : float
+        Area of the secondary jet [m^2].
+    DSPL_m : float
+        Decibel Sound Pressure Level for the mixed jet [SPL].
+    EX_m : float
+        Excess noise level for the mixed jet.
+    Str_m : float
+        Strouhal number for the mixed jet.
+    Velocity_mixed : float
+        Velocity of the mixed jet [m/s].
+    XBPR : float
+        Bypass ratio adjustment factor.
 
-    Inputs:
-        SPL_m               [dB]
-        Velocity_primary    [m/s]
-        theta_m             [rad]
-        sound_ambient       [SPL]
-        Velocity_secondary  [m/s]
-        Velocity_aircraft   [m/s]
-        Area_primary        [m^2]
-        Area_secondary      [m^2]
-        DSPL_m              [SPL]
-        EX_m
-        Str_m
-        Velocity_mixed      [m/s]
-        XBPR                   
+    Returns
+    -------
+    SPL_m : float
+        Sound Pressure Level for the mixed jet component [dB].
 
-    Outputs:
-        SPL_m                [dB]
+    Notes
+    -----
+    The function uses semi-empirical methods to calculate the noise contribution of the mixed jet component.
 
-    Properties Used: 
-        N/A 
-    """ 
+    **Definitions**
+
+    'SPL_m'
+        Sound Pressure Level for the mixed jet component.
+
+    References
+    ----------
+    [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
+    [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
+    """
 
     #Calculation of the velocity exponent
     velocity_exponent = (Velocity_mixed/sound_ambient)**0.5*(0.6+(0.2/(0.2+Str_m) * \

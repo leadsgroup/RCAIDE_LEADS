@@ -16,29 +16,67 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------  
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for constant equivalent airspeed descent at fixed rate
 
-    Assumptions:
-    Constant EAS speed and constant descent rate
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - descent_rate : float
+                Rate of descent [m/s]
+            - equivalent_air_speed : float
+                Equivalent airspeed to maintain [m/s]
+            - altitude_start : float
+                Initial altitude [m]
+            - altitude_end : float
+                Final altitude [m]
+            - sideslip_angle : float
+                Aircraft sideslip angle [rad]
+            - state:
+                numerics.dimensionless.control_points : array
+                    Discretization points [-]
+                conditions : Data
+                    State conditions container
+            - analyses:
+                atmosphere : Model
+                    Atmospheric model for property calculations
+    
+    Returns
+    -------
+    None
 
-    Source:
-    N/A
+    Notes
+    -----
+    This function sets up the initial conditions for a descent segment with constant
+    equivalent airspeed (EAS) and constant descent rate. It handles the conversion
+    between EAS and true airspeed accounting for density variations with altitude.
+    Updates segment conditions directly with velocity_vector [m/s], altitude [m],
+    and position_vector [m].
 
-    Inputs:
-    segment.equivalent_air_speed                        [meters/second]
-    segment.altitude_start                              [meters]
-    segment.altitude_end                                [meters]
-    segment.descent_rate                                [meters/second]
-    segment.state.numerics.dimensionless.control_points [array]
+    **Calculation Process**
+        1. Discretize altitude profile
+        2. Get atmospheric properties at each altitude
+        3. Convert EAS to true airspeed:
+            V = EAS/sqrt(ρ/ρ0) where:
+                - ρ is local density
+                - ρ0 is sea level density
+        4. Decompose velocity into components using:
+            - Fixed descent rate
+            - Sideslip angle
+            - Computed true airspeed
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
-    conditions.frames.inertial.time             [seconds]
+    **Major Assumptions**
+        * Constant equivalent airspeed
+        * Constant descent rate
+        * Standard atmosphere model
+        * Small angle approximations
+        * Quasi-steady flight
 
-    Properties Used:
-    N/A
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
+    RCAIDE.Library.Mission.Common.Update.atmosphere
     """       
     
     # unpack

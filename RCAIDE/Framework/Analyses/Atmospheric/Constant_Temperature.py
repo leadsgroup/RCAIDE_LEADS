@@ -15,12 +15,11 @@ from RCAIDE.Library.Attributes.Planets import Earth
 #  Classes
 # ----------------------------------------------------------------------
 class Constant_Temperature(Atmospheric):
-
     """Implements a constant temperature with U.S. Standard Atmosphere (1976 version) freestream pressure
         
     Assumptions:
     None
-    
+
     Source:
     U.S. Standard Atmosphere, 1976, U.S. Government Printing Office, Washington, D.C., 1976
     """
@@ -48,8 +47,8 @@ class Constant_Temperature(Atmospheric):
         self.update(atmo_data)
     
     def compute_values(self,altitude,temperature=288.15):
-
-        """Computes atmospheric values.
+        """
+        Computes atmospheric values.
     
         Assumptions:
         Constant temperature atmosphere
@@ -63,20 +62,20 @@ class Constant_Temperature(Atmospheric):
 
         Outputs:
         atmo_data.
-          pressure                               [Pa]
-          temperature                            [K]
-          speed_of_sound                         [m/s]
-          dynamic_viscosity                      [kg/(m*s)]
-          prandtl_number                         [-]
+            pressure                               [Pa]
+            temperature                            [K]
+            speed_of_sound                         [m/s]
+            dynamic_viscosity                      [kg/(m*s)]
+            prandtl_number                         [-]
     
         Properties Used:
         self.
-          fluid_properties.gas_specific_constant [J/(kg*K)]
-          planet.sea_level_gravity               [m/s^2]
-          planet.mean_radius                     [m]
-          breaks.
-            altitude                             [m]
-            pressure                             [Pa]
+            fluid_properties.gas_specific_constant [J/(kg*K)]
+            planet.sea_level_gravity               [m/s^2]
+            planet.mean_radius                     [m]
+            breaks.
+                altitude                             [m]
+                pressure                             [Pa]
         """
 
         # unpack

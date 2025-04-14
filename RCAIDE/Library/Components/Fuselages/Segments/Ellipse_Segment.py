@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Fuselage/Ellipse_Segment.py
+# RCAIDE/Library/Components/Fuselage/Ellipse_Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

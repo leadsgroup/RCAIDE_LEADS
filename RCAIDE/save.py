@@ -15,24 +15,43 @@ from collections import OrderedDict
 # ----------------------------------------------------------------------------------------------------------------------
 #  save
 # ----------------------------------------------------------------------------------------------------------------------       
-def save(data,filename,pickle_format = False):
-    """Converts a RCAIDE data structure to a JSON file for storage. 
-
-    Assumptions:
-        Data must be numpy arrays, strings, booleans, floats, ints, or lists.
-        Functions are ignored and all other data raises an error.
-
-    Source:
-        None
-
-    Args:
-        data                   : RCAIDE data structure [unitless]
-        filename (string)      : file to be output     [unitless] 
-        pickle_format (boolean): pickle file format flag  [unitless]
-
-    Returns:
-        None 
-    """      
+def save(data, filename, pickle_format=False):
+    """
+    Converts a RCAIDE data structure to a JSON or Pickle file for storage.
+    
+    Parameters
+    ----------
+    data : RCAIDE.Framework.Core.Data
+        RCAIDE data structure to be saved
+    filename : str
+        Path where the file will be saved, without extension for pickle files
+    pickle_format : bool, optional
+        Flag indicating whether to save as a pickle file (True) or JSON file (False)
+        Default is False (JSON format)
+        
+    Returns
+    -------
+    None
+    
+    Notes
+    -----
+    This function supports two file formats:
+    
+    1. JSON format (default): Converts the RCAIDE data structure to a JSON string
+       using the build_dict_base and build_dict_r helper functions, then writes it to a file.
+       
+    2. Pickle format: Serializes the Python object directly to a binary file.
+       The .pkl extension is automatically added to the filename.
+    
+    JSON format is human-readable and more portable across different Python versions,
+    while pickle format is more efficient for large data structures but less portable.
+    
+    See Also
+    --------
+    RCAIDE.load
+    RCAIDE.build_dict_base
+    RCAIDE.build_dict_r
+    """
     if pickle_format:
         pickle_file  =  filename + '.pkl'
         with open(pickle_file, 'wb') as file:

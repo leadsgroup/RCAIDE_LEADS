@@ -11,15 +11,15 @@
 import  RCAIDE
 from RCAIDE.Framework.Core import Data ,redirect  
 from RCAIDE.Framework.Analyses.Propulsion.Ducted_Fan_Design_Code import Ducted_Fan_Design_Code
-from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance import compute_ducted_fan_efficiency
- 
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Rankine_Froude_Momentum_Theory.RFMT_performance                  import compute_ducted_fan_efficiency
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.write_geometry                     import  write_geometry
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.write_input_deck                   import  write_input_deck
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.run_dfdc_analysis                  import  run_dfdc_analysis
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.translate_conditions_to_dfdc_cases import  translate_conditions_to_dfdc_cases
+from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.Performance.Blade_Element_Momentum_Theory.read_results                       import  read_results 
+
 # python imports   
 from shutil import rmtree
-from .write_geometry                     import  write_geometry
-from .write_input_deck                   import  write_input_deck
-from .run_dfdc_analysis                  import  run_dfdc_analysis
-from .translate_conditions_to_dfdc_cases import  translate_conditions_to_dfdc_cases
-from .read_results                       import  read_results 
 from scipy import interpolate 
 import os
 import numpy as  np
@@ -27,7 +27,7 @@ import numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 #  design_ducted_fan
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_ducted_fan(ducted_fan, dfdc_bin_name = 'dfdc', new_regression_results = False, keep_files = True): 
+def design_ducted_fan(ducted_fan, new_regression_results = False, keep_files = True): 
     """
     Designs and optimizes a ducted fan propulsor using either Rankine-Froude Momentum Theory or 
     Blade Element Momentum Theory (BEMT) with DFDC integration.
@@ -130,7 +130,7 @@ def design_ducted_fan(ducted_fan, dfdc_bin_name = 'dfdc', new_regression_results
             
         dfdc_analysis                                   = Ducted_Fan_Design_Code() 
         dfdc_analysis.geometry                          = ducted_fan
-        dfdc_analysis.settings.filenames.dfdc_bin_name  = dfdc_bin_name
+        dfdc_analysis.settings.filenames.dfdc_bin_name  = ducted_fan.DFDC.bin_name
         dfdc_analysis.settings.new_regression_results   = new_regression_results
         dfdc_analysis.settings.keep_files               = keep_files
         
@@ -140,7 +140,7 @@ def design_ducted_fan(ducted_fan, dfdc_bin_name = 'dfdc', new_regression_results
         root_dir = os.path.abspath(os.path.join(current_dir, *['..'] * 6))
     
         # Set the run folder path
-        dfdc_analysis.settings.filenames.run_folder = os.path.join(root_dir, 'Regressions', 'Tests', 'network_electric', 'dfdc_files')
+        dfdc_analysis.settings.filenames.run_folder = os.path.join(root_dir, 'VnV', 'Verification', 'network_electric', 'dfdc_files')
         run_folder = dfdc_analysis.settings.filenames.run_folder
     
         # Ensure the directory exists

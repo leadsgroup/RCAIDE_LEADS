@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Thwaites Method
 # ----------------------------------------------------------------------------------------------------------------------
-def thwaites_method(npanel,ncases,ncpts,NU,L,RE_L,X_I,VE_I, DVE_I,tol,THETA_0):
+def thwaites_method(npanel,ncases,ncpts,NU,L,RE_L,X_I,VE_I, DVE_I,tol,wrong_columns,THETA_0):
     """ Computes the boundary layer characteristics in laminar 
     flow pressure gradients
     
@@ -67,13 +67,18 @@ def thwaites_method(npanel,ncases,ncpts,NU,L,RE_L,X_I,VE_I, DVE_I,tol,THETA_0):
         for cpt in range(ncpts):
             
             def dy_by_dx(index, X, Y):
-                return 0.45*nu*Ve_i[index]**5            
+                return 0.45*nu*Ve_i[index]**5
+
+            if case in wrong_columns:
+                continue           
             
             l              = L[case,cpt]
             theta_0        = THETA_0 
             Re_L           = RE_L[case,cpt]
             x_i            = X_I.data[:,case,cpt][X_I.mask[:,case,cpt] ==False]
+            x_mask         = X_I.mask[:,case,cpt]    # debug step
             Ve_i           = VE_I.data[:,case,cpt][VE_I.mask[:,case,cpt] ==False]
+            V_mask         = VE_I.mask[:,case,cpt]   # debug step
             dVe_i          = DVE_I.data[:,case,cpt][DVE_I.mask[:,case,cpt] ==False]
             nu             = NU[case,cpt]
             n              = len(x_i)

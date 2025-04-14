@@ -53,35 +53,32 @@ class Generic_Battery_Module(Component):
         
     cell : Data
         Container for cell-specific attributes
-        
-        - chemistry : str
-            Battery chemistry type (default: None)
-        - discharge_performance_map : Data
-            Discharge performance characteristics
-        - ragone : Data
-            Ragone plot parameters
+            - chemistry : str
+                Battery chemistry type (default: None)
+            - discharge_performance_map : Data
+                Discharge performance characteristics
+            - ragone : Data
+                Ragone plot parameters
             
     electrical_configuration : Data
         Battery electrical arrangement
-        
-        - series : int
-            Number of cells in series (default: 1)
-        - parallel : int
-            Number of parallel strings (default: 1)
+            - series : int
+                Number of cells in series (default: 1)
+            - parallel : int
+                Number of parallel strings (default: 1)
             
     geometrtic_configuration : Data
         Physical arrangement of cells
-        
-        - normal_count : int
-            Cells in normal direction (default: 1)
-        - parallel_count : int
-            Cells in parallel direction (default: 1)
-        - normal_spacing : float
-            Spacing between normal cells [m] (default: 0.02)
-        - stacking_rows : int
-            Number of stacking rows (default: 3)
-        - parallel_spacing : float
-            Spacing between parallel cells [m] (default: 0.02)
+            - normal_count : int
+                Cells in normal direction (default: 1)
+            - parallel_count : int
+                Cells in parallel direction (default: 1)
+            - normal_spacing : float
+                Spacing between normal cells [m] (default: 0.02)
+            - stacking_rows : int
+                Number of stacking rows (default: 3)
+            - parallel_spacing : float
+                Spacing between parallel cells [m] (default: 0.02)
 
     Notes
     -----

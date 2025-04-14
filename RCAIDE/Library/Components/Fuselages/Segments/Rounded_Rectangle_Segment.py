@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Fuselage/Rounded_Rectangle_Segment.py
+# RCAIDE/Library/Components/Fuselage/Rounded_Rectangle_Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

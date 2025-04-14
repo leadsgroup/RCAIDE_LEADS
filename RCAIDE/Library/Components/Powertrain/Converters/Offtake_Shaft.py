@@ -30,17 +30,17 @@ class Offtake_Shaft(Converter):
     -----
     The Offtake_Shaft class models power extraction from rotating shafts in 
     propulsion systems. It is typically used to simulate:
-    * Accessory power extraction
-    * Generator drives
-    * Hydraulic pump drives
-    * Air conditioning system drives
-    * Other mechanical power requirements
+        * Accessory power extraction
+        * Generator drives
+        * Hydraulic pump drives
+        * Air conditioning system drives
+        * Other mechanical power requirements
 
     The model accounts for:
-    * Power extraction effects on main shaft
-    * Temperature effects on performance
-    * Pressure effects on performance
-    * Impact on engine thermodynamic cycle
+        * Power extraction effects on main shaft
+        * Temperature effects on performance
+        * Pressure effects on performance
+        * Impact on engine thermodynamic cycle
 
     **Definitions**
 

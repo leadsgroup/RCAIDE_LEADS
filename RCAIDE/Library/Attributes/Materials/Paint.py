@@ -15,22 +15,43 @@ from RCAIDE.Framework.Core import Units
 #-------------------------------------------------------------------------------
 
 class Paint(Solid):
-    """ Physical Constants Specific to Paint/Vinyl Surface Coverings
+    """
+    A class representing paint and vinyl surface coating material properties.
+
+    Attributes
+    ----------
+    ultimate_tensile_strength : float
+        Maximum tensile stress before failure in Pa (0.0)
+    ultimate_shear_strength : float
+        Maximum shear stress before failure in Pa (0.0)
+    ultimate_bearing_strength : float
+        Maximum bearing stress before failure in Pa (0.0)
+    yield_tensile_strength : float
+        Stress at which material begins to deform plastically in Pa (0.0)
+    yield_shear_strength : float
+        Shear stress at which material begins to deform plastically in Pa (0.0)
+    yield_bearing_strength : float
+        Bearing stress at which material begins to deform plastically in Pa (0.0)
+    minimum_gage_thickness : float
+        Minimum applicable thickness in m (150e-6)
+    density : float
+        Material density in kg/m³ (1800)
+
+    Notes
+    -----
+    This class implements material properties for paint and vinyl surface coatings. 
+    The zero values for strength properties reflect that these coatings are non 
+    load-bearing elements. The minimum gage thickness represents a typical 
+    coating thickness for aerospace applications.
+
+    **Definitions**
     
-    Assumptions:
-    None
+    'Surface Coating'
+        A material applied to the surface of another material to provide protection, 
+        decoration, or other functional properties
     
-    Source:
-    MatWeb (Median of Mfg. Reported Values)
-    
-    Inputs:
-    N/A
-    
-    Outputs:
-    N/A
-    
-    Properties Used:
-    None
+    'Minimum Gage Thickness'
+        The minimum thickness required for adequate surface coverage and protection
     """
 
     def __defaults__(self):

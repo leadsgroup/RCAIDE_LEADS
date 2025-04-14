@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Wings/Segment.py
+# RCAIDE/Library/Components/Wings/Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

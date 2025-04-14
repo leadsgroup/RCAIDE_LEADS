@@ -34,8 +34,7 @@ def initialize_conditions_unpack_unknowns(segment):
 
     Outputs:
     conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.energy.throttle              [unitless]
+    conditions.frames.inertial.position_vector  [meters] 
     conditions.frames.body.inertial_rotations   [radians]
 
     Properties Used:

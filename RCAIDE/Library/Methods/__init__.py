@@ -1,7 +1,15 @@
 # RCAIDE/Methods/__init__.py
 # 
 
-""" RCAIDE Package Setup
+"""
+This module provides a comprehensive collection of methods for aircraft design, analysis, and simulation within the RCAIDE framework.
+
+The module is organized into specialized submodules covering various disciplines of aerospace engineering. 
+
+See Also
+--------
+RCAIDE.Library.Components
+RCAIDE.Framework.Analyses
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

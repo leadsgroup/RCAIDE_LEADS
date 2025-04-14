@@ -85,7 +85,7 @@ def induced_drag(state,settings,geometry):
                 AR   = AR_wing
         
         # compute total induced drag 
-        total_induced_drag = total_viscous_induced_drag +  CDi  
+        total_induced_drag = total_viscous_induced_drag +  CDi
         
         # Calculate the vehicle level oswald efficiency
         e_osw = (CL**2)/(np.pi*AR*total_induced_drag)

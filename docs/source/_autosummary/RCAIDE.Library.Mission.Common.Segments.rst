@@ -16,11 +16,7 @@ Segments
    .. autosummary::
       :toctree:
    
-      merge_segment_states
-      pre_process
       sequential_segments
-      unpack_segments
-      update_segments
    
    
 

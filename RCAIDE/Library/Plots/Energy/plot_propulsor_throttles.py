@@ -101,7 +101,7 @@ def plot_propulsor_throttles(results,
         set_axes(axis_1)               
         for network in results.segments[i].analyses.energy.vehicle.networks: 
             for j ,  propulsor in enumerate(network.propulsors):
-                eta = results.segments[i].conditions.energy[propulsor.tag].throttle[:,0]  
+                eta = results.segments[i].conditions.energy.propulsors[propulsor.tag].throttle[:,0]  
                 if j == 0 and i ==0:               
                     axis_1.plot(time, eta, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name + ': '+ propulsor.tag )
                 else:

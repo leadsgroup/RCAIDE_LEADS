@@ -14,43 +14,51 @@ from .find_specific_power                import find_specific_power
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
 def find_ragone_properties(specific_energy, battery, energy, power):
-    """determines mass of a battery based on the specific energy, energy required, and power required,
-    works by calling find_specific_power and size_module_from_energy_and_power
-    Assumptions:
-    None
-    
-    Inputs:
-    energy            [J]
-    power             [W]
-    battery.
-    
-    battery.
-      type
-      specific_energy [J/kg]               
-      specific_power  [W/kg]
-      ragone.
-        constant_1    [W/kg]
-        constant_2    [J/kg]
-        upper_bound   [J/kg]
-        lower_bound   [J/kg]
-                
-    Outputs:
-    battery.
-      maximum_energy      [J]
-      maximum_power       [W]
-      specific_energy [J/kg]
-      specific_power  [W/kg]
-      mass_properties.
-        mass           [kg]    
-    
-    
     """
+    Determines battery mass based on specific energy, energy required, and power required.
     
+    Parameters
+    ----------
+    specific_energy : float
+        Specific energy value to use for the battery [J/kg]
+    battery : Battery
+        The battery component to be sized
+    energy : float
+        Required energy capacity [J]
+    power : float
+        Required power output [W]
     
+    Returns
+    -------
+    mass : float
+        Calculated mass of the battery [kg]
     
+    Notes
+    -----
+    This function calculates the mass of a battery needed to meet both energy and power
+    requirements, using a specific energy value and the corresponding specific power
+    determined from a Ragone curve.
+    
+    The function performs the following steps:
+      1. Calculates the specific power corresponding to the given specific energy using the Ragone curve correlation
+      2. Sizes the battery module based on the energy and power requirements
+    
+    The Ragone curve describes the trade-off between specific energy and specific power
+    in energy storage devices. By using this relationship, the function ensures that
+    the battery is sized appropriately to meet both energy and power requirements.
+    
+    **Major Assumptions**
+        * The Ragone curve accurately represents the energy-power trade-off
+        * Linear scaling of energy and power with mass
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.find_specific_power
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_energy_and_power
+    """
     
     find_specific_power(battery, specific_energy)
     size_module_from_energy_and_power(battery, energy, power)
     
-    #can used for a simple optimization
+    # can be used for a simple optimization
     return battery.mass_properties.mass 

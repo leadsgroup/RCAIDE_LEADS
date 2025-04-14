@@ -11,31 +11,73 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # update_nmc_cell_age
 # ----------------------------------------------------------------------------------------------------------------------  
-def update_nmc_cell_age(battery,segment, battery_conditions,increment_battery_age_by_one_day):  
-    """ This is an aging model for 18650 lithium-nickel-manganese-cobalt-oxide batteries. 
-   
-    Source: 
-    Schmalstieg, Johannes, et al. "A holistic aging model for Li (NiMnCo) O2
-    based 18650 lithium-ion batteries." Journal of Power Sources 257 (2014): 325-334.
-      
-    Assumptions:
-    None
-
-    Inputs:
-      segment.conditions.energy. 
-         battery.cycle_in_day                                                   [unitless]
-         battery.cell.temperature                                               [Kelvin] 
-         battery.voltage_open_circuit                                           [Volts] 
-         battery.charge_throughput                                              [Amp-hrs] 
-         battery.cell.state_of_charge                                           [unitless] 
+def update_nmc_cell_age(battery, segment, battery_conditions, increment_battery_age_by_one_day):  
+    """
+    Updates the aging model for 18650 lithium-nickel-manganese-cobalt-oxide batteries.
     
-    Outputs:
-       segment.conditions.energy.
-         battery.capacity_fade_factor     (internal resistance growth factor)   [unitless]
-         battery.resistance_growth_factor (capactance (energy) growth factor)   [unitless]  
-         
-    Properties Used:
-    N/A 
+    Parameters
+    ----------
+    battery : BatteryModule
+        The battery module containing NMC cells
+    segment : Segment
+        The mission segment in which the battery is operating
+    battery_conditions : Conditions
+        Object containing battery state with the following attributes:
+            - cell.state_of_charge : numpy.ndarray
+                State of charge of the cell [unitless, 0-1]
+            - voltage_under_load : numpy.ndarray
+                Battery voltage under load [V]
+            - cell.cycle_in_day : int
+                Number of cycles the battery has undergone [days]
+            - cell.charge_throughput : numpy.ndarray
+                Cumulative charge throughput [Ah]
+            - cell.temperature : numpy.ndarray
+                Battery cell temperature [K]
+            - cell.capacity_fade_factor : float
+                Factor representing capacity degradation [unitless, 0-1]
+            - cell.resistance_growth_factor : float
+                Factor representing internal resistance growth [unitless, ≥1]
+    increment_battery_age_by_one_day : bool
+        Flag to increment the battery age by one day
+    
+    Returns
+    -------
+    None
+        This function modifies the battery_conditions object in-place.
+    
+    Notes
+    -----
+    This function implements a holistic aging model for NMC batteries based on
+    research by Schmalstieg et al. The model accounts for:
+    
+    1. Capacity fade due to:
+       - Calendar aging (time-dependent, voltage-dependent, temperature-dependent)
+       - Cycling aging (charge throughput-dependent, voltage-dependent, DOD-dependent)
+    
+    2. Resistance growth due to:
+       - Calendar aging (time-dependent, voltage-dependent, temperature-dependent)
+       - Cycling aging (charge throughput-dependent, voltage-dependent, DOD-dependent)
+    
+    The model uses the following key equations:
+    
+    Capacity fade factor:
+    E_fade_factor = 1 - α_cap * t^0.75 - β_cap * √Q
+    
+    Resistance growth factor:
+    R_growth_factor = 1 + α_res * t^0.75 + β_res * Q
+    
+    where:
+      - t is time in days
+      - Q is charge throughput
+      - α_cap, β_cap, α_res, β_res are coefficients dependent on voltage and temperature
+    
+    References
+    ----------
+    [1] Schmalstieg, Johannes, et al. "A holistic aging model for Li(NiMnCo)O2 based 18650 lithium-ion batteries." Journal of Power Sources 257 (2014): 325-334.
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.compute_nmc_cell_performance
     """    
     n_series   = battery.electrical_configuration.series
     SOC        = battery_conditions.cell.state_of_charge

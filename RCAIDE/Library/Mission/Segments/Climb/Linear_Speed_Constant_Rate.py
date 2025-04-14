@@ -14,29 +14,66 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
-    
-    Assumptions:
-    Linearly changing airspeed, with a constant rate of climb
+    """
+    Initializes conditions for linear speed climb segment
 
-    Source:
-    N/A
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
 
-    Inputs:
-    segment.climb_rate                          [meters/second]
-    segment.air_speed_start                     [meters/second]
-    segment.air_speed_end                       [meters/second]
-    segment.altitude_end                        [meters]
-    state.numerics.dimensionless.control_points [Unitless]
-    conditions.freestream.density               [kilograms/meter^3]
+    Notes
+    -----
+    This function sets up the initial conditions for a climb segment with linearly
+    varying airspeed and constant rate of climb. The airspeed varies linearly
+    between the start and end values.
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
+    **Required Segment Components**
 
-    Properties Used:
-    N/A
+    segment:
+        - climb_rate : float
+            Rate of climb [m/s]
+        - air_speed_start : float
+            Initial true airspeed [m/s]
+        - air_speed_end : float
+            Final true airspeed [m/s]
+        - altitude_start : float
+            Initial altitude [m]
+        - altitude_end : float
+            Final altitude [m]
+        - sideslip_angle : float
+            Aircraft sideslip angle [rad]
+        - state:
+            numerics.dimensionless.control_points : array
+                Discretization points [-]
+            conditions : Data
+                State conditions container
+
+    **Calculation Process**
+        1. Discretize altitude profile
+        2. Calculate velocity magnitude variation
+        3. Decompose velocity into components using:
+            - Climb rate constraint
+            - Sideslip angle
+            - Linear speed profile
+
+    **Major Assumptions**
+        * Linear airspeed variation
+        * Constant rate of climb
+        * Small angle approximations
+        * Quasi-steady flight
+
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+            - conditions.frames.inertial.velocity_vector [m/s]
+            - conditions.frames.inertial.position_vector [m]
+            - conditions.freestream.altitude [m]
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """      
     
     # unpack

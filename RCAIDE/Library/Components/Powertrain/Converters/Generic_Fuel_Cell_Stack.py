@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Sources/Fuel_Cells/Generic_Fuel_Cell.py
+# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Cells/Generic_Fuel_Cell.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke

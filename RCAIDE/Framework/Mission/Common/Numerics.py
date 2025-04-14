@@ -46,14 +46,15 @@ class Numerics(Conditions):
         self.tag                              = 'numerics' 
         self.number_of_control_points         = 16
         self.discretization_method            = chebyshev_data
-        self.solver                           =  Data()
+        self.solver                           = Data()
         self.solver.type                      = "optimize" # options: "optimize", "root_finder"
         self.solver.method                    = "SLSQP"    
-        self.solver.objective                 = "energy"   #options: # None, energy , power 
-        self.solver.tolerance_solution        = 1E-6
+        self.solver.objective                 = None        # options: # None, energy , power 
+        self.solver.tolerance_solution        = 1E-6     
         self.solver.converged                 = None
+        self.solver.print_output              = True
         self.solver.max_evaluations           = 200
-        self.solver.step_size                 = 1E-8
+        self.solver.step_size                 = 1E-8    
         
         self.dimensionless                    = Conditions()
         self.dimensionless.control_points     = np.empty([0,0])

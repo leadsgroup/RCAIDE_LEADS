@@ -143,7 +143,7 @@ def plot_lateral_stability(results,
     fig.subplots_adjust(top=0.8) 
     
     # set title of plot 
-    title_text    = 'Stability Coefficents'      
+    title_text    = 'Stability Coeffiicents'      
     fig.suptitle(title_text)
  
     if save_figure:

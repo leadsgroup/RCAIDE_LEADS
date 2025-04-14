@@ -1,7 +1,12 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Ram/__init__.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 
-""" RCAIDE Package Setup
+"""
+This module provides functionality for modeling ram air compression in powertrains. It includes methods for computing 
+ram compression performance and appending ram conditions to simulation results.
+
+See Also
+--------
+RCAIDE.Library.Methods.Powertrain.Converters
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

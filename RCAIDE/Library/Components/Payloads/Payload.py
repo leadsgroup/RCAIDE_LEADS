@@ -82,25 +82,3 @@ class Payload(Component):
     def append_operating_conditions(self,segment,bus): 
         append_payload_conditions(self,segment,bus)
         return 
-        
-    def power(self):
-        """This gives the power draw from a payload.
-
-        Assumptions:
-        None
-
-        Source:
-        N/A
-
-        Inputs:
-        None
-
-        Outputs:
-        self.outputs.power_draw         [Watts]
-
-        Properties Used:
-        self.power_draw
-        """          
-        self.inputs.power = self.power_draw
-        
-        return self.power_draw 

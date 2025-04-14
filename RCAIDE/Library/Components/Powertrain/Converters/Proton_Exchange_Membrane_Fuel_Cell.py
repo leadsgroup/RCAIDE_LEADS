@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Sources/Fuel_Cell/Proton_Exchange_Membrane_Fuel_Cell.py
+# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Cell/Proton_Exchange_Membrane_Fuel_Cell.py
 # 
 # 
 # Created:  Dec 2024, M. Guidotti and M. Clarke 

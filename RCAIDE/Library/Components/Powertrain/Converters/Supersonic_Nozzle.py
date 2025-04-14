@@ -41,21 +41,19 @@ class Supersonic_Nozzle(Converter):
     -----
     The Supersonic_Nozzle class models a convergent-divergent nozzle that can 
     achieve supersonic exit flow. The model includes:
-    
-    * Isentropic flow relations
-    * Shock wave effects
-    * Variable area ratio capabilities
-    * Real gas effects through efficiency terms
-    * Pressure recovery modeling
+        * Isentropic flow relations
+        * Shock wave effects
+        * Variable area ratio capabilities
+        * Real gas effects through efficiency terms
+        * Pressure recovery modeling
 
     **Major Assumptions**
-
-    * Pressure ratio and efficiency do not change with varying conditions
-    * One-dimensional flow
-    * Perfect gas behavior
-    * Adiabatic process
-    * No boundary layer separation
-    * Steady flow conditions
+        * Pressure ratio and efficiency do not change with varying conditions
+        * One-dimensional flow
+        * Perfect gas behavior
+        * Adiabatic process
+        * No boundary layer separation
+        * Steady flow conditions
 
     **Definitions**
 
@@ -107,7 +105,6 @@ class Supersonic_Nozzle(Converter):
         self.max_area_ratio                  = 1000.
         self.min_area_ratio                  = 0.
 
-    def append_operating_conditions(self,segment,propulsor): 
-        propulsor_conditions =  segment.state.conditions.energy[propulsor.tag]
-        append_supersonic_nozzle_conditions(self,segment,propulsor_conditions)
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
+        append_supersonic_nozzle_conditions(self,segment,energy_conditions)
         return 

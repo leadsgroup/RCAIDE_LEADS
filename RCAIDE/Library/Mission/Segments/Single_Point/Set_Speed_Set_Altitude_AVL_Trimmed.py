@@ -13,30 +13,77 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------   
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for fixed speed and altitude trim analysis using AVL
 
-    Assumptions:
-    A fixed speed and altitude
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - altitude : float
+                Flight altitude [m]
+            - air_speed : float
+                True airspeed [m/s]
+            - sideslip_angle : float
+                Aircraft sideslip angle [rad]
+            - linear_acceleration_x : float
+                Acceleration in x-direction [m/s^2]
+            - linear_acceleration_y : float
+                Acceleration in y-direction [m/s^2]
+            - linear_acceleration_z : float
+                Acceleration in z-direction [m/s^2]
+            - roll_rate : float
+                Aircraft roll rate [rad/s]
+            - pitch_rate : float
+                Aircraft pitch rate [rad/s]
+            - yaw_rate : float
+                Aircraft yaw rate [rad/s]
+            - state:
+                conditions : Data
+                    State conditions container
+                initials : Data, optional
+                    Initial conditions from previous segment
+    
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+            - conditions.freestream.altitude [m]
+            - conditions.frames.inertial.position_vector [m]
+            - conditions.frames.inertial.velocity_vector [m/s]
+            - conditions.frames.inertial.acceleration_vector [m/s^2]
+            - conditions.static_stability.roll_rate [rad/s]
+            - conditions.static_stability.pitch_rate [rad/s]
+            - conditions.static_stability.yaw_rate [rad/s]
+    
+    Notes
+    -----
+    This function sets up the initial conditions for a single point analysis with
+    fixed speed and altitude. It includes trim state variables for AVL (Athena 
+    Vortex Lattice) aerodynamic analysis.
 
-    Source:
-    N/A
+    **Calculation Process**
+        1. Check initial conditions
+        2. Decompose velocity into components using sideslip angle:
+                - v_x = V * cos(β)
+                - v_y = V * sin(β)
+            where:
+                - V is true airspeed
+                - β is sideslip angle
+        3. Set position and altitude
+        4. Set acceleration vector
+        5. Set angular rates for trim analysis
 
-    Inputs:
-    segment.altitude                               [meters]
-    segment.air_speed                              [meters/second]
-    segment.linear_acceleration_x                  [meters/second^2]
-    segment.sideslip_angle                         [radians]
-    segment.linear_acceleration_z                  [meters/second^2]
+    **Major Assumptions**
+        * Steady state trim condition
+        * Small angle approximations
+        * Linear aerodynamics
+        * No atmospheric variations
 
-    Outputs:
-    conditions.frames.inertial.acceleration_vector [meters/second^2]
-    conditions.frames.inertial.velocity_vector     [meters/second]
-    conditions.frames.inertial.position_vector     [meters]
-    conditions.freestream.altitude                 [meters]
-    conditions.frames.inertial.time                [seconds]
-
-    Properties Used:
-    N/A
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
+    RCAIDE.Methods.Aerodynamics.AVL
     """      
     
     # unpack

@@ -14,58 +14,73 @@ from RCAIDE.Library.Methods.Gas_Dynamics.fm_id import fm_id
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_supersonic_nozzle_performance(supersonic_nozzle,s_nozzle_conditions,conditions): 
-    """This computes the output values from the input values according to
-    equations from the source.
+def compute_supersonic_nozzle_performance(supersonic_nozzle,conditions): 
+    """
+    Computes the performance parameters of a supersonic nozzle based on input conditions.
     
-    Assumptions:
-    Constant polytropic efficiency and pressure ratio
+    Parameters
+    ----------
+    supersonic_nozzle : RCAIDE.Components.Energy.Converters.Supersonic_Nozzle
+        The supersonic nozzle component for which performance is being computed
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Container for flight conditions and energy system states
+        
+    Returns
+    -------
+    None
+        This function modifies the conditions object in-place
     
-    Source:
-    https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+    Notes
+    -----
+    This function calculates output values from input conditions according to 
+    gas dynamics equations for supersonic nozzles.
     
-    Inputs:
-    conditions.freestream.
-      isentropic_expansion_factor         [-]
-      specific_heat_at_constant_pressure  [J/(kg K)]
-      pressure                            [Pa]
-      stagnation_pressure                 [Pa]
-      stagnation_temperature              [K]
-      gas_specific_constant               [J/(kg K)]
-      mach_number                         [-]
-    self.inputs.
-      stagnation_temperature              [K]
-      stagnation_pressure                 [Pa]
-               
-    Outputs:
-    s_nozzle_conditions.
-      stagnation_temperature              [K]  
-      stagnation_pressure                 [Pa]
-      stagnation_enthalpy                 [J/kg]
-      mach_number                         [-]
-      static_temperature                  [K]
-      static_enthalpy                     [J/kg]
-      velocity                            [m/s]
-      static_pressure                     [Pa]
-      area_ratio                          [-]
-            
-    Properties Used:
-    self.
-      pressure_ratio                      [-]
-      polytropic_efficiency               [-]
-      pressure_recovery                   [-]
+    **Major Assumptions**
+        * Constant polytropic efficiency and pressure ratio
+        * Isentropic flow except for losses accounted by efficiency terms
+        * Perfect gas behavior
+    
+    **Theory**
+    
+    The nozzle performance is calculated using isentropic flow relations. For supersonic flow,
+    the Mach number is calculated from the pressure ratio:
+    
+    .. math::
+        M = \\sqrt{\\frac{2}{\\gamma-1}\\left[\\left(\\frac{P_t}{P_0}\\right)^{\\frac{\\gamma-1}{\\gamma}}-1\\right]}
+    
+    The static temperature is related to stagnation temperature by:
+    
+    .. math::
+        T = \\frac{T_t}{1+\\frac{\\gamma-1}{2}M^2}
+    
+    **Definitions**
+    
+    'Pressure ratio'
+        Ratio of exit pressure to inlet pressure in the nozzle
+    
+    'Polytropic efficiency'
+        Measure of the nozzle's thermodynamic efficiency accounting for irreversibilities
+    
+    References
+    ----------
+    [1] Cantwell, B. "AA283 Course Material: Course Notes." Stanford University. https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Gas_Dynamics.fm_id
     """           
     
     #unpack the values
     
     #unpack from conditions
-    gamma    = conditions.freestream.isentropic_expansion_factor
-    Cp       = conditions.freestream.specific_heat_at_constant_pressure
-    Po       = conditions.freestream.pressure
-    Pto      = conditions.freestream.stagnation_pressure
-    Tto      = conditions.freestream.stagnation_temperature
-    R        = conditions.freestream.gas_specific_constant
-    Mo       = conditions.freestream.mach_number
+    gamma               = conditions.freestream.isentropic_expansion_factor
+    Cp                  = conditions.freestream.specific_heat_at_constant_pressure
+    Po                  = conditions.freestream.pressure
+    Pto                 = conditions.freestream.stagnation_pressure
+    Tto                 = conditions.freestream.stagnation_temperature
+    R                   = conditions.freestream.gas_specific_constant
+    Mo                  = conditions.freestream.mach_number
+    s_nozzle_conditions = conditions.energy.converters[supersonic_nozzle.tag]
     
     #unpack from inputs
     Tt_in    = s_nozzle_conditions.inputs.stagnation_temperature
@@ -86,8 +101,8 @@ def compute_supersonic_nozzle_performance(supersonic_nozzle,s_nozzle_conditions,
     #compute the output Mach number, static quantities and the output velocity
     Mach          = np.sqrt((((Pt_out/Po)**((gamma-1)/gamma))-1)*2/(gamma-1))
     
-    #Remove check on mach numbers from expansion nozzle
-    i_low         = Mach < 10.0
+    #Remove check on mach numbers fromn expansion nozzle
+    i_low         = Mach < 1.0
     
     #initializing the Pout array
     P_out         = 1.0 *Mach/Mach

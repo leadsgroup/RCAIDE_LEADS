@@ -14,7 +14,27 @@ from array import *
 # Polytetrafluoroethylene Insulation Material
 #------------------------------------------------------------------------------- 
 class Polytetrafluoroethylene(Solid): 
-    """ Physical constants specific to  Polytetrafluoroethylene (PFTE)
+    """
+    A class representing Polytetrafluoroethylene (PFTE) and its material properties.
+
+    Attributes
+    ----------
+    electrical_permittivity : float
+        Material electrical permittivity in kg/m³ (2.1)
+    dielectric_strength_range : list
+        Range of dielectric strength in Pa (6E7,8E7)
+    density : float
+        Material density in kg/m³ (2170)
+    thermal_conductivity : float
+        Heat conduction coefficient in W/(m·K) (0.25)
+    melting_point : float
+        Material melting point in K (600)
+    temperature_range : list
+        Range of temperature in K (183, 533)
+    modulus_of_elasticity : float
+        Material modulus of elasticity in Pa (.49E9)
+    yield_tensile_strength : float
+        Stress at which material begins to deform plastically in Pa (24e6)
     """
 
     def __defaults__(self):

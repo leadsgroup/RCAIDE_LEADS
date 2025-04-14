@@ -108,11 +108,10 @@ def plot_electric_propulsor_efficiencies(results,
                         thrustor =  propulsor.ducted_fan
                         axis_1.set_ylabel(r'$\eta_{ducted fan}$')
                     motor =  propulsor.motor
-                      
-                    bus_results  = results.segments[i].conditions.energy 
+                       
                     time         = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
-                    effp         = bus_results[propulsor.tag][thrustor.tag].efficiency[:,0] 
-                    effm         = bus_results[propulsor.tag][motor.tag].efficiency[:,0]  
+                    effp         = results.segments[i].conditions.energy.converters[thrustor.tag].efficiency[:,0] 
+                    effm         = results.segments[i].conditions.energy.converters[motor.tag].efficiency[:,0]  
                     
                     if p_i == 0 and i ==0:              
                         axis_1.plot(time, effp, color = line_colors[i], marker = ps.markers[p_i], markersize= ps.marker_size, linewidth = ps.line_width, label = thrustor.tag)

@@ -1,16 +1,16 @@
-# RCAIDE/Library/Compoments/Powertrain/Distributors/__init__.py
+# RCAIDE/Library/Components/Powertrain/Distributors/__init__.py
 # 
 
 """
-Energy sources module providing components for aircraft power generation and storage
+Energy Distributor module providing components for aircraft power distribution
 
-This module contains implementations for various energy source components including
-batteries, fuel tanks, and other power generation systems. These components serve
-as the primary energy providers in aircraft propulsion systems.
+This module contains implementations for various energy distributor components including
+coolant lines, fuel lines, and electrical busses. These components serve
+as the primary energy distributors in aircraft propulsion systems.
 
 See Also
 --------
-RCAIDE.Library.Components.Energy.Modulators
+RCAIDE.Library.Components.Powertrain.Modulators
     Energy control systems
 RCAIDE.Library.Components.Powertrain.Sources
     Fuel storage and delivery systems

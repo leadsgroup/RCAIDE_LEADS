@@ -13,29 +13,62 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------  
 def initialize_conditions(segment):
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for constant speed descent at fixed rate
 
-    Assumptions:
-    Constant speed and constant descent rate
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - descent_rate : float
+                Rate of descent [m/s]
+            - air_speed : float
+                True airspeed to maintain [m/s]
+            - altitude_start : float
+                Initial altitude [m]
+            - altitude_end : float
+                Final altitude [m]
+            - sideslip_angle : float
+                Aircraft sideslip angle [rad]
+            - state:
+                numerics.dimensionless.control_points : array
+                    Discretization points [-]
+                conditions : Data
+                    State conditions container
+    
+    Returns
+    -------
+    None
+    
+    Notes
+    -----
+    This function sets up the initial conditions for a descent segment with constant
+    true airspeed and constant descent rate. The horizontal velocity components are
+    determined from the airspeed and descent rate constraints. Updates segment conditions
+    directly with velocity_vector [m/s], altitude [m], and position_vector [m].
 
-    Source:
-    N/A
+    **Calculation Process**
+        1. Discretize altitude profile
+        2. Calculate horizontal velocity magnitude:
+        v_xy = sqrt(V^2 - v_z^2) where:
+            - V is true airspeed
+            - v_z is descent rate
+        3. Decompose horizontal velocity using sideslip angle:
+            - v_x = v_xy * cos(β)
+            - v_y = v_xy * sin(β)
 
-    Inputs:
-    segment.descent_rate                                [meters/second]
-    segment.altitude_start                              [meters]
-    segment.altitude_end                                [meters]
-    segment.air_speed                                   [meters/second]
-    segment.state.numerics.dimensionless.control_points [array]
+            where β is sideslip angle
 
-    Outputs:
-    conditions.frames.inertial.velocity_vector  [meters/second]
-    conditions.frames.inertial.position_vector  [meters]
-    conditions.freestream.altitude              [meters]
-    conditions.frames.inertial.time             [seconds]
+    **Major Assumptions**
+        * Constant true airspeed
+        * Constant descent rate
+        * Small angle approximations
+        * Quasi-steady flight
+        * No wind effects
 
-    Properties Used:
-    N/A
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """     
     
     # unpack

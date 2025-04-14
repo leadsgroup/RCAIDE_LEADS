@@ -71,6 +71,10 @@ def design_wavy_channel(HAS,battery,single_side_contact=True, dry_mass=True,
 
     # Terminate suppression of console window output   
     sys.stdout = sys.__stdout__
+
+    if output[3] != 0:
+        print("Wavy-channel desing optimization failed: ",output[4])
+        
     print('\nSizing ', HAS.tag)
     print(output[4])
 

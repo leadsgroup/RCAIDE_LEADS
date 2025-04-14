@@ -13,30 +13,59 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------     
 #  Primary Noise Component
 # ----------------------------------------------------------------------------------------------------------------------          
-def primary_noise_component(Velocity_primary,Temperature_primary,R_gas,theta_p,DVPS,sound_ambient,Velocity_secondary,Velocity_aircraft,Area_primary,Area_secondary,DSPL_p,EX_p,Str_p):
-    """This function calculates the noise contribution of the primary jet component
-    
-        Assumptions:
-        Empirical based procedure.
-    
-    Source:  
-       [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
-       [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
-        
-    Inputs:
-        noise_data     - RCAIDE type vehicle
+def primary_noise_component(Velocity_primary, Temperature_primary, R_gas, theta_p, DVPS, sound_ambient, 
+                            Velocity_secondary, Velocity_aircraft, Area_primary, Area_secondary, DSPL_p, EX_p, Str_p):
+    """
+    This function calculates the noise contribution of the primary jet component.
 
-    Outputs:
-        OASPL          - Overall Sound Pressure Level            [dB]
-        PNL            - Perceived Noise Level                   [dB]
-        PNL_dBA        - Perceived Noise Level A-weighted level  [dBA]
-        EPNdB_takeoff  - Takeoff Effective Perceived Noise Level [EPNdB]
-        EPNdB_landing  - Landing Effective Perceived Noise Level [EPNdB]  
-    
-    Properties Used:
-        N/A  
-       
-    """      
+    Parameters
+    ----------
+    Velocity_primary : float
+        Velocity of the primary jet [m/s].
+    Temperature_primary : float
+        Temperature of the primary jet [K].
+    R_gas : float
+        Specific gas constant [J/(kg·K)].
+    theta_p : float
+        Angle for the primary jet [rad].
+    DVPS : float
+        Design velocity parameter for the primary jet.
+    sound_ambient : float
+        Ambient sound level [SPL].
+    Velocity_secondary : float
+        Velocity of the secondary jet [m/s].
+    Velocity_aircraft : float
+        Velocity of the aircraft [m/s].
+    Area_primary : float
+        Area of the primary jet [m^2].
+    Area_secondary : float
+        Area of the secondary jet [m^2].
+    DSPL_p : float
+        Decibel Sound Pressure Level for the primary jet [SPL].
+    EX_p : float
+        Excess noise level for the primary jet.
+    Str_p : float
+        Strouhal number for the primary jet.
+
+    Returns
+    -------
+    SPL_p : float
+        Sound Pressure Level for the primary jet component [dB].
+
+    Notes
+    -----
+    The function uses empirical methods to calculate the noise contribution of the primary jet component.
+
+    **Definitions**
+
+    'SPL_p'
+        Sound Pressure Level for the primary jet component.
+
+    References
+    ----------
+    [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
+    [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
+    """
 
     # Flow parameters of the primary jet
     sound_primary    = np.sqrt(1.4*R_gas*Temperature_primary) 

@@ -41,7 +41,7 @@ Aerodynamics
    plot_drag_components
    plot_lift_distribution
    plot_rotor_conditions
-   plot_rotor_disc_inflow
    plot_rotor_disc_performance
    plot_rotor_performance
+   plot_surface_pressures
 

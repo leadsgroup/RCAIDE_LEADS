@@ -14,48 +14,102 @@ from warnings import warn
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_compression_nozzle_performance
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_compression_nozzle_performance(compression_nozzle,nozzle_conditions,conditions):
-    """  Computes the performance of a compression nozzle bases on its polytropic efficiency.
-         The following properties are computed: 
-        compression_nozzle.outputs.
-          stagnation_temperature             (numpy.ndarray): exit stagnation temperature [K]
-          stagnation_pressure                (numpy.ndarray): exit stagnation pressure    [Pa]
-          stagnation_enthalpy                (numpy.ndarray): exit stagnation enthalpy    [J/kg]
-          mach_number                        (numpy.ndarray): exit Mach number            [unitless]
-          static_temperature                 (numpy.ndarray): exit static temperature     [K]
-          static_enthalpy                    (numpy.ndarray): exit static enthalpy        [J/kg]
-          velocity                           (numpy.ndarray): exit nozzle velocity        [m/s]
-          
-
-    Assumptions:  
-        1. Pressure ratio and polytropic efficiency do not change with varying conditions.
-        2. Adiabatic
-        3. Subsonic or choked output.
-
-    Source:
-        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
-
-    Args:
-        conditions.freestream.
-          isentropic_expansion_factor         (numpy.ndarray): isentropic_expansion_factor        [unitless]
-          specific_heat_at_constant_pressure  (numpy.ndarray): specific_heat_at_constant_pressure [J/(kg K)]
-          pressure                            (numpy.ndarray): pressure                           [Pa]
-          gas_specific_constant               (numpy.ndarray): gas_specific_constant              [J/(kg K)]
-        compression_nozzle.
-          inputs.stagnation_temperature       (numpy.ndarra): entering stagnation_temperature     [K]
-          inputs.stagnation_pressure          (numpy.ndarra): entering stagnation_pressure        [Pa] 
-          pressure_ratio                             (float): pressure_ratio                      [unitless]
-          polytropic_efficiency                      (float): polytropic_efficiency               [unitless]
-          pressure_recovery                          (float): pressure_recovery                   [unitless]
-
-    Returns:
+def compute_compression_nozzle_performance(compression_nozzle, conditions):
+    """
+    Computes the performance of a compression nozzle based on its polytropic efficiency.
+    
+    Parameters
+    ----------
+    compression_nozzle : Data
+        Data dictionary with compression nozzle properties
+            - tag : str
+                Identifier for the compression nozzle
+            - pressure_ratio : float
+                Pressure ratio across the nozzle [unitless]
+            - polytropic_efficiency : float
+                Polytropic efficiency of the nozzle [unitless]
+            - pressure_recovery : float
+                Pressure recovery factor [unitless]
+            - compressibility_effects : bool
+                Flag to include compressibility effects
+            - working_fluid : Data
+                Working fluid object with methods to compute properties
+    conditions : Data
+        Data dictionary with flow conditions
+            - freestream : Data
+                Freestream flow properties
+                - pressure : ndarray
+                    Freestream pressure [Pa]
+                - mach_number : ndarray
+                    Freestream Mach number [unitless]
+            - energy : Data
+                Energy conditions
+                    - converters : dict
+                        Dictionary of converter conditions indexed by tag
+                        - inputs : Data
+                            Input conditions
+                            - stagnation_temperature : ndarray
+                                Entering stagnation temperature [K]
+                            - stagnation_pressure : ndarray
+                                Entering stagnation pressure [Pa]
+                            - static_temperature : ndarray
+                                Entering static temperature [K]
+                            - static_pressure : ndarray
+                                Entering static pressure [Pa]
+                            - mach_number : ndarray
+                                Entering Mach number [unitless]
+    
+    Returns
+    -------
+    None
+        Results are stored in conditions.energy.converters[compression_nozzle.tag].outputs:
+            - stagnation_temperature : ndarray
+                Exit stagnation temperature [K]
+            - stagnation_pressure : ndarray
+                Exit stagnation pressure [Pa]
+            - stagnation_enthalpy : ndarray
+                Exit stagnation enthalpy [J/kg]
+            - mach_number : ndarray
+                Exit Mach number [unitless]
+            - static_temperature : ndarray
+                Exit static temperature [K]
+            - static_enthalpy : ndarray
+                Exit static enthalpy [J/kg]
+            - velocity : ndarray
+                Exit nozzle velocity [m/s]
+            - static_pressure : ndarray
+                Exit static pressure [Pa]
+    
+    Notes
+    -----
+    This function computes the thermodynamic properties at the exit of a compression nozzle
+    based on the inlet conditions and nozzle characteristics. It handles both subsonic and
+    supersonic flows with appropriate relations.
+    
+    **Major Assumptions**
+        * Pressure ratio and polytropic efficiency do not change with varying conditions
+        * Adiabatic process
+        * Subsonic or choked output
+    
+    **Theory**
+    The compression nozzle performance is calculated using gas dynamics relations for
+    compressible flow. For subsonic flow, isentropic relations are used. For supersonic flow,
+    normal shock relations are applied. The stagnation properties are transformed to static
+    properties based on the exit Mach number.
+    
+    References
+    ----------
+    [1] Stanford University, "AA283 Course Notes", https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle.compute_expansion_nozzle_performance
     """
 
-    # Unpack conditions
-    #gamma   = conditions.freestream.isentropic_expansion_factor
-    #Cp      = conditions.freestream.specific_heat_at_constant_pressure
-    P0      = conditions.freestream.pressure
-    M0      = conditions.freestream.mach_number 
+    # Unpack conditions 
+    P0                = conditions.freestream.pressure
+    M0                = conditions.freestream.mach_number
+    nozzle_conditions = conditions.energy.converters[compression_nozzle.tag]
 
     # Unpack inpust
     Tt_in                   = nozzle_conditions.inputs.stagnation_temperature

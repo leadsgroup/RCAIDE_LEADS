@@ -51,7 +51,7 @@ def compute_vertical_tail_weight(wing, vehicle):
     t_c_v             = wing.thickness_to_chord
     sweep_v           = wing.sweeps.quarter_chord
 
-    q_c               = vehicle.design_dynamic_pressure
+    q_c               = vehicle.flight_envelope.design_dynamic_pressure
     Nult              = vehicle.flight_envelope.ultimate_load 
     TOW               = vehicle.mass_properties.max_takeoff
 

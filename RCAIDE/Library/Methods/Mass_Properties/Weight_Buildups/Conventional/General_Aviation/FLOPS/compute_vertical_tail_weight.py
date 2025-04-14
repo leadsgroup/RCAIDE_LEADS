@@ -75,7 +75,7 @@ def compute_vertical_tail_weight(vehicle, wing):
     else: 
         HHT = 0.
 
-    QCRUS    = vehicle.design_dynamic_pressure / Units.psf
+    QCRUS    = vehicle.flight_envelope.design_dynamic_pressure / Units.psf
     ULF      = vehicle.flight_envelope.ultimate_load   
     WVT      = 0.073* (1+0.2*HHT) * (ULF * DG)**0.376 * QCRUS**0.122 
     return WVT * Units.lbs

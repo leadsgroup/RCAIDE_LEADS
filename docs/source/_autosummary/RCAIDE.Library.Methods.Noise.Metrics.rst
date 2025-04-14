@@ -32,6 +32,6 @@ Metrics
 
    A_weighting_metric
    EPNL_noise_metric
+   Equivalent_SENEL_SEL_noise_metrics
    PNL_noise_metric
-   compute_noise_metrics
 

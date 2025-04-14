@@ -17,36 +17,104 @@ import  numpy as  np
 # Propulsion System Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_propulsion_system_weight(vehicle,network):
-    """ Calculate the weight of propulsion system using Raymer method, including:
-        - fuel system weight
-        - thurst reversers weight
-        - electrical system weight
-        - starter engine weight
-        - nacelle weight
-        - cargo containers
-        The dry engine weight comes from the FLOPS relations since it is not listed in Raymer
+    """
+    Calculates the total propulsion system weight using Raymer's method, including subsystems.
 
-        Assumptions:
+    Parameters
+    ----------
+    vehicle : RCAIDE.Vehicle()
+        Vehicle data structure containing:
+            - networks : list
+                List of propulsion networks
+            - fuselages : list
+                List of fuselage components
+            - flight_envelope : Data()
+                Contains design_mach_number
+            - mass_properties : Data()
+                Contains max_zero_fuel
+    network : RCAIDE.Network()
+        Network component containing:
+            - fuel_lines : list
+                List of fuel line components with fuel tanks
+            - propulsors : list
+                List of propulsion components
 
-        Source:
-            Aircraft Design: A Conceptual Approach
+    Returns
+    -------
+    output : Data()
+        Propulsion system weight breakdown:
+            - W_prop : float
+                Total propulsion system weight [kg]
+            - W_thrust_reverser : float
+                Thrust reverser weight [kg]
+            - W_starter : float
+                Starter engine weight [kg]
+            - W_engine_controls : float
+                Engine controls weight [kg]
+            - W_fuel_system : float
+                Fuel system weight [kg]
+            - W_nacelle : float
+                Nacelle weight [kg]
+            - W_engine : float
+                Total dry engine weight [kg]
+            - number_of_engines : int
+                Number of engines
+            - number_of_fuel_tanks : int
+                Number of fuel tanks
 
-        Inputs:
-            vehicle - data dictionary with vehicle properties                   [dimensionless]
-            network    - data dictionary for the specific network that is being estimated [dimensionless]
+    Notes
+    -----
+    This method calculates the complete propulsion system weight including engines,
+    nacelles, fuel system, and all supporting systems using Raymer's correlations.
 
-        Outputs:
-            output - data dictionary with weights                               [kilograms]
-                    - output.W_prop: total propulsive system weight
-                    - output.W_thrust_reverser: thurst reverser weight
-                    - output.starter: starter engine weight
-                    - output.W_engine_controls: engine controls weight
-                    - output.fuel_system: fuel system weight
-                    - output.nacelle: nacelle weight
-                    - output.W_engine: dry engine weight
+    **Major Assumptions**
+        * Correlations based on conventional turbofan/turbojet installations
+        * Engine controls scale with number of engines and fuselage length
+        * Nacelle weight includes thrust reversers if applicable
+        * Fuel system weight scales with fuel capacity and number of tanks
+        * Starter weight scales with total engine weight
 
-        Properties Used:
-            N/A
+    **Theory**
+    Key component weights are calculated using:
+    .. math::
+        W_{nacelle} = 0.6724K_{ng}L_n^{0.1}W_n^{0.294}N_{ult}^{0.119}W_{ec}^{0.611}N_{eng}^{0.984}S_n^{0.224}
+
+    .. math::
+        W_{fuel\_sys} = 1.07W_{fuel}^{0.58}N_{eng}^{0.43}M_{max}^{0.34}
+
+    .. math::
+        W_{engine} = 0.084BPR^{1.1}W_{eng}^{0.5}N_{eng}^{0.5}
+
+    .. math::
+        W_{engine\_controls} = 5N_{eng} + 0.8L_{eng}
+
+    .. math::
+        W_{starter} = 49.19\left(\frac{W_{eng}}{1000}\right)^{0.541}
+    
+    where:
+        * :math:`K_{ng}` is a factor for the engine mount type
+        * :math:`L_n` is the length of the nacelle
+        * :math:`W_n` is the diameter of the nacelle
+        * :math:`N_{ult}` is the ultimate load factor
+        * :math:`W_{ec}` is the engine control weight
+        * :math:`N_{eng}` is the number of engines
+        * :math:`BPR` is the bypass ratio
+        * :math:`W_{eng}` is the dry engine weight
+        * :math:`L_{eng}` is the length of the engine
+        * :math:`N_{eng}` is the number of engines
+        * :math:`W_{fuel}` is the fuel weight
+        * :math:`M_{max}` is the maximum Mach number
+        * :math:`S_n` is the nacelle surface area
+
+    References
+    ----------
+    [1] Raymer, D., "Aircraft Design: A Conceptual Approach", AIAA 
+        Education Series, 2018. 
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Weights.Correlation_Buildups.FLOPS.compute_jet_engine_weight
+    RCAIDE.Library.Methods.Weights.Correlation_Buildups.FLOPS.compute_piston_engine_weight
     """
 
     NENG    =  0 

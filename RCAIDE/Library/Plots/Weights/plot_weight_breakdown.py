@@ -111,7 +111,7 @@ def plot_weight_breakdown(vehicle,
     RCAIDE.Library.Analysis.Weights : Weight analysis tools
     """
 
-    breakdown =  vehicle.weight_breakdown     
+    breakdown =  vehicle.mass_properties.weight_breakdown     
     
     level_1 = []
     level_2 = []

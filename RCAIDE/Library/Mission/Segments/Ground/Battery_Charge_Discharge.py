@@ -9,23 +9,70 @@ import  numpy as  np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def initialize_conditions(segment):  
-    """Sets the specified conditions which are given for the segment type.
+    """
+    Initializes conditions for battery charging or discharging on ground
 
-    Assumptions: 
-    During recharging, the charge time associated with the largest capacity battery pack is used 
+    Parameters
+    ----------
+    segment : Segment
+        The mission segment being analyzed
+            - cutoff_SOC : float
+                Target state of charge to reach [-]
+            - cooling_time : float
+                Additional time for battery cooling [s]
+            - initial_battery_state_of_charge : float, optional
+                Initial SOC if no previous segment [-]
+            - analyses:
+                energy:
+                    vehicle:
+                        networks : list
+                            List of power networks
+                            Each network contains:
+                            - busses : list
+                                List of electrical busses
+                                Each bus contains:
+                                - charging_c_rate : float
+                                    Battery charging C-rate [-]
+                                - battery_modules : list
+                                    List of battery modules
+        
+        For discharging segments:
+            - time : float
+                Duration of discharge [s]
     
-    Source:
-    N/A
+    Returns
+    -------
+    None
+        Updates segment conditions directly:
+            - conditions.frames.inertial.time [s]
+    
+    Notes
+    -----
+    This function sets up the initial conditions for a ground segment involving 
+    battery charging or discharging. For charging segments, the charging time is 
+    determined by the battery with the lowest state of charge.
 
-    Inputs:
-    segment.overcharge_contingency              [-]
-    battery.                                    [-]
+    **Calculation Process**
+    For charging:
+        1. Find lowest battery state of charge
+        2. Calculate charging time based on:
+            t = (SOC_target - SOC_current) / C_rate
+        3. Add cooling time
+        4. Discretize time points
 
-    Outputs: 
-    conditions.frames.inertial.time             [seconds]
+    For discharging:
+        1. Use specified discharge time
+        2. Discretize time points
 
-    Properties Used:
-    N/A
+    **Major Assumptions**
+        * Charging time determined by lowest SOC battery
+        * Constant C-rate charging
+        * Linear SOC increase during charging
+        * Uniform cooling time added
+
+    See Also
+    --------
+    RCAIDE.Framework.Mission.Segments
     """    
     t_nondim   = segment.state.numerics.dimensionless.control_points
 

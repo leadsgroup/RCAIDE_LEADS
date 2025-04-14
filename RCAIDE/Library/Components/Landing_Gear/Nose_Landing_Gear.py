@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Landing_Gear/Nose_Landing_Gear.py
+# RCAIDE/Components/Landing_Gear/Nose_Landing_Gear.py
 # 
 # Created:  Nov 2024, M. Clarke 
 

@@ -12,5 +12,4 @@ from .compute_boom_weight                   import compute_boom_weight
 from .compute_fuselage_weight               import compute_fuselage_weight
 from .compute_operating_empty_weight        import compute_operating_empty_weight
 from .compute_wing_weight                   import compute_wing_weight
-from .converge_physics_based_weight_buildup import converge_physics_based_weight_buildup
 from .dynamo_supply_mass_estimation         import dynamo_supply_mass_estimation

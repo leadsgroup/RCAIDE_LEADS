@@ -41,16 +41,16 @@ class Engine(Converter):
     -----
     The Engine class models an internal combustion engine's performance characteristics
     including:
-    * Sea level power rating
-    * Power lapse with altitude
-    * Fuel consumption characteristics
-    * Power distribution capabilities
-    * Operating speed effects
+        * Sea level power rating
+        * Power lapse with altitude
+        * Fuel consumption characteristics
+        * Power distribution capabilities
+        * Operating speed effects
 
     **Major Assumptions**
-    * Constant power specific fuel consumption
-    * Fuel properties remain constant
-    * Steady-state operation (no transient effects)
+        * Constant power specific fuel consumption
+        * Fuel properties remain constant
+        * Steady-state operation (no transient effects)
 
     **Definitions**
     
@@ -83,8 +83,7 @@ class Engine(Converter):
         self.power_split_ratio               = 0.0
         self.power_specific_fuel_consumption = 0.36
 
-    def append_operating_conditions(self,segment,propulsor):  
-        propulsor_conditions =  segment.state.conditions.energy[propulsor.tag] 
-        append_engine_conditions(self,segment,propulsor_conditions) 
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):   
+        append_engine_conditions(self,segment,energy_conditions,noise_conditions) 
         return                
 

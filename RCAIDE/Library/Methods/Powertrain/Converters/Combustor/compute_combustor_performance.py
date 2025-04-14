@@ -12,41 +12,87 @@ import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_combustor_performance
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_combustor_performance(combustor,combustor_conditions,conditions):
-    """ This computes the output values from the input values according to
-        equations from the source. The following properties are computed         
-        combustor_conditions.outputs.
-          stagnation_temperature             (numpy.ndarray):  [K]  
-          stagnation_pressure                (numpy.ndarray):  [Pa]
-          stagnation_enthalpy                (numpy.ndarray):  [J/kg]
-          fuel_to_air_ratio                  (numpy.ndarray):  [unitless] 
-
-    Assumptions:
-        Constant efficiency and pressure ratio
-
-    Source:
-        https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Course_Notes/
-
-    Args:
-        conditions.freestream.
-          isentropic_expansion_factor        (numpy.ndarray):  [unitless]
-          specific_heat_at_constant_pressure (numpy.ndarray):  [J/(kg K)]
-          temperature                        (numpy.ndarray):  [K]
-          stagnation_temperature             (numpy.ndarray):  [K]
-        combustor_conditions.inputs.
-          stagnation_temperature             (numpy.ndarray):  [K]
-          stagnation_pressure                (numpy.ndarray):  [Pa]
-          nondim_mass_ratio                  (numpy.ndarray):  [unitless] 
-        combustor.
-          turbine_inlet_temperature                  (float):  [K]
-          pressure_ratio                             (float):  [unitless]
-          efficiency                                 (float):  [unitless]
-          area_ratio                                 (float):  [unitless]
-          fuel_data.specific_energy                  (float):  [J/kg]
-      
-    Returns:
-        None
-    """ 
+def compute_combustor_performance(combustor, conditions):
+    """
+    Computes the thermodynamic performance of a combustor in a gas turbine engine.
+    
+    Parameters
+    ----------
+    combustor : RCAIDE.Library.Components.Converters.Combustor
+        Combustor component with the following attributes:
+            - tag : str
+                Identifier for the combustor
+            - working_fluid : Data
+                Working fluid properties object
+            - turbine_inlet_temperature : float
+                Target turbine inlet temperature [K]
+            - pressure_ratio : float
+                Pressure ratio across the combustor (typically < 1.0 due to losses)
+            - efficiency : float
+                Combustion efficiency
+            - area_ratio : float
+                Exit to inlet area ratio
+            - fuel_data : Data
+                Fuel properties
+                    - specific_energy : float
+                        Fuel specific energy [J/kg]
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions with:
+            - energy : Data
+                Energy conditions
+                    - converters : dict
+                        Converter energy conditions indexed by tag
+    
+    Returns
+    -------
+    None
+        Results are stored in conditions.energy.converters[combustor.tag].outputs:
+            - stagnation_temperature : numpy.ndarray
+                Stagnation temperature at combustor exit [K]
+            - stagnation_pressure : numpy.ndarray
+                Stagnation pressure at combustor exit [Pa]
+            - stagnation_enthalpy : numpy.ndarray
+                Stagnation enthalpy at combustor exit [J/kg]
+            - fuel_to_air_ratio : numpy.ndarray
+                Fuel-to-air ratio
+            - static_temperature : numpy.ndarray
+                Static temperature at combustor exit [K]
+            - static_pressure : numpy.ndarray
+                Static pressure at combustor exit [Pa]
+            - mach_number : numpy.ndarray
+                Mach number at combustor exit
+    
+    Notes
+    -----
+    This function computes the thermodynamic properties at the combustor exit based on
+    the inlet conditions, combustor characteristics, and fuel properties. It calculates
+    the fuel-to-air ratio required to achieve the specified turbine inlet temperature,
+    accounting for combustion efficiency and pressure losses.
+    
+    The computation follows these steps:
+        1. Extract inlet conditions (temperature, pressure, Mach number)
+        2. Compute working fluid properties (gamma, Cp)
+        3. Calculate stagnation pressure at exit using pressure ratio
+        4. Set exit stagnation temperature to the specified turbine inlet temperature
+        5. Compute stagnation enthalpies at inlet and exit
+        6. Calculate fuel-to-air ratio required to achieve the temperature rise
+        7. Compute exit static conditions (temperature, pressure) based on exit Mach number
+        8. Store all results in the conditions data structure
+    
+    **Major Assumptions**
+        * Constant efficiency and pressure ratio
+        * Turbine inlet temperature is controlled to a specified value
+        * Mach number is preserved from inlet to exit
+    
+    References
+    ----------
+    [1] Cantwell, B., "AA283 Course Notes", Stanford University https://web.stanford.edu/~cantwell/AA283_Course_Material/
+    
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance
+    """
+    combustor_conditions    = conditions.energy.converters[combustor.tag]
     T0                      = combustor_conditions.inputs.static_temperature
     P0                      = combustor_conditions.inputs.static_pressure  
     M0                      = combustor_conditions.inputs.mach_number 

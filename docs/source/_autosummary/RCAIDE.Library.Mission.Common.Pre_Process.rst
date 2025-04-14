@@ -33,6 +33,7 @@ Pre\_Process
    aerodynamics
    emissions
    energy
+   mass_properties
    set_residuals_and_unknowns
    stability
 

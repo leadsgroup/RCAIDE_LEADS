@@ -13,36 +13,52 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------     
 #  Secondary Noise Component
 # ----------------------------------------------------------------------------------------------------------------------       
-def secondary_noise_component(Velocity_primary,theta_s,sound_ambient,Velocity_secondary,Velocity_aircraft,
-                              Area_primary,Area_secondary,DSPL_s,EX_s,Str_s):
-    """This function calculates the noise contribution of the secondary jet component
-    
-    Assumptions:
-        None
+def secondary_noise_component(Velocity_primary, theta_s, sound_ambient, Velocity_secondary, Velocity_aircraft,
+                              Area_primary, Area_secondary, DSPL_s, EX_s, Str_s):
+    """
+    This function calculates the noise contribution of the secondary jet component.
 
-    Source:
-       [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
-       [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
+    Parameters
+    ----------
+    Velocity_primary : float
+        Velocity of the primary jet [m/s].
+    theta_s : float
+        Angle for the secondary jet [rad].
+    sound_ambient : float
+        Ambient sound level [dB].
+    Velocity_secondary : float
+        Velocity of the secondary jet [m/s].
+    Velocity_aircraft : float
+        Velocity of the aircraft [m/s].
+    Area_primary : float
+        Area of the primary jet [m^2].
+    Area_secondary : float
+        Area of the secondary jet [m^2].
+    DSPL_s : float
+        Decibel Sound Pressure Level for the secondary jet [dB].
+    EX_s : float
+        Excess noise level for the secondary jet.
+    Str_s : float
+        Strouhal number for the secondary jet.
 
-    Inputs:
-        SPL_s               [dB]
-        Velocity_primary    [m/s]
-        theta_s             [rad]
-        sound_ambient       [dB]
-        Velocity_secondary  [m/s]
-        Velocity_aircraft   [m/s]
-        Area_primary        [m^2]
-        Area_secondary      [m^2]
-        DSPL_s              [dB]
-        EX_s                [-]
-        Str_s               [-]
+    Returns
+    -------
+    SPL_s : float
+        Sound Pressure Level for the secondary jet component [dB].
 
-    Outputs: 
-        SPL_s               [dB]
+    Notes
+    -----
+    The function uses semi-empirical methods to calculate the noise contribution of the secondary jet component.
 
-    Properties Used:
-        N/A 
-    
+    **Definitions**
+
+    'SPL_s'
+        Sound Pressure Level for the secondary jet component.
+
+    References
+    ----------
+    [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
+    [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
     """
 
     # Calculation of the velocity exponent

@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Fuselages/Cabins/Cabin_Class.py
+# RCAIDE/Components/Fuselages/Cabins/Cabin_Class.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

@@ -11,13 +11,6 @@ clean\_wing\_noise
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-      :toctree:
-   
-      clean_wing_noise
-   
    
 
    

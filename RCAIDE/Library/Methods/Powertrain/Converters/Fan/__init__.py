@@ -1,7 +1,12 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Fan/__init__.py
-# (c) Copyright 2023 Aerospace Research Community LLC
 
-""" RCAIDE Package Setup
+"""
+This module provides functionality for modeling fans in powertrains. It includes methods for computing 
+fan performance and appending fan conditions to simulation results.
+
+See Also
+--------
+RCAIDE.Library.Methods.Powertrain.Converters
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

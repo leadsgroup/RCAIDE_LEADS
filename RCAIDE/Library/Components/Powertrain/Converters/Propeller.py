@@ -25,29 +25,24 @@ class Propeller(Rotor):
         Default is [0., 0., 0.] for X-direction thrust in vehicle frame.
         
     use_2d_analysis : bool
-        Flag for using 2D aerodynamic analysis. Default is False.
-        
-    variable_pitch : bool
-        Flag indicating if propeller has variable pitch capability. Default is False.
+        Flag for using 2D aerodynamic analysis. Default is False. 
 
     Notes
     -----
     The Propeller class models fixed or variable pitch propellers for aircraft
     propulsion. It includes capabilities for:
-
-    * Forward flight performance analysis
-    * Fixed and variable pitch operation
-    * Blade element momentum theory calculations
-    * Efficiency optimization
-    * Acoustic analysis
+        * Forward flight performance analysis
+        * Fixed and variable pitch operation
+        * Blade element momentum theory calculations
+        * Efficiency optimization
+        * Acoustic analysis
 
     The model assumes:
-
-    * Axial inflow (unless modified by orientation angles)
-    * Rigid blades
-    * Quasi-steady aerodynamics
-    * No blade-to-blade aerodynamic interference
-    * No compressibility effects (unless explicitly modeled)
+        * Axial inflow (unless modified by orientation angles)
+        * Rigid blades
+        * Quasi-steady aerodynamics
+        * No blade-to-blade aerodynamic interference
+        * No compressibility effects (unless explicitly modeled)
 
     **Definitions**
     
@@ -84,6 +79,5 @@ class Propeller(Rotor):
 
         self.tag                       = 'propeller'
         self.orientation_euler_angles  = [0.,0.,0.] # This is X-direction thrust in vehicle frame
-        self.use_2d_analysis           = False       
-        self.variable_pitch            = False
+        self.use_2d_analysis           = False        
         

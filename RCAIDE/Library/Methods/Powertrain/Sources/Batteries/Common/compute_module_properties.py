@@ -14,37 +14,81 @@ import  numpy as  np
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
 def compute_module_properties(battery_module):  
-    """Calculate module level properties of battery module using cell 
-    properties and module configuraton
+    """
+    Calculates module level properties of battery module using cell properties and module configuration.
     
-    Assumptions:
-    Total battery module pack mass contains build-up factor (1.42) for battery module casing,
-    internal wires, thermal management system and battery module management system 
-    Factor computed using information of battery module properties for X-57 Maxwell 
-    Aircraft
+    Parameters
+    ----------
+    battery_module : BatteryModule
+        The battery module with the following attributes:
+            - cell.nominal_capacity : float
+                Nominal capacity of a single cell [Ah]
+            - cell.maximum_voltage : float
+                Maximum voltage of a single cell [V]
+            - cell.mass : float
+                Mass of a single cell [kg]
+            - electrical_configuration.series : int
+                Number of cells in series
+            - electrical_configuration.parallel : int
+                Number of cells in parallel
+            - geometrtic_configuration : GeometricConfiguration
+                Object containing geometric layout information
+            - volume_packaging_factor : float
+                Factor accounting for additional volume due to packaging
+            - orientation_euler_angles : numpy.ndarray
+                Euler angles for module orientation [rad]
+            - BMS_additional_weight_factor : float
+                Factor accounting for battery management system weight
     
-    Source:
-    Cell Charge: Chin, J. C., Schnulo, S. L., Miller, T. B., Prokopius, K., and Gray, 
-    J., Battery Performance Modeling on Maxwell X-57",AIAA Scitech, San Diego, CA,
-    2019. URLhttp://openmdao.org/pubs/chin_battery_performance_x57_2019.pdf.     
-
-    Inputs:
-    mass              
-    battery_module.cell
-      nominal_capacity        [amp-hours]            
-      nominal_voltage         [volts]
-      pack_config             [unitless]
-      mass                    [kilograms]
-                          
-    Outputs:              
-     battery_module.             
-       maximum_energy         [watt-hours]
-       maximum_power              [watts]
-       initial_maximum_energy [watt-hours]
-       specific_energy        [watt-hours/kilogram]
-       charging_voltage       [volts]
-       mass_properties.    
-        mass                  [kilograms] 
+    Returns
+    -------
+    None
+        This function modifies the battery_module object in-place, setting the following attributes:
+            - length : float
+                Length of the battery module [m]
+            - width : float
+                Width of the battery module [m]
+            - height : float
+                Height of the battery module [m]
+            - mass_properties.mass : float
+                Total mass of the battery module [kg]
+            - specific_energy : float
+                Specific energy of the battery module [Wh/kg]
+            - maximum_energy : float
+                Maximum energy capacity of the battery module [J]
+            - specific_power : float
+                Specific power of the battery module [W/kg]
+            - maximum_power : float
+                Maximum power output of the battery module [W]
+            - maximum_voltage : float
+                Maximum voltage of the battery module [V]
+            - initial_maximum_energy : float
+                Initial maximum energy capacity [J]
+            - nominal_capacity : float
+                Nominal capacity of the battery module [Ah]
+            - voltage : float
+                Voltage of the battery module [V]
+    
+    Notes
+    -----
+    This function calculates the physical and electrical properties of a battery module
+    based on the properties of its constituent cells and the module configuration.
+    
+    The physical dimensions are calculated based on the geometric layout of cells,
+    including spacing between cells and a volume packaging factor. The module orientation
+    can be adjusted using Euler angles.
+    
+    The electrical properties are calculated based on the series-parallel configuration
+    of cells, with series connections increasing voltage and parallel connections
+    increasing capacity.
+    
+    **Major Assumptions**
+        * Total battery module pack mass can be modeled with a build-up factor for battery module casing,
+          internal wires, thermal management system and battery module management system.
+    
+    References
+    ----------
+    [1] Chin, J. C., Schnulo, S. L., Miller, T. B., Prokopius, K., and Gray, J., "Battery Performance Modeling on Maxwell X-57", AIAA Scitech, San Diego, CA, 2019. URL http://openmdao.org/pubs/chin_battery_performance_x57_2019.pdf.
     """
     
 

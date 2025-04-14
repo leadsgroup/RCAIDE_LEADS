@@ -18,7 +18,7 @@ import scipy as sp
 # ----------------------------------------------------------------------------------------------------------------------
 # Compute Harmonic Noise 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt):
+def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,coordinates,rotor,settings,Noise,cpt):
     '''This computes the harmonic noise (i.e. thickness and loading noise) in the frequency domain 
     of a rotor at any angle of attack with load distribution along the blade span. This is a level 1 fidelity
     approach. The thickness source is however computed using the helicoidal surface theory.
@@ -68,7 +68,7 @@ def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,propulsor_cond
                       For instance, m_6 is the 6 dimensional harmonic modes variable, m_5 is 5 dimensional harmonic modes variable
     '''
 
-    aeroacoustic_data       = propulsor_conditions[rotor.tag] 
+    aeroacoustic_data       = conditions.energy.converters[rotor.tag] 
     angle_of_attack         = np.atleast_2d(conditions.aerodynamics.angles.alpha[cpt]) 
     velocity_vector         = np.atleast_2d(conditions.frames.inertial.velocity_vector[cpt])   
     freestream              = conditions.freestream       
@@ -82,12 +82,14 @@ def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,propulsor_cond
     num_az                  = aeroacoustic_data.number_azimuthal_stations 
     orientation             = np.array(rotor.orientation_euler_angles) * 1 
     body2thrust             = sp.spatial.transform.Rotation.from_rotvec(orientation).as_matrix()  
-    commanded_thrust_vector = np.atleast_2d(propulsor_conditions.commanded_thrust_vector_angle[cpt])
+    commanded_thrust_vector = np.atleast_2d(conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle[cpt])
     for jj,airfoil in enumerate(airfoils):
         airfoil_points = airfoil.number_of_points
         y_u_6          = np.tile(airfoil.geometry.y_upper_surface[None,None,None,None,None,:],(num_cpt,num_mic,num_sec,num_h_b,num_h_l,1))
         y_l_6          = np.tile(airfoil.geometry.y_lower_surface[None,None,None,None,None,:],(num_cpt,num_mic,num_sec,num_h_b,num_h_l,1))
     chord_coord             = int(np.floor(airfoil_points/2))
+
+    thrust_vec         = aeroacoustic_data.thrust
     
     # ----------------------------------------------------------------------------------
     # Rotational Noise  Thickness and Loading Noise
@@ -115,9 +117,10 @@ def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,propulsor_cond
     p_ref          = 2E-5
         
     # net angle of inclination of propeller axis wrt inertial axis
-    alpha_4        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None],(1,num_mic,num_h_b,num_h_l))
-    alpha_5        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None,None],(1,num_mic,num_sec,num_h_b,num_h_l))
-    alpha_6        = np.tile((angle_of_attack + np.arccos(body2thrust[0,0]))[:,:,None,None,None,None],(1,num_mic,num_sec,num_h_b,num_h_l,chord_coord))
+    alpha          = np.arccos(np.dot(velocity_vector[0,:], thrust_vec[cpt,:])/(np.linalg.norm(velocity_vector)*np.linalg.norm(thrust_vec[cpt,:])))
+    alpha_4        = alpha*np.ones_like(k_4)
+    alpha_5        = alpha*np.ones_like(k_5)
+    alpha_6        = alpha*np.ones_like(k_6)
     
     # rotor angular speed
     omega_3        = np.tile(aeroacoustic_data.omega[cpt][:,None,None],(1,num_mic,num_h_b))
@@ -185,7 +188,7 @@ def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,propulsor_cond
     theta_r_prime_6 = np.arccos(np.cos(theta_r_6)*np.cos(alpha_6) + np.sin(theta_r_6)*np.sin(phi_6)*np.sin(alpha_6))
     
     phi_prime_4    = np.arccos((np.sin(theta_r_4)*np.cos(phi_4))/np.sin(theta_r_prime_4))
-    
+
     # Velocity in the rotor frame
     T_body2inertial = conditions.frames.body.transform_to_inertial
     T_inertial2body = orientation_transpose(T_body2inertial)
@@ -250,4 +253,4 @@ def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,propulsor_cond
     Noise.SPL_prop_harmonic_1_3_spectrum     = convert_to_third_octave_band(Noise.SPL_prop_harmonic_bpf_spectrum,Noise.f,settings)          
     Noise.SPL_prop_harmonic_1_3_spectrum[np.isinf(Noise.SPL_prop_harmonic_1_3_spectrum)]         = 0     
     
-    return 
+    return

@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
- # RCAIDE imports  
-from RCAIDE.Framework.Core      import Data
-from .                          import Propulsor
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor.append_turbofan_conditions     import append_turbofan_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan_Propulsor.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
+ # RCAIDE imports
+from RCAIDE.Framework.Core     import Data
+from .                         import Propulsor
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .append_turbofan_conditions     import append_turbofan_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
  
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fan Component
@@ -60,14 +60,14 @@ class Turbofan(Propulsor):
     active_crypgenic_tanks_tanks : None or list
         Collection of active cryogenoc tanks. Default is None.
         
-    engine_diameter : float
+    diameter : float
         Diameter of the engine [m]. Default is 0.0.
         
-    engine_length : float
+    length : float
         Length of the engine [m]. Default is 0.0.
         
-    engine_height : float
-        Engine centerline height above the ground plane [m]. Default is 0.5. 
+    height : float
+        Engine centerline height above the ground plane [m]. Default is 0.5.
         
     plug_diameter : float
         Diameter of the engine plug [m]. Default is 0.1.
@@ -105,7 +105,7 @@ class Turbofan(Propulsor):
     design_thrust : float
         Design thrust of the engine [N]. Default is 0.0.
         
-    mass_flow_rate_design : float
+    design_mass_flow_rate : float
         Design mass flow rate [kg/s]. Default is 0.0.
         
     OpenVSP_flow_through : bool
@@ -149,9 +149,9 @@ class Turbofan(Propulsor):
         self.combustor                                  = None 
         self.core_nozzle                                = None 
         self.fan_nozzle                                 = None       
-        self.engine_diameter                            = 0.0      
-        self.engine_length                              = 0.0
-        self.engine_height                              = 0.5     # Engine centerline heigh above the ground plane 
+        self.diameter                                   = 0.0      
+        self.length                                     = 0.0
+        self.height                                     = 0.0     # Engine centerline heigh above the ground plane 
         self.plug_diameter                              = 0.1     # dimater of the engine plug
         self.geometry_xe                                = 1.      # Geometry information for the installation effects function
         self.geometry_ye                                = 1.      # Geometry information for the installation effects function
@@ -172,16 +172,15 @@ class Turbofan(Propulsor):
         self.emission_indices.CO                        = None
         self.emission_indices.H2O                       = None
         self.emission_indices.SO2                       = None
-        self.emission_indices.Soot                      = None 
-        
+        self.emission_indices.Soot                      = None  
         
         self.OpenVSP_flow_through                       = False
     
-    def append_operating_conditions(self,segment):
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
         Appends operating conditions to the segment.
         """
-        append_turbofan_conditions(self,segment)
+        append_turbofan_conditions(self,segment,energy_conditions,noise_conditions)
         return
 
     def unpack_propulsor_unknowns(self,segment):   
@@ -197,12 +196,12 @@ class Turbofan(Propulsor):
         """
         Computes turbofan performance including thrust, moment, and power.
         """
-        thrust,moment,power,stored_results_flag,stored_propulsor_tag =  compute_turbofan_performance(self,state,center_of_gravity)
-        return thrust,moment,power,stored_results_flag,stored_propulsor_tag
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turbofan_performance(self,state,center_of_gravity)
+        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity = [[0, 0, 0]]):
+    def reuse_stored_data(turbofan,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored turbofan data for performance calculations.
         """
-        thrust,moment,power  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power 
+        thrust,moment,power_mech,power_elec  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,power_mech,power_elec
