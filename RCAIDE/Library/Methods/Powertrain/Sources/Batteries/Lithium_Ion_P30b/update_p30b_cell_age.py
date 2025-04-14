@@ -7,12 +7,12 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np  
-import pybamm as pb
+import pybamm
  
 # ----------------------------------------------------------------------------------------------------------------------
 # update_nmc_cell_age
 # ----------------------------------------------------------------------------------------------------------------------  
-def update_p30b_cell_age(battery,segment, battery_conditions,increment_battery_age_by_one_day):  
+def update_p30b_cell_age(battery,segment, battery_conditions,increment_battery_age_by_one_day, battery_model):  
     """ This is an aging model for 18650 lithium-nickel-manganese-cobalt-oxide batteries. 
    
     Source: 
@@ -44,9 +44,11 @@ def update_p30b_cell_age(battery,segment, battery_conditions,increment_battery_a
     t          = battery_conditions.cell.cycle_in_day         
     Q_prior    = battery_conditions.cell.charge_throughput[-1,0] 
     Temp       = np.mean(battery_conditions.cell.temperature) 
+    initial_conditions = battery_conditions.cell.model_conditions
     
-    # aging model  
-    delta_DOD = abs(SOC[0][0] - SOC[-1][0])
+    # aging model, shouldn't need any of this, will have to rework theoretical setup. I think this is where all of the pybamm work goes, everything I should be able to keep laregely the same  
+    # this is where the degradation is run but state needs to be stored elsewhere
+    delta_DOD = abs(SOC[0][0] - SOC[-1][0]) #depth of discharge equals starting SOC - ending SOC
     rms_V_ul  = np.sqrt(np.mean(V_ul**2)) 
     alpha_cap = (7.542*np.mean(V_ul) - 23.75) * 1E6 * np.exp(-6976/(Temp))  
     alpha_res = (5.270*np.mean(V_ul) - 16.32) * 1E5 * np.exp(-5986/(Temp))  
@@ -55,11 +57,29 @@ def update_p30b_cell_age(battery,segment, battery_conditions,increment_battery_a
     
     E_fade_factor   = 1 - alpha_cap*(t**0.75) - beta_cap*np.sqrt(Q_prior)   
     R_growth_factor = 1 + alpha_res*(t**0.75) + beta_res*Q_prior  
+
+
+    model = model_base.set_initial_conditions_from(initial_conditions, inplace = False)
+    experiment = pybamm.Experiment(
+        ["Discharge at "+ str(bus_conditions.current_draw[t_idx]) + "A for " + str(delta_t) + " seconds"]#might be delta_t[t_idx]
+      ) #can change to step format 
+    simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = params) #setup simulation
+    simulation_solved = simulation.solve(initial_soc = state.SOC) #solving for time segment
+
+    batt_capacity = simulation_solved.summary_variables['Capacity [A.h]'] #gives the charge throughput
+    batt_voltage = simulation_solved['Voltage [V]'].data[-1] #gives the final voltage of the time segment
+    batt_current = simulation_solved['Current [A]'].data[-1] #gives the final current of the time segment, same as bus current
+    batt_resistance = simulation_solved['Resistance [Ohm]'].data[-1] #gives the final resistance of the time segment. not to be used for heat, just used pybamm
+    batt_heat_gen = simulation_solved['Total heating [W.m-3]'].data[-1] #gives the heat generated during the time segment. 
     
-    battery_conditions.cell.capacity_fade_factor     = np.minimum(E_fade_factor,battery_conditions.cell.capacity_fade_factor)
-    battery_conditions.cell.resistance_growth_factor = np.maximum(R_growth_factor,battery_conditions.cell.resistance_growth_factor)
+
+    battery_conditions.cell.capacity_fade_factor = batt_capacity / (battery_conditions.E_module_max / n_parallel)
     
-    if increment_battery_age_by_one_day:
+    battery_conditions.cell.capacity_fade_factor     = np.minimum(E_fade_factor,battery_conditions.cell.capacity_fade_factor) #shouldn't need this/or update
+    battery_conditions.cell.resistance_growth_factor = np.maximum(R_growth_factor,battery_conditions.cell.resistance_growth_factor) #or this
+    #battery_conditions.cell.heat_generation = 
+    
+    if increment_battery_age_by_one_day: #good
         battery_conditions.cell.cycle_in_day += 1 # update battery age by one day 
   
     return  

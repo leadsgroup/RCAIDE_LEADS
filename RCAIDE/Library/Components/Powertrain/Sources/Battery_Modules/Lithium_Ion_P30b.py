@@ -58,7 +58,8 @@ class Lithium_Ion_P30b(Generic_Battery_Module):
         
         self.cell.watt_hour_rating            = self.cell.nominal_capacity  * self.cell.nominal_voltage                          # [Watt-hours]      
         self.cell.specific_energy             = self.cell.watt_hour_rating*Units.Wh/self.cell.mass                               # [J/kg]
-        #self.cell.specific_power              = self.cell.specific_energy/self.cell.nominal_capacity                             # [W/kg]   
+        #self.cell.specific_power              = self.cell.specific_energy/self.cell.nominal_capacity
+        self.cell.specific_heat_capacity      = 1108                  # [W/kg], taken from NMC not accurate but not sure if needed   
         
         self.cell.specific_power              = self.cell.maximum_discharge_current * self.cell.maximum_voltage / self.cell.mass # [W/kg]                                             
         return  

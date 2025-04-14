@@ -12,9 +12,22 @@ from copy import  deepcopy
 import pybamm
 
 # ----------------------------------------------------------------------------------------------------------------------
-# Create battery model
+# Create Base P30b battery model
 # ---------------------------------------------------------------------------------------------------------------------- 
-model  = pybamm.lithium_ion.SPM()
+
+model_base = pybamm.lithium_ion.SPM( #initializing first model to have degradation
+        {
+            "SEI": "solvent-diffusion limited",
+            "SEI porosity change": "true",
+            "lithium plating": "partially reversible",
+            "lithium plating porosity change": "true",  # alias for "SEI porosity change"
+            "particle mechanics": ("swelling and cracking", "swelling only"),
+            "SEI on cracks": "true",
+            "loss of active material": "stress-driven",
+            "calculate discharge energy": "true",  # for compatibility with older PyBaMM versions  
+            #"thermal": "lumped"
+        }
+)
 params = pybamm.ParameterValues("Chen2020")
 params.update({"Electrode width [m]": 9.06108669e-01,
                 "Negative electrode density [kg.m-3]": 2.23367642e+03,
@@ -29,9 +42,8 @@ params.update({"Electrode width [m]": 9.06108669e-01,
                 })
 
 
-
 # ----------------------------------------------------------------------------------------------------------------------
-# compute_nmc_cell_performance
+# compute_p30b_cell_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, delta_t): 
@@ -126,7 +138,7 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     As_cell                   = battery_module.cell.surface_area
     cell_mass                 = battery_module.cell.mass    
     Cp                        = battery_module.cell.specific_heat_capacity       
-    battery_module_data       = battery_module.cell.discharge_performance_map
+    #battery_module_data       = battery_module.cell.discharge_performance_map
     
     # ---------------------------------------------------------------------------------
     # Compute Bus electrical properties 
@@ -137,57 +149,29 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     P_bus                       = bus_conditions.power_draw
     I_bus                       = bus_conditions.current_draw
     
-
-    # ---------------------------------------------------------------------------------
-    # PyBaMM analysis for a single cell
-    # ---------------------------------------------------------------------------------
- 
-    experiment = pybamm.Experiment(
-        ["Discharge at "+ str(bus_conditions.current_draw[t_idx]) + "A for " + str(delta_t[t_idx]) + " seconds"]
-    ) #can change to step format 
-    simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = params) #setup simulation
-    simulation_solved = simulation.solve(initial_soc = state.SOC) #solving for time segment
-
-    simulation_solved['Discharge capacity [A.h]'].data[-1] #gives the charge throughput
-    simulation_solved['Voltage [V]'].data[-1] #gives the final voltage of the time segment
-    simulation_solved['Current [A]'].data[-1] #gives the final current of the time segment, same as bus current
-    simulation_solved['Resistance [Ohm]'].data[-1] #gives the final resistance of the time segment. not to be used for heat, just used pybamm
-    simulation_solved['Total heating [W.m-3]'].data[-1] #gives the heat generated during the time segment. 
-
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions
     # -------------------------------------------------------------------------    
-    battery_module_conditions = state.conditions.energy[bus.tag].battery_modules[battery_module.tag]  
-   
-    E_module_max       = battery_module.maximum_energy * battery_module_conditions.cell.capacity_fade_factor
+    battery_module_conditions = state.conditions.energy[bus.tag].battery_modules[battery_module.tag]  #understand this, need to make sure data being fed in is updated
     
-    V_oc_module        = battery_module_conditions.voltage_open_circuit
-    V_oc_cell          = battery_module_conditions.cell.voltage_open_circuit   
-  
+    #E_module_max       = battery_module.maximum_energy * battery_module_conditions.cell.capacity_fade_factor #capacity 
+    E_module_max       = battery_module_conditions.maximum_energy #need to update maximum energy 
     P_module           = battery_module_conditions.power
-    P_cell             = battery_module_conditions.cell.power
-    
-    R_0_module         = battery_module_conditions.internal_resistance
-    R_0_cell           = battery_module_conditions.cell.internal_resistance
-    
-    Q_heat_module      = battery_module_conditions.heat_energy_generated
-    Q_heat_cell        = battery_module_conditions.cell.heat_energy_generated
-    
-    V_ul_module        = battery_module_conditions.voltage_under_load
+    P_cell             = battery_module_conditions.cell.power 
+    LLI_cell           = battery_module_conditions.cell.loss_of_lithium_inventory 
+    R_0_cell           = battery_module_conditions.cell.internal_resistance 
+    Q_heat_cell        = battery_module_conditions.cell.heat_energy_generated 
     V_ul_cell          = battery_module_conditions.cell.voltage_under_load
     
     I_module           = battery_module_conditions.current 
-    I_cell             = battery_module_conditions.cell.current
+    I_cell             = battery_module_conditions.cell.current 
     
-    T_module           = battery_module_conditions.temperature                 
-    T_cell             = battery_module_conditions.cell.temperature
-    
-    SOC_cell           = battery_module_conditions.cell.state_of_charge  
-    SOC_module         = battery_module_conditions.state_of_charge
-    E_cell             = battery_module_conditions.cell.energy   
-    E_module           = battery_module_conditions.energy
-    Q_cell             = battery_module_conditions.cell.charge_throughput              
-    DOD_cell           = battery_module_conditions.cell.depth_of_discharge
+    # SOC_cell           = battery_module_conditions.cell.state_of_charge  
+    # SOC_module         = battery_module_conditions.state_of_charge
+    # E_cell             = battery_module_conditions.cell.energy   
+    # E_module           = battery_module_conditions.energy #mid segment capacity
+    # Q_cell             = battery_module_conditions.cell.charge_throughput              
+    # DOD_cell           = battery_module_conditions.cell.depth_of_discharge
     
     # ---------------------------------------------------------------------------------
     # Compute battery_module electrical properties 
@@ -209,7 +193,7 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
                     if sub_tag == battery_module.tag:
                         for btms in  sub_item:
                             HAS = btms    
-
+    #good
 
     # ---------------------------------------------------------------------------------------------------
     # Current State 
@@ -221,66 +205,64 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
 
     I_cell[t_idx] = I_module[t_idx] / n_parallel   
        
+
+
+
     # ---------------------------------------------------------------------------------
-    # Compute battery_module cell temperature 
-    # ---------------------------------------------------------------------------------
-    R_0_cell[t_idx]                     =  (0.01483*(SOC_cell[t_idx]**2) - 0.02518*SOC_cell[t_idx] + 0.1036) *battery_module_conditions.cell.resistance_growth_factor  
-    R_0_cell[t_idx][R_0_cell[t_idx]<0]  = 0. 
-
-    # Determine temperature increase         
-    sigma                 = 139 # Electrical conductivity
-    n                     = 1
-    F                     = 96485 # C/mol Faraday constant    
-    delta_S               = -496.66*(SOC_cell[t_idx])**6 +  1729.4*(SOC_cell[t_idx])**5 + -2278 *(SOC_cell[t_idx])**4 +  1382.2 *(SOC_cell[t_idx])**3 + \
-                            -380.47*(SOC_cell[t_idx])**2 +  46.508*(SOC_cell[t_idx])  + -10.692  
-
-    i_cell                = I_cell[t_idx]/electrode_area # current intensity
-    q_dot_entropy         = -(T_cell[t_idx])*delta_S*i_cell/(n*F)       
-    q_dot_joule           = (i_cell**2)*(battery_module_conditions.cell.resistance_growth_factor)/(sigma)          
-    Q_heat_cell[t_idx]    = (q_dot_joule + q_dot_entropy)*As_cell 
-    Q_heat_module[t_idx]  = Q_heat_cell[t_idx]*n_total  
-
-    V_ul_cell[t_idx]      = compute_nmc_cell_state(battery_module_data,SOC_cell[t_idx],T_cell[t_idx],abs(I_cell[t_idx])) 
-
-    V_oc_cell[t_idx]      = V_ul_cell[t_idx] + (abs(I_cell[t_idx]) * R_0_cell[t_idx])              
-
-    # Effective Power flowing through battery_module 
-    P_module[t_idx]       = P_bus[t_idx] /no_modules  - np.abs(Q_heat_module[t_idx]) 
-
-    # store remaining variables 
-    V_oc_module[t_idx]     = V_oc_cell[t_idx]*n_series 
-    V_ul_module[t_idx]     = V_ul_cell[t_idx]*n_series  
-    T_module[t_idx]        = T_cell[t_idx]   # Assume the cell temperature is the temperature of the module
-    P_cell[t_idx]          = P_module[t_idx]/n_total 
-    E_module[t_idx]        = E_bus[t_idx]/no_modules 
-    E_cell[t_idx]          = E_module[t_idx]/n_total  
-
-    # ---------------------------------------------------------------------------------------------------     
-    # Future State 
-    # --------------------------------------------------------------------------------------------------- 
-    if t_idx != state.numerics.number_of_control_points-1:  
-
-        # Compute cell temperature
-        if HAS is not None:
-            T_cell[t_idx+1]  = HAS.compute_thermal_performance(battery_module,bus,coolant_line,Q_heat_cell[t_idx],T_cell[t_idx],state,delta_t[t_idx],t_idx)
-        else:
-            # Considers a thermally insulated system and the heat piles on in the system
-            dT_dt              = Q_heat_cell[t_idx]/(cell_mass*Cp)
-            T_cell[t_idx+1]    =  T_cell[t_idx] + dT_dt*delta_t[t_idx]
-            
-        # Compute state of charge and depth of discarge of the battery_module
-        E_module[t_idx+1]                                     = (E_module[t_idx]) -P_module[t_idx]*delta_t[t_idx]
-        E_module[t_idx+1][E_module[t_idx+1] > E_module_max]   = np.float32(E_module_max)
-        SOC_cell[t_idx+1]                                     = E_module[t_idx+1]/E_module_max 
-        SOC_cell[t_idx+1][SOC_cell[t_idx+1]>1]                = 1.
-        SOC_cell[t_idx+1][SOC_cell[t_idx+1]<0]                = 0. 
-        DOD_cell[t_idx+1]                                     = 1 - SOC_cell[t_idx+1]  
-        SOC_module[t_idx+1]                                   = SOC_cell[t_idx+1]
-
-    
-        # Determine new charge throughput (the amount of charge gone through the battery_module)
-        Q_cell[t_idx+1]    = Q_cell[t_idx] + abs(I_cell[t_idx])*delta_t[t_idx]/Units.hr
+    # PyBaMM analysis for a single cell
+    # --------------------------------------------------------------------------------- 
+    if t_idx == 0:
+        model = pybamm.lithium_ion.SPM( #initializing first model to have degradation
+        {
+            "SEI": "solvent-diffusion limited",
+            "SEI porosity change": "true",
+            "lithium plating": "partially reversible",
+            "lithium plating porosity change": "true",  # alias for "SEI porosity change"
+            "particle mechanics": ("swelling and cracking", "swelling only"),
+            "SEI on cracks": "true",
+            "loss of active material": "stress-driven",
+            "calculate discharge energy": "true",  # for compatibility with older PyBaMM versions  
+            #"thermal": "lumped"
+        }
+        )
+        params = pybamm.ParameterValues("Chen2020")
+        params.update({"Electrode width [m]": 9.06108669e-01,
+                        "Negative electrode density [kg.m-3]": 2.23367642e+03,
+                        "Positive electrode density [kg.m-3]": 3.35604961e+03,
+                        'Bulk solvent concentration [mol.m-3]': 9.04026059e+02,
+                        'Cation transference number': 1.00108959e+00,
+                        'Nominal cell capacity [A.h]': 3.43328039e+00,
+                        'Negative electrode porosity': 9.85780579e-01,
+                        'Separator porosity':1.01419255e+00, 
+                        "Ambient temperature [K]": 296.15,
+                        'Reference temperature [K]': 296.15
+                        })
         
+
+        experiment = pybamm.Experiment(
+            ["Discharge at "+ str(I_cell[t_idx]) + "A for " + str(delta_t) + " seconds"]#might be delta_t[t_idx]
+        ) #can change to step format 
+        simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = params) #setup simulation
+        simulation_solved = simulation.solve(initial_soc = state.SOC) #solving for time segment
+
+        initial_conditions =  deepcopy(simulation_solved)
+    else: 
+        model = model.set_initial_conditions_from(initial_conditions, inplace = False)
+
+        experiment = pybamm.Experiment(
+            ["Discharge at "+ str(I_cell[t_idx]) + "A for " + str(delta_t) + " seconds"]#might be delta_t[t_idx]
+        ) #can change to step format 
+        simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = params) #setup simulation
+        simulation_solved = simulation.solve(initial_soc = state.SOC) #solving for time segment
+
+    batt_capacity = simulation_solved['Discharge capacity [A.h]'].data[-1] #gives the charge throughput
+    V_ul_cell[t_idx+1] = simulation_solved['Voltage [V]'].data[-1] #gives the final voltage of the time segment
+    I_cell[t_idx+1] = simulation_solved['Current [A]'].data[-1] #gives the final current of the time segment, same as bus current
+    R_0_cell[t_idx+1] = simulation_solved['Resistance [Ohm]'].data[-1] #gives the final resistance of the time segment. not to be used for heat, just used pybamm
+    Q_heat_cell[t_idx+1]  = simulation_solved['Total heating [W.m-3]'].data[-1] #gives the heat generated during the time segment. 
+    LLI_cell[t_idx+1] = simulation_solved['Loss of lithium inventory [mol]'].data[-1] #gives the loss of lithium inventory during the time segment.
+    
+    
     stored_results_flag     = True
     stored_battery_module_tag     = battery_module.tag  
         
@@ -307,44 +289,5 @@ def reuse_stored_p30b_cell_data(battery_module,state,bus,stored_results_flag, st
    
     state.conditions.energy[bus.tag].battery_modules[battery_module.tag] = deepcopy(state.conditions.energy[bus.tag].battery_modules[stored_battery_module_tag])
     
-        
     return
  
-def compute_p30b_cell_state(battery_module_data,SOC,T,I):
-    """This computes the electrical state variables of a lithium ion 
-    battery_module cell with a lithium-nickel-cobalt-aluminum oxide cathode 
-    chemistry from look-up tables 
-     
-    Assumtions: 
-    N/A
-    
-    Source:  
-    N/A 
-     
-    Inputs:
-        SOC                  - state of charge of cell     [unitless]
-        battery_module_data  - look-up data structure      [unitless]
-        T             - battery_module cell temperature    [Kelvin]
-        I             - battery_module cell current        [Amperes]
-    
-    Outputs:  
-        V_ul          - under-load voltage          [Volts] 
-        
-    """ #should let 
-
-    # Make sure things do not break by limiting current, temperature and current 
-    SOC[SOC < 0.]   = 0.  
-    SOC[SOC > 1.]   = 1.    
-    DOD             = 1 - SOC 
-    
-    T[np.isnan(T)] = 302.65
-    T[T<272.65]    = 272.65 # model does not fit for below 0  degrees
-    T[T>322.65]    = 322.65 # model does not fit for above 50 degrees
-     
-    I[I<0.0]       = 0.0
-    I[I>8.0]       = 8.0   
-     
-    pts            = np.hstack((np.hstack((I, T)),DOD  )) # amps, temp, SOC   
-    V_ul           = np.atleast_2d(battery_module_data.Voltage(pts)[:,1]).T  
-    
-    return V_ul

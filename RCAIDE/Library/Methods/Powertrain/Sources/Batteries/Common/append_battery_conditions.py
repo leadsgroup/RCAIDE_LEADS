@@ -9,6 +9,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE 
+from RCAIDE.Framework.Core import Container
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -58,6 +59,7 @@ def append_battery_conditions(battery_module,segment,bus):
     """
  
     ones_row                                               = segment.state.ones_row
+    n_cpts  = segment.state.numerics.number_of_control_points 
 
     # compute ambient conditions
     atmosphere    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
@@ -154,7 +156,16 @@ def append_battery_conditions(battery_module,segment,bus):
     # This is the only one besides energy and discharge flag that should be moduleed into the segment top level
     if 'increment_battery_age_by_one_day' not in segment:
         segment.increment_battery_age_by_one_day   = False    
-     
+    if type(battery_module) == RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b:
+            bus_results.battery_modules[battery_module.tag].cell.loss_of_lithium_inventory = 0 * ones_row(1)  
+
+            bus_results.battery_modules[battery_module.tag].cell.pybamm_state  = Container()  
+            for i in range(n_cpts): 
+                bus_results.battery_modules[battery_module.tag].cell.pybamm_state['timestep_' + str(i)]  = Container()  
+
+                
+            bus_results.battery_modules[battery_module.tag].cell.pybamm_state['timestep_' + str(0)]  = Container()      
+
     return 
     
 def append_battery_segment_conditions(battery_module, bus, conditions, segment): 
@@ -193,7 +204,9 @@ def append_battery_segment_conditions(battery_module, bus, conditions, segment):
         module_conditions.cell.capacity_fade_factor       = battery_initials.cell.capacity_fade_factor 
         module_conditions.cell.state_of_charge[:,0]       = battery_initials.cell.state_of_charge[-1,0]
         module_conditions.cell.energy[:,0]                = battery_initials.cell.energy[-1,0]
-
+        module_conditions.model_conditions
+        if type(battery_module) == RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b:
+            module_conditions.cell.loss_of_lithium_inventory[:,0] = battery_initials.cell.loss_of_lithium_inventory[-1,0] 
     if 'battery_cell_temperature' in segment:       
         module_conditions.temperature[:,0]          = segment.battery_cell_temperature 
         module_conditions.cell.temperature[:,0]     = segment.battery_cell_temperature     
