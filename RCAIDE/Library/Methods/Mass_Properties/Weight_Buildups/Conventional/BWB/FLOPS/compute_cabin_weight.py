@@ -60,8 +60,8 @@ def compute_cabin_weight(vehicle,settings):
             sum(segment.sweeps.leading_edge for segment in segments) / len(segments)
             if segments else 0.0
                 )/Units.degree
-        W_cabin = 1.06 * 1.20 * 105.95 * (A_CB**0.97) * (TOGW**0.0021) * (FR**-0.75) * (THETA_CB**-0.62) * (SR**-0.0008)
-        W_cabin = W_cabin * Units.lbf / 9.81
+        W_cabin_lbf = 1.06 * 1.20 * 105.95 * (A_CB**0.97) * (TOGW**0.0021) * (FR**-0.75) * (THETA_CB**-0.62) * (SR**-0.0008)
+        W_cabin = W_cabin_lbf * Units.lbf / 9.81
     else: 
         W_cabin = 5.698865 * 0.316422 * (TOGW ** 0.166552) * A_CB ** 1.061158
     
