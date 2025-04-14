@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Wings/All_Moving_Surface.py
+# RCAIDE/Library/Components/Wings/All_Moving_Surface.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

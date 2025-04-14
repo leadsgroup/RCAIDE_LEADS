@@ -192,7 +192,7 @@ def broadband_noise(conditions,coordinates,rotor,settings,Noise,cpt):
         P_TIP                 = 10**(SPL_TIP/10)
         P_TIP[:,:,:,:-1,:,:]  = 0
         
-        # Sum broadband compoments along blade sections and blades to get self noise per rotor 
+        # Sum broadband Components along blade sections and blades to get self noise per rotor 
         P_b_7                     = np.zeros((4,num_cpt,num_mic,num_blades,num_sec,num_cf,num_az))
         P_b_7[0,:,:,:,:,:,:]      = P_BWI
         P_b_7[1,:,:,:,:,:,:]      = P_TBL_TE_tripped 

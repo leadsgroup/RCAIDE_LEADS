@@ -16,37 +16,60 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------     
 #  External Plug Effect
 # ----------------------------------------------------------------------------------------------------------------------       
-def external_plug_effect(Velocity_primary,Velocity_secondary, Velocity_mixed, Diameter_primary,
-                         Diameter_secondary,Diameter_mixed, Plug_diameter, sound_ambient, theta_p,theta_s,theta_m):
-    """This function calculates the adjustments, in decibels, to be added to the predicted jet noise levels due to
-    external plugs in coaxial jets.
-    
-    Assumptions:
-        N/A
+def external_plug_effect(Velocity_primary, Velocity_secondary, Velocity_mixed, Diameter_primary,
+                         Diameter_secondary, Diameter_mixed, Plug_diameter, sound_ambient, theta_p, theta_s, theta_m):
+    """
+    This function calculates the adjustments, in decibels, to be added to the predicted jet noise levels due to external plugs in coaxial jets.
 
-    Source:
-        N/A
+    Parameters
+    ----------
+    Velocity_primary : float
+        Velocity of the primary jet [m/s].
+    Velocity_secondary : float
+        Velocity of the secondary jet [m/s].
+    Velocity_mixed : float
+        Velocity of the mixed jet [m/s].
+    Diameter_primary : float
+        Diameter of the primary jet [m].
+    Diameter_secondary : float
+        Diameter of the secondary jet [m].
+    Diameter_mixed : float
+        Diameter of the mixed jet [m].
+    Plug_diameter : float
+        Diameter of the external plug [m].
+    sound_ambient : float
+        Ambient sound level [dB].
+    theta_p : float
+        Angle for the primary jet [rad].
+    theta_s : float
+        Angle for the secondary jet [rad].
+    theta_m : float
+        Angle for the mixed jet [rad].
 
-    Inputs: 
-        Velocity_primary      [m/s]
-        Velocity_secondary    [m/s]
-        Velocity_mixed        [m/s]
-        Diameter_primary      [m]
-        Diameter_secondary    [m]
-        Diameter_mixed        [m]
-        Plug_diameter         [m]
-        sound_ambient         [dB]
-        theta_p               [rad]
-        theta_s               [rad]
-        theta_m               [rad]
-    
-    Outputs: 
-        PG_p        [dB]
-        PG_s        [dB]
-        PG_m        [dB]
+    Returns
+    -------
+    jet_plug_effects : Data
+        Contains the noise adjustments for each jet component.
+            - PG_p : float
+                Adjustment for the primary jet [dB].
+            - PG_s : float
+                Adjustment for the secondary jet [dB].
+            - PG_m : float
+                Adjustment for the mixed jet [dB].
 
-    Properties Used:
-        N/A  
+    Notes
+    -----
+    The function assumes that the external plug effect is significant for coaxial jets and calculates the noise adjustments accordingly.
+
+    **Definitions**
+
+    'PG'
+        Plug Gain, the adjustment in decibels due to the presence of an external plug.
+
+    References
+    ----------
+    [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
+    [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
     """
 
     # Primary jet

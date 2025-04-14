@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Distributors/__init__.py
+# RCAIDE/Library/Components/Powertrain/Distributors/__init__.py
 # 
 
 """

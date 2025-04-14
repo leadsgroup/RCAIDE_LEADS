@@ -133,7 +133,7 @@ def plot_drag_components(results,
     
         set_axes(axis_1)            
         axis_1.set_xlabel('Time (mins)')
-        axis_1.set_ylabel('Drag Compoments') 
+        axis_1.set_ylabel('Drag Components') 
         
     
     if show_legend:                    

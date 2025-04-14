@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Sources/Batteries/Lithium_Ion_LiNiMnCoO2_18650.py
+# RCAIDE/Library/Components/Powertrain/Sources/Batteries/Lithium_Ion_LiNiMnCoO2_18650.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke

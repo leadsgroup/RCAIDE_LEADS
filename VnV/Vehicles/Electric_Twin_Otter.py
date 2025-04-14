@@ -1,4 +1,4 @@
-# Regressions/Vehicles/Electric_Twin_Otter.py
+# VnV/Vehicles/Electric_Twin_Otter.py
 # 
 # 
 # Created:   Sep 2024, S. Shekar

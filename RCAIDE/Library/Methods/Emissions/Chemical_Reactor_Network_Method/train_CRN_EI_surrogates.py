@@ -106,8 +106,9 @@ def train_CRN_EI_surrogates(emissions):
         for propulsor in  network.propulsors:
             if  isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
                 isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
-                isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft) or \
-                isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.ICE_Propeller):            
+                isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop) or \
+                isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine) or\
+                isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine):           
                 combustor = propulsor.combustor    
             else:
                 combustor = False 

@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Operating Test Conditions Set-up
 # ---------------------------------------------------------------------------------------------------------------------- 
-def setup_operating_conditions(component, altitude=0, velocity_range=np.array([10]), angle_of_attack=0):
+def setup_operating_conditions(component, velocity_range=np.array([10]), altitude=0, angle_of_attack=0, temperature_deviation=0):
     """
     Sets up operating conditions for single component analysis.
     
@@ -111,7 +111,7 @@ def setup_operating_conditions(component, altitude=0, velocity_range=np.array([1
     component.working_fluid                           = working_fluid     
     
     atmosphere_sls                                    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmo_data                                         = atmosphere_sls.compute_values(altitude,0.0) 
+    atmo_data                                         = atmosphere_sls.compute_values(altitude,temperature_deviation) 
     p                                                 = atmo_data.pressure          
     T                                                 = atmo_data.temperature       
     rho                                               = atmo_data.density          
@@ -130,7 +130,8 @@ def setup_operating_conditions(component, altitude=0, velocity_range=np.array([1
     conditions.freestream.Cp                          = np.atleast_2d(working_fluid.compute_cp(T,p))
     conditions.freestream.R                           = np.atleast_2d(working_fluid.gas_specific_constant)
     conditions.freestream.speed_of_sound              = np.atleast_2d(a)
-
+    conditions.freestream.delta_ISA                   = np.atleast_2d(temperature_deviation)
+    
     num_ctrl_pts      = len(velocity_range)    
     conditions._size  = num_ctrl_pts
     conditions.expand_rows(num_ctrl_pts)

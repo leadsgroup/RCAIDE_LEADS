@@ -166,11 +166,10 @@ def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_id
     # ---------------------------------------------------------------------------------    
     bus_conditions              = state.conditions.energy[bus.tag]
     bus_config                  = bus.battery_module_electric_configuration
-    phi                         = state.conditions.energy.hybrid_power_split_ratio
     psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio
     E_bus                       = bus_conditions.energy
-    P_bus                       = bus_conditions.power_draw*phi * psi
-    I_bus                       = bus_conditions.current_draw*phi * psi
+    P_bus                       = bus_conditions.power_draw*psi
+    I_bus                       = bus_conditions.current_draw*psi 
     
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions
@@ -263,7 +262,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_id
     V_oc_cell[t_idx]      = V_ul_cell[t_idx] + (abs(I_cell[t_idx]) * R_0_cell[t_idx])              
 
     # Effective Power flowing through battery_module 
-    P_module[t_idx]       = P_bus[t_idx] /no_modules  - np.abs(Q_heat_module[t_idx]) 
+    P_module[t_idx]       = P_bus[t_idx] /no_modules  + np.abs(Q_heat_module[t_idx]) 
 
     # store remaining variables 
     V_oc_module[t_idx]     = V_oc_cell[t_idx]*n_series 

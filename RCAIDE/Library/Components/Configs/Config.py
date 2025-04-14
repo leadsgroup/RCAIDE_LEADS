@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Configs/Config.py
+# RCAIDE/Library/Components/Configs/Config.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 

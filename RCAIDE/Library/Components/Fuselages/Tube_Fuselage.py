@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Fuselages/Tube_Fuselage.py
+# RCAIDE/Components/Fuselages/Tube_Fuselage.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

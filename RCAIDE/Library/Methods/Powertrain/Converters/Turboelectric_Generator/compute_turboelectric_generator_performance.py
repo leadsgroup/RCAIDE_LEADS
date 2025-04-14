@@ -85,6 +85,7 @@ def compute_turboelectric_generator_performance(turboelectric_generator, state, 
         P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line)
         
         # connect properties of the turboshaft to generator 
+        turboelectric_generator_conditions.power = generator_conditions.outputs.power
         generator_conditions.inputs.power  = P_mech     
         generator_conditions.inputs.omega  = compressor_conditions.omega         
         
@@ -100,7 +101,9 @@ def compute_turboelectric_generator_performance(turboelectric_generator, state, 
         
         # assign voltage across bus 
         generator_conditions.outputs.voltage = bus.voltage*np.ones_like(generator_conditions.outputs.power)
+        generator_conditions.outputs.current = generator_conditions.outputs.power / generator_conditions.outputs.voltage
         
+        generator.inverse_calculation = True
         # run the generator 
         compute_generator_performance(generator,conditions)
         
