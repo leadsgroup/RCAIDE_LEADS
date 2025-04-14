@@ -59,6 +59,43 @@ def train_VLM_surrogates(aerodynamics):
     else:
         training.supersonic  = None
         training.transonic   = None
+
+    # compute neutral point
+     # --------------------------------------------------------------------------------------------      
+    # Equilibrium Condition 
+    # --------------------------------------------------------------------------------------------       
+
+
+    conditions                                      = RCAIDE.Framework.Mission.Common.Results()
+    conditions.freestream.mach_number               = np.array([[0.5]])
+    conditions.aerodynamics.angles.alpha            = np.array([[0.0]])
+
+
+    np_vehicle = deepcopy(aerodynamics.vehicle)
+    np_settings = deepcopy(aerodynamics.settings) 
+    VLM_results_0 = VLM(conditions,np_settings,np_vehicle) 
+    CM_0    = VLM_results_0.CM  
+
+    delta_angle  = aerodynamics.training.angle_purtubation  
+    conditions.aerodynamics.angles.alpha   += delta_angle 
+    VLM_results_1 = VLM(conditions,np_settings,np_vehicle) 
+    CM_alpha_prime    = VLM_results_1.CM 
+    
+    vehicle_shifted_CG = deepcopy(aerodynamics.vehicle)
+    delta_cg = 0.1
+    vehicle_shifted_CG.mass_properties.center_of_gravity[0][0] +=delta_cg
+    VLM_results_2 = VLM(conditions,np_settings,vehicle_shifted_CG)  
+    CM_alpha_cg_prime  = VLM_results_2.CM  
+  
+    dCM_dalpha_cg = (CM_alpha_cg_prime   - CM_0) / (delta_angle)    
+    dCM_dalpha    = (CM_alpha_prime   - CM_0) / (delta_angle)    
+     
+    m  =  (dCM_dalpha_cg[0] - dCM_dalpha[0]) /delta_cg 
+    b  =  dCM_dalpha_cg[0]  - (m * vehicle_shifted_CG.mass_properties.center_of_gravity[0][0])
+    NP =  -b / m  
+      
+    aerodynamics.vehicle.mass_properties.neutral_point = NP 
+    
     return 
     
 def train_model(aerodynamics, Mach): 
