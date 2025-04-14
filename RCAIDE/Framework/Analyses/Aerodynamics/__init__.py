@@ -10,4 +10,5 @@
   
 from .Aerodynamics           import Aerodynamics 
 from .Athena_Vortex_Lattice  import Athena_Vortex_Lattice
+from .Empirical_Correlation  import Empirical_Correlation
 from .Vortex_Lattice_Method  import Vortex_Lattice_Method
