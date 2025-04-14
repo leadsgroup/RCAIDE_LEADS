@@ -31,6 +31,7 @@ RCAIDE.Library.Components.Wings
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 from . import Athena_Vortex_Lattice
+from . import Empirical_Correlation
 from . import Airfoil_Panel_Method 
 from . import AERODAS
 from . import Vortex_Lattice_Method
