@@ -94,7 +94,7 @@ class Electrical_Bus(Component):
         self.tag                                    = 'bus' 
         self.battery_modules                        = Container()
         self.fuel_cell_stacks                       = Container()
-        self.cryogenic_tanks                        = Container()
+        self.fuel_tanks                             = Container()
         self.assigned_propulsors                    = []
         self.assigned_converters                    = [] 
         self.avionics                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()

@@ -179,7 +179,7 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
                     EI_SO2  = fuel.emission_indices.SO2
                     EI_Soot = fuel.emission_indices.Soot  
                     
-                    mdot = segment.conditions.energy[fuel_line.tag][fuel_tank.tag].mass_flow_rate
+                    mdot = segment.conditions.energy.fuel_lines[fuel_line.tag][fuel_tank.tag].mass_flow_rate
                      
                     # Integrate them over the entire segment
                     NOx_total  += np.dot(I,mdot*EI_NOx)

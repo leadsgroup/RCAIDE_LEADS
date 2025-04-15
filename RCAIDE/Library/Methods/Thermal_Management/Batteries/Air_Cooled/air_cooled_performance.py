@@ -102,8 +102,8 @@ def air_cooled_performance(HAS,battery,bus,coolant_line, Q_heat_gen,T_cell,state
     T_current                 = T_cell + dT_dt*delta_t
     heat_transfer_efficiency  = (Tw_To - T_ambient) / (T_cell - T_ambient)
     
-    state.conditions.energy[coolant_line.tag][HAS.tag].total_heat_removed[t_idx+1]               = Q_convec
-    state.conditions.energy[coolant_line.tag][HAS.tag].effectiveness[t_idx+1]                    = heat_transfer_efficiency
+    state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].total_heat_removed[t_idx+1]               = Q_convec
+    state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].effectiveness[t_idx+1]                    = heat_transfer_efficiency
        
     
     return  T_current

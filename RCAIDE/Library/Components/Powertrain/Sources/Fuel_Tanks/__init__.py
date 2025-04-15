@@ -23,3 +23,4 @@ RCAIDE.Library.Components.Powertrain.Modulators.Fuel_Selector
 from .Fuel_Tank         import Fuel_Tank
 from .Central_Fuel_Tank import Central_Fuel_Tank
 from .Wing_Fuel_Tank    import Wing_Fuel_Tank
+from .Cryogenic_Tank    import Cryogenic_Tank

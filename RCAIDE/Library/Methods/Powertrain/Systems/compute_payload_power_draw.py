@@ -58,7 +58,7 @@ def compute_payload_power_draw(payload, bus, conditions):
     --------
     RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw
     """
-    bus_conditions                = conditions.energy[bus.tag]
+    bus_conditions                = conditions.energy.busses[bus.tag]
     payload_conditions            = bus_conditions[payload.tag]    
     payload_conditions.power[:,0] = payload.power_draw  
     bus_conditions.power_draw     += payload_conditions.power*bus.power_split_ratio /bus.efficiency

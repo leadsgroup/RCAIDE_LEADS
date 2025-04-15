@@ -50,7 +50,7 @@ class Hybrid(Weights):
         Properties Used:
         N/A
         """
-        # self.method        = 'Semi_Emperical'
+        # self.method        = 'Semi_Empirical'
         # self.aircraft_type = 'Transport'
         # self.propulsion_architecture = 'Hydrogen'
 

@@ -38,17 +38,17 @@ def append_battery_conditions(battery_module,segment,bus):
                  battery_module.resistance_growth_factor   [unitless]
                  battery_module.capacity_fade_factor       [unitless]
                  battery_module.discharge                  [boolean]
-                 increment_battery_age_by_one_day   [boolean]
+                 increment_battery_age_by_one_day          [boolean]
                
         Outputs:
             segment
-               battery_discharge                    [boolean]
-               increment_battery_age_by_one_day     [boolean]
+               battery_discharge                             [boolean]
+               increment_battery_age_by_one_day              [boolean]
                segment.state.conditions.energy
                battery_module.battery_discharge_flag         [boolean]
-               battery_module.maximum_initial_energy  [watts]
-               battery_module.energy                  [watts] 
-               battery_module.temperature             [kelvin]
+               battery_module.maximum_initial_energy         [watts]
+               battery_module.energy                         [watts] 
+               battery_module.temperature                    [kelvin]
                battery_module.cycle_in_day                   [int]
                battery_module.cell.charge_throughput         [Ampere-Hours] 
                battery_module.resistance_growth_factor       [unitless]
@@ -67,16 +67,16 @@ def append_battery_conditions(battery_module,segment,bus):
         temp_dev = segment.temperature_deviation    
     atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)  
         
-    bus_results                                       = segment.state.conditions.energy[bus.tag]        
-    bus_results.battery_modules[battery_module.tag]          = Conditions() 
-    bus_results.battery_modules[battery_module.tag].cell     = Conditions()
-
-
-    bus_results.battery_modules[battery_module.tag].voltage_open_circuit      = 0 * ones_row(1)
-    bus_results.battery_modules[battery_module.tag].cell.voltage_open_circuit = 0 * ones_row(1)
-            
-    bus_results.battery_modules[battery_module.tag].internal_resistance       = 0 * ones_row(1)
-    bus_results.battery_modules[battery_module.tag].cell.internal_resistance  = 0 * ones_row(1)
+    bus_results                                                                = segment.state.conditions.energy.busses[bus.tag]        
+    bus_results.battery_modules[battery_module.tag]                            = Conditions() 
+    bus_results.battery_modules[battery_module.tag].cell                       = Conditions()
+  
+  
+    bus_results.battery_modules[battery_module.tag].voltage_open_circuit       = 0 * ones_row(1)
+    bus_results.battery_modules[battery_module.tag].cell.voltage_open_circuit  = 0 * ones_row(1)
+              
+    bus_results.battery_modules[battery_module.tag].internal_resistance        = 0 * ones_row(1)
+    bus_results.battery_modules[battery_module.tag].cell.internal_resistance   = 0 * ones_row(1)
          
     bus_results.battery_modules[battery_module.tag].voltage_under_load         = 0 * ones_row(1)
     bus_results.battery_modules[battery_module.tag].cell.voltage_under_load    = 0 * ones_row(1)
@@ -179,7 +179,7 @@ def append_battery_segment_conditions(battery_module, bus, conditions, segment):
 
     module_conditions = conditions[bus.tag].battery_modules[battery_module.tag]
     if segment.state.initials:  
-        battery_initials                                        = segment.state.initials.conditions.energy[bus.tag].battery_modules[battery_module.tag]  
+        battery_initials                                        = segment.state.initials.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag]  
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
             module_conditions.battery_discharge_flag           = False 
         else:                   

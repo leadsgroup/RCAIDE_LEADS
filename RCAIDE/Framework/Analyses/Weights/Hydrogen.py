@@ -50,9 +50,9 @@ class Hydrogen(Weights):
         Properties Used:
         N/A
         """
-        self.method        = 'Semi_Emperical'
-        self.aircraft_type = 'Transport'
-        self.propulsion_architecture = 'Hydrogen'
+        self.method                                        = 'Semi_Empirical'
+        self.aircraft_type                                 = 'Transport'
+        self.propulsion_architecture                       = 'Hydrogen'
 
         self.settings.use_max_fuel_weight                  = True 
         self.settings.advanced_composites                  = False
