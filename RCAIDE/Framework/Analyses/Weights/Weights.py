@@ -53,7 +53,7 @@ class Weights(Analysis):
         self.propulsion_architecture                 = None 
         self.settings                                = Data()
         self.settings.update_mass_properties         = True
-        self.settings.update_center_of_gravity       = True
+        self.settings.update_center_of_gravity       = False
         self.settings.update_moment_of_inertia       = True
         self.print_weight_analysis_report            = True
         
