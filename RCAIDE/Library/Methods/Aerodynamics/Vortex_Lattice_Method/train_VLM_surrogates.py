@@ -193,7 +193,7 @@ def train_model(aerodynamics, Mach):
     CM_alpha      = np.reshape(CM_res,(len_Mach,len_AoA)).T 
     CN_alpha      = np.reshape(CN_res,(len_Mach,len_AoA)).T  
     
-    # Angle of Attack at 0 Degrees 
+    # Angle of Attack at 0 Degrees .
     Clift_alpha_0   =  np.tile(Clift_alpha[2][None,:],(2,1))
     Cdrag_alpha_0   =  np.tile(Cdrag_alpha[2][None,:],(2,1))
     CX_alpha_0      =  np.tile(CX_alpha[2][None,:],(2, 1)) 
@@ -370,7 +370,7 @@ def train_model(aerodynamics, Mach):
     training.dCX_dalpha = (CX_alpha[0,:] - CX_alpha[1,:]) / (AoA[0] - AoA[1])       
     training.dCX_du = (CX_u[0,:] - CX_u[1,:]) / (u[0] - u[1])                                     
 
-    training.dCY_dbeta = 2*((CY_beta[0,:] - CY_beta[1,:]) / (Beta[0] - Beta[1]))
+    training.dCY_dbeta = 2*((CY_beta[0,:] - CY_beta[1,:]) / (Beta[0] - Beta[1])) # Note correction 
     training.dCY_dr     = (CY_r[0,:] - CY_r[1,:]) / (yaw_rate[0]-yaw_rate[1])   # Added here   
 
     training.dCZ_dalpha = (CZ_alpha[0,:] - CZ_alpha[1,:]) / (AoA[0] - AoA[1])             
@@ -380,16 +380,16 @@ def train_model(aerodynamics, Mach):
 
     
     training.dCL_dbeta = ((CL_beta[0,:] - CL_beta[1,:]) / (Beta[0] - Beta[1]))                
-    training.dCL_dp = -2*((CL_p[0,:] - CL_p[1,:]) / (roll_rate[0]-roll_rate[1]))                
+    training.dCL_dp = -2*((CL_p[0,:] - CL_p[1,:]) / (roll_rate[0]-roll_rate[1]))    # Note correction            
     training.dCL_dr = (CL_r[0,:] - CL_r[1,:]) / (yaw_rate[0]-yaw_rate[1])    
 
     training.dCM_dalpha = (CM_alpha[0,:] - CM_alpha[1,:]) / (AoA[0] - AoA[1])          
     training.dCM_du = (CM_u[0,:] - CM_u[1,:]) / (u[0] - u[1])                                               
-    training.dCM_dq = 10*((CM_q[0,:] - CM_q[1,:]) / (pitch_rate[0]-pitch_rate[1]))            
+    training.dCM_dq = 10*((CM_q[0,:] - CM_q[1,:]) / (pitch_rate[0]-pitch_rate[1]))  # Note correction           
             
     training.dCN_dbeta = (CN_beta[0,:] - CN_beta[1,:]) / (Beta[0] - Beta[1]) 
-    training.dCN_dp = -3*((CN_p[0,:] - CN_p[1,:]) / (roll_rate[0]-roll_rate[1]))                 
-    training.dCN_dr = 3*((CN_r[0,:] - CN_r[1,:]) / (yaw_rate[0]-yaw_rate[1]))
+    training.dCN_dp = -3*((CN_p[0,:] - CN_p[1,:]) / (roll_rate[0]-roll_rate[1]))   # Note correction               
+    training.dCN_dr = 3*((CN_r[0,:] - CN_r[1,:]) / (yaw_rate[0]-yaw_rate[1])) # Note correction 
 
     '''  for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces'''
       
