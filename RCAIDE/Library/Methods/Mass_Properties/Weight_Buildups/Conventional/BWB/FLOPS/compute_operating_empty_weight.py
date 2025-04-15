@@ -109,8 +109,6 @@ def compute_operating_empty_weight(vehicle,settings=None):
                 wing.flap_ratio = flap_ratio 
         
     TOW         = vehicle.mass_properties.max_takeoff
-    
-
     W_cabin                       = compute_cabin_weight(vehicle,settings)
 
     ##-------------------------------------------------------------------------------                 

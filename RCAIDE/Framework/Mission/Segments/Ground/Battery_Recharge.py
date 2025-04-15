@@ -47,12 +47,7 @@ class Battery_Recharge(Evaluate):
         self.overcharge_contingency        = 1.10
         self.cutoff_SOC                    = 1.0
         self.true_course                   = 0.0 * Units.degrees  
-        self.cooling_time                  = 0.0 * Units.hr 
-
-        self.state.conditions.energy.recharging  = True 
-        ones_row                                 = self.state.ones_row 
-        self.state.unknowns['recharge']          =  0* ones_row(1)  
-        self.state.residuals['recharge']         =  0* ones_row(1) 
+        self.cooling_time                  = 0.0 * Units.hr
          
         initialize                         = self.process.initialize  
         initialize.conditions              = Ground.Battery_Charge_Discharge.initialize_conditions  
