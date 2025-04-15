@@ -27,6 +27,8 @@ class Fuel_Cell(Network):
         Electric network class 
     RCAIDE.Library.Framework.Networks.Hybrid
         Hybrid network class  
+    RCAIDE.Library.Framework.Networks.Hydrogen
+        Hydrogen network class  
     """      
     def __defaults__(self):
         """ This sets the default values for the network to function.
