@@ -106,7 +106,7 @@ vertical_stabilizer
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-7.1274  0.0    0.3038    1.0594    0.0     
+7.1274  0.0    0.3038    1.0593    0.0     
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
@@ -122,4 +122,4 @@ rudder    1.0   0.6   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-7.4017  0.0    1.7853    0.5106    0.0     
+7.4017  0.0    1.7854    0.5106    0.0     
