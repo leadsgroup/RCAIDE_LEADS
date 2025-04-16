@@ -60,27 +60,26 @@ def train_VLM_surrogates(aerodynamics):
         training.supersonic  = None
         training.transonic   = None
 
+    # --------------------------------------------------------------------------------------------      
     # compute neutral point
-     # --------------------------------------------------------------------------------------------      
-    # Equilibrium Condition 
-    # --------------------------------------------------------------------------------------------       
-
-
+    # --------------------------------------------------------------------------------------------      
+    # Equilibrium Condition      
     conditions                                      = RCAIDE.Framework.Mission.Common.Results()
     conditions.freestream.mach_number               = np.array([[0.5]])
     conditions.aerodynamics.angles.alpha            = np.array([[0.0]])
-
 
     np_vehicle = deepcopy(aerodynamics.vehicle)
     np_settings = deepcopy(aerodynamics.settings) 
     VLM_results_0 = VLM(conditions,np_settings,np_vehicle) 
     CM_0    = VLM_results_0.CM  
 
+    # Angle of Attack Perturbation      
     delta_angle  = aerodynamics.training.angle_purtubation  
     conditions.aerodynamics.angles.alpha   += delta_angle 
     VLM_results_1 = VLM(conditions,np_settings,np_vehicle) 
     CM_alpha_prime    = VLM_results_1.CM 
     
+    # Center of Gravity Perturbation      
     vehicle_shifted_CG = deepcopy(aerodynamics.vehicle)
     delta_cg = 0.1
     vehicle_shifted_CG.mass_properties.center_of_gravity[0][0] +=delta_cg
@@ -95,6 +94,7 @@ def train_VLM_surrogates(aerodynamics):
     NP =  -b / m  
       
     aerodynamics.vehicle.mass_properties.neutral_point = NP 
+    training.NP = NP 
     
     return 
     
