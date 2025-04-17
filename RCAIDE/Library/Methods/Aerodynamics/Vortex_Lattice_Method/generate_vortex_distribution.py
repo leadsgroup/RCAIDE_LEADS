@@ -9,7 +9,7 @@
 # ----------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core                                                              import  Data
-from RCAIDE.Library.Components.Wings                                                    import All_Moving_Surface 
+from RCAIDE.Library.Components.Wings.All_Moving_Surface                                 import All_Moving_Surface 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_VD_helpers      import postprocess_VD
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.make_VLM_wings           import make_VLM_wings 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.deflect_control_surface  import deflect_control_surface
