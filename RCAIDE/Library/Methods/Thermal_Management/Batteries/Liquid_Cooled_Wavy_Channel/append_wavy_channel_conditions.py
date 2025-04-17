@@ -72,7 +72,7 @@ def append_wavy_channel_segment_conditions(wavy_channel,segment,coolant_line):
          None
      """     
 
-     wavy_channel_conditions = segment.state.energy.coolant_lines[coolant_line.tag][wavy_channel.tag]
+     wavy_channel_conditions = segment.state.conditions.energy.coolant_lines[coolant_line.tag][wavy_channel.tag]
      if segment.state.initials:  
           wavy_channel_initials                                    = segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][wavy_channel.tag]
           wavy_channel_conditions.outlet_coolant_temperature[:,0] = wavy_channel_initials.outlet_coolant_temperature[-1,0]
