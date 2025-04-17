@@ -48,7 +48,7 @@ class Network(Component):
     Section 2 computees the perfomrance of any converters on the distrution lines, for example,
     turboshafts, motors, pumps etc; and Section 3 computes the thermal mangement of the system as
     well as energy consumtion of the powertrain. The state of storage devices such as covnentional fuel tanks,
-    cryogenic tanks and batteries are also updates. Propulsor groups can be "active" or "inactive" to simulate
+    batteries are also updates. Propulsor groups can be "active" or "inactive" to simulate
     engine out conditions. Energy consumtion from payload and avionics is also modeled 
     
     **Definitions** 
@@ -269,7 +269,7 @@ class Network(Component):
                                 # use previous battery results 
                                 fuel_cell_stack.reuse_stored_data(state,bus,stored_results_flag, stored_fuel_cell_tag)
                              
-                        # compute cryogen mass flow rate 
+                        # compute mass flow rate 
                         fuel_cell_stack_conditions  = state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]                        
                         conditions.energy.busses[bus.tag].fuel_flow_rate[t_idx]  += fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]      
                           
@@ -290,7 +290,7 @@ class Network(Component):
                                
                 # Determine mass flow from each tank
                 for tank in bus.fuel_tanks:  
-                    tank.compute_tank_properties(state,fuel_line) 
+                    tank.compute_tank_properties(state,bus) 
                                  
         if reverse_thrust ==  True:
             total_thrust =  total_thrust * -1     

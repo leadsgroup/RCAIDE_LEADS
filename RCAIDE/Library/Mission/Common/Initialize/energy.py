@@ -70,20 +70,19 @@ def energy(segment):
     """ 
 
     conditions = segment.state.conditions.energy
+    vehicle    = segment.analyses.energy.vehicle
     
     # loop through battery modules in networks
-    for network in segment.analyses.energy.vehicle.networks:
+    for network in vehicle.networks:
         # if network has busses  
         for bus in network.busses: 
             for fuel_tank in bus.fuel_tanks:  
                 if segment.state.initials:   
                     bus_initials       = segment.state.initials.conditions.energy.busses[bus.tag]
                     fuel_tank_initials = bus_initials[fuel_tank.tag] 
-                    conditions.busses[bus.tag][fuel_tank.tag].mass[:,0]   = fuel_tank_initials.mass[-1,0]
-                    #conditions.busses[bus.tag].fuel_flow_rate             = bus_initials.fuel_flow_rate[-1,0]
-                else: 
-                    conditions.busses[bus.tag][fuel_tank.tag].mass[:,0]   = segment.analyses.energy.vehicle.networks[network.tag].busses[bus.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
-                    #conditions.busses[bus.tag].fuel_flow_rate             = 0
+                    conditions.busses[bus.tag].fuel_tanks[fuel_tank.tag].mass[:,0]   = fuel_tank_initials.mass[-1,0] 
+                elif vehicle.networks[network.tag].busses[bus.tag].fuel_tanks[fuel_tank.tag].fuel != None: 
+                        conditions.busses[bus.tag].fuel_tanks[fuel_tank.tag].mass[:,0]  = vehicle.networks[network.tag].busses[bus.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
             bus.append_segment_conditions(segment)
             for battery_module in  bus.battery_modules:
                 battery_module.append_battery_segment_conditions(segment, bus)
@@ -107,8 +106,6 @@ def energy(segment):
                 if segment.state.initials:
                     fuel_line_initials = segment.state.initials.conditions.energy.fuel_lines[fuel_line.tag]
                     fuel_tank_initials = fuel_line_initials[fuel_tank.tag] 
-                    conditions.fuel_lines[fuel_line.tag][fuel_tank.tag].mass[:,0]   = fuel_tank_initials.mass[-1,0]
-                    #conditions.fuel_lines[fuel_line.tag].fuel_flow_rate             = fuel_line_initials.fuel_flow_rate[-1,0]
-                else: 
-                    conditions.fuel_lines[fuel_line.tag][fuel_tank.tag].mass[:,0]   = segment.analyses.energy.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
-                    #bgyconditions.fuel_lines[fuel_line.tag].fuel_flow_rate[:,0]        = 0
+                    conditions.fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].mass[:,0]   = fuel_tank_initials.mass[-1,0] 
+                elif  vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel != None: 
+                    conditions.fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].mass[:,0]   = vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass

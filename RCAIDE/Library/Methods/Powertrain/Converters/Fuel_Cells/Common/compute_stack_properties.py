@@ -168,8 +168,8 @@ def compute_stack_properties(fuel_cell_stack):
             if issubclass(type(bus_item), RCAIDE.Library.Components.Component):
                 bus_item.append_operating_conditions(segment,bus)
  
-        for cryogenic_tank in  bus.cryogenic_tanks: 
-            cryogenic_tank.append_operating_conditions(segment,bus)
+        for tank in  bus.fuel_tanks: 
+            tank.append_operating_conditions(segment,bus)
       
         # compute fuel cell performance             
         t_idx                                                                    =  0

@@ -21,11 +21,10 @@ def compute_fuel_tank_properties(tank,state, distributor):
     elif  type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line: 
         distributor_conditions = state.conditions.energy.fuel_lines[distributor.tag]         
     
-    tank_conditions = distributor_conditions[tank.tag]      
+    tank_conditions = distributor_conditions.fuel_tanks[tank.tag]      
     if type(tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank:
         # unpack
-        T_amb                = state.conditions.freestream.temperature  
-        tank_conditions      = distributor_conditions[tank.tag]
+        T_amb  = state.conditions.freestream.temperature  
         
         T_s =  tank_conditions.surface_temperature 
         h   =  0 # NEED TO UPDATE 

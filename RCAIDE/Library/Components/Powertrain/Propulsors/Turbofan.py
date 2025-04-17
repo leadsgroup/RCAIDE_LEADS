@@ -55,10 +55,7 @@ class Turbofan(Propulsor):
         Core exhaust nozzle component. Default is None.
         
     fan_nozzle : Component
-        Fan exhaust nozzle component. Default is None.
-        
-    active_crypgenic_tanks_tanks : None or list
-        Collection of active cryogenoc tanks. Default is None.
+        Fan exhaust nozzle component. Default is None. 
         
     diameter : float
         Diameter of the engine [m]. Default is 0.0.

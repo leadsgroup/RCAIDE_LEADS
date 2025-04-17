@@ -44,10 +44,7 @@ class Turboshaft(Converter):
         Combustor component. Default is None.
         
     core_nozzle : Component
-        Core exhaust nozzle component. Default is None. 
-        
-    active_crypgenic_tanks_tanks : None or list
-        Collection of active cryogenoc tanks. Default is None.
+        Core exhaust nozzle component. Default is None.  
         
     diameter : float
         Diameter of the engine [m]. Default is 0.0.

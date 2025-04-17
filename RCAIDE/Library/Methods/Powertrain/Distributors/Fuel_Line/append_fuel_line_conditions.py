@@ -57,6 +57,7 @@ def append_fuel_line_conditions(fuel_line,segment):
     segment.state.conditions.energy.fuel_lines[fuel_line.tag].temperature                         = 0 * ones_row(1)
     segment.state.conditions.energy.fuel_lines[fuel_line.tag].energy                              = 0 * ones_row(1)  
     segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_flow_rate                      = 0 * ones_row(1)  
+    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_tanks                          = Conditions() 
 
     return
 

@@ -3,7 +3,7 @@
 
 """
 This module provides functionality for modeling energy sources in powertrains. It includes methods for 
-batteries, cryogenic tanks, and fuel tanks that store and provide energy for propulsion systems.
+batteries and fuel tanks that store and provide energy for propulsion systems.
 
 See Also
 --------
