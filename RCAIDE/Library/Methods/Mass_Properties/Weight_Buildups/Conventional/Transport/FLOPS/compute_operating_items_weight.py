@@ -173,16 +173,10 @@ def compute_operating_items_weight(vehicle):
     WFLAAB = NFLA * 155 + NGALC * 200  # flight attendant weight, WSTUAB in FLOPS
     WFLCRB = NFLCR * 225  # flight crew and baggage weight
 
-    # Passenger Service Weight
-    WSRV = (5.164*NPF + 3.846*NPB + 2.529*NPT)*(DESRNG/VMAX)**0.225
-
-    
-
     output                           = Data()
     output.misc = WUF * Units.lbs + WOIL * Units.lbs + WSRV * Units.lbs + WCON * Units.lbs
     output.flight_crew               = WFLCRB * Units.lbs
     output.flight_attendants         = WFLAAB * Units.lbs
     output.passenger_service         = WSRV   * Units.lbs
-    output.total                     = output.misc + output.flight_crew + \
-                                       output.flight_attendants + output.passenger_service 
+    output.total                     = output.misc + output.flight_crew +  output.flight_attendants + output.passenger_service 
     return output
