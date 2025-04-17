@@ -257,10 +257,10 @@ def evaluate_surrogate(state,settings,vehicle):
         else:
             conditions.static_stability.derivatives.CY_delta_r = aerodynamics.stability_derivatives.CY_delta_r* ones_row
         
-        #if aerodynamics.stability_derivatives.CL_delta_r == None:
-        #    conditions.static_stability.derivatives.CL_delta_r     = compute_stability_derivative(sub_sur.dCL_ddelta_r     ,trans_sur.dCL_ddelta_r     ,sup_sur.dCL_ddelta_r     ,h_sub,h_sup,Mach)
-        #else:
-        #    conditions.static_stability.derivatives.CL_delta_r = aerodynamics.stability_derivatives.CL_delta_r* ones_row
+        if aerodynamics.stability_derivatives.CL_delta_r == None:
+            conditions.static_stability.derivatives.CL_delta_r     = compute_stability_derivative(sub_sur.dCL_ddelta_r     ,trans_sur.dCL_ddelta_r     ,sup_sur.dCL_ddelta_r     ,h_sub,h_sup,Mach)
+        else:
+            conditions.static_stability.derivatives.CL_delta_r = aerodynamics.stability_derivatives.CL_delta_r* ones_row
         
         if aerodynamics.stability_derivatives.CN_delta_r == None:
             conditions.static_stability.derivatives.CN_delta_r     = compute_stability_derivative(sub_sur.dCN_ddelta_r     ,trans_sur.dCN_ddelta_r     ,sup_sur.dCN_ddelta_r     ,h_sub,h_sup,Mach) 
