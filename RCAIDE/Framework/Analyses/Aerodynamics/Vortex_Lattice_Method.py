@@ -164,6 +164,7 @@ class Vortex_Lattice_Method(Aerodynamics):
 
         # Stability derivatives. If these are not user defined, then they will be calculated.
         self.stability_derivatives = Data()
+        self.stability_derivatives.dClift_dalpha= None
         self.stability_derivatives.dCX_dalpha   = None
         self.stability_derivatives.dCX_du       = None
         self.stability_derivatives.dCY_dbeta    = None

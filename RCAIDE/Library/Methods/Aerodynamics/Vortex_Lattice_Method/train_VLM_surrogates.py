@@ -367,6 +367,7 @@ def train_model(aerodynamics, Mach):
     training.CN_r              = CN_r
       
     # STABILITY DERIVATIVES 
+    training.dClift_dalpha = (Clift_alpha[0,:] - Clift_alpha[1,:]) / (AoA[0] - AoA[1])       
     training.dCX_dalpha = (CX_alpha[0,:] - CX_alpha[1,:]) / (AoA[0] - AoA[1])       
     training.dCX_du = (CX_u[0,:] - CX_u[1,:]) / (u[0] - u[1])                                     
 
@@ -376,8 +377,6 @@ def train_model(aerodynamics, Mach):
     training.dCZ_dalpha = (CZ_alpha[0,:] - CZ_alpha[1,:]) / (AoA[0] - AoA[1])             
     training.dCZ_du = (CZ_u[0,:] - CZ_u[1,:]) / (u[0] - u[1])    
     training.dCZ_dq     = (CZ_q[0,:] - CZ_q[1,:]) / (pitch_rate[0]-pitch_rate[1])    
- 
-
     
     training.dCL_dbeta = ((CL_beta[0,:] - CL_beta[1,:]) / (Beta[0] - Beta[1]))                
     training.dCL_dp = -2*((CL_p[0,:] - CL_p[1,:]) / (roll_rate[0]-roll_rate[1]))    # Note correction            
@@ -644,7 +643,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
       
             
     # STABILITY DERIVATIVES 
-              
+    training.dClift_dalpha = (Clift_alpha[0,:] - Clift_alpha[1,:]) / (AoA[0] - AoA[1])          
     training.dCX_dalpha    = (CX_alpha[0,:] - CX_alpha[1,:]) / (AoA[0] - AoA[1])            
     training.dCX_du        = (CX_u[0,:] - CX_u[1,:]) / (u[0] - u[1])                                 
          

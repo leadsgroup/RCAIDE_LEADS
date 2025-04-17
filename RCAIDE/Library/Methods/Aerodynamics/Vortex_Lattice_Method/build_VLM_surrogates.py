@@ -95,6 +95,7 @@ def build_surrogate(aerodynamics, training):
 
 
 # Use interpolat.interp1d below
+    surrogates.dClift_dalpha    = interpolate.interp1d(mach_data, training.dClift_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dCX_dalpha       = interpolate.interp1d(mach_data, training.dCX_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dCX_du           = interpolate.interp1d(mach_data, training.dCX_du, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
@@ -224,6 +225,7 @@ def no_surrogate(aerodynamics, training):
     surrogates.CN_q           = None    
     surrogates.CN_r           = None
     
+    surrogates.dClift_dalpha    = None      
     surrogates.dCX_dalpha       = None      
     surrogates.dCX_du           = None      
     surrogates.dCY_dbeta        = None  
