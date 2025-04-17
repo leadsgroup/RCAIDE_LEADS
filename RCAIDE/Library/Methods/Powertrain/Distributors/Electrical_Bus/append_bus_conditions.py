@@ -81,7 +81,7 @@ def append_bus_conditions(bus,segment):
     return
 
 
-def append_bus_segment_conditions(bus,conditions,segment):
+def append_bus_segment_conditions(bus,segment):
     """
     Sets the initial bus properties at the start of each segment based on the last point from the previous segment.
     
@@ -119,7 +119,7 @@ def append_bus_segment_conditions(bus,conditions,segment):
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
     """    
-    bus_conditions             = conditions[bus.tag]
+    bus_conditions             = segment.state.energy.busses[bus.tag]
     ones_row                   = segment.state.ones_row
     bus_conditions.power_draw  = 0 * ones_row(1)
     # Thermal power draw

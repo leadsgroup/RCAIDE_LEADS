@@ -80,34 +80,35 @@ def energy(segment):
                     bus_initials       = segment.state.initials.conditions.energy.busses[bus.tag]
                     fuel_tank_initials = bus_initials[fuel_tank.tag] 
                     conditions.busses[bus.tag][fuel_tank.tag].mass[:,0]   = fuel_tank_initials.mass[-1,0]
-                    conditions.busses[bus.tag].fuel_flow_rate             = bus_initials.fuel_flow_rate[-1,0]
+                    #conditions.busses[bus.tag].fuel_flow_rate             = bus_initials.fuel_flow_rate[-1,0]
                 else: 
                     conditions.busses[bus.tag][fuel_tank.tag].mass[:,0]   = segment.analyses.energy.vehicle.networks[network.tag].busses[bus.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
-                    conditions.busses[bus.tag].fuel_flow_rate             = 0
-            bus.append_segment_conditions(conditions, segment)
+                    #conditions.busses[bus.tag].fuel_flow_rate             = 0
+            bus.append_segment_conditions(segment)
             for battery_module in  bus.battery_modules:
-                battery_module.append_battery_segment_conditions(bus, conditions, segment)
+                battery_module.append_battery_segment_conditions(bus,segment)
             for coolant_line in  network.coolant_lines:
                 for tag, item in  coolant_line.items(): 
                     if tag == 'battery_modules':
                         for battery in item:
                             for btms in  battery:
-                                btms.append_segment_conditions(segment,coolant_line, conditions)
+                                btms.append_segment_conditions(segment,coolant_line)
                     if tag == 'heat_exchangers':
                         for heat_exchanger in  item:
-                            heat_exchanger.append_segment_conditions(segment,bus,coolant_line, conditions)
+                            heat_exchanger.append_segment_conditions(segment,bus,coolant_line)
                     if tag == 'reservoirs':
                         for reservoir in  item:
-                            reservoir.append_segment_conditions(segment, coolant_line, conditions) 
+                            reservoir.append_segment_conditions(segment, coolant_line) 
                     
         # if network has fuel lines             
-        for fuel_line in  network.fuel_lines: 
+        for fuel_line in  network.fuel_lines:
+            fuel_line.append_segment_conditions(segment)
             for fuel_tank in fuel_line.fuel_tanks: 
                 if segment.state.initials:
                     fuel_line_initials = segment.state.initials.conditions.energy.fuel_lines[fuel_line.tag]
                     fuel_tank_initials = fuel_line_initials[fuel_tank.tag] 
                     conditions.fuel_lines[fuel_line.tag][fuel_tank.tag].mass[:,0]   = fuel_tank_initials.mass[-1,0]
-                    conditions.fuel_lines[fuel_line.tag].fuel_flow_rate             = fuel_line_initials.fuel_flow_rate[-1,0]
+                    #conditions.fuel_lines[fuel_line.tag].fuel_flow_rate             = fuel_line_initials.fuel_flow_rate[-1,0]
                 else: 
                     conditions.fuel_lines[fuel_line.tag][fuel_tank.tag].mass[:,0]   = segment.analyses.energy.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
-                    conditions.fuel_lines[fuel_line.tag].fuel_flow_rate[:,0]        = 0
+                    #bgyconditions.fuel_lines[fuel_line.tag].fuel_flow_rate[:,0]        = 0

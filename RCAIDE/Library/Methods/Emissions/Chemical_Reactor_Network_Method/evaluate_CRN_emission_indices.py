@@ -274,6 +274,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     emissions.total                  = Data()
     emissions.index                  = Data() 
     emissions.total.CO2              = CO2_total  * combustor.fuel_data.global_warming_potential_100.CO2 
+    emissions.total.CO               = CO_total  * combustor.fuel_data.global_warming_potential_100.CO 
     emissions.total.H2O              = H2O_total  * combustor.fuel_data.global_warming_potential_100.H2O  
     emissions.total.NOx              = NOx_total * combustor.fuel_data.global_warming_potential_100.NOx 
     emissions.index.CO2              = EI_CO2_comb

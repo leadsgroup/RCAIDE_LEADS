@@ -85,7 +85,7 @@ class Air_Cooled(Component):
         append_air_cooled_conditions(self, segment, coolant_line)
         return
 
-    def append_segment_conditions(self, segment, coolant_line, conditions):
+    def append_segment_conditions(self, segment, coolant_line):
         """
         Adds specific segment conditions to the cooling system analysis.
 
@@ -98,7 +98,7 @@ class Air_Cooled(Component):
         conditions : Data
             Operating conditions for the segment
         """
-        append_air_cooled_segment_conditions(self, segment, coolant_line, conditions)
+        append_air_cooled_segment_conditions(self, segment, coolant_line)
         return
     
     def compute_thermal_performance(self, battery, bus, coolant_line, Q_heat_gen, T_cell, state, delta_t, t_idx): 

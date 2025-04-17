@@ -243,7 +243,7 @@ class Cross_Flow_Heat_Exchanger(Component):
         append_cross_flow_heat_exchanger_conditions(self, segment, coolant_line)
         return
   
-    def append_segment_conditions(self, segment, bus, coolant_line, conditions):
+    def append_segment_conditions(self, segment, bus, coolant_line):
         """
         Adds specific segment conditions to the heat exchanger analysis.
 
@@ -258,7 +258,7 @@ class Cross_Flow_Heat_Exchanger(Component):
         conditions : Data
             Operating conditions for the segment
         """
-        append_cross_flow_hex_segment_conditions(self, segment, bus, coolant_line, conditions)
+        append_cross_flow_hex_segment_conditions(self, segment, bus, coolant_line)
         return
        
     def compute_heat_exchanger_performance(self, state, bus, coolant_line, delta_t, t_idx):

@@ -61,7 +61,7 @@ def append_fuel_line_conditions(fuel_line,segment):
     return
 
 
-def append_fuel_line_segment_conditions(fuel_line,conditions,segment):
+def append_fuel_line_segment_conditions(fuel_line,segment):
     """
     Sets the initial fuel line properties at the start of each segment based on the last point from the previous segment.
     
@@ -84,5 +84,5 @@ def append_fuel_line_segment_conditions(fuel_line,conditions,segment):
     --------
     RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.append_fuel_line_conditions 
     """     
-
+    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_flow_rate[:,0]    = 0
     return

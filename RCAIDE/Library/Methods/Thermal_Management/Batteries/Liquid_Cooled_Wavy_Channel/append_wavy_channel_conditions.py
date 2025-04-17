@@ -52,7 +52,7 @@ def append_wavy_channel_conditions(wavy_channel,segment,coolant_line):
      
      return
 
-def append_wavy_channel_segment_conditions(wavy_channel,segment,coolant_line,conditions):
+def append_wavy_channel_segment_conditions(wavy_channel,segment,coolant_line):
      """Sets the initial wavy channel heat acquisition properties at the
         start of each segment as the last point from the previous segment 
 
@@ -72,7 +72,7 @@ def append_wavy_channel_segment_conditions(wavy_channel,segment,coolant_line,con
          None
      """     
 
-     wavy_channel_conditions = conditions[coolant_line.tag][wavy_channel.tag]
+     wavy_channel_conditions = segment.state.energy.coolant_lines[coolant_line.tag][wavy_channel.tag]
      if segment.state.initials:  
           wavy_channel_initials                                    = segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][wavy_channel.tag]
           wavy_channel_conditions.outlet_coolant_temperature[:,0] = wavy_channel_initials.outlet_coolant_temperature[-1,0]

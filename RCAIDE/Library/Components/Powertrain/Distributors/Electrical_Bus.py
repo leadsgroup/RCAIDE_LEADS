@@ -122,7 +122,7 @@ class Electrical_Bus(Component):
         append_bus_conditions(self, segment)
         return
         
-    def append_segment_conditions(self, conditions, segment):
+    def append_segment_conditions(self,segment):
         """
         Append segment-specific conditions to the bus
         
@@ -133,7 +133,7 @@ class Electrical_Bus(Component):
         segment : Segment
             Flight segment data
         """
-        append_bus_segment_conditions(self, conditions, segment)
+        append_bus_segment_conditions(self,segment)
         return    
     
     def initialize_bus_properties(self):
