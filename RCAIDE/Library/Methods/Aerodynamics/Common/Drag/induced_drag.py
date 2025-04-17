@@ -74,7 +74,7 @@ def induced_drag(state,settings,geometry):
         # Prime totals
         area                        = 1E-12 
         AR                          = 1E-12 
-        total_induced_viscous_drag  = K*aero.drag.parasite.total*(CL**2)
+        total_viscous_induced_drag  = K*aero.drag.parasite.total*(CL**2)
 
         # Go through each wing, and make calculations
         for wing in wings: 
@@ -85,7 +85,7 @@ def induced_drag(state,settings,geometry):
                 AR   = AR_wing
         
         # compute total induced drag 
-        total_induced_drag = total_induced_viscous_drag +  CDi  
+        total_induced_drag = total_viscous_induced_drag +  CDi
         
         # Calculate the vehicle level oswald efficiency
         e_osw = (CL**2)/(np.pi*AR*total_induced_drag)
@@ -102,10 +102,10 @@ def induced_drag(state,settings,geometry):
 
         # Calculate the induced drag       
         total_induced_drag = CL **2 / (np.pi*AR*e_osw)
-        total_induced_viscous_drag = total_induced_drag - CDi
+        total_viscous_induced_drag = total_induced_drag - CDi
         
     aero.drag.induced.total                    = total_induced_drag
-    aero.drag.induced.viscous                  = total_induced_viscous_drag
+    aero.drag.induced.viscous                  = total_viscous_induced_drag
     aero.drag.induced.oswald_efficiency_factor = e_osw
     aero.drag.induced.viscous_wings_drag       = wing_viscous_induced_drags 
     
