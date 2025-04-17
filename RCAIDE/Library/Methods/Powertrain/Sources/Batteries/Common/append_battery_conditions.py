@@ -158,7 +158,7 @@ def append_battery_conditions(battery_module,segment,bus):
      
     return 
     
-def append_battery_segment_conditions(battery_module, bus, conditions, segment): 
+def append_battery_segment_conditions(battery_module, segment, bus): 
     """Sets the initial battery energy at the start of each segment as the last point from the previous segment 
     
         Assumptions:
@@ -177,7 +177,7 @@ def append_battery_segment_conditions(battery_module, bus, conditions, segment):
         None
     """
 
-    module_conditions = conditions[bus.tag].battery_modules[battery_module.tag]
+    module_conditions =  segment.state.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag]
     if segment.state.initials:  
         battery_initials                                        = segment.state.initials.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag]  
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             

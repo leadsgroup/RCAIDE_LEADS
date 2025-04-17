@@ -11,20 +11,20 @@ import RCAIDE
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_tank_properties(tank,segment, distributor):
+def compute_fuel_tank_properties(tank,state, distributor):
     '''
     SAI HEADER
     ''' 
     
     if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
-        distributor_conditions = segment.state.conditions.energy.busses[distributor.tag] 
+        distributor_conditions = state.conditions.energy.busses[distributor.tag] 
     elif  type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line: 
-        distributor_conditions = segment.state.conditions.energy.fuel_lines[distributor.tag]         
+        distributor_conditions = state.conditions.energy.fuel_lines[distributor.tag]         
     
     tank_conditions = distributor_conditions[tank.tag]      
     if type(tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank:
         # unpack
-        T_amb                = segment.state.conditions.freestream.temperature  
+        T_amb                = state.conditions.freestream.temperature  
         tank_conditions      = distributor_conditions[tank.tag]
         
         T_s =  tank_conditions.surface_temperature 
@@ -45,7 +45,7 @@ def compute_tank_properties(tank,segment, distributor):
          
         tank_conditions.boil_off_flow_rate =  m_dot_boil_off 
                     
-    tank_conditions.mass_flow_rate  += tank.fuel_selector_ratio*distributor_conditions.fuel_flow_rate + distributor_conditions[tank.tag].boil_off_flow_rate +  tank_conditions.secondary_fuel_flow_rate
+    tank_conditions.mass_flow_rate  += tank.fuel_selector_ratio*distributor_conditions.fuel_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_fuel_flow_rate
     tank_conditions.mass -= tank_conditions.mass_flow_rate 
   
     return 

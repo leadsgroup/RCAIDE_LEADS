@@ -86,7 +86,7 @@ def energy(segment):
                     #conditions.busses[bus.tag].fuel_flow_rate             = 0
             bus.append_segment_conditions(segment)
             for battery_module in  bus.battery_modules:
-                battery_module.append_battery_segment_conditions(bus,segment)
+                battery_module.append_battery_segment_conditions(segment, bus)
             for coolant_line in  network.coolant_lines:
                 for tag, item in  coolant_line.items(): 
                     if tag == 'battery_modules':
