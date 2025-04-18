@@ -128,7 +128,7 @@ def compute_operating_items_weight(vehicle):
     number_of_tanks = 0  
     for network in  vehicle.networks:
         for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
+            for _ in fuel_line.fuel_tanks:
                 number_of_tanks += 1 
     if number_of_tanks == 0:
         number_of_tanks = 5    
@@ -177,6 +177,6 @@ def compute_operating_items_weight(vehicle):
     output.misc = WUF * Units.lbs + WOIL * Units.lbs + WSRV * Units.lbs + WCON * Units.lbs
     output.flight_crew               = WFLCRB * Units.lbs
     output.flight_attendants         = WFLAAB * Units.lbs
-    output.total                     = output.misc + output.flight_crew + \
-                                       output.flight_attendants
+    output.passenger_service         = WSRV   * Units.lbs
+    output.total                     = output.misc + output.flight_crew +  output.flight_attendants + output.passenger_service 
     return output

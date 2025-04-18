@@ -9,9 +9,14 @@ import  RCAIDE
 from RCAIDE.Framework.Core import Data 
 from .compute_cabin_weight          import compute_cabin_weight
 from .compute_aft_centerbody_weight import compute_aft_centerbody_weight
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional import Common     as Common
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport import FLOPS
 from RCAIDE.Library.Attributes.Materials.Aluminum import Aluminum
+from RCAIDE.Library.Methods.Geometry.Planform                          import segment_properties  
+
+from RCAIDE.Library.Plots  import *
+
+from copy import deepcopy
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Operating Empty Weight 
@@ -104,20 +109,8 @@ def compute_operating_empty_weight(vehicle,settings=None):
                 wing.flap_ratio = flap_ratio 
         
     TOW         = vehicle.mass_properties.max_takeoff
-    
-    for fuselage in vehicle.fuselages:
-        if type(fuselage) ==  RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage: 
-            bwb_aft_centerbody_area       = fuselage.aft_centerbody_area
-            bwb_aft_centerbody_taper      = fuselage.aft_centerbody_taper 
-            W_cabin                       = compute_cabin_weight(fuselage.cabin_area, TOW)
-            fuselage.mass_properties.mass = W_cabin
-        else:
-            print('No BWB Fuselage is defined!') 
-            bwb_aft_centerbody_area       = 0
-            bwb_aft_centerbody_taper      = 0
-            W_cabin                       = 0
-            fuselage.mass_properties.mass = 0      
-    
+    W_cabin                       = compute_cabin_weight(vehicle,settings)
+
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
@@ -156,20 +149,42 @@ def compute_operating_empty_weight(vehicle,settings=None):
     W_energy_network_cumulative += W_energy_network_total
         
     # Compute Wing Weight 
+    bwb_vehicle = deepcopy(vehicle)
     for wing in vehicle.wings:
-        if isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing):
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            bwb_vehicle.wings[wing.tag].segments.clear()
+            for fus_segment in vehicle.wings[wing.tag].segments:
+                bwb_wing_seg = deepcopy(fus_segment)
+                if isinstance(fus_segment, RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
+                    bwb_vehicle.wings[wing.tag].spans.projected = vehicle.wings[wing.tag].spans.projected * bwb_wing_seg.percent_span_location
+                else:
+                    bwb_vehicle.wings[wing.tag].segments.append(bwb_wing_seg)
+            bwb_vehicle.wings[wing.tag].spans.projected = vehicle.wings[wing.tag].spans.projected - bwb_vehicle.wings[wing.tag].spans.projected
+            for idx, segment in enumerate(bwb_vehicle.wings[wing.tag].segments):
+                if idx ==0:
+                    bwb_vehicle.wings[wing.tag].chords.root  =  bwb_vehicle.wings[wing.tag].chords.root* segment.root_chord_percent  
+                    starting_span_percentage = bwb_vehicle.wings[wing.tag].segments[segment.tag].percent_span_location
+            last_percentage = 1.0
+            for segment in bwb_vehicle.wings[wing.tag].segments:
+                segment.percent_span_location = (segment.percent_span_location - starting_span_percentage) / (last_percentage - starting_span_percentage)
+                segment.root_chord_percent    = (vehicle.wings[wing.tag].segments[segment.tag].root_chord_percent * vehicle.wings[wing.tag].chords.root ) / bwb_vehicle.wings[wing.tag].chords.root
+                a= 0
+                
+            bwb_wing = segment_properties(bwb_vehicle.wings[wing.tag],update_ref_areas=True) 
+
             rho      = Aluminum().density
             sigma    = Aluminum().yield_tensile_strength      
-            complexity = settings.FLOPS.complexity     
-            W_wing = FLOPS.compute_wing_weight(vehicle, wing, 0, complexity, settings, 1)
+            complexity = settings.FLOPS.complexity  
+            plot_3d_vehicle(bwb_vehicle)
 
+            W_wing = FLOPS.compute_wing_weight(bwb_vehicle, bwb_wing, 0, complexity, settings, 1)
             wing.mass_properties.mass = W_wing
 
     # Calculating Landing Gear Weight 
     landing_gear        = FLOPS.compute_landing_gear_weight(vehicle)
     
     # Compute Aft Center Body Weight 
-    W_aft_centerbody   = compute_aft_centerbody_weight(number_of_engines,bwb_aft_centerbody_area, bwb_aft_centerbody_taper, TOW)
+    #W_aft_centerbody   = compute_aft_centerbody_weight(number_of_engines,bwb_aft_centerbody_area, bwb_aft_centerbody_taper, TOW)
     
     # Compute Peripheral Operating Items Weights 
     W_oper = FLOPS.compute_operating_items_weight(vehicle)
@@ -178,7 +193,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     systems_weights     = FLOPS.compute_systems_weight(vehicle) 
 
     # Compute Payload Weight     
-    payload = Common.compute_payload_weight(vehicle) 
+    payload = compute_payload_weight(vehicle) 
     vehicle.payload.passengers = RCAIDE.Library.Components.Component()
     vehicle.payload.baggage    = RCAIDE.Library.Components.Component()
     vehicle.payload.cargo      = RCAIDE.Library.Components.Component()
@@ -193,14 +208,14 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty                               = Data()
     output.empty.structural                    = Data()
     output.empty.structural.wings              = W_wing
-    output.empty.structural.afterbody          = W_aft_centerbody
+    #output.empty.structural.afterbody          = W_aft_centerbody
     output.empty.structural.fuselage           = W_cabin
     output.empty.structural.landing_gear       = landing_gear.main +  landing_gear.nose 
     output.empty.structural.nacelle            = 0
     output.empty.structural.paint              = 0   
-    output.empty.structural.total              = output.empty.structural.wings + output.empty.structural.afterbody \
+    output.empty.structural.total              = output.empty.structural.wings  \
                                                       + output.empty.structural.fuselage + output.empty.structural.landing_gear \
-                                                      + output.empty.structural.paint + output.empty.structural.nacelle
+                                                      + output.empty.structural.paint + output.empty.structural.nacelle #+ output.empty.structural.afterbody
 
     output.empty.propulsion                     = Data()
     output.empty.propulsion.total               = W_energy_network_cumulative

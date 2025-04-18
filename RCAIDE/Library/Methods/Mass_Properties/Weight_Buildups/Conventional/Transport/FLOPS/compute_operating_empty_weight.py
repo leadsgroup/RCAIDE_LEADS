@@ -7,8 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Data ,  Units 
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
-from RCAIDE.Library.Attributes.Materials.Aluminum import Aluminum
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight 
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS as FLOPS
 # python imports 
 import numpy as np
@@ -99,16 +98,16 @@ def compute_operating_empty_weight(vehicle, settings=None):
         Properties Used:
             N/A
     """
-    
+
     if settings == None:
         W_factors = Data()
-        use_max_fuel_weight = True 
+        use_max_fuel_weight = True
     else:
-        use_max_fuel_weight = settings.use_max_fuel_weight 
-        
+        use_max_fuel_weight = settings.use_max_fuel_weight
+
     # Set the factors
     if not hasattr(settings, 'weight_reduction_factors'):
-        W_factors              = Data() 
+        W_factors              = Data()
         W_factors.main_wing    = 0.
         W_factors.empennage    = 0.
         W_factors.fuselage     = 0.
@@ -124,7 +123,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
             W_factors.systems      = 0.
         else:
             W_factors.structural   = 0.
-            W_factors.systems      = 0. 
+            W_factors.systems      = 0.
     
     Wings = RCAIDE.Library.Components.Wings  
 
@@ -134,9 +133,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
         raise ValueError("FLOPS requires a design range for sizing!")
     if vehicle.flight_envelope.design_cruise_altitude == None:
         raise ValueError("FLOPS requires a cruise altitude for sizing!")
-    if not hasattr(vehicle, 'flap_ratio'): 
+    if not hasattr(vehicle, 'flap_ratio'):
         if vehicle.systems.accessories == None:
-            raise ValueError("FLOPS requires systems accessories!") 
+            raise ValueError("FLOPS requires systems accessories!")
         if vehicle.systems.accessories == "sst":
             flap_ratio = 0.22
         else:
@@ -214,7 +213,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_energy_network.W_engine_controls  += W_propulsion.W_engine_controls
         W_energy_network.W_starter          += W_propulsion.W_starter
         W_energy_network.W_fuel_system      += W_propulsion.W_fuel_system 
-        W_energy_network.W_nacelle          += W_propulsion.W_nacelle    
+        W_energy_network.W_nacelle          += W_propulsion.W_nacelle * (1. - W_factors.nacelle)
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
         for propulsor in network.propulsors:
@@ -248,7 +247,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         WTNFA  = W_energy_network.W_engine + W_energy_network.W_thrust_reverser + W_energy_network.W_starter \
                 + 0.25 * W_energy_network.W_engine_controls + 0.11 * W_systems.W_instruments + 0.13 * W_systems.W_electrical \
                 + 0.13 * W_systems.W_hyd_pnu + 0.25 * W_energy_network.W_fuel_system
-        WPOD += WTNFA / np.max([1, NENG]) + W_energy_network.W_nacelle / np.max(
+        WPOD += WTNFA / np.max([1, NENG]) + W_energy_network.W_nacelle* (1. - W_factors.nacelle)    / np.max(
             [1.0, NENG + 1. / 2 * (NENG - 2 * np.floor(NENG / 2.))])
  
     output.empty.propulsion.total               = W_energy_network_cumulative
@@ -261,10 +260,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
 
     ##-------------------------------------------------------------------------------                 
     # Wing Weight 
-    ##------------------------------------------------------------------------------- 
-    Al_rho   = Aluminum().density
-    Al_sigma = Aluminum().yield_tensile_strength      
-    
+    ##-------------------------------------------------------------------------------     
     num_main_wings      = 0
     W_main_wing        = 0.0
     W_tail_horizontal  = 0.0
@@ -319,14 +315,14 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------                 
     # Accumulate Structural Weight
     ##-------------------------------------------------------------------------------   
-    output.empty.structural                 = Data()
-    output.empty.structural.wings           = W_main_wing +   W_tail_horizontal +  W_tail_vertical 
-    output.empty.structural.fuselage        = W_fuselage_total
-    output.empty.structural.landing_gear    = landing_gear.main +  landing_gear.nose  
-    output.empty.structural.nacelle         = W_energy_network.W_nacelle 
-    output.empty.structural.paint           = 0  # TODO reconcile FLOPS paint calculations with Raymer and RCAIDE baseline
-    output.empty.structural.total           = output.empty.structural.wings   + output.empty.structural.fuselage + output.empty.structural.landing_gear\
-                                              + output.empty.structural.paint + output.empty.structural.nacelle 
+    output.empty.structural                       = Data()
+    output.empty.structural.wings                  = W_main_wing +   W_tail_horizontal +  W_tail_vertical 
+    output.empty.structural.fuselage              = W_fuselage_total
+    output.empty.structural.landing_gear          = landing_gear.main +  landing_gear.nose  
+    output.empty.structural.nacelle               = W_energy_network.W_nacelle* (1. - W_factors.nacelle)
+    output.empty.structural.paint = 0  # TODO reconcile FLOPS paint calculations with Raymer and RCAIDE baseline
+    output.empty.structural.total = output.empty.structural.wings   + output.empty.structural.fuselage + output.empty.structural.landing_gear\
+                                    + output.empty.structural.paint + output.empty.structural.nacelle 
 
     ##-------------------------------------------------------------------------------                 
     # Accumulate Systems Weight
@@ -352,7 +348,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff
     total_fuel_weight           = vehicle.mass_properties.max_takeoff - output.zero_fuel_weight
-    
+
     # assume fuel is equally distributed in fuel tanks
     if use_max_fuel_weight:
         for network in vehicle.networks: 
@@ -373,11 +369,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     if nose_landing_gear == False:
         nose_gear = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()  
         nose_gear.mass_properties.mass = landing_gear.nose    
-        vehicle.landing_gears.append(nose_gear) 
+        vehicle.landing_gears.append(nose_gear)
     if main_landing_gear == False:
         main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
         main_gear.mass_properties.mass = landing_gear.main  
-        vehicle.landing_gears.append(main_gear) 
+        vehicle.landing_gears.append(main_gear)
 
     control_systems                         = RCAIDE.Library.Components.Component()
     control_systems.tag                     = 'control_systems'  
