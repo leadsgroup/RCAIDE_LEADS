@@ -82,6 +82,10 @@ def design_turbofan(turbofan):
                 Low pressure turbine component
                     - tag : str
                         Identifier for the low pressure turbine
+            - afterburner : Data
+                Afterburner component
+                    - tag : str
+                        Identifier for the afterburner
             - core_nozzle : Data
                 Core nozzle component
                     - tag : str
@@ -114,14 +118,15 @@ def design_turbofan(turbofan):
         6. Combustor
         7. High pressure turbine
         8. Low pressure turbine
-        9. Core nozzle
-        10. Fan nozzle
+        9. Afterburner
+        10. Core nozzle
+        11. Fan nozzle
     
     **Major Assumptions**
         * US Standard Atmosphere 1976
         * Steady state operation
         * One-dimensional flow through components
-        * Adiabatic components except for the combustor
+        * Adiabatic components except for the combustor and afterburner
         * Perfect gas behavior with variable properties
     
     References
@@ -178,6 +183,7 @@ def design_turbofan(turbofan):
     combustor                 = turbofan.combustor
     high_pressure_turbine     = turbofan.high_pressure_turbine
     low_pressure_turbine      = turbofan.low_pressure_turbine
+    afterburner               = turbofan.afterburner
     core_nozzle               = turbofan.core_nozzle
     fan_nozzle                = turbofan.fan_nozzle 
     bypass_ratio              = turbofan.bypass_ratio  
@@ -192,8 +198,9 @@ def design_turbofan(turbofan):
     combustor_conditions    = conditions.energy.converters[combustor.tag] 
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
-    core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
-    fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
+    afterburner_conditions    = conditions.energy.converters[afterburner.tag]
+    core_nozzle_conditions    = conditions.energy.converters[core_nozzle.tag]
+    fan_nozzle_conditions     = conditions.energy.converters[fan_nozzle.tag]    
      
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                             = turbofan.working_fluid
@@ -290,16 +297,56 @@ def design_turbofan(turbofan):
     # Step 16: Compute flow through the low pressure turbine
     compute_turbine_performance(low_pressure_turbine,conditions)
     
-    # Step 17: Link the core nozzle to the low pressure turbine
-    core_nozzle_conditions.inputs.stagnation_temperature     = lpt_conditions.outputs.stagnation_temperature
-    core_nozzle_conditions.inputs.stagnation_pressure        = lpt_conditions.outputs.stagnation_pressure
-    core_nozzle_conditions.inputs.static_temperature         = lpt_conditions.outputs.static_temperature
-    core_nozzle_conditions.inputs.static_pressure            = lpt_conditions.outputs.static_pressure  
-    core_nozzle_conditions.inputs.mach_number                = lpt_conditions.outputs.mach_number   
-    core_nozzle.working_fluid                                = low_pressure_turbine.working_fluid 
+    if  turbofan.afterburner_active == True:
+        #link the core nozzle to the afterburner
+        afterburner_conditions.inputs.stagnation_temperature = lpt_conditions.outputs.stagnation_temperature
+        afterburner_conditions.inputs.stagnation_pressure    = lpt_conditions.outputs.stagnation_pressure   
+        afterburner_conditions.inputs.nondim_ratio           = 1.0 + combustor_conditions.outputs.fuel_to_air_ratio
+        afterburner_conditions.inputs.static_temperature     = lpt_conditions.outputs.static_temperature
+        afterburner_conditions.inputs.static_pressure        = lpt_conditions.outputs.static_pressure
+        afterburner_conditions.inputs.mach_number            = lpt_conditions.outputs.mach_number  
+        afterburner.working_fluid                            = low_pressure_turbine.working_fluid
+
+        #flow through the afterburner 
+        compute_combustor_performance(afterburner,conditions)
+
+        #link the core nozzle to the afterburner
+        core_nozzle_conditions.inputs.stagnation_temperature = afterburner_conditions.outputs.stagnation_temperature
+        core_nozzle_conditions.inputs.stagnation_pressure    = afterburner_conditions.outputs.stagnation_pressure  
+        core_nozzle_conditions.inputs.static_temperature     = afterburner_conditions.outputs.static_temperature
+        core_nozzle_conditions.inputs.static_pressure        = afterburner_conditions.outputs.static_pressure  
+        core_nozzle_conditions.inputs.mach_number            = afterburner_conditions.outputs.mach_number   
+        core_nozzle.working_fluid                            = afterburner.working_fluid  
+        
+        # Flow through the core nozzle
+        compute_supersonic_nozzle_performance(core_nozzle,conditions) 
+ 
+        # Link the thrust component to the core nozzle 
+        turbofan_conditions.core_nozzle_area_ratio           = core_nozzle_conditions.outputs.area_ratio 
+        turbofan_conditions.core_nozzle_static_pressure      = core_nozzle_conditions.outputs.static_pressure
+        turbofan_conditions.core_nozzle_exit_velocity        = core_nozzle_conditions.outputs.velocity  
     
-    # Step 18: Compute flow through the core nozzle
-    compute_expansion_nozzle_performance(core_nozzle,conditions)
+        # Link the thrust component to the combustor
+        turbofan_conditions.fuel_to_air_ratio                = combustor_conditions.outputs.fuel_to_air_ratio 
+        turbofan_conditions.fuel_to_air_ratio               += afterburner_conditions.outputs.fuel_to_air_ratio
+
+    else:
+
+        # Link the core nozzle to the low pressure turbine
+        core_nozzle_conditions.inputs.stagnation_temperature     = lpt_conditions.outputs.stagnation_temperature
+        core_nozzle_conditions.inputs.stagnation_pressure        = lpt_conditions.outputs.stagnation_pressure
+        core_nozzle_conditions.inputs.static_temperature         = lpt_conditions.outputs.static_temperature
+        core_nozzle_conditions.inputs.static_pressure            = lpt_conditions.outputs.static_pressure 
+        core_nozzle_conditions.inputs.velocity                   = lpt_conditions.outputs.velocity                
+        core_nozzle_conditions.inputs.mach_number                = lpt_conditions.outputs.mach_number   
+        core_nozzle.working_fluid                                = turbofan.working_fluid 
+            
+        # Flow through the core nozzle
+        compute_expansion_nozzle_performance(core_nozzle,conditions)
+        turbofan_conditions.core_nozzle_area_ratio               = core_nozzle_conditions.outputs.area_ratio 
+        turbofan_conditions.core_nozzle_static_pressure          = core_nozzle_conditions.outputs.static_pressure
+        turbofan_conditions.core_nozzle_exit_velocity            = core_nozzle_conditions.outputs.velocity  
+        turbofan_conditions.fuel_to_air_ratio                    = combustor_conditions.outputs.fuel_to_air_ratio 
    
     # Step 19: Link the fan nozzle to the fan
     fan_nozzle_conditions.inputs.stagnation_temperature     = fan_conditions.outputs.stagnation_temperature
@@ -320,7 +367,6 @@ def design_turbofan(turbofan):
     turbofan_conditions.core_nozzle_area_ratio                   = core_nozzle_conditions.outputs.area_ratio 
     turbofan_conditions.core_nozzle_static_pressure              = core_nozzle_conditions.outputs.static_pressure
     turbofan_conditions.core_nozzle_exit_velocity                = core_nozzle_conditions.outputs.velocity 
-    turbofan_conditions.fuel_to_air_ratio                        = combustor_conditions.outputs.fuel_to_air_ratio 
     turbofan_conditions.total_temperature_reference              = lpc_conditions.outputs.stagnation_temperature
     turbofan_conditions.total_pressure_reference                 = lpc_conditions.outputs.stagnation_pressure
     turbofan_conditions.flow_through_core                        = 1./(1.+bypass_ratio) #scaled constant to turn on core thrust computation

@@ -432,6 +432,7 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     combustor                   = turbojet.combustor
     high_pressure_turbine       = turbojet.high_pressure_turbine
     low_pressure_turbine        = turbojet.low_pressure_turbine
+    afterburner                 = turbojet.afterburner
     core_nozzle                 = turbojet.core_nozzle
     ram_0                       = network.propulsors[stored_propulsor_tag].ram
     inlet_nozzle_0              = network.propulsors[stored_propulsor_tag].inlet_nozzle 
@@ -441,7 +442,7 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     high_pressure_turbine_0     = network.propulsors[stored_propulsor_tag].high_pressure_turbine
     low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
-
+    afterburner_0               = network.propulsors[stored_propulsor_tag].afterburner
     # deep copy results 
     conditions.energy.propulsors[turbojet.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
     conditions.noise.propulsors[turbojet.tag]                  = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
@@ -453,7 +454,7 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
     conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
     conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
-
+    conditions.energy.converters[afterburner.tag]              = deepcopy(conditions.energy.converters[afterburner_0.tag]             )
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
     thrust_vector      = 0*state.ones_row(3)

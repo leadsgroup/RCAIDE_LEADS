@@ -49,6 +49,7 @@ def design_turbojet(turbojet):
                 - combustor : Combustor
                 - high_pressure_turbine : Turbine
                 - low_pressure_turbine : Turbine
+                - afterburner : Combustor
                 - core_nozzle : Supersonic_Nozzle
     
     Returns
@@ -73,6 +74,7 @@ def design_turbojet(turbojet):
             - Combustor
             - High pressure turbine
             - Low pressure turbine
+            - Afterburner
             - Core nozzle
         4. Sizes the core based on design thrust requirements
         5. Computes static sea level performance
@@ -157,6 +159,7 @@ def design_turbojet(turbojet):
     combustor                 = turbojet.combustor
     high_pressure_turbine     = turbojet.high_pressure_turbine
     low_pressure_turbine      = turbojet.low_pressure_turbine
+    afterburner               = turbojet.afterburner 
     core_nozzle               = turbojet.core_nozzle
 
     # unpack component conditions
@@ -169,6 +172,7 @@ def design_turbojet(turbojet):
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
     combustor_conditions    = conditions.energy.converters[combustor.tag] 
+    afterburner_conditions  = conditions.energy.converters[afterburner.tag] 
      
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                             = turbojet.working_fluid
@@ -252,13 +256,36 @@ def design_turbojet(turbojet):
     compute_turbine_performance(low_pressure_turbine,conditions)
 
     # Step 17: Link the core nozzle to the low pressure turbine
-    core_nozzle_conditions.inputs.stagnation_temperature     = lpt_conditions.outputs.stagnation_temperature
-    core_nozzle_conditions.inputs.stagnation_pressure        = lpt_conditions.outputs.stagnation_pressure
-    core_nozzle_conditions.inputs.static_temperature         = lpt_conditions.outputs.static_temperature
-    core_nozzle_conditions.inputs.static_pressure            = lpt_conditions.outputs.static_pressure  
-    core_nozzle_conditions.inputs.mach_number                = lpt_conditions.outputs.mach_number   
-    core_nozzle.working_fluid                                = low_pressure_turbine.working_fluid 
+    if turbojet.afterburner_active == True:
+        #link the core nozzle to the afterburner
+        afterburner_conditions.inputs.stagnation_temperature = lpt_conditions.outputs.stagnation_temperature
+        afterburner_conditions.inputs.stagnation_pressure    = lpt_conditions.outputs.stagnation_pressure   
+        afterburner_conditions.inputs.nondim_ratio           = 1.0 + combustor_conditions.outputs.fuel_to_air_ratio
+        afterburner_conditions.inputs.static_temperature     = lpt_conditions.outputs.static_temperature
+        afterburner_conditions.inputs.static_pressure        = lpt_conditions.outputs.static_pressure
+        afterburner_conditions.inputs.mach_number            = lpt_conditions.outputs.mach_number  
+        afterburner.working_fluid                            = low_pressure_turbine.working_fluid
 
+        #flow through the afterburner 
+        compute_combustor_performance(afterburner,conditions)
+
+        #link the core nozzle to the afterburner
+        core_nozzle_conditions.inputs.stagnation_temperature = afterburner_conditions.outputs.stagnation_temperature
+        core_nozzle_conditions.inputs.stagnation_pressure    = afterburner_conditions.outputs.stagnation_pressure  
+        core_nozzle_conditions.inputs.static_temperature     = afterburner_conditions.outputs.static_temperature
+        core_nozzle_conditions.inputs.static_pressure        = afterburner_conditions.outputs.static_pressure  
+        core_nozzle_conditions.inputs.mach_number            = afterburner_conditions.outputs.mach_number   
+        core_nozzle.working_fluid                            = afterburner.working_fluid  
+
+    else:
+        #link the core nozzle to the low pressure turbine
+        core_nozzle_conditions.inputs.stagnation_temperature = lpt_conditions.outputs.stagnation_temperature
+        core_nozzle_conditions.inputs.stagnation_pressure    = lpt_conditions.outputs.stagnation_pressure
+        core_nozzle_conditions.inputs.static_temperature     = lpt_conditions.outputs.static_temperature
+        core_nozzle_conditions.inputs.static_pressure        = lpt_conditions.outputs.static_pressure  
+        core_nozzle_conditions.inputs.mach_number            = lpt_conditions.outputs.mach_number   
+        core_nozzle.working_fluid                            = low_pressure_compressor.working_fluid 
+ 
     # Step 18: Compute flow through the core nozzle
     compute_supersonic_nozzle_performance(core_nozzle,conditions)
  
@@ -267,6 +294,9 @@ def design_turbojet(turbojet):
     turbojet_conditions.core_nozzle_static_pressure              = core_nozzle_conditions.outputs.static_pressure
     turbojet_conditions.core_nozzle_exit_velocity                = core_nozzle_conditions.outputs.velocity 
     turbojet_conditions.fuel_to_air_ratio                        = combustor_conditions.outputs.fuel_to_air_ratio 
+    if turbojet.afterburner_active == True:
+        # previous fuel ratio is neglected when the afterburner fuel ratio is calculated
+        turbojet_conditions.fuel_to_air_ratio                   += afterburner_conditions.outputs.fuel_to_air_ratio
     turbojet_conditions.stag_temp_lpt_exit                       = lpc_conditions.outputs.stagnation_temperature
     turbojet_conditions.stag_press_lpt_exit                      = lpc_conditions.outputs.stagnation_pressure 
     turbojet_conditions.total_temperature_reference              = lpc_conditions.outputs.stagnation_temperature
