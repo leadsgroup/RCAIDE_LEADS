@@ -134,6 +134,7 @@ class Propellant(Data):
         self.emission_indices.Production  = 0
         self.emission_indices.CO2         = 0
         self.emission_indices.H2O         = 0
+        self.emission_indices.CO          = 0
         self.emission_indices.SO2         = 0
         self.emission_indices.NOx         = 0
         self.emission_indices.Soot        = 0 
@@ -142,6 +143,7 @@ class Propellant(Data):
         self.global_warming_potential_100.CO2       = 0
         self.global_warming_potential_100.H2O       = 0
         self.global_warming_potential_100.SO2       = 0
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
         self.global_warming_potential_100.NOx       = 0
         self.global_warming_potential_100.Soot      = 0  
         self.global_warming_potential_100.Contrails = 0        
