@@ -172,7 +172,7 @@ def set_residuals_and_unknowns(mission):
                 segment.state.unknowns["elevator" ] = ones_row(1) * 0.0 * Units.degrees  
             num_ctrls += 1   
                 
-        # Elevator 
+        # Rudder
         if ctrls.rudder_deflection.active:    
             if ctrls.rudder_deflection.initial_guess_values !=  None: 
                 segment.state.unknowns["rudder" ] = ones_row(1) * ctrls.rudder_deflection.initial_guess_values[0][0]

@@ -113,12 +113,12 @@ def plot_flight_forces_and_moments(results,
     
     for i in range(len(results.segments)): 
         time   = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min 
-        X = results.segments[i].conditions.frames.inertial.total_force_vector[:,0]
-        Y = results.segments[i].conditions.frames.inertial.total_force_vector[:,1]
-        Z = results.segments[i].conditions.frames.inertial.total_force_vector[:,2]
-        L = results.segments[i].conditions.frames.inertial.total_moment_vector[:,0]
-        M = results.segments[i].conditions.frames.inertial.total_moment_vector[:,1]
-        N = results.segments[i].conditions.frames.inertial.total_moment_vector[:,2]
+        X = results.segments[i].conditions.frames.wind.total_force_vector[:,0] # Changed to wind form inertial 
+        Y = results.segments[i].conditions.frames.wind.total_force_vector[:,1]
+        Z = results.segments[i].conditions.frames.wind.total_force_vector[:,2]
+        L = results.segments[i].conditions.frames.wind.total_moment_vector[:,0]
+        M = results.segments[i].conditions.frames.wind.total_moment_vector[:,1]
+        N = results.segments[i].conditions.frames.wind.total_moment_vector[:,2]
         
                        
         segment_tag  =  results.segments[i].tag
