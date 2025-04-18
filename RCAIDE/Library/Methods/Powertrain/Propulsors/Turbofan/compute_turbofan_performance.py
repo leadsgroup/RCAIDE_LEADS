@@ -205,7 +205,8 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     combustor                 = turbofan.combustor
     high_pressure_turbine     = turbofan.high_pressure_turbine
     low_pressure_turbine      = turbofan.low_pressure_turbine
-    afterburner               = turbofan.afterburner 
+    if  turbofan.afterburner_active == True:
+        afterburner               = turbofan.afterburner 
     core_nozzle               = turbofan.core_nozzle
     fan_nozzle                = turbofan.fan_nozzle 
     bypass_ratio              = turbofan.bypass_ratio 
@@ -219,7 +220,8 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     combustor_conditions    = conditions.energy.converters[combustor.tag]     
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
-    afterburner_conditions  = conditions.energy.converters[afterburner.tag] 
+    if  turbofan.afterburner_active == True:
+        afterburner_conditions  = conditions.energy.converters[afterburner.tag] 
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
     fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
 
@@ -512,7 +514,8 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     combustor                   = turbofan.combustor
     high_pressure_turbine       = turbofan.high_pressure_turbine
     low_pressure_turbine        = turbofan.low_pressure_turbine
-    afterburner                 = turbofan.afterburner
+    if  turbofan.afterburner_active == True:
+        afterburner                 = turbofan.afterburner
     core_nozzle                 = turbofan.core_nozzle
     fan_nozzle                  = turbofan.fan_nozzle  
     ram_0                       = network.propulsors[stored_propulsor_tag].ram
@@ -523,7 +526,8 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     combustor_0                 = network.propulsors[stored_propulsor_tag].combustor
     high_pressure_turbine_0     = network.propulsors[stored_propulsor_tag].high_pressure_turbine
     low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
-    afterburner_0               = network.propulsors[stored_propulsor_tag].afterburner
+    if  turbofan.afterburner_active == True:
+        afterburner_0               = network.propulsors[stored_propulsor_tag].afterburner
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
     fan_nozzle_0                = network.propulsors[stored_propulsor_tag].fan_nozzle 
     
@@ -540,7 +544,8 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
     conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
     conditions.energy.converters[fan_nozzle.tag]               = deepcopy(conditions.energy.converters[fan_nozzle_0.tag]              )
-    conditions.energy.converters[afterburner.tag]               = deepcopy(conditions.energy.converters[afterburner_0.tag]              )
+    if  turbofan.afterburner_active == True:
+        conditions.energy.converters[afterburner.tag]               = deepcopy(conditions.energy.converters[afterburner_0.tag]              )
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
     thrust_vector      = 0*state.ones_row(3)

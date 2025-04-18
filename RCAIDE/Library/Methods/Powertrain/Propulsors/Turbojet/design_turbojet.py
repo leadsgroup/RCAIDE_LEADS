@@ -159,7 +159,8 @@ def design_turbojet(turbojet):
     combustor                 = turbojet.combustor
     high_pressure_turbine     = turbojet.high_pressure_turbine
     low_pressure_turbine      = turbojet.low_pressure_turbine
-    afterburner               = turbojet.afterburner 
+    if  turbojet.afterburner_active == True:
+        afterburner               = turbojet.afterburner 
     core_nozzle               = turbojet.core_nozzle
 
     # unpack component conditions
@@ -172,7 +173,8 @@ def design_turbojet(turbojet):
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
     combustor_conditions    = conditions.energy.converters[combustor.tag] 
-    afterburner_conditions  = conditions.energy.converters[afterburner.tag] 
+    if  turbojet.afterburner_active == True:
+        afterburner_conditions  = conditions.energy.converters[afterburner.tag] 
      
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                             = turbojet.working_fluid

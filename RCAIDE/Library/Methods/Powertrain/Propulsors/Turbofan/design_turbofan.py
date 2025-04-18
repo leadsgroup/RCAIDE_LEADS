@@ -15,6 +15,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Fan                import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import compute_turbine_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle   import compute_supersonic_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan           import size_core 
 from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions 
 
@@ -183,7 +184,8 @@ def design_turbofan(turbofan):
     combustor                 = turbofan.combustor
     high_pressure_turbine     = turbofan.high_pressure_turbine
     low_pressure_turbine      = turbofan.low_pressure_turbine
-    afterburner               = turbofan.afterburner
+    if  turbofan.afterburner_active == True:
+        afterburner               = turbofan.afterburner
     core_nozzle               = turbofan.core_nozzle
     fan_nozzle                = turbofan.fan_nozzle 
     bypass_ratio              = turbofan.bypass_ratio  
@@ -198,7 +200,8 @@ def design_turbofan(turbofan):
     combustor_conditions    = conditions.energy.converters[combustor.tag] 
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
-    afterburner_conditions    = conditions.energy.converters[afterburner.tag]
+    if  turbofan.afterburner_active == True:
+        afterburner_conditions    = conditions.energy.converters[afterburner.tag]
     core_nozzle_conditions    = conditions.energy.converters[core_nozzle.tag]
     fan_nozzle_conditions     = conditions.energy.converters[fan_nozzle.tag]    
      

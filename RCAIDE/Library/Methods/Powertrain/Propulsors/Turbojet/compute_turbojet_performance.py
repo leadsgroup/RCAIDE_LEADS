@@ -187,7 +187,8 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     combustor                 = turbojet.combustor
     high_pressure_turbine     = turbojet.high_pressure_turbine
     low_pressure_turbine      = turbojet.low_pressure_turbine 
-    afterburner               = turbojet.afterburner 
+    if  turbojet.afterburner_active == True:
+        afterburner               = turbojet.afterburner 
     core_nozzle               = turbojet.core_nozzle   
 
     # unpack component conditions 
@@ -199,7 +200,8 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
     combustor_conditions    = conditions.energy.converters[combustor.tag]
-    afterburner_conditions  = conditions.energy.converters[afterburner.tag] 
+    if  turbojet.afterburner_active == True:
+        afterburner_conditions  = conditions.energy.converters[afterburner.tag] 
     
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbojet.working_fluid
@@ -432,7 +434,8 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     combustor                   = turbojet.combustor
     high_pressure_turbine       = turbojet.high_pressure_turbine
     low_pressure_turbine        = turbojet.low_pressure_turbine
-    afterburner                 = turbojet.afterburner
+    if  turbojet.afterburner_active == True:
+        afterburner                 = turbojet.afterburner
     core_nozzle                 = turbojet.core_nozzle
     ram_0                       = network.propulsors[stored_propulsor_tag].ram
     inlet_nozzle_0              = network.propulsors[stored_propulsor_tag].inlet_nozzle 
@@ -442,7 +445,8 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     high_pressure_turbine_0     = network.propulsors[stored_propulsor_tag].high_pressure_turbine
     low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
-    afterburner_0               = network.propulsors[stored_propulsor_tag].afterburner
+    if  turbojet.afterburner_active == True:
+        afterburner_0               = network.propulsors[stored_propulsor_tag].afterburner
     # deep copy results 
     conditions.energy.propulsors[turbojet.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
     conditions.noise.propulsors[turbojet.tag]                  = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
@@ -454,7 +458,8 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
     conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
     conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
-    conditions.energy.converters[afterburner.tag]              = deepcopy(conditions.energy.converters[afterburner_0.tag]             )
+    if  turbojet.afterburner_active == True:
+        conditions.energy.converters[afterburner.tag]              = deepcopy(conditions.energy.converters[afterburner_0.tag]             )
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
     thrust_vector      = 0*state.ones_row(3)
