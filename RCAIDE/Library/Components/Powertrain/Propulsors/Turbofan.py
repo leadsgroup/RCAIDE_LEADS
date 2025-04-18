@@ -50,6 +50,9 @@ class Turbofan(Propulsor):
         
     combustor : Component
         Combustor component. Default is None.
+
+    afterburner : Component
+        Afterburner component. Default is None.     
         
     core_nozzle : Component
         Core exhaust nozzle component. Default is None.
@@ -92,6 +95,9 @@ class Turbofan(Propulsor):
         
     design_altitude : float
         Design altitude of the engine [m]. Default is 0.0.
+    
+    afterburner_active : bool
+        Flag indicating if afterburner is in use. Default is False.
         
     specific_fuel_consumption_reduction_factor : float
         Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
@@ -151,7 +157,9 @@ class Turbofan(Propulsor):
         self.high_pressure_turbine                      = None 
         self.combustor                                  = None 
         self.core_nozzle                                = None 
-        self.fan_nozzle                                 = None       
+        self.fan_nozzle                                 = None
+        self.afterburner                                = None 
+        self.afterburner_active                         = False      
         self.diameter                                   = 0.0      
         self.length                                     = 0.0
         self.height                                     = 0.0     # Engine centerline heigh above the ground plane 

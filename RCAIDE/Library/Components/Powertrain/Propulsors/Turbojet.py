@@ -161,7 +161,15 @@ class Turbojet(Propulsor):
         self.areas.wetted                                = 0.0
         self.areas.maximum                               = 0.0
         self.areas.exit                                  = 0.0
-        self.areas.inflow                                = 0.0 
+        self.areas.inflow                                = 0.0
+
+        self.emission_indices                           = Data()  
+        self.emission_indices.NOx                       = None
+        self.emission_indices.CO2                       = None
+        self.emission_indices.CO                        = None
+        self.emission_indices.H2O                       = None
+        self.emission_indices.SO2                       = None
+        self.emission_indices.Soot                      = None 
 
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
