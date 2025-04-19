@@ -179,7 +179,7 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
                     combustor = propulsor.combustor
                     propulsor_conditions = state.conditions.energy.propulsors[propulsor.tag]
                     
-                    fuel =  combustor.fuel_data 
+                    fuel =  combustor.fuel 
 
                     EI_NOx  = fuel.emission_indices.NOx
                     EI_CO2  = fuel.emission_indices.CO2 

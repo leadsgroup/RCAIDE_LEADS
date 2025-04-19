@@ -401,15 +401,24 @@ class Network(Component):
                 converter.append_operating_conditions(segment,segment.state.conditions.energy)                 
     
             for fuel_line_i, fuel_line in enumerate(network.fuel_lines):
-                fuel_line.append_operating_conditions(segment)              
-                  
-                # Assign network-specific  residuals, unknowns and results data structures 
+                fuel_line.append_operating_conditions(segment)             
+                # ------------------------------------------------------------------------------------------------------            
+                # Create fuel_line results data structure  
+                # ------------------------------------------------------------------------------------------------------   
+                segment.state.conditions.energy.fuel_lines[fuel_line.tag] = RCAIDE.Framework.Mission.Common.Conditions() 
+                segment.state.conditions.noise[fuel_line.tag]  = RCAIDE.Framework.Mission.Common.Conditions()   
+                 
+                # ------------------------------------------------------------------------------------------------------
+                # Assign network-specific  residuals, unknowns and results data structures
+                # ------------------------------------------------------------------------------------------------------
                 if fuel_line.active:
                     for propulsor_group in  fuel_line.assigned_propulsors:
                         propulsor =  network.propulsors[propulsor_group[0]]
                         propulsor.append_propulsor_unknowns_and_residuals(segment)
-                         
-                # Assign sub component results data structures  
+                        
+                # ------------------------------------------------------------------------------------------------------
+                # Assign sub component results data structures
+                # ------------------------------------------------------------------------------------------------------  
                 for fuel_tank in  fuel_line.fuel_tanks: 
                     fuel_tank.append_operating_conditions(segment,fuel_line) 
     

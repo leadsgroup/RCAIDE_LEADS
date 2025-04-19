@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-from RCAIDE.Library.Methods.Geometry.Planform  import wing_segmented_planform, wing_planform
+from RCAIDE.Library.Methods.Geometry.Planform  import wing_planform
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  aerodynamics
@@ -71,11 +71,8 @@ def aerodynamics(mission):
         if segment.analyses.aerodynamics != None:
             # ensure all properties of wing are computed before drag calculations  
             vehicle =  segment.analyses.aerodynamics.vehicle
-            for wing in  vehicle.wings:
-                if len(wing.segments) > 1: 
-                    wing_segmented_planform(wing)
-                else:
-                    wing_planform(wing)
+            for wing in  vehicle.wings: 
+                wing_planform(wing)
                 
             if (last_tag!=  None) and  ('compute' in mission.segments[last_tag].analyses.aerodynamics.process.keys()): 
                 segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings

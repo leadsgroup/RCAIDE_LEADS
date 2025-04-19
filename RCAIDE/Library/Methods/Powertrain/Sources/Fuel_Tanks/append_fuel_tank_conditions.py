@@ -51,9 +51,11 @@ def append_fuel_tank_conditions(tank, segment, distributor):
     """
     ones_row    = segment.state.ones_row
     
-    if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus: 
+    if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
+        segment.state.conditions.energy.busses[distributor.tag] = Conditions()   
         distributor_conditions = segment.state.conditions.energy.busses[distributor.tag]
-    elif  type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line: 
+    elif  type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line:
+        segment.state.conditions.energy.fuel_lines[distributor.tag] = Conditions()
         distributor_conditions = segment.state.conditions.energy.fuel_lines[distributor.tag]
         
     distributor_conditions[tank.tag]                           = Conditions()  
