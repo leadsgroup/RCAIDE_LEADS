@@ -93,7 +93,8 @@ class Network(Component):
         total_mech_power     = 0. * state.ones_row(1) 
         total_elec_power     = 0. * state.ones_row(1) 
         total_moment         = 0. * state.ones_row(3)  
-        total_mdot           = 0. * state.ones_row(1)   
+        total_mdot           = 0. * state.ones_row(1)
+        cryogen_mdot         = 0. * state.ones_row(1)  
         reverse_thrust       = network.reverse_thrust 
     
         # ----------------------------------------------------------       
@@ -123,7 +124,7 @@ class Network(Component):
                         total_mech_power  += P   
         
                         # compute total mass flow rate 
-                        conditions.energy.fuel_lines[fuel_line.tag].fuel_flow_rate += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
+                        conditions.energy.fuel_lines[fuel_line.tag].fuel_flow_rate     += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
                 
         # 1.2 Electric Propulsors         
         for bus in busses:            
@@ -271,7 +272,7 @@ class Network(Component):
                              
                         # compute cryogen mass flow rate 
                         fuel_cell_stack_conditions  = state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]                        
-                        conditions.energy.busses[bus.tag].fuel_flow_rate[t_idx]  += fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]
+                        conditions.energy.busses[bus.tag].fuel_flow_rate[t_idx]        += fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]
                           
                        
                     # Step 3: Compute bus properties          
@@ -493,7 +494,7 @@ class Container(Component.Container):
             Source:
                 None 
         """ 
-        for net in self.values():             
+        for net in self.values(): 
             net.evaluate(state,center_of_gravity)  
         return   
 
