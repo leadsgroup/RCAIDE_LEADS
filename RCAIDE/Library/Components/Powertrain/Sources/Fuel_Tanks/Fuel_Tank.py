@@ -9,7 +9,7 @@
 
 # RCAIDE imports 
 from RCAIDE.Library.Components          import Component
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks import * 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Tank
@@ -76,16 +76,16 @@ class Fuel_Tank(Component):
     
 
 
-    def compute_tank_properties(self,state,distributor):  
+    def compute_tank_properties(self,segment,distributor):  
         """
         Append cryogenic tank operating conditions for a flight segment
         
         Parameters
         ----------
-        state : State
-            State conditions of flight segment
+        segment : Segment
+            Flight segment containing state conditions
         bus : Component
             Connected bus component
         """
-        compute_fuel_tank_properties(self,state, distributor)  
+        #compute_fuel_tank_properties(self,segment, distributor)  
         return                                                  

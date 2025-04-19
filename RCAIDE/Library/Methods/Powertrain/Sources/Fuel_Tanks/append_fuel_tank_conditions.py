@@ -62,6 +62,6 @@ def append_fuel_tank_conditions(tank, segment, distributor):
     distributor_conditions[tank.tag].surface_temperature       = 0 * ones_row(1)  
     distributor_conditions[tank.tag].boil_off_flow_rate        = 0 * ones_row(1)  
     distributor_conditions[tank.tag].ullage                    = 0 * ones_row(1)
-    distributor_conditions[tank.tag].secondary_fuel_flow_rate  = ones_row(1) 
+    distributor_conditions[tank.tag].secondary_mass_flow_rate  = ones_row(1)
          
     return 
