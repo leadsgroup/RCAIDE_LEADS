@@ -135,7 +135,6 @@ def flight_dynamics(segment):
             segment.state.residuals.force_x[:,0] = FT_w[:,0]/m[:,0] - a_w[:,0]  
         if segment.flight_dynamics.force_y: 
             segment.state.residuals.force_y[:,0] = FT_w[:,1]/m[:,0] - a_w[:,1]    
-            print(segment.state.residuals.force_y[:,0])
         if segment.flight_dynamics.force_z: 
             segment.state.residuals.force_z[:,0] = FT_w[:,2]/m[:,0] - a_w[:,2]  
         if  segment.flight_dynamics.moment_x:

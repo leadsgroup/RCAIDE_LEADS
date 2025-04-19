@@ -162,65 +162,68 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.hsup_min                                               = 1.05
         self.hsup_max                                               = 1.15 
 
-        # Stability derivatives. If these are not user defined, then they will be calculated.
-        self.stability_derivatives = Data()
-        self.stability_derivatives.dClift_dalpha= None
-        self.stability_derivatives.dCX_dalpha   = None
-        self.stability_derivatives.dCX_du       = None
-        self.stability_derivatives.dCY_dbeta    = None
-        self.stability_derivatives.dCY_dr       = None
-        self.stability_derivatives.dCZ_dalpha   = None
-        self.stability_derivatives.dCZ_du       = None
-        self.stability_derivatives.dCZ_dq       = None
-        self.stability_derivatives.dCL_dbeta    = None
-        self.stability_derivatives.dCL_dp       = None
-        self.stability_derivatives.dCL_dr       = None
-        self.stability_derivatives.dCM_dalpha   = None
-        self.stability_derivatives.dCM_du       = None
-        self.stability_derivatives.dCM_dq       = None
-        self.stability_derivatives.dCN_dbeta    = None
-        self.stability_derivatives.dCN_dp       = None
-        self.stability_derivatives.dCN_dr       = None
-        self.stability_derivatives.CY_delta_a   = None
-        self.stability_derivatives.CL_delta_a   = None
-        self.stability_derivatives.CN_delta_a   = None
-        self.stability_derivatives.CM_delta_e   = None
-        self.stability_derivatives.CY_delta_r   = None
-        self.stability_derivatives.CL_delta_r   = None
-        self.stability_derivatives.CN_delta_r   = None
-        self.stability_derivatives.CM_delta_f   = None
-                     
-        # surrogoate models                 
+        # Stability derivatives. If these are not user defined, then they will be calculated. 
+        self.stability_derivatives                                  = Data()   
+        self.stability_derivatives.M_0                              = None
+        self.stability_derivatives.Clift_alpha                      = None
+        self.stability_derivatives.CX_alpha                         = None
+        self.stability_derivatives.CX_u                             = None
+        self.stability_derivatives.CY_beta                          = None
+        self.stability_derivatives.CY_r                             = None
+        self.stability_derivatives.CZ_alpha                         = None
+        self.stability_derivatives.CZ_u                             = None
+        self.stability_derivatives.CZ_q                             = None
+        self.stability_derivatives.CL_beta                          = None
+        self.stability_derivatives.CL_p                             = None
+        self.stability_derivatives.CL_r                             = None
+        self.stability_derivatives.CM_alpha                         = None
+        self.stability_derivatives.CM_u                             = None
+        self.stability_derivatives.CM_q                             = None
+        self.stability_derivatives.CN_beta                          = None
+        self.stability_derivatives.CN_p                             = None
+        self.stability_derivatives.CN_r                             = None
+        self.stability_derivatives.CY_delta_a                       = None
+        self.stability_derivatives.CL_delta_a                       = None
+        self.stability_derivatives.CN_delta_a                       = None
+        self.stability_derivatives.CM_delta_e                       = None
+        self.stability_derivatives.CLift_delta_e                    = None
+        self.stability_derivatives.CY_delta_r                       = None
+        self.stability_derivatives.CL_delta_r                       = None
+        self.stability_derivatives.CN_delta_r                       = None
+        self.stability_derivatives.CM_delta_f                       = None
+        self.stability_derivatives.CLift_delta_f                    = None
+                                      
+        # surrogoate models                                  
         self.surrogates                                             = Data() 
-
-        # build the evaluation process
-        compute                                    = Process() 
-        compute.lift                               = Process() 
-        compute.lift.inviscid_wings                = None 
-        compute.lift.fuselage                      = Common.Lift.fuselage_correction 
-        #compute.LIFT.spoiler
-        compute.drag                               = Process()
-        compute.drag.parasite                      = Process()
-        compute.drag.parasite.wings                = Process_Geometry('wings')
-        compute.drag.parasite.wings.wing           = Common.Drag.parasite_drag_wing 
-        compute.drag.parasite.fuselages            = Process_Geometry('fuselages')
-        compute.drag.parasite.fuselages.fuselage   = Common.Drag.parasite_drag_fuselage
-        compute.drag.parasite.booms                = Process_Geometry('booms')
-        compute.drag.parasite.booms.boom           = Common.Drag.parasite_drag_fuselage 
-        compute.drag.parasite.nacelles             = Common.Drag.parasite_drag_nacelle
-        compute.drag.parasite.pylons               = Common.Drag.parasite_drag_pylon
-        compute.drag.parasite.total                = Common.Drag.parasite_total
-        compute.drag.induced                       = Common.Drag.induced_drag
-        compute.drag.cooling                       = Process()
-        compute.drag.cooling.total                 = Common.Drag.cooling_drag        
-        compute.drag.compressibility               = Process() 
-        compute.drag.compressibility.total         = Common.Drag.compressibility_drag
-        compute.drag.miscellaneous                 = Common.Drag.miscellaneous_drag 
-        compute.drag.spoiler                       = Common.Drag.spoiler_drag
-        compute.drag.total                         = Common.Drag.total_drag
-        compute.stability                          = Process()
-        compute.stability.dynamic_modes            = RCAIDE.Library.Methods.Stability.compute_dynamic_flight_modes  
-        self.process.compute                       = compute
+                 
+        # build the evaluation process                 
+        compute                                                     = Process() 
+        compute.lift                                                = Process() 
+        compute.lift.inviscid_wings                                 = None 
+        compute.lift.fuselage                                       = Common.Lift.fuselage_correction 
+        #compute.LIFT.spoiler                 
+        compute.drag                                                = Process()
+        compute.drag.parasite                                       = Process()
+        compute.drag.parasite.wings                                 = Process_Geometry('wings')
+        compute.drag.parasite.wings.wing                            = Common.Drag.parasite_drag_wing 
+        compute.drag.parasite.fuselages                             = Process_Geometry('fuselages')
+        compute.drag.parasite.fuselages.fuselage                    = Common.Drag.parasite_drag_fuselage
+        compute.drag.parasite.booms                                 = Process_Geometry('booms')
+        compute.drag.parasite.booms.boom                            = Common.Drag.parasite_drag_fuselage 
+        compute.drag.parasite.nacelles                              = Common.Drag.parasite_drag_nacelle
+        compute.drag.parasite.pylons                                = Common.Drag.parasite_drag_pylon
+        compute.drag.parasite.total                                 = Common.Drag.parasite_total
+        compute.drag.induced                                        = Common.Drag.induced_drag
+        compute.drag.cooling                                        = Process()
+        compute.drag.cooling.total                                  = Common.Drag.cooling_drag        
+        compute.drag.compressibility                                = Process() 
+        compute.drag.compressibility.total                          = Common.Drag.compressibility_drag
+        compute.drag.miscellaneous                                  = Common.Drag.miscellaneous_drag 
+        compute.drag.spoiler                                        = Common.Drag.spoiler_drag
+        compute.drag.total                                          = Common.Drag.total_drag
+        compute.stability                                           = Process()
+        compute.stability.dynamic_modes                             = RCAIDE.Library.Methods.Stability.compute_dynamic_flight_modes  
+        self.process.compute                                        = compute
         
 
     def initialize(self):  

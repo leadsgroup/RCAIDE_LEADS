@@ -113,7 +113,7 @@ def plot_lateral_stability(results,
     
     for i in range(len(results.segments)): 
         time     = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min  
-        phi      = results.segments[i].conditions.aerodynamics.angles.phi[:,0] / Units.deg          
+        phi      = -results.segments[i].conditions.aerodynamics.angles.phi[:,0] / Units.deg          
         delta_a  = results.segments[i].conditions.control_surfaces.aileron.deflection[:,0] / Units.deg  
         delta_r  = results.segments[i].conditions.control_surfaces.rudder.deflection[:,0] / Units.deg   
           

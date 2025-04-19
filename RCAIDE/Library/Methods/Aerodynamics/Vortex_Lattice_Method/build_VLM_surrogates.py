@@ -55,16 +55,7 @@ def build_surrogate(aerodynamics, training):
     mach_data      = training.Mach
     vehicle        = aerodynamics.vehicle
     AoA_data       = aerodynamics.training.angle_of_attack     
-    Beta_data      = aerodynamics.training.sideslip_angle  
-    u_data         = aerodynamics.training.u
-    p_data         = aerodynamics.training.roll_rate
-    q_data         = aerodynamics.training.pitch_rate
-    r_data         = aerodynamics.training.yaw_rate  
-
-    aileron_data   = aerodynamics.training.aileron_deflection           
-    elevator_data  = aerodynamics.training.elevator_deflection          
-    rudder_data    = aerodynamics.training.rudder_deflection            
-    flap_data      = aerodynamics.training.flap_deflection         
+    Beta_data      = aerodynamics.training.sideslip_angle     
     
     surrogates.Clift_wing_alpha = Data()
     surrogates.Cdrag_wing_alpha = Data() 
@@ -73,18 +64,17 @@ def build_surrogate(aerodynamics, training):
         surrogates.Cdrag_wing_alpha[wing.tag] = RegularGridInterpolator((AoA_data ,mach_data),training.Cdrag_wing_alpha[wing.tag],method = 'linear',   bounds_error=False, fill_value=None) 
      
     # Pack the outputs
-    surrogates.Clift_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.Clift_alpha        ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Cdrag_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.Cdrag_alpha        ,method = 'linear',   bounds_error=False, fill_value=None)      
+    surrogates.Clift_alpha    = RegularGridInterpolator((AoA_data ,mach_data),training.Clift_alpha        ,method = 'linear',   bounds_error=False, fill_value=None)      
+    surrogates.Cdrag_alpha    = RegularGridInterpolator((AoA_data ,mach_data),training.Cdrag_alpha        ,method = 'linear',   bounds_error=False, fill_value=None)      
     surrogates.CM_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.CM_alpha       ,method = 'linear',   bounds_error=False, fill_value=None)  
     surrogates.CX_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.CX_alpha       ,method = 'linear',   bounds_error=False, fill_value=None)  
     surrogates.CZ_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.CZ_alpha       ,method = 'linear',   bounds_error=False, fill_value=None)
     surrogates.CY_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.CY_alpha       ,method = 'linear',   bounds_error=False, fill_value=None)
     surrogates.CL_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.CL_alpha       ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.CN_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.CN_alpha       ,method = 'linear',   bounds_error=False, fill_value=None)    
-    
+    surrogates.CN_alpha       = RegularGridInterpolator((AoA_data ,mach_data),training.CN_alpha       ,method = 'linear',   bounds_error=False, fill_value=None)       
 
-    surrogates.Clift_beta        = RegularGridInterpolator((Beta_data ,mach_data),training.Clift_beta        ,method = 'linear',   bounds_error=False, fill_value=None)   
-    surrogates.Cdrag_beta        = RegularGridInterpolator((Beta_data ,mach_data),training.Cdrag_beta        ,method = 'linear',   bounds_error=False, fill_value=None)    
+    surrogates.Clift_beta     = RegularGridInterpolator((Beta_data ,mach_data),training.Clift_beta        ,method = 'linear',   bounds_error=False, fill_value=None)   
+    surrogates.Cdrag_beta     = RegularGridInterpolator((Beta_data ,mach_data),training.Cdrag_beta        ,method = 'linear',   bounds_error=False, fill_value=None)    
     surrogates.CX_beta        = RegularGridInterpolator((Beta_data ,mach_data),training.CX_beta        ,method = 'linear',   bounds_error=False, fill_value=None)    
     surrogates.CZ_beta        = RegularGridInterpolator((Beta_data ,mach_data),training.CZ_beta        ,method = 'linear',   bounds_error=False, fill_value=None)    
     surrogates.CY_beta        = RegularGridInterpolator((Beta_data ,mach_data),training.CY_beta        ,method = 'linear',   bounds_error=False, fill_value=None)      
@@ -93,8 +83,8 @@ def build_surrogate(aerodynamics, training):
     surrogates.CM_beta        = RegularGridInterpolator((Beta_data ,mach_data),training.CM_beta        ,method = 'linear',   bounds_error=False, fill_value=None) 
 
 
-
-# Use interpolat.interp1d below
+    # Use interpolat.interp1d below
+    surrogates.CM_0             =  interpolate.interp1d(mach_data, training.CM_0, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dClift_dalpha    = interpolate.interp1d(mach_data, training.dClift_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dCX_dalpha       = interpolate.interp1d(mach_data, training.dCX_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dCX_du           = interpolate.interp1d(mach_data, training.dCX_du, kind='linear', bounds_error=False, fill_value='extrapolate')      
@@ -161,69 +151,22 @@ def no_surrogate(aerodynamics, training):
      
     # Pack the outputs     
     surrogates.Clift_alpha    = None     
-    surrogates.Clift_beta     = None
-    surrogates.Clift_u        = None     
-    surrogates.Clift_v        = None     
-    surrogates.Clift_w        = None     
-    surrogates.Clift_p        = None     
-    surrogates.Clift_q        = None     
-    surrogates.Clift_r        = None    
+    surrogates.Clift_beta     = None  
     surrogates.Cdrag_alpha    = None     
-    surrogates.Cdrag_beta     = None
-    surrogates.Cdrag_u        = None    
-    surrogates.Cdrag_v        = None    
-    surrogates.Cdrag_w        = None    
-    surrogates.Cdrag_p        = None    
-    surrogates.Cdrag_q        = None    
-    surrogates.Cdrag_r        = None 
+    surrogates.Cdrag_beta     = None 
     surrogates.CX_alpha       = None    
-    surrogates.CX_beta        = None
-    surrogates.CX_u           = None    
-    surrogates.CX_v           = None    
-    surrogates.CX_w           = None    
-    surrogates.CX_p           = None    
-    surrogates.CX_q           = None    
-    surrogates.CX_r           = None  
+    surrogates.CX_beta        = None 
     surrogates.CY_alpha       = None    
-    surrogates.CY_beta        = None
-    surrogates.CY_u           = None    
-    surrogates.CY_v           = None    
-    surrogates.CY_w           = None    
-    surrogates.CY_p           = None    
-    surrogates.CY_q           = None    
-    surrogates.CY_r           = None   
+    surrogates.CY_beta        = None  
     surrogates.CZ_alpha       = None    
-    surrogates.CZ_beta        = None
-    surrogates.CZ_u           = None    
-    surrogates.CZ_v           = None    
-    surrogates.CZ_w           = None    
-    surrogates.CZ_p           = None    
-    surrogates.CZ_q           = None    
-    surrogates.CZ_r           = None
+    surrogates.CZ_beta        = None 
     surrogates.CL_alpha       = None    
-    surrogates.CL_beta        = None
-    surrogates.CL_u           = None    
-    surrogates.CL_v           = None    
-    surrogates.CL_w           = None    
-    surrogates.CL_p           = None    
-    surrogates.CL_q           = None    
-    surrogates.CL_r           = None  
+    surrogates.CL_beta        = None 
     surrogates.CM_alpha       = None    
-    surrogates.CM_beta        = None
-    surrogates.CM_u           = None    
-    surrogates.CM_v           = None    
-    surrogates.CM_w           = None    
-    surrogates.CM_p           = None    
-    surrogates.CM_q           = None    
-    surrogates.CM_r           = None  
+    surrogates.CM_beta        = None 
     surrogates.CN_alpha       = None    
-    surrogates.CN_beta        = None
-    surrogates.CN_u           = None    
-    surrogates.CN_v           = None    
-    surrogates.CN_w           = None    
-    surrogates.CN_p           = None    
-    surrogates.CN_q           = None    
-    surrogates.CN_r           = None
+    surrogates.CN_beta        = None    
+    surrogates.CM_0           = None
     
     surrogates.dClift_dalpha    = None      
     surrogates.dCX_dalpha       = None      
@@ -244,95 +187,23 @@ def no_surrogate(aerodynamics, training):
     surrogates.dCN_dr           = None
    
 
-    if aerodynamics.aileron_flag: 
-        surrogates.Clift_delta_a    = None
-        surrogates.Cdrag_delta_a    = None
-        surrogates.CX_delta_a       = None
-        surrogates.CY_delta_a       = None
-        surrogates.CZ_delta_a       = None
-        surrogates.CL_delta_a       = None
-        surrogates.CM_delta_a       = None
-        surrogates.CN_delta_a       = None
-        surrogates.dClift_ddelta_a  = None
-        surrogates.dCdrag_ddelta_a  = None
-        surrogates.dCX_ddelta_a     = None
-        surrogates.dCY_ddelta_a     = None
-        surrogates.dCZ_ddelta_a     = None
-        surrogates.dCL_ddelta_a     = None
-        surrogates.dCM_ddelta_a     = None
+    if aerodynamics.aileron_flag:  
+        surrogates.dCY_ddelta_a     = None 
+        surrogates.dCL_ddelta_a     = None 
         surrogates.dCN_ddelta_a     = None        
     
     if aerodynamics.elevator_flag: 
-        surrogates.Clift_delta_e    = None
-        surrogates.Cdrag_delta_e    = None
-        surrogates.CX_delta_e       = None
-        surrogates.CY_delta_e       = None
-        surrogates.CZ_delta_e       = None
-        surrogates.CL_delta_e       = None
-        surrogates.CM_delta_e       = None
-        surrogates.CN_delta_e       = None
-        surrogates.dClift_ddelta_e  = None
-        surrogates.dCdrag_ddelta_e  = None
-        surrogates.dCX_ddelta_e     = None
-        surrogates.dCY_ddelta_e     = None
-        surrogates.dCZ_ddelta_e     = None
-        surrogates.dCL_ddelta_e     = None
-        surrogates.dCM_ddelta_e     = None
-        surrogates.dCN_ddelta_e     = None
+        surrogates.Clift_delta_e    = None 
+        surrogates.dCM_ddelta_e     = None 
     
     
-    if aerodynamics.rudder_flag: 
-        surrogates.Clift_delta_r    = None  
-        surrogates.Cdrag_delta_r    = None
-        surrogates.CX_delta_r       = None
-        surrogates.CY_delta_r       = None
-        surrogates.CZ_delta_r       = None
-        surrogates.CL_delta_r       = None
-        surrogates.CM_delta_r       = None
-        surrogates.CN_delta_r       = None
-        surrogates.dClift_ddelta_r  = None
-        surrogates.dCdrag_ddelta_r  = None
-        surrogates.dCX_ddelta_r     = None
-        surrogates.dCY_ddelta_r     = None
-        surrogates.dCZ_ddelta_r     = None
-        surrogates.dCL_ddelta_r     = None
-        surrogates.dCM_ddelta_r     = None
+    if aerodynamics.rudder_flag:  
+        surrogates.dCY_ddelta_r     = None 
+        surrogates.dCL_ddelta_r     = None 
         surrogates.dCN_ddelta_r     = None
     
     if aerodynamics.flap_flag:
-        surrogates.Clift_delta_f    = None
-        surrogates.Cdrag_delta_f    = None
-        surrogates.CX_delta_f       = None
-        surrogates.CY_delta_f       = None
-        surrogates.CZ_delta_f       = None
-        surrogates.CL_delta_f       = None
-        surrogates.CM_delta_f       = None
-        surrogates.CN_delta_f       = None
-        surrogates.dClift_ddelta_f  = None
-        surrogates.dCdrag_ddelta_f  = None
-        surrogates.dCX_ddelta_f     = None
-        surrogates.dCY_ddelta_f     = None
-        surrogates.dCZ_ddelta_f     = None
-        surrogates.dCL_ddelta_f     = None
-        surrogates.dCM_ddelta_f     = None
-        surrogates.dCN_ddelta_f     = None
-    
-    if aerodynamics.slat_flag: 
-        surrogates.Clift_delta_s    = None       
-        surrogates.Cdrag_delta_s    = None
-        surrogates.CX_delta_s       = None
-        surrogates.CY_delta_s       = None
-        surrogates.CZ_delta_s       = None
-        surrogates.CL_delta_s       = None
-        surrogates.CM_delta_s       = None
-        surrogates.CN_delta_s       = None
-        surrogates.dClift_ddelta_s  = None
-        surrogates.dCdrag_ddelta_s  = None
-        surrogates.dCX_ddelta_s     = None
-        surrogates.dCY_ddelta_s     = None
-        surrogates.dCZ_ddelta_s     = None
-        surrogates.dCL_ddelta_s     = None
-        surrogates.dCM_ddelta_s     = None
-        surrogates.dCN_ddelta_s     = None
+        surrogates.Clift_delta_f    = None 
+        surrogates.dCM_ddelta_f     = None  
    
     return surrogates 

@@ -128,13 +128,11 @@ def plot_longitudinal_stability(results,
         segment_name = segment_tag.replace('_', ' ')  
         
         axis_1.plot(time, c_m, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name) 
-        axis_1.set_ylabel(r'$C_M$')
-        axis_1.set_ylim([-1, 1])  
+        axis_1.set_ylabel(r'$C_M$') 
         set_axes(axis_1) 
 
         axis_2.plot(time, Cm_alpha, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width) 
-        axis_2.set_ylabel(r'$C_M\alpha$')
-        axis_2.set_ylim([-1, 1]) 
+        axis_2.set_ylabel(r'$C_M\alpha$') 
         set_axes(axis_2) 
         
         axis_3.plot(time,SM , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
@@ -144,20 +142,17 @@ def plot_longitudinal_stability(results,
 
         axis_4.plot(time,delta_e , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_4.set_xlabel('Time (mins)')
-        axis_4.set_ylabel(r'Elevator Defl.n') 
-        axis_4.set_ylim([-15, 15]) 
+        axis_4.set_ylabel(r'Elevator Defl.n')  
         set_axes(axis_4) 
         
         axis_5.plot(time,CM_delta_e , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_5.set_xlabel('Time (mins)')
-        axis_5.set_ylabel(r'$C_M\delta_e$')
-        axis_5.set_ylim([-1, 1]) 
+        axis_5.set_ylabel(r'$C_M\delta_e$') 
         set_axes(axis_5)
         
         axis_6.plot(time,CL_alpha, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_6.set_xlabel('Time (mins)')
-        axis_6.set_ylabel(r'$C_L\alpha$')
-        axis_6.set_ylim([-1, 10]) 
+        axis_6.set_ylabel(r'$C_L\alpha$') 
         set_axes(axis_6)    
         
     if show_legend:
