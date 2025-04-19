@@ -235,11 +235,11 @@ def evaluate_surrogate(state,settings,vehicle):
         else:
             conditions.static_stability.derivatives.CN_delta_a = aerodynamics.stability_derivatives.CN_delta_a* ones_row
         
-        conditions.static_stability.coefficients.Y                                   += conditions.static_stability.derivatives.CY_delta_a * conditions.control_surfaces.aileron.deflection * np.sin(Phi)     
+        conditions.static_stability.coefficients.Y                                   += conditions.static_stability.derivatives.CY_delta_a * conditions.control_surfaces.aileron.deflection  
         conditions.static_stability.coefficients.L                                   += conditions.static_stability.derivatives.CL_delta_a * conditions.control_surfaces.aileron.deflection
         conditions.static_stability.coefficients.N                                   += conditions.static_stability.derivatives.CN_delta_a * conditions.control_surfaces.aileron.deflection
                      
-        conditions.control_surfaces.aileron.static_stability.coefficients.Y          = conditions.static_stability.derivatives.CY_delta_a * conditions.control_surfaces.aileron.deflection * np.sin(Phi)               
+        conditions.control_surfaces.aileron.static_stability.coefficients.Y          = conditions.static_stability.derivatives.CY_delta_a * conditions.control_surfaces.aileron.deflection               
         conditions.control_surfaces.aileron.static_stability.coefficients.L          = conditions.static_stability.derivatives.CL_delta_a * conditions.control_surfaces.aileron.deflection          
         conditions.control_surfaces.aileron.static_stability.coefficients.N          = conditions.static_stability.derivatives.CN_delta_a * conditions.control_surfaces.aileron.deflection             
         
@@ -278,10 +278,10 @@ def evaluate_surrogate(state,settings,vehicle):
         #CL_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0          
         #CN_delta_r[conditions.control_surfaces.rudder.deflection==0.0]    = 0
         
-        conditions.static_stability.coefficients.Y                                   += conditions.static_stability.derivatives.CY_delta_r * conditions.control_surfaces.rudder.deflection * np.sin(Phi)     
+        conditions.static_stability.coefficients.Y                                   += conditions.static_stability.derivatives.CY_delta_r * conditions.control_surfaces.rudder.deflection  
         conditions.static_stability.coefficients.L                                   += conditions.static_stability.derivatives.CL_delta_r * conditions.control_surfaces.rudder.deflection
         conditions.static_stability.coefficients.N                                   += conditions.static_stability.derivatives.CN_delta_r * conditions.control_surfaces.rudder.deflection
-        conditions.control_surfaces.rudder.static_stability.coefficients.Y           = conditions.static_stability.derivatives.CY_delta_r * conditions.control_surfaces.rudder.deflection * np.sin(Phi)            
+        conditions.control_surfaces.rudder.static_stability.coefficients.Y           = conditions.static_stability.derivatives.CY_delta_r * conditions.control_surfaces.rudder.deflection          
         conditions.control_surfaces.rudder.static_stability.coefficients.L           = conditions.static_stability.derivatives.CL_delta_r * conditions.control_surfaces.rudder.deflection        
         conditions.control_surfaces.rudder.static_stability.coefficients.N           = conditions.static_stability.derivatives.CN_delta_r * conditions.control_surfaces.rudder.deflection       
         
