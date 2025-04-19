@@ -79,7 +79,7 @@ def append_cross_flow_hex_segment_conditions(cross_flow_hex,segment,bus,coolant_
         None
     """    
 
-    cross_flow_hex_conditions = segment.state.conditions.energy.coolant_lines[coolant_line.tag][cross_flow_hex.tag]
+    cross_flow_hex_conditions = segment.state.energy.coolant_lines[coolant_line.tag][cross_flow_hex.tag]
     if segment.state.initials:  
         cross_flow_hex_initials                                   = segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][cross_flow_hex.tag]
         cross_flow_hex_conditions.coolant_mass_flow_rate[:,0]     = cross_flow_hex_initials.coolant_mass_flow_rate[-1,0]     
