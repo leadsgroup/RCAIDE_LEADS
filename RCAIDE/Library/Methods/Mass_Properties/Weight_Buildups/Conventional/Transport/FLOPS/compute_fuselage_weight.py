@@ -18,66 +18,34 @@ import  numpy as  np
 # Fuselage Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_fuselage_weight(vehicle):
-    """
-    Computes the fuselage weight using NASA FLOPS weight estimation method. Accounts for 
-    aircraft type.
+    """ Calculate the weight of the fuselage of a transport aircraft
 
-    Parameters
-    ----------
-    vehicle : Vehicle
-        The vehicle instance containing:
-            - networks : list
-                Propulsion system data for engine count and mounting
-            - fuselages['fuselage'] : Fuselage
-                Primary fuselage with:
-                    - lengths.total : float
-                        Total fuselage length [m]
-                    - width : float
-                        Maximum fuselage width [m]
-                    - heights.maximum : float
-                        Maximum fuselage height [m]
-            - flight_envelope.ultimate_load : float
-                Ultimate load factor (default: 3.75)
-            - systems.accessories : str
-                Aircraft type ('short-range', 'commuter', 'medium-range', 
-                'long-range', 'sst', 'cargo')
-            - mass_properties.max_takeoff : float
-                Maximum takeoff weight [kg]
-            - design_mach_number : float
-                Design cruise Mach number
+        Assumptions:
+            NFUSE = 1, only one fuselage (it's possible to modify this in future work)
+            delta_isa = 0, for pressure calculations
+            Fuselage is tagged as 'fuselage'
 
-    Returns
-    -------
-    WFUSE : float
-        Fuselage structural weight [kg]
+        Source:
+            The Flight Optimization System Weight Estimation Method
 
-    Notes
-    -----
-    Uses FLOPS correlations developed from transport aircraft database. For more details, 
-    please refer to the FLOPS documentation: https://ntrs.nasa.gov/citations/20170005851  
+        Inputs:
+            vehicle - data dictionary with vehicle properties                    [dimensionless]
+                -.networks: data dictionary containing all propulsion properties
+                -.fuselages['fuselage'].lengths.total: fuselage total length      [meters]
+                -.fuselages['fuselage'].width: fuselage width                    [meters]
+                -.fuselages['fuselage'].heights.maximum: fuselage maximum height [meters]
+                -.flight_envelope.ultimate_load: ultimate load factor (default: 3.75)
+                -.systems.accessories: type of aircraft (short-range, commuter
+                                                        medium-range, long-range,
+                                                        sst, cargo)
+                -.mass_properties.max_takeoff: MTOW                              [kilograms]
+                -.design_mach_number: design mach number for cruise flight
 
-    **Major Assumptions**
-        * Single fuselage configuration (NFUSE = 1). If there are multiple fuselages, these are calcualted separately.
-        * Fuselage is tagged as 'fuselage'
-    
-    **Theory**
-    For transport aircraft:
-    .. math::
-         W_{fuse} = 1.35(L_{f}D_{eq})^{1.28}(1 + 0.05*N_{ef})(1 + 0.38*F_{cargo})
- 
-    where:
-        * L_f = fuselage length
-        * D_eq = equivalent diameter
-        * N_ef = number of fuselage-mounted engines
-        * F_cargo = cargo aircraft flag
+        Outputs:
+            WFUSE - weight of the fuselage                                      [kilograms]
 
-    References
-    ----------
-    [1] NASA Flight Optimization System (FLOPS)
-
-    See Also
-    --------
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight
+        Properties Used:
+            N/A
     """
     
     L =  0

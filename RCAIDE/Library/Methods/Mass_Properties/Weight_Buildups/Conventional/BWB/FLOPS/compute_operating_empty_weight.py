@@ -184,7 +184,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     landing_gear        = FLOPS.compute_landing_gear_weight(vehicle)
     
     # Compute Aft Center Body Weight 
-    #W_aft_centerbody   = compute_aft_centerbody_weight(number_of_engines,bwb_aft_centerbody_area, bwb_aft_centerbody_taper, TOW)
+    W_aft_centerbody   = compute_aft_centerbody_weight(number_of_engines,bwb_aft_centerbody_area, bwb_aft_centerbody_taper, TOW)
     
     # Compute Peripheral Operating Items Weights 
     W_oper = FLOPS.compute_operating_items_weight(vehicle)

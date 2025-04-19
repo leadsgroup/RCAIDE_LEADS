@@ -25,6 +25,7 @@ def compute_cabin_weight(vehicle,settings):
     Sources:
         Bradley, K. R., "A Sizing Methodology for the Conceptual Design of 
         Blended-Wing-Body Transports," NASA/CR-2004-213016, 2004.
+        ***** ADD SOURCE********
     
     Inputs:
         cabin_area - the planform area representing the passenger cabin  [meters**2]

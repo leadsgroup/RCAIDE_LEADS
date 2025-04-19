@@ -7,7 +7,7 @@ base
   0      0     0.0
   
 #Sref    Cref    Bref 	<meters>
-17.112      1.7399407099567097     10.166
+17.112      1.7332445618980672     10.166438904552567
 
 #Xref    Yref    Zref   <meters>
 2.239696797      0     -0.131189711
@@ -26,11 +26,11 @@ YDUPLICATE
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-1.6526  0.0    -0.6007    2.1944    2.0     
+1.6526  0.0    -0.6007    2.186    2.0     
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-1.7064  1.0166    -0.4668    1.9925    1.1611     
+1.7062  1.0166    -0.4668    1.9848    1.1628     
 NACA
 6410
 CONTROL
@@ -38,7 +38,7 @@ flap    1.0   0.8   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-1.7872  2.5415    -0.2661    1.6897    -0.0972     
+1.7867  2.5416    -0.2661    1.6832    -0.093     
 NACA
 6410
 CONTROL
@@ -46,7 +46,7 @@ flap    1.0   0.8   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-1.8411  3.5581    -0.1322    1.4878    -0.9361     
+1.8404  3.5583    -0.1322    1.4821    -0.9302     
 NACA
 6410
 CONTROL
@@ -54,7 +54,7 @@ aileron    -1.0   0.8   0. 0. 0.  -1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-1.8949  4.5747    0.0016    1.2859    -1.775     
+1.894  4.5749    0.0016    1.281    -1.7674     
 NACA
 6410
 CONTROL
@@ -62,7 +62,7 @@ aileron    -1.0   0.8   0. 0. 0.  -1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-1.9219  5.083    0.0685    1.185    -1.0     
+1.9209  5.0832    0.0686    1.1804    -1.0     
 NACA
 6410
 
