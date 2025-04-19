@@ -15,42 +15,22 @@ from RCAIDE.Framework.Core import Units
 #-------------------------------------------------------------------------------
 
 class Carbon_Fiber_Honeycomb(Solid):
-    """
-    A class representing carbon fiber honeycomb core material properties.
-
-    Attributes
-    ----------
-    ultimate_tensile_strength : float
-        Maximum tensile stress before failure in Pa (1e6)
-    ultimate_shear_strength : float
-        Maximum shear stress before failure in Pa (1e6)
-    ultimate_bearing_strength : float
-        Maximum bearing stress before failure in Pa (1e6)
-    yield_tensile_strength : float
-        Stress at which material begins to deform plastically in Pa (1e6)
-    yield_shear_strength : float
-        Shear stress at which material begins to deform plastically in Pa (1e6)
-    yield_bearing_strength : float
-        Bearing stress at which material begins to deform plastically in Pa (1e6)
-    minimum_gage_thickness : float
-        Minimum manufacturable thickness in m (6.5e-3)
-    density : float
-        Material density in kg/m³ (55.0)
-
-    Notes
-    -----
-    This class implements material properties for carbon fiber honeycomb core materials
-    typically used in sandwich composite structures. The low density and relatively high
-    thickness reflect its primary use as a lightweight core material.
-
-    **Definitions**
+    """ Physical Constants Specific to Carbon Fiber Honeycomb Core Material
     
-    'Ultimate Strength'
-        The maximum stress that a material can withstand before failure
+    Assumptions:
+    None
     
-    'Yield Strength'
-        The stress at which a material begins to deform plastically
-
+    Source:
+    MatWeb (Median of Mfg. Reported Values)
+    
+    Inputs:
+    N/A
+    
+    Outputs:
+    N/A
+    
+    Properties Used:
+    None
     """
 
     def __defaults__(self):

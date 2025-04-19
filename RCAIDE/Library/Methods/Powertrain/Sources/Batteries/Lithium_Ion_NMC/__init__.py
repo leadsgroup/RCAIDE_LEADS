@@ -1,14 +1,7 @@
 # RCAIDE/Methods/Powertrain/Sources/Batteries/Lithium_Ion_NMC/__init__.py
 # 
 
-"""
-This module provides functionality for modeling lithium-ion NMC (nickel manganese cobalt) batteries in powertrains. 
-It includes methods for computing NMC cell performance and updating cell age.
-
-See Also
---------
-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC
-RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP
+""" RCAIDE Package Setup
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

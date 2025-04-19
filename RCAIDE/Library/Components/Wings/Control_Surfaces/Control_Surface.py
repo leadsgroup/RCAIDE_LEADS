@@ -1,4 +1,4 @@
-# RCAIDE/Components/Wings/Control_Surfaces/Control_Surface.py
+# RCAIDE/Compoments/Wings/Control_Surfaces/Control_Surface.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

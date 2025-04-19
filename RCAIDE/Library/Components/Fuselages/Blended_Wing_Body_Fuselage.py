@@ -1,4 +1,4 @@
-# RCAIDE/Components/Fuselages/Blended_Wing_Body_Fuselage.py
+# RCAIDE/Compoments/Fuselages/Blended_Wing_Body_Fuselage.py
 # 
 # Created:  Mar 2024, M. Clarke 
 # Modified: Mar 2025, S. Shekar

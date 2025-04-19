@@ -1,12 +1,7 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Expansion_Nozzle/__init__.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Expansion_Nozzlee/__init__.py
+# (c) Copyright 2023 Aerospace Research Community LLC
 
-"""
-This module provides functionality for modeling expansion nozzles in powertrains. It includes methods for computing 
-expansion nozzle performance and appending expansion nozzle conditions to simulation results.
-
-See Also
---------
-RCAIDE.Library.Methods.Powertrain.Converters
+""" RCAIDE Package Setup
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

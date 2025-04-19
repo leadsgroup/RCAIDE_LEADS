@@ -1,6 +1,6 @@
 # RCAIDE/Library/Methods/Stability/__init__.py 
 
-""" Documentation to come!
+"""RCAIDE Package Setup
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

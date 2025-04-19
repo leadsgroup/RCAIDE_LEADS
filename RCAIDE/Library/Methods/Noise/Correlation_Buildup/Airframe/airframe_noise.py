@@ -22,69 +22,53 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Airframe Noise 
 # ----------------------------------------------------------------------
-def airframe_noise(microphone_locations, segment, config, settings):
-    """
-    This computes the noise from different sources of the airframe for a given vehicle for a constant altitude flight.
+def airframe_noise(microphone_locations,segment,config,settings):
+    """ This computes the noise from different sources of the airframe for a given vehicle for a constant altitude flight. 
 
-    Parameters
-    ----------
-    microphone_locations : array_like
-        Coordinates of the microphones used to capture noise data.
-    segment : RCAIDE type segment
-        Contains flight path data and conditions.
-            - conditions : object
-                Contains freestream velocity, kinematic viscosity, and mach number.
-            - frames : object
-                Contains inertial time data.
-    config : RCAIDE type config
-        Configuration of the vehicle including wings and landing gears.
-            - wings : list
-                List of wing objects with attributes like taper, areas, spans, and control surfaces.
-            - landing_gears : list
-                List of landing gear objects with attributes like tire diameter, strut length, and gear status.
-    settings : object
-        Contains settings such as center frequencies for noise calculations.
+    Assumptions:
+        Correlation based 
+ 
+    Source:
+       Fink, Martin R. "Noise component method for airframe noise." Journal of aircraft 16.10 (1979): 659-665.
+               
+    Inputs:
+        vehicle	 - RCAIDE type vehicle
 
-    Returns
-    -------
-    airframe_noise : Data
-        Contains the computed noise data.
-            - SPL : float
-                Sound Pressure Level.
-            - SPL_1_3_spectrum : array_like
-                One Third Octave Band SPL spectrum.
-            - SPL_dBA : float
-                A-weighted Sound Pressure Level.
-            - noise_time : array_like
-                Time discretization of the noise data.
+        includes these fields:
+            S                          - Wing Area
+            bw                         - Wing Span
+            Sht                        - Horizontal tail area
+            bht                        - Horizontal tail span
+            Svt                        - Vertical tail area
+            bvt                        - Vertical tail span
+            deltaf                     - Flap deflection
+            Sf                         - Flap area
+            cf                         - Flap chord
+            slots                      - Number of slots (Flap type)
+            Dp                         - Main landing gear tyre diameter
+            Hp                         - Main lading gear strut length
+            Dn                         - Nose landing gear tyre diameter
+            Hn                         - Nose landing gear strut length
+            wheels                     - Number of wheels 
+            
+        noise segment - flight path data, containing:
+            distance_vector             - distance from the source location to observer
+            angle                       - polar angle from the source to the observer
+            phi                         - azimuthal angle from the source to the observer
 
-    Notes
-    -----
-    The function assumes a correlation-based noise computation method. It uses the noise component method as described
-    by Fink (1979) to calculate the noise from various airframe components.
 
-    **Major Assumptions**
-        * Constant altitude flight
-        * Correlation-based noise computation
+    Outputs: One Third Octave Band SPL [dB]
+        SPL_wing                        - Sound Pressure Level of the clean wing
+        SPLht                           - Sound Pressure Level of the horizontal tail
+        SPLvt                           - Sound Pressure Level of the vertical tail
+        SPL_flap                        - Sound Pressure Level of the flaps trailing edge
+        SPL_slat                        - Sound Pressure Level of the slat leading edge
+        SPL_main_landing_gear           - Sound Pressure Level og the main landing gear
+        SPL_nose_landing_gear           - Sound Pressure Level of the nose landing gear
 
-    **Theory**
-
-    The noise is computed using the noise component method, which involves calculating the noise from individual
-    components like wings, tails, flaps, and landing gears, and then summing them incoherently.
-
-    **Definitions**
-
-    'SPL'
-        Sound Pressure Level, a measure of the sound intensity.
-
-    References
-    ----------
-    [1] Fink, Martin R. "Noise component method for airframe noise." Journal of aircraft 16.10 (1979): 659-665.
-
-    See Also
-    --------
-    RCAIDE.Library.Methods.Noise.Metrics.A_weighting_metric
-    RCAIDE.Library.Methods.Noise.Common.SPL_arithmetic
+    Properties Used:
+        N/A      
+        
     """
     # Unpack conditions 
     velocity     = segment.conditions.freestream.velocity                  # aircraft velocity  
@@ -97,13 +81,16 @@ def airframe_noise(microphone_locations, segment, config, settings):
     n_mic     = len(microphone_locations)
     
     # Unpack Geometry  
-    slots      = 0 
+    slots      = 0
+    deltas     = 0
     for wing in config.wings:
         if type(wing) == RCAIDE.Library.Components.Wings.Main_Wing:
             taper = wing.taper 
             Sw    = wing.areas.reference                
             bw    = wing.spans.projected               
-            for cs in  wing.control_surfaces:  
+            for cs in  wing.control_surfaces: 
+                if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
+                    deltas                  = cs.deflection  
                 if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap: 
                     deltaf                  = cs.deflection
                     flap_span               = (cs.span_fraction_end - cs.span_fraction_start) * bw
@@ -160,13 +147,17 @@ def airframe_noise(microphone_locations, segment, config, settings):
     viscosity           = segment.conditions.freestream.kinematic_viscosity[:,0] 
     M                   = segment.conditions.freestream.mach_number 
     SPL_total_history   = np.zeros((n_cpts,n_mic,num_f)) 
-    SPLt_dBA_history    = np.zeros((n_cpts,n_mic,num_f))   
+    SPLt_dBA_history    = np.zeros((n_cpts,n_mic,num_f))  
+    SPLt_dBA_max        = np.zeros((n_cpts,n_mic))    
+    
+
 
     # Distance vector from the aircraft position in relation to the microphone coordinates [meters]
     distance          = np.linalg.norm(microphone_locations,axis = 1)
     
     altitude          = abs(microphone_locations[:,2])
-    sideline_distance =  microphone_locations[:,1] 
+    sideline_distance =  microphone_locations[:,1]
+    x_dist            =  microphone_locations[:,0]
     
     # Polar angle emission vector relatively to the aircraft to the microphone coordinates, [rad] 
 
@@ -180,6 +171,12 @@ def airframe_noise(microphone_locations, segment, config, settings):
     theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
     theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
     theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4]
+
+
+    #if x_dist< 0.:
+        #theta = np.arctan(np.abs(altitude/x_dist))
+    #else:
+        #theta = np.pi - np.arctan(np.abs(altitude/x_dist))
     
      # Azimuthal (sideline) angle emission vector relatively to the aircraft to the microphone coordinates, [rad] 
     phi   = np.arctan(sideline_distance/altitude)

@@ -5,29 +5,23 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports 
 from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
 
-# python imports 
 import plotly.graph_objects as go
-import numpy as  np
-import os
-import sys
+import  numpy as  np 
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_Layout_of_Passenger_Accommodations
 # ---------------------------------------------------------------------------------------------------------------------- 
-def plot_layout_of_passenger_accommodations(fuselage, 
-                                            save_figure    = False,
-                                            save_filename  = "Vehicle_Geometry", 
-                                            show_figure    = True):
+def plot_layout_of_passenger_accommodations(fuselage):
     '''
     Plot aircraft layout of passenger accommodations
     '''  
     if  type(fuselage.layout_of_passenger_accommodations) != np.ndarray: 
-        compute_layout_of_passenger_accommodations(fuselage)
+        compute_layout_of_passenger_accommodations(fuselage)   
+    plot_LOPA(fuselage.layout_of_passenger_accommodations)
+    return 
         
-    LOPA = fuselage.layout_of_passenger_accommodations
-    
+def plot_LOPA(LOPA):
     fig = go.Figure() 
     # Set axes properties
     fig.update_xaxes(range=[min(LOPA[:,2]) - 1 , max(LOPA[:,2]) + 1], showgrid=False)
@@ -219,13 +213,6 @@ def plot_layout_of_passenger_accommodations(fuselage,
                 ),
                 fillcolor=lavatory_color[0],
             )
-
-    # Use the first path from sys.path
-    save_filename = os.path.join(sys.path[0], save_filename)
-    if save_figure:
-        fig.write_image(save_filename + ".png")
-        
-    if show_figure:
-        fig.write_html( save_filename + '.html', auto_open=True) 
-     
+    fig.show()
+    
     return 

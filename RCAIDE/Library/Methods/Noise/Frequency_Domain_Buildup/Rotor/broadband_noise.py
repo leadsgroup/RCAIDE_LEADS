@@ -20,7 +20,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # Compute Broadband Noise 
 # ----------------------------------------------------------------------------------------------------------------------
-def broadband_noise(conditions,coordinates,rotor,settings,Noise,cpt):
+def broadband_noise(conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt):
     '''This computes the trailing edge noise compoment of broadband noise of a propeller or 
     lift-rotor in the frequency domain. Boundary layer properties are computed using RCAIDE's 
     panel method.
@@ -57,7 +57,7 @@ def broadband_noise(conditions,coordinates,rotor,settings,Noise,cpt):
     Properties Used:
         N/A   
     '''     
-    aeroacoustic_data       = conditions.energy.converters[rotor.tag]
+    aeroacoustic_data       = propulsor_conditions[rotor.tag]
     num_cpt                 = 1
     num_mic                 = len(coordinates.X[0,:,0,0,0])  
     num_blades              = len(coordinates.X[0,0,:,0,0])
@@ -192,7 +192,7 @@ def broadband_noise(conditions,coordinates,rotor,settings,Noise,cpt):
         P_TIP                 = 10**(SPL_TIP/10)
         P_TIP[:,:,:,:-1,:,:]  = 0
         
-        # Sum broadband Components along blade sections and blades to get self noise per rotor 
+        # Sum broadband compoments along blade sections and blades to get self noise per rotor 
         P_b_7                     = np.zeros((4,num_cpt,num_mic,num_blades,num_sec,num_cf,num_az))
         P_b_7[0,:,:,:,:,:,:]      = P_BWI
         P_b_7[1,:,:,:,:,:,:]      = P_TBL_TE_tripped 

@@ -14,61 +14,28 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
-    """
-    Initializes conditions for constant speed climb with linear altitude change
+    """Sets the specified conditions which are given for the segment type.
 
-    Parameters
-    ----------
-    segment : Segment
-        The mission segment being analyzed
+    Assumptions:
+    Constrant dynamic pressure and constant rate of climb
 
-    Notes
-    -----
-    This function sets up the initial conditions for a climb segment with constant
-    true airspeed and linear altitude variation. The climb angle is determined by
-    the distance and altitude change.
+    Source:
+    N/A
 
-    **Required Segment Components**
+    Inputs:
+    segment.air_speed                           [meters/second]
+    segment.altitude_start                      [meters]
+    segment.altitude_end                        [meters]
+    segment.distance                            [meters]
 
-    segment:
-        - air_speed : float
-            True airspeed to maintain [m/s]
-        - altitude_start : float
-            Initial altitude [m]
-        - altitude_end : float
-            Final altitude [m]
-        - distance : float
-            Ground distance to cover [m]
-        - sideslip_angle : float
-            Aircraft sideslip angle [rad]
-        - state:
-            numerics.dimensionless.control_points : array
-                Discretization points [-]
-            conditions : Data
-                State conditions container
+    Outputs:
+    conditions.frames.inertial.velocity_vector  [meters/second]
+    conditions.frames.inertial.position_vector  [meters]
+    conditions.freestream.altitude              [meters]
+    conditions.frames.inertial.time             [seconds]
 
-    **Calculation Process**
-        1. Calculate climb angle from altitude change and distance
-        2. Discretize altitude profile
-        3. Decompose constant velocity into components using:
-            - Computed climb angle
-            - Sideslip angle
-            - Constant speed requirement
-
-    **Major Assumptions**
-        * Constant true airspeed
-        * Linear altitude change
-        * Small angle approximations
-        * Quasi-steady flight
-
-    Returns
-    -------
-    None
-        Updates segment conditions directly:
-
-    See Also
-    --------
-    RCAIDE.Framework.Mission.Segments
+    Properties Used:
+    N/A
     """        
     
     # unpack

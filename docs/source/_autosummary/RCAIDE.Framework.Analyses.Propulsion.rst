@@ -31,4 +31,5 @@ Propulsion
    :recursive:
 
    Ducted_Fan_Design_Code
+   Momentum_Theory_Wake
 

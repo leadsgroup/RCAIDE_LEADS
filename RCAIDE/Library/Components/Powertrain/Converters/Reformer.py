@@ -1,4 +1,4 @@
-# RCAIDE/Components/Propulsors/Converters/Reformer.py
+# RCAIDE/Compoments/Propulsors/Converters/Reformer.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke, M. Guidotti
@@ -68,10 +68,10 @@ class Reformer(Converter):
     Notes
     -----
     The reformer model includes parameters for:
-        * Fuel composition and properties
-        * Reformate composition
-        * Reformer geometry and performance characteristics
-        * Thermodynamic properties of reactants/products
+    - Fuel composition and properties
+    - Reformate composition
+    - Reformer geometry and performance characteristics
+    - Thermodynamic properties of reactants/products
 
     """
     

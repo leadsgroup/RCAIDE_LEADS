@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Nacelles/Segment.py
+# RCAIDE/Library/Compoments/Nacelles/Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -96,7 +96,7 @@ class Segment_Container(Container):
     --------
     RCAIDE.Framework.Core.Container
         Base container class providing core functionality
-    RCAIDE.Library.Components.Nacelles.Segments.Segment
+    RCAIDE.Library.Components.Nacelles.Segment
         The segment components stored in this container
     """     
 

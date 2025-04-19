@@ -22,84 +22,37 @@ import matplotlib.pyplot as plt
 # ---------------------------------------------------------------------------------------------------------------------- 
 def generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA):
     
-    """
-    Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.
+    """ Computes a V-n diagram for a given aircraft and given regulations for ISA conditions
 
-    Parameters
-    ----------
-    vehicle : Vehicle
-        The vehicle instance containing:
-            - reference_area : float
-                Wing reference area [m²]
-            - maximum_lift_coefficient : float
-                Maximum lift coefficient
-            - minimum_lift_coefficient : float
-                Minimum lift coefficient
-            - chords.mean_aerodynamic : float
-                Mean aerodynamic chord [m]
-            - flight_envelope : Data
-                Container with:
-                    - FAR_part_number : str
-                        '23' or '25' for certification category
-                    - category : str
-                        For Part 23: 'normal', 'utility', 'acrobatic', or 'commuter'
-                    - design_mach_number : float
-                        Cruise Mach number
-                    - positive_limit_load : float
-                        Positive load factor limit
-                    - negative_limit_load : float
-                        Negative load factor limit
-    analyses : Analyses
-        Container with atmosphere and aerodynamic analyses
-    altitude : float
-        Analysis altitude [m]
-    delta_ISA : float
-        Temperature offset from ISA conditions [K]
+    Source:
+    S. Gudmundsson "General Aviation Aircraft Design: Applied Methods and Procedures", Butterworth-Heinemann; 1 edition
+    CFR FAR Part 23: https://www.ecfr.gov/cgi-bin/text-idx?SID=0e6a13c7c1de7f501d0eb0a4d71418bd&mc=true&tpl=/ecfrbrowse/Title14/14cfr23_main_02.tpl
+    CFR FAR Part 25: https://www.ecfr.gov/cgi-bin/text-idx?tpl=/ecfrbrowse/Title14/14cfr25_main_02.tpl
 
-    Returns
-    -------
-    V_n_data : Data
-        Container of V-n diagram data including:
-            - limit_loads : Data
-                Positive and negative load factor limits
-            - airspeeds : Data
-                Critical airspeeds (Vs, Va, Vb, Vc, Vd)
-            - gust_load_factors : Data
-                Load factors from gust conditions
-            - load_factors : Data
-                Complete set of load factors vs velocity
+    Inputs:
+    analyses.base.atmosphere               [RCAIDE data type]
+    vehicle.
+      reference_area                       [m^2]
+      maximum_lift_coefficient             [Unitless]
+      minimum_lift_coefficient             [Unitless]
+      chords.mean_aerodynamic              [m]
+      envelope.FARpart_number              [Unitless]
+        positive_limit_load               [Unitless]
+        negative_limit_load               [Unitless]
+        cruise_mach                        [Unitless]
+    weight                                 [kg]
+    altitude                               [m]
+    delta_ISA                              [deg C]
 
-    Notes
-    -----
-    Computes the following critical speeds and conditions:
-        * Vs1: Stall speed
-        * Va: Maneuvering speed
-        * Vb: Design speed for maximum gust intensity
-        * Vc: Design cruise speed
-        * Vd: Design diving speed
+    Outputs:
+    V_n_data
 
-    **Major Assumptions**
-        * Quasi-steady aerodynamics
-        * Linear lift curve slope
-        * Rigid aircraft structure
-        * Standard atmosphere modified by altitude and delta_ISA
+    Properties Used:
+    N/A
 
-    **Theory**
-    Load factor limits are determined by:
-
-    .. math::
-        n = \\frac{L}{W} = \\frac{\\rho V^2 S C_L}{2W}
-
-    Gust loads are computed using:
-
-    .. math::
-        \\Delta n = \\frac{K_g U_de V a C_{L_\\alpha}}{498 W/S}
-
-    References
-    ----------
-    [1] FAR Part 23: https://www.ecfr.gov/current/title-14/part-23
-    [2] FAR Part 25: https://www.ecfr.gov/current/title-14/part-25
-    [3] Gudmundsson, S. (2022). General Aviation Aircraft Design: Applied Methods and procedures. Elsevier. 
+    Description:
+    The script creates an aircraft V-n diagram based on the input parameters specified by the user.
+    Depending on the certification flag, an appropriate diagram, output and log files are created.
     """
     
     weight =  vehicle.mass_properties.max_takeoff

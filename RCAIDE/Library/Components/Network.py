@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Network.py
+# RCAIDE/Library/Compoments/Network.py
 # 
 # Created:  Jul 2024, S. Shekar
 

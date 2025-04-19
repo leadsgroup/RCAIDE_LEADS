@@ -1,16 +1,7 @@
 # RCAIDE/Methods/Mission/Segments/Cruise/__init__.py
 # 
 
-"""
-Collection of cruise segment types for aircraft mission analysis. This module provides various 
-cruise profiles including constant Mach, constant speed, loiter patterns, and specialized 
-maneuvers at constant altitude with different control parameters (throttle, dynamic pressure, 
-pitch rate, etc.).
-
-See Also
---------
-RCAIDE.Library.Mission.Segments.Climb
-RCAIDE.Library.Mission.Segments.Descent
+""" RCAIDE Package Setup
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

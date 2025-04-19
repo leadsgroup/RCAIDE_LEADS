@@ -1,4 +1,4 @@
-# RCAIDE/Components/Nacelles/Stack_Nacelle.py
+# RCAIDE/Compoments/Nacelles/Stack_Nacelle.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -55,7 +55,7 @@ class Stack_Nacelle(Nacelle):
     --------
     RCAIDE.Library.Components.Nacelles.Nacelle
         Base nacelle class
-    RCAIDE.Library.Components.Nacelles.Segments.Segment
+    RCAIDE.Library.Components.Nacelles.Segment
         Individual segments used to build the stack
     RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle
         Alternative nacelle design approach

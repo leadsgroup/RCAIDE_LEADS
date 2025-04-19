@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Wings/Stabilator.py
+# RCAIDE/Library/Compoments/Wings/Stabilator.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

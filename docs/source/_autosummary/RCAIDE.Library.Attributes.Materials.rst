@@ -32,19 +32,15 @@ Materials
 
    Acrylic
    Aluminum
-   Aluminum_Alloy
+   Aluminum_Rib
    Bidirectional_Carbon_Fiber
    Carbon_Fiber_Honeycomb
    Copper
-   CrossLinked_Polyethylene
    Epoxy
    Magnesium
    Nickel
    Paint
-   Perfluoroalkoxy
    Polyetherimide
-   Polyimide
-   Polytetrafluoroethylene
    Solid
    Steel
    Titanium

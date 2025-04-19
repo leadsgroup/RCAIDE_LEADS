@@ -14,13 +14,25 @@ import numpy as np
 #  Angle of Attack Effect
 # ----------------------------------------------------------------------------------------------------------------------     
 def angle_of_attack_effect(AoA,Mach_aircraft,theta_m):
-    """
-    This module predicts the free-field 1/3 Octave Band Sound Pressure Level (SPL) of coaxial subsonic jets for turbofan engines. It uses semi-empirical methods to account for various conditions such as flyover, static, and in-flight scenarios.
+    """This calculates the angle of attack effect, in decibels, to be added 
+    to the predicted mixed jet noise level. 
+        
+    Assumptions:
+        N/A
+
+    Source:
+        SAE Model
     
-    See Also
-    --------
-    RCAIDE.Library.Methods.Noise.Metrics.A_weighting_metric : https://example.com/A_weighting_metric
-    RCAIDE.Library.Methods.Noise.Common.SPL_arithmetic : https://example.com/SPL_arithmetic
+    Inputs:   
+        AoA           angle of attack         [rad]
+        Mach_aircraft mach number of aircraft [Unitless]
+        theta_m       emission angle          [rad]                
+    
+    Outputs:
+        ATK_m         angle of attack effect  [Unitless]    
+    
+    Properties Used:
+        None 
     """
 
     # Angle of attack effect

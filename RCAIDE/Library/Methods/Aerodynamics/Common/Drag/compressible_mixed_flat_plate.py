@@ -39,8 +39,8 @@ def compressible_mixed_flat_plate(Re,Ma,Tc,xt):
     """     
     
     if xt < 0.0 or xt > 1.0:
-        raise ValueError("Turbulent transition must be between 0 and 1")
-
+        raise ValueError("Turbulent transition must be between 0 and 1") 
+    
     Rex = Re*xt
     Rex[Rex==0.0] = 0.0001
 

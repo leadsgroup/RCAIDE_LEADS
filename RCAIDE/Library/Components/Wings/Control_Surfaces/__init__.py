@@ -17,11 +17,10 @@ RCAIDE.Library.Components.Wings.All_Moving_Surface
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .Control_Surface import Control_Surface
 from .Slat            import Slat
 from .Spoiler         import Spoiler
 from .Flap            import Flap
 from .Aileron         import Aileron
 from .Elevator        import Elevator
 from .Rudder          import Rudder
-from .Spoiler         import Spoiler
+from .Control_Surface import Control_Surface

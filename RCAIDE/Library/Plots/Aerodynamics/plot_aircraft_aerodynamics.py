@@ -73,25 +73,18 @@ def plot_aircraft_aerodynamics(results,
         - Angle of attack sensitivity
         - Nonlinear aerodynamic behavior
         
-    Function displays and optionally saves two 3D surface plots:
+    Function displays and optionally saves two 2D plots:
         Left Panel:
-            - Lift coefficient surface
-            - Shows CL variation with Mach and alpha
-            - X-axis: Mach number
-            - Y-axis: Angle of attack [degrees]
-            - Z-axis: Lift coefficient
+            - Lift coefficient surface  
+            - X-axis: Angle of attack [degrees]
+            - Y-axis: Lift coefficient
             
         Right Panel:
-            - Drag coefficient surface
-            - Shows CD variation with Mach and alpha
-            - X-axis: Mach number
-            - Y-axis: Angle of attack [degrees]
-            - Z-axis: Drag coefficient
+            - Drag coefficient surface 
+            - X-axis: Angle of attack [degrees]
+            - Y-axis: Drag coefficient
     
-    **Definitions**
-    
-    'Mach Number'
-        Ratio of airspeed to speed of sound
+    **Definitions** 
     'Angle of Attack'
         Angle between airflow and reference line
     'Lift Coefficient'
@@ -118,21 +111,20 @@ def plot_aircraft_aerodynamics(results,
     #------------------------------------------------------------------------
     # setup figures
     #------------------------------------------------------------------------
-    fig = plt.figure(save_filename + " Lift Coefficients")  
+    fig = plt.figure(save_filename)  
     fig.set_size_inches(12,6) 
-    axis_1 = fig.add_subplot(1, 2, 1, projection='3d')
-    axis_2 = fig.add_subplot(1, 2, 2, projection='3d') 
- 
-    X, Y = np.meshgrid(results.Mach, results.alpha)
-    surf = axis_1.plot_surface(X, Y/Units.degree, results.lift_coefficient   , cmap=cm.jet,linewidth=0, antialiased=False) 
-    surf = axis_2.plot_surface(X, Y/Units.degree, results.drag_coefficient   , cmap=cm.jet,linewidth=0, antialiased=False) 
+    axis_1 = fig.add_subplot(1, 2, 1)
+    axis_2 = fig.add_subplot(1, 2, 2) 
+  
+    axis_1.plot(results.alpha/Units.degree, results.lift_coefficient ) 
+    axis_2.plot(results.alpha/Units.degree, results.drag_coefficient ) 
 
     axis_1.set_title('$C_L$') 
     axis_2.set_title('$C_D$')            
-    axis_1.set_ylabel('AoA') 
-    axis_2.set_ylabel('AoA')  
-    axis_1.set_xlabel('Mach') 
-    axis_2.set_xlabel('Mach')   
+    axis_1.set_ylabel('$C_L$')   
+    axis_2.set_ylabel('$C_D$')   
+    axis_1.set_xlabel('AoA')  
+    axis_2.set_xlabel('AoA')   
     
     # set title of plot 
     title_text    = 'Aircraft Aerodynamic Analysis '    

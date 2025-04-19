@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Sources/Cryogenic_Tanks/Cryogenic_Tank.py
+# RCAIDE/Library/Compoments/Powertrain/Sources/Cryogenic_Tanks/Cryogenic_Tank.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke 
@@ -22,6 +22,7 @@ class Cryogenic_Tank(Component):
     ----------
     tag : str
         Identifier for the cryogenic tank (default: 'cryogenic_tank')
+        
     cryogenic_selector_ratio : float
         Ratio of cryogenic flow allocation (default: 1.0)
         

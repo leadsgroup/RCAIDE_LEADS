@@ -41,34 +41,25 @@ def pressure_ratio_to_SPL_arithmetic(p_pref_total):
 #  SPL_arithmetic
 # ----------------------------------------------------------------------------------------------------------------------   
 def SPL_arithmetic(SPL, sum_axis):
-    """
-    This function computes the total Sound Pressure Level (SPL) from multiple sources using decibel arithmetic.
+    '''This computes the total SPL from multiple sources 
+    using decibel arithmetic  
+    
+    Assumptions:
+        None
 
-    Parameters
-    ----------
-    SPL : array_like
-        Sound Pressure Level [dB].
-    sum_axis : int
-        Axis along which the SPL values are summed.
+    Source:
+        None
 
-    Returns
-    -------
-    SPL_total : float or array_like
-        Total Sound Pressure Level [dB].
+    Inputs:
+        SPL  -  Sound Pressure Level        [dB]
 
-    Notes
-    -----
-    The function uses decibel arithmetic to sum SPL values from multiple sources. If the input SPL is one-dimensional, it returns the input as the total SPL.
-
-    **Definitions**
-
-    'SPL'
-        Sound Pressure Level, a measure of the sound intensity.
-
-    References
-    ----------
-    None
-    """
+    Outputs: 
+        SPL  -  Sound Pressure Level        [dB]
+    
+    Properties Used:
+        N/A 
+    
+    '''
     if SPL.ndim == 1:
         SPL_total = SPL 
     else:

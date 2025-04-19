@@ -27,7 +27,7 @@ from RCAIDE.Framework.Core import interp2d
 # ----------------------------------------------------------------------------------------------------------------------    
 #  Rotor Noise 
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index = 0, previous_rotor_tag = None, identical_propulsors=True):
+def compute_rotor_noise(microphone_locations,propulsor,rotor,segment,settings, rotor_index = 0, previous_rotor_tag = None, identical_propulsors=True):
     ''' This is a collection medium-fidelity frequency domain methods for rotor acoustic noise prediction which 
     computes the acoustic signature (sound pressure level, weighted sound pressure levels,
     and frequency spectrums of a system of rotating blades           
@@ -64,6 +64,7 @@ def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index
  
     # unpack 
     conditions           = segment.state.conditions
+    propulsor_conditions = conditions.energy[propulsor.tag]
     harmonics_blade      = settings.harmonics
     harmonics_load       = np.linspace(0,5,6).astype(int)  
     num_mic              = len(microphone_locations[:,0]) 
@@ -91,7 +92,7 @@ def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index
     Results.SPL_broadband_1_3_spectrum_dBA                = np.zeros_like(Results.SPL_1_3_spectrum)
 
     # compute position vector from point source (or should it be origin) at rotor hub to microphones 
-    coordinates   = compute_rotor_point_source_coordinates(rotor,conditions,microphone_locations,settings)        
+    coordinates   = compute_rotor_point_source_coordinates(propulsor,rotor,conditions,microphone_locations,settings)        
 
     for cpt in range(num_cpt): 
         # ----------------------------------------------------------------------------------
@@ -99,7 +100,7 @@ def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index
         # ---------------------------------------------------------------------------------- 
         # harmonic noise with planar load distribution
         if settings.fidelity == 'plane_source': 
-            aeroacoustic_data = segment.state.conditions.energy.converters[rotor.tag]       
+            aeroacoustic_data = propulsor_conditions[rotor.tag]       
             Re                = aeroacoustic_data.disc_reynolds_number
             AOA_sec           = aeroacoustic_data.disc_effective_angle_of_attack  
             a_loc             = rotor.airfoil_polar_stations
@@ -110,8 +111,8 @@ def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index
             chord_coord             = int(np.floor(airfoil_points/2))       
                 
             if (identical_propulsors == False) and rotor_index !=0: 
-                prev_aeroacoustic_data                   = segment.state.conditions.energy.converters[previous_rotor_tag]                 
-                prev_aeroacoustic_data                   = segment.state.conditions.energy.converters[rotor.tag]  
+                prev_aeroacoustic_data                   = propulsor_conditions[previous_rotor_tag]                 
+                prev_aeroacoustic_data                   = propulsor_conditions[rotor.tag]  
                 aeroacoustic_data.disc_lift_distribution = prev_aeroacoustic_data.disc_lift_distribution
                 aeroacoustic_data.disc_drag_distribution = prev_aeroacoustic_data.disc_lift_distribution
                 aeroacoustic_data.disc_lift_coefficient  = prev_aeroacoustic_data.disc_lift_coefficient 
@@ -158,16 +159,16 @@ def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index
                 aeroacoustic_data.blade_upper_surface    = y_up
                 aeroacoustic_data.blade_lower_surface    = y_low                        
                         
-            harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,coordinates,rotor,settings,Noise,cpt)
+            harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt)
         elif settings.fidelity == 'line_source': 
-            harmonic_noise_line(harmonics_blade,harmonics_load,conditions,coordinates,rotor,settings,Noise,cpt)
+            harmonic_noise_line(harmonics_blade,harmonics_load,conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt)
         else:
-            harmonic_noise_point(harmonics_blade,harmonics_load,conditions,coordinates,rotor,settings,Noise,cpt) 
+            harmonic_noise_point(harmonics_blade,harmonics_load,conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt) 
     
         # ----------------------------------------------------------------------------------    
         # Broadband Noise
         # ---------------------------------------------------------------------------------- 
-        broadband_noise(conditions,coordinates,rotor,settings,Noise,cpt)  
+        broadband_noise(conditions,propulsor_conditions,coordinates,rotor,settings,Noise,cpt)  
     
         # ----------------------------------------------------------------------------------    
         # Atmospheric attenuation 
@@ -203,5 +204,5 @@ def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index
         Results.SPL_broadband_1_3_spectrum_dBA[cpt,:,:]    = A_weighting_metric(Results.SPL_broadband_1_3_spectrum[cpt,:,:],settings.center_frequencies) 
     
     # A-weighted
-    conditions.noise.converters[rotor.tag] = Results 
+    conditions.noise[propulsor.tag][rotor.tag] = Results 
     return rotor.tag 

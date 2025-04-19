@@ -6,8 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports
-from RCAIDE.Framework.Core import  Units
+ # RCAIDE imports   
 from .Converter  import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor.append_compressor_conditions import append_compressor_conditions
 
@@ -63,11 +62,8 @@ class Compressor(Converter):
         self.tag                             = 'Compressor'
         self.polytropic_efficiency           = 1.0
         self.pressure_ratio                  = 1.0
-        self.design_angular_velocity         = 12000 *  Units.rpm
-        self.motor                           = None
-        self.generator                       = None
-        self.nondimensional_massflow         = 0.0
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
-        append_compressor_conditions(self,segment,energy_conditions)
+    def append_operating_conditions(self,segment,propulsor): 
+        propulsor_conditions =  segment.state.conditions.energy[propulsor.tag]
+        append_compressor_conditions(self,segment,propulsor_conditions)
         return        

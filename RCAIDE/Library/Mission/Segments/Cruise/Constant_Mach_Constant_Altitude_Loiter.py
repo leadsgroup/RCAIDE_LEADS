@@ -16,67 +16,28 @@ import numpy as np
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
-    """
-    Initializes conditions for constant Mach loiter at fixed altitude
+    """Sets the specified conditions which are given for the segment type.
 
-    Parameters
-    ----------
-    segment : Segment
-        The mission segment being analyzed
-            - altitude : float
-                Loiter altitude [m]
-            - time : float
-                Loiter duration [s]
-            - mach_number : float
-                Mach number to maintain [-]
-            - sideslip_angle : float
-                Aircraft sideslip angle [rad]
-            - state:
-                numerics.dimensionless.control_points : array
-                    Discretization points [-]
-                conditions : Data
-                    State conditions container
-            - analyses:
-                atmosphere : Model
-                    Atmospheric model for property calculations
-    
-    Returns
-    -------
-    None
-        Updates segment conditions directly:
-            - conditions.frames.inertial.velocity_vector [m/s]
-            - conditions.frames.inertial.position_vector [m]
-            - conditions.freestream.altitude [m]
-            - conditions.frames.inertial.time [s]
+    Assumptions:
+    Constant mach and constant altitude with set loiter time
 
-    Notes
-    -----
-    This function sets up the initial conditions for a loiter segment with constant
-    Mach number and constant altitude. The true airspeed is determined from the
-    Mach number and local speed of sound.      
+    Source:
+    N/A
 
-    **Calculation Process**
-        1. Get atmospheric properties at altitude
-        2. Calculate true airspeed from Mach number:
-            V = M * a where:
-                - M is Mach number
-                - a is speed of sound
-        3. Discretize time points
-        4. Decompose velocity into components using sideslip angle
+    Inputs:
+    segment.altitude                [meters]
+    segment.time                    [seconds]
+    segment.mach_number             [unitless]
 
-    **Major Assumptions**
-        * Constant Mach number
-        * Constant altitude
-        * Standard atmosphere model
-        * Small angle approximations
-        * Quasi-steady flight
-        * No wind effects
+    Outputs:
+    conditions.frames.inertial.velocity_vector  [meters/second]
+    conditions.frames.inertial.position_vector  [meters]
+    conditions.freestream.altitude              [meters]
+    conditions.frames.inertial.time             [seconds]
 
-    See Also
-    --------
-    RCAIDE.Framework.Mission.Segments
-    RCAIDE.Library.Mission.Common.Update.atmosphere
-    """       
+    Properties Used:
+    N/A
+    """        
     
     # unpack
     alt        = segment.altitude

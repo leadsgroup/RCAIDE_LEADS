@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Converters/Rotor.py
+# RCAIDE/Library/Compoments/Powertrain/Converters/Rotor.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke
@@ -9,7 +9,8 @@
 
  # RCAIDE imports 
 from RCAIDE.Framework.Core                              import Data , Units, Container
-from RCAIDE.Library.Components                          import Component  
+from RCAIDE.Library.Components                          import Component 
+from RCAIDE.Framework.Analyses.Propulsion               import Momentum_Theory_Wake 
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions import  append_rotor_conditions
 
 # package imports
@@ -110,27 +111,29 @@ class Rotor(Component):
     -----
     The Rotor class provides a comprehensive framework for modeling rotary
     propulsion devices including:
-        * Geometric definition of rotor and blades
-        * Aerodynamic performance calculation
-        * Wake modeling capabilities
-        * Blade element analysis
-        * Performance optimization
-        * Acoustic analysis
+
+    * Geometric definition of rotor and blades
+    * Aerodynamic performance calculation
+    * Wake modeling capabilities
+    * Blade element analysis
+    * Performance optimization
+    * Acoustic analysis
 
     **Major Assumptions**
-        * Rigid blade structure
-        * Quasi-steady aerodynamics
-        * Small angle approximations for flapping
-        * Linear blade twist and taper
-        * Uniform inflow (unless nonuniform_freestream is True)
+
+    * Rigid blade structure
+    * Quasi-steady aerodynamics
+    * Small angle approximations for flapping
+    * Linear blade twist and taper
+    * Uniform inflow (unless nonuniform_freestream is True)
 
     **Theory**
 
     The rotor model combines:
-        * Blade Element Momentum Theory
-        * Prescribed/Free Wake Analysis
-        * Acoustic Propagation Models
-        * Performance Optimization Methods
+    * Blade Element Momentum Theory
+    * Prescribed/Free Wake Analysis
+    * Acoustic Propagation Models
+    * Performance Optimization Methods
 
     **Definitions**
 
@@ -178,34 +181,22 @@ class Rotor(Component):
         self.thickness_to_chord                = 0.0
         self.max_thickness_distribution        = 0.0
         self.radius_distribution               = None
-        self.blade_pitch_command               = 0.0
         self.mid_chord_alignment               = 0.0
         self.blade_solidity                    = 0.0 
         self.flap_angle                        = 0.0
         self.number_azimuthal_stations         = 16 
         self.vtk_airfoil_points                = 40        
         self.airfoils                          = Airfoil_Container() 
-        self.airfoil_polar_stations            = []       
-
-        # Initialize the default wake set to Fidelity Zero         
-        self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'          
+        self.airfoil_polar_stations            = []  
+        self.propulsive_efficiency             = 0.86   
+        self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'  
         
         # design flight conditions 
         self.cruise                            = Data() 
         self.cruise.design_power               = None
         self.cruise.design_thrust              = None
-        self.cruise.design_torque              = None 
         self.cruise.design_power_coefficient   = 0.01 
         self.cruise.design_thrust_coefficient  = 0.01
-        self.cruise.design_torque_coefficient  = 0.005
-        self.cruise.design_Cl                  = 0.7 
-        self.cruise.design_efficiency          = 0.86  
-        self.cruise.design_angular_velocity    = None
-        self.cruise.design_tip_mach            = None
-        self.cruise.design_acoustics           = None
-        self.cruise.design_performance         = None
-        self.cruise.design_SPL_dBA             = None
-        self.cruise.design_blade_pitch_command       = 0.0     
 
         # operating conditions 
         self.induced_power_factor              = 1.48        # accounts for interference effects
@@ -213,6 +204,7 @@ class Rotor(Component):
         self.clockwise_rotation                = True
         self.phase_offset_angle                = 0.0
         self.orientation_euler_angles          = [0.,0.,0.]  # vector of angles defining default orientation of rotor
+        self.blade_pitch_command               = 0.0
         self.ducted                            = False
         self.sol_tolerance                     = 1e-8 
         self.use_2d_analysis                   = False       # True if rotor is at an angle relative to freestream or nonuniform freestream
@@ -221,9 +213,13 @@ class Rotor(Component):
         self.tangential_velocities_2d          = None        # user input for additional velocity influences at the rotor
         self.radial_velocities_2d              = None        # user input for additional velocity influences at the rotor 
         self.start_angle                       = 0.0         # angle of first blade from vertical
-        self.start_angle_idx                   = 0           # azimuthal index at which the blade is started  
+        self.start_angle_idx                   = 0           # azimuthal index at which the blade is started 
+        self.variable_pitch                    = False
         self.electric_propulsion_fraction      = 1.0
- 
+
+        # Initialize the default wake set to Fidelity Zero 
+        self.Wake                      = Momentum_Theory_Wake() 
+        
         # blade optimization parameters     
         self.optimization_parameters                                    = Data() 
         self.optimization_parameters.tip_mach_range                     = [0.3,0.7] 
@@ -236,7 +232,9 @@ class Rotor(Component):
         self.optimization_parameters.ideal_efficiency                   = 1.0     
         self.optimization_parameters.ideal_figure_of_merit              = 1.0
 
-    def append_operating_conditions(rotor,segment,energy_conditions,noise_conditions=None): 
+    def append_operating_conditions(rotor,segment,propulsor): 
+        energy_conditions       = segment.state.conditions.energy[propulsor.tag]
+        noise_conditions        = segment.state.conditions.noise[propulsor.tag]
         append_rotor_conditions(rotor,segment,energy_conditions,noise_conditions)
         return        
          

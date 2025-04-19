@@ -167,8 +167,8 @@ def compute_noise_certification_data(approach_mission  = None,
     
 def post_process_certification_noise_data(approach_results,takeoff_results): 
    
-    approach_noise_data   = post_process_noise_data(approach_results)
-    takeoff_noise_data    = post_process_noise_data(takeoff_results) 
+    approach_noise_data   = post_process_noise_data(approach_results,evalaute_noise_metrics=False)
+    takeoff_noise_data    = post_process_noise_data(takeoff_results,evalaute_noise_metrics=False) 
     
     # append approach noise                                
     approach_pos         = approach_noise_data.aircraft_position
@@ -213,7 +213,10 @@ def post_process_certification_noise_data(approach_results,takeoff_results):
     res.flyover_noise_6000m  = cert_SPL_dBA_max[-1, 0] 
     res.sideline_noise_450m  = max(cert_SPL_dBA_max[:, 2])
     res.area_65_dbA = area_65_dbA
-    res.area_85_dbA = area_85_dbA 
+    res.area_65_dbA = area_65_dbA
+    
+    
+    
     
     return res
 

@@ -34,7 +34,6 @@ dependencies = [
     "plotly",
     "kaleido",
     "pandas",
-    "tqdm",
     "contourpy",
     "cycler",
     "fonttools",

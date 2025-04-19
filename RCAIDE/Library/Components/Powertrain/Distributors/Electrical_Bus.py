@@ -32,6 +32,9 @@ class Electrical_Bus(Component):
     assigned_propulsors : list
         List of propulsion systems powered by this bus
         
+    solar_panel : Component, optional
+        Solar panel system connected to this bus
+        
     avionics : Component
         Aircraft avionics system
         
@@ -80,6 +83,8 @@ class Electrical_Bus(Component):
     --------
     RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules
         Battery module components
+    RCAIDE.Library.Components.Powertrain.Sources.Solar_Panels
+        Solar panel components
     """
     
     def __defaults__(self):
@@ -96,7 +101,7 @@ class Electrical_Bus(Component):
         self.fuel_cell_stacks                       = Container()
         self.cryogenic_tanks                        = Container()
         self.assigned_propulsors                    = []
-        self.assigned_converters                    = [] 
+        self.solar_panel                            = None 
         self.avionics                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
         self.payload                                = RCAIDE.Library.Components.Payloads.Payload()         
         self.identical_battery_modules              = True      

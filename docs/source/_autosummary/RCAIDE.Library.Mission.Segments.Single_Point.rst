@@ -32,6 +32,5 @@ Single\_Point
 
    Set_Speed_Set_Altitude
    Set_Speed_Set_Altitude_AVL_Trimmed
-   Set_Speed_Set_Altitude_No_Propulsion
    Set_Speed_Set_Throttle
 

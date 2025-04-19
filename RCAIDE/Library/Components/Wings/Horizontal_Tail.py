@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Wings/Horizontal_Tail.py
+# RCAIDE/Library/Compoments/Wings/Horizontal_Tail.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

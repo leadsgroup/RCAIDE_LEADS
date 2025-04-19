@@ -1,4 +1,4 @@
-# RCAIDE/Components/Wings/Control_Surfaces/Slat.py
+# RCAIDE/Compoments/Wings/Control_Surfaces/Slat.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

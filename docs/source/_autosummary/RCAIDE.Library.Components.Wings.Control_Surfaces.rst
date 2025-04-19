@@ -36,5 +36,4 @@ Control\_Surfaces
    Flap
    Rudder
    Slat
-   Spoiler
 

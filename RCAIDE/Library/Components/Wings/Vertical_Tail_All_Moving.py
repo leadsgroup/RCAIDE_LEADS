@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Wings/Vertical_Tail_All_Moving.py
+# RCAIDE/Library/Compoments/Wings/Vertical_Tail_All_Moving.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

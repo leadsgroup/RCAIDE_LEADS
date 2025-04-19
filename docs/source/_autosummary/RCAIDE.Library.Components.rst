@@ -34,13 +34,15 @@ Components
    Booms
    Component
    Configs
+   Energy
    Fuselages
    Landing_Gear
    Mass_Properties
    Nacelles
    Network
    Payloads
-   Powertrain
+   Propulsors
+   Systems
    Thermal_Management
    Wings
 

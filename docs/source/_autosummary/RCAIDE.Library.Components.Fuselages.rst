@@ -31,7 +31,6 @@ Fuselages
    :recursive:
 
    Blended_Wing_Body_Fuselage
-   Cabins
    Fuselage
    Segments
    Tube_Fuselage

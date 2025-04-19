@@ -1,4 +1,4 @@
-# RCAIDE/Components/Nacelles/Body_of_Revolution_Nacelle.py
+# RCAIDE/Compoments/Nacelles/Body_of_Revolution_Nacelle.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

@@ -183,8 +183,6 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag.induced.inviscid_wings             = Conditions()
         self.aerodynamics.coefficients.drag.cooling                            = Conditions()
         self.aerodynamics.coefficients.drag.cooling.total                      = ones_1col * 0
-        self.aerodynamics.coefficients.drag.spoiler                            = Conditions()
-        self.aerodynamics.coefficients.drag.spoiler.total                      = ones_1col * 0
         self.aerodynamics.coefficients.drag.windmilling                        = Conditions()
         self.aerodynamics.coefficients.drag.windmilling.total                  = ones_1col * 0
         self.aerodynamics.coefficients.drag.asymmetry_trim                     = Conditions()
@@ -436,30 +434,25 @@ class Results(Conditions):
         # Noise
         # ----------------------------------------------------------------------------------------------------------------------       
         self.noise                                            = Conditions() 
-        self.noise.converters                                 = Conditions() 
-        self.noise.propulsors                                 = Conditions() 
-        self.noise.modulators                                 = Conditions() 
 
         # ----------------------------------------------------------------------------------------------------------------------         
         # Energy
         # ---------------------------------------------------------------------------------------------------------------------- 
-        self.energy                                           = Conditions()  
-        self.energy.converters                                = Conditions()
-        self.energy.propulsors                                = Conditions()
-        self.energy.modulators                                = Conditions()
+        self.energy                                           = Conditions()
+        self.energy.throttle                                  = ones_1col * 0   
         self.energy.thrust_force_vector                       = ones_3col * 0
         self.energy.thrust_moment_vector                      = ones_3col * 0
         self.energy.power                                     = ones_1col * 0 
         self.energy.fuel_consumption                          = ones_1col * 0
         self.energy.cumulative_fuel_consumption               = ones_1col * 0
-        self.energy.hybrid_power_split_ratio                  = ones_1col * 0 
-        self.energy.battery_fuel_cell_power_split_ratio       = ones_1col * 0 
+        self.energy.recharging                                = False 
+        
         
         # ----------------------------------------------------------------------------------------------------------------------         
         # Weights 
         # ----------------------------------------------------------------------------------------------------------------------     
         self.weights                                          = Conditions() 
         self.weights.total_mass                               = ones_1col * 0
-        self.weights.total_moment_of_inertia                  = ones_3col * 0  
+        self.weights.total_moment_of_inertia                  = ones_3col * 0 # 3 total I(I_xx, I_yy, I_zz)? or 9(including I_xz etc)?
         self.weights.weight_breakdown                         = Conditions()
         self.weights.vehicle_mass_rate                        = ones_1col * 0

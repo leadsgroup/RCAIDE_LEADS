@@ -1,12 +1,7 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Compression_Nozzle/__init__.py
+# (c) Copyright 2023 Aerospace Research Community LLC
 
-"""
-This module provides functionality for modeling compression nozzles in powertrains. It includes methods for computing 
-compression nozzle performance and appending compression nozzle conditions to simulation results.
-
-See Also
---------
-RCAIDE.Library.Methods.Powertrain.Converters
+""" RCAIDE Package Setup
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

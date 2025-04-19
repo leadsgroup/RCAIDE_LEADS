@@ -1,4 +1,4 @@
-# RCAIDE/Components/Landing_Gear/Landing_Gear.py
+# RCAIDE/Compoments/Landing_Gear/Landing_Gear.py
 # 
 # Created:  Nov 2024, M. Clarke 
 

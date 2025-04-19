@@ -80,7 +80,8 @@ def initialize_conditions(segment):
     segment.air_speed_end                        [meters/second] 
     segment.state.numerics.number_of_control_points [int]
 
-    Outputs: 
+    Outputs:
+    state.conditions.energy.throttle        [unitless]
     conditions.frames.inertial.position_vector  [meters]
     conditions.freestream.altitude              [meters]
 

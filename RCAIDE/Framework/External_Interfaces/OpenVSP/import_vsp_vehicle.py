@@ -130,7 +130,7 @@ def import_vsp_vehicle(tag,main_wing_tag = None, network_type=None, propulsor_ty
         raise Exception('Vehicle energy network type must be defined. \n Choose from list in RCAIDE.Framework.Networks') 
 
     if isinstance(propulsor_type,RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor ) != True:
-        raise Exception('Vehicle propulsor type must be defined. \n Choose from list in RCAIDE.Library.Components.Propulsors')     
+        raise Exception('Vehicle propulsor type must be defined. \n Choose from list in RCAIDE.Library.Compoments.Propulsors')     
 
     if blended_wing_body and transition_segment == None:
         raise ValueError("Transition segment must be specified for a Blended Wing Body configuration.")
@@ -379,7 +379,7 @@ def import_vsp_vehicle(tag,main_wing_tag = None, network_type=None, propulsor_ty
     for fuselage in vehicle.fuselages:
         vsp_origin = np.minimum(vsp_origin, fuselage.origin[0][0])
         
-    # shift all Components to new origin
+    # shift all compoments to new origin
     origin_shift =  -vsp_origin
     
 

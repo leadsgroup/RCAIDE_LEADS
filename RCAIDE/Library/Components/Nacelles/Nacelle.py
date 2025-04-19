@@ -1,12 +1,11 @@
-# RCAIDE/Components/Nacelles/Nacelle.py
+# RCAIDE/Compoments/Nacelles/Nacelle.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports
-import RCAIDE
+# RCAIDE imports    
 from RCAIDE.Framework.Core              import Data 
 from RCAIDE.Library.Components          import Component   
 import scipy as sp
@@ -118,7 +117,7 @@ class Nacelle(Component):
         self.differential_pressure    = 0.0    
         self.cowling_airfoil_angle    = 0.0
 
-    def append_operating_conditions(self, segment, energy_conditions, noise_conditions=None): 
+    def append_operating_conditions(self, segment, propulsor): 
         """
         Placeholder for adding operating conditions to the nacelle.
 
@@ -129,8 +128,6 @@ class Nacelle(Component):
         propulsor : Data
             Propulsion system data
         """
-    
-        energy_conditions[self.tag]   = RCAIDE.Framework.Mission.Common.Conditions()         
         return
 
     def nac_vel_to_body(self):

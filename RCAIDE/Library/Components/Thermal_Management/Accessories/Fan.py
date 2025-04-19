@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Thermal_Management/Accessories/Fan.py
+# RCAIDE/Library/Compoments/Thermal_Management/Accessories/Fan.py
 # 
 #
 # Created: March 2024  S. Shekar
@@ -51,8 +51,8 @@ class Fan(Data):
         """
         Sets default values for the fan attributes.
         """
-        self.tag                      = 'Fan'
-        self.efficiency               = 1.0
+        self.tag        = 'Fan'
+        self.efficiency = 1.0
         return
    
     def compute_power_consumed(pressure_differential, density, mass_flow_rate, efficiency):

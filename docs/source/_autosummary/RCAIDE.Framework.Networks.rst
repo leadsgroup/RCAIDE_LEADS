@@ -32,7 +32,7 @@ Networks
 
    Electric
    Fuel
-   Fuel_Cell
-   Hybrid
+   Human_Powered
    Network
+   Solar
 

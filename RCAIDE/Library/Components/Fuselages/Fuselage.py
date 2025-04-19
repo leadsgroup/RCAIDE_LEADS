@@ -1,4 +1,4 @@
-# RCAIDE/Components/Fuselages/Fuselage.py
+# RCAIDE/Compoments/Fuselages/Fuselage.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

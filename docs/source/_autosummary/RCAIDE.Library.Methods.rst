@@ -32,15 +32,16 @@ Methods
 
    Aerodynamics
    Emissions
+   Energy
    Gas_Dynamics
    Geodesics
    Geometry
-   Mass_Properties
    Noise
    Performance
-   Powertrain
+   Propulsors
    Stability
    Thermal_Management
    Utilities
+   Weights
    skip
 

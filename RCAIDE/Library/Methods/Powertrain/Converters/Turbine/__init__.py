@@ -1,12 +1,7 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Turbine/__init__.py
+# (c) Copyright 2023 Aerospace Research Community LLC
 
-"""
-This module provides functionality for modeling turbines in powertrains. It includes methods for computing 
-turbine performance and appending turbine conditions to simulation results.
-
-See Also
---------
-RCAIDE.Library.Methods.Powertrain.Converters
+""" RCAIDE Package Setup
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

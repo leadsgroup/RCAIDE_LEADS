@@ -1,13 +1,7 @@
 # RCAIDE/Methods/Energy/Distributors/Electrical_Bus/__init__.py
 # 
 
-"""
-This module provides functionality for modeling electrical buses in powertrain distribution systems. It includes methods for 
-initializing bus properties, computing bus conditions, and appending bus conditions to simulation results.
-
-See Also
---------
-RCAIDE.Library.Methods.Powertrain.Distributors
+""" RCAIDE Package Setup
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

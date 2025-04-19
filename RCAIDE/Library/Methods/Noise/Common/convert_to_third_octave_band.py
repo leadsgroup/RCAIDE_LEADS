@@ -14,7 +14,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------       
 def convert_to_third_octave_band(SPL,f,settings): 
     """This method converts the SPL spectrum from blade harmonic passing frequency
-    to third octave spectrum
+    to thrid octave spectrum
     
     Assumptions:
         N/A

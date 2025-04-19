@@ -2,8 +2,10 @@
 # 
 
 """
-This package contains modules for visualizing various aspects of aircraft analysis, simulation results,
-and aircraft geometry.
+RCAIDE Plotting Package
+
+This package contains modules for visualizing various aspects of aircraft analysis 
+and simulation results.
 
 See Also
 --------

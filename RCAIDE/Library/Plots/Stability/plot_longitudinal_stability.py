@@ -169,7 +169,7 @@ def plot_longitudinal_stability(results,
     fig.subplots_adjust(top=0.8)
     
     # set title of plot 
-    title_text    = 'Stability Coefficients'      
+    title_text    = 'Stability Coefficents'      
     fig.suptitle(title_text)
  
     if save_figure:

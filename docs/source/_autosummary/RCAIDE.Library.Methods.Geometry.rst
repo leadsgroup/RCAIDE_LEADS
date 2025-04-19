@@ -31,6 +31,5 @@ Geometry
    :recursive:
 
    Airfoil
-   LOPA
    Planform
 
