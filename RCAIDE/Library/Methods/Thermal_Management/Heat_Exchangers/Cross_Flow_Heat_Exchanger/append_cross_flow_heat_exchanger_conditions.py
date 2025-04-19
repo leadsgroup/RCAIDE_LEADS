@@ -60,7 +60,7 @@ def append_cross_flow_heat_exchanger_conditions(cross_flow_hex,segment,coolant_l
      
     return
 
-def append_cross_flow_hex_segment_conditions(cross_flow_hex,segment,bus,coolant_line):
+def append_cross_flow_hex_segment_conditions(cross_flow_hex,segment,bus,coolant_line,conditions):
     """Sets the initial cross flow heat exchanger properties at the start of each segment as the last point from the previous segment 
     
         Assumptions:
@@ -79,7 +79,7 @@ def append_cross_flow_hex_segment_conditions(cross_flow_hex,segment,bus,coolant_
         None
     """    
 
-    cross_flow_hex_conditions = segment.state.energy.coolant_lines[coolant_line.tag][cross_flow_hex.tag]
+    cross_flow_hex_conditions = conditions[coolant_line.tag][cross_flow_hex.tag]
     if segment.state.initials:  
         cross_flow_hex_initials                                   = segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][cross_flow_hex.tag]
         cross_flow_hex_conditions.coolant_mass_flow_rate[:,0]     = cross_flow_hex_initials.coolant_mass_flow_rate[-1,0]     

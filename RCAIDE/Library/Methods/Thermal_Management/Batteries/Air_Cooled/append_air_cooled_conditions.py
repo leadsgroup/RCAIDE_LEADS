@@ -40,7 +40,7 @@ def append_air_cooled_conditions(air_cooled,segment,coolant_line):
     
     return
 
-def append_air_cooled_segment_conditions(air_cooled, segment,coolant_line):
+def append_air_cooled_segment_conditions(air_cooled, segment,coolant_line, conditions):
     """Sets the initial air cooled heat acquistion conditions at the start of each segment as the last point from the previous segment 
     
         Assumptions:
@@ -59,7 +59,7 @@ def append_air_cooled_segment_conditions(air_cooled, segment,coolant_line):
         None
     """    
     
-    air_cooled_conditions = segment.state.energy.coolant_lines[coolant_line.tag][air_cooled.tag]
+    air_cooled_conditions = conditions[coolant_line.tag][air_cooled.tag]
     if segment.state.initials:  
         air_cooled_initials                            = segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][air_cooled.tag]
         air_cooled_conditions.effectiveness[:,0]       = air_cooled_initials.effectiveness[-1,0]     
