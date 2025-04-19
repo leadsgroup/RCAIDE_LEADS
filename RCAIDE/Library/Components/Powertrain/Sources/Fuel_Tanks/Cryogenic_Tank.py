@@ -45,4 +45,8 @@ class Cryogenic_Tank(Fuel_Tank):
         Sets default values for cryogenic tank attributes
         """          
         self.tag                             = 'cryogenic_tank'
-        self.pressure                        = 1.0
+        self.pressure                        = 1.0 
+        self.mass_properties.empty_mass      = 0.0   
+        self.fuel_selector_ratio             = 1.0 
+        self.secondary_cryogenic_flow_rate   = 0.0 
+        self.cryogen                         = None 
