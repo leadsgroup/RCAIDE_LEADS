@@ -7,7 +7,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports 
-from .Fuel_Tank  import Fuel_Tank  
+from .Fuel_Tank  import Fuel_Tank 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Tank
@@ -28,7 +29,7 @@ class Wing_Fuel_Tank(Fuel_Tank):
     mass_properties.empty_mass : float
         Mass of empty tank structure [kg] (default: 0.0)
         
-    secondary_fuel_flow_rate : float
+    secondary_fuel_flow : float
         Secondary fuel flow rate [kg/s] (default: 0.0)
         
     length : float
@@ -63,8 +64,23 @@ class Wing_Fuel_Tank(Fuel_Tank):
         self.tag                         = 'wing_fuel_tank'
         self.fuel_selector_ratio         = 1.0 
         self.mass_properties.empty_mass  = 0.0   
-        self.secondary_fuel_flow_rate    = 0.0
+        self.secondary_fuel_flow         = 0.0
         self.length                      = 0.0
         self.width                       = 0.0
         self.height                      = 0.0
-        self.fuel                        = None 
+        self.fuel                        = None
+         
+
+    def append_operating_conditions(self,segment,fuel_line):  
+        """
+        Append fuel tank operating conditions for a flight segment
+        
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment containing state conditions
+        fuel_line : Component
+            Connected fuel line component
+        """
+        append_fuel_tank_conditions(self,segment, fuel_line)  
+        return                                          

@@ -447,9 +447,6 @@ class Results(Conditions):
         self.energy.converters                                = Conditions()
         self.energy.propulsors                                = Conditions()
         self.energy.modulators                                = Conditions()
-        self.energy.busses                                    = Conditions()
-        self.energy.fuel_lines                                = Conditions()
-        self.energy.coolant_lines                             = Conditions()
         self.energy.thrust_force_vector                       = ones_3col * 0
         self.energy.thrust_moment_vector                      = ones_3col * 0
         self.energy.power                                     = ones_1col * 0 

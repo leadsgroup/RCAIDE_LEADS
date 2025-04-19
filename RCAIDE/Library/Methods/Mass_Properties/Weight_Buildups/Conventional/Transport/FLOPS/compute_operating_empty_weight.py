@@ -7,7 +7,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Data ,  Units 
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight 
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
+from RCAIDE.Library.Attributes.Materials.Aluminum import Aluminum
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS as FLOPS
 # python imports 
 import numpy as np

@@ -29,7 +29,7 @@ class Fuel_Tank(Component):
     mass_properties.empty_mass : float
         Mass of empty tank structure [kg] (default: 0.0)
         
-    secondary_fuel_flow_rate : float
+    secondary_fuel_flow : float
         Secondary fuel flow rate [kg/s] (default: 0.0)
         
     fuel : Component, optional
@@ -56,11 +56,11 @@ class Fuel_Tank(Component):
         self.tag                         = 'fuel_tank'
         self.fuel_selector_ratio         = 1.0 
         self.mass_properties.empty_mass  = 0.0   
-        self.secondary_fuel_flow_rate    = 0.0
+        self.secondary_fuel_flow         = 0.0
         self.fuel                        = None
          
 
-    def append_operating_conditions(self,segment,distributor=None):  
+    def append_operating_conditions(self,segment,fuel_line):  
         """
         Append fuel tank operating conditions for a flight segment
         
@@ -71,21 +71,5 @@ class Fuel_Tank(Component):
         fuel_line : Component
             Connected fuel line component
         """
-        append_fuel_tank_conditions(self,segment, distributor)  
-        return
-    
-
-
-    def compute_tank_properties(self,segment,distributor):  
-        """
-        Append cryogenic tank operating conditions for a flight segment
-        
-        Parameters
-        ----------
-        segment : Segment
-            Flight segment containing state conditions
-        bus : Component
-            Connected bus component
-        """
-        #compute_fuel_tank_properties(self,segment, distributor)  
-        return                                                  
+        append_fuel_tank_conditions(self,segment, fuel_line)  
+        return                                          

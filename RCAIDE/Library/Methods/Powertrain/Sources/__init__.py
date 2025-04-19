@@ -16,4 +16,5 @@ RCAIDE.Library.Methods.Powertrain.Distributors
 # ----------------------------------------------------------------------------------------------------------------------
 
 from . import Batteries
+from . import Cryogenic_Tanks
 from . import Fuel_Tanks

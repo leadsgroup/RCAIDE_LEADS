@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Tanks/Cryogenic_Tank.py
+# RCAIDE/Library/Components/Powertrain/Sources/Cryogenic_Tanks/Cryogenic_Tank.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke 
@@ -8,12 +8,13 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports 
-from .Fuel_Tank  import Fuel_Tank  
+from RCAIDE.Library.Components          import Component
+from RCAIDE.Library.Methods.Powertrain.Sources.Cryogenic_Tanks.append_cryogenic_tank_conditions import append_cryogenic_tank_conditions 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Tank
 # ---------------------------------------------------------------------------------------------------------------------     
-class Cryogenic_Tank(Fuel_Tank):
+class Cryogenic_Tank(Component):
     """
     Base class for aircraft cryogenic tank implementations
     
@@ -44,9 +45,24 @@ class Cryogenic_Tank(Fuel_Tank):
         """
         Sets default values for cryogenic tank attributes
         """          
-        self.tag                             = 'cryogenic_tank'
-        self.pressure                        = 1.0 
-        self.mass_properties.empty_mass      = 0.0   
-        self.fuel_selector_ratio             = 1.0 
-        self.secondary_cryogenic_flow_rate   = 0.0 
-        self.cryogen                         = None 
+        self.tag                         = 'cryogenic_tank'
+        self.pressure                    = 1.0 
+        self.mass_properties.empty_mass  = 0.0   
+        self.croygen_selector_ratio      = 1.0 
+        self.secondary_cryogenic_flow    = 0.0 
+        self.cryogen                     = None
+         
+
+    def append_operating_conditions(self,segment,bus):  
+        """
+        Append cryogenic tank operating conditions for a flight segment
+        
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment containing state conditions
+        bus : Component
+            Connected bus component
+        """
+        append_cryogenic_tank_conditions(self,segment, bus)  
+        return                                          

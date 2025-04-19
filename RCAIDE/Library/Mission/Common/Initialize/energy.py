@@ -72,18 +72,9 @@ def energy(segment):
     conditions = segment.state.conditions.energy
     
     # loop through battery modules in networks
-    for network in segment.analyses.energy.vehicle.networks:
-        
+    for network in segment.analyses.energy.vehicle.networks:  
         # if network has busses  
-        for bus in network.busses: 
-            for fuel_tank in bus.fuel_tanks:  
-                if segment.state.initials:  
-                    fuel_tank_initials = segment.state.initials.conditions.energy.fuel_lines[bus.tag][fuel_tank.tag] 
-                    conditions[bus.tag][fuel_tank.tag].mass[:,0]   = fuel_tank_initials.mass[-1,0]
-                else: 
-                    conditions[bus.tag][fuel_tank.tag].mass[:,0]   = segment.analyses.energy.vehicle.networks[network.tag].fuel_lines[bus.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
-                    
-                    
+        for bus in network.busses:
             bus.append_segment_conditions(conditions, segment)
             for battery_module in  bus.battery_modules:
                 battery_module.append_battery_segment_conditions(bus, conditions, segment)
@@ -103,8 +94,9 @@ def energy(segment):
         # if network has fuel lines             
         for fuel_line in  network.fuel_lines:
             for fuel_tank in fuel_line.fuel_tanks: 
+                fuel_tank_conditions   = conditions[fuel_line.tag][fuel_tank.tag] 
                 if segment.state.initials:  
-                    fuel_tank_initials = segment.state.initials.conditions.energy.fuel_lines[fuel_line.tag][fuel_tank.tag] 
-                    conditions[fuel_line.tag][fuel_tank.tag].mass[:,0]   = fuel_tank_initials.mass[-1,0]
+                    fuel_tank_initials = segment.state.initials.conditions.energy[fuel_line.tag][fuel_tank.tag] 
+                    fuel_tank_conditions.mass[:,0]   = fuel_tank_initials.mass[-1,0]
                 else: 
-                    conditions[fuel_line.tag][fuel_tank.tag].mass[:,0]   = segment.analyses.energy.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
+                    fuel_tank_conditions.mass[:,0]   = segment.analyses.energy.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
