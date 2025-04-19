@@ -20,33 +20,9 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_operating_empty_weight(vehicle, settings=None):
     """
-    """
-
-    if settings == None:
-        W_factors = Data()
-        use_max_fuel_weight = True
-    else:
-        use_max_fuel_weight = settings.use_max_fuel_weight
-
-    # Set the factors
-    if not hasattr(settings, 'weight_reduction_factors'):
-        W_factors              = Data()
-        W_factors.main_wing    = 0.
-        W_factors.empennage    = 0.
-        W_factors.fuselage     = 0.
-        W_factors.structural   = 0.
-        W_factors.systems      = 0.
-    else:
-        W_factors = settings.weight_reduction_factors
-        if 'structural' in W_factors and W_factors.structural != 0.:
-            print('Overriding individual structural weight factors')
-            W_factors.main_wing    = 0.
-            W_factors.empennage    = 0.
-            W_factors.fuselage     = 0.
-            W_factors.systems      = 0.
-        else:
-            W_factors.structural   = 0.
-            W_factors.systems      = 0.
+    """ 
+    use_max_fuel_weight = settings.use_max_fuel_weight  
+    W_factors = settings.weight_reduction_factors 
     
     Wings = RCAIDE.Library.Components.Wings  
     

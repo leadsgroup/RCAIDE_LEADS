@@ -91,7 +91,7 @@ def plot_lift_distribution(results,
     for segment in results.segments.values():   	
         num_ctrl_pts = len(segment.conditions.frames.inertial.time)	
         for ti in range(num_ctrl_pts):  
-            cl_y = segment.conditions.aerodynamics.coefficients.lift.induced.spanwise[ti]
+            Clift_sectional = segment.conditions.aerodynamics.coefficients.lift.induced.spanwise[ti] 
             line = ['-b','-b','-r','-r','-k']
             fig  = plt.figure(save_filename + '_' + str(img_idx))
             fig.set_size_inches(8,8)  
@@ -99,7 +99,7 @@ def plot_lift_distribution(results,
             axes = plt.subplot(1,1,1)
             for i in range(n_w): 
                 y_pts = VD.Y_SW[b_sw[i]:b_sw[i+1]]
-                z_pts = cl_y[b_sw[i]:b_sw[i+1]]
+                z_pts = Clift_sectional[b_sw[i]:b_sw[i+1]]
                 axes.plot(y_pts, z_pts, line[i] ) 
             axes.set_xlabel("Spanwise Location (m)")
             axes.set_title('$C_{Ly}$')  

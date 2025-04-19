@@ -50,7 +50,7 @@ def write_geometry(avl_object,run_script_path):
     # Open the geometry file after purging if it already exists
     purge_files([geometry_file]) 
     geometry             = open(geometry_file,'w')
-
+    
     with open(geometry_file,'w') as geometry:
         header_text       = make_header_text(avl_object)
         geometry.write(header_text)
