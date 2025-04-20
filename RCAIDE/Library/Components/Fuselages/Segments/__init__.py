@@ -20,4 +20,3 @@ from .Circle_Segment             import Circle_Segment
 from .Ellipse_Segment            import Ellipse_Segment
 from .Super_Ellipse_Segment      import Super_Ellipse_Segment
 from .Rounded_Rectangle_Segment  import Rounded_Rectangle_Segment
-from .Blended_Wing_Segment       import Blended_Wing_Segment

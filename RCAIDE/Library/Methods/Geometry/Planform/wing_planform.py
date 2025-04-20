@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Geometry/Two_Dimensional/Planform/wing_planform.py
+# RCAIDE/Library/Methods/Geometry/Planform/wing_planform.py
 # 
 # 
 # Created:  Jul 2024, M. Clarke 
@@ -349,7 +349,7 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
             segment.areas.wetted            = Swet_seg
             
             total_wetted_area    = total_wetted_area + Swet_seg 
-            if isinstance(segments[segment_names[i_segs+1]], RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
+            if isinstance(segments[segment_names[i_segs+1]], RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
                 center_body_area += Sref_seg 
                 # use S_ref_seg to compute S_center bofy and S_aft_body
             else:

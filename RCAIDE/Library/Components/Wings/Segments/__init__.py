@@ -19,4 +19,5 @@ RCAIDE.Library.Components.Fuselages
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .Segment                   import Segment, Segment_Container 
+from .Segment                   import Segment, Segment_Container
+from .Blended_Wing_Body_Fuselage_Segment import  Blended_Wing_Body_Fuselage_Segment

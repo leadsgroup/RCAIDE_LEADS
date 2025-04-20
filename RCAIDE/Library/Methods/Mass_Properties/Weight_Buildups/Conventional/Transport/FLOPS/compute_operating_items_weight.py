@@ -83,12 +83,32 @@ def compute_operating_items_weight(vehicle):
     WUF             = 11.5 * NENG * THRUST ** 0.2 + 0.07 * SW + 1.6 * number_of_tanks * FMXTOT ** 0.28  # unusable fuel weight
     WOIL            = 0.082 * NENG * THRUST ** 0.65  # engine oil weight
     
-    for fuselage in  vehicle.fuselages: 
-        if len(fuselage.cabins) > 0:
+    bwb_flag = False
+    for wing in vehicle.wings:
+        if type(wing) == RCAIDE.Library.Components.Wings.Blended_Wing_Body:
+            bwb_flag = True
+            bwb_wing_tag = wing.tag
+            
+    if len(vehicle.fuselages) > 0: 
+        for fuselage in  vehicle.fuselages: 
+            if len(fuselage.cabins) > 0:
+                NPT =  0
+                NPF =  0
+                NPB =  0
+                for cabin in fuselage.cabins:
+                    for cabin_class in cabin.classes:
+                        if type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy:
+                            NPT =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
+                        elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business:
+                            NPB =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
+                        elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
+                            NPF =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
+    elif bwb_flag:  
+        if len(vehicle.wings[bwb_wing_tag].cabins) > 0:
             NPT =  0
             NPF =  0
             NPB =  0
-            for cabin in fuselage.cabins:
+            for cabin in vehicle.wings[bwb_wing_tag].cabins:
                 for cabin_class in cabin.classes:
                     if type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy:
                         NPT =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
@@ -96,10 +116,11 @@ def compute_operating_items_weight(vehicle):
                         NPB =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
                     elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
                         NPF =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
-        else:
-            NPF = vehicle.passengers / 20.
-            NPB = vehicle.passengers / 10.
-            NPT = vehicle.passengers - NPF - NPB
+    else:
+        NPF = vehicle.passengers / 20.
+        NPB = vehicle.passengers / 10.
+        NPT = vehicle.passengers - NPF - NPB
+            
     vehicle.NPF = NPF
     vehicle.NPB = NPB
     vehicle.NPT = NPT

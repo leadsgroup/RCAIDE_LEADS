@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core import Data
+from RCAIDE.Framework.Core import Data, Container
 from .Main_Wing import Main_Wing
 
 # python imports 
@@ -69,12 +69,12 @@ class Blended_Wing_Body(Main_Wing):
         modify these values based on their specific design requirements after instantiation.
         """      
           
-        self.tag                   = 'blended_wing_body'  
-
-        self.areas.center_body     = 0.0        
-        self.areas.aft_centerbody  = 0.0
-        self.aft_centerbody_taper  = 0.0
-        self.cabin_area            = 0.0 
+        self.tag                                    = 'blended_wing_body'  
+                 
+        self.areas.center_body                      = 0.0        
+        self.areas.aft_centerbody                   = 0.0
+        self.aft_centerbody_taper                   = 0.0
+        self.cabin_area                             = 0.0 
           
         self.number_of_passengers                   = 0.0  
         self.layout_of_passenger_accommodations     = None 
@@ -97,8 +97,7 @@ class Blended_Wing_Body(Main_Wing):
         self.x_rotation                             = 0.0
         self.y_rotation                             = 0.0
         self.z_rotation                             = 0.0    
-        self.cabins                                 = Container()
-        
+        self.cabins                                 = Container() 
 
     
     def append_cabin(self,cabin):

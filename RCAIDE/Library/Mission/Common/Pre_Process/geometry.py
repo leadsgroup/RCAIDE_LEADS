@@ -7,6 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
+from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
+from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform 
 from RCAIDE.Library.Methods.Geometry.Planform  import  wing_planform
 from copy import deepcopy
 
@@ -72,18 +74,28 @@ def geometry(mission):
             if last_tag!=  None:
                 segment.analyses.aerodynamics.vehicle = vehicle 
             else: 
-                vehicle  =  segment.analyses.aerodynamics.vehicle 
+                vehicle  =  segment.analyses.aerodynamics.vehicle
+                
+                # update fuselage properties
+                for fuselage in vehicle.fuselages:
+                    compute_layout_of_passenger_accommodations(fuselage, update_fuselage_properties=False)  # These defaults need to be put somewhere else   
                 
                 # ensure all properties of wing are computed before drag calculations  
                 for wing in vehicle.wings: 
-                    if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) or isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
+                    if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) or isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                        
+                        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
+                            compute_layout_of_passenger_accommodations(wing, update_fuselage_properties=False)  # These defaults need to be put somewhere else
+                            
+                            update_blended_wing_body_planform(wing, update_planform = True)
+                            
                         # compute planform properties 
-                        wing_planform(wing, overwrite_reference=True) 
+                        wing_planform(wing, overwrite_reference=True)  # These defaults need to be put somewhere else  
                         
                         vehicle.reference_area = wing.areas.reference
                     else:
                         # compute planform properties 
-                        wing_planform(wing, overwrite_reference=True)  
+                        wing_planform(wing, overwrite_reference=True)  # These defaults need to be put somewhere else   
                 last_tag = tag 
 
             # update weights vehicle with correct geometric properties                  

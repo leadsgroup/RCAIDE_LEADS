@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Fuselage/Segments/Segment.py
+# RCAIDE/Library/Compoments/Wings/Segments/Blended_Wing_Body_Fuselage_Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -11,11 +11,10 @@ from RCAIDE.Library.Components.Wings.Segments import Segment
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Segment
 # ----------------------------------------------------------------------------------------------------------------------   
-class Blended_Wing_Segment(Segment):
+class Blended_Wing_Body_Fuselage_Segment(Segment):
     '''
-    '''
-
+    ''' 
     def __defaults__(self):
-        self.tag                           = 'fuselage_segment'
+        self.tag       = 'bwb_fuselage_segment'
         
 

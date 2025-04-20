@@ -17,7 +17,7 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_layout_of_passenger_accommodations
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_layout_of_passenger_accommodations(fuselage):
+def compute_layout_of_passenger_accommodations(fuselage, update_fuselage_properties=False):
     '''
     Creates the layout of passenger accommodations for a vehicle
     '''  
@@ -37,11 +37,11 @@ def compute_layout_of_passenger_accommodations(fuselage):
 
     fuselage.number_of_passengers               = np.sum(LOPA[:,10])
     fuselage.layout_of_passenger_accommodations = LOPA
-    compute_fusselage_dimensions(fuselage)
+    compute_fuselage_dimensions(fuselage,update_fuselage_properties)
 
     return  
  
-def compute_fusselage_dimensions(fuselage):
+def compute_fuselage_dimensions(fuselage,update_fuselage_properties):
     LOPA = fuselage.layout_of_passenger_accommodations 
     
        # Step 1: plot cabin bounds  
@@ -94,12 +94,14 @@ def compute_fusselage_dimensions(fuselage):
     
     cabin_length = max(starboard_x_points)
     cabin_wdith = 2*max(starboard_y_points)
-
-    fuselage.lengths.nose = fuselage.fineness.nose*cabin_wdith
-    fuselage.lengths.tail = fuselage.fineness.tail*cabin_wdith  
-
-    fuselage.lengths.total = fuselage.lengths.nose + fuselage.lengths.tail + cabin_length
-    fuselage.width  = cabin_wdith
+    
+    if update_fuselage_properties:
+        fuselage.lengths.nose  = fuselage.fineness.nose*cabin_wdith
+        fuselage.lengths.tail  = fuselage.fineness.tail*cabin_wdith   
+        fuselage.lengths.total = fuselage.lengths.nose + fuselage.lengths.tail + cabin_length
+        fuselage.width         = cabin_wdith
+    
+    return 
 
 def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_cabin_offset):  
     

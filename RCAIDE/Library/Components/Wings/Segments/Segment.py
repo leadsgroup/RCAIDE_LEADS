@@ -111,7 +111,11 @@ class Segment(Component):
         self.areas.reference         = 0.0
         self.areas.exposed           = 0.0
         self.areas.wetted            = 0.0
-
+        
+        self.structural              =  Data()
+        self.structural.front_spar_percent_chord   =  0
+        self.structural.rear_spar_percent_chord    =  0    
+ 
         self.airfoil                 = None
         
     def append_airfoil(self, airfoil):
