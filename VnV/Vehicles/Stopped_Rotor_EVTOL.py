@@ -8,8 +8,7 @@
 #   Imports
 # ---------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Units 
-from RCAIDE.Library.Methods.Geometry.Planform                                             import segment_properties,wing_segmented_planform 
+from RCAIDE.Framework.Core import Units  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor 
 from RCAIDE.Library.Plots                                                                 import *  
 from RCAIDE.load    import load as load_propulsor
@@ -132,15 +131,7 @@ def vehicle_setup(new_regression=True) :
     segment.sweeps.quarter_chord  = 0  * Units.degrees 
     segment.thickness_to_chord    = 0.16  
     segment.append_airfoil(airfoil)
-    wing.append_segment(segment)                 
-    
-    
-    # compute reference properties 
-    wing_segmented_planform(wing, overwrite_reference = True )  
-    vehicle.reference_area        = wing.areas.reference  
-    wing.areas.wetted             = wing.areas.reference  * 2 
-    wing.areas.exposed            = wing.areas.reference  * 2  
-
+    wing.append_segment(segment)                   
                                           
     # control surfaces ------------------------------------------- 
     flap                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()

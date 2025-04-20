@@ -324,7 +324,7 @@ def vehicle_setup():
 
     # ################################################# Fuselage ################################################################ 
     
-    fuselage                                           = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()  
+    fuselage                                           = RCAIDE.Library.Components.Fuselages.Fuselage()  
     
     cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
     first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 

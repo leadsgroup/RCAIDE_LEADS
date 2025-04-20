@@ -14,7 +14,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data 
 from RCAIDE.Library.Components.Airfoils.Airfoil import Airfoil
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform, wing_segmented_planform
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 
 import numpy as np
 import string
@@ -279,7 +279,7 @@ def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil
         wing.chords.mean_geometric    = wing.areas.reference / wing.spans.projected
 
         # Just double calculate and fix things:
-        wing = wing_segmented_planform(wing)
+        wing = wing_planform(wing)
 
 
     else:

@@ -1,22 +1,24 @@
-# RCAIDE/Components/Fuselages/Blended_Wing_Body_Fuselage.py
+# RCAIDE/Components/Wings/Blended_Wing_Body.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports    
-from .Fuselage import Fuselage
+# RCAIDE imports
+import RCAIDE
+from RCAIDE.Framework.Core import Data
+from .Main_Wing import Main_Wing
 
 # python imports 
 import numpy as np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Blended_Wing_Body_Fuselage
+#  Blended_Wing_Body
 # ----------------------------------------------------------------------------------------------------------------------  
-class Blended_Wing_Body_Fuselage(Fuselage):
+class Blended_Wing_Body(Main_Wing):
     """
-    A blended wing body (BWB) fuselage design that smoothly integrates the wing and fuselage 
+    A blended wing body (BWB) design that smoothly integrates the wing and fuselage 
     into a single lifting body configuration.
 
     Attributes
@@ -55,8 +57,6 @@ class Blended_Wing_Body_Fuselage(Fuselage):
     --------
     RCAIDE.Library.Components.Fuselages.Fuselage
         Base fuselage class that provides common functionality
-    RCAIDE.Library.Components.Fuselages.Tube_Fuselage
-        Conventional tube fuselage design for comparison
     """
     
     def __defaults__(self):
@@ -69,11 +69,56 @@ class Blended_Wing_Body_Fuselage(Fuselage):
         modify these values based on their specific design requirements after instantiation.
         """      
           
-        self.tag                   = 'bwb_fuselage'
+        self.tag                   = 'blended_wing_body'  
+        
         self.aft_centerbody_area   = 0.0
         self.aft_centerbody_taper  = 0.0
-        self.cabin_area            = 0.0
+        self.cabin_area            = 0.0 
+          
+        self.number_of_passengers                   = 0.0  
+        self.layout_of_passenger_accommodations     = None 
+ 
+        self.effective_diameter                     = 0.0
+        self.width                                  = 0.0  
         
+        self.heights                                = Data() 
+        self.heights.maximum                        = 0.0
+        self.heights.at_quarter_length              = 0.0
+        self.heights.at_three_quarters_length       = 0.0
+        self.heights.at_wing_root_quarter_chord     = 0.0
+        self.heights.at_vertical_root_quarter_chord = 0.0 
+        
+        self.lengths                                = Data()     
+        self.lengths.nose                           = 0.0
+        self.lengths.tail                           = 0.0
+        self.lengths.total                          = 0.0
+        
+        self.x_rotation                             = 0.0
+        self.y_rotation                             = 0.0
+        self.z_rotation                             = 0.0    
+        self.cabins                                 = Container()
+        
+
+    
+    def append_cabin(self,cabin):
+        """
+        Adds a new segment to the fuselage's segment container.
+
+        Parameters
+        ----------
+        segment : Data
+            Fuselage segment to be added
+        """
+
+        # Assert database type
+        if not isinstance(cabin,RCAIDE.Library.Components.Fuselages.Cabins.Cabin):
+            raise Exception('input component must be of type Cabin')
+
+        # Store data
+        self.cabins.append(cabin)
+
+        return     
+    
     def compute_moment_of_inertia(self, center_of_gravity): 
         """
         Computes the moment of inertia tensor for the BWB fuselage.

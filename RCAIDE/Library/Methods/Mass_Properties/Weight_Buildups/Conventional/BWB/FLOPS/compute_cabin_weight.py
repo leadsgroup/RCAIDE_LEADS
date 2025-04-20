@@ -6,10 +6,8 @@
 #  Imports
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
-from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Methods.Geometry.Planform                          import segment_properties  
-
-from copy import deepcopy
+from RCAIDE.Framework.Core import Units  
+import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Cabin Weight 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -35,34 +33,30 @@ def compute_cabin_weight(vehicle,settings):
             
     Properties Used:
     N/A
-    """
-    bwb_vehicle = deepcopy(vehicle)
-    bwb_vehicle.wings.main_wing.segments.clear()
+    """ 
     
-    for fus_segment in vehicle.wings.main_wing.segments:
-        if isinstance(fus_segment, RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
-            bwb_fuselage_seg = deepcopy(fus_segment)
-            bwb_vehicle.wings.main_wing.segments.append(bwb_fuselage_seg)
-            bwb_vehicle.wings.main_wing.spans.projected =  vehicle.wings.main_wing.spans.projected * bwb_fuselage_seg.percent_span_location  
+    fus_seg_max_percent_span = 0
+    root_chord               = 0
+    span                     = 0
+    segment_le_sweeps        = []
+    for wing in  vehicle.wings:
+        span =  np.maximum(span,wing.spans.projected )
+        root_chord =  np.maximum(root_chord,wing.chords.root)
+        for segment in wing:
+            if isinstance(segment, RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
+                fus_seg_max_percent_span =  np.maximum(fus_seg_max_percent_span,segment.percent_span_location  )
+                segment_le_sweeps.append(segment.sweeps.leading_edge/Units.degree)  
     
-    for segment in bwb_vehicle.wings.main_wing.segments:
-        segment.percent_span_location  = segment.percent_span_location * (vehicle.wings.main_wing.spans.projected / bwb_vehicle.wings.main_wing.spans.projected )
-
-    bwb_vehicle.wings.main_wing = segment_properties(bwb_vehicle.wings.main_wing,update_ref_areas=True)  
      # convert to imperial units
-    A_CB    =  bwb_vehicle.wings.main_wing.areas.reference / Units['feet^2']
-    TOGW       =  bwb_vehicle.mass_properties.max_takeoff*9.81/ Units.lbf
+    A_CB     =  vehicle.reference_area / Units['feet^2']
+    TOGW     =  vehicle.mass_properties.max_takeoff*9.81/ Units.lbf
+    THETA_CB = np.array(segment_le_sweeps ) / len(segment_le_sweeps)
 
     if settings.PRSEUS:
-        SR     = bwb_vehicle.wings.main_wing.spans.projected / vehicle.wings.main_wing.spans.projected
-        FR = bwb_vehicle.wings.main_wing.spans.projected / bwb_vehicle.wings.main_wing.chords.root
-        segments = bwb_vehicle.wings.main_wing.segments
-        THETA_CB = (
-            sum(segment.sweeps.leading_edge for segment in segments) / len(segments)
-            if segments else 0.0
-                )/Units.degree
+        SR  = fus_seg_max_percent_span
+        FR  = fus_seg_max_percent_span*span/ root_chord   
         W_cabin_lbf = 1.06 * 1.20 * 105.95 * (A_CB**0.97) * (TOGW**0.0021) * (FR**-0.75) * (THETA_CB**-0.62) * (SR**-0.0008)
-        W_cabin = W_cabin_lbf * Units.lbf / 9.81
+        W_cabin     = W_cabin_lbf * Units.lbf / 9.81
     else: 
         W_cabin = 5.698865 * 0.316422 * (TOGW ** 0.166552) * A_CB ** 1.061158
     

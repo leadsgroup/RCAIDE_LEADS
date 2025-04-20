@@ -52,9 +52,8 @@ def stability(mission):
 
     **Wing Processing**
     
-    For each wing:
-        - If multi-segmented: Uses wing_segmented_planform
-        - If single segment: Uses wing_planform
+    For each wing: 
+        - Uses wing_planform
 
     **Major Assumptions**
         * Valid wing geometry definitions

@@ -167,10 +167,9 @@ def vehicle_setup():
     elevator.span_fraction_end            = 0.9
     elevator.deflection                   = 0.0  * Units.deg
     elevator.chord_fraction               = 0.35
-    wing.append_control_surface(elevator)       
-
-    RCAIDE.Library.Methods.Geometry.Planform.wing_planform(wing)     
-
+    wing.append_control_surface(elevator)
+    
+    
     # add to vehicle
     vehicle.append_component(wing)
 

@@ -8,8 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core                                                                import Units   
-from RCAIDE.Library.Methods.Geometry.Planform                                             import wing_segmented_planform 
+from RCAIDE.Framework.Core                                                                import Units    
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
 
 # python imports 
@@ -106,9 +105,6 @@ def vehicle_setup(fuel_cell_model):
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)    
     
-    # Fill out more segment properties automatically
-    wing = wing_segmented_planform(wing)           
-    
     # add to vehicle
     vehicle.append_component(wing)
 
@@ -170,7 +166,7 @@ def vehicle_setup(fuel_cell_model):
 
  
     # ##########################################################   Fuselage  ############################################################    
-    fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage() 
+    fuselage = RCAIDE.Library.Components.Fuselages.Fuselage() 
 
     cabin         = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
     economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 

@@ -141,10 +141,8 @@ class Fuselage(Component):
 
     See Also
     --------
-    RCAIDE.Library.Components.Fuselages.Tube_Fuselage
-        Implementation for conventional tube-and-wing aircraft
-    RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage
-        Implementation for blended wing body aircraft
+    RCAIDE.Library.Components.Fuselages.Fuselage
+        Implementation for conventional tube-and-wing aircraft 
     """
     
     def __defaults__(self):

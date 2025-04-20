@@ -9,8 +9,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units      
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan
-from RCAIDE.Library.Methods.Geometry.Planform               import wing_planform, segment_properties
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan 
 from RCAIDE.Library.Plots                 import *     
 
 # python imports 
@@ -168,8 +167,7 @@ def vehicle_setup():
     aileron.span_fraction_end     = 0.93
     aileron.deflection            = 0.0 * Units.degrees
     aileron.chord_fraction        = 0.16
-    wing.append_control_surface(aileron)     
-    wing                          = wing_planform(wing) 
+    wing.append_control_surface(aileron)      
 
     # add to vehicle
     vehicle.append_component(wing)
@@ -195,8 +193,7 @@ def vehicle_setup():
     wing.origin                  = [[64.6,0,14.783]]
     wing.vertical                = False
     wing.symmetric               = True       
-    wing.high_lift               = False
-    wing                         = wing_planform(wing)
+    wing.high_lift               = False 
     wing.areas.exposed           = 1.0 * wing.areas.wetted 
     wing.twists.root             = 0 * Units.degrees
     wing.twists.tip              = 0 * Units.degrees    
@@ -326,7 +323,7 @@ def vehicle_setup():
     #  Fuselage
     # ------------------------------------------------------------------
 
-    fuselage                                    = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()  
+    fuselage                                    = RCAIDE.Library.Components.Fuselages.Fuselage()  
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.0
     fuselage.lengths.nose                       = 7.4   * Units.meter

@@ -54,8 +54,6 @@ def parasite_total(state,settings,geometry):
  
     # renormalize parasite drag from fuselages using reference area of aircraft 
     for fuselage in geometry.fuselages:
-        if type(fuselage) == RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage:
-            continue
         fuselage_parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag].total 
         conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag].total = fuselage_parasite_drag * fuselage.areas.front_projected/vehicle_reference_area
         total_parasite_drag += fuselage_parasite_drag * fuselage.areas.front_projected/vehicle_reference_area

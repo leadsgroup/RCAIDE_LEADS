@@ -18,8 +18,6 @@ RCAIDE.Library.Components.Booms
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .Fuselage                   import Fuselage
-from .Blended_Wing_Body_Fuselage import Blended_Wing_Body_Fuselage 
-from .Tube_Fuselage              import Tube_Fuselage
 
 from . import Segments
 from . import Cabins

@@ -11,8 +11,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core                                             import Units , Data    
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet             import design_turbojet
-from RCAIDE.Library.Methods.Geometry.Planform                          import wing_segmented_planform
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet             import design_turbojet 
 from RCAIDE.Library.Plots                                              import *     
 
 # python imports 
@@ -150,11 +149,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 0.
     segment.thickness_to_chord    = 0.03
     segment.append_airfoil(wing_airfoil)
-    wing.segments.append(segment)      
-    
-    # Fill out more segment properties automatically
-    wing = wing_segmented_planform(wing)
-    
+    wing.segments.append(segment)       
 
     # control surfaces -------------------------------------------
     slat                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
@@ -265,10 +260,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 0.
     segment.thickness_to_chord    = 0.04
     segment.append_airfoil(tail_airfoil)
-    wing.segments.append(segment)    
-    
-    # Fill out more segment properties automatically
-    wing = wing_segmented_planform(wing)        
+    wing.segments.append(segment)
     
     # add to vehicle
     vehicle.append_component(wing)    
@@ -278,7 +270,7 @@ def vehicle_setup():
     #  Fuselage
     # ------------------------------------------------------------------
     
-    fuselage                                        = RCAIDE.Library.Components.Fuselages.Tube_Fuselage() 
+    fuselage                                        = RCAIDE.Library.Components.Fuselages.Fuselage() 
     fuselage.seats_abreast                          = 4
     fuselage.seat_pitch                             = 38. * Units.inches 
     fuselage.fineness.nose                          = 4.3
