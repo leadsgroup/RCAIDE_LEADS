@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
-import RCAIDE
 import numpy as np 
  
 # package imports
@@ -68,8 +67,6 @@ def parasite_total(state,settings,geometry):
                 conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total  = nacelle_parasite_drag * nacelle_parasite_drag/vehicle_reference_area
                 total_parasite_drag += nacelle_parasite_drag * ref_area/vehicle_reference_area
                 
-                  
-
     state.conditions.aerodynamics.coefficients.drag.parasite.total = total_parasite_drag * (1 -  settings.drag_reduction_factors.parasite_drag)
 
     return 

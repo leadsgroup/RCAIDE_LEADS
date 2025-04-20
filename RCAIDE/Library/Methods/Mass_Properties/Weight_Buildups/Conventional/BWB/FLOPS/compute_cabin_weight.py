@@ -45,10 +45,12 @@ def compute_cabin_weight(vehicle,settings):
         for segment in wing:
             if isinstance(segment, RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
                 fus_seg_max_percent_span =  np.maximum(fus_seg_max_percent_span,segment.percent_span_location  )
-                segment_le_sweeps.append(segment.sweeps.leading_edge/Units.degree)  
+                segment_le_sweeps.append(segment.sweeps.leading_edge/Units.degree)
+                
+        if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            A_CB     =  wing.areas.center_body / Units['feet^2']               
     
      # convert to imperial units
-    A_CB     =  vehicle.reference_area / Units['feet^2']
     TOGW     =  vehicle.mass_properties.max_takeoff*9.81/ Units.lbf
     THETA_CB = np.array(segment_le_sweeps ) / len(segment_le_sweeps)
 

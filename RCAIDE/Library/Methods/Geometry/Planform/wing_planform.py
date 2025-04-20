@@ -303,6 +303,7 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
     num_segments              = len(segment_names)   
     total_wetted_area         = 0.
     total_reference_area      = 0.
+    center_body_area          = 0.0
     root_chord                = wing.chords.root      
     
     for i_segs in range(num_segments):
@@ -349,12 +350,14 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
             
             total_wetted_area    = total_wetted_area + Swet_seg 
             if isinstance(segments[segment_names[i_segs+1]], RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
-                pass
+                center_body_area += Sref_seg 
+                # use S_ref_seg to compute S_center bofy and S_aft_body
             else:
-                total_reference_area = total_reference_area + Sref_seg  
+                total_reference_area += Sref_seg  
         
     if wing.areas.reference==0. or update_ref_areas:
         wing.areas.reference = total_reference_area
+        wing.areas.center_body = center_body_area
         
     if wing.areas.wetted==0. or update_wet_areas:
         wing.areas.wetted    = total_wetted_area

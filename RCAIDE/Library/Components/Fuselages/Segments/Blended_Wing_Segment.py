@@ -17,4 +17,5 @@ class Blended_Wing_Segment(Segment):
 
     def __defaults__(self):
         self.tag                           = 'fuselage_segment'
+        
 
