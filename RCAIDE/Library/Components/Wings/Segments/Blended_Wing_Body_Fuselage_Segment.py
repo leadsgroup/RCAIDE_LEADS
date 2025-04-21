@@ -15,6 +15,7 @@ class Blended_Wing_Body_Fuselage_Segment(Segment):
     '''
     ''' 
     def __defaults__(self):
-        self.tag       = 'bwb_fuselage_segment'
+        self.tag                       = 'bwb_fuselage_segment' 
+        self.percent_chord_cabin_start = 0.0   
         
 

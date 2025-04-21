@@ -91,17 +91,18 @@ def compute_fuselage_dimensions(fuselage,update_fuselage_properties):
     port_idxs  =  np.where(y_border_pts<0)[0]
     starboard_x_points = np.delete(x_border_pts, port_idxs) 
     starboard_y_points = np.delete(y_border_pts, port_idxs)
+    LOPA.cabin_area_coordinates = np.vstack((starboard_x_points,starboard_y_points)) 
     
-    cabin_length = max(starboard_x_points)
-    cabin_wdith = 2*max(starboard_y_points)
+    LOPA.cabin_length = max(starboard_x_points)
+    LOPA.cabin_wdith = 2*max(starboard_y_points) 
     
     if update_fuselage_properties:
-        fuselage.lengths.nose  = fuselage.fineness.nose*cabin_wdith
-        fuselage.lengths.tail  = fuselage.fineness.tail*cabin_wdith   
-        fuselage.lengths.total = fuselage.lengths.nose + fuselage.lengths.tail + cabin_length
-        fuselage.width         = cabin_wdith
+        fuselage.lengths.nose  = fuselage.fineness.nose*LOPA.cabin_wdith
+        fuselage.lengths.tail  = fuselage.fineness.tail*LOPA.cabin_wdith   
+        fuselage.lengths.total = fuselage.lengths.nose + fuselage.lengths.tail + LOPA.cabin_length
+        fuselage.width         = LOPA.cabin_wdith
     
-    return 
+    return  
 
 def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_cabin_offset):  
     
