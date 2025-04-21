@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Energy/Sources/Fuel_Tanks/Wing_Fuel_Tank.py
+# RCAIDE/Library/Components/Powertrain/Energy/Sources/Fuel_Tanks/Integral_Tank.py
 # 
 # Created:  Sep 2024, A. Molloy and M. Clarke 
 
@@ -6,17 +6,18 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports 
+# RCAIDE imports
+import RCAIDE
 from .Fuel_Tank  import Fuel_Tank 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Tank
 # ---------------------------------------------------------------------------------------------------------------------    
-class Wing_Fuel_Tank(Fuel_Tank):
+class Integral_Tank(Fuel_Tank):
     """Fuel tank compoment.
     
-    Class for modeling wing-mounted fuel tank characteristics and behavior
+    Class for modeling integral fuel tank characteristics and behavior
     
     Attributes
     ----------
@@ -46,30 +47,42 @@ class Wing_Fuel_Tank(Fuel_Tank):
 
     Notes
     -----
-    The wing fuel tank is integrated into the aircraft wing structure,
+    The intergral tank is integrated into the aircraft wing structure,
     utilizing the space between wing spars and ribs for fuel storage.
 
     See Also
     --------
     RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank
         Base fuel tank class
-    RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Central_Fuel_Tank
-        Center section fuel tank
+    RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank
+        Non-integral fuel tank
     """
     
     def __defaults__(self):
         """
         Sets default values for wing fuel tank attributes
         """          
-        self.tag                         = 'wing_fuel_tank'
+        self.tag                         = 'integral_tank'
         self.fuel_selector_ratio         = 1.0 
         self.mass_properties.empty_mass  = 0.0   
-        self.secondary_fuel_flow         = 0.0
-        self.length                      = 0.0
-        self.width                       = 0.0
-        self.height                      = 0.0
-        self.fuel                        = None
-         
+        self.secondary_fuel_flow         = 0.0 
+        self.fuel                        = None 
+
+    def __init__ (self, compoment=None):
+        """
+        Initialize  
+        """ 
+        if compoment is not None:
+            if isinstance(compoment, RCAIDE.Library.Components.Wings.Wing): 
+                self.wing      = compoment 
+                #self.origin                                 = component.origin  
+                #self.fuel.origin                            = component.mass_properties.center_of_gravity      
+                #self.fuel.mass_properties.center_of_gravity = component.aerodynamic_center            
+            if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage): 
+                self.fuselage     = compoment           
+                #self.origin                                 = component.origin  
+                #self.fuel.origin                            = component.mass_properties.center_of_gravity      
+                #self.fuel.mass_properties.center_of_gravity = component.aerodynamic_center  
 
     def append_operating_conditions(self,segment,fuel_line):  
         """

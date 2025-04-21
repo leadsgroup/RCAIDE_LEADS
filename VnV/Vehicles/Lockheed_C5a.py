@@ -536,7 +536,7 @@ def vehicle_setup():
     fuel.mass_properties.center_of_gravity      = [[23.0,0,3.913]] #vehicle.wings.main_wing.mass_properties.center_of_gravity
     fuel.internal_volume                        = fuel.mass_properties.mass/fuel.density  
     fuel_tank.fuel                              = fuel
-    fuel_tank.volume                           = fuel.internal_volume
+    fuel_tank.internal_volume                  = fuel.internal_volume
     fuel_line.fuel_tanks.append(fuel_tank) 
     
 

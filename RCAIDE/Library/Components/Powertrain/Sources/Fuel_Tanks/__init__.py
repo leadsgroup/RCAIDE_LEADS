@@ -20,6 +20,6 @@ RCAIDE.Library.Components.Powertrain.Modulators.Fuel_Selector
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .Fuel_Tank         import Fuel_Tank
-from .Central_Fuel_Tank import Central_Fuel_Tank
-from .Wing_Fuel_Tank    import Wing_Fuel_Tank
+from .Fuel_Tank            import Fuel_Tank
+from .Integral_Tank        import Integral_Tank
+from .Non_Integral_Tank    import Non_Integral_Tank

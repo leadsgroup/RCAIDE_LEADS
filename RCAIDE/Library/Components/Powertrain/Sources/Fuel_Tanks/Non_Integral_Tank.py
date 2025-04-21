@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Energy/Sources/Fuel_Tanks/Central_Fuel_Tank.py
+# RCAIDE/Library/Components/Powertrain/Energy/Sources/Fuel_Tanks/Non_Integral_Tank.py
 # 
 # 
 # Created:  September 2024, A. Molloy and M. Clarke 
@@ -7,16 +7,17 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports 
+# RCAIDE imports
+import RCAIDE
 from .Fuel_Tank  import Fuel_Tank 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Tank
 # ---------------------------------------------------------------------------------------------------------------------    
-class Central_Fuel_Tank(Fuel_Tank):
+class Non_Integral_Tank(Fuel_Tank):
     """
-    Class for modeling central fuel tank characteristics and behavior
+    Class for modeling a non integral tank characteristics and behavior
     
     Attributes
     ----------
@@ -53,22 +54,32 @@ class Central_Fuel_Tank(Fuel_Tank):
     --------
     RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank
         Base fuel tank class
-    RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Wing_Fuel_Tank
-        Wing-mounted fuel tank class
+    RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank
+        Integral fuel tank class
     """
     
     def __defaults__(self):
         """
         Sets default values for central fuel tank attributes
         """          
-        self.tag                         = 'Central_fuel_tank'
+        self.tag                         = 'non_integral_tank'
         self.fuel_selector_ratio         = 1.0 
         self.mass_properties.empty_mass  = 0.0   
-        self.secondary_fuel_flow         = 0.0
-        self.length                      = 0.0
-        self.width                       = 0.0
-        self.height                      = 0.0
-        self.fuel                        = None
+        self.secondary_fuel_flow         = 0.0 
+        self.wall_clearance              = 0.0
+        self.outer_diameter              = 0.0
+        self.fuel                        = None 
+
+    def __init__ (self, compoment=None):
+        """
+        Initialize  
+        """
+        
+        if compoment is not None:
+            if isinstance(compoment) == RCAIDE.Library.Components.Wings.Wing: 
+                self.wing      = compoment    
+            if isinstance(compoment) == RCAIDE.Library.Components.Fuselages.Fuselage: 
+                self.fuselage     = compoment              
          
 
     def append_operating_conditions(self,segment,fuel_line):  

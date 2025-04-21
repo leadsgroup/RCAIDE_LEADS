@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Wing Segmented Planform
 # ----------------------------------------------------------------------------------------------------------------------    
-def wing_planform(wing, overwrite_reference = False):
+def wing_planform(wing, overwrite_reference = True):
     """Computes standard wing planform values.
     
     Assumptions:
@@ -160,6 +160,7 @@ def wing_planform(wing, overwrite_reference = False):
         seg_keys = list(wing.segments.keys())
         for i in range(len(wing.segments) - 1):
             wing.segments[seg_keys[i]].sweeps.leading_edge = le_sweeps[i]
+            wing.segments[seg_keys[i]].origin = [[dxs[i],dys[i],dzs[i]]]
             
         wing.spans.total                    = total_len
         wing.chords.mean_geometric          = mgc

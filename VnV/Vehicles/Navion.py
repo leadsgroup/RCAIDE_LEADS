@@ -326,7 +326,7 @@ def vehicle_setup():
     fuel_tank.fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel_tank.fuel.mass_properties.mass                   = 319 *Units.lbs 
     fuel_tank.fuel.mass_properties.center_of_gravity      = wing.mass_properties.center_of_gravity
-    fuel_tank.volume                                      = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.internal_volume                             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
     fuel_line.fuel_tanks.append(fuel_tank)  
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor

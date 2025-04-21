@@ -92,7 +92,7 @@ def compute_systems_weight(vehicle):
     SFLAP    = 0
     ref_wing = None 
     for wing in  vehicle.wings:
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) or isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             SFLAP  += wing.areas.reference * wing.flap_ratio / Units.ft ** 2
             ref_wing  =  wing
     
@@ -105,14 +105,25 @@ def compute_systems_weight(vehicle):
     DG    = vehicle.mass_properties.max_takeoff / Units.lbs
     WSC   = 1.1 * VMAX ** 0.52 * SFLAP ** 0.6 * DG ** 0.32  # surface controls weight
     
-    XL = 0
-    WF = 0
+    XL    = 0
+    WF    = 0
     L_fus = 0
     for fuselage in vehicle.fuselages:
-        if L_fus < fuselage.lengths.total:
-            ref_fuselage = fuselage 
-            XL  = fuselage.lengths.total / Units.ft
-            WF  = fuselage.width / Units.ft
+        if fuselage.lengths.total > L_fus:
+            L_fus = fuselage.lengths.total  
+            XL    = fuselage.lengths.total / Units.ft
+            WF    = fuselage.width / Units.ft
+            DF    = fuselage.heights.maximum / Units.ft
+             
+    for wing in  vehicle.wings:
+        isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body)
+        XL    = wing.chords.root / Units.ft
+        DF    = (wing.chords.root*wing.thickness_to_chord) / Units.ft
+        
+        for segment in wing.segments:
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
+                WF    = segment.percent_span_location * wing.spans.projected  / Units.ft        
+             
     FPAREA      = XL * WF
     NPASS       = vehicle.passengers
     WAPU        = 54 * FPAREA ** 0.3 + 5.4 * NPASS ** 0.9  # apu weight
@@ -137,7 +148,6 @@ def compute_systems_weight(vehicle):
     WAVONC  = 15.8 * DESRNG ** 0.1 * NFLCR ** 0.7 * FPAREA ** 0.43  # avionics weight
 
     XLP     = 0.8 * XL
-    DF      = ref_fuselage.heights.maximum / Units.ft # D stands for depth
     WFURN   = 127 * NFLCR + 112 * vehicle.NPF + 78 * vehicle.NPB + 44 * vehicle.NPT \
                 + 2.6 * XLP * (WF + DF) * NFUSE  # furnishing weight
 

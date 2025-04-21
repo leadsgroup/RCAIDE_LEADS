@@ -110,8 +110,10 @@ class Segment(Component):
         self.areas                               = Data()
         self.areas.reference                     = 0.0
         self.areas.exposed                       = 0.0
-        self.areas.wetted                        = 0.0
+        self.areas.wetted                        = 0.0  
          
+        self.has_fuel_tank                       = False
+        
         self.structural                          = Data()  
         self.structural.rib                      = False   
         self.structural.front_spar_percent_chord = 0.1  

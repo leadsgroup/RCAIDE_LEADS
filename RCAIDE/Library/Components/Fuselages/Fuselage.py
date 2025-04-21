@@ -186,8 +186,8 @@ class Fuselage(Component):
         self.fineness.tail                          = 0.0  
         self.nose_curvature                         = 1.5
         self.tail_curvature                         = 1.5   
-    
-        self.fuel_tanks                             = Container()
+
+        self.has_fuel_tank                          = False     
  
         self.vsp_data                               = Data()
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
