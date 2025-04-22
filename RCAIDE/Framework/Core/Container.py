@@ -123,7 +123,7 @@ class Container(Data):
         #     N/A
         # """         
         if isinstance(vals,(list,tuple)):
-            for v in val: self.append(v)
+            for v in vals: self.append(v) #originally val
         elif isinstance(vals,dict):
             self.update(vals)
         else:

@@ -11,6 +11,7 @@
 import RCAIDE 
 from RCAIDE.Framework.Core import Container
 from RCAIDE.Framework.Mission.Common     import   Conditions
+import pybamm
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
@@ -104,12 +105,12 @@ def append_battery_conditions(battery_module,segment,bus):
     # Conditions for recharging battery module
     if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
         segment.state.conditions.energy.recharging  = True 
-        segment.state.unknowns['recharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['recharge'] =  0* ones_row(1)
+        segment.state.unknowns['recharge']          =  0 * ones_row(1)  
+        segment.state.residuals.network['recharge'] =  0 * ones_row(1)
     elif type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
         segment.state.conditions.energy.recharging   = False 
-        segment.state.unknowns['discharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['discharge'] =  0* ones_row(1)     
+        segment.state.unknowns['discharge']          =  0 * ones_row(1)  
+        segment.state.residuals.network['discharge'] =  0 * ones_row(1)     
     else:
         segment.state.conditions.energy.recharging  = False 
         
@@ -122,17 +123,56 @@ def append_battery_conditions(battery_module,segment,bus):
         
         initial_battery_energy                                                   = segment.initial_battery_state_of_charge*battery_module.maximum_energy   
         bus_results.battery_modules[battery_module.tag].maximum_initial_energy   = initial_battery_energy
-        bus_results.battery_modules[battery_module.tag].energy                   = initial_battery_energy* ones_row(1) 
+        bus_results.battery_modules[battery_module.tag].energy                   = initial_battery_energy * ones_row(1) 
         bus_results.battery_modules[battery_module.tag].cell.energy              = initial_battery_energy / n_total* ones_row(1) 
         bus_results.battery_modules[battery_module.tag].state_of_charge          = segment.initial_battery_state_of_charge* ones_row(1) 
         bus_results.battery_modules[battery_module.tag].cell.state_of_charge     = segment.initial_battery_state_of_charge* ones_row(1) 
         bus_results.battery_modules[battery_module.tag].cell.depth_of_discharge  = 1 - segment.initial_battery_state_of_charge* ones_row(1)
+        
+
+        if type(battery_module) == RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b:
+            bus_results.battery_modules[battery_module.tag].cell.loss_of_lithium_inventory              = 0 * ones_row(1)
+            bus_results.battery_modules[battery_module.tag].cell.total_heat_generation                  = 0 * ones_row(1) 
+            bus_results.battery_modules[battery_module.tag].cell.capacity_lost                          = 0 * ones_row(1) 
+            bus_results.battery_modules[battery_module.tag].cell.pybamm_condition  = Container()
+            for i in range(n_cpts): 
+                bus_results.battery_modules[battery_module.tag].cell.pybamm_condition['timestep_' + str(i)]  = Container()
+                
+
+            # run pybamm once at ~0 A to initialize the model
+            
+            experiment = pybamm.Experiment(["Discharge at "+ str(0.1) + "A for " + str(0.001) + " seconds"]) 
+            simulation = pybamm.Simulation(battery_module.cell.model, experiment = experiment, parameter_values = battery_module.cell.battery_parameters) 
+            pybamm_solution = simulation.solve(initial_soc = segment.initial_battery_state_of_charge) 
+            #pybamm_solution = pybamm.solvers.solution.Solution()
+
+            
+             
+            bus_results.battery_modules[battery_module.tag].cell.pybamm_condition['timestep_' + str(0)]  = pybamm_solution
+
+  
+   
     else:  
         bus_results.battery_modules[battery_module.tag].energy                    = 0 * ones_row(1)
         bus_results.battery_modules[battery_module.tag].state_of_charge           = 0 * ones_row(1)
         bus_results.battery_modules[battery_module.tag].cell.state_of_charge      = 0 * ones_row(1)       
-        bus_results.battery_modules[battery_module.tag].cell.depth_of_discharge   = 0 * ones_row(1) 
-        
+        bus_results.battery_modules[battery_module.tag].cell.depth_of_discharge   = 0 * ones_row(1)
+        if type(battery_module) == RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b:
+            bus_results.battery_modules[battery_module.tag].cell.loss_of_lithium_inventory              = 0 * ones_row(1)
+            bus_results.battery_modules[battery_module.tag].cell.total_heat_generation                  = 0 * ones_row(1) 
+            bus_results.battery_modules[battery_module.tag].cell.capacity_lost                          = 0 * ones_row(1) 
+            bus_results.battery_modules[battery_module.tag].cell.pybamm_condition  = Container()
+            for i in range(n_cpts): 
+                bus_results.battery_modules[battery_module.tag].cell.pybamm_condition['timestep_' + str(i)]  = Container()
+            experiment = pybamm.Experiment(["Discharge at "+ str(0.1) + "A for " + str(0.001) + " seconds"]) 
+            simulation = pybamm.Simulation(battery_module.cell.model, experiment = experiment, parameter_values = battery_module.cell.battery_parameters) 
+            pybamm_solution = simulation.solve(initial_soc = 1) #incorrect SOC
+            #pybamm_solution = pybamm.solvers.solution.Solution()
+
+            
+             
+            bus_results.battery_modules[battery_module.tag].cell.pybamm_condition['timestep_' + str(0)]  = pybamm_solution
+
     # temperature 
     if 'battery_cell_temperature' in segment:
         cell_temperature  = segment.battery_cell_temperature  
@@ -156,15 +196,11 @@ def append_battery_conditions(battery_module,segment,bus):
     # This is the only one besides energy and discharge flag that should be moduleed into the segment top level
     if 'increment_battery_age_by_one_day' not in segment:
         segment.increment_battery_age_by_one_day   = False    
-    if type(battery_module) == RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b:
-            bus_results.battery_modules[battery_module.tag].cell.loss_of_lithium_inventory = 0 * ones_row(1)  
-
-            bus_results.battery_modules[battery_module.tag].cell.pybamm_state  = Container()  
-            for i in range(n_cpts): 
-                bus_results.battery_modules[battery_module.tag].cell.pybamm_state['timestep_' + str(i)]  = Container()  
-
-                
-            bus_results.battery_modules[battery_module.tag].cell.pybamm_state['timestep_' + str(0)]  = Container()      
+  
+  
+            
+            # bus_results.battery_modules[battery_module.tag].cell.pybamm_condition['timestep_' + str(0)]['model'] = model
+            # bus_results.battery_modules[battery_module.tag].cell.pybamm_condition['timestep_' + str(0)]['params'] = params
 
     return 
     
@@ -204,11 +240,15 @@ def append_battery_segment_conditions(battery_module, bus, conditions, segment):
         module_conditions.cell.capacity_fade_factor       = battery_initials.cell.capacity_fade_factor 
         module_conditions.cell.state_of_charge[:,0]       = battery_initials.cell.state_of_charge[-1,0]
         module_conditions.cell.energy[:,0]                = battery_initials.cell.energy[-1,0]
-        module_conditions.model_conditions
+        #module_conditions.model_conditions #seems to be tossing an error in regression
         if type(battery_module) == RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b:
-            module_conditions.cell.loss_of_lithium_inventory[:,0] = battery_initials.cell.loss_of_lithium_inventory[-1,0] 
+            module_conditions.cell.loss_of_lithium_inventory[:,0]   = battery_initials.cell.loss_of_lithium_inventory[-1,0] 
+            module_conditions.cell.total_heat_generation[:,0]       = battery_initials.cell.total_heat_generation[-1,0] 
+            module_conditions.cell.capacity_lost[:,0]               = battery_initials.cell.capacity_lost[-1,0]
+            #module_conditions.cell.pybamm_condition['timestep_' + str(0)]  = battery_initials.cell.pybamm_condition['timestep_' + str(0)] 
     if 'battery_cell_temperature' in segment:       
         module_conditions.temperature[:,0]          = segment.battery_cell_temperature 
-        module_conditions.cell.temperature[:,0]     = segment.battery_cell_temperature     
+        module_conditions.cell.temperature[:,0]     = segment.battery_cell_temperature 
+        
 
     return    

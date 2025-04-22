@@ -15,31 +15,7 @@ import pybamm
 # Create Base P30b battery model
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-model_base = pybamm.lithium_ion.SPM( #initializing first model to have degradation
-        {
-            "SEI": "solvent-diffusion limited",
-            "SEI porosity change": "true",
-            "lithium plating": "partially reversible",
-            "lithium plating porosity change": "true",  # alias for "SEI porosity change"
-            "particle mechanics": ("swelling and cracking", "swelling only"),
-            "SEI on cracks": "true",
-            "loss of active material": "stress-driven",
-            "calculate discharge energy": "true",  # for compatibility with older PyBaMM versions  
-            #"thermal": "lumped"
-        }
-)
-params = pybamm.ParameterValues("Chen2020")
-params.update({"Electrode width [m]": 9.06108669e-01,
-                "Negative electrode density [kg.m-3]": 2.23367642e+03,
-                "Positive electrode density [kg.m-3]": 3.35604961e+03,
-                'Bulk solvent concentration [mol.m-3]': 9.04026059e+02,
-                'Cation transference number': 1.00108959e+00,
-                'Nominal cell capacity [A.h]': 3.43328039e+00,
-                'Negative electrode porosity': 9.85780579e-01,
-                'Separator porosity':1.01419255e+00, 
-                "Ambient temperature [K]": 296.15,
-                'Reference temperature [K]': 296.15
-                })
+
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -116,34 +92,22 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
         - cell.charge_throughput
         - cell.depth_of_discharge
 
-    References
-    ----------
-    .. [1] Zou, Y., Hu, X., Ma, H., and Li, S. E., "Combined State of Charge and State of
-           Health estimation over lithium-ion battery_module cell cycle lifespan for electric 
-           vehicles," Journal of Power Sources, Vol. 273, 2015, pp. 793-803.
-           doi:10.1016/j.jpowsour.2014.09.146
-    .. [2] Jeon, Dong Hyup, and Seung Man Baek. "Thermal modeling of cylindrical lithium ion 
-           battery_module during discharge cycle." Energy Conversion and Management 52.8-9 (2011): 
-           2973-2981.
-
-    Assumptions
-    -----------
-    - All battery_module modules exhibit the same thermal behavior.
-    - The cell temperature is assumed to be the temperature of the entire module.
+   
     """
+    #these will be immutable. even parameter values do not change over the course of the experiment
+   
 
     # ---------------------------------------------------------------------------------    
     # battery cell properties
     # --------------------------------------------------------------------------------- 
     As_cell                   = battery_module.cell.surface_area
-    cell_mass                 = battery_module.cell.mass    
-    Cp                        = battery_module.cell.specific_heat_capacity       
+    cell_mass                 = battery_module.cell.mass     
     #battery_module_data       = battery_module.cell.discharge_performance_map
     
     # ---------------------------------------------------------------------------------
     # Compute Bus electrical properties 
     # ---------------------------------------------------------------------------------    
-    bus_conditions              = state.conditions.energy[bus.tag]
+    bus_conditions              = state.conditions.energy[bus.tag] #what does .tag mean
     bus_config                  = bus.battery_module_electric_configuration
     E_bus                       = bus_conditions.energy
     P_bus                       = bus_conditions.power_draw
@@ -155,18 +119,24 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     battery_module_conditions = state.conditions.energy[bus.tag].battery_modules[battery_module.tag]  #understand this, need to make sure data being fed in is updated
     
     #E_module_max       = battery_module.maximum_energy * battery_module_conditions.cell.capacity_fade_factor #capacity 
-    E_module_max       = battery_module_conditions.maximum_energy #need to update maximum energy 
+    E_module_max       = battery_module.maximum_energy #need to update maximum energy 
     P_module           = battery_module_conditions.power
     P_cell             = battery_module_conditions.cell.power 
-    LLI_cell           = battery_module_conditions.cell.loss_of_lithium_inventory 
     R_0_cell           = battery_module_conditions.cell.internal_resistance 
-    Q_heat_cell        = battery_module_conditions.cell.heat_energy_generated 
+    #Q_heat_cell        = battery_module_conditions.cell.heat_energy_generated 
     V_ul_cell          = battery_module_conditions.cell.voltage_under_load
+    LLI_cell           = battery_module_conditions.cell.loss_of_lithium_inventory
+    Q_heat_cell        = battery_module_conditions.cell.total_heat_generation
+    Cap_lost_cell      = battery_module_conditions.cell.capacity_lost
+    pybamm_condition   = battery_module_conditions.cell.pybamm_condition['timestep_' + str(t_idx)] #.solution
+
+
+
     
     I_module           = battery_module_conditions.current 
     I_cell             = battery_module_conditions.cell.current 
     
-    # SOC_cell           = battery_module_conditions.cell.state_of_charge  
+    SOC_cell           = battery_module_conditions.cell.state_of_charge  
     # SOC_module         = battery_module_conditions.state_of_charge
     # E_cell             = battery_module_conditions.cell.energy   
     # E_module           = battery_module_conditions.energy #mid segment capacity
@@ -211,57 +181,32 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     # ---------------------------------------------------------------------------------
     # PyBaMM analysis for a single cell
     # --------------------------------------------------------------------------------- 
-    if t_idx == 0:
-        model = pybamm.lithium_ion.SPM( #initializing first model to have degradation
-        {
-            "SEI": "solvent-diffusion limited",
-            "SEI porosity change": "true",
-            "lithium plating": "partially reversible",
-            "lithium plating porosity change": "true",  # alias for "SEI porosity change"
-            "particle mechanics": ("swelling and cracking", "swelling only"),
-            "SEI on cracks": "true",
-            "loss of active material": "stress-driven",
-            "calculate discharge energy": "true",  # for compatibility with older PyBaMM versions  
-            #"thermal": "lumped"
-        }
-        )
-        params = pybamm.ParameterValues("Chen2020")
-        params.update({"Electrode width [m]": 9.06108669e-01,
-                        "Negative electrode density [kg.m-3]": 2.23367642e+03,
-                        "Positive electrode density [kg.m-3]": 3.35604961e+03,
-                        'Bulk solvent concentration [mol.m-3]': 9.04026059e+02,
-                        'Cation transference number': 1.00108959e+00,
-                        'Nominal cell capacity [A.h]': 3.43328039e+00,
-                        'Negative electrode porosity': 9.85780579e-01,
-                        'Separator porosity':1.01419255e+00, 
-                        "Ambient temperature [K]": 296.15,
-                        'Reference temperature [K]': 296.15
-                        })
-        
+   
+    #model =  battery_module_conditions.cell.pybamm_conditions['timestep_' + str(t_idx)]['model']
+    model = battery_module.cell.model.set_initial_conditions_from(pybamm_condition, inplace = False)
+    if I_cell[t_idx][0] < 0:
+        experiment = pybamm.Experiment( ["Discharge at "+ str(abs(I_cell[t_idx][0])) + " A for " + str(delta_t[t_idx]) + " seconds"] )
+        simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = battery_module.cell.battery_parameters) 
+        pybamm_condition = simulation.solve(initial_soc = SOC_cell[0][0]) #be careful with [0] may be t_idx
+    else:
+        experiment = pybamm.Experiment( ["Charge at "+ str(abs(I_cell[t_idx][0])) + " A for " + str(delta_t[t_idx-1]) + " seconds"] )
+        simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = battery_module.cell.battery_parameters) 
+        pybamm_condition = simulation.solve(initial_soc = SOC_cell[0][0]) #be careful with [0] may be t_idx
+    if(t_idx < len(delta_t)):
+        V_ul_cell[t_idx+1]          = pybamm_condition['Voltage [V]'].data[-1] 
+        #I_cell[t_idx+1] = pybamm_condition['Current [A]'].data[-1] 
+        R_0_cell[t_idx+1]           = pybamm_condition['Resistance [Ohm]'].data[-1] 
+        LLI_cell[t_idx+1]           = pybamm_condition['Loss of lithium inventory [%]'].data[-1]
+        Q_heat_cell[t_idx+1]        = pybamm_condition['Total heating [W.m-3]'].data[-1] 
+        Cap_lost_cell[t_idx+1]      = pybamm_condition['Total capacity lost to side reactions [A.h]'].data[-1]
+        battery_module_conditions.cell.pybamm_condition['timestep_' + str(t_idx+1)] = pybamm_condition
 
-        experiment = pybamm.Experiment(
-            ["Discharge at "+ str(I_cell[t_idx]) + "A for " + str(delta_t) + " seconds"]#might be delta_t[t_idx]
-        ) #can change to step format 
-        simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = params) #setup simulation
-        simulation_solved = simulation.solve(initial_soc = state.SOC) #solving for time segment
-
-        initial_conditions =  deepcopy(simulation_solved)
-    else: 
-        model = model.set_initial_conditions_from(initial_conditions, inplace = False)
-
-        experiment = pybamm.Experiment(
-            ["Discharge at "+ str(I_cell[t_idx]) + "A for " + str(delta_t) + " seconds"]#might be delta_t[t_idx]
-        ) #can change to step format 
-        simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = params) #setup simulation
-        simulation_solved = simulation.solve(initial_soc = state.SOC) #solving for time segment
-
-    batt_capacity = simulation_solved['Discharge capacity [A.h]'].data[-1] #gives the charge throughput
-    V_ul_cell[t_idx+1] = simulation_solved['Voltage [V]'].data[-1] #gives the final voltage of the time segment
-    I_cell[t_idx+1] = simulation_solved['Current [A]'].data[-1] #gives the final current of the time segment, same as bus current
-    R_0_cell[t_idx+1] = simulation_solved['Resistance [Ohm]'].data[-1] #gives the final resistance of the time segment. not to be used for heat, just used pybamm
-    Q_heat_cell[t_idx+1]  = simulation_solved['Total heating [W.m-3]'].data[-1] #gives the heat generated during the time segment. 
-    LLI_cell[t_idx+1] = simulation_solved['Loss of lithium inventory [mol]'].data[-1] #gives the loss of lithium inventory during the time segment.
     
+
+    #pybamm_condition = battery_module_conditions.cell.pybamm_state['timestep_' + str(t_idx+1)]['solution'] #how to carry over the solution from the previous time step
+    #model = battery_module_conditions.cell.pybamm_state['timestep_' + str(t_idx+1)]['model']
+  
+
     
     stored_results_flag     = True
     stored_battery_module_tag     = battery_module.tag  
@@ -285,7 +230,7 @@ def reuse_stored_p30b_cell_data(battery_module,state,bus,stored_results_flag, st
     
     Properties Used: 
     N.A.        
-    ''' #should not have to moddify
+    ''' #should not have to modify
    
     state.conditions.energy[bus.tag].battery_modules[battery_module.tag] = deepcopy(state.conditions.energy[bus.tag].battery_modules[stored_battery_module_tag])
     

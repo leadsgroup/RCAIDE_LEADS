@@ -21,7 +21,7 @@ import numpy as np
 #  State
 # ----------------------------------------------------------------------------------------------------------------------
 class State(Conditions):
-    """ Creates the State data structure for storing daata that solved in a mission
+    """ Creates the State data structure for storing data that solved in a mission
     
         Assumptions:
         None

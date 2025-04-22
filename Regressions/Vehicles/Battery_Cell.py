@@ -36,7 +36,9 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
     if cell_chemistry == 'lithium_ion_nmc': 
         battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
     elif cell_chemistry == 'lithium_ion_lfp': 
-        battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP()    
+        battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP()
+    elif cell_chemistry == 'lithium_ion_p30b':
+        battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b()        
     bus.battery_modules.append(battery)  
     bus.initialize_bus_properties()
     
