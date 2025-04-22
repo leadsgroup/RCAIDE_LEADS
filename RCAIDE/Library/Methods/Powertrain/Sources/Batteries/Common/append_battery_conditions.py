@@ -166,7 +166,7 @@ def append_battery_conditions(battery_module,segment,bus):
                 bus_results.battery_modules[battery_module.tag].cell.pybamm_condition['timestep_' + str(i)]  = Container()
             experiment = pybamm.Experiment(["Discharge at "+ str(0.1) + "A for " + str(0.001) + " seconds"]) 
             simulation = pybamm.Simulation(battery_module.cell.model, experiment = experiment, parameter_values = battery_module.cell.battery_parameters) 
-            pybamm_solution = simulation.solve(initial_soc = 1) #incorrect SOC
+            pybamm_solution = simulation.solve() #SOC not set, relevant?
             #pybamm_solution = pybamm.solvers.solution.Solution()
 
             

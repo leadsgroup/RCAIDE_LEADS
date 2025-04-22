@@ -122,11 +122,17 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     E_module_max       = battery_module.maximum_energy #need to update maximum energy 
     P_module           = battery_module_conditions.power
     P_cell             = battery_module_conditions.cell.power 
-    R_0_cell           = battery_module_conditions.cell.internal_resistance 
+    R_0_cell           = battery_module_conditions.cell.internal_resistance
+    V_oc_module        = battery_module_conditions.voltage_open_circuit
+    V_oc_cell          = battery_module_conditions.cell.voltage_open_circuit  
     #Q_heat_cell        = battery_module_conditions.cell.heat_energy_generated 
     V_ul_cell          = battery_module_conditions.cell.voltage_under_load
+    V_ul_module        = battery_module_conditions.voltage_under_load
+    
     LLI_cell           = battery_module_conditions.cell.loss_of_lithium_inventory
     Q_heat_cell        = battery_module_conditions.cell.total_heat_generation
+    Q_heat_module      = battery_module_conditions.heat_energy_generated
+
     Cap_lost_cell      = battery_module_conditions.cell.capacity_lost
     pybamm_condition   = battery_module_conditions.cell.pybamm_condition['timestep_' + str(t_idx)] #.solution
 
@@ -137,11 +143,11 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     I_cell             = battery_module_conditions.cell.current 
     
     SOC_cell           = battery_module_conditions.cell.state_of_charge  
-    # SOC_module         = battery_module_conditions.state_of_charge
-    # E_cell             = battery_module_conditions.cell.energy   
-    # E_module           = battery_module_conditions.energy #mid segment capacity
+    SOC_module         = battery_module_conditions.state_of_charge
+    E_cell             = battery_module_conditions.cell.energy   
+    E_module           = battery_module_conditions.energy #mid segment capacity
     # Q_cell             = battery_module_conditions.cell.charge_throughput              
-    # DOD_cell           = battery_module_conditions.cell.depth_of_discharge
+    DOD_cell           = battery_module_conditions.cell.depth_of_discharge
     
     # ---------------------------------------------------------------------------------
     # Compute battery_module electrical properties 
@@ -174,9 +180,15 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
         I_module[t_idx]      = I_bus[t_idx] /len(bus.battery_modules)
 
     I_cell[t_idx] = I_module[t_idx] / n_parallel   
-       
+    Q_heat_module[t_idx]  = Q_heat_cell[t_idx]*n_total    
+    P_module[t_idx]       = P_bus[t_idx] /no_modules  - np.abs(Q_heat_module[t_idx]) 
 
-
+    V_oc_module[t_idx]     = V_oc_cell[t_idx]*n_series 
+    V_ul_module[t_idx]     = V_ul_cell[t_idx]*n_series  
+    #T_module[t_idx]        = T_cell[t_idx]   # Assume the cell temperature is the temperature of the module
+    P_cell[t_idx]          = P_module[t_idx]/n_total 
+    E_module[t_idx]        = E_bus[t_idx]/no_modules 
+    E_cell[t_idx]          = E_module[t_idx]/n_total 
 
     # ---------------------------------------------------------------------------------
     # PyBaMM analysis for a single cell
@@ -193,6 +205,10 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
         simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = battery_module.cell.battery_parameters) 
         pybamm_condition = simulation.solve(initial_soc = SOC_cell[0][0]) #be careful with [0] may be t_idx
     if(t_idx < len(delta_t)):
+        E_module[t_idx+1]                                     = (E_module[t_idx]) -P_module[t_idx]*delta_t[t_idx]
+        E_module[t_idx+1][E_module[t_idx+1] > E_module_max]   = np.float32(E_module_max)
+        SOC_cell[t_idx+1]                                     = E_module[t_idx+1]/E_module_max 
+
         V_ul_cell[t_idx+1]          = pybamm_condition['Voltage [V]'].data[-1] 
         #I_cell[t_idx+1] = pybamm_condition['Current [A]'].data[-1] 
         R_0_cell[t_idx+1]           = pybamm_condition['Resistance [Ohm]'].data[-1] 

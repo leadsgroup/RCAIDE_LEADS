@@ -73,12 +73,12 @@ def lithium_sulphur_battery_test(Ereq,Preq):
 def lithium_ion_battery_test():    
     
     # Operating conditions for battery p
-    curr                  = [1.5,3]  
-    C_rat                 = [0.5,1]  
+    curr                  = [1.5,3,1.5]  
+    C_rat                 = [0.5,1,.5]  
     marker_size           = 5 
     mAh                   = np.array([3800,2600,3000]) 
-    V_ul_true             = np.array([[3.176391931635407,3.1422615279089],[3.176391931635407,3.1422615279089]])
-    bat_temp_true         = np.array([[309.47942727882105,304.7804077267032], [309.65733640183896,304.9861235766863]])  
+    V_ul_true             = np.array([[3.176391931635407,3.1422615279089],[3.176391931635407,3.1422615279089], [3.176391931635407,3.1422615279089]])
+    bat_temp_true         = np.array([[309.47942727882105,304.7804077267032], [309.65733640183896,304.9861235766863], [309.47942727882105,304.7804077267032]])  
 
     # Plot parameters 
     marker                = ['s' ,'o' ,'P']
@@ -94,7 +94,7 @@ def lithium_ion_battery_test():
     axes5  = fig1.add_subplot(3,2,5) 
     axes6  = fig1.add_subplot(3,2,6)  
 
-    battery_chemistry     = ['lithium_ion_p30b']#['lithium_ion_nmc','lithium_ion_lfp','lithium_ion_p30b']    
+    battery_chemistry     = ['lithium_ion_nmc','lithium_ion_lfp','lithium_ion_p30b']   #['lithium_ion_p30b'] 
     electrical_config     = ['Series','Parallel'] 
     for j in range(len(curr)):      
         for i in range(len(battery_chemistry)):
