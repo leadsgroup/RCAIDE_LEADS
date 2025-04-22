@@ -89,11 +89,12 @@ def compute_aircraft_moment_of_inertia(vehicle, CG_location, update_MOI=True):
                                  
         for fuel_line in network.fuel_lines:
             for fuel_tank in fuel_line.fuel_tanks:
-                if isinstance(fuel_tank,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Central_Fuel_Tank ): 
-                    I, mass = compute_cuboid_moment_of_inertia(fuel_tank.origin, fuel_tank.fuel.mass_properties.mass, fuel_tank.length, fuel_tank.width, fuel_tank.height, 0, 0, 0, CG_location)
+                if isinstance(fuel_tank,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank): 
+                    I, mass = compute_cylinder_moment_of_inertia(fuel_tank.origin, fuel_tank.fuel.mass_properties.mass, fuel_tank.length, fuel_tank.width, fuel_tank.height, 0, 0, 0, CG_location)
                     I_network += I
                     MOI_mass += mass
-                if isinstance(fuel_tank,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Wing_Fuel_Tank): 
+                    
+                if isinstance(fuel_tank,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank) and ( fuel_tank.wing !=  None):
                     I, mass =  compute_wing_moment_of_inertia(vehicle.wings["main_wing"], mass=fuel_tank.fuel.mass_properties.mass, center_of_gravity = CG_location, fuel_flag=True)
                     I_network += I
                     MOI_mass += mass                    

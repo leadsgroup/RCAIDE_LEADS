@@ -194,6 +194,7 @@ class Fuselage(Component):
         self.vsp_data.xsec_num                      = None  # Number if XSecs in fuselage geom. 
         self.segments                               = Container()
         self.cabins                                 = Container()
+        self.cabin_offset                           = 0.0
 
         self.vsp_data                               = Data()
         self.vsp_data.xsec_id                       = ''       

@@ -35,7 +35,9 @@ def compute_layout_of_passenger_accommodations(fuselage, update_fuselage_propert
     for cabin in fuselage.cabins: 
         for cabin_class in cabin.classes: 
             cabin_class.percentage = cabin_class.length/cabin.length
-
+    
+    # add cabin offset to account (useful for BWBs and aircraft with H2 tanks)
+    LOPA[:, 2] += fuselage.cabin_offset 
     fuselage.layout_of_passenger_accommodations                      = Data()
     fuselage.layout_of_passenger_accommodations.object_coordinates   = LOPA
     fuselage.layout_of_passenger_accommodations.number_of_passengers = np.sum(LOPA[:,10])

@@ -18,8 +18,7 @@ from copy import deepcopy
 def update_blended_wing_body_planform(bwb_wing, update_planform = True):
     '''
     
-    '''
-
+    ''' 
     BWB_LOPA     = bwb_wing.layout_of_passenger_accommodations
     cabin_width  = BWB_LOPA.cabin_wdith
     
@@ -138,8 +137,7 @@ def update_blended_wing_body_planform(bwb_wing, update_planform = True):
         # update percent root chord values and the location of the lopa 
         if i == 0: 
             bwb_wing.chords.root       =  inner_chord
-            delta_x_0                  =  inner_sectional_cabin_chord *inner_chord
-            BWB_LOPA[:, 2]             += delta_x_0
+            delta_x_0                  =  inner_sectional_cabin_chord *inner_chord 
             outer_origin_x             += delta_x_0
         segment.root_chord_percent = inner_chord / bwb_wing.chords.root
         
