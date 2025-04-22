@@ -74,7 +74,8 @@ class Blended_Wing_Body(Main_Wing):
         self.areas.center_body                      = 0.0        
         self.areas.aft_centerbody                   = 0.0
         self.aft_centerbody_taper                   = 0.0
-        self.cabin_area                             = 0.0 
+        self.cabin_area                             = 0.0
+        self.cabin_offset                           = 0.0
           
         self.number_of_passengers                   = 0.0  
         self.layout_of_passenger_accommodations     = None 

@@ -230,9 +230,16 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
     # Composite utilization factor [0 no composite, 1 full composite]
     FCOMP   = composite_utilization_factor  
     ULF     = vehicle.flight_envelope.ultimate_load
-    if len(vehicle.fuselages) == 1:
+    
+
+    num_fus = len(vehicle.fuselages) 
+    for wing in vehicle.wings:
+        if type(wing) == RCAIDE.Library.Components.Wings.Blended_Wing_Body:
+            num_fus = 1
+            
+    if num_fus == 1:
         CAYF    = 1  # Multiple fuselage factor [1 one fuselage, 0.5 multiple fuselages]
-    elif len(vehicle.fuselage) > 1:
+    elif num_fus > 1:
         CAYF    = 0.5
     else:
         raise NotImplementedError

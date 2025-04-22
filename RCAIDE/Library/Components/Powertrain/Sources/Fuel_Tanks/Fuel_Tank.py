@@ -58,7 +58,7 @@ class Fuel_Tank(Component):
         self.mass_properties.empty_mass  = 0.0   
         self.secondary_fuel_flow         = 0.0
         self.fuel_selector_ratio         = 1.0 
-        self.wall_thickness              = 1.0 
+        self.wall_thickness              = 0.01
         self.fuel                        = None
          
 

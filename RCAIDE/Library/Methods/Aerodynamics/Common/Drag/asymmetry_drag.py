@@ -53,7 +53,7 @@ def asymmetry_drag(state, geometry, engine_out_location = 0,  single_engine_thru
     else:
         n_wing = 0
         for wing in wings:
-            if not isinstance(wing,Wings.Main_Wing): continue
+            if not (isinstance(wing,Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body)): continue
             n_wing = n_wing + 1
             reference_area = wing.sref
         if n_wing > 1:

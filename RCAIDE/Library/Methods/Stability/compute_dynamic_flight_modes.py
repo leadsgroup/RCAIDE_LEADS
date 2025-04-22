@@ -91,7 +91,7 @@ def compute_dynamic_flight_modes(state,settings,aircraft):
         for wing in aircraft.wings:
             if isinstance(wing,RCAIDE.Library.Components.Wings.Horizontal_Tail):
                 ht_tag  = wing.tag
-            if isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing):
+            if isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing) or isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
                 main_wing_tag = wing.tag
                 
         if main_wing_tag != None and  ht_tag !=None: 

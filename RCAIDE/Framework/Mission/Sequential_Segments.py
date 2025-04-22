@@ -15,7 +15,7 @@ from . import Segments
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ANALYSIS
-# ----------------------------------------------------------------------------------------------------------------------  -Mission
+# ----------------------------------------------------------------------------------------------------------------------  
 class Sequential_Segments(Segments.Segment.Container):
     """ Solves each segment one at time
     
@@ -48,7 +48,7 @@ class Sequential_Segments(Segments.Segment.Container):
         self.tag = 'mission'
         
         #   Initialize   
-        self.process.initialize                                = Process() 
+        self.process.initialize                                = Process()
         self.process.initialize.geometry                       = geometry 
         self.process.initialize.mass_properties                = mass_properties 
         self.process.initialize.aero                           = aerodynamics

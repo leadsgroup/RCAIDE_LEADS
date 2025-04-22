@@ -164,11 +164,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_tail_horizontal  = 0.0
     W_tail_vertical    = 0.0
     for wing in vehicle.wings:
-        if isinstance(wing, Wings.Main_Wing):
+        if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body): 
             num_main_wings += 1
     
     for wing in vehicle.wings:
-        if isinstance(wing, Wings.Main_Wing): 
+        if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body):  
             W_wing = Raymer.compute_main_wing_weight(vehicle, wing, settings) 
             # Apply weight factor
             W_wing = W_wing * (1. - W_factors.main_wing) * (1. - W_factors.structural)

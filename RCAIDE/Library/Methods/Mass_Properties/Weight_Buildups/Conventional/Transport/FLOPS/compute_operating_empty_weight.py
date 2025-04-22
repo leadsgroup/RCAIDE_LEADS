@@ -141,7 +141,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         else:
             flap_ratio = 0.33
         for wing in vehicle.wings:
-            if isinstance(wing, Wings.Main_Wing):
+            if isinstance(wing, Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body):
                 wing.flap_ratio = flap_ratio 
                 
     ##-------------------------------------------------------------------------------             
@@ -266,11 +266,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_tail_horizontal  = 0.0
     W_tail_vertical    = 0.0
     for wing in vehicle.wings:
-        if isinstance(wing, Wings.Main_Wing):
+        if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body): 
             num_main_wings += 1
     
     for wing in vehicle.wings:
-        if isinstance(wing, Wings.Main_Wing): 
+        if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body): 
             complexity = settings.FLOPS.complexity
             W_wing = FLOPS.compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wings)
 

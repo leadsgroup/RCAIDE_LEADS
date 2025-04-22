@@ -105,7 +105,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
         else:
             flap_ratio = 0.33
         for wing in vehicle.wings:
-            if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) or isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
                 wing.flap_ratio = flap_ratio 
         
     TOW         = vehicle.mass_properties.max_takeoff

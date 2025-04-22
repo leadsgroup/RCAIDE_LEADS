@@ -94,15 +94,15 @@ def compute_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,outer_seg
 
     inner_front_rib_yu,inner_rear_rib_yu,inner_front_rib_yl,inner_rear_rib_yl = compute_non_dimensional_rib_coordinates(inner_segment)
     inner_segment_chord     = wing.chords.root * inner_segment.root_chord_percent
-    inner_front_rib_length  = abs(inner_front_rib_yu) + abs( ) 
-    inner_rear_rib_length   = abs(inner_rear_rib_yu) + abs(inner_rear_rib_yl) 
-    inner_wingbox_length    = inner_segment_chord(inner_segment.structural.rear_spar_percent_chord -inner_segment.structural.front_spar_percent_chord)  
+    inner_front_rib_length  = inner_segment_chord * (abs(inner_front_rib_yu) + abs(inner_front_rib_yl)) 
+    inner_rear_rib_length   = inner_segment_chord * (abs(inner_rear_rib_yu) + abs(inner_rear_rib_yl) )
+    inner_wingbox_length    = inner_segment_chord * (inner_segment.structural.rear_spar_percent_chord -inner_segment.structural.front_spar_percent_chord)  
     
     outer_front_rib_yu,outer_rear_rib_yu,outer_front_rib_yl,outer_rear_rib_yl = compute_non_dimensional_rib_coordinates(outer_segment)
     outer_segment_chord     = wing.chords.root * outer_segment.root_chord_percent
-    outer_front_rib_length  = abs(outer_front_rib_yu) + abs(outer_front_rib_yl) 
-    outer_rear_rib_length   = abs(outer_rear_rib_yu) + abs(outer_rear_rib_yl) 
-    outer_wingbox_length    = outer_segment_chord(outer_segment.structural.rear_spar_percent_chord -outer_segment.structural.front_spar_percent_chord)   
+    outer_front_rib_length  = outer_segment_chord * (abs(outer_front_rib_yu) + abs(outer_front_rib_yl)) 
+    outer_rear_rib_length   = outer_segment_chord * (abs(outer_rear_rib_yu) + abs(outer_rear_rib_yl))
+    outer_wingbox_length    = outer_segment_chord * (outer_segment.structural.rear_spar_percent_chord -outer_segment.structural.front_spar_percent_chord)   
      
     z_outer_center = inner_segment.origin[0][2] + delta_span *np.tan(inner_segment.dihedral_outboard)
     inner_segment_thickness =  np.minimum(inner_front_rib_length,inner_rear_rib_length)
@@ -126,11 +126,11 @@ def compute_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,outer_seg
     dy_lower   = y_outer_lower - y_inner_lower
     
     # determine slopes 
-    upper_slope = np.arctan(dy_upper/dz_upper)
-    lower_slope = np.arctan(dy_lower/dz_lower) 
+    upper_slope = np.arctan(dz_upper/dy_upper) # might need to make negative
+    lower_slope = np.arctan(dz_lower/dy_lower) 
     
     # determine tank diameter and location of next spar 
-    D         = 10
+    D         = 1
     epsilon_D = 10 
     
     
@@ -149,7 +149,7 @@ def compute_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,outer_seg
         
         epsilon_D  =  AB + DC - AD - BC
         
-        delta_AD =  epsilon_D / (1 +  np.cos(upper_slope) /np.cos(lower_slope) )
+        delta_AD = epsilon_D / (1 +  np.cos(upper_slope) /np.cos(lower_slope) )
         
         detla_D  = delta_AD *  np.cos(upper_slope)
         
@@ -170,10 +170,13 @@ def compute_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,outer_seg
     # delete original outer segment and replace with segment 
     tank_span_location = inner_segment.percent_span_location + (2 * D) / wing.spans.projected
      
+    # get length of tank
     l = np.minimum(outer_wingbox_length,inner_wingbox_length)
-    r =  fuel_tank.inner_dimater  / 2
+    
+    
+    r =  fuel_tank.inner_dimater / 2
     volume = np.pi * ( r** 2) * l +  4 / 3 * np.pi * ( r** 3) 
-    if wing.symmetrc:
+    if wing.symmetric:
         volume *= 2
     
     fuel_tank.length = l
