@@ -76,9 +76,10 @@ class Coolant_Line(Component):
         self.tag                            = 'coolant_line' 
         self.heat_exchangers                = Container()
         self.reservoirs                     = Container() 
+    
 
                     
-    def __init__ (self, distributor=None):
+    def __init__ (self, network = None, distributor=None):
         """
         Initialize coolant line and set up containers for thermal management components
         
@@ -97,6 +98,15 @@ class Coolant_Line(Component):
         """               
         self.active                        = True 
         self.efficiency                    = 1.0
+        if network is not None:
+            for tag, item in  network.items():
+                if tag == 'propulsors':
+                    if not hasattr(self, 'propulsors'):
+                        self.propulsor = Container()
+                    for propulsor in item:
+                        self.propulsor[propulsor.tag] = Container()
+
+                        # add an if statement and check for motors and add it here
         if distributor is not None:
             for tag, item in  distributor.items():
                 self.identical_battery_modules  =  distributor.identical_battery_modules

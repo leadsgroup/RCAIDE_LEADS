@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Thermal_Management/__init__.py
+# RCAIDE/Library/Methods/Thermal_Management/Motors/__init__.py
 # 
 
 """ Documentation to come!
@@ -7,8 +7,5 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+from . import Air_Cooled
 
-from . import Batteries
-from . import Heat_Exchangers
-from . import Reservoirs
-from . import Motors
