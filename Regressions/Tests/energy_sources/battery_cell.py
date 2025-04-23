@@ -74,7 +74,7 @@ def lithium_ion_battery_test():
     
     # Operating conditions for battery p
     curr                  = [1.5,3]  
-    C_rat                 = [0.5,1,.5]  
+    C_rat                 = [0.5,1]  
     marker_size           = 5 
     mAh                   = np.array([3800,2600,3000]) 
     V_ul_true             = np.array([[3.176391931635407,3.1422615279089,3.1422615279089],[3.176391931635407,3.1422615279089,3.1422615279089], [3.176391931635407,3.1422615279089,3.1422615279089]]) #heavily modified
