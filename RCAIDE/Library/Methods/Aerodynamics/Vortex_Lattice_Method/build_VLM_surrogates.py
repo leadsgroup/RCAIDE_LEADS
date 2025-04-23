@@ -116,6 +116,7 @@ def build_surrogate(aerodynamics, training):
     
     if aerodynamics.elevator_flag: 
         surrogates.dCM_ddelta_e     = interpolate.interp1d(mach_data,training.dCM_ddelta_e     ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
+        surrogates.dClift_ddelta_e  = interpolate.interp1d(mach_data,training.dClift_ddelta_e  ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
         
     
     if aerodynamics.rudder_flag: 

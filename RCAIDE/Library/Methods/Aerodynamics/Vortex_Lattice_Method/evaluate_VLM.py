@@ -234,14 +234,14 @@ def evaluate_surrogate(state,settings,vehicle):
         else:
             conditions.static_stability.derivatives.CM_delta_e = aerodynamics.stability_derivatives.CM_delta_e* ones_row
     
-        if aerodynamics.stability_derivatives.CLift_delta_e == None:
-            conditions.static_stability.derivatives.Clift_delta_e     = compute_stability_derivative(sub_sur.dCLift_ddelta_e     ,trans_sur.dCLift_ddelta_e     ,sup_sur.dCLift_ddelta_e     ,h_sub,h_sup,Mach)
+        if aerodynamics.stability_derivatives.Clift_delta_e == None:
+            conditions.static_stability.derivatives.Clift_delta_e     = compute_stability_derivative(sub_sur.dClift_ddelta_e     ,trans_sur.dClift_ddelta_e     ,sup_sur.dClift_ddelta_e     ,h_sub,h_sup,Mach)
         else:
-            conditions.static_stability.derivatives.CLift_delta_e = aerodynamics.stability_derivatives.CLift_delta_e* ones_row 
-        conditions.static_stability.coefficients.lift                           +=  conditions.static_stability.derivatives.CLift_delta_e * conditions.control_surfaces.elevator.deflection   
+            conditions.static_stability.derivatives.Clift_delta_e = aerodynamics.stability_derivatives.Clift_delta_e* ones_row 
+        conditions.static_stability.coefficients.lift                           +=  conditions.static_stability.derivatives.Clift_delta_e * conditions.control_surfaces.elevator.deflection   
         conditions.static_stability.coefficients.M                              += conditions.static_stability.derivatives.CM_delta_e * conditions.control_surfaces.elevator.deflection  
         conditions.control_surfaces.elevator.static_stability.coefficients.M    = conditions.static_stability.derivatives.CM_delta_e * conditions.control_surfaces.elevator.deflection   
-        conditions.control_surfaces.elevator.static_stability.coefficients.lift = conditions.static_stability.derivatives.CLift_delta_e * conditions.control_surfaces.elevator.deflection   
+        conditions.control_surfaces.elevator.static_stability.coefficients.lift = conditions.static_stability.derivatives.Clift_delta_e * conditions.control_surfaces.elevator.deflection   
     
     # Rudder  
     if aerodynamics.rudder_flag:  

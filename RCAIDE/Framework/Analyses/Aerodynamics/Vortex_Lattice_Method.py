@@ -187,12 +187,12 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.stability_derivatives.CL_delta_a                       = None
         self.stability_derivatives.CN_delta_a                       = None
         self.stability_derivatives.CM_delta_e                       = None
-        self.stability_derivatives.CLift_delta_e                    = None
+        self.stability_derivatives.Clift_delta_e                    = None
         self.stability_derivatives.CY_delta_r                       = None
         self.stability_derivatives.CL_delta_r                       = None
         self.stability_derivatives.CN_delta_r                       = None
         self.stability_derivatives.CM_delta_f                       = None
-        self.stability_derivatives.CLift_delta_f                    = None
+        self.stability_derivatives.Clift_delta_f                    = None
                                       
         # surrogoate models                                  
         self.surrogates                                             = Data() 
