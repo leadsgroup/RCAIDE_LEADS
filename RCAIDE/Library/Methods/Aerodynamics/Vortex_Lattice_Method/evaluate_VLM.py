@@ -192,6 +192,11 @@ def evaluate_surrogate(state,settings,vehicle):
     else:
         conditions.static_stability.derivatives.CN_r        = aerodynamics.stability_derivatives.CN_r * ones_row 
      
+    if aerodynamics.stability_derivatives.Clift_alpha ==None:
+        conditions.static_stability.derivatives.Clift_alpha        = compute_stability_derivative(sub_sur.dClift_dalpha        ,trans_sur.dClift_dalpha        ,sup_sur.dClift_dalpha        ,h_sub,h_sup,Mach)
+    else:
+        conditions.static_stability.derivatives.Clift_alpha       = aerodynamics.stability_derivatives.Clift_alpha * ones_row 
+     
     conditions.static_stability.coefficients.lift   = Clift_alpha * np.cos(Phi)   
     conditions.static_stability.coefficients.drag   = Cdrag_alpha # + Cdrag_u + Cdrag_w + Cdrag_q
     conditions.static_stability.coefficients.Y      = conditions.static_stability.derivatives.CY_beta *Beta 
