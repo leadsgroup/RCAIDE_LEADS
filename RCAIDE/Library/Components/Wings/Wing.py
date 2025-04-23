@@ -204,7 +204,7 @@ class Wing(Component):
         self.chords.tip                        = 0.0
                                                
         self.sweeps                            = Data()
-        self.sweeps.quarter_chord              = 0.0
+        self.sweeps.quarter_chord              = None
         self.sweeps.leading_edge               = None
         self.sweeps.half_chord                 = 0.0        
                                                

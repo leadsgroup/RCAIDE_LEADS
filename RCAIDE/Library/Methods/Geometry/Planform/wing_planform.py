@@ -7,7 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Data 
+from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments
 
 # package imports 
 import numpy as np
@@ -66,12 +67,28 @@ def wing_planform(wing, overwrite_reference = True):
         dihedrals = []
         chords    = []
         t_cs      = []
-        for key in wing.segments.keys():
-            seg = wing.segments[key]
+
+        seg_keys = list(wing.segments.keys())  
+        for i in range(len(wing.segments)): 
+            seg       = wing.segments[seg_keys[i]]
             span_locs.append(seg.percent_span_location)
             twists.append(seg.twist)
             chords.append(seg.root_chord_percent)
-            sweeps.append(seg.sweeps.quarter_chord)
+            
+            if seg.sweeps.quarter_chord !=  None: 
+                sweeps.append(seg.sweeps.quarter_chord)                
+            
+            elif seg.sweeps.quarter_chord == None and  seg.sweeps.leading_edge != None:
+                # covert leading edge to quarter chord
+                if i == len(wing.segments) - 1:
+                    sweeps.append(0)
+                else: 
+                    next_seg  = wing.segments[seg_keys[i+1]]                
+                    quarter_chord =  convert_sweep_segments(seg.sweeps.leading_edge, seg, next_seg, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25) # CHANGE 
+                    sweeps.append(quarter_chord)            
+            else:
+                raise AssertionError("Quarter chord or leading edge sweep must be defined") 
+                 
             t_cs.append(seg.thickness_to_chord)
             dihedrals.append(seg.dihedral_outboard)
             
@@ -132,7 +149,7 @@ def wing_planform(wing, overwrite_reference = True):
         le_sweeps = np.arctan((r_offsets+np.tan(sweeps[:-1])*(lengths_dim)-t_offsets)/(lengths_dim))    
         
         # Calculate the effective sweeps
-        c_4_sweep   = np.arctan(np.sum(lengths_ndim*np.tan(sweeps[:-1])))
+        c_4_sweep     = np.arctan(np.sum(lengths_ndim*np.tan(sweeps[:-1])))
         le_sweep_total= np.arctan(np.sum(lengths_ndim*np.tan(le_sweeps)))
     
         # Calculate the aerodynamic center, but first the centroid
@@ -157,7 +174,6 @@ def wing_planform(wing, overwrite_reference = True):
         # Total length for supersonics
         total_length = np.tan(le_sweep_total)*semispan + chords[-1]*RC
         
-        seg_keys = list(wing.segments.keys())
         for i in range(len(wing.segments) - 1):
             wing.segments[seg_keys[i]].sweeps.leading_edge = le_sweeps[i]
             wing.segments[seg_keys[i]].origin = [[dxs[i],dys[i],dzs[i]]]

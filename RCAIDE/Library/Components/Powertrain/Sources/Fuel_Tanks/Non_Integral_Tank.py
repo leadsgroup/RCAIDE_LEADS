@@ -66,8 +66,6 @@ class Non_Integral_Tank(Fuel_Tank):
         self.fuel_selector_ratio         = 1.0 
         self.mass_properties.empty_mass  = 0.0   
         self.secondary_fuel_flow         = 0.0 
-        self.wall_clearance              = 0.0
-        self.outer_diameter              = 0.0
         self.fuel                        = None 
 
     def __init__ (self, compoment=None):

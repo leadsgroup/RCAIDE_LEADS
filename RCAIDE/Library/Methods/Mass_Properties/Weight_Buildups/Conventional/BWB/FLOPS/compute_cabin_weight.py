@@ -40,19 +40,20 @@ def compute_cabin_weight(vehicle,settings):
     span                     = 0
     segment_le_sweeps        = []
     for wing in  vehicle.wings:
-        span =  np.maximum(span,wing.spans.projected )
-        root_chord =  np.maximum(root_chord,wing.chords.root)
-        for segment in wing:
-            if isinstance(segment, RCAIDE.Library.Components.Fuselages.Segments.Blended_Wing_Segment):
-                fus_seg_max_percent_span =  np.maximum(fus_seg_max_percent_span,segment.percent_span_location  )
-                segment_le_sweeps.append(segment.sweeps.leading_edge/Units.degree)
-                
+
         if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            A_CB     =  wing.areas.center_body / Units['feet^2']               
+            A_CB =  wing.areas.center_body / Units['feet^2'] 
+            span =  np.maximum(span,wing.spans.projected )
+            root_chord =  np.maximum(root_chord,wing.chords.root)
+            for segment in wing.segments:
+                if isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
+                    fus_seg_max_percent_span =  np.maximum(fus_seg_max_percent_span,segment.percent_span_location  )
+                    segment_le_sweeps.append(segment.sweeps.leading_edge/Units.degree)
+                  
     
      # convert to imperial units
     TOGW     =  vehicle.mass_properties.max_takeoff*9.81/ Units.lbf
-    THETA_CB = np.array(segment_le_sweeps ) / len(segment_le_sweeps)
+    THETA_CB = np.sum(np.array(segment_le_sweeps ))/ len(segment_le_sweeps)
 
     if settings.PRSEUS:
         SR  = fus_seg_max_percent_span

@@ -56,12 +56,14 @@ def compute_landing_gear_weight(vehicle):
         RFACT = 0.00004
     DESRNG  = vehicle.flight_envelope.design_range / Units.nmi  # Design range in nautical miles
     WLDG    = vehicle.mass_properties.max_takeoff / Units.lbs * (1 - RFACT * DESRNG)
-    
+
+    l_f =  0    
     for wing in vehicle.wings:
         if isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing):
             main_wing = wing
+        if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            l_f =  wing.chords.root
     
-    l_f =  0
     for fuselage in vehicle.fuselages:
         if l_f < fuselage.lengths.total:
             main_fuselage = fuselage 
@@ -77,7 +79,7 @@ def compute_landing_gear_weight(vehicle):
                 WF      = main_fuselage.width / Units.ft
                 XMLG    = 12 * FNAC + (0.26 - np.tan(DIH)) * (YEE - 6 * WF)  # length of extended main landing gear
             else:
-                XMLG    = 0.75 * main_fuselage.lengths.total / Units.ft  # length of extended nose landing gear
+                XMLG    = 0.75 * l_f / Units.ft  # length of extended nose landing gear
     XNLG = 0.7 * XMLG
     WLGM = (0.0117 - 0.0012 * DFTE) * WLDG ** 0.95 * XMLG ** 0.43
     WLGN = (0.048 - 0.0080 * DFTE) * WLDG ** 0.67 * XNLG ** 0.43 * (1 + 0.8 * CARBAS)

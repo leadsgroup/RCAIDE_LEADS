@@ -61,7 +61,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     if not hasattr(vehicle, 'flap_ratio'):
         flap_ratio = 0.33
         for wing in vehicle.wings:
-            if isinstance(wing, Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body):
+            if isinstance(wing, Wings.Main_Wing):
                 wing.flap_ratio = flap_ratio 
                 
     ##-------------------------------------------------------------------------------             

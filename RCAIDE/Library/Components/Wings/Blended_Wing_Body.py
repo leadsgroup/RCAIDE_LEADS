@@ -93,7 +93,11 @@ class Blended_Wing_Body(Main_Wing):
         self.lengths                                = Data()     
         self.lengths.nose                           = 0.0
         self.lengths.tail                           = 0.0
-        self.lengths.total                          = 0.0
+        self.lengths.total                          = 0.0 
+
+        self.fineness                               = Data() 
+        self.fineness.nose                          = 0.0 
+        self.fineness.tail                          = 0.0
         
         self.x_rotation                             = 0.0
         self.y_rotation                             = 0.0
@@ -118,27 +122,4 @@ class Blended_Wing_Body(Main_Wing):
         # Store data
         self.cabins.append(cabin)
 
-        return     
-    
-    def compute_moment_of_inertia(self, center_of_gravity): 
-        """
-        Computes the moment of inertia tensor for the BWB fuselage.
-
-        Parameters
-        ----------
-        center_of_gravity : array-like
-            The (x, y, z) coordinates of the center of gravity about which to compute
-            the moment of inertia
-
-        Returns
-        -------
-        I : ndarray
-            3x3 moment of inertia tensor in kg*m^2
-
-        Notes
-        -----
-        Currently returns a zero matrix. This is a placeholder that should be implemented
-        with actual BWB moment of inertia calculations.
-        """
-        I = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]]) 
-        return I        
+        return      

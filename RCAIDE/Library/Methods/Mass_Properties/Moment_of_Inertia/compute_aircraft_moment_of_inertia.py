@@ -90,7 +90,7 @@ def compute_aircraft_moment_of_inertia(vehicle, CG_location, update_MOI=True):
         for fuel_line in network.fuel_lines:
             for fuel_tank in fuel_line.fuel_tanks:
                 if isinstance(fuel_tank,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank): 
-                    I, mass = compute_cylinder_moment_of_inertia(fuel_tank.origin, fuel_tank.fuel.mass_properties.mass, fuel_tank.length, fuel_tank.width, fuel_tank.height, 0, 0, 0, CG_location)
+                    I, mass = compute_cylinder_moment_of_inertia(fuel_tank.origin, fuel_tank.fuel.mass_properties.mass, fuel_tank.length, fuel_tank.outer_diameter/2, 0, 0, CG_location)
                     I_network += I
                     MOI_mass += mass
                     

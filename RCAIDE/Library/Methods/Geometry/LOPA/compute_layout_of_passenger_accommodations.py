@@ -108,7 +108,7 @@ def compute_fuselage_dimensions(fuselage,update_fuselage_properties):
         fuselage.lengths.tail          = fuselage.fineness.tail*LOPA.cabin_wdith   
         fuselage.lengths.total         = fuselage.lengths.nose + fuselage.lengths.tail + LOPA.cabin_length
         fuselage.width                 = LOPA.cabin_wdith
-        fuselage.number_of_passengers  = np.sum(LOPA[:,10])
+        fuselage.number_of_passengers  = np.sum(LOPA_coords[:,10])
     
     return  
 

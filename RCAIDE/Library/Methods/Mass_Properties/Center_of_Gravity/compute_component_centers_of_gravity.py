@@ -100,7 +100,10 @@ def compute_component_centers_of_gravity(vehicle, nose_load = 0.06):
     # Check if there is a fuselage
     if len(vehicle.fuselages) == 0.:
         for wing in vehicle.wings:
-            if isinstance(wing,C.Wings.Main_Wing) or isinstance(wing,C.Wings.Blended_Wing_Body):
+            if isinstance(wing,C.Wings.Main_Wing):
+                if isinstance(wing,C.Wings.Blended_Wing_Body): 
+                    length       = wing.chords.root
+                    length_scale = length 
                 b = wing.chords.root
                 if b>length_scale:
                     length_scale = b

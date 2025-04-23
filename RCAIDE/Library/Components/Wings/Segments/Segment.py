@@ -101,7 +101,7 @@ class Segment(Component):
         self.thickness_to_chord                  = 0.0
                     
         self.sweeps                              = Data()
-        self.sweeps.quarter_chord                = 0.0
+        self.sweeps.quarter_chord                = None
         self.sweeps.leading_edge                 = None
                 
         self.chords                              = Data()
