@@ -128,7 +128,13 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,oute
     
     clearance  = fuel_tank.wall_clearance  
     delta_span = (outer_segment.percent_span_location - inner_segment.percent_span_location) /2 * wing.spans.projected 
-
+    
+    
+    # update the location of the inner segment so that it is not always the wing defined segment but where the tank ends
+    # to do this, you have to create a sybolic segment by interpolation that is at the tank_span_location
+    # send that as the "inner segment"
+    # you do this until the the tank_span_location> outer_segment
+    
     inner_front_rib_yu,inner_rear_rib_yu,inner_front_rib_yl,inner_rear_rib_yl = compute_non_dimensional_rib_coordinates(inner_segment)
     inner_segment_chord     = wing.chords.root * inner_segment.root_chord_percent
     inner_front_rib_length  = inner_segment_chord * (abs(inner_front_rib_yu) + abs(inner_front_rib_yl)) 
