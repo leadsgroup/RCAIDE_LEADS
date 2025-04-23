@@ -177,6 +177,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.stability_derivatives.CL_p                             = None
         self.stability_derivatives.CL_r                             = None
         self.stability_derivatives.CM_alpha                         = None
+        self.stability_derivatives.CM_0                             = None
         self.stability_derivatives.CM_u                             = None
         self.stability_derivatives.CM_q                             = None
         self.stability_derivatives.CN_beta                          = None

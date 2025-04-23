@@ -349,31 +349,53 @@ def train_model(aerodynamics, Mach):
     training.CL_beta           = CL_beta  
     training.CM_beta           = CM_beta
     training.CN_beta           = CN_beta 
-     
+
+    training.CX_u              = CX_u
+    training.CZ_u              = CZ_u
+    training.CM_u              = CM_u
+
+    training.CM_q              = CM_q
+    training.CZ_q              = CZ_q
+
+    training.CL_p              = CL_p
+    training.CN_p              = CN_p
+    training.CY_p              = CY_p
+
+    training.CL_r              = CL_r
+    training.CN_r              = CN_r
+    training.CY_r              = CY_r 
       
+
+    correction_factor = Data()
+    correction_factor.dCY_dbeta = 1#10
+    correction_factor.dCL_dp    = 1#-2
+    correction_factor.dCM_dq    = 1#10
+    correction_factor.dCN_dp    = 1#-3
+    correction_factor.dCN_dr    = 1#3
+
     # STABILITY DERIVATIVES 
     training.dClift_dalpha = (Clift_alpha[0,:] - Clift_alpha[1,:]) / (AoA[0] - AoA[1])       
     training.dCX_dalpha = (CX_alpha[0,:] - CX_alpha[1,:]) / (AoA[0] - AoA[1])       
     training.dCX_du = (CX_u[0,:] - CX_u[1,:]) / (u[0] - u[1])                                     
 
-    training.dCY_dbeta = 2*((CY_beta[0,:] - CY_beta[1,:]) / (Beta[0] - Beta[1])) # Note correction 
-    training.dCY_dr     = (CY_r[0,:] - CY_r[1,:]) / (yaw_rate[0]-yaw_rate[1])   # Added here   
+    training.dCY_dbeta = correction_factor.dCY_dbeta*((CY_beta[0,:] - CY_beta[1,:]) / (Beta[0] - Beta[1])) # Note correction 
+    training.dCY_dr     = (CY_r[0,:] - CY_r[1,:]) / (yaw_rate[0]-yaw_rate[1]) 
 
     training.dCZ_dalpha = (CZ_alpha[0,:] - CZ_alpha[1,:]) / (AoA[0] - AoA[1])             
     training.dCZ_du = (CZ_u[0,:] - CZ_u[1,:]) / (u[0] - u[1])    
     training.dCZ_dq     = (CZ_q[0,:] - CZ_q[1,:]) / (pitch_rate[0]-pitch_rate[1])    
     
     training.dCL_dbeta = ((CL_beta[0,:] - CL_beta[1,:]) / (Beta[0] - Beta[1]))  
-    training.dCL_dp = -2*((CL_p[0,:] - CL_p[1,:]) / (roll_rate[0]-roll_rate[1]))    # Note correction 
+    training.dCL_dp = correction_factor.dCL_dp*((CL_p[0,:] - CL_p[1,:]) / (roll_rate[0]-roll_rate[1]))    # Note correction 
     training.dCL_dr = (CL_r[0,:] - CL_r[1,:]) / (yaw_rate[0]-yaw_rate[1])    
 
     training.dCM_dalpha = (CM_alpha[0,:] - CM_alpha[1,:]) / (AoA[0] - AoA[1])          
     training.dCM_du = (CM_u[0,:] - CM_u[1,:]) / (u[0] - u[1])                                               
-    training.dCM_dq = 10*((CM_q[0,:] - CM_q[1,:]) / (pitch_rate[0]-pitch_rate[1]))  # Note correction           
+    training.dCM_dq = correction_factor.dCM_dq*((CM_q[0,:] - CM_q[1,:]) / (pitch_rate[0]-pitch_rate[1]))  # Note correction           
             
     training.dCN_dbeta = (CN_beta[0,:] - CN_beta[1,:]) / (Beta[0] - Beta[1]) 
-    training.dCN_dp = -3*((CN_p[0,:] - CN_p[1,:]) / (roll_rate[0]-roll_rate[1]))   # Note correction               
-    training.dCN_dr = 3*((CN_r[0,:] - CN_r[1,:]) / (yaw_rate[0]-yaw_rate[1])) # Note correction 
+    training.dCN_dp = correction_factor.dCN_dp*((CN_p[0,:] - CN_p[1,:]) / (roll_rate[0]-roll_rate[1]))   # Note correction               
+    training.dCN_dr = correction_factor.dCN_dr*((CN_r[0,:] - CN_r[1,:]) / (yaw_rate[0]-yaw_rate[1])) # Note correction 
 
     '''  for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces'''
       
@@ -481,7 +503,7 @@ def train_model(aerodynamics, Mach):
                     vehicle.wings[wing.tag].control_surfaces.flap.deflection = 0 
                     Clift_d_f[f_i,:] = Clift_res[:,0]  - Clift_alpha_0[0,:]  
                     CM_d_f[f_i,:]    = CM_res[:,0]   - CM_alpha_0[0,:]            
-                training.dLift_ddelta_f  = (Clift_d_f[0,:] - Clift_d_f[1,:]) / (delta_f[0] - delta_f[1]) 
+                training.dClift_ddelta_f  = (Clift_d_f[0,:] - Clift_d_f[1,:]) / (delta_f[0] - delta_f[1]) 
                 training.dCM_ddelta_f    = (CM_d_f[0,:] - CM_d_f[1,:]) / (delta_f[0] - delta_f[1])  
     
     
@@ -527,7 +549,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     CL_alpha      =  np.concatenate((training_subsonic.CL_alpha[:,-1][:,None]    , training_supersonic.CL_alpha[:,0][:,None] ), axis = 1)   
     CM_alpha      =  np.concatenate((training_subsonic.CM_alpha[:,-1][:,None]    , training_supersonic.CM_alpha[:,0][:,None] ), axis = 1)   
     CN_alpha      =  np.concatenate((training_subsonic.CN_alpha[:,-1][:,None]    , training_supersonic.CN_alpha[:,0][:,None] ), axis = 1) 
-    CM_0      =  np.concatenate((training_subsonic.CM_0[:,-1][:,None]    , training_supersonic.CM_0[:,0][:,None] ), axis = 1)     
+    CM_0          =  np.concatenate((training_subsonic.CM_0[:][-1,None]    , training_supersonic.CM_0[:][0,None] ))     
 
     Clift_wing_alpha = Data()
     Cdrag_wing_alpha = Data() 
