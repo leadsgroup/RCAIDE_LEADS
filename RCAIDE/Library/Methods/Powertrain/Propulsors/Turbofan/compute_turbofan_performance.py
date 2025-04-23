@@ -14,15 +14,15 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Compressor           import co
 from RCAIDE.Library.Methods.Powertrain.Converters.Fan                  import compute_fan_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Turbine              import compute_turbine_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle     import compute_expansion_nozzle_performance 
-from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import compute_supersonic_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import compute_compression_nozzle_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import compute_supersonic_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan             import compute_thrust
 
 import  numpy as  np
 from copy import  deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------
-# compute_performance
+# compute_turbofan_performance
 # ----------------------------------------------------------------------------------------------------------------------   
 def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
@@ -86,8 +86,6 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
                 Core nozzle component
                     - tag : str
                         Identifier for the core nozzle
-            - afterburner_active : bool
-                Flag indicating if afterburner is active
             - fan_nozzle : Data
                 Fan nozzle component
                     - tag : str
@@ -169,17 +167,16 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
         7. Compute combustor performance
         8. Compute high pressure turbine performance
         9. Compute low pressure turbine performance
-        10. Compute afterburner performance (if active)
-        11. Compute core nozzle performance
-        12. Compute fan nozzle performance
-        13. Compute thrust and power output
-        14. Calculate efficiencies
-        15. Handle electrical power generation/consumption if applicable
+        10. Compute core nozzle performance
+        11. Compute fan nozzle performance
+        12. Compute thrust and power output
+        13. Calculate efficiencies
+        14. Handle electrical power generation/consumption if applicable
     
     **Major Assumptions**
         * Steady state operation
         * One-dimensional flow through components
-        * Adiabatic components except for the combustor and afterburner
+        * Adiabatic components except for the combustor
         * Perfect gas behavior with variable properties
     
     References
@@ -205,11 +202,11 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     combustor                 = turbofan.combustor
     high_pressure_turbine     = turbofan.high_pressure_turbine
     low_pressure_turbine      = turbofan.low_pressure_turbine
-    if  turbofan.afterburner_active == True:
-        afterburner               = turbofan.afterburner 
     core_nozzle               = turbofan.core_nozzle
     fan_nozzle                = turbofan.fan_nozzle 
     bypass_ratio              = turbofan.bypass_ratio 
+    if  turbofan.afterburner_active == True:
+        afterburner               = turbofan.afterburner 
     
     # unpack component conditions 
     ram_conditions          = conditions.energy.converters[ram.tag]    
@@ -220,10 +217,10 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     combustor_conditions    = conditions.energy.converters[combustor.tag]     
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
-    if  turbofan.afterburner_active == True:
-        afterburner_conditions  = conditions.energy.converters[afterburner.tag] 
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
     fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
+    if  turbofan.afterburner_active == True:
+        afterburner_conditions  = conditions.energy.converters[afterburner.tag] 
 
  
     # Set the working fluid to determine the fluid properties
@@ -324,7 +321,8 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     # Flow through the low pressure turbine
     compute_turbine_performance(low_pressure_turbine,conditions)
 
-    if  turbofan.afterburner_active == True:
+    if turbofan.afterburner_active == True:
+        
         #link the core nozzle to the afterburner
         afterburner_conditions.inputs.stagnation_temperature = lpt_conditions.outputs.stagnation_temperature
         afterburner_conditions.inputs.stagnation_pressure    = lpt_conditions.outputs.stagnation_pressure   
@@ -345,19 +343,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
         core_nozzle_conditions.inputs.mach_number            = afterburner_conditions.outputs.mach_number   
         core_nozzle.working_fluid                            = afterburner.working_fluid  
         
-        # Flow through the core nozzle
-        compute_supersonic_nozzle_performance(core_nozzle,conditions) 
- 
-        # Link the thrust component to the core nozzle 
-        turbofan_conditions.core_nozzle_area_ratio           = core_nozzle_conditions.outputs.area_ratio 
-        turbofan_conditions.core_nozzle_static_pressure      = core_nozzle_conditions.outputs.static_pressure
-        turbofan_conditions.core_nozzle_exit_velocity        = core_nozzle_conditions.outputs.velocity  
-    
-        # Link the thrust component to the combustor
-        turbofan_conditions.fuel_to_air_ratio                = combustor_conditions.outputs.fuel_to_air_ratio 
-        turbofan_conditions.fuel_to_air_ratio               += afterburner_conditions.outputs.fuel_to_air_ratio
-
-    else:
+    else: 
 
         # Link the core nozzle to the low pressure turbine
         core_nozzle_conditions.inputs.stagnation_temperature     = lpt_conditions.outputs.stagnation_temperature
@@ -367,14 +353,11 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
         core_nozzle_conditions.inputs.velocity                   = lpt_conditions.outputs.velocity                
         core_nozzle_conditions.inputs.mach_number                = lpt_conditions.outputs.mach_number   
         core_nozzle.working_fluid                                = turbofan.working_fluid 
-            
-        # Flow through the core nozzle
-        compute_expansion_nozzle_performance(core_nozzle,conditions)
-        turbofan_conditions.core_nozzle_area_ratio               = core_nozzle_conditions.outputs.area_ratio 
-        turbofan_conditions.core_nozzle_static_pressure          = core_nozzle_conditions.outputs.static_pressure
-        turbofan_conditions.core_nozzle_exit_velocity            = core_nozzle_conditions.outputs.velocity  
-        turbofan_conditions.fuel_to_air_ratio                    = combustor_conditions.outputs.fuel_to_air_ratio 
-            
+        
+    # Flow through the core nozzle
+    compute_supersonic_nozzle_performance(core_nozzle,conditions)
+    #compute_expansion_nozzle_performance(core_nozzle,conditions)
+
     # Link the dan nozzle to the fan
     fan_nozzle_conditions.inputs.stagnation_temperature     = fan_conditions.outputs.stagnation_temperature
     fan_nozzle_conditions.inputs.stagnation_pressure        = fan_conditions.outputs.stagnation_pressure
@@ -393,6 +376,12 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     turbofan_conditions.core_nozzle_area_ratio                          = core_nozzle_conditions.outputs.area_ratio 
     turbofan_conditions.core_nozzle_static_pressure                     = core_nozzle_conditions.outputs.static_pressure
     turbofan_conditions.core_nozzle_exit_velocity                       = core_nozzle_conditions.outputs.velocity  
+
+    # Link the thrust component to the combustor
+    turbofan_conditions.fuel_to_air_ratio                        = combustor_conditions.outputs.fuel_to_air_ratio
+    if turbofan.afterburner_active == True:
+        # previous fuel ratio is neglected when the afterburner fuel ratio is calculated
+        turbofan_conditions.fuel_to_air_ratio += afterburner_conditions.outputs.fuel_to_air_ratio
 
     # Link the thrust component to the low pressure compressor 
     turbofan_conditions.total_temperature_reference              = lpc_conditions.outputs.stagnation_temperature
@@ -514,10 +503,10 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     combustor                   = turbofan.combustor
     high_pressure_turbine       = turbofan.high_pressure_turbine
     low_pressure_turbine        = turbofan.low_pressure_turbine
-    if  turbofan.afterburner_active == True:
-        afterburner                 = turbofan.afterburner
     core_nozzle                 = turbofan.core_nozzle
     fan_nozzle                  = turbofan.fan_nozzle  
+    if  turbofan.afterburner_active == True:
+        afterburner                 = turbofan.afterburner
     ram_0                       = network.propulsors[stored_propulsor_tag].ram
     inlet_nozzle_0              = network.propulsors[stored_propulsor_tag].inlet_nozzle
     fan_0                       = network.propulsors[stored_propulsor_tag].fan
@@ -526,10 +515,10 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     combustor_0                 = network.propulsors[stored_propulsor_tag].combustor
     high_pressure_turbine_0     = network.propulsors[stored_propulsor_tag].high_pressure_turbine
     low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
-    if  turbofan.afterburner_active == True:
-        afterburner_0               = network.propulsors[stored_propulsor_tag].afterburner
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
     fan_nozzle_0                = network.propulsors[stored_propulsor_tag].fan_nozzle 
+    if  turbofan.afterburner_active == True:
+        afterburner_0               = network.propulsors[stored_propulsor_tag].afterburner
     
     # deep copy results 
     conditions.energy.propulsors[turbofan.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
@@ -545,7 +534,8 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
     conditions.energy.converters[fan_nozzle.tag]               = deepcopy(conditions.energy.converters[fan_nozzle_0.tag]              )
     if  turbofan.afterburner_active == True:
-        conditions.energy.converters[afterburner.tag]               = deepcopy(conditions.energy.converters[afterburner_0.tag]              )
+        conditions.energy.converters[afterburner.tag]              = deepcopy(conditions.energy.converters[afterburner_0.tag]             )
+    
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
     thrust_vector      = 0*state.ones_row(3)

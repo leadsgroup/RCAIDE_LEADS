@@ -22,7 +22,7 @@ import numpy as np
 
 # import vehicle file
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
-from Lockheed_Martin_F22 import vehicle_setup as vehicle_setup
+from All_Moving_Surface_Aircraft import vehicle_setup as vehicle_setup
 import matplotlib.pyplot                as plt
 
 # ----------------------------------------------------------------------
