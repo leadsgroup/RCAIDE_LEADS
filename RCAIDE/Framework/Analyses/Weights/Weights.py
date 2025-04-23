@@ -56,6 +56,8 @@ class Weights(Analysis):
         self.settings.update_mass_properties                = False
         self.settings.update_center_of_gravity              = False
         self.settings.update_moment_of_inertia              = False
+
+
         self.settings.weight_reduction_factors              = Data()
         self.settings.weight_reduction_factors.main_wing    = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.weight_reduction_factors.empennage    = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)
@@ -63,7 +65,24 @@ class Weights(Analysis):
         self.settings.weight_reduction_factors.structural   = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.weight_reduction_factors.systems      = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)  
         self.settings.weight_reduction_factors.nacelle      = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)    
+
+        self.settings.weight_correction_factors                  = Data()
+        self.settings.weight_correction_factors.empty            = Data()
+        self.settings.weight_correction_factors.empty.propulsion = Data()
+        self.settings.weight_correction_factors.empty.structural = Data()
+        self.settings.weight_correction_factors.empty.systems    = Data()
+
+
+        self.settings.weight_correction_additions                   = Data()
+        self.settings.weight_correction_additions.empty             = Data()
+        self.settings.weight_correction_additions.empty.propulsion  = Data()
+        self.settings.weight_correction_additions.empty.structural  = Data()
+        self.settings.weight_correction_additions.empty.systems     = Data()
+        self.settings.weight_correction_additions.operational_items = Data()
         
+
+
+
     def evaluate(self):
         """Evaluate the weight analysis.
 

@@ -90,12 +90,12 @@ def geometry(mission):
                             #update_blended_wing_body_planform(wing, update_planform = False)
                             
                         # compute planform properties 
-                        wing_planform(wing)  # These defaults need to be put somewhere else  
+                        wing_planform(wing,overwrite_reference = False)  # These defaults need to be put somewhere else  
                         
-                        vehicle.reference_area = wing.areas.reference
-                    else:
-                        # compute planform properties 
-                        wing_planform(wing)  # These default need to be put somewhere else
+                        #vehicle.reference_area = wing.areas.reference
+                    # else:
+                    #     # compute planform properties 
+                    #     wing_planform(wing)  # These default need to be put somewhere else
                         
                 # compute fuel volume
                 compute_fuel_volume(vehicle, update_max_fuel=False)
