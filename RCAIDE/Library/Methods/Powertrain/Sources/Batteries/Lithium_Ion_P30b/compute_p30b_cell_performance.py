@@ -196,7 +196,7 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
    
     #model =  battery_module_conditions.cell.pybamm_conditions['timestep_' + str(t_idx)]['model']
     model = battery_module.cell.model.set_initial_conditions_from(pybamm_condition, inplace = False)
-    if I_cell[t_idx][0] < 0:
+    if P_bus[t_idx][0] > 0: #power is positive when discharging
         experiment = pybamm.Experiment( ["Discharge at "+ str(abs(I_cell[t_idx][0])) + " A for " + str(delta_t[t_idx]) + " seconds"] )
         simulation = pybamm.Simulation(model, experiment = experiment, parameter_values = battery_module.cell.battery_parameters) 
         pybamm_condition = simulation.solve(initial_soc = SOC_cell[0][0]) #be careful with [0] may be t_idx

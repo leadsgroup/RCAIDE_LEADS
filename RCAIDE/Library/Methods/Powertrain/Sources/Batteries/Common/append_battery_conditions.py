@@ -139,7 +139,7 @@ def append_battery_conditions(battery_module,segment,bus):
                 bus_results.battery_modules[battery_module.tag].cell.pybamm_condition['timestep_' + str(i)]  = Container()
                 
 
-            # run pybamm once at ~0 A to initialize the model
+            # run pybamm once at ~0 A to initialize the model, however it will reset the state, add another condition for subsequent segments that pulls in the former state
             
             experiment = pybamm.Experiment(["Discharge at "+ str(0.1) + "A for " + str(0.001) + " seconds"]) 
             simulation = pybamm.Simulation(battery_module.cell.model, experiment = experiment, parameter_values = battery_module.cell.battery_parameters) 
@@ -245,6 +245,8 @@ def append_battery_segment_conditions(battery_module, bus, conditions, segment):
             module_conditions.cell.loss_of_lithium_inventory[:,0]   = battery_initials.cell.loss_of_lithium_inventory[-1,0] 
             module_conditions.cell.total_heat_generation[:,0]       = battery_initials.cell.total_heat_generation[-1,0] 
             module_conditions.cell.capacity_lost[:,0]               = battery_initials.cell.capacity_lost[-1,0]
+            module_conditions.cell.pybamm_condition['timestep_' + str(0)]  = battery_initials.cell.pybamm_condition['timestep_' + str(0)]
+            module_conditions.cell.voltage_under_load[:,0]         = battery_initials.cell.voltage_under_load[-1,0]
             #module_conditions.cell.pybamm_condition['timestep_' + str(0)]  = battery_initials.cell.pybamm_condition['timestep_' + str(0)] 
     if 'battery_cell_temperature' in segment:       
         module_conditions.temperature[:,0]          = segment.battery_cell_temperature 
