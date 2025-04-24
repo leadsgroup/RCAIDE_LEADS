@@ -197,7 +197,7 @@ def evaluate_surrogate(state,settings,vehicle):
     else:
         conditions.static_stability.derivatives.Clift_alpha       = aerodynamics.stability_derivatives.Clift_alpha * ones_row 
      
-    conditions.static_stability.coefficients.lift   = Clift_alpha * np.cos(Phi)   
+    conditions.static_stability.coefficients.lift   = Clift_alpha #* np.cos(Phi)   
     conditions.static_stability.coefficients.drag   = Cdrag_alpha # + Cdrag_u + Cdrag_w + Cdrag_q
     conditions.static_stability.coefficients.Y      = conditions.static_stability.derivatives.CY_beta *Beta 
     conditions.static_stability.coefficients.L      = conditions.static_stability.derivatives.CL_beta *Beta 

@@ -168,8 +168,11 @@ def train_model(aerodynamics, Mach):
     conditions                                      = RCAIDE.Framework.Mission.Common.Results()
     conditions.freestream.mach_number               = Machs
     conditions.aerodynamics.angles.alpha            = np.ones_like(Machs)*AoAs 
-
-    VLM_results = VLM(conditions,settings,vehicle)
+   
+    clean_wing_vehicle = deepcopy(vehicle) # Double check this is correct
+    for wing in clean_wing_vehicle.wings:
+        wing.control_surfaces = []
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
     Clift_res        = VLM_results.CLift
     Cdrag_res        = VLM_results.CDrag_induced
     CX_res           = VLM_results.CX
@@ -245,7 +248,7 @@ def train_model(aerodynamics, Mach):
     CX_beta    =    np.reshape(CX_res,(len_Mach,len_Beta)).T    - CX_alpha_0   
     CY_beta    =    np.reshape(CY_res,(len_Mach,len_Beta)).T    - CY_alpha_0   
     CZ_beta    =    np.reshape(CZ_res,(len_Mach,len_Beta)).T    - CZ_alpha_0   
-    CL_beta    = - (np.reshape(CL_res,(len_Mach,len_Beta)).T    - CL_alpha_0) 
+    CL_beta    = - (np.reshape(CL_res,(len_Mach,len_Beta)).T    - CL_alpha_0) # Note correction
     CM_beta    =    np.reshape(CM_res,(len_Mach,len_Beta)).T    - CM_alpha_0   
     CN_beta    =    np.reshape(CN_res,(len_Mach,len_Beta)).T    - CN_alpha_0  
  
@@ -422,8 +425,8 @@ def train_model(aerodynamics, Mach):
                     CN_res    = VLM_results.CN
                     vehicle.wings[wing.tag].control_surfaces.aileron.deflection = 0
                 
-                    CY_d_a[a_i,:]    =  -(CY_res[:,0]   - CY_alpha_0[0,:]  )
-                    CL_d_a[a_i,:]    =  -(CL_res[:,0]   - CL_alpha_0[0,:])
+                    CY_d_a[a_i,:]    =  -(CY_res[:,0]   - CY_alpha_0[0,:]  ) # Negative sign is due to convention
+                    CL_d_a[a_i,:]    =  -(CL_res[:,0]   - CL_alpha_0[0,:]) # Negative sign is due to convention
                     CN_d_a[a_i,:]    =  (CN_res[:,0]   - CN_alpha_0[0,:]  ) 
                 training.dCY_ddelta_a    = (CY_d_a[0,:] - CY_d_a[1,:]) / (delta_a[0] - delta_a[1]) 
                 training.dCL_ddelta_a    = ((CL_d_a[0,:] - CL_d_a[1,:]) / (delta_a[0] - delta_a[1]))
@@ -475,8 +478,8 @@ def train_model(aerodynamics, Mach):
                     CL_res    = VLM_results.CL
                     CN_res    = VLM_results.CN
                     vehicle.wings[wing.tag].control_surfaces.rudder.deflection = 0 
-                    CY_d_r[r_i,:]    =   -(CY_res[:,0]   - CY_alpha_0[0,:]  )
-                    CL_d_r[r_i,:]    =   -(CL_res[:,0]   - CL_alpha_0[0,:]  )
+                    CY_d_r[r_i,:]    =   -(CY_res[:,0]   - CY_alpha_0[0,:]  ) # Negative sign is due to convention
+                    CL_d_r[r_i,:]    =   -(CL_res[:,0]   - CL_alpha_0[0,:]  ) # Negative sign is due to convention
                     CN_d_r[r_i,:]    =   (CN_res[:,0]   - CN_alpha_0[0,:] )
                   
                 training.dCY_ddelta_r    = (CY_d_r[0,:] - CY_d_r[1,:]) / (delta_r[0] - delta_r[1]) 

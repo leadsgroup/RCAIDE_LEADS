@@ -196,6 +196,7 @@ def no_surrogate(aerodynamics, training):
     if aerodynamics.elevator_flag: 
         surrogates.Clift_delta_e    = None 
         surrogates.dCM_ddelta_e     = None 
+        surrogates.dClift_ddelta_e  = None 
     
     
     if aerodynamics.rudder_flag:  
