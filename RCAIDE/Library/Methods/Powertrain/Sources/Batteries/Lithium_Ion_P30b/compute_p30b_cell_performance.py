@@ -137,7 +137,7 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     pybamm_condition   = battery_module_conditions.cell.pybamm_condition['timestep_' + str(t_idx)] #.solution
 
 
-
+    Q_cell             = battery_module_conditions.cell.charge_throughput
     
     I_module           = battery_module_conditions.current 
     I_cell             = battery_module_conditions.cell.current 
@@ -208,7 +208,7 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
         E_module[t_idx+1]                                     = (E_module[t_idx]) -P_module[t_idx]*delta_t[t_idx]
         E_module[t_idx+1][E_module[t_idx+1] > E_module_max]   = np.float32(E_module_max)
         SOC_cell[t_idx+1]                                     = E_module[t_idx+1]/E_module_max 
-
+        Q_cell[t_idx+1]                                       = Q_cell[t_idx] + abs(I_cell[t_idx])*delta_t[t_idx]/Units.hr
         V_ul_cell[t_idx+1]          = pybamm_condition['Voltage [V]'].data[-1] 
         #I_cell[t_idx+1] = pybamm_condition['Current [A]'].data[-1] 
         R_0_cell[t_idx+1]           = pybamm_condition['Resistance [Ohm]'].data[-1] 
