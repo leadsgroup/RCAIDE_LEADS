@@ -17,17 +17,19 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------  
 def geometry(mission):
     """
-  
+
+    This is a work in progress and will be implemented in a future PR 
+    This is  a  work in progress Documentation will be added before it is pushed to Master
     """
      
     last_tag = None
     for tag,segment in mission.segments.items():  
-        if segment.analyses.aerodynamics != None:
+        if segment.analyses.geometry != None:
+
             if last_tag!=  None:
                 segment.analyses.aerodynamics.vehicle = vehicle 
             else: 
                 vehicle  =  segment.analyses.aerodynamics.vehicle
-                
                 # update fuselage properties
                 for fuselage in vehicle.fuselages:
                     fuselage_planform(fuselage, update_fuselage_properties=False)  # These defaults need to be put somewhere else   
@@ -38,7 +40,6 @@ def geometry(mission):
                         
                         #if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
                             #compute_layout_of_passenger_accommodations(wing)  # These defaults need to be put somewhere else
-                            
                             #update_blended_wing_body_planform(wing, update_planform = False)
                             
                         # compute planform properties 
@@ -57,4 +58,8 @@ def geometry(mission):
             ## update weights vehicle with correct geometric properties                  
             #if segment.analyses.weights != None:
                 #segment.analyses.weights.vehicle = vehicle
+        else:
+            raise AssertionError('Geometry Analyses not defined')
+            
+
     return 
