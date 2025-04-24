@@ -17,55 +17,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------  
 def geometry(mission):
     """
-    Initializes and processes aerodynamic models for mission segments
-
-    Parameters
-    ----------
-    mission : Mission
-        The mission containing segments to be analyzed
-            - analyses.aerodynamics : Analysis
-                Aerodynamic analysis module
-                - vehicle : Vehicle
-                    Aircraft geometry definition
-                    - wings : list
-                        Wing geometry definitions
-                - process.compute.lift.inviscid_wings : Process
-                    Lift computation process
-                - surrogates : Data
-                    Aerodynamic surrogate models
-                - reference_values : Data
-                    Reference aerodynamic parameters
-
-    Notes
-    -----
-    This function prepares the aerodynamic analysis for each mission segment.
-    It ensures proper wing geometry computation and manages aerodynamic
-    surrogate models across segments for computational efficiency.
-
-    The function performs the following steps:
-        1. Computes wing planform properties
-        2. Reuses previous segment's aerodynamic data when possible
-        3. Initializes new aerodynamic analyses when needed
-
-    **Wing Processing**
-    
-    For each wing:
-        - Uses wing_planform
-
-    **Major Assumptions**
-        * Valid wing geometry definitions
-        * Compatible aerodynamic models between segments
-        * Proper initialization of first segment
-        * Continuous aerodynamic characteristics
-
-    Returns
-    -------
-    None
-        Updates mission segment analyses directly
-
-    See Also
-    --------
-    RCAIDE.Library.Methods.Geometry.Planform
+  
     """
      
     last_tag = None
@@ -98,7 +50,7 @@ def geometry(mission):
                     #     wing_planform(wing)  # These default need to be put somewhere else
                         
                 # compute fuel volume
-                compute_fuel_volume(vehicle, update_max_fuel=False)
+                #compute_fuel_volume(vehicle, update_max_fuel=False)
                 
                 last_tag = tag 
 
