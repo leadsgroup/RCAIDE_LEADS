@@ -81,6 +81,7 @@ class Expansion_Nozzle(Converter):
         self.pressure_ratio                  = 1.0
         self.diameter                        = 1.0
         self.exit_velocity                   = 1.0
+        self.pressure_recovery               = 1.0
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         append_expansion_nozzle_conditions(self,segment,energy_conditions)
