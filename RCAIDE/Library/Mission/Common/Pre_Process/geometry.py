@@ -36,25 +36,25 @@ def geometry(mission):
                 for wing in vehicle.wings: 
                     if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
                         
-                        #if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
-                            #compute_layout_of_passenger_accommodations(wing)  # These defaults need to be put somewhere else
+                        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
+                            compute_layout_of_passenger_accommodations(wing)  # These defaults need to be put somewhere else
                             
-                            #update_blended_wing_body_planform(wing, update_planform = False)
+                            update_blended_wing_body_planform(wing, update_planform = False)
                             
                         # compute planform properties 
                         wing_planform(wing,overwrite_reference = False)  # These defaults need to be put somewhere else  
                         
                         #vehicle.reference_area = wing.areas.reference
-                    # else:
-                    #     # compute planform properties 
-                    #     wing_planform(wing)  # These default need to be put somewhere else
+                    else:
+                        # compute planform properties 
+                        wing_planform(wing)  # These default need to be put somewhere else
                         
-                # compute fuel volume
-                #compute_fuel_volume(vehicle, update_max_fuel=False)
+                #compute fuel volume
+                compute_fuel_volume(vehicle, update_max_fuel=False)
                 
                 last_tag = tag 
 
-            ## update weights vehicle with correct geometric properties                  
-            #if segment.analyses.weights != None:
-                #segment.analyses.weights.vehicle = vehicle
+            # update weights vehicle with correct geometric properties                  
+            if segment.analyses.weights != None:
+                segment.analyses.weights.vehicle = vehicle
     return 

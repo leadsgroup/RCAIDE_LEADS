@@ -220,6 +220,25 @@ def plot_layout_of_passenger_accommodations(fuselage,
                 fillcolor=lavatory_color[0],
             )
 
+
+
+    show_axis =  False
+    # Use update_layout instead of update_scenes
+    fig.update_layout(
+        width=1500,
+        height=1500,
+        scene=dict(
+            aspectmode='cube',
+            xaxis=dict(backgroundcolor="white", gridcolor="white", showbackground=show_axis,
+                       zerolinecolor="white", range=[x_min, x_max], visible=show_axis),
+            yaxis=dict(backgroundcolor="white", gridcolor="white", showbackground=show_axis, 
+                       zerolinecolor="white", range=[y_min, y_max], visible=show_axis),
+        ), 
+    )
+    
+    fig.update_coloraxes(showscale=False)   
+    #fig.update_traces(opacity=alpha)
+            
     # Use the first path from sys.path
     save_filename = os.path.join(sys.path[0], save_filename)
     if save_figure:
