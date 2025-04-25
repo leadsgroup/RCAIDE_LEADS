@@ -328,8 +328,10 @@ def design_turbofan(turbofan):
         core_nozzle.working_fluid                                = low_pressure_turbine.working_fluid 
         
     # Step 18: Compute flow through the core nozzle
-    #compute_expansion_nozzle_performance(core_nozzle,conditions)
-    compute_supersonic_nozzle_performance(core_nozzle,conditions)
+    if np.any(conditions.freestream.mach_number > 1.0):
+        compute_supersonic_nozzle_performance(core_nozzle,conditions)
+    else:
+        compute_expansion_nozzle_performance(core_nozzle,conditions)
    
     # Step 19: Link the fan nozzle to the fan
     fan_nozzle_conditions.inputs.stagnation_temperature     = fan_conditions.outputs.stagnation_temperature

@@ -549,7 +549,7 @@ def vehicle_setup():
     turbofan                                        = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                    = 'outer_starboard_propulsor' 
     turbofan.origin                                 = [[26.429, 17.6, 0.2]] 
-    turbofan.length                          = 7.92    
+    turbofan.length                                 = 7.92    
     turbofan.bypass_ratio                           = 8  
     turbofan.design_altitude                        = 0*Units.ft
     turbofan.design_mach_number                     = 0.01

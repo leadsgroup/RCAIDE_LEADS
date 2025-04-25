@@ -355,8 +355,10 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
         core_nozzle.working_fluid                                = turbofan.working_fluid 
         
     # Flow through the core nozzle
-    compute_supersonic_nozzle_performance(core_nozzle,conditions)
-    #compute_expansion_nozzle_performance(core_nozzle,conditions)
+    if np.any(conditions.freestream.mach_number > 1.0):
+        compute_supersonic_nozzle_performance(core_nozzle,conditions)
+    else:
+        compute_expansion_nozzle_performance(core_nozzle,conditions)
 
     # Link the dan nozzle to the fan
     fan_nozzle_conditions.inputs.stagnation_temperature     = fan_conditions.outputs.stagnation_temperature

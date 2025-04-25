@@ -73,8 +73,6 @@ def compute_supersonic_nozzle_performance(supersonic_nozzle,conditions):
     #unpack the values
     
     #unpack from conditions
-    gamma               = conditions.freestream.isentropic_expansion_factor
-    Cp                  = conditions.freestream.specific_heat_at_constant_pressure
     Po                  = conditions.freestream.pressure
     Pto                 = conditions.freestream.stagnation_pressure
     Tto                 = conditions.freestream.stagnation_temperature
@@ -89,15 +87,20 @@ def compute_supersonic_nozzle_performance(supersonic_nozzle,conditions):
     pid      = supersonic_nozzle.pressure_ratio
     etapold  = supersonic_nozzle.polytropic_efficiency
     eta_rec  = supersonic_nozzle.pressure_recovery
-    
-    #Method for computing the nozzle properties
+
+    P_in  = s_nozzle_conditions.inputs.static_pressure    
+    T_in  = s_nozzle_conditions.inputs.static_temperature
+
+    # Unpack ram inputs       
+    working_fluid  = supersonic_nozzle.working_fluid 
+    gamma          = working_fluid.compute_gamma(T_in,P_in) 
+    Cp             = working_fluid.compute_cp(T_in,P_in) 
     
     #--Getting the output stagnation quantities
     Pt_out   = Pt_in*pid*eta_rec
     Tt_out   = Tt_in*(pid*eta_rec)**((gamma-1)/(gamma)*etapold)
     ht_out   = Cp*Tt_out
-    
-    
+
     #compute the output Mach number, static quantities and the output velocity
     Mach          = np.sqrt((((Pt_out/Po)**((gamma-1)/gamma))-1)*2/(gamma-1))
     

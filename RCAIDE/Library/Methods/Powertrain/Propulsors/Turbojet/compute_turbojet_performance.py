@@ -13,6 +13,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Combustor          import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor         import compute_compressor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import compute_turbine_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import compute_supersonic_nozzle_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import compute_expansion_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet           import compute_thrust
 
@@ -313,7 +314,10 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
         core_nozzle.working_fluid                            = low_pressure_compressor.working_fluid 
  
     # Flow through the core nozzle
-    compute_supersonic_nozzle_performance(core_nozzle,conditions) 
+    if np.any(conditions.freestream.mach_number > 1.0):
+        compute_supersonic_nozzle_performance(core_nozzle,conditions) 
+    else:
+        compute_expansion_nozzle_performance(core_nozzle,conditions)
  
     # Link the thrust component to the core nozzle 
     turbojet_conditions.core_nozzle_area_ratio                          = core_nozzle_conditions.outputs.area_ratio 
