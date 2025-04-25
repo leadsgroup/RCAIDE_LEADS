@@ -281,9 +281,15 @@ def evaluate_surrogate(state,settings,vehicle):
         else:
             conditions.static_stability.derivatives.CM_delta_f = aerodynamics.stability_derivatives.CM_delta_f* ones_row 
         
+        if aerodynamics.stability_derivatives.Clift_delta_f == None:
+            conditions.static_stability.derivatives.Clift_delta_f     = compute_stability_derivative(sub_sur.dClift_ddelta_f     ,trans_sur.dClift_ddelta_f     ,sup_sur.dClift_ddelta_f     ,h_sub,h_sup,Mach)
+        else:
+            conditions.static_stability.derivatives.Clift_delta_f = aerodynamics.stability_derivatives.Clift_delta_f* ones_row 
+
         conditions.static_stability.coefficients.M                                   += conditions.static_stability.derivatives.CM_delta_f * conditions.control_surfaces.flap.deflection  
-        conditions.control_surfaces.flap.static_stability.coefficients.M             = conditions.static_stability.derivatives.CM_delta_f * conditions.control_surfaces.flap.deflection            
-    
+        conditions.control_surfaces.flap.static_stability.coefficients.M              = conditions.static_stability.derivatives.CM_delta_f * conditions.control_surfaces.flap.deflection            
+        conditions.static_stability.coefficients.lift                                += conditions.static_stability.derivatives.Clift_delta_f * conditions.control_surfaces.flap.deflection  
+        conditions.control_surfaces.flap.static_stability.coefficients.lift           = conditions.static_stability.derivatives.Clift_delta_f * conditions.control_surfaces.flap.deflection  
     
     # -----------------------------------------------------------------------------------------------------------------------      
     # Static margin and neutral point 
