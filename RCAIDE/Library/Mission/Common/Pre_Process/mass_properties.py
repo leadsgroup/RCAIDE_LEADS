@@ -7,13 +7,14 @@
 #  RCAIDE
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
+from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_aircraft_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity                             import compute_vehicle_center_of_gravity
 # ----------------------------------------------------------------------------------------------------------------------
 #  mass_properties
 # ----------------------------------------------------------------------------------------------------------------------  
 def mass_properties(mission):
-    """ Performances mass property analysis       
+    """ This is  a  work in progress Documentation will be added before it is pushed to Master
     """
 
     last_tag = None    
@@ -96,22 +97,27 @@ def mass_properties(mission):
                
         else:
              # Creates a Weight Analysis if there doesnt exist one
-            last_tag = None
-            if last_tag == None:
-              segment.analyses.weights.vehicle = mission.analyses.geometry.vehicle
+            last_tag = None    
+            for segment in mission.segments:
+                segment.analyses.weights         = Data()
+                if last_tag == None:
+                    segment.analyses.weights.vehicle = segment.analyses.geometry.vehicle
+                    if segment.analyses.weights.vehicle.mass_properties.takeoff == 0:
+                         if segment.analyses.vehicle.mass_properties.operating_empty != 0 or segment.analyses.vehicle.mass_properties.payload !=0 or segment.analyses.vehicle.mass_properties.fuel != 0:
+                              segment.analyses.vehicle.mass_properties.takeoff = segment.analyses.vehicle.mass_properties.operating_empty \
+                                                                            + segment.analyses.vehicle.mass_properties.payload \
+                                                                            + segment.analyses.vehicle.mass_properties.fuel
+                              if segment.analyses.vehicle.mass_properties.takeoff > segment.analyses.vehicle.mass_properties.max_takeoff:
+                                    print('Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
+                         else:
+                            if segment.analyses.vehicle.mass_properties.max_takeoff != 0:
+                                 segment.analyses.vehicle.mass_properties.takeoff = segment.analyses.vehicle.mass_properties.max_takeoff
+                            else: 
+                                 raise AssertionError('Specify Takeoff Weight')          
+                    last_tag = segment.tag.lower()
+                else:
+                    segment.analyses.weights.vehicle =  mission.segments[last_tag].analyses.weights.vehicle           
             
-                # check if there is take off weight
-                # if not check for operating empty payload and fuel
-                #if not check for maxtakeoff and assign it 
-            else:
-              segment.analyses.weights.vehicle =  mission.segments[last_tag].analyses.weights.vehicle
-              
-
-
-
-              
-              last_tag = segment.tag.lower()
-
 
              
    
