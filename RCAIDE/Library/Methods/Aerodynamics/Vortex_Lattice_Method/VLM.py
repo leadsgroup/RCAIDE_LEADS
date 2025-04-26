@@ -486,23 +486,6 @@ def VLM(conditions,settings,geometry):
 
     # Now calculate the coefficients for each wing
     Clift_y   = LIFT/CHORD_strip/ES 
-    # for i in VD.control_surface_flag:
-    #     if i:
-    #         Clift_y_mod = Clift_y
-    #         X_mod = X
-    #         Y_mod = Y
-    #         Z_mod = Z
-    #         CHORD_strip_mod = CHORD_strip
-    #         SURF_mod = SURF
-    #         n_sw_mod = n_sw
-    #     else:
-    #         Clift_y_mod = Clift_y
-    #         X_mod = X
-    #         Y_mod = Y
-    #         Z_mod = Z
-    #         CHORD_strip_mod = CHORD_strip
-    #         SURF_mod = SURF
-    #         n_sw_mod = n_sw
     results   = compute_induced_drag(Clift_y, aoa, X, Y, Z, CHORD_strip, SURF,n_sw,SREF)    
     CL_wing   = np.add.reduceat(LIFT,span_breaks,axis=1)/SURF 
     
@@ -660,9 +643,6 @@ def compute_induced_drag(cl, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_
    
     wing_span_index = 0
     # Induced velocity calculation for this case
-    name = []
-    TP_y_list = []
-    TP_z_list = []
     for wing_index,wing_segments in enumerate(n_sw):
         wing_span_index_previous = wing_span_index
         wing_span_index += wing_segments
@@ -717,13 +697,6 @@ def compute_induced_drag(cl, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_
                 
                 # Downwash. Dot product of normal vector and induced velocity vector.
                 V_induced[:,j] = np.sum( np.tile(n_hat[:,0][:, None], (1,len(TP_z_centerpoints[0]) )) *v[:,0,:] +  np.tile(n_hat[:,1][:, None], (1,len(TP_z_centerpoints[0]) ))*v[:,1,:], axis=1) 
-        TP_y_list.append(TP_y_control_points)
-        TP_z_list.append(TP_z_control_points)
-        name.append(f"surface: {wing_index}")
-        
-        # plt.plot(TP_y_control_points[0,:], V_induced[0,:], 'r-')
-        # plt.title(f"surface: {wing_index}")
-        
         
         drag_sum = np.sqrt(np.square(y_control_points[:, 0]) + np.square(z_control_points[:, 0]))
         s_wake   = np.atleast_2d(deepcopy(drag_sum)).T
@@ -742,14 +715,6 @@ def compute_induced_drag(cl, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_
 
     CDi_total = np.sum(D_induced, axis=1) / (0.5 * rho * v_inf**2 * SREF)
 
-    # for j in range(len(TP_y_list[0])):
-    #     plt.figure(j)
-    #     for i in range(len(TP_y_list)):
-    #         plt.plot(TP_y_list[i][j,:], TP_z_list[i][j,:], 'o-')
-    #     plt.legend(name)
-    #     plt.title(f"alpha: {alpha[j]}")
-    # plt.show()
-    # Package results
     results                          = Data()
     results.CDrag_induced            = CDi_total[:, np.newaxis]
     results.sectional_CDrag_induced  = Cd_i_distribution
