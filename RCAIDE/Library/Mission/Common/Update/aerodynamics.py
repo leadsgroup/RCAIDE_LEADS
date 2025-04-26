@@ -57,8 +57,8 @@ def aerodynamics(segment):
     # dimensionalize
     bank_angle = segment.state.conditions.aerodynamics.angles.phi
     F      = segment.state.ones_row(3) * 0.0 
-    F[:,2] = ( -CL * q * Sref )[:,0]   # phi is the bank angle. Need it * np.cos(bank_angle)
-    F[:,1] = (  CY * q * Sref  )[:,0]  # add lift component + CL * q * Sref * np.sin(bank_angle)
+    F[:,2] = ( -CL * q * Sref )[:,0]
+    F[:,1] = (  CY * q * Sref  )[:,0]  
     F[:,0] = ( -CD * q * Sref )[:,0]
 
     # rewrite aerodynamic CL and CD

@@ -246,7 +246,7 @@ def train_model(aerodynamics, Mach):
     Clift_beta =    np.reshape(Clift_res,(len_Mach,len_Beta)).T - Clift_alpha_0
     Cdrag_beta =    np.reshape(Cdrag_res,(len_Mach,len_Beta)).T - Cdrag_alpha_0                                
     CX_beta    =    np.reshape(CX_res,(len_Mach,len_Beta)).T    - CX_alpha_0   
-    CY_beta    =    np.reshape(CY_res,(len_Mach,len_Beta)).T    - CY_alpha_0   
+    CY_beta    =    - np.reshape(CY_res,(len_Mach,len_Beta)).T    - CY_alpha_0   # Note correction
     CZ_beta    =    np.reshape(CZ_res,(len_Mach,len_Beta)).T    - CZ_alpha_0   
     CL_beta    = - (np.reshape(CL_res,(len_Mach,len_Beta)).T    - CL_alpha_0) # Note correction
     CM_beta    =    np.reshape(CM_res,(len_Mach,len_Beta)).T    - CM_alpha_0   
@@ -305,9 +305,9 @@ def train_model(aerodynamics, Mach):
     CL_res    = VLM_results.CL
     CN_res    = VLM_results.CN
     CY_res    = VLM_results.CY
-    CL_p        = (np.reshape(CL_res,(len_Mach,len_p)).T    - CL_alpha_0   )
-    CN_p        = (np.reshape(CN_res,(len_Mach,len_p)).T    - CN_alpha_0   )   
-    CY_p        = (np.reshape(CY_res,(len_Mach,len_p)).T    - CY_alpha_0   )
+    CL_p        = -1*(np.reshape(CL_res,(len_Mach,len_p)).T    - CL_alpha_0   ) # Note negative sign correction
+    CN_p        = -1*(np.reshape(CN_res,(len_Mach,len_p)).T    - CN_alpha_0   ) # Note negative sign correction
+    CY_p        = -1*(np.reshape(CY_res,(len_Mach,len_p)).T    - CY_alpha_0   ) # Note negative sign correction
 
     # -------------------------------------------------------               
     # Yaw Rate 
@@ -369,7 +369,7 @@ def train_model(aerodynamics, Mach):
     training.CY_r              = CY_r 
       
 
-    correction_factor = Data()
+    correction_factor = Data() # If a correction factor is not included below then there is no correction
     correction_factor.dCY_dbeta = 1#10
     correction_factor.dCL_dp    = 1#-2
     correction_factor.dCM_dq    = 1#10
@@ -625,13 +625,19 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     training.CM_beta           = CM_beta
     training.CN_beta           = CN_beta  
       
-            
+    correction_factor = Data() # If a correction factor is not included below then there is no correction
+    correction_factor.dCY_dbeta = 1#10
+    correction_factor.dCL_dp    = 1#-2
+    correction_factor.dCM_dq    = 1#10
+    correction_factor.dCN_dp    = 1#-3
+    correction_factor.dCN_dr    = 1#3
+
     # STABILITY DERIVATIVES 
     training.dClift_dalpha = (Clift_alpha[0,:] - Clift_alpha[1,:]) / (AoA[0] - AoA[1])          
     training.dCX_dalpha    = (CX_alpha[0,:] - CX_alpha[1,:]) / (AoA[0] - AoA[1])            
     training.dCX_du        = (CX_u[0,:] - CX_u[1,:]) / (u[0] - u[1])                                 
          
-    training.dCY_dbeta     = (CY_beta[0,:] - CY_beta[1,:]) / (Beta[0] - Beta[1])    
+    training.dCY_dbeta  = correction_factor.dCY_dbeta * (CY_beta[0,:] - CY_beta[1,:]) / (Beta[0] - Beta[1])    
     training.dCY_dr     = (CY_r[0,:] - CY_r[1,:]) / (yaw_rate[0]-yaw_rate[1])                     
     
     training.dCZ_dalpha = (CZ_alpha[0,:] - CZ_alpha[1,:]) / (AoA[0] - AoA[1])             
@@ -639,7 +645,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     training.dCZ_dq     = (CZ_q[0,:] - CZ_q[1,:]) / (pitch_rate[0]-pitch_rate[1])    
 
     training.dCL_dbeta  = (CL_beta[0,:] - CL_beta[1,:]) / (Beta[0] - Beta[1])                                                    
-    training.dCL_dp     = (CL_p[0,:] - CL_p[1,:]) / (roll_rate[0]-roll_rate[1])                
+    training.dCL_dp     = correction_factor.dCL_dp * (CL_p[0,:] - CL_p[1,:]) / (roll_rate[0]-roll_rate[1])                
     training.dCL_dr     = (CL_r[0,:] - CL_r[1,:]) / (yaw_rate[0]-yaw_rate[1])                    
     
     training.dCM_dalpha = (CM_alpha[0,:] - CM_alpha[1,:]) / (AoA[0] - AoA[1])          
@@ -647,8 +653,8 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     training.dCM_dq     = (CM_q[0,:] - CM_q[1,:]) / (pitch_rate[0]-pitch_rate[1])             
     
     training.dCN_dbeta  = (CN_beta[0,:] - CN_beta[1,:]) / (Beta[0] - Beta[1])                
-    training.dCN_dp = (CN_p[0,:] - CN_p[1,:]) / (roll_rate[0]-roll_rate[1])                 
-    training.dCN_dr = (CN_r[0,:] - CN_r[1,:]) / (yaw_rate[0]-yaw_rate[1])
+    training.dCN_dp = correction_factor.dCN_dp * (CN_p[0,:] - CN_p[1,:]) / (roll_rate[0]-roll_rate[1])                 
+    training.dCN_dr = correction_factor.dCN_dr * (CN_r[0,:] - CN_r[1,:]) / (yaw_rate[0]-yaw_rate[1])
 
 
     '''  for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces'''
