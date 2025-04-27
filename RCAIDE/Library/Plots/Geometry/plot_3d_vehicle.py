@@ -5,17 +5,11 @@
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-import RCAIDE
+# ---------------------------------------------------------------------------------------------------------------------- 
 from RCAIDE.Library.Plots.Geometry.plot_3d_fuselage             import plot_3d_fuselage
 from RCAIDE.Library.Plots.Geometry.plot_3d_wing                 import plot_3d_wing 
 from RCAIDE.Library.Plots.Geometry.plot_3d_nacelle              import plot_3d_nacelle
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import plot_3d_rotor
-from RCAIDE.Library.Plots.Geometry.plot_3d_fuel_tank            import plot_3d_concetric_fuel_tank, plot_3d_integral_wing_tank
-
-from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
-from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform 
-from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, compute_fuel_volume 
 
 # python imports 
 import numpy as np 
@@ -240,40 +234,12 @@ def generate_3d_vehicle_geometry_data(plot_data,
         - Energy networks (using plot_3d_energy_network)
     """ 
     
-
-    # -------------------------------------------------------------------------
-    # Run Geoemtry Analysis
-    # ------------------------------------------------------------------------- 
-    # update fuselage properties
-    for fuselage in vehicle.fuselages:
-        fuselage_planform(fuselage, update_fuselage_properties=False)  # These defaults need to be put somewhere else   
-
-    # ensure all properties of wing are computed before drag calculations  
-    for wing in vehicle.wings: 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-
-            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
-                compute_layout_of_passenger_accommodations(wing)  # These defaults need to be put somewhere else
-
-                update_blended_wing_body_planform(wing, update_planform = False)
-
-            # compute planform properties 
-            wing_planform(wing,overwrite_reference = False)  # These defaults need to be put somewhere else  
-
-            #vehicle.reference_area = wing.areas.reference
-        else:
-            # compute planform properties 
-            wing_planform(wing)  # These default need to be put somewhere else
-
-    #compute fuel volume
-    compute_fuel_volume(vehicle, update_max_fuel=False)    
-    
     # -------------------------------------------------------------------------
     # PLOT WING
     # ------------------------------------------------------------------------- 
     number_of_airfoil_points = 21
     for wing in vehicle.wings:
-        plot_data       = plot_3d_wing(plot_data,wing,number_of_airfoil_points , color_map='greys',alpha=0.5) 
+        plot_data       = plot_3d_wing(plot_data,wing,number_of_airfoil_points , color_map='greys',alpha=1) 
         
     # -------------------------------------------------------------------------
     # PLOT FUSELAGE
@@ -293,7 +259,7 @@ def generate_3d_vehicle_geometry_data(plot_data,
     # ------------------------------------------------------------------------- 
     number_of_airfoil_points = 11
     for network in vehicle.networks:
-        plot_data = plot_3d_energy_network(plot_data,network,number_of_airfoil_points,color_map = 'turbid' ) 
+        plot_data = plot_3d_energy_network(plot_data,network,number_of_airfoil_points,color_map = 'turbid' )
  
     return plot_data,min_x_axis_limit,max_x_axis_limit,min_y_axis_limit,max_y_axis_limit,min_z_axis_limit,max_z_axis_limit
 
@@ -346,15 +312,5 @@ def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,color_map)
             plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,color_map) 
         if 'propeller' in propulsor:
             plot_data = plot_3d_rotor(propulsor.propeller,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,color_map) 
-       
-        for fuel_line in network.fuel_lines: 
-            for fuel_tank in fuel_line.fuel_tanks:   
-                if fuel_tank.wing != None: 
-                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                        plot_3d_integral_wing_tank(plot_data, fuel_tank, tessellation, color_map = 'orange') 
-                    elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                        plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'orange')   
-                elif fuel_tank.fuselage != None:   
-                    plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'orange')   
-            
+ 
     return plot_data

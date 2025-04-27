@@ -78,13 +78,12 @@ def compute_fuel_volume(vehicle, update_max_fuel =True):
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:
 
                         if len(fuselage.segments) > 1:
-                            tank_section_percent_x = 0
                             seg_tags = list(fuselage.segments.keys())
                             for i in range(len(seg_tags)-1):
                                 inner_segment = fuselage.segments[seg_tags[i]]
                                 outer_segment = fuselage.segments[seg_tags[i+1]]
                                 if inner_segment.has_fuel_tank == True: 
-                                    volume = compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage,inner_segment,outer_segment,tank_section_percent_x)
+                                    volume = compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage,inner_segment,outer_segment)
                                     fuel_tank.internal_volume += volume 
                                     total_fuel_volume += volume  
                                     total_fuel_mass   += volume * fuel_tank.fuel.density
@@ -102,31 +101,15 @@ def compute_fuel_volume(vehicle, update_max_fuel =True):
         vehicle.mass_properties.max_fuel = total_fuel_mass
     return
 
-def compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage,fus_first_segment,fus_second_segment,tank_section_percent_x): 
+def compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage,first_segment,second_segment): 
 
     # volume of truncated  
-    A_1 = np.pi * fus_first_segment.height  *  fus_first_segment.width
-    A_2 = np.pi * fus_second_segment.height  *  fus_second_segment.width
-    h   = fuselage.lengths.total * (fus_second_segment.percent_x_location  - fus_first_segment.percent_x_location)
+    A_1 = np.pi * first_segment.height  *  first_segment.width
+    A_2 = np.pi * second_segment.height  *  second_segment.width
+    h   = fuselage.lengths.total * (second_segment.percent_x_location  - first_segment.percent_x_location)
     volume = (1 /3) * ( A_1 + A_2 + np.sqrt(A_1*A_2)) *h
-   
-    tank_first_segment = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Segments.Segment()
-    tank_first_segment.height = fus_first_segment.height
-    tank_first_segment.width  = fus_first_segment.width
-    tank_first_segment.percent_x_location = tank_section_percent_x /h
-    
-    tank_section_percent_x += h
-    
-    fuel_tank.append_segment(tank_first_segment)
-    if tank_second_segment.has_fuel_tank == False: 
-        tank_second_segment = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Segments.Segment()
-        tank_second_segment.height = fus_second_segment.height
-        tank_second_segment.width  = fus_second_segment.width 
-        tank_second_segment.percent_x_location = 1       
-        fuel_tank.append_segment(tank_second_segment)
     
     return volume
-
 
 def compute_fuselage_non_integral_tank_fuel_volume(fuel_tank,fuselage): 
     # get length of tank
@@ -136,7 +119,6 @@ def compute_fuselage_non_integral_tank_fuel_volume(fuel_tank,fuselage):
     r =  fuel_tank.inner_diameter / 2
     volume = np.pi * ( r** 2) * l +  4 / 3 * np.pi * ( r** 3)      
     
-    create_non_integral_tank_sections(fuel_tank,fuel_tank.outer_diameter/2,l)
     return volume
 
 
@@ -214,7 +196,8 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,oute
         
         detla_D  = delta_AD *  np.cos(upper_slope)
         
-        D += detla_D 
+        D += detla_D
+    
     
     # get orgin of fuel tank
     spar_sweep       = convert_sweep_segments(inner_segment.sweeps.quarter_chord, inner_segment, outer_segment, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=inner_segment.structural.front_spar_percent_chord) 
@@ -239,8 +222,6 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,oute
         volume *= 2
     
     fuel_tank.length = l
-    
-    create_non_integral_tank_sections(fuel_tank,fuel_tank.outer_diamter/2,l)
     
     return volume ,  tank_span_location
 
@@ -310,34 +291,6 @@ def compute_non_dimensional_rib_coordinates(compoment):
     
          
     return front_rib_nondim_y_upper,rear_rib_nondim_y_upper, front_rib_nondim_y_lower, rear_rib_nondim_y_lower
-
-
-def create_non_integral_tank_sections(fuel_tank,r,l): 
-    n = 8
-    thetas =  np.linspace(0,np.pi/2, n) 
-    
-    # front of tank
-    sec_i =  0
-    for i in range(n): 
-        segment = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Segments.Segment()
-        segment.tag    = 'tank_section_' + str(sec_i+1)
-        segment.height = 2 * r *np.sin(thetas[i]) 
-        segment.width  = 2 * r *np.sin(thetas[i])           
-        segment.percent_x_location = r * (1 - np.cos(thetas[i]))
-        fuel_tank.append_segment(segment)
-        sec_i += 1
-    
-    for i in range(n):  
-        segment = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Segments.Segment()
-        segment.tag    = 'tank_section_' + str(sec_i+1)
-        segment.height = 2 * r * np.sin(thetas[i])      
-        segment.width  = 2 * r * np.sin(thetas[i])      
-        segment.percent_x_location = l +  r * np.cos(thetas[i])
-        sec_i += 1      
-    
-    return 
-    
-
     
     
     
