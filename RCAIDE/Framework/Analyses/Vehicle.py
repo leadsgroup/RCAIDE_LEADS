@@ -98,7 +98,6 @@ class Vehicle(Analysis.Container):
         Analysis.Container.__init__(self,*args,**kwarg)
 
         self._analyses_map = { 
-            RCAIDE.Framework.Analyses.Geometry.Geometry         : 'geometry'     ,
             RCAIDE.Framework.Analyses.Weights.Weights           : 'weights'      ,
             RCAIDE.Framework.Analyses.Aerodynamics.Aerodynamics : 'aerodynamics' ,
             RCAIDE.Framework.Analyses.Stability.Stability       : 'stability'    ,
