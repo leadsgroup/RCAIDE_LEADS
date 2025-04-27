@@ -24,4 +24,5 @@ from .plot_battery_ragone_diagram               import plot_battery_ragone_diagr
 from .plot_electric_propulsor_efficiencies      import plot_electric_propulsor_efficiencies
 from .plot_fuel_consumption                     import plot_fuel_consumption
 from .plot_altitude_sfc_weight                  import plot_altitude_sfc_weight
-from .plot_propulsor_throttles                  import plot_propulsor_throttles               
+from .plot_propulsor_throttles                  import plot_propulsor_throttles
+from .plot_jet_engine_conditions                import plot_jet_engine_conditions

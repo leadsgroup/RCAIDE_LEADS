@@ -185,7 +185,8 @@ def plot_mission(results):
     plot_aerodynamic_forces(results)
     
     plot_fuel_consumption(results)
-     
+    
+    plot_jet_exit_conditions(results) 
         
     return 
 

@@ -153,10 +153,14 @@ def compute_turbine_performance(turbine,conditions):
     # Compute the working fluid properties
     T0              = turbine_conditions.inputs.static_temperature
     P0              = turbine_conditions.inputs.static_pressure  
-    M0              = turbine_conditions.inputs.mach_number   
-    gamma           = working_fluid.compute_gamma(T0,P0) 
-    Cp              = working_fluid.compute_cp(T0,P0) 
-    R               = working_fluid.compute_R(T0,P0)    
+    M0              = turbine_conditions.inputs.mach_number
+
+    gamma               = conditions.freestream.isentropic_expansion_factor
+    Cp                  = conditions.freestream.specific_heat_at_constant_pressure
+    R                   = conditions.freestream.gas_specific_constant    
+    #gamma           = working_fluid.compute_gamma(T0,P0) 
+    #Cp              = working_fluid.compute_cp(T0,P0) 
+    #R               = working_fluid.compute_R(T0,P0)    
     
     #Unpack turbine entering properties 
     eta_mech              = turbine.mechanical_efficiency

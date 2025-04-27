@@ -131,9 +131,9 @@ def main():
 
 
 
-    error = np.abs((rcaide_values["Fuel Mass Flow Rate [kg/s]"] - literature_values[turbofan.tag]["Fuel Mass Flow Rate [kg/s]"]) / literature_values[turbofan.tag]["Fuel Mass Flow Rate [kg/s]"]) * 100
+    error = np.abs((rcaide_values["Fuel Mass Flow Rate [kg/s]"] - literature_values[turbofan.tag]["Fuel Mass Flow Rate [kg/s]"]) / literature_values[turbofan.tag]["Fuel Mass Flow Rate [kg/s]"])  
     print("\nError in Fuel Mass Flow Rate [%]:", error)
-    assert error < 8e-1
+    assert error < 5e-2
     
     return
 

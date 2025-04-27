@@ -14,7 +14,6 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Ram                import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor          import compute_combustor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor         import compute_compressor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import compute_turbine_performance
-from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import compute_supersonic_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import compute_expansion_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet           import size_core  
@@ -257,9 +256,11 @@ def design_turbojet(turbojet):
 
     # Step 16: Compute flow through the low pressure turbine
     compute_turbine_performance(low_pressure_turbine,conditions)
+    
 
     # Step 17: Link the core nozzle to the low pressure turbine
-    if turbojet.afterburner_active == True:
+
+    if turbojet.afterburner != None: 
         #link the core nozzle to the afterburner
         afterburner_conditions.inputs.stagnation_temperature = lpt_conditions.outputs.stagnation_temperature
         afterburner_conditions.inputs.stagnation_pressure    = lpt_conditions.outputs.stagnation_pressure   
@@ -268,18 +269,26 @@ def design_turbojet(turbojet):
         afterburner_conditions.inputs.static_pressure        = lpt_conditions.outputs.static_pressure
         afterburner_conditions.inputs.mach_number            = lpt_conditions.outputs.mach_number  
         afterburner.working_fluid                            = low_pressure_turbine.working_fluid
-
-        #flow through the afterburner 
-        compute_combustor_performance(afterburner,conditions)
-
+        
+        if turbojet.afterburner_active == True: 
+    
+            #flow through the afterburner 
+            compute_combustor_performance(afterburner,conditions) 
+        else:
+            afterburner_conditions.outputs.stagnation_temperature = afterburner_conditions.inputs.stagnation_temperature  
+            afterburner_conditions.outputs.stagnation_pressure    = afterburner_conditions.inputs.stagnation_pressure      
+            afterburner_conditions.outputs.static_temperature     = afterburner_conditions.inputs.static_temperature      
+            afterburner_conditions.outputs.static_pressure        = afterburner_conditions.inputs.static_pressure         
+            afterburner_conditions.outputs.mach_number            = afterburner_conditions.inputs.mach_number
+       
         #link the core nozzle to the afterburner
         core_nozzle_conditions.inputs.stagnation_temperature = afterburner_conditions.outputs.stagnation_temperature
         core_nozzle_conditions.inputs.stagnation_pressure    = afterburner_conditions.outputs.stagnation_pressure  
         core_nozzle_conditions.inputs.static_temperature     = afterburner_conditions.outputs.static_temperature
         core_nozzle_conditions.inputs.static_pressure        = afterburner_conditions.outputs.static_pressure  
         core_nozzle_conditions.inputs.mach_number            = afterburner_conditions.outputs.mach_number   
-        core_nozzle.working_fluid                            = afterburner.working_fluid  
-
+        core_nozzle.working_fluid                            = afterburner.working_fluid 
+        
     else:
         #link the core nozzle to the low pressure turbine
         core_nozzle_conditions.inputs.stagnation_temperature = lpt_conditions.outputs.stagnation_temperature
@@ -287,13 +296,11 @@ def design_turbojet(turbojet):
         core_nozzle_conditions.inputs.static_temperature     = lpt_conditions.outputs.static_temperature
         core_nozzle_conditions.inputs.static_pressure        = lpt_conditions.outputs.static_pressure  
         core_nozzle_conditions.inputs.mach_number            = lpt_conditions.outputs.mach_number   
-        core_nozzle.working_fluid                            = low_pressure_compressor.working_fluid 
- 
-    # Step 18: Compute flow through the core nozzle
-    if np.any(conditions.freestream.mach_number > 1.0):
-        compute_supersonic_nozzle_performance(core_nozzle,conditions)
-    else:
-        compute_expansion_nozzle_performance(core_nozzle,conditions)
+        core_nozzle.working_fluid                            = low_pressure_compressor.working_fluid
+        
+         
+    # Step 18: Compute flow through the core nozzle 
+    compute_expansion_nozzle_performance(core_nozzle,conditions) 
  
     # Step 19: link the thrust component to the core nozzle
     turbojet_conditions.core_nozzle_area_ratio                   = core_nozzle_conditions.outputs.area_ratio 

@@ -58,8 +58,18 @@ def append_combustor_conditions(combustor, segment, energy_conditions):
     RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance
     """
     ones_row    = segment.state.ones_row 
-    energy_conditions.converters[combustor.tag]                           = Conditions() 
-    energy_conditions.converters[combustor.tag].inputs                    = Conditions() 
-    energy_conditions.converters[combustor.tag].inputs.nondim_mass_ratio  = ones_row(1)
-    energy_conditions.converters[combustor.tag].outputs                   = Conditions()
+    energy_conditions.converters[combustor.tag]                                 = Conditions() 
+    energy_conditions.converters[combustor.tag].inputs                          = Conditions() 
+    energy_conditions.converters[combustor.tag].inputs.nondim_mass_ratio        = ones_row(1)
+    energy_conditions.converters[combustor.tag].inputs.stagnation_temperature   = ones_row(1)
+    energy_conditions.converters[combustor.tag].inputs.stagnation_pressure      = ones_row(1)
+    energy_conditions.converters[combustor.tag].inputs.static_temperature       = ones_row(1)
+    energy_conditions.converters[combustor.tag].inputs.static_pressure          = ones_row(1)
+    energy_conditions.converters[combustor.tag].inputs.mach_number              = ones_row(1)
+    energy_conditions.converters[combustor.tag].outputs                         = Conditions() 
+    energy_conditions.converters[combustor.tag].outputs.stagnation_temperature  = ones_row(1)
+    energy_conditions.converters[combustor.tag].outputs.stagnation_pressure     = ones_row(1)
+    energy_conditions.converters[combustor.tag].outputs.static_temperature      = ones_row(1)
+    energy_conditions.converters[combustor.tag].outputs.static_pressure         = ones_row(1)
+    energy_conditions.converters[combustor.tag].outputs.mach_number             = ones_row(1)
     return 

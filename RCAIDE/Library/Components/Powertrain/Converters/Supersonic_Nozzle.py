@@ -101,7 +101,7 @@ class Supersonic_Nozzle(Converter):
         self.tag                             = 'Supersonic_Nozzle'
         self.polytropic_efficiency           = 1.0
         self.pressure_ratio                  = 1.0
-        self.pressure_recovery               = 0.9
+        self.pressure_recovery               = 1.0 
         self.max_area_ratio                  = 1000.
         self.min_area_ratio                  = 0.
 
