@@ -64,7 +64,10 @@ def geometry(mission):
 
             # update weights vehicle with correct geometric properties                  
             if segment.analyses.weights != None:
-                segment.analyses.weights.vehicle = vehicle
+                #  Weights
+                weights = RCAIDE.Framework.Analyses.Weights.Weights()
+                weights.vehicle = vehicle
+                segment.analyses.weights = weights
         else:
             raise AttributeError('Geometry Analyses not defined')
     return 

@@ -136,9 +136,7 @@ def vehicle_setup():
     tip_airfoil.coordinate_file   = rel_path + 'Airfoils' + separator + 'B737d.txt'
     segment.append_airfoil(tip_airfoil)
     wing.segments.append(segment)       
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)        
+   
 
     # control surfaces -------------------------------------------
     flap                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap() 

@@ -25,7 +25,20 @@ from  Cessna_172 import vehicle_setup
 
 def main():
 
+    vehicle  = vehicle_setup()
+
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '23' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
+
     analyses = RCAIDE.Framework.Analyses.Vehicle()
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    analyses.append(geometry)
+    
     # ------------------------------------------------------------------
     #  Planet Analysis
     planet = RCAIDE.Framework.Analyses.Planets.Earth()
@@ -39,13 +52,6 @@ def main():
     
     altitude  = 0 * Units.m
     delta_ISA = 0 
- 
-    vehicle  = vehicle_setup()
-
-    vehicle.flight_envelope.category                  = 'normal'
-    vehicle.flight_envelope.FAR_part_number           = '23' 
-    vehicle.flight_envelope.maximum_lift_coefficient  = 3
-    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
     
     V_n_data = generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA) 
 
