@@ -84,7 +84,7 @@ def wing_planform(wing, overwrite_reference = True):
                     sweeps.append(0)
                 else: 
                     next_seg  = wing.segments[seg_keys[i+1]]                
-                    quarter_chord =  convert_sweep_segments(seg.sweeps.leading_edge, seg, next_seg, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25) # CHANGE 
+                    quarter_chord =  convert_sweep_segments(seg.sweeps.leading_edge, seg, next_seg, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25)
                     sweeps.append(quarter_chord)            
             else:
                 raise AssertionError("Quarter chord or leading edge sweep must be defined") 
@@ -272,6 +272,28 @@ def wing_planform(wing, overwrite_reference = True):
         wing.total_length               = total_length 
         
     return wing
+
+def bwb_wing_planform(wing,overwrite_reference = True):
+
+    wing_planform(wing,overwrite_reference) 
+
+    seg_keys = list(wing.segments.keys())  
+    for tag, segment in enumerate(wing.segments): 
+        if not isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment) and segment.reference_area_root:                      
+            segment_root_chord       = wing.segments[seg_keys[tag]].root_chord_percent * wing.chords.root 
+            segment_tip_chord        = wing.segments[seg_keys[tag+1]].root_chord_percent * wing.chords.root 
+            segnent_start_span       = wing.segments[seg_keys[tag]].percent_span_location * wing.spans.projected
+            reference_wing_span      = wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected
+
+            next_seg = wing.segments[seg_keys[tag+1]]
+            trailing_edge_sweep = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=1.0) 
+            leading_edge_sweep  = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.0) 
+
+            projected_root_chord = segment_root_chord + segnent_start_span * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
+            wing.areas.reference = (projected_root_chord + segment_tip_chord)/2 * reference_wing_span
+                    
+
+    return 
  
 def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
     """Computes detailed segment properties. These are currently used for parasite drag calculations.

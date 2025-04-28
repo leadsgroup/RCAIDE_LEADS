@@ -37,11 +37,13 @@ class Geometry(Analysis):
             """                  
         
         
-        self.tag      = 'geometry'
-        self.vehicle  = None
-        self.settings = Data()
-        self.settings.update_fuselage_properties=False
-        self.settings.overwrite_reference = False
+        self.tag                                 = 'geometry'
+        self.vehicle                             = None
+        self.settings                            = Data()
+        self.settings.update_fuselage_properties = False
+        self.settings.overwrite_reference        = False
+        self.settings.update_wing_properties     = False
+        self.settings.update_fuel_volume         = False
 
         
         

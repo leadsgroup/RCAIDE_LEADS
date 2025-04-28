@@ -10,7 +10,7 @@ from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodat
 #  Methods
 # ----------------------------------------------------------------------
 
-def fuselage_planform(fuselage, update_fuselage_properties =True, circular_cross_section = True):
+def fuselage_planform(fuselage, circular_cross_section = True):
     """Calculates fuselage geometry values
 
     Assumptions:
@@ -40,8 +40,6 @@ def fuselage_planform(fuselage, update_fuselage_properties =True, circular_cross
     Properties Used:
     N/A
     """
-    # size cabins 
-    compute_layout_of_passenger_accommodations(fuselage,update_fuselage_properties)
      
     nose_fineness   = fuselage.fineness.nose
     tail_fineness   = fuselage.fineness.tail
@@ -74,12 +72,12 @@ def fuselage_planform(fuselage, update_fuselage_properties =True, circular_cross
     Deff = (a+b)*(64.-3.*R**4)/(64.-16.*R**2)
     wetted_area += 0.75*np.pi*Deff * (nose_length + tail_length)
     
-    # update
-    if update_fuselage_properties: 
-        fuselage.lengths.nose          = nose_length
-        fuselage.lengths.tail          = tail_length
-        fuselage.lengths.cabin         = cabin_length 
-        fuselage.areas.wetted          = wetted_area
-        fuselage.areas.front_projected = cross_section_area
-        fuselage.effective_diameter    = Deff 
+
+    fuselage.lengths.nose          = nose_length
+    fuselage.lengths.tail          = tail_length
+    fuselage.lengths.cabin         = cabin_length 
+    fuselage.areas.wetted          = wetted_area
+    fuselage.areas.front_projected = cross_section_area
+    fuselage.effective_diameter    = Deff 
+
     return 

@@ -77,16 +77,18 @@ def mass_properties(mission):
                                                                             + weights_analysis.vehicle.mass_properties.payload \
                                                                             + weights_analysis.vehicle.mass_properties.fuel
                 else:
-                     print('Takeoff Weight Prescribed skipping weight analysis')        
+                    print('Takeoff Weight Prescribed skipping weight analysis')        
 
                 if weights_analysis.vehicle.mass_properties.takeoff > weights_analysis.vehicle.mass_properties.max_takeoff:
-                     print('Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
+                    print('Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
                      
                 # CG Location  
-                CG_location, _ = compute_vehicle_center_of_gravity(weights_analysis.vehicle, update_CG= weights_analysis.settings.update_center_of_gravity)  
+                if weights_analysis.settings.update_center_of_gravity:
+                    CG_location, _ = compute_vehicle_center_of_gravity(weights_analysis.vehicle, update_CG= weights_analysis.settings.update_center_of_gravity)  
                  
                 # Operating Aircraft MOI    
-                _, _ = compute_aircraft_moment_of_inertia(weights_analysis.vehicle, CG_location, update_MOI= weights_analysis.settings.update_moment_of_inertia)          
+                if weights_analysis.settings.update_moment_of_inertia:
+                    _, _ = compute_aircraft_moment_of_inertia(weights_analysis.vehicle, CG_location, update_MOI= weights_analysis.settings.update_moment_of_inertia)          
 
                 last_tag = segment.tag.lower()
                 segment.analyses.aerodynamics.vehicle.mass_properties =  weights_analysis.vehicle.mass_properties
@@ -103,20 +105,22 @@ def mass_properties(mission):
                 if last_tag == None:
                     segment.analyses.weights.vehicle = segment.analyses.geometry.vehicle
                     if segment.analyses.weights.vehicle.mass_properties.takeoff == 0:
-                         if segment.analyses.vehicle.mass_properties.operating_empty != 0 or segment.analyses.vehicle.mass_properties.payload !=0 or segment.analyses.vehicle.mass_properties.fuel != 0:
-                              segment.analyses.vehicle.mass_properties.takeoff = segment.analyses.vehicle.mass_properties.operating_empty \
-                                                                            + segment.analyses.vehicle.mass_properties.payload \
-                                                                            + segment.analyses.vehicle.mass_properties.fuel
-                              if segment.analyses.vehicle.mass_properties.takeoff > segment.analyses.vehicle.mass_properties.max_takeoff:
+                         if segment.analyses.weights.vehicle.mass_properties.operating_empty != 0 or segment.analyses.weights.vehicle.mass_properties.payload !=0 or segment.analyses.vehicle.mass_properties.fuel != 0:
+                              segment.analyses.weights.vehicle.mass_properties.takeoff = segment.analyses.weights.vehicle.mass_properties.operating_empty \
+                                                                            + segment.analyses.weights.vehicle.mass_properties.payload \
+                                                                            + segment.analyses.weights.vehicle.mass_properties.fuel
+                              if segment.analyses.weights.vehicle.mass_properties.takeoff > segment.analyses.weights.vehicle.mass_properties.max_takeoff:
                                     print('Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
                          else:
-                            if segment.analyses.vehicle.mass_properties.max_takeoff != 0:
-                                 segment.analyses.vehicle.mass_properties.takeoff = segment.analyses.vehicle.mass_properties.max_takeoff
+                            if segment.analyses.weights.vehicle.mass_properties.max_takeoff != 0:
+                                 segment.analyses.weights.vehicle.mass_properties.takeoff = segment.analyses.weights.vehicle.mass_properties.max_takeoff
                             else: 
-                                 raise AssertionError('Specify Takeoff Weight')          
+                                 raise AssertionError('Specify Takeoff Weight')         
                     last_tag = segment.tag.lower()
+                    segment.analyses.aerodynamics.vehicle.mass_properties =  segment.analyses.weights.vehicle.mass_properties
                 else:
-                    segment.analyses.weights.vehicle =  mission.segments[last_tag].analyses.weights.vehicle           
+                    segment.analyses.weights.vehicle      = mission.segments[last_tag].analyses.weights.vehicle       
+                    segment.analyses.aerodynamics.vehicle = mission.segments[last_tag].analyses.aerodynamics.vehicle
             
 
              
