@@ -106,6 +106,7 @@ class Nacelle(Component):
         self.origin                   = [[0.0,0.0,0.0]]
         self.aerodynamic_center       = [0.0,0.0,0.0]  
         self.areas                    = Data()
+        self.areas.reference          = 0.0
         self.areas.front_projected    = 0.0
         self.areas.side_projected     = 0.0
         self.areas.wetted             = 0.0 

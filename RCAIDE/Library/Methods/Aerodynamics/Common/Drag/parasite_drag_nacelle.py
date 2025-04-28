@@ -73,7 +73,7 @@ def nacelle_drag(state,settings, nacelle):
     Re               = freestream.reynolds_number
     low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number
     high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number 
-    Sref             = nacelle.diameter**2 / 4 * np.pi
+    Sref             = nacelle.areas.front_projected
     Swet             = nacelle.areas.wetted
     
     # Reynolds number

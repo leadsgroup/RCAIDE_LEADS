@@ -65,7 +65,7 @@ def parasite_total(state,settings,geometry):
         for propulsor in network.propulsors:  
             if 'nacelle' in propulsor:
                 nacelle       = propulsor.nacelle
-                ref_area      = np.pi * nacelle.diameter * nacelle.length 
+                ref_area      = nacelle.areas.front_projected
                 nacelle_parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total
                 conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total  = nacelle_parasite_drag * nacelle_parasite_drag/vehicle_reference_area
                 total_parasite_drag += nacelle_parasite_drag * ref_area/vehicle_reference_area
