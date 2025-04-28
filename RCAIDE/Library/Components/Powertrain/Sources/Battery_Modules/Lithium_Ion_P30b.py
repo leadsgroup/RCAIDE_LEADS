@@ -73,7 +73,7 @@ class Lithium_Ion_P30b(Generic_Battery_Module):
                 "SEI on cracks": "true",
                 "loss of active material": "stress-driven",
                 "calculate discharge energy": "true",  # for compatibility with older PyBaMM versions  
-                #"thermal": "lumped"
+                "thermal": "lumped"
             })
         self.cell.battery_parameters =  pybamm.ParameterValues("OKane2022")
         # self.cell.battery_parameters.update({"Electrode width [m]": 9.06108669e-01,
