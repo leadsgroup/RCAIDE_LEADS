@@ -138,6 +138,7 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
 
 
     Q_cell             = battery_module_conditions.cell.charge_throughput
+    T_cell             = battery_module_conditions.cell.temperature
     
     I_module           = battery_module_conditions.current 
     I_cell             = battery_module_conditions.cell.current 
@@ -213,12 +214,18 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
         #I_cell[t_idx+1] = pybamm_condition['Current [A]'].data[-1] 
         R_0_cell[t_idx+1]           = pybamm_condition['Resistance [Ohm]'].data[-1] 
         LLI_cell[t_idx+1]           = pybamm_condition['Loss of lithium inventory [%]'].data[-1]
-        Q_heat_cell[t_idx+1]        = pybamm_condition['Total heating [W.m-3]'].data[-1] 
+        T_cell[t_idx+1]             = pybamm_condition['Cell temperature [K]'].data[-1][0]
+        Q_heat_cell[t_idx+1]        = pybamm_condition['Total heating [W.m-3]'].data[-1] #total heating may be incorrect 
         Cap_lost_cell[t_idx+1]      = pybamm_condition['Total capacity lost to side reactions [A.h]'].data[-1]
         battery_module_conditions.cell.pybamm_condition['timestep_' + str(t_idx+1)] = pybamm_condition
-
-    
-
+        # Compute cell temperature
+        if HAS is not None:
+            T_cell[t_idx+1]  = HAS.compute_thermal_performance(battery_module,bus,coolant_line,Q_heat_cell[t_idx],T_cell[t_idx],state,delta_t[t_idx],t_idx)
+        else:
+            # Considers a thermally insulated system and the heat piles on in the system
+            #dT_dt              = Q_heat_cell[t_idx]/(cell_mass*Cp)
+            #T_cell[t_idx+1]    =  T_cell[t_idx] + dT_dt*delta_t[t_idx]
+            T_cell[t_idx+1]    = pybamm_condition['Cell temperature [K]'].data[-1][0] #currently not interactive with the pybamm state
     #pybamm_condition = battery_module_conditions.cell.pybamm_state['timestep_' + str(t_idx+1)]['solution'] #how to carry over the solution from the previous time step
     #model = battery_module_conditions.cell.pybamm_state['timestep_' + str(t_idx+1)]['model']
   
