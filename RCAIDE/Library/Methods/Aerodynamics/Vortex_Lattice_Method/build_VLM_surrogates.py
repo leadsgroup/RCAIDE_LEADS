@@ -136,6 +136,9 @@ def build_surrogate(aerodynamics, training):
     if aerodynamics.flap_flag:
         surrogates.dCM_ddelta_f     = interpolate.interp1d(mach_data,training.dCM_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
     
+    surrogates.neutral_point = aerodynamics.training.subsonic.neutral_point
+    surrogates.static_margin = aerodynamics.training.subsonic.static_margin
+    
     return surrogates
  
  
@@ -187,6 +190,8 @@ def no_surrogate(aerodynamics, training):
     surrogates.dCN_dbeta        = None  
     surrogates.dCN_dp           = None      
     surrogates.dCN_dr           = None
+    surrogates.neutral_point = training.neutral_point # Double check this
+    surrogates.static_margin = training.static_margin # Double check this
    
 
     if aerodynamics.aileron_flag:  

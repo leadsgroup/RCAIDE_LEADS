@@ -295,8 +295,8 @@ def evaluate_surrogate(state,settings,vehicle):
     # Static margin and neutral point 
     # -----------------------------------------------------------------------------------------------------------------------  
     CG =  aerodynamics.vehicle.mass_properties.center_of_gravity[0][0]
-    NP = aerodynamics.vehicle.mass_properties.neutral_point  
-    SM = (NP - CG) / aerodynamics.reference_values.c_ref      
+    NP = aerodynamics.surrogates.subsonic.neutral_point # Neutral Point is stored on subsonic surrogate
+    SM = aerodynamics.surrogates.subsonic.static_margin # Static Margin is stored on subsonic surrogate
     conditions.static_stability.neutral_point[:,0]   = NP
     conditions.static_stability.static_margin[:,0]   = SM
         
