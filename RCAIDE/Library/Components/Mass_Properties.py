@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Mass_Properties.py
+# RCAIDE/Library/Components/Mass_Properties.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

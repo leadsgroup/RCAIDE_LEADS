@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Airfoils/Airfoil.py
+# RCAIDE/Library/Components/Airfoils/Airfoil.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 

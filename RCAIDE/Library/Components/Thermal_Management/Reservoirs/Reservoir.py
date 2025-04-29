@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Thermal_Management/Reservoirs/Reservoir.py
+# RCAIDE/Library/Components/Thermal_Management/Reservoirs/Reservoir.py
 # 
 # Created:  Mar 2024, S. Shekar
 

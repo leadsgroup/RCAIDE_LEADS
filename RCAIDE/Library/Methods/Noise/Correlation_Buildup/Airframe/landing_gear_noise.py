@@ -12,32 +12,48 @@ from RCAIDE.Framework.Core import Units
 # ----------------------------------------------------------------------------------------------------------------------  
 # main and nose landing gear noise
 # ----------------------------------------------------------------------------------------------------------------------  
-def landing_gear_noise(D,H,wheels,M,velocity,phi,theta,distance,frequency):
-    """This calculates the Landing gear 1/3 octave band sound pressure level and overall sound pressure level
-    for a tyre diameter D, a strut length H and WHEELS number of  wheels per unit.
+def landing_gear_noise(D, H, wheels, M, velocity, phi, theta, distance, frequency):
+    """
+    This calculates the Landing gear 1/3 octave band sound pressure level and overall sound pressure level.
 
-    Assumptions:
-        Correlation based.
+    Parameters
+    ----------
+    D : float
+        Landing gear tyre diameter.
+    H : float
+        Landing gear strut length.
+    wheels : int
+        Number of wheels per unit.
+    M : float
+        Mach number.
+    velocity : float
+        Aircraft speed.
+    phi : float
+        Azimuthal angle [rad].
+    theta : float
+        Polar angle [rad].
+    distance : float
+        Distance from airplane to observer, evaluated at retarded time [ft].
+    frequency : array_like
+        Frequency array [Hz].
 
-    Source:
-       Fink, Martin R. "Noise component method for airframe noise." Journal of aircraft 16.10 (1979): 659-665.
+    Returns
+    -------
+    SPL : array_like
+        Sound Pressure Level of the landing gear [dB].
 
+    Notes
+    -----
+    The function uses correlation-based methods to compute the noise levels from the landing gear.
 
-    Inputs:
-        D         - Landing gear tyre diameter                                      
-        H         - Lading gear strut length                                        
-        wheels    - Number of wheels per unit                                      [-]
-        M         - Mach number                                                    [-]
-        velocity  - Aircraft speed                                                  
-        phi       - Azimuthal angle                                                [rad]
-        theta     - Polar angle                                                    [rad]
-        distance  - Distance from airplane to observer, evaluated at retarded time [ft]
-        frequemcy - Frequency array                                                [Hz] 
+    **Definitions**
 
-    Outputs: One Third Octave Band SPL [dB]
-        SPL           - Sound Pressure Level of the landing gear         [dB]
-        OASPL         - Overall Sound Pressure Level of the landing gear [dB] 
- 
+    'SPL'
+        Sound Pressure Level, a measure of the sound intensity.
+
+    References
+    ----------
+    Fink, Martin R. "Noise component method for airframe noise." Journal of aircraft 16.10 (1979): 659-665.
     """  
      
     velocity_kts = velocity/Units.knots

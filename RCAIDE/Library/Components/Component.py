@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Component.py
+# RCAIDE/Library/Components/Component.py
 #  
 # Created:  Mar 2024, M. Clarke 
 

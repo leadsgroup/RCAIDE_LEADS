@@ -95,13 +95,13 @@ def VLM(conditions,settings,geometry):
     settings.use_VORLAX_matrix_calculation     [boolean]
     settings.floating_point_precision          [float16/32/64]
        
-    conditions.aerodynamics.angles.alpha    [radians]
-    conditions.aerodynamics.angles.beta   [radians]
+    conditions.aerodynamics.angles.alpha       [radians]
+    conditions.aerodynamics.angles.beta        [radians]
     conditions.freestream.mach_number          [Unitless]
     conditions.freestream.velocity             [m/s]
-    conditions.static_stability.pitch_rate    [radians/s]
-    conditions.static_stability.roll_rate     [radians/s]
-    conditions.static_stability.yaw_rate      [radians/s]
+    conditions.static_stability.pitch_rate     [radians/s]
+    conditions.static_stability.roll_rate      [radians/s]
+    conditions.static_stability.yaw_rate       [radians/s]
        
     
     Outputs:    
@@ -109,11 +109,11 @@ def VLM(conditions,settings,geometry):
         CL                                     [Unitless], CLTOT in VORLAX
         CDi                                    [Unitless], CDTOT in VORLAX
         CM                                     [Unitless], CMTOT in VORLAX
-        CY                                  [Unitless], Total y force coeff
+        CY                                     [Unitless], Total y force coeff
         CRTOT                                  [Unitless], Rolling moment coeff (unscaled)
         CL_mom                                 [Unitless], Rolling moment coeff (scaled by b_ref)
         CNTOT                                  [Unitless], Yawing  moment coeff (unscaled)
-        CN                                 [Unitless], Yawing  moment coeff (scaled by b_ref)
+        CN                                     [Unitless], Yawing  moment coeff (scaled by b_ref)
         CL_wing                                [Unitless], CL  of each wing
         CDi_wing                               [Unitless], CDi of each wing
         cl_y                                   [Unitless], CL  of each strip

@@ -213,7 +213,7 @@ def post_process_certification_noise_data(approach_results,takeoff_results):
     res.flyover_noise_6000m  = cert_SPL_dBA_max[-1, 0] 
     res.sideline_noise_450m  = max(cert_SPL_dBA_max[:, 2])
     res.area_65_dbA = area_65_dbA
-    res.area_65_dbA = area_65_dbA 
+    res.area_85_dbA = area_85_dbA 
     
     return res
 

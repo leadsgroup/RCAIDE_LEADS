@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Nacelles/Nacelle.py
+# RCAIDE/Components/Nacelles/Nacelle.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

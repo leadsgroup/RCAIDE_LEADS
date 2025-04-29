@@ -22,53 +22,69 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Airframe Noise 
 # ----------------------------------------------------------------------
-def airframe_noise(microphone_locations,segment,config,settings):
-    """ This computes the noise from different sources of the airframe for a given vehicle for a constant altitude flight. 
+def airframe_noise(microphone_locations, segment, config, settings):
+    """
+    This computes the noise from different sources of the airframe for a given vehicle for a constant altitude flight.
 
-    Assumptions:
-        Correlation based 
- 
-    Source:
-       Fink, Martin R. "Noise component method for airframe noise." Journal of aircraft 16.10 (1979): 659-665.
-               
-    Inputs:
-        vehicle	 - RCAIDE type vehicle
+    Parameters
+    ----------
+    microphone_locations : array_like
+        Coordinates of the microphones used to capture noise data.
+    segment : RCAIDE type segment
+        Contains flight path data and conditions.
+            - conditions : object
+                Contains freestream velocity, kinematic viscosity, and mach number.
+            - frames : object
+                Contains inertial time data.
+    config : RCAIDE type config
+        Configuration of the vehicle including wings and landing gears.
+            - wings : list
+                List of wing objects with attributes like taper, areas, spans, and control surfaces.
+            - landing_gears : list
+                List of landing gear objects with attributes like tire diameter, strut length, and gear status.
+    settings : object
+        Contains settings such as center frequencies for noise calculations.
 
-        includes these fields:
-            S                          - Wing Area
-            bw                         - Wing Span
-            Sht                        - Horizontal tail area
-            bht                        - Horizontal tail span
-            Svt                        - Vertical tail area
-            bvt                        - Vertical tail span
-            deltaf                     - Flap deflection
-            Sf                         - Flap area
-            cf                         - Flap chord
-            slots                      - Number of slots (Flap type)
-            Dp                         - Main landing gear tyre diameter
-            Hp                         - Main lading gear strut length
-            Dn                         - Nose landing gear tyre diameter
-            Hn                         - Nose landing gear strut length
-            wheels                     - Number of wheels 
-            
-        noise segment - flight path data, containing:
-            distance_vector             - distance from the source location to observer
-            angle                       - polar angle from the source to the observer
-            phi                         - azimuthal angle from the source to the observer
+    Returns
+    -------
+    airframe_noise : Data
+        Contains the computed noise data.
+            - SPL : float
+                Sound Pressure Level.
+            - SPL_1_3_spectrum : array_like
+                One Third Octave Band SPL spectrum.
+            - SPL_dBA : float
+                A-weighted Sound Pressure Level.
+            - noise_time : array_like
+                Time discretization of the noise data.
 
+    Notes
+    -----
+    The function assumes a correlation-based noise computation method. It uses the noise component method as described
+    by Fink (1979) to calculate the noise from various airframe components.
 
-    Outputs: One Third Octave Band SPL [dB]
-        SPL_wing                        - Sound Pressure Level of the clean wing
-        SPLht                           - Sound Pressure Level of the horizontal tail
-        SPLvt                           - Sound Pressure Level of the vertical tail
-        SPL_flap                        - Sound Pressure Level of the flaps trailing edge
-        SPL_slat                        - Sound Pressure Level of the slat leading edge
-        SPL_main_landing_gear           - Sound Pressure Level og the main landing gear
-        SPL_nose_landing_gear           - Sound Pressure Level of the nose landing gear
+    **Major Assumptions**
+        * Constant altitude flight
+        * Correlation-based noise computation
 
-    Properties Used:
-        N/A      
-        
+    **Theory**
+
+    The noise is computed using the noise component method, which involves calculating the noise from individual
+    components like wings, tails, flaps, and landing gears, and then summing them incoherently.
+
+    **Definitions**
+
+    'SPL'
+        Sound Pressure Level, a measure of the sound intensity.
+
+    References
+    ----------
+    [1] Fink, Martin R. "Noise component method for airframe noise." Journal of aircraft 16.10 (1979): 659-665.
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Noise.Metrics.A_weighting_metric
+    RCAIDE.Library.Methods.Noise.Common.SPL_arithmetic
     """
     # Unpack conditions 
     velocity     = segment.conditions.freestream.velocity                  # aircraft velocity  

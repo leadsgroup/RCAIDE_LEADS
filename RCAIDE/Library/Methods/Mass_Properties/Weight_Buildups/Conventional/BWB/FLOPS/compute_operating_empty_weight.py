@@ -17,9 +17,19 @@ from RCAIDE.Library.Attributes.Materials.Aluminum import Aluminum
 # Operating Empty Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_operating_empty_weight(vehicle,settings=None):
-    """
-    Computes the operating empty weight for a Blended Wing Body aircraft using component-based 
-    weight estimation methods.
+    """ This is for a BWB aircraft configuration.
+
+    Assumptions:
+         Calculated aircraft weight from correlations created per component of historical aircraft
+         The wings are made out of aluminum.
+         A wing with the tag 'main_wing' exists.
+
+    Source:
+        N/A
+
+    Inputs:
+        engine - a data dictionary with the fields:
+            thrust_sls - sea level static thrust of a single engine                                        [Newtons]
 
     Parameters
     ----------

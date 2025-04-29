@@ -62,4 +62,12 @@ class Aviation_Gasoline(Propellant):
         self.tag             ='Aviation_Gasoline'
         self.density         = 721.0            # kg/m^3
         self.specific_energy = 43.71e6          # J/kg     
+
+        self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
+        self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
+        self.temperature                   = 0         # [K] Temperature of fuel
+        self.pressure                      = 0         # [Pa] Pressure of fuel
+        self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
+        self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
+        self.oxidizer                      = ''
         

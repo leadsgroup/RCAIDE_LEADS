@@ -120,6 +120,14 @@ class Propellant(Data):
         self.temperatures.autoignition = 0.0                       # K
         self.temperatures.freeze       = 0.0                       # K
         self.temperatures.boiling      = 0.0                       # K
+
+        self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
+        self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
+        self.temperature                   = 0         # [K] Temperature of fuel
+        self.pressure                      = 0         # [Pa] Pressure of fuel
+        self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
+        self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
+        self.oxidizer                      = ''
         
         # Emission Indices 
         self.emission_indices             =  Data() 

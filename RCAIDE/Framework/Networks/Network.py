@@ -53,7 +53,7 @@ class Network(Component):
     
     **Definitions** 
     'Propulsor Group'
-        Any single or group of compoments that work together to provide thrust.
+        Any single or group of Components that work together to provide thrust.
     
     See Also
     --------
@@ -122,8 +122,7 @@ class Network(Component):
         
                         total_thrust      += T   
                         total_moment      += M   
-                        total_mech_power  += P 
-                        total_elec_power  += P_elec 
+                        total_mech_power  += P   
         
                         # compute total mass flow rate 
                         fuel_mdot     += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
@@ -174,8 +173,7 @@ class Network(Component):
     
                 # compute power from each componemnt 
                 bus_conditions.power_draw        += (total_elec_power- state.conditions.energy[bus.tag].regenerative_power*bus_voltage ) * bus.power_split_ratio  /bus.efficiency   
-                bus_conditions.current_draw       = bus_conditions.power_draw/bus_voltage 
-                total_elec_power                 += bus_conditions.power_draw  
+                bus_conditions.current_draw       = bus_conditions.power_draw/bus_voltage  
              
         # ------------------------------------------------------------------------------------------------------------------- 
         # Section 2.0 Converters
@@ -192,13 +190,12 @@ class Network(Component):
                                 generator             = converter.generator   
                                 state.conditions.energy.converters[generator.tag].outputs.power  =  total_elec_power*(1 - state.conditions.energy.hybrid_power_split_ratio ) 
                                 P_mech, P_elec, stored_results_flag,stored_propulsor_tag         = converter.compute_performance(state,fuel_line,bus)  
-                                bus_conditions.power_draw   += P_elec/bus.efficiency
+                                bus_conditions.power_draw   -= P_elec/bus.efficiency
                                 fuel_mdot                   += conditions.energy.converters[converter.tag].fuel_flow_rate  
                  
                             if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft):   
                                 state.conditions.energy.converters[converter.tag].power = total_mech_power*(1 - state.conditions.energy.hybrid_power_split_ratio )   
                                 P_mech, P_elec,stored_results_flag,stored_propulsor_tag = converter.compute_performance(state)   
-                                bus_conditions.power_draw   += P_elec/bus.efficiency
                                 fuel_mdot                   += conditions.energy.converters[converter.tag].fuel_flow_rate   
                     
         # 2.1 Electric Converters                            
@@ -217,7 +214,7 @@ class Network(Component):
                                 
                             if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.DC_Generator) or isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator):                              
                                 compute_generator_performance(converter,conditions) 
-                                bus_conditions.power_draw   += conditions.energy.converters[converter.tag].outputs.power/bus.efficiency
+                                bus_conditions.power_draw   -= conditions.energy.converters[converter.tag].outputs.power/bus.efficiency
                                 bus_conditions.current_draw  = bus_conditions.power_draw/bus.voltage                            
                         
         # ----------------------------------------------------------        
@@ -237,8 +234,7 @@ class Network(Component):
             if bus.active: 
                 for t_idx in range(state.numerics.number_of_control_points):            
                     stored_results_flag       = False
-                    stored_battery_cell_tag   = None 
-                    stored_fuel_cell_tag      = None
+                    stored_battery_cell_tag   = None
                     
                     # ------------------------------------------------------------------------------------------------------------------- 
                     # 3.1 Batteries
@@ -257,7 +253,9 @@ class Network(Component):
                       
                     # ------------------------------------------------------------------------------------------------------------------- 
                     # 3.2 Fuel Cell Stacks
-                    # -------------------------------------------------------------------------------------------------------------------                
+                    # ------------------------------------------------------------------------------------------------------------------- 
+                    stored_results_flag       = False   
+                    stored_fuel_cell_tag      = None                  
                     for fuel_cell_stack in  bus.fuel_cell_stacks:                   
                         if bus.identical_fuel_cell_stacks == False:
                             # run analysis  

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Systems/Avionics.py
+# RCAIDE/Library/Components/Powertrain/Systems/Avionics.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

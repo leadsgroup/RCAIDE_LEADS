@@ -87,6 +87,14 @@ class Alcohol_Mixture(Propellant):
         self.specific_energy            = self.compute_mixture_specific_energy()                         # J/kg
         self.energy_density             = self.compute_mixture_energy_density()                          # J/m^3
         self.lower_heating_value        = self.compute_mixture_lower_heating_value()                     # J/kg
+
+        self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
+        self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
+        self.temperature                   = 0         # [K] Temperature of fuel
+        self.pressure                      = 0         # [Pa] Pressure of fuel
+        self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
+        self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
+        self.oxidizer                      = ''
         
     def compute_mixture_density(self):
         """

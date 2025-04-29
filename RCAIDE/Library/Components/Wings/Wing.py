@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Wings/Wing.py
+# RCAIDE/Library/Components/Wings/Wing.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

@@ -1,4 +1,4 @@
- # RCAIDE/Methods/Noise/Correlation_Buildup/Engine/noise_source_location.py
+# RCAIDE/Methods/Noise/Correlation_Buildup/Engine/noise_source_location.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke  
@@ -16,47 +16,78 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------     
 #  Noise Source Location
 # ----------------------------------------------------------------------------------------------------------------------       
-def noise_source_location(B,Xo,zk,Diameter_primary,theta_p,Area_primary,Area_secondary,distance_microphone,
-                           Diameter_secondary,theta,theta_s,theta_m,Diameter_mixed,Velocity_primary,Velocity_secondary,
-                           Velocity_mixed,Velocity_aircraft,sound_ambient,Str_m,Str_s):
-    """This function calculates the noise source location
-    
-    Assumptions:
-        None
+def noise_source_location(B, Xo, zk, Diameter_primary, theta_p, Area_primary, Area_secondary, distance_microphone,
+                          Diameter_secondary, theta, theta_s, theta_m, Diameter_mixed, Velocity_primary, Velocity_secondary,
+                          Velocity_mixed, Velocity_aircraft, sound_ambient, Str_m, Str_s):
+    """
+    This function calculates the noise source location for primary, secondary, and mixed jet components.
 
-    Source:
-        None
+    Parameters
+    ----------
+    B : array_like
+        Array for storing intermediate calculations.
+    Xo : float
+        Initial position offset.
+    zk : float
+        Scaling factor for jet source location.
+    Diameter_primary : float
+        Diameter of the primary jet [m].
+    theta_p : array_like
+        Angles for the primary jet [rad].
+    Area_primary : float
+        Area of the primary jet [m^2].
+    Area_secondary : float
+        Area of the secondary jet [m^2].
+    distance_microphone : float
+        Distance from the noise source to the microphone [m].
+    Diameter_secondary : float
+        Diameter of the secondary jet [m].
+    theta : float
+        General angle used in calculations [rad].
+    theta_s : array_like
+        Angles for the secondary jet [rad].
+    theta_m : array_like
+        Angles for the mixed jet [rad].
+    Diameter_mixed : float
+        Diameter of the mixed jet [m].
+    Velocity_primary : float
+        Velocity of the primary jet [m/s].
+    Velocity_secondary : float
+        Velocity of the secondary jet [m/s].
+    Velocity_mixed : float
+        Velocity of the mixed jet [m/s].
+    Velocity_aircraft : float
+        Velocity of the aircraft [m/s].
+    sound_ambient : float
+        Ambient sound level [dB].
+    Str_m : array_like
+        Strouhal number for the mixed jet.
+    Str_s : array_like
+        Strouhal number for the secondary jet.
 
-    Inputs: 
-        B                         [-]
-        Xo                        [-]
-        zk                        [-]
-        Diameter_primary          [m]
-        theta_p                   [rad]
-        Area_primary              [m^2]
-        Area_secondary            [m^2]
-        distance_microphone       [m]
-        Diameter_secondary        [m]
-        theta                     [rad]
-        theta_s                   [rad]
-        theta_m                   [rad]
-        Diameter_mixed            [m]
-        Velocity_primary          [m/s]
-        Velocity_secondary        [m/s]
-        Velocity_mixed            [m/s]
-        Velocity_aircraft         [m/s]
-        sound_ambient             [dB]
-        Str_m                     [-]
-        Str_s                     [-]
+    Returns
+    -------
+    source_location : Data
+        Contains the calculated angles for each jet component.
+            - theta_p : array_like
+                Angles for the primary jet [rad].
+            - theta_s : array_like
+                Angles for the secondary jet [rad].
+            - theta_m : array_like
+                Angles for the mixed jet [rad].
 
-    Outputs: 
-        theta_p  [rad]
-        theta_s  [rad]
-        theta_m  [rad]
-    
-    Properties Used:
-        N/A 
-    
+    Notes
+    -----
+    The function iteratively calculates the source location for each jet component by adjusting angles and positions based on geometric and velocity parameters.
+
+    **Definitions**
+
+    'theta_p', 'theta_s', 'theta_m'
+        Angles for the primary, secondary, and mixed jet components, respectively.
+
+    References
+    ----------
+    None
     """
     
     # P rimary jet source location

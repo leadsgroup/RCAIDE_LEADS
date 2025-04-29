@@ -13,42 +13,53 @@ from RCAIDE.Framework.Core import Units
 # ----------------------------------------------------------------------------------------------------------------------
 # Clean Wing Noise
 # ----------------------------------------------------------------------------------------------------------------------
-def clean_wing_noise(S,b,ND,IsHorz, velocity,viscosity,M,phi,theta,distance,frequency):
-    """ This computes the 1/3 octave band sound pressure level and the overall sound pressure level from the clean wing,
-    for a wing with area S (sq.ft) and span b (ft).  ND is a constant set to 0 for clean wings and set to 1 for propeller
-    airplanes, jet transports with numerous large trailing edge flap tracks, flaps extended, or slats extended. ISHORZ must be set to 1.
-    This function can be used for the horizontal tail by inserting the appropriate tail area and span. For a vertical tail, its appropriate
-    area and height are used and ISHORZ must be set to 0.
-    
-    Assumptions:
-        Correlation based.  
-    
-    Source:
-       Fink, Martin R. "Noise component method for airframe noise." Journal of aircraft 16.10 (1979): 659-665. 
-       
-    Inputs:
-            S                          - Wing Area  
-            b                          - Wing Span  
-            ND                         - Costant from the method
-            IsHoriz                    - Costant from the method
-            deltaw                     - Wing Turbulent Boundary Layer thickness [ft]
-            velocity                   - Aircraft speed [kts]
-            viscosity                  - Dynamic viscosity
-            M                          - Mach number
-            phi                        - Azimuthal angle [rad]
-            theta                      - Polar angle [rad]
-            distance                   - Distance from airplane to observer, evaluated at retarded time [ft]
-            frequency                  - Frequency array [Hz] 
+def clean_wing_noise(S, b, ND, IsHorz, velocity, viscosity, M, phi, theta, distance, frequency):
+    """
+    This computes the 1/3 octave band sound pressure level and the overall sound pressure level from the clean wing.
 
+    Parameters
+    ----------
+    S : float
+        Wing area [sq.ft].
+    b : float
+        Wing span [ft].
+    ND : int
+        Constant from the method, set to 0 for clean wings and 1 for others.
+    IsHorz : int
+        Constant from the method, set to 1 for horizontal components.
+    velocity : float
+        Aircraft speed [kts].
+    viscosity : float
+        Dynamic viscosity.
+    M : float
+        Mach number.
+    phi : float
+        Azimuthal angle [rad].
+    theta : float
+        Polar angle [rad].
+    distance : float
+        Distance from airplane to observer, evaluated at retarded time [ft].
+    frequency : array_like
+        Frequency array [Hz].
 
-    Outputs: One Third Octave Band SPL [dB]
-        SPL                              - Sound Pressure Level of the clean wing [dB]
-        OASPL                            - Overall Sound Pressure Level of the clean wing [dB]
+    Returns
+    -------
+    SPL : array_like
+        Sound Pressure Level of the clean wing [dB].
 
-    Properties Used:
-        None
-    
-    """ 
+    Notes
+    -----
+    The function uses correlation-based methods to compute the noise levels from the clean wing.
+
+    **Definitions**
+
+    'SPL'
+        Sound Pressure Level, a measure of the sound intensity.
+
+    References
+    ----------
+    Fink, Martin R. "Noise component method for airframe noise." Journal of aircraft 16.10 (1979): 659-665.
+    """
     distance_ft   = distance /Units.ft
     delta         = 0.37*(S/b)*(velocity*S/(b*viscosity))**(-0.2) 
     if IsHorz==1:

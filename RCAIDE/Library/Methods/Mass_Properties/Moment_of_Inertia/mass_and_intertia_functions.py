@@ -16,7 +16,7 @@ import numpy as np
 #  Recursive Moment
 # ----------------------------------------------------------------------------------------------------------------------   
 def sum_moment(component):
-    """ Recursively sums up the moment of all compoments and subcomponents
+    """ Recursively sums up the moment of all Components and subcomponents
 
     Assumptions:
     None
@@ -53,7 +53,7 @@ def sum_moment(component):
 #  Recursive Moment of Intertia 
 # ----------------------------------------------------------------------------------------------------------------------   
 def sum_moment_of_inertia(component, vehicle_center_of_gravity = None): 
-    """ Recursively sums up the moment of intertia of all compoments and subcomponents
+    """ Recursively sums up the moment of intertia of all Components and subcomponents
 
     Assumptions:
     None

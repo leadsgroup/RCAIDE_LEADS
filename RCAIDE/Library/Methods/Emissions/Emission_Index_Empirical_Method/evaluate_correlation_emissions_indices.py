@@ -160,6 +160,7 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
     I          = state.numerics.time.integrate
     NOx_total  = 0 * state.ones_row(1)  
     CO2_total  = 0 * state.ones_row(1) 
+    CO_total   = 0 * state.ones_row(1) 
     SO2_total  = 0 * state.ones_row(1) 
     H2O_total  = 0 * state.ones_row(1) 
     Soot_total = 0 * state.ones_row(1) 
@@ -173,6 +174,7 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
              
                     EI_NOx  = fuel.emission_indices.NOx
                     EI_CO2  = fuel.emission_indices.CO2 
+                    EI_CO   = fuel.emission_indices.CO
                     EI_H2O  = fuel.emission_indices.H2O
                     EI_SO2  = fuel.emission_indices.SO2
                     EI_Soot = fuel.emission_indices.Soot  
@@ -182,6 +184,7 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
                     # Integrate them over the entire segment
                     NOx_total  += np.dot(I,mdot*EI_NOx)
                     CO2_total  += np.dot(I,mdot*EI_CO2)
+                    CO_total   += np.dot(I,mdot*EI_CO)
                     SO2_total  += np.dot(I,mdot*EI_SO2)
                     H2O_total  += np.dot(I,mdot*EI_H2O) 
                     Soot_total += np.dot(I,mdot*EI_Soot)
@@ -195,12 +198,14 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
     emissions.index           = Data() 
     emissions.total.NOx       = NOx_total   * fuel.global_warming_potential_100.NOx 
     emissions.total.CO2       = CO2_total   * fuel.global_warming_potential_100.CO2
+    emissions.total.CO        = CO_total    * fuel.global_warming_potential_100.CO
     emissions.total.H2O       = H2O_total   * fuel.global_warming_potential_100.H2O  
     emissions.total.SO2       = SO2_total   * fuel.global_warming_potential_100.SO2  
     emissions.total.Soot      = Soot_total  * fuel.global_warming_potential_100.Soot 
     emissions.total.Contrails = Contrails_total   
     emissions.index.NOx       = EI_NOx   * state.ones_row(1)
     emissions.index.CO2       = EI_CO2   * state.ones_row(1)
+    emissions.index.CO        = EI_CO    * state.ones_row(1)
     emissions.index.H2O       = EI_H2O   * state.ones_row(1)
     emissions.index.SO2       = EI_SO2   * state.ones_row(1)
     emissions.index.Soot      = EI_Soot  * state.ones_row(1)
