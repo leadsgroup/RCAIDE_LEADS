@@ -63,7 +63,7 @@ def geometry(mission):
                 last_tag = tag 
 
             # update weights vehicle with correct geometric properties                  
-            if segment.analyses.weights != None:
+            if segment.analyses.weights == None:
                 #  Weights
                 weights = RCAIDE.Framework.Analyses.Weights.Weights()
                 weights.vehicle = vehicle

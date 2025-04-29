@@ -11,6 +11,7 @@ from .compute_aft_centerbody_weight import compute_aft_centerbody_weight
 from .compute_cabin_weight import compute_cabin_weight
 from .compute_systems_weight import compute_systems_weight
 from .compute_bwb_wing_weight import compute_wing_weight
+from .compute_operating_items import compute_operating_items_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport import FLOPS
 from RCAIDE.Library.Attributes.Materials.Aluminum import Aluminum
@@ -163,7 +164,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     ##-------------------------------------------------------------------------------             
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
-    W_oper = FLOPS.compute_operating_items_weight(vehicle)
+    W_oper = compute_operating_items_weight(vehicle)
     
     ##-------------------------------------------------------------------------------         
     # System Weight

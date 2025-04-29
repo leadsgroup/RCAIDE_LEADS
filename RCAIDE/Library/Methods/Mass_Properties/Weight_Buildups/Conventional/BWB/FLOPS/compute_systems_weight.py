@@ -153,7 +153,9 @@ def compute_systems_weight(vehicle):
         for segment in wing.segments:
             if isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
                 WF    += segment.percent_span_location * wing.spans.projected  / Units.ft        
-         
+
+    WF = 12 /Units.feet
+    XL = 22/Units.feet 
     FPAREA      = XL * WF
     NPASS       = vehicle.passengers
     WAPU        = 54 * FPAREA ** 0.3 + 5.4 * NPASS ** 0.9  # apu weight
