@@ -12,7 +12,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core                                     import Units , Data     
 from   RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop  import design_turboprop
-from   RCAIDE.Library.Methods.Geometry.Planform                import segment_properties
 
 # python imports 
 import numpy as np  
@@ -123,10 +122,7 @@ def vehicle_setup():
     airfoil.coordinate_file               = local_path + 'Airfoils' + separator + 'B737d.txt'
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)     
-    
-    # update properties of the wing using segments 
-    wing = segment_properties(wing,update_wet_areas=True,update_ref_areas=True)
-    
+       
     # add to vehicle
     vehicle.append_component(wing)
 
@@ -234,10 +230,6 @@ def vehicle_setup():
     segment.sweeps.leading_edge           = 0 * Units.degrees   
     segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)    
-
-    # update properties of the wing using segments 
-    wing = segment_properties(wing,update_wet_areas=True,update_ref_areas=True)
-    
     # add to vehicle
     vehicle.append_component(wing)    
 

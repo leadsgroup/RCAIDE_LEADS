@@ -10,7 +10,7 @@ import RCAIDE
 from   RCAIDE.Framework.Core import Units
 from   RCAIDE.Library.Plots  import *    
 from   RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop  import design_turboprop
-from   RCAIDE.Library.Methods.Geometry.Planform                import segment_properties 
+
 from RCAIDE.Library.Plots import *
 
 # python imports 
@@ -112,9 +112,6 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.
     segment.sweeps.quarter_chord          = 0.  
     wing.append_segment(segment)     
-    
-    # update properties of the wing using segments 
-    wing = segment_properties(wing,update_wet_areas=True,update_ref_areas=True)
     
     # add to vehicle
     vehicle.append_component(wing)
@@ -223,9 +220,6 @@ def vehicle_setup():
     segment.sweeps.leading_edge           = 0 * Units.degrees   
     segment.thickness_to_chord            = 0.1
     wing.append_segment(segment)    
-
-    # update properties of the wing using segments 
-    wing = segment_properties(wing,update_wet_areas=True,update_ref_areas=True)
     
     # add to vehicle
     vehicle.append_component(wing)

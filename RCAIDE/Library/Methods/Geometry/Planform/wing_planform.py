@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments
+from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments, convert_sweep
 
 # package imports 
 import numpy as np
@@ -82,10 +82,13 @@ def wing_planform(wing, overwrite_reference = True):
                 # covert leading edge to quarter chord
                 if i == len(wing.segments) - 1:
                     sweeps.append(0)
+                    seg.sweeps.quarter_chord = 0
                 else: 
                     next_seg  = wing.segments[seg_keys[i+1]]                
-                    quarter_chord =  convert_sweep_segments(seg.sweeps.leading_edge, seg, next_seg, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25)
-                    sweeps.append(quarter_chord)            
+                    quarter_chord_sweep =  convert_sweep_segments(seg.sweeps.leading_edge, seg, next_seg, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25)
+                    sweeps.append(quarter_chord_sweep)
+                    seg.sweeps.quarter_chord = quarter_chord_sweep
+
             else:
                 raise AssertionError("Quarter chord or leading edge sweep must be defined") 
                  
@@ -198,7 +201,6 @@ def wing_planform(wing, overwrite_reference = True):
         segment_properties(wing,update_wet_areas=overwrite_reference,update_ref_areas=overwrite_reference)
     else:
         
-     
         # unpack
         sref        = wing.areas.reference
         taper       = wing.taper
@@ -221,7 +223,11 @@ def wing_planform(wing, overwrite_reference = True):
         mac = 2./3.*( chord_root+chord_tip - chord_root*chord_tip/(chord_root+chord_tip) )
         
         # calculate leading edge sweep
-        le_sweep = np.arctan( np.tan(sweep) - (4./ar)*(0.-0.25)*(1.-taper)/(1.+taper) )
+        if wing.sweeps.leading_edge == None:
+            le_sweep = np.arctan( np.tan(sweep) - (4./ar)*(0.-0.25)*(1.-taper)/(1.+taper) )
+        else:
+            le_sweep = wing.sweeps.leading_edge
+            wing.sweeps.quarter_chord = convert_sweep(wing,old_ref_chord_fraction = 0.0,new_ref_chord_fraction = 0.25)
         
         # estimating aerodynamic center coordinates
         y_coord = span / 6. * (( 1. + 2. * taper ) / (1. + taper))

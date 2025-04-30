@@ -51,8 +51,10 @@ def geometry(mission):
                     # All other Wing Surfaces
                     # ----------------------------
                     else:
-                        if segment.analyses.geometry.settings.update_wing_properties and  segment.analyses.geometry.settings.overwrite_reference:
-                            wing_planform(wing,overwrite_reference = True) 
+                        if segment.analyses.geometry.settings.update_wing_properties:
+                            wing_planform(wing,overwrite_reference =  segment.analyses.geometry.settings.overwrite_reference) 
+                            if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+                                 vehicle.reference_area = wing.areas.reference
                         
                 # ----------------------------
                 # Compute Fuel Volume to be added in next PR

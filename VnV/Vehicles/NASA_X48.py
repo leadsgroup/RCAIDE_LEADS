@@ -8,7 +8,6 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
-from RCAIDE.Library.Methods.Geometry.Planform                               import segment_properties    
 from RCAIDE.Library.Plots                                                   import *     
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan       import design_electric_ducted_fan
 
@@ -142,15 +141,12 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     segment.dihedral_outboard     = 0. * Units.degrees
     segment.sweeps.quarter_chord  = 0. * Units.degrees
     segment.thickness_to_chord    = 0.10
-    wing.append_segment(segment)
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)        
+    wing.append_segment(segment)      
 
     # add to vehicle
     vehicle.append_component(wing)
   
-    fuselage = RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage()  
+    fuselage = RCAIDE.Library.Components.Wings.Blended_Wing_Body()  
     fuselage.lengths.total                      = 6.4 
     vehicle.append_component(fuselage)    
     

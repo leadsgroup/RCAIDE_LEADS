@@ -8,7 +8,6 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
-from RCAIDE.Library.Methods.Geometry.Planform                   import segment_properties    
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan      import design_turbofan   
 from RCAIDE.Library.Methods.Geometry.Planform.fuselage_planform import fuselage_planform
 from RCAIDE.Library.Plots                                       import *     
@@ -178,10 +177,6 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 0. * Units.degrees
     segment.thickness_to_chord    = 0.10
     wing.append_segment(segment)
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)        
-
 
     # control surfaces -------------------------------------------
     slat                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()

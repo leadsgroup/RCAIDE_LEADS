@@ -55,20 +55,17 @@ def main():
      cabin.append_cabin_class(economy_class)
      
      fuselage.append_cabin(cabin)        
- 
+     plot_layout_of_passenger_accommodations(fuselage, show_figure=False)
      fuselage_planform(fuselage)
-
-     show_figure = False
-     plot_layout_of_passenger_accommodations(fuselage, show_figure=show_figure)
      
      # Truth Values
-     nose_length_truth   = 8.08736
-     tail_length_truth   = 10.1092
+     nose_length_truth   = 7.924799999999999
+     tail_length_truth   = 9.905999999999999
      cabin_length_truth  = 41.732200000000006
-     total_length_truth  = 59.92876000000001
-     wetted_area_truth   = 879.4003560743143
-     frontal_area_truth  = 20.066122879740007
-     dia_effective_truth = 5.0546
+     total_length_truth  = 59.563
+     wetted_area_truth   = 857.4554632035765
+     frontal_area_truth  = 19.26755189268235
+     dia_effective_truth = 4.952999999999999
      
      # Compute Errors
      error             = Data() 

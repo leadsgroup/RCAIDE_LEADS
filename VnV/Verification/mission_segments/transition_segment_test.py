@@ -162,6 +162,13 @@ def TW_base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = True
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights
@@ -203,6 +210,12 @@ def SR_base_analysis(vehicle):
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
     
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = True
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
     # ------------------------------------------------------------------
     #  Weights
     weights         = RCAIDE.Framework.Analyses.Weights.Electric()

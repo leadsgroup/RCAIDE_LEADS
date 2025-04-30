@@ -99,7 +99,6 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     initial_segment =  list(mission.segments.keys())[0]
     
     # perform inital weights analysis 
-    # weights_analysis   = mission.segments[initial_segment].analyses.weights 
     mass_properties(mission)
     vehicle = mission.segments[initial_segment].analyses.weights.vehicle
     
