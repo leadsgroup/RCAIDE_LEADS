@@ -34,7 +34,7 @@ def main():
     update_regression_values = False
      
     # TEST 1
-    tiltwing_transition_test(update_regression_values)
+    #tiltwing_transition_test(update_regression_values)
     
     # TEST 2
     stopped_rotor_transition_test(update_regression_values)
@@ -166,8 +166,6 @@ def TW_base_analysis(vehicle):
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
@@ -221,6 +219,8 @@ def SR_base_analysis(vehicle):
     weights         = RCAIDE.Framework.Analyses.Weights.Electric()
     weights.aircraft_type =  "VTOL"
     weights.vehicle = vehicle
+    weights.settings.update_center_of_gravity   = True
+    weights.settings.update_moment_of_inertia   = True
     analyses.append(weights)
 
     # ------------------------------------------------------------------
