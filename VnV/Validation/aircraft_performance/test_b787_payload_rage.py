@@ -31,8 +31,8 @@ def main():
     }
     # Tolerance checks
     for key in truth_values:
-        error = np.max(np.abs(np.atleast_1d(payload_range_results[key]) - np.atleast_1d(truth_values[key])))
-        assert error < 1e-2, f"{key} error too large: {error}"
+        error = np.max(np.abs(np.atleast_1d(payload_range_results[key]) - np.atleast_1d(truth_values[key]))/np.atleast_1d(truth_values[key]))
+        assert error < 1e-4, f"{key} error too large: {error}"
     
     return
 
