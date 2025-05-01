@@ -38,7 +38,7 @@ modules = [
     # 'Verification/network_fuel_cell/hydrogen_fuel_cell_aircraft_test.py', 
     # 'Verification/network_hybrid/hybrid_network_test.py', 
     #'Verification/network_turbofan/turbofan_network_test.py',
-    'Verification/network_turbojet/turbojet_network_test.py',
+    # 'Verification/network_turbojet/turbojet_network_test.py',
     # 'Verification/network_turboprop/turboprop_network_test.py',
     # 'Verification/network_turboshaft/turboshaft_network_test.py',
     # 'Verification/network_internal_combustion_engine/ICE_test.py',

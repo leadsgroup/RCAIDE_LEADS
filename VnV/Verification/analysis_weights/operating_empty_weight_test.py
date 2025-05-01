@@ -5,7 +5,8 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbo
 from RCAIDE.Library.Plots import * 
 from RCAIDE.load import load as load_results
 from RCAIDE.save import save as save_results 
-
+from RCAIDE.Library.Methods.Geometry.LOPA import compute_layout_of_passenger_accommodations
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform,bwb_wing_planform,update_blended_wing_body_planform
 import numpy as  np 
 import sys
 import os
@@ -15,7 +16,7 @@ sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], '
 
 from Boeing_737             import vehicle_setup as transport_setup
 from Cessna_172             import vehicle_setup as general_aviation_setup
-from Boeing_BWB_450         import vehicle_setup as bwb_setup
+from BWB                    import vehicle_setup as bwb_setup
 from Stopped_Rotor_EVTOL    import vehicle_setup as evtol_setup
 
 def main():
@@ -176,7 +177,14 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
     
     weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional()
     weight_analysis.vehicle  = bwb_setup()
-    weight_analysis.aircraft_type = 'BWB'
+    for wing in weight_analysis.vehicle.wings: 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            compute_layout_of_passenger_accommodations(wing)  
+            update_blended_wing_body_planform(wing)
+            bwb_wing_planform(wing,overwrite_reference = True)
+            weight_analysis.vehicle.reference_area = wianng.areas.reference
+    weight_analysis.aircraft_type  = 'BWB'
+    weight_analysis.settings.FLOPS.complexity   = 'Complex' 
     weight                   = weight_analysis.evaluate()
     plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure) 
     
