@@ -102,31 +102,31 @@ def main():
     
     # Truth values
     takeoff_thrust_truth     = 99134.30160723036
-    climb_throttle_1_truth   = 0.7347399503722588
-    climb_throttle_2_truth   = 0.6646748330389128
-    climb_throttle_3_truth   = 0.501573645267558
-    climb_throttle_4_truth   = 0.7670672111427674
-    climb_throttle_5_truth   = 0.867730361583948
-    climb_throttle_6_truth   = 1.2210708286609517
-    climb_throttle_7_truth   = 1.3746991407760545
-    climb_throttle_8_truth   = 0.5939025017898274
-    climb_throttle_9_truth   = 0.8682307193587236
-    climb_10_CL_truth        = 1.3941264792379442
-    cruise_CL_1_truth        = 0.6820815169128401
-    cruise_CL_2_truth        = 0.6779024814852085
-    cruise_CL_3_truth        = 0.4525315559060166
-    descent_throttle_1_truth = -0.031061589070179384
-    curved_cruise_CL_truth   = 1.3274716782324671
-    descent_throttle_2_truth = 0.08436689664322368
-    single_pt_CL_1_truth     = 0.0007742072654689804
-    single_pt_CL_2_truth     = 0.0006616284953265269
-    cruise_4_CL_truth        = 0.5028622762887521
-    cruise_5_CL_truth        = 0.5028568554114377
-    cruise_6_CL_truth        = 0.3390644413290978
-    cruise_7_CL_truth        = 0.32902745357215685
-    cruise_8_CL_truth        = 0.320102820035959
-    descent_throttle_3_truth = 0.03709196448939247
-    landing_thrust_truth     = 10914.922642740088
+    climb_throttle_1_truth   = 0.7488700577449167
+    climb_throttle_2_truth   = 0.6973614059831147
+    climb_throttle_3_truth   = 0.5316863450218582
+    climb_throttle_4_truth   = 0.7945296781347821
+    climb_throttle_5_truth   = 0.8953229866911637
+    climb_throttle_6_truth   = 1.2525333568368964
+    climb_throttle_7_truth   = 1.409316691784725
+    climb_throttle_8_truth   = 0.6310957384731923
+    climb_throttle_9_truth   = 0.918513328305869
+    climb_10_CL_truth        = 1.3889299023270896
+    cruise_CL_1_truth        = 0.678026250556147
+    cruise_CL_2_truth        = 0.6737726921809426
+    cruise_CL_3_truth        = 0.4814363944835985
+    descent_throttle_1_truth = -0.0005739080039203644
+    curved_cruise_CL_truth   = 1.3166077312621909
+    descent_throttle_2_truth = 0.10516364958783522
+    single_pt_CL_1_truth     = 0.2725603742455539
+    single_pt_CL_2_truth     = 0.0007638722002310087
+    cruise_4_CL_truth        = 0.49815681300619447
+    cruise_5_CL_truth        = 0.4981510550101634
+    cruise_6_CL_truth        = 0.33551598451581893
+    cruise_7_CL_truth        = 0.32500492969311423
+    cruise_8_CL_truth        = 0.3156704226822779
+    descent_throttle_3_truth = 0.0536064449638372
+    landing_thrust_truth     = 10914.922590314012
     
     # Store errors 
     error = Data()
