@@ -370,7 +370,7 @@ def train_model(aerodynamics, Mach):
       
 
     correction_factor = Data() # If a correction factor is not included below then there is no correction
-    correction_factor.dCY_dbeta = 1#10
+    correction_factor.dCY_dbeta = -1#10
     correction_factor.dCL_dp    = 1#-2
     correction_factor.dCM_dq    = 1#10
     correction_factor.dCN_dp    = 1#-3
