@@ -23,7 +23,13 @@ def mass_properties(mission):
             if last_tag == None:
                 weights_analysis =  segment.analyses.weights
                 
-                if weights_analysis.vehicle.mass_properties.takeoff == 0:
+                if weights_analysis.vehicle.mass_properties.takeoff == 0 and weights_analysis.aircraft_type == None :
+                    if weights_analysis.vehicle.mass_properties.max_takeoff == 0:
+                        raise AttributeError('Define Max Takeoff Weight or Weight Analysis Type')
+                    else:
+                        weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff  
+
+                if weights_analysis.vehicle.mass_properties.takeoff == 0 and weights_analysis.aircraft_type != None :
                     _ = weights_analysis.evaluate() 
                 
                     for tag, item in weights_analysis.settings.weight_correction_factors.items():
