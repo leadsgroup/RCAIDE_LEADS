@@ -8,7 +8,7 @@ sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], '
 
 from Boeing_737             import vehicle_setup as transport_setup
 from Cessna_172             import vehicle_setup as general_aviation_setup
-from Boeing_BWB_450         import vehicle_setup as bwb_setup
+from BWB                    import vehicle_setup as bwb_setup
 from Stopped_Rotor_EVTOL    import vehicle_setup as evtol_setup
 
 from RCAIDE.Framework.External_Interfaces.OpenVSP.export_vsp_vehicle import export_vsp_vehicle 
