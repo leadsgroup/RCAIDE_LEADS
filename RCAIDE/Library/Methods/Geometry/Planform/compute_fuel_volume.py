@@ -104,8 +104,8 @@ def compute_fuel_volume(vehicle, update_max_fuel =True):
 def compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage,first_segment,second_segment): 
 
     # volume of truncated  
-    A_1 = np.pi * first_segment.height  *  first_segment.width
-    A_2 = np.pi * second_segment.height  *  second_segment.width
+    A_1 = np.pi * (first_segment.height/2 -fuel_tank.wall_thickness) *  (first_segment.width/2  -fuel_tank.wall_thickness)
+    A_2 = np.pi * (second_segment.height/2 -fuel_tank.wall_thickness)   *  (second_segment.width/2  -fuel_tank.wall_thickness)
     h   = fuselage.lengths.total * (second_segment.percent_x_location  - first_segment.percent_x_location)
     volume = (1 /3) * ( A_1 + A_2 + np.sqrt(A_1*A_2)) *h
     

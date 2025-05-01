@@ -52,7 +52,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     # ------------------------------------------------------------------        
     #   Main Wing
     # ------------------------------------------------------------------ 
-    wing                                  = RCAIDE.Library.Components.Wings.Main_Wing()
+    wing                                  = RCAIDE.Library.Components.Wings.Blended_Wing_Body()
     wing.tag                              = 'main_wing' 
     wing.aspect_ratio                     = 4.1
     wing.sweeps.quarter_chord             = 33. * Units.deg
@@ -144,11 +144,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     wing.append_segment(segment)      
 
     # add to vehicle
-    vehicle.append_component(wing)
-  
-    fuselage = RCAIDE.Library.Components.Wings.Blended_Wing_Body()  
-    fuselage.lengths.total                      = 6.4 
-    vehicle.append_component(fuselage)    
+    vehicle.append_component(wing) 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Electric Network
