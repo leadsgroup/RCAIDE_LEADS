@@ -11,7 +11,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core                                             import Units , Data    
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet             import design_turbojet 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet             import design_turbojet
 from RCAIDE.Library.Plots                                              import *     
 
 # python imports 
@@ -149,8 +149,8 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 0.
     segment.thickness_to_chord    = 0.03
     segment.append_airfoil(wing_airfoil)
-    wing.segments.append(segment)       
-
+    wing.segments.append(segment)      
+    
     # control surfaces -------------------------------------------
     slat                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
     slat.tag                      = 'slat'
@@ -260,8 +260,8 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 0.
     segment.thickness_to_chord    = 0.04
     segment.append_airfoil(tail_airfoil)
-    wing.segments.append(segment)
-    
+    wing.segments.append(segment)    
+
     # add to vehicle
     vehicle.append_component(wing)    
 

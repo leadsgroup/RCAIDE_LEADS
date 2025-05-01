@@ -33,7 +33,7 @@ def main():
 
     # vehicle data
     vehicle  = vehicle_setup()
-
+    
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
 
@@ -48,6 +48,8 @@ def main():
      
     # mission analysis 
     results = missions.base_mission.evaluate()   
+    plot_mission(results)    
+
     # Extract sample values from computation  
     thrust     = results.segments.climb_1.conditions.energy.propulsors['inner_right_turbojet'].thrust[3][0]
     throttle   = results.segments.level_cruise.conditions.energy.propulsors['inner_right_turbojet'].throttle[3][0] 
@@ -61,9 +63,9 @@ def main():
             print(val)
     
     # Truth values
-    thrust_truth     = 138533.5176593721
-    throttle_truth   = 1.1989753724063823
-    CL_truth         = 0.04712796779870372
+    thrust_truth     = 121879.42334376826
+    throttle_truth   = 0.6824462621445628
+    CL_truth         = 0.17530577886508114
     
     # Store errors 
     error = Data()
@@ -104,12 +106,11 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
-    
+
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-
     geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
+    geometry.settings.overwrite_reference        = False
     geometry.settings.update_wing_properties     = True
     analyses.append(geometry)
     
@@ -117,7 +118,7 @@ def base_analysis(vehicle):
     #  Weights
     weights                 = RCAIDE.Framework.Analyses.Weights.Conventional()
     weights.aircraft_type  =  "Transport"
-    weights.settings.update_mass_properties         = True
+    weights.settings.update_mass_properties         = False
     weights.settings.update_center_of_gravity       = False
     weights.settings.update_moment_of_inertia       = False
     weights.vehicle        = vehicle

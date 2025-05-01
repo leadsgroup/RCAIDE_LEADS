@@ -10,6 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
 from RCAIDE.Library.Methods.Performance  import generate_V_n_diagram
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 import matplotlib.pyplot as plt
 
 # package imports
@@ -26,18 +27,19 @@ from  Cessna_172 import vehicle_setup
 def main():
 
     vehicle  = vehicle_setup()
+    
 
     vehicle.flight_envelope.category                  = 'normal'
     vehicle.flight_envelope.FAR_part_number           = '23' 
     vehicle.flight_envelope.maximum_lift_coefficient  = 3
     vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
 
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    for wing in vehicle.wings: 
+         wing_planform(wing,overwrite_reference =  True) 
+         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            vehicle.reference_area = wing.areas.reference
 
-    #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
-    analyses.append(geometry)
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
     
     # ------------------------------------------------------------------
     #  Planet Analysis
@@ -74,11 +76,11 @@ def main():
     actual.Va_neg                   = 104.71978144726074
     actual.Vc                       = 126.33084642567567
     actual.Vd                       = 176.86318499594594
-    actual.limit_load_pos           = 4.28309101595805
+    actual.limit_load_pos           = 4.238756207637408
     actual.limit_load_neg           = -3.8
     actual.dive_limit_load_pos      = 3.8
-    actual.dive_limit_load_neg      = -1.2981637111706341
-    
+    actual.dive_limit_load_neg      = -1.2671293453461856
+
     # error calculations
     error                         = Data()
     error.Vs1_pos                 = (actual.Vs1_pos - V_n_data.Vs1.positive)/actual.Vs1_pos
