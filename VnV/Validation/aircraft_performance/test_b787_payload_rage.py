@@ -29,17 +29,11 @@ def main():
         "takeoff_weight": np.array([0.0, 227930.0, 227930.0, 216853.32969521]),
         "fuel_reserve_percentage": 0.05,
     }
-
     # Tolerance checks
-    tol = 1e-6
-    for key, val in payload_range_results.items():
-        arr = np.atleast_1d(val)
-        assert not np.any(np.abs(arr) < tol), f"{key} has values < {tol}"
-
-        # Optional regression check
-        np.testing.assert_allclose(arr, truth_values[key], rtol=1e-9, atol=1e-6, err_msg=f"{key} mismatch")
-
-
+    for key in truth_values:
+        error = np.max(np.abs(np.atleast_1d(payload_range_results[key]) - np.atleast_1d(truth_values[key])))
+        assert error < 1e-6, f"{key} error too large: {error}"
+    
     return
 
 def payload_range_test():

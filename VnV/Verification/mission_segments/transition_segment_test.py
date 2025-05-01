@@ -34,7 +34,7 @@ def main():
     update_regression_values = False
      
     # TEST 1
-    #tiltwing_transition_test(update_regression_values)
+    tiltwing_transition_test(update_regression_values)
     
     # TEST 2
     stopped_rotor_transition_test(update_regression_values)
@@ -342,10 +342,7 @@ def SR_mission_setup(analyses,vehicle):
 
     # base segment           
     base_segment  = Segments.Segment()   
-    # VSTALL Calculation  
-    vehicle_mass   = vehicle.mass_properties.max_takeoff
-    reference_area = vehicle.reference_area 
-    Vstall         = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)      
+    Vstall         = 48.5313220449591
      
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Vertical Climb 

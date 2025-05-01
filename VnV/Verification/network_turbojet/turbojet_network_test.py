@@ -34,17 +34,6 @@ def main():
     # vehicle data
     vehicle  = vehicle_setup()
 
-    # plot vehicle 
-    plot_3d_vehicle(vehicle, 
-                    min_x_axis_limit            = 0,
-                    max_x_axis_limit            = 60,
-                    min_y_axis_limit            = -30,
-                    max_y_axis_limit            = 30,
-                    min_z_axis_limit            = -30,
-                    max_z_axis_limit            = 30,
-                    show_figure                 = False 
-                    )
-    
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
 
@@ -59,8 +48,6 @@ def main():
      
     # mission analysis 
     results = missions.base_mission.evaluate()   
-    plot_mission(results)    
-
     # Extract sample values from computation  
     thrust     = results.segments.climb_1.conditions.energy.propulsors['inner_right_turbojet'].thrust[3][0]
     throttle   = results.segments.level_cruise.conditions.energy.propulsors['inner_right_turbojet'].throttle[3][0] 
@@ -120,14 +107,17 @@ def base_analysis(vehicle):
     
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+
     geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = True
+    geometry.settings.update_wing_properties     = True
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights
     weights                 = RCAIDE.Framework.Analyses.Weights.Conventional()
     weights.aircraft_type  =  "Transport"
-    weights.settings.update_mass_properties         = False
+    weights.settings.update_mass_properties         = True
     weights.settings.update_center_of_gravity       = False
     weights.settings.update_moment_of_inertia       = False
     weights.vehicle        = vehicle

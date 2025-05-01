@@ -29,14 +29,33 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = False
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
     
     #  Aerodynamics Analysis
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
     aerodynamics.geometry = vehicle 
+    aerodynamics.settings.maximum_lift_coefficient_factor = 0.90
     analyses.append(aerodynamics)
     
     # done!
     return analyses     
+
+def analyses_setup(configs):
+    
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+    
+    # build a base analysis for each config
+    for tag,config in list(configs.items()):
+        analysis = base_analysis(config)
+        analyses[tag] = analysis
+    
+    return analyses
 
 
 def main():
@@ -59,8 +78,7 @@ def main():
     
     # CLmax for a given configuration may be informed by user
     # Used defined ajust factor for maximum lift coefficient
-    analyses = base_analysis(vehicle)
-    analyses.aerodynamics.settings.maximum_lift_coefficient_factor = 0.90
+    analyses = analyses_setup(configs)
     
     # =====================================
     # Landing field length evaluation
@@ -69,7 +87,7 @@ def main():
     landing_field_length = np.zeros_like(w_vec)
     for id_w,weight in enumerate(w_vec):
         landing_config.mass_properties.landing = weight
-        landing_field_length[id_w] = estimate_landing_field_length(landing_config,analyses)
+        landing_field_length[id_w] = estimate_landing_field_length(landing_config,analyses.landing)
 
     truth_LFL = np.array([ 763.53405134,  832.00525818,  900.47646503,  968.94767187,
        1037.41887872, 1105.89008556, 1174.36129241, 1242.83249925,
