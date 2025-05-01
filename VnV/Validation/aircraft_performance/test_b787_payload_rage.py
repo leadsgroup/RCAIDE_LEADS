@@ -31,9 +31,17 @@ def main():
     }
     # Tolerance checks
     for key in truth_values:
-        error = np.max(np.abs(np.atleast_1d(payload_range_results[key]) - np.atleast_1d(truth_values[key]))/np.atleast_1d(truth_values[key]))
+        denom = np.atleast_1d(truth_values[key])
+        numer = np.abs(np.atleast_1d(payload_range_results[key]) - denom)
+
+        # Avoid division by zero
+        with np.errstate(divide='ignore', invalid='ignore'):
+            rel_error = np.where(denom != 0, numer / denom, 0.0)
+            error = np.max(rel_error)
+
         assert error < 1e-4, f"{key} error too large: {error}"
-    
+
+            
     return
 
 def payload_range_test():
