@@ -7,7 +7,7 @@ base
   0      0     0.0
   
 #Sref    Cref    Bref 	<meters>
-17.112      1.74     10.166
+17.112      1.7399407099567097     10.166
 
 #Xref    Yref    Zref   <meters>
 2.239696797      0     -0.131189711
@@ -79,23 +79,23 @@ YDUPLICATE
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-6.5452  0.0    0.2039    1.2394    0.0     
+6.5452  0.0    0.2039    1.1976    0.0     
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-6.5662  0.2    0.2039    1.1985    0.0     
+6.5662  0.2    0.2039    1.1581    0.0     
 CONTROL
 elevator    1.0   0.65   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-6.7344  1.8    0.2039    0.8713    0.0     
+6.7344  1.8    0.2039    0.8419    0.0     
 CONTROL
 elevator    1.0   0.65   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-6.7554  2.0    0.2039    0.8304    0.0     
+6.7554  2.0    0.2039    0.8024    0.0     
 
 
 #---------------------------------------------------------
@@ -106,20 +106,20 @@ vertical_stabilizer
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-7.1274  0.0    0.3038    1.2176    0.0     
+7.1274  0.0    0.3038    1.0594    0.0     
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-7.1813  0.0    0.4519    1.1545    0.0     
+7.1813  0.0    0.4519    1.0045    0.0     
 CONTROL
 rudder    1.0   0.6   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-7.6127  0.0    1.6372    0.65    0.0     
+7.6127  0.0    1.6372    0.5655    0.0     
 CONTROL
 rudder    1.0   0.6   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-7.6666  0.0    1.7854    0.587    0.0     
+7.6666  0.0    1.7853    0.5106    0.0     
