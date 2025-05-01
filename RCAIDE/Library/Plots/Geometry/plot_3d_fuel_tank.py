@@ -14,11 +14,12 @@ from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series
 import numpy as np     
 from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
 import numpy as np   
+from scipy.interpolate import interp1d
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_3d_concetric_fuel_tank
 # ----------------------------------------------------------------------------------------------------------------------   
-def plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation = 24, color_map = 'orange', alpha=1):
+def plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation = 24, color_map = 'oranges', alpha=1):
     """
     Creates a 3D visualization of a fuel_tank surface using tessellated panels.
 
@@ -56,7 +57,25 @@ def plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation = 24, color_m
     --------
     generate_3d_fuel_tank_points : Function to generate fuel_tank surface points
     """
-    G  = generate_3d_fuel_tank_points(fuel_tank,tessellation = 24 ) 
+
+    segment_list = []
+
+    fuselage       = fuel_tank.fuselage    
+    segment_tags = list(fuselage.segments.keys())     
+    for i in range(len(fuselage.segments) - 1):
+        seg =  fuselage.segments[segment_tags[i]]
+        next_seg =  fuselage.segments[segment_tags[i+1]]
+        if seg.has_fuel_tank: 
+            segment_list.append(seg.tag)
+            if next_seg.tag not in segment_list:
+                segment_list.append(next_seg.tag) 
+    
+    if len(fuselage.segments)>0:
+        dim =  len(segment_list)
+    else:
+        dim = 2
+        
+    G  = generate_3d_fuel_tank_points(fuel_tank, segment_list,tessellation = 24 ) 
     num_fus_segs = len(G.PTS[:,0,0])
     if num_fus_segs > 0:
         tesselation  = len(G.PTS[0,:,0])
@@ -70,7 +89,7 @@ def plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation = 24, color_m
                               [G.PTS[i_seg  ,i_tes+1,2],G.PTS[i_seg+1,i_tes+1,2]]])  
                  
                 values = np.ones_like(X) 
-                verts  = contour_surface_slice(X, Y, Z,values,color_map )
+                verts  = contour_surface_slice(X, Y, Z,values,color_map,alpha )
                 plot_data.append(verts)          
 
     return plot_data 
@@ -78,7 +97,7 @@ def plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation = 24, color_m
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_3d_integral_wing_tank
 # ----------------------------------------------------------------------------------------------------------------------  
-def plot_3d_integral_wing_tank(plot_data, wing, number_of_airfoil_points = 201, color_map='orange', alpha=1):
+def plot_3d_integral_wing_tank(plot_data,fuel_tank, number_of_airfoil_points = 201, color_map='oranges', alpha=1):
     """
     Creates a 3D visualization of wing surfaces including symmetric sections if applicable.
 
@@ -117,14 +136,26 @@ def plot_3d_integral_wing_tank(plot_data, wing, number_of_airfoil_points = 201, 
     * Airfoil sections lie in x-z plane
     * Symmetric wing is mirror image about y-axis
     """ 
-    af_pts    = 4
-    n_segments = len(wing.segments)  
-    if n_segments>0:
-        dim =  n_segments
+    af_pts     = 4
+    wing       = fuel_tank.wing
+    
+    segment_list = [] 
+    segment_tags = list(wing.segments.keys())     
+    for i in range(len(wing.segments) - 1):
+        seg =  wing.segments[segment_tags[i]]
+        next_seg =  wing.segments[segment_tags[i+1]]
+        if seg.has_fuel_tank: 
+            segment_list.append(seg.tag)
+            if next_seg.tag not in segment_list:
+                segment_list.append(next_seg.tag) 
+    
+    if len(wing.segments)>0:
+        dim =  len(segment_list)
     else:
         dim = 2 
- 
-    G = generate_integral_wing_tank_points(wing,number_of_airfoil_points,dim)
+    
+    number_of_airfoil_points = 5
+    G = generate_integral_wing_tank_points(wing,number_of_airfoil_points,dim,segment_list)
     # ------------------------------------------------------------------------
     # Plot Rotor Blade
     # ------------------------------------------------------------------------
@@ -138,7 +169,7 @@ def plot_3d_integral_wing_tank(plot_data, wing, number_of_airfoil_points = 201, 
                  [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
              
             values      = np.ones_like(X) 
-            verts       = contour_surface_slice(X, Y, Z ,values,color_map)
+            verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
             plot_data.append(verts)
     if wing.symmetric:
         if wing.vertical: 
@@ -149,7 +180,7 @@ def plot_3d_integral_wing_tank(plot_data, wing, number_of_airfoil_points = 201, 
                     Z = np.array([[-G.ZA1[sec,loc], -G.ZA2[sec,loc]],[-G.ZB1[sec,loc], -G.ZB2[sec,loc]]]) 
                      
                     values      = np.ones_like(X) 
-                    verts       = contour_surface_slice(X, Y, Z ,values,color_map)
+                    verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
                     plot_data.append(verts)
         else:
             for sec in range(dim-1):
@@ -159,7 +190,7 @@ def plot_3d_integral_wing_tank(plot_data, wing, number_of_airfoil_points = 201, 
                     Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
                      
                     values      = np.ones_like(X) 
-                    verts       = contour_surface_slice(X, Y, Z ,values,color_map)
+                    verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
                     plot_data.append(verts)
             
              
@@ -169,7 +200,7 @@ def plot_3d_integral_wing_tank(plot_data, wing, number_of_airfoil_points = 201, 
 #  helper functions
 # ----------------------------------------------------------------------------------------------------------------------  
  
-def generate_integral_wing_tank_points(wing, n_points, dim):
+def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
     """
     Generates 3D coordinate points that define a wing surface.
 
@@ -217,8 +248,7 @@ def generate_integral_wing_tank_points(wing, n_points, dim):
     # unpack  
     # obtain the geometry for each segment in a loop                                            
     symm                 = wing.symmetric
-    semispan             = wing.spans.projected*0.5 * (2 - symm) 
-    root_chord           = wing.chords.root
+    semispan             = wing.spans.projected*0.5 * (2 - symm)  
     segments             = wing.segments
     n_segments           = len(segments.keys()) 
     origin               = wing.origin   
@@ -232,39 +262,23 @@ def generate_integral_wing_tank_points(wing, n_points, dim):
         translation        = np.zeros((dim,n_points, 3,1)) 
         translation[0, :, 0,:] = origin[0][0]  
         translation[0, :, 1,:] = origin[0][1]  
-        translation[0, :, 2,:] = origin[0][2]  
-        
-        for i in range(n_segments):
-            current_seg = list(segments.keys())[i]
-        
-            inner_front_rib_yu,inner_rear_rib_yu,inner_front_rib_yl,inner_rear_rib_yl = compute_non_dimensional_rib_coordinates(current_seg)
+        translation[0, :, 2,:] = origin[0][2]   
+        for i in range(len(segment_list)):
+            current_seg = segments[segment_list[i]]
+            front_rib_yu,rear_rib_yu,front_rib_yl,rear_rib_yl = compute_non_dimensional_rib_coordinates(current_seg)
             fs = current_seg.structural.front_spar_percent_chord
             rs = current_seg.structural.rear_spar_percent_chord  
             x_coordinates =  np.array([rs, rs, fs, fs, rs])
-            y_coordinates =  np.array([inner_rear_rib_yl, inner_rear_rib_yu, inner_front_rib_yu,inner_front_rib_yl,inner_rear_rib_yl ]) 
-             
-            
+            y_coordinates =  np.array([rear_rib_yl, rear_rib_yu, front_rib_yu,front_rib_yl,rear_rib_yl ])              
             if (i == n_segments-1):
                 sweep = 0                                 
-            else: 
-                next_seg = list(segments.keys())[i+1]                
-                if wing.segments[current_seg].sweeps.leading_edge is not None: 
-                    # If leading edge sweep is defined 
-                    sweep       = wing.segments[current_seg].sweeps.leading_edge  
-                else:   
-                    # If quarter chord sweep is defined, convert it to leading edge sweep
-                    sweep_quarter_chord = wing.segments[current_seg].sweeps.quarter_chord 
-                    chord_fraction      = 0.25                          
-                    segment_root_chord  = root_chord*wing.segments[current_seg].root_chord_percent
-                    segment_tip_chord   = root_chord*wing.segments[next_seg].root_chord_percent
-                    segment_span        = semispan*(wing.segments[next_seg].percent_span_location - wing.segments[current_seg].percent_span_location )
-                    sweep               = np.arctan(((segment_root_chord*chord_fraction) + (np.tan(sweep_quarter_chord )*segment_span - chord_fraction*segment_tip_chord)) /segment_span) 
-            dihedral = wing.segments[current_seg].dihedral_outboard    
-            twist    = wing.segments[current_seg].twist
-            
+            else:  
+                sweep               = current_seg.sweeps.leading_edge
+            dihedral = current_seg.dihedral_outboard    
+            twist    = current_seg.twist 
             if wing.vertical:  
-                pts[i,:,0,0]   = x_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root 
-                pts[i,:,1,0]   = y_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root 
+                pts[i,:,0,0]   = x_coordinates * current_seg.root_chord_percent * wing.chords.root 
+                pts[i,:,1,0]   = y_coordinates * current_seg.root_chord_percent * wing.chords.root 
                 pts[i,:,2,0]   = np.zeros_like(y_coordinates) 
               
                 section_twist[i,:,0,0] = np.cos(twist) 
@@ -273,18 +287,19 @@ def generate_integral_wing_tank_points(wing, n_points, dim):
                 section_twist[i,:,1,1] = np.cos(twist) 
             
             else: 
-                pts[i,:,0,0]   = x_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root
+                pts[i,:,0,0]   = x_coordinates * current_seg.root_chord_percent * wing.chords.root
                 pts[i,:,1,0]   = np.zeros_like(y_coordinates) 
-                pts[i,:,2,0]   = y_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root   
+                pts[i,:,2,0]   = y_coordinates * current_seg.root_chord_percent * wing.chords.root   
 
                 section_twist[i,:,0,0] = np.cos(twist) 
                 section_twist[i,:,0,2] = np.sin(twist)  
                 section_twist[i,:,2,0] = -np.sin(twist) 
                 section_twist[i,:,2,2] =  np.cos(twist)  
              
-            if (i != n_segments-1):
+            if (i != n_segments-1):  
                 # update origin for next segment 
-                segment_percent_span =    wing.segments[next_seg].percent_span_location - wing.segments[current_seg].percent_span_location     
+                next_seg             = segments[segment_list[i+1]]                
+                segment_percent_span = next_seg.percent_span_location - current_seg.percent_span_location     
                 if wing.vertical:
                     dz = semispan*segment_percent_span
                     dy = dz*np.tan(dihedral)
@@ -306,16 +321,12 @@ def generate_integral_wing_tank_points(wing, n_points, dim):
         section_twist[:, :, 1, 1] = 1
         section_twist[:, :, 2, 2] = 1
         translation      = np.zeros((dim,n_points, 3,1))
-        
-
     
-        inner_front_rib_yu,inner_rear_rib_yu,inner_front_rib_yl,inner_rear_rib_yl = compute_non_dimensional_rib_coordinates(wing)
+        front_rib_yu,rear_rib_yu,front_rib_yl,rear_rib_yl = compute_non_dimensional_rib_coordinates(wing)
         fs = current_seg.structural.front_spar_percent_chord
         rs = current_seg.structural.rear_spar_percent_chord  
         x_coordinates =  np.array([rs, rs, fs, fs, rs])
-        y_coordinates =  np.array([inner_rear_rib_yl, inner_rear_rib_yu, inner_front_rib_yu,inner_front_rib_yl,inner_rear_rib_yl ]) 
-        
-         
+        y_coordinates =  np.array([rear_rib_yl, rear_rib_yu, front_rib_yu,front_rib_yl,rear_rib_yl ]) 
             
         dihedral              = wing.dihedral
         if wing.sweeps.leading_edge  is not None: 
@@ -364,8 +375,7 @@ def generate_integral_wing_tank_points(wing, n_points, dim):
             
             pts[1,:,0,0]   = x_coordinates *  wing.chords.tip  
             pts[1,:,1,0]   = np.zeros_like(y_coordinates)  
-            pts[1,:,2,0]   = y_coordinates *  wing.chords.tip  
-            
+            pts[1,:,2,0]   = y_coordinates *  wing.chords.tip   
     
             translation[1, :, 0,:] +=  semispan*np.tan(sweep)
             translation[1, :, 1,:] += semispan 
@@ -409,32 +419,7 @@ def generate_integral_wing_tank_points(wing, n_points, dim):
     
     return G
 
-
-def compute_non_dimensional_rib_coordinates(compoment):
-    # import inner_segment airfoil 
-    if compoment.airfoil != None: 
-        if type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-            geometry = compute_naca_4series(compoment.airfoil.NACA_4_Series_code)
-        elif type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil: 
-            geometry = import_airfoil_geometry(compoment.airfoil.coordinate_file)
-    else:
-        geometry = compute_naca_4series('0012')
-  
-    # inner spar 
-    inner_front_rib_nondim_x       = compoment.structural.front_spar_percent_chord   
-    inner_rear_rib_nondim_x       = compoment.structural.rear_spar_percent_chord 
-    
-    # non-wing box dimension coordinates 
-    front_rib_nondim_y_upper = np.interp(inner_front_rib_nondim_x, geometry.x_upper_surface  ,geometry.y_upper_surface ) 
-    rear_rib_nondim_y_upper  = np.interp(inner_rear_rib_nondim_x, geometry.x_upper_surface  ,geometry.y_upper_surface )     
-    front_rib_nondim_y_lower = np.interp(inner_front_rib_nondim_x, geometry.x_lower_surface   , geometry.y_lower_surface)     
-    rear_rib_nondim_y_lower  = np.interp(inner_rear_rib_nondim_x, geometry.x_lower_surface   , geometry.y_lower_surface)
-    
-         
-    return front_rib_nondim_y_upper,rear_rib_nondim_y_upper, front_rib_nondim_y_lower, rear_rib_nondim_y_lower
-
-
-def generate_3d_fuel_tank_points(fuel_tank, tessellation = 24):
+def generate_3d_fuel_tank_points(fuel_tank, segment_list, tessellation = 24):
     """
     Generates 3D coordinate points that define a fuel_tank surface.
 
@@ -470,22 +455,79 @@ def generate_3d_fuel_tank_points(fuel_tank, tessellation = 24):
     --------
     plot_3d_fuel_tank : Function to visualize the generated surface
     """
-    num_fus_segs = len(fuel_tank.segments.keys())
-    fuel_tank_points = np.zeros((num_fus_segs,tessellation ,3))
-     
-    if num_fus_segs > 0:
-        for i_seg, segment in enumerate(fuel_tank.segments): 
+    
+    fuselage         = fuel_tank.fuselage
+    fus_segs         = fuselage.segments
+    num_fus_segs     = len(segment_list) 
+    fuel_tank_points = np.zeros((num_fus_segs+2,tessellation ,3))
+        
+    if num_fus_segs > 0: 
+        # first segment
+        segment_start = fus_segs[segment_list[0]]
+        a        = 1E-6
+        b        = 1E-6
+        n        = segment_start.curvature
+        theta    = np.linspace(0,2*np.pi,tessellation) 
+        fus_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
+        fus_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
+        fuel_tank_points[0,:,0] = segment_start.percent_x_location*fuselage.lengths.total + fuselage.origin[0][0]
+        fuel_tank_points[0,:,1] = fus_ypts + segment_start.percent_y_location*fuselage.lengths.total + fuselage.origin[0][1]
+        fuel_tank_points[0,:,2] = fus_zpts + segment_start.percent_z_location*fuselage.lengths.total + fuselage.origin[0][2]
+        
+                
+        for i in range(num_fus_segs):  
+            segment = fus_segs[segment_list[i]]  
             a = segment.width/2
             b = segment.height/2
             n = segment.curvature
             theta    = np.linspace(0,2*np.pi,tessellation) 
             fus_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
             fus_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
-            fuel_tank_points[i_seg,:,0] = segment.percent_x_location*fuel_tank.lengths.total + fuel_tank.origin[0][0]
-            fuel_tank_points[i_seg,:,1] = fus_ypts + segment.percent_y_location*fuel_tank.lengths.total + fuel_tank.origin[0][1]
-            fuel_tank_points[i_seg,:,2] = fus_zpts + segment.percent_z_location*fuel_tank.lengths.total + fuel_tank.origin[0][2]
+            fuel_tank_points[i+1,:,0] = segment.percent_x_location*fuselage.lengths.total + fuselage.origin[0][0]
+            fuel_tank_points[i+1,:,1] = fus_ypts + segment.percent_y_location*fuselage.lengths.total + fuselage.origin[0][1]
+            fuel_tank_points[i+1,:,2] = fus_zpts + segment.percent_z_location*fuselage.lengths.total + fuselage.origin[0][2] 
+       
+        # first segment
+        segment_start = fus_segs[segment_list[-1]]
+        a        = 1E-6
+        b        = 1E-6
+        n        = segment_start.curvature
+        theta    = np.linspace(0,2*np.pi,tessellation) 
+        fus_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
+        fus_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
+        fuel_tank_points[-1,:,0] = segment_start.percent_x_location*fuselage.lengths.total + fuselage.origin[0][0]
+        fuel_tank_points[-1,:,1] = fus_ypts + segment_start.percent_y_location*fuselage.lengths.total + fuselage.origin[0][1]
+        fuel_tank_points[-1,:,2] = fus_zpts + segment_start.percent_z_location*fuselage.lengths.total + fuselage.origin[0][2]
         
-    G = Data()         
+    G = Data()
+    
     G.PTS  = fuel_tank_points
 
     return G
+
+
+
+
+def compute_non_dimensional_rib_coordinates(compoment): 
+    if compoment.airfoil != None: 
+        if type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+            geometry = compute_naca_4series(compoment.airfoil.NACA_4_Series_code)
+        elif type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil: 
+            geometry = import_airfoil_geometry(compoment.airfoil.coordinate_file)
+    else:
+        geometry = compute_naca_4series('0012')
+   
+    clearance = 2E-2
+    front_rib_nondim_x       = compoment.structural.front_spar_percent_chord   
+    rear_rib_nondim_x        = compoment.structural.rear_spar_percent_chord 
+    f_upper = interp1d(geometry.x_upper_surface  ,geometry.y_upper_surface, kind='linear')
+    f_lower = interp1d(geometry.x_lower_surface  , geometry.y_lower_surface, kind='linear')
+    
+    # non-wing box dimension coordinates 
+    front_rib_nondim_y_upper = f_upper([front_rib_nondim_x])[0] - clearance
+    rear_rib_nondim_y_upper  = f_upper([rear_rib_nondim_x])[0]  - clearance   
+    front_rib_nondim_y_lower = f_lower([front_rib_nondim_x])[0] + clearance   
+    rear_rib_nondim_y_lower  = f_lower([rear_rib_nondim_x])[0]  + clearance   
+         
+    return front_rib_nondim_y_upper,rear_rib_nondim_y_upper, front_rib_nondim_y_lower, rear_rib_nondim_y_lower
+

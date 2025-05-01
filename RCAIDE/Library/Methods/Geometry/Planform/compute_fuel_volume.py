@@ -105,25 +105,10 @@ def compute_fuel_volume(vehicle, update_max_fuel =True):
 def compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage,fus_first_segment,fus_second_segment,tank_section_percent_x): 
 
     # volume of truncated  
-    A_1 = np.pi * fus_first_segment.height  *  fus_first_segment.width
-    A_2 = np.pi * fus_second_segment.height  *  fus_second_segment.width
-    h   = fuselage.lengths.total * (fus_second_segment.percent_x_location  - fus_first_segment.percent_x_location)
-    volume = (1 /3) * ( A_1 + A_2 + np.sqrt(A_1*A_2)) *h
-   
-    tank_first_segment = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Segments.Segment()
-    tank_first_segment.height = fus_first_segment.height
-    tank_first_segment.width  = fus_first_segment.width
-    tank_first_segment.percent_x_location = tank_section_percent_x /h
-    
-    tank_section_percent_x += h
-    
-    fuel_tank.append_segment(tank_first_segment)
-    if tank_second_segment.has_fuel_tank == False: 
-        tank_second_segment = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Segments.Segment()
-        tank_second_segment.height = fus_second_segment.height
-        tank_second_segment.width  = fus_second_segment.width 
-        tank_second_segment.percent_x_location = 1       
-        fuel_tank.append_segment(tank_second_segment)
+    A_1    = np.pi * fus_first_segment.height /2  *  fus_first_segment.width/2
+    A_2    = np.pi * fus_second_segment.height/2  *  fus_second_segment.width/2
+    h      = fuselage.lengths.total * (fus_second_segment.percent_x_location  - fus_first_segment.percent_x_location)
+    volume = (1 /3) * ( A_1 + A_2 + np.sqrt(A_1*A_2)) *h 
     
     return volume
 
@@ -288,8 +273,7 @@ def compute_segmented_wing_integral_tank_fuel_volume(fuel_tank,wing,inner_segmen
     
     return volume
     
-def compute_non_dimensional_rib_coordinates(compoment):
-    # import inner_segment airfoil 
+def compute_non_dimensional_rib_coordinates(compoment): 
     if compoment.airfoil != None: 
         if type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
             geometry = compute_naca_4series(compoment.airfoil.NACA_4_Series_code)
@@ -297,20 +281,20 @@ def compute_non_dimensional_rib_coordinates(compoment):
             geometry = import_airfoil_geometry(compoment.airfoil.coordinate_file)
     else:
         geometry = compute_naca_4series('0012')
-  
-    # inner spar 
-    inner_front_rib_nondim_x       = compoment.structural.front_spar_percent_chord   
-    inner_rear_rib_nondim_x       = compoment.structural.rear_spar_percent_chord 
+   
+    clearance = 1.5E-2
+    front_rib_nondim_x       = compoment.structural.front_spar_percent_chord   
+    rear_rib_nondim_x        = compoment.structural.rear_spar_percent_chord 
+    f_upper = interp1d(geometry.x_upper_surface  ,geometry.y_upper_surface, kind='linear')
+    f_lower = interp1d(geometry.x_lower_surface  , geometry.y_lower_surface, kind='linear')
     
     # non-wing box dimension coordinates 
-    front_rib_nondim_y_upper = np.interp(inner_front_rib_nondim_x, geometry.x_upper_surface  ,geometry.y_upper_surface ) 
-    rear_rib_nondim_y_upper  = np.interp(inner_rear_rib_nondim_x, geometry.x_upper_surface  ,geometry.y_upper_surface )     
-    front_rib_nondim_y_lower = np.interp(inner_front_rib_nondim_x, geometry.x_lower_surface   , geometry.y_lower_surface)     
-    rear_rib_nondim_y_lower  = np.interp(inner_rear_rib_nondim_x, geometry.x_lower_surface   , geometry.y_lower_surface)
-    
+    front_rib_nondim_y_upper = f_upper([front_rib_nondim_x])[0] - clearance
+    rear_rib_nondim_y_upper  = f_upper([rear_rib_nondim_x])[0]  - clearance   
+    front_rib_nondim_y_lower = f_lower([front_rib_nondim_x])[0] + clearance   
+    rear_rib_nondim_y_lower  = f_lower([rear_rib_nondim_x])[0]  + clearance   
          
-    return front_rib_nondim_y_upper,rear_rib_nondim_y_upper, front_rib_nondim_y_lower, rear_rib_nondim_y_lower
-
+    return front_rib_nondim_y_upper,rear_rib_nondim_y_upper, front_rib_nondim_y_lower, rear_rib_nondim_y_lower 
 
 def create_non_integral_tank_sections(fuel_tank,r,l): 
     n = 8

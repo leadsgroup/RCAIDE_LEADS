@@ -195,23 +195,14 @@ def import_airfoil_geometry(airfoil_geometry_file, npoints = 201,surface_interpo
         y_data[0]          = y_data[0]  - 1E-4
         y_data[-1]         = y_data[-1] + 1E-4
         
-    # thicknes and camber distributions require equal points     
-    x_up_surf_old  = np.array(x_up_surf)   
-    arrx_up_interp = interpolate.interp1d(np.arange(x_up_surf_old.size),x_up_surf_old, kind=surface_interpolation)
-    x_up_surf_new  = arrx_up_interp(np.linspace(0,x_up_surf_old.size-1,half_npoints))    
- 
-    x_lo_surf_old  = np.array(x_lo_surf) 
-    arrx_lo_interp = interpolate.interp1d(np.arange(x_lo_surf_old.size),x_lo_surf_old, kind=surface_interpolation )
-    x_lo_surf_new  = arrx_lo_interp(np.linspace(0,x_lo_surf_old.size-1,half_npoints)) 
- 
-    # y coordinate s 
-    y_up_surf_old  = np.array(y_up_surf)   
-    arry_up_interp = interpolate.interp1d(np.arange(y_up_surf_old.size),y_up_surf_old, kind=surface_interpolation)
-    y_up_surf_new  = arry_up_interp(np.linspace(0,y_up_surf_old.size-1,half_npoints))    
- 
-    y_lo_surf_old  = np.array(y_lo_surf) 
-    arry_lo_interp = interpolate.interp1d(np.arange(y_lo_surf_old.size),y_lo_surf_old, kind=surface_interpolation)
-    y_lo_surf_new  = arry_lo_interp(np.linspace(0,y_lo_surf_old.size-1,half_npoints)) 
+    # thicknes and camber distributions require equal points    
+    arrx_up_interp = interpolate.interp1d(x_up_surf,y_up_surf, kind=surface_interpolation)
+    x_up_surf_new  = np.linspace(0,1,half_npoints)
+    y_up_surf_new  = arrx_up_interp(x_up_surf_new) - y_delta   
+  
+    arrx_lo_interp = interpolate.interp1d(x_lo_surf,y_lo_surf, kind=surface_interpolation )
+    x_lo_surf_new  = np.linspace(0,1,half_npoints)
+    y_lo_surf_new  = arrx_lo_interp(x_lo_surf_new) - y_delta   
 
     # compute thickness, camber and concatenate coodinates 
     thickness      = y_up_surf_new - y_lo_surf_new
@@ -229,5 +220,5 @@ def import_airfoil_geometry(airfoil_geometry_file, npoints = 201,surface_interpo
     geometry.y_upper_surface    = y_up_surf_new 
     geometry.y_lower_surface    = y_lo_surf_new              
     geometry.camber_coordinates = camber
-         
+     
     return geometry

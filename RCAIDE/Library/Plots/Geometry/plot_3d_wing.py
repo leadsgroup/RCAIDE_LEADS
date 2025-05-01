@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------  
-def plot_3d_wing(plot_data, wing, number_of_airfoil_points = 21, color_map='greys', alpha=1):
+def plot_3d_wing(plot_data, wing, number_of_airfoil_points = 21, color_map='greys', alpha=0.5):
     """
     Creates a 3D visualization of wing surfaces including symmetric sections if applicable.
 
@@ -77,7 +77,7 @@ def plot_3d_wing(plot_data, wing, number_of_airfoil_points = 21, color_map='grey
                  [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
              
             values      = np.ones_like(X) 
-            verts       = contour_surface_slice(X, Y, Z ,values,color_map)
+            verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
             plot_data.append(verts)
     if wing.symmetric:
         if wing.vertical: 
@@ -88,7 +88,7 @@ def plot_3d_wing(plot_data, wing, number_of_airfoil_points = 21, color_map='grey
                     Z = np.array([[-G.ZA1[sec,loc], -G.ZA2[sec,loc]],[-G.ZB1[sec,loc], -G.ZB2[sec,loc]]]) 
                      
                     values      = np.ones_like(X) 
-                    verts       = contour_surface_slice(X, Y, Z ,values,color_map)
+                    verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
                     plot_data.append(verts)
         else:
             for sec in range(dim-1):
@@ -98,7 +98,7 @@ def plot_3d_wing(plot_data, wing, number_of_airfoil_points = 21, color_map='grey
                     Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
                      
                     values      = np.ones_like(X) 
-                    verts       = contour_surface_slice(X, Y, Z ,values,color_map)
+                    verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
                     plot_data.append(verts)
             
              

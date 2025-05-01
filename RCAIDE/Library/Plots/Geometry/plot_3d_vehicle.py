@@ -258,9 +258,7 @@ def generate_3d_vehicle_geometry_data(plot_data,
                 update_blended_wing_body_planform(wing, update_planform = False)
 
             # compute planform properties 
-            wing_planform(wing,overwrite_reference = False)  # These defaults need to be put somewhere else  
-
-            #vehicle.reference_area = wing.areas.reference
+            wing_planform(wing,overwrite_reference = False)  # These defaults need to be put somewhere else   
         else:
             # compute planform properties 
             wing_planform(wing)  # These default need to be put somewhere else
@@ -279,17 +277,17 @@ def generate_3d_vehicle_geometry_data(plot_data,
     # PLOT FUSELAGE
     # ------------------------------------------------------------------------- 
     for fus in vehicle.fuselages:
-        plot_data = plot_3d_fuselage(plot_data,fus,color_map = 'teal')
+        plot_data = plot_3d_fuselage(plot_data,fus,color_map = 'teal',alpha=0.2)
 
     
     # -------------------------------------------------------------------------
-    # PLOT BOOMS
+    # PLOT FUSELAGES AND BOOMS
     # ------------------------------------------------------------------------- 
     for boom in vehicle.booms:
         plot_data = plot_3d_fuselage(plot_data,boom,color_map = 'gray') 
         
     # -------------------------------------------------------------------------
-    # PLOT ROTORS
+    # PLOT ENERGY NETWORK
     # ------------------------------------------------------------------------- 
     number_of_airfoil_points = 11
     for network in vehicle.networks:
@@ -351,10 +349,10 @@ def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,color_map)
             for fuel_tank in fuel_line.fuel_tanks:   
                 if fuel_tank.wing != None: 
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                        plot_3d_integral_wing_tank(plot_data, fuel_tank, tessellation, color_map = 'orange') 
+                        plot_3d_integral_wing_tank(plot_data,fuel_tank, tessellation, color_map = 'oranges') 
                     elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                        plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'orange')   
+                        plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
                 elif fuel_tank.fuselage != None:   
-                    plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'orange')   
+                    plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
             
     return plot_data

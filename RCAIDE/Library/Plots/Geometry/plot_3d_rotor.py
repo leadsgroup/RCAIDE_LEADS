@@ -98,7 +98,7 @@ def plot_3d_rotor(rotor, save_filename = "Rotor", save_figure = False, plot_data
                      [G.ZB1[cpt,sec,loc],G.ZB2[cpt,sec,loc]]]) 
                  
                 values      = np.ones_like(X) 
-                verts       = contour_surface_slice(X, Y, Z ,values,color_map)
+                verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
                 plot_data.append(verts)      
             
     axis_limits = np.maximum(np.max(G.XA1), np.maximum(np.max(G.YA1),np.max(G.ZA1)))*2 
