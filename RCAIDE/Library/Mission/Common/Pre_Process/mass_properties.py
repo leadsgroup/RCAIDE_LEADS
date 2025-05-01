@@ -62,7 +62,7 @@ def mass_properties(mission):
                     weights_analysis.vehicle.mass_properties.operating_empty =  weights_analysis.vehicle.mass_properties.weight_breakdown.empty.total \
                                                                                 + weights_analysis.vehicle.mass_properties.weight_breakdown.operational_items.total 
 
-                    if weights_analysis.vehicle.mass_properties.payload == 0 and weights_analysis.vehicle.mass_properties.fuel == 0:
+                    if weights_analysis.vehicle.mass_properties.payload == 0 or weights_analysis.vehicle.mass_properties.fuel == 0:
                         print('Payload or Fuel Weight Not Defined Assuming Takeoff Weight is MTOW')
                         weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff
 
