@@ -20,7 +20,7 @@ from BWB                    import vehicle_setup as bwb_setup
 from Stopped_Rotor_EVTOL    import vehicle_setup as evtol_setup
 
 def main():
-    update_regression_values = True  # should be false unless code functionally changes
+    update_regression_values = False  # should be false unless code functionally changes
     show_figure              = False # leave false for regression
     
     Transport_Aircraft_Test(update_regression_values,show_figure)
@@ -39,6 +39,10 @@ def Transport_Aircraft_Test(update_regression_values, show_figure):
             print(f'Testing Transport Aircraft Method: {method_type} | Advanced Composites: {advanced_composites} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}')        
             weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional()
             weight_analysis.vehicle = transport_setup()
+            for wing in weight_analysis.vehicle.wings: 
+                wing_planform(wing,overwrite_reference =  True) 
+                if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+                    weight_analysis.vehicle.reference_area = wing.areas.reference
             weight_analysis.method = method_type
             weight_analysis.settings.advanced_composites = advanced_composites
             weight_analysis.aircraft_type = 'Transport'
@@ -89,6 +93,10 @@ def General_Aviation_Test(update_regression_values, show_figure):
             
             weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional()
             weight_analysis.vehicle = general_aviation_setup()
+            for wing in weight_analysis.vehicle.wings: 
+                wing_planform(wing,overwrite_reference =  True) 
+                if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+                    weight_analysis.vehicle.reference_area = wing.areas.reference
             weight_analysis.method = method_type
             weight_analysis.aircraft_type = 'General_Aviation'
             weight_analysis.settings.advanced_composites = advanced_composite
@@ -182,7 +190,7 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
             compute_layout_of_passenger_accommodations(wing)  
             update_blended_wing_body_planform(wing)
             bwb_wing_planform(wing,overwrite_reference = True)
-            weight_analysis.vehicle.reference_area = wianng.areas.reference
+            weight_analysis.vehicle.reference_area = wing.areas.reference
     weight_analysis.aircraft_type  = 'BWB'
     weight_analysis.settings.FLOPS.complexity   = 'Complex' 
     weight                   = weight_analysis.evaluate()
@@ -217,6 +225,10 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
 def EVTOL_Aircraft_Test(update_regression_values,show_figure): 
     weight_analysis          = RCAIDE.Framework.Analyses.Weights.Electric()
     weight_analysis.vehicle  = evtol_setup(update_regression_values) 
+    for wing in weight_analysis.vehicle.wings: 
+                wing_planform(wing,overwrite_reference =  True) 
+                if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+                    weight_analysis.vehicle.reference_area = wing.areas.reference
     weight_analysis.aircraft_type = 'VTOL'
     weight_analysis.method   = 'Physics_Based'
     weight_analysis.settings.safety_factor = 1.5    # CHECK THIS VALUE
