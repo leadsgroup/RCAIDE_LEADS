@@ -27,7 +27,7 @@ import sys
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------  
 def plot_3d_vehicle(vehicle,
-                    show_axis                   = False,
+                    show_axis                       = False,
                     save_figure                 = False,
                     save_filename               = "Vehicle_Geometry",
                     alpha                       = 1.0,  
@@ -36,13 +36,26 @@ def plot_3d_vehicle(vehicle,
                     min_y_axis_limit            =  -20,
                     max_y_axis_limit            =  20,
                     min_z_axis_limit            =  -20,
-                    max_z_axis_limit            =  20, 
+                    max_z_axis_limit            =  20,
+                    top_view                    = False, 
+                    side_view                   = False, 
+                    front_view                  = False, 
                     camera_eye_x                = -1.5,
                     camera_eye_y                = -1.5,
                     camera_eye_z                = .8,
                     camera_center_x             = 0.,
                     camera_center_y             = 0.,
                     camera_center_z             = -0.5,
+                    wing_color                  = 'greys', 
+                    fuselage_color              = 'teal', 
+                    nacelle_color               = 'darkmint', 
+                    fuel_tank_color             = 'oranges', 
+                    rotor_color                 = 'turbid', 
+                    wing_alpha                  = 1.0, 
+                    fuselage_alpha              = 1.0,
+                    nacelle_alpha               = 1.0,
+                    fuel_tank_alpha             = 1.0,
+                    rotor_alpha                 = 1.0,
                     show_figure                 = True):
     """
     Creates a complete 3D visualization of an aircraft including all major components.
@@ -51,55 +64,55 @@ def plot_3d_vehicle(vehicle,
     ----------
     vehicle : Vehicle
         RCAIDE vehicle data structure containing all component geometries
-        
+
     show_axis : bool, optional
         Flag to display coordinate axes (default: False)
-        
+
     save_figure : bool, optional
         Flag for saving the figure (default: False)
-        
+
     save_filename : str, optional
         Name of file for saved figure (default: "Vehicle_Geometry")
-        
+
     alpha : float, optional
         Transparency value between 0 and 1 (default: 1.0)
-        
+
     min_x_axis_limit : float, optional
         Minimum x-axis plot limit (default: -5)
-        
+
     max_x_axis_limit : float, optional
         Maximum x-axis plot limit (default: 40)
-        
+
     min_y_axis_limit : float, optional
         Minimum y-axis plot limit (default: -20)
-        
+
     max_y_axis_limit : float, optional
         Maximum y-axis plot limit (default: 20)
-        
+
     min_z_axis_limit : float, optional
         Minimum z-axis plot limit (default: -20)
-        
+
     max_z_axis_limit : float, optional
         Maximum z-axis plot limit (default: 20)
-        
+
     camera_eye_x : float, optional
         Camera eye x-position (default: -1.5)
-        
+
     camera_eye_y : float, optional
         Camera eye y-position (default: -1.5)
-        
+
     camera_eye_z : float, optional
         Camera eye z-position (default: 0.8)
-        
+
     camera_center_x : float, optional
         Camera target x-position (default: 0.0)
-        
+
     camera_center_y : float, optional
         Camera target y-position (default: 0.0)
-        
+
     camera_center_z : float, optional
         Camera target z-position (default: -0.5)
-        
+
     show_figure : bool, optional
         Flag to display the figure (default: True)
 
@@ -116,6 +129,39 @@ def plot_3d_vehicle(vehicle,
         - Customizable view and camera angles
     """
 
+    if front_view:
+        camera_eye_x  = -1 
+        camera_eye_y  = 0
+        camera_eye_z  = 0
+        camera_center_x  = 0.0
+        camera_center_y  = 0.0
+        camera_center_z  = 0.0
+
+    elif side_view:
+        camera_eye_x  = 0  
+        camera_eye_y  = -1 
+        camera_eye_z  = 0 
+        camera_center_x  = 0 
+        camera_center_y  = 0 
+        camera_center_z  = 0 
+
+    elif top_view:
+        camera_eye_x  = 0
+        camera_eye_y  = 0 
+        camera_eye_z  = 1 
+        camera_center_x  = 0 
+        camera_center_y  = 0 
+        camera_center_z  = 0 
+
+    else: 
+        camera_eye_x  = -1.5 
+        camera_eye_y  = -1.5 
+        camera_eye_z  = .8
+        camera_center_x  = 0 
+        camera_center_y  = 0 
+        camera_center_z  = 0
+        
+        
     print("\nPlotting vehicle") 
     camera = dict(
         eye=dict(x=camera_eye_x, y=camera_eye_y, z=camera_eye_z), 
@@ -132,7 +178,18 @@ def plot_3d_vehicle(vehicle,
                                                                                        min_y_axis_limit,
                                                                                        max_y_axis_limit,
                                                                                        min_z_axis_limit,
-                                                                                       max_z_axis_limit)
+                                                                                       max_z_axis_limit,
+                                                                                       wing_color,
+                                                                                       fuselage_color,
+                                                                                       nacelle_color, 
+                                                                                       fuel_tank_color, 
+                                                                                       rotor_color,
+                                                                                       wing_alpha,
+                                                                                       fuselage_alpha,
+                                                                                       nacelle_alpha,
+                                                                                       fuel_tank_alpha,
+                                                                                       rotor_alpha,
+                                                                                       )
     
 
     fig = go.Figure(data=plot_data)
@@ -174,7 +231,18 @@ def generate_3d_vehicle_geometry_data(plot_data,
                                       min_y_axis_limit            =  -20,
                                       max_y_axis_limit            =  20,
                                       min_z_axis_limit            =  -20,
-                                      max_z_axis_limit            =  20, ):
+                                      max_z_axis_limit            =  20,
+                                      wing_color                  = 'greys', 
+                                      fuselage_color              = 'teal', 
+                                      nacelle_color               = 'darkmint', 
+                                      fuel_tank_color             = 'oranges', 
+                                      rotor_color                 = 'turbid', 
+                                      wing_alpha                  = 1.0, 
+                                      fuselage_alpha              = 1.0,
+                                      nacelle_alpha               = 1.0,
+                                      fuel_tank_alpha             = 1.0,
+                                      rotor_alpha                 = 1.0,
+                                      ):
     """
     Generates plot data for all vehicle components.
 
@@ -271,31 +339,31 @@ def generate_3d_vehicle_geometry_data(plot_data,
     # ------------------------------------------------------------------------- 
     number_of_airfoil_points = 21
     for wing in vehicle.wings:
-        plot_data       = plot_3d_wing(plot_data,wing,number_of_airfoil_points , color_map='greys',alpha=0.5) 
+        plot_data       = plot_3d_wing(plot_data,wing,number_of_airfoil_points , color_map=wing_color,alpha=wing_alpha) 
         
     # -------------------------------------------------------------------------
     # PLOT FUSELAGE
     # ------------------------------------------------------------------------- 
     for fus in vehicle.fuselages:
-        plot_data = plot_3d_fuselage(plot_data,fus,color_map = 'teal',alpha=0.2)
+        plot_data = plot_3d_fuselage(plot_data,fus,color_map =fuselage_color,alpha=fuselage_alpha)
 
     
     # -------------------------------------------------------------------------
     # PLOT FUSELAGES AND BOOMS
     # ------------------------------------------------------------------------- 
     for boom in vehicle.booms:
-        plot_data = plot_3d_fuselage(plot_data,boom,color_map = 'gray') 
+        plot_data = plot_3d_fuselage(plot_data,boom,color_map =fuselage_color,alpha=fuselage_alpha) 
         
     # -------------------------------------------------------------------------
     # PLOT ENERGY NETWORK
     # ------------------------------------------------------------------------- 
     number_of_airfoil_points = 11
     for network in vehicle.networks:
-        plot_data = plot_3d_energy_network(plot_data,network,number_of_airfoil_points,color_map = 'turbid' ) 
+        plot_data = plot_3d_energy_network(plot_data,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha) 
  
     return plot_data,min_x_axis_limit,max_x_axis_limit,min_y_axis_limit,max_y_axis_limit,min_z_axis_limit,max_z_axis_limit
 
-def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,color_map):
+def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha):
     """
     Generates plot data for vehicle energy network components.
 
@@ -335,15 +403,15 @@ def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,color_map)
         tessellation             = 24
         if 'nacelle' in propulsor: 
             if propulsor.nacelle !=  None: 
-                plot_data = plot_3d_nacelle(plot_data,propulsor.nacelle,tessellation,number_of_airfoil_points,color_map = 'darkmint') 
+                plot_data = plot_3d_nacelle(plot_data,propulsor.nacelle,tessellation,number_of_airfoil_points,nacelle_color,nacelle_alpha) 
         if 'rotor' in propulsor: 
-            plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,color_map) 
+            plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
         if 'propeller' in propulsor:
-            plot_data = plot_3d_rotor(propulsor.propeller,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,color_map)  
+            plot_data = plot_3d_rotor(propulsor.propeller,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
         if 'rotor' in propulsor: 
-            plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,color_map) 
+            plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
         if 'propeller' in propulsor:
-            plot_data = plot_3d_rotor(propulsor.propeller,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,color_map) 
+            plot_data = plot_3d_rotor(propulsor.propeller,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
        
         for fuel_line in network.fuel_lines: 
             for fuel_tank in fuel_line.fuel_tanks:   
