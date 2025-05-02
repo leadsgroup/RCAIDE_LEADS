@@ -99,118 +99,104 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
                         
     DG              = vehicle.mass_properties.max_takeoff / Units.lbs  # Design gross weight in lb
 
-    if complexity == 'Simple':
-        EMS  = 1 - 0.25 * FSTRT  # Wing strut bracing factor
-        TLAM = np.tan(wing.sweeps.quarter_chord) \
-               - 2 * (1 - TR) / (AR * (1 + TR))  # Tangent of the 3/4 chord sweep angle
-        SLAM = TLAM / np.sqrt(1 + TLAM ** 2)  # sine of 3/4 chord wing sweep angle
-        C6   = 0.5 * FAERT - 0.16 * FSTRT
-        C4   = 1 - 0.5 * FAERT
-        CAYL = (1.0 - SLAM ** 2) * \
-               (1.0 + C6 * SLAM ** 2 + 0.03 * CAYA * C4 * SLAM)  # Wing sweep factor due to aeroelastic tailoring
-        TCA  = wing.thickness_to_chord
-        BT   = 0.215 * (0.37 + 0.7 * TR) * (SPAN ** 2 / SW) ** EMS / (CAYL * TCA)  # Bending factor
-        CAYE = 1 - 0.03 * NEW
+    NSD             = 500
+    N2              = int(NEW / 2) 
+    
+    NFUSE = 0
+    for wing in  vehicle.wings:
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            NFUSE   += 1
+        width = 0
+        for segment in wing.segments:
+            if isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
+                width    += segment.percent_span_location * wing.spans.projected  / Units.ft     
 
-    else:
-        NSD             = 500
-        N2              = int(NEW / 2) 
-       
-        NFUSE = 0
-        for wing in  vehicle.wings:
-            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-                NFUSE   += 1
-            width = 0
-            for segment in wing.segments:
-                if isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
-                    width    += segment.percent_span_location * wing.spans.projected  / Units.ft     
-
-        ETA, C, T, SWP  = generate_wing_stations(width, copy.deepcopy(wing))
-        NS, Y           = generate_int_stations(NSD, ETA)
-        EETA            = get_spanwise_engine(vehicle.networks,SEMISPAN)
-        P0              = calculate_load(ETA[-1])
-        ASW             = 0
-        EM              = 0
-        EL              = 0
-        C0              = C[-1]
-        S               = 0
-        EEL             = 0
-        EEM             = 0
-        EA0             = 0
-        EW              = 0
-        
-        
-        # Replaced FOR LOOP
-        # Reverse Order
-        Y  = np.flip(Y)
-        
-        # DY distance
-        DY = np.diff(Y)
-        
-        # Trim the vectors away from the tip and center
-        Y  = Y[1:-2]
-        DY = -DY[0:-2]
-        
-        # Get normalized pressure loading across the wing
-        P1     = calculate_load(Y)
-        P0     = np.zeros_like(P1)
-        P0[1:] = P1[0:-1]
-        
-        # Get local chord length
-        C1     = np.interp(Y, ETA, C)
-        C0     = np.zeros_like(C1)
-        C0[0]  = C[-1]
-        C0[1:] = C1[0:-1]
-        
-        # Calculate local pressure load and moments (DELP and DELM)
-        T1   = np.interp(Y, ETA, T)
-        SWP1 = find_sweep(Y,ETA,SWP)
-        DELP = DY / 6 * (C0 * (2 * P0 + P1) + C1 * (2 * P1 + P0))
-        DELM = DY ** 2 * (C0 * (3.0 * P0 + P1) + C1 * (P1 + P0)) / 12.
-        
-        # Sum loads
-        EL     = np.zeros_like(DELP) 
-        EL[1:] = np.cumsum(DELP[0:-1])
-        
-        # Sum moments
-        EM     = np.cumsum((DELM + DY * EL) * 1 / np.cos(SWP1))
-        
-        # Calculate required bending material area
-        BMA1     = EM * 1 / np.cos(SWP1) * 1 / (C1 * T1)
-        
-        BMA0     = np.zeros_like(BMA1)
-        BMA0[1:] = BMA1[0:-1]
-        
-        # Compute segment values
-        ASW  = np.cumsum((DY + 2 * Y) * DY * SWP1)
-        PM   = np.cumsum((BMA0 + BMA1) * DY / 2.)
-        S    = np.cumsum((C0 + C1) * DY / 2.)
+    ETA, C, T, SWP  = generate_wing_stations(width, copy.deepcopy(wing))
+    NS, Y           = generate_int_stations(NSD, ETA)
+    EETA            = get_spanwise_engine(vehicle.networks,SEMISPAN)
+    P0              = calculate_load(ETA[-1])
+    ASW             = 0
+    EM              = 0
+    EL              = 0
+    C0              = C[-1]
+    S               = 0
+    EEL             = 0
+    EEM             = 0
+    EA0             = 0
+    EW              = 0
+    
+    
+    # Replaced FOR LOOP
+    # Reverse Order
+    Y  = np.flip(Y)
+    
+    # DY distance
+    DY = np.diff(Y)
+    
+    # Trim the vectors away from the tip and center
+    Y  = Y[1:-2]
+    DY = -DY[0:-2]
+    
+    # Get normalized pressure loading across the wing
+    P1     = calculate_load(Y)
+    P0     = np.zeros_like(P1)
+    P0[1:] = P1[0:-1]
+    
+    # Get local chord length
+    C1     = np.interp(Y, ETA, C)
+    C0     = np.zeros_like(C1)
+    C0[0]  = C[-1]
+    C0[1:] = C1[0:-1]
+    
+    # Calculate local pressure load and moments (DELP and DELM)
+    T1   = np.interp(Y, ETA, T)
+    SWP1 = find_sweep(Y,ETA,SWP)
+    DELP = DY / 6 * (C0 * (2 * P0 + P1) + C1 * (2 * P1 + P0))
+    DELM = DY ** 2 * (C0 * (3.0 * P0 + P1) + C1 * (P1 + P0)) / 12.
+    
+    # Sum loads
+    EL     = np.zeros_like(DELP) 
+    EL[1:] = np.cumsum(DELP[0:-1])
+    
+    # Sum moments
+    EM     = np.cumsum((DELM + DY * EL) * 1 / np.cos(SWP1))
+    
+    # Calculate required bending material area
+    BMA1     = EM * 1 / np.cos(SWP1) * 1 / (C1 * T1)
+    
+    BMA0     = np.zeros_like(BMA1)
+    BMA0[1:] = BMA1[0:-1]
+    
+    # Compute segment values
+    ASW  = np.cumsum((DY + 2 * Y) * DY * SWP1)
+    PM   = np.cumsum((BMA0 + BMA1) * DY / 2.)
+    S    = np.cumsum((C0 + C1) * DY / 2.)
 
 
-        # Adjust for engine loads
-        if N2>0: # If there are engines
-            EEL   = np.zeros_like(Y)
-            DELM2 = np.zeros_like(Y)
-            
-            # Do a for loop over engine stations
-            for ii in range(len(EETA)):
-                # Find the station closest to the engine but inboard
-                distances              = EETA[ii]-Y
-                distances[distances<0] = np.inf
-                distance               = np.min(distances)
-                loc                    = np.argmin(distances)
-                DELM2[loc]             = DELM2[loc] + distance
-                EEL[loc+1:]            = EEL[loc+1:] + 1
+    # Adjust for engine loads
+    if N2>0: # If there are engines
+        EEL   = np.zeros_like(Y)
+        DELM2 = np.zeros_like(Y)
+        
+        # Do a for loop over engine stations
+        for ii in range(len(EETA)):
+            # Find the station closest to the engine but inboard
+            distances              = EETA[ii]-Y
+            distances[distances<0] = np.inf
+            distance               = np.min(distances)
+            loc                    = np.argmin(distances)
+            DELM2[loc]             = DELM2[loc] + distance
+            EEL[loc+1:]            = EEL[loc+1:] + 1
 
-            DELM2 = DELM2 + EEL*DY
+        DELM2 = DELM2 + EEL*DY
 
-            EEM = np.cumsum(DELM2/np.cos(SWP1))
-            EA1 = EEM * 1 / np.cos(SWP1) * 1 / (C1 * T1)
-            
-            EA0 = np.zeros_like(Y)
-            EA0[1:] = EA1[0:-1]
-            
-            EW  = np.sum((EA0 + EA1) * DY / 2)
+        EEM = np.cumsum(DELM2/np.cos(SWP1))
+        EA1 = EEM * 1 / np.cos(SWP1) * 1 / (C1 * T1)
+        
+        EA0 = np.zeros_like(Y)
+        EA0[1:] = EA1[0:-1]
+        
+        EW  = np.sum((EA0 + EA1) * DY / 2)
             
         # Finalize properties
         EL = EL[-1] + DELP[-1]    
