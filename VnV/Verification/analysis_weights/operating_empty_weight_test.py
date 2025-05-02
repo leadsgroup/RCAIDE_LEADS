@@ -234,7 +234,7 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
     cabin_types = ['Non-PERSUS','PERSUS']
     for cabin_type in cabin_types:
         for FLOPS_number in [0,1]:
-            print(f'Testing Transport Aircraft Method: {'BWB'} | Composites: {cabin_type} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}') 
+            print(f'Testing Transport Aircraft Method: BWB| Composites: {cabin_type} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}') 
             weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional()
             weight_analysis.vehicle  = bwb_setup()
             if cabin_type == 'PERSUS':
@@ -253,8 +253,8 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
             plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure) 
             
             if update_regression_values:
-                save_results(weight, os.path.join(os.path.dirname(__file__), f'{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res'))
-            old_weight = load_results(os.path.join(os.path.dirname(__file__), f'{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res'))
+               save_results(weight, os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res"))
+            old_weight = load_results(os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res"))
             
             check_list = [
                 'empty.total',
