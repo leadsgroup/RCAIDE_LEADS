@@ -297,28 +297,6 @@ def generate_wing_stations(fuselage_width, wing):
     SEMISPAN    = SPAN / 2
     root_chord  = wing.chords.root / Units.ft
     num_seg     = len(wing.segments.keys())
-
-    if num_seg == 0:
-        segment                         = RCAIDE.Library.Components.Wings.Segments.Segment()
-        segment.tag                     = 'root'
-        segment.percent_span_location   = 0.
-        segment.twist                   = wing.twists.root
-        segment.root_chord_percent      = 1
-        segment.dihedral_outboard       = 0.
-        segment.sweeps.quarter_chord    = wing.sweeps.quarter_chord
-        segment.thickness_to_chord      = wing.thickness_to_chord
-        wing.segments.append(segment)
-
-        segment                         = RCAIDE.Library.Components.Wings.Segments.Segment()
-        segment.tag                     = 'tip'
-        segment.percent_span_location   = 1.
-        segment.twist                   = wing.twists.tip
-        segment.root_chord_percent      = wing.chords.tip / wing.chords.root
-        segment.dihedral_outboard       = 0.
-        segment.sweeps.quarter_chord    = wing.sweeps.quarter_chord
-        segment.thickness_to_chord      = wing.thickness_to_chord
-        wing.segments.append(segment)
-        num_seg = len(wing.segments.keys())
         
     ETA    = np.zeros(num_seg + 1)
     C      = np.zeros(num_seg + 1)
