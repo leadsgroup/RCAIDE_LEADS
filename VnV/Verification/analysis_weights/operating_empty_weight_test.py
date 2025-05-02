@@ -18,6 +18,7 @@ from Boeing_737             import vehicle_setup as transport_setup
 from Cessna_172             import vehicle_setup as general_aviation_setup
 from BWB                    import vehicle_setup as bwb_setup
 from Stopped_Rotor_EVTOL    import vehicle_setup as evtol_setup
+from Boeing_787             import vehicle_setup as hydrogen_transport_setup
 
 def main():
     update_regression_values = False  # should be false unless code functionally changes
@@ -27,8 +28,56 @@ def main():
     BWB_Aircraft_Test(update_regression_values,show_figure)
     General_Aviation_Test(update_regression_values,show_figure)
     EVTOL_Aircraft_Test(update_regression_values,show_figure)
+    Transport_Hydrogen_Test(update_regression_values,show_figure)
     return
 
+
+def Transport_Hydrogen_Test(update_regression_values, show_figure):
+    method_types = ['Semi_Empirical']
+
+    vehicle = hydrogen_transport_setup()
+    for propulsor in vehicle.networks.fuel.propulsors:
+        propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    for fuel_line in vehicle.networks.fuel.fuel_lines:
+        for fuel_tank in fuel_line.fuel_tanks:
+            fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
+            fuel_tank.fuel.gravimetric_efficiency            = 0.5
+         
+    for method_type in method_types:
+        print(f'Testing Transport Aircraft Method: {method_type} | Method: {"Complex"}')        
+        weight_analysis = RCAIDE.Framework.Analyses.Weights.Hydrogen()
+        weight_analysis.vehicle = vehicle
+        for wing in weight_analysis.vehicle.wings: 
+            wing_planform(wing,overwrite_reference =  True) 
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+                weight_analysis.vehicle.reference_area = wing.areas.reference
+        weight_analysis.method = method_type
+        weight_analysis.aircraft_type = 'Transport'
+
+    
+        weight = weight_analysis.evaluate()
+        plot_weight_breakdown(weight_analysis.vehicle, show_figure=show_figure)
+
+        save_path = os.path.join(os.path.dirname(__file__), f'hydrogen_weights_transport_{method_type}.res')
+
+        if update_regression_values:
+            save_results(weight, save_path)
+        old_weight = load_results(save_path)
+
+        check_list = [
+            'payload.total', 'payload.passengers', 'payload.baggage',
+            'empty.structural.wings', 'empty.structural.fuselage',
+            'empty.propulsion.total', 'empty.structural.landing_gear',
+            'empty.systems.total', 'empty.total'
+        ]
+
+        for k in check_list:
+            old_val = old_weight.deep_get(k)
+            new_val = weight.deep_get(k)
+            err = (new_val - old_val) / old_val
+            print(f'{k} Error: {err:.6e}')
+            assert np.abs(err) < 1e-6, f'Check Failed: {k}'
+        print('')
 
 def Transport_Aircraft_Test(update_regression_values, show_figure):
     method_types = ['FLOPS', 'Raymer']
@@ -182,43 +231,48 @@ def General_Aviation_Test(update_regression_values, show_figure):
         print('')
         
 def BWB_Aircraft_Test(update_regression_values,show_figure):
-    
-    weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weight_analysis.vehicle  = bwb_setup()
-    for wing in weight_analysis.vehicle.wings: 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            compute_layout_of_passenger_accommodations(wing)  
-            update_blended_wing_body_planform(wing)
-            bwb_wing_planform(wing,overwrite_reference = True)
-            weight_analysis.vehicle.reference_area = wing.areas.reference
-    weight_analysis.aircraft_type  = 'BWB'
-    weight_analysis.settings.FLOPS.complexity   = 'Complex' 
-    weight                   = weight_analysis.evaluate()
-    plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure) 
-    
-    if update_regression_values:
-        save_results(weight, os.path.join(os.path.dirname(__file__), 'weights_BWB.res'))
-    old_weight = load_results(os.path.join(os.path.dirname(__file__), 'weights_BWB.res'))
-    
-    check_list = [
-        'empty.total',
-        'empty.structural.wings', 
-        'empty.structural.total',
-        'empty.propulsion.total',   
-        'empty.systems.total',  
-    ]
+    cabin_types = ['Non-PERSUS','PERSUS']
+    for cabin_type in cabin_types:
+        weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional()
+        weight_analysis.vehicle  = bwb_setup()
+        if cabin_type == 'PERSUS':
+            weight_analysis.settings.PRSEUS = True
+        elif cabin_type == 'Non-PERSUS':
+            weight_analysis.settings.PRSEUS = False
+        for wing in weight_analysis.vehicle.wings: 
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                compute_layout_of_passenger_accommodations(wing)  
+                update_blended_wing_body_planform(wing)
+                bwb_wing_planform(wing,overwrite_reference = True)
+                weight_analysis.vehicle.reference_area = wing.areas.reference
+        weight_analysis.aircraft_type  = 'BWB'
+        weight_analysis.settings.FLOPS.complexity   = 'Complex' 
+        weight                   = weight_analysis.evaluate()
+        plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure) 
+        
+        if update_regression_values:
+            save_results(weight, os.path.join(os.path.dirname(__file__), f'{cabin_type}weights_BWB.res'))
+        old_weight = load_results(os.path.join(os.path.dirname(__file__), f'{cabin_type}weights_BWB.res'))
+        
+        check_list = [
+            'empty.total',
+            'empty.structural.wings', 
+            'empty.structural.total',
+            'empty.propulsion.total',   
+            'empty.systems.total',  
+        ]
 
-    # do the check
-    for k in check_list:
-        print(k)
+        # do the check
+        for k in check_list:
+            print(k)
 
-        old_val = old_weight.deep_get(k)
-        new_val = weight.deep_get(k)
-        err = (new_val-old_val)/old_val
-        print('Error:' , err)
-        assert np.abs(err) < 1e-6 , 'Check Failed : %s' % k     
+            old_val = old_weight.deep_get(k)
+            new_val = weight.deep_get(k)
+            err = (new_val-old_val)/old_val
+            print('Error:' , err)
+            assert np.abs(err) < 1e-6 , 'Check Failed : %s' % k     
 
-        print('')
+            print('')
         
     return
 
