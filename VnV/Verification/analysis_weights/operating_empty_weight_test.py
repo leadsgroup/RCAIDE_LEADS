@@ -233,46 +233,48 @@ def General_Aviation_Test(update_regression_values, show_figure):
 def BWB_Aircraft_Test(update_regression_values,show_figure):
     cabin_types = ['Non-PERSUS','PERSUS']
     for cabin_type in cabin_types:
-        weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional()
-        weight_analysis.vehicle  = bwb_setup()
-        if cabin_type == 'PERSUS':
-            weight_analysis.settings.PRSEUS = True
-        elif cabin_type == 'Non-PERSUS':
-            weight_analysis.settings.PRSEUS = False
-        for wing in weight_analysis.vehicle.wings: 
-            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-                compute_layout_of_passenger_accommodations(wing)  
-                update_blended_wing_body_planform(wing)
-                bwb_wing_planform(wing,overwrite_reference = True)
-                weight_analysis.vehicle.reference_area = wing.areas.reference
-        weight_analysis.aircraft_type  = 'BWB'
-        weight_analysis.settings.FLOPS.complexity   = 'Complex' 
-        weight                   = weight_analysis.evaluate()
-        plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure) 
-        
-        if update_regression_values:
-            save_results(weight, os.path.join(os.path.dirname(__file__), f'{cabin_type}weights_BWB.res'))
-        old_weight = load_results(os.path.join(os.path.dirname(__file__), f'{cabin_type}weights_BWB.res'))
-        
-        check_list = [
-            'empty.total',
-            'empty.structural.wings', 
-            'empty.structural.total',
-            'empty.propulsion.total',   
-            'empty.systems.total',  
-        ]
+        for FLOPS_number in [0,1]:
+            print(f'Testing Transport Aircraft Method: {'BWB'} | Composites: {cabin_type} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}') 
+            weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional()
+            weight_analysis.vehicle  = bwb_setup()
+            if cabin_type == 'PERSUS':
+                weight_analysis.settings.PRSEUS = True
+            elif cabin_type == 'Non-PERSUS':
+                weight_analysis.settings.PRSEUS = False
+            for wing in weight_analysis.vehicle.wings: 
+                if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                    compute_layout_of_passenger_accommodations(wing)  
+                    update_blended_wing_body_planform(wing)
+                    bwb_wing_planform(wing,overwrite_reference = True)
+                    weight_analysis.vehicle.reference_area = wing.areas.reference
+            weight_analysis.aircraft_type  = 'BWB'
+            weight_analysis.settings.FLOPS.complexity = 'Simple' if FLOPS_number == 0 else 'Complex'
+            weight                   = weight_analysis.evaluate()
+            plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure) 
+            
+            if update_regression_values:
+                save_results(weight, os.path.join(os.path.dirname(__file__), f'{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res'))
+            old_weight = load_results(os.path.join(os.path.dirname(__file__), f'{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res'))
+            
+            check_list = [
+                'empty.total',
+                'empty.structural.wings', 
+                'empty.structural.total',
+                'empty.propulsion.total',   
+                'empty.systems.total',  
+            ]
 
-        # do the check
-        for k in check_list:
-            print(k)
+            # do the check
+            for k in check_list:
+                print(k)
 
-            old_val = old_weight.deep_get(k)
-            new_val = weight.deep_get(k)
-            err = (new_val-old_val)/old_val
-            print('Error:' , err)
-            assert np.abs(err) < 1e-6 , 'Check Failed : %s' % k     
+                old_val = old_weight.deep_get(k)
+                new_val = weight.deep_get(k)
+                err = (new_val-old_val)/old_val
+                print('Error:' , err)
+                assert np.abs(err) < 1e-6 , 'Check Failed : %s' % k     
 
-            print('')
+                print('')
         
     return
 
