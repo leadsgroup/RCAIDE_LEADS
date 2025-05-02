@@ -145,31 +145,4 @@ def mass_properties(mission):
                 segment.analyses.weights.vehicle.mass_properties      = mission.segments[last_tag].analyses.weights.vehicle.mass_properties
                 if segment.analyses.aerodynamics != None:   
                     segment.analyses.aerodynamics.vehicle = mission.segments[last_tag].analyses.aerodynamics.vehicle
-
-        else:
-                # Creates a Weight Analysis if there doesnt exist one
-            last_tag = None    
-            for segment in mission.segments:
-                segment.analyses.weights         = Data()
-                if last_tag == None:
-                    segment.analyses.weights.vehicle = segment.analyses.geometry.vehicle
-                    if segment.analyses.weights.vehicle.mass_properties.takeoff == 0:
-                        if segment.analyses.weights.vehicle.mass_properties.operating_empty != 0 or segment.analyses.weights.vehicle.mass_properties.payload !=0 or segment.analyses.vehicle.mass_properties.fuel != 0:
-                            segment.analyses.weights.vehicle.mass_properties.takeoff = segment.analyses.weights.vehicle.mass_properties.operating_empty \
-                                  + segment.analyses.weights.vehicle.mass_properties.payload \
-                                                                            + segment.analyses.weights.vehicle.mass_properties.fuel
-                            if segment.analyses.weights.vehicle.mass_properties.takeoff > segment.analyses.weights.vehicle.mass_properties.max_takeoff:
-                                print('Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
-                        else:
-                            if segment.analyses.weights.vehicle.mass_properties.max_takeoff != 0:
-                                segment.analyses.weights.vehicle.mass_properties.takeoff = segment.analyses.weights.vehicle.mass_properties.max_takeoff
-                            else: 
-                                raise AssertionError('Specify Takeoff Weight')         
-                    last_tag = segment.tag.lower()
-                    if segment.analyses.aerodynamics != None:
-                        segment.analyses.aerodynamics.vehicle =  segment.analyses.weights.vehicle
-                else:
-                    segment.analyses.weights.vehicle      = mission.segments[last_tag].analyses.weights.vehicle    
-                    if segment.analyses.aerodynamics != None:   
-                        segment.analyses.aerodynamics = mission.segments[last_tag].analyses.aerodynamics
     return 
