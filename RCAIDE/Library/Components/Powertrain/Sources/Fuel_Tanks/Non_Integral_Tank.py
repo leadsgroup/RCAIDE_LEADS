@@ -67,6 +67,8 @@ class Non_Integral_Tank(Fuel_Tank):
         self.mass_properties.empty_mass  = 0.0   
         self.secondary_fuel_flow         = 0.0 
         self.fuel                        = None 
+        self.wing                        = None 
+        self.fuselage                    = None
 
     def __init__ (self, compoment=None):
         """
