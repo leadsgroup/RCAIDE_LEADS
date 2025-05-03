@@ -11,7 +11,7 @@ import RCAIDE
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_fuel_tank_properties(tank,state, distributor):
+def compute_fuel_tank_properties(tank,state,distributor):
     '''
     SAI HEADER
     ''' 
@@ -22,7 +22,7 @@ def compute_fuel_tank_properties(tank,state, distributor):
         distributor_conditions = state.conditions.energy.fuel_lines[distributor.tag]         
     
     tank_conditions = distributor_conditions.fuel_tanks[tank.tag]      
-    if type(tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank:
+    if type(tank.fuel) == RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen:
         # unpack
         T_amb  = state.conditions.freestream.temperature  
         

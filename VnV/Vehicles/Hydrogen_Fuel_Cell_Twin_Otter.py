@@ -445,12 +445,18 @@ def vehicle_setup(fuel_cell_model):
         
     bus.fuel_cell_stacks.append(fuel_cell_stack)  
     bus.initialize_bus_properties() 
-
+      
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Crogenic Tank
     #------------------------------------------------------------------------------------------------------------------------------------       
-    cryogenic_tank = RCAIDE.Library.Components.Powertrain.Sources.Cryogenic_Tanks.Cryogenic_Tank()  
-    bus.cryogenic_tanks.append(cryogenic_tank)    
+    cryogenic_tank_1 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.fuselages.fuselage)    # for regression, aircraft has two tanks
+    cryogenic_tank_1.fuel_selector_ratio  = 0.5 
+    cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()       
+    cryogenic_tank_2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
+    cryogenic_tank_2.fuel_selector_ratio  = 0.5
+    cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    bus.fuel_tanks.append(cryogenic_tank_1)     
+    bus.fuel_tanks.append(cryogenic_tank_2)   
      
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor

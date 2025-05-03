@@ -174,7 +174,9 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag                                    = Conditions()  
         self.aerodynamics.coefficients.drag.total                              = ones_1col * 0   
         self.aerodynamics.coefficients.drag.parasite                           = Conditions()
+        self.aerodynamics.coefficients.drag.miscellaneous                      = Conditions()
         self.aerodynamics.coefficients.drag.compressible                       = Conditions()
+        self.aerodynamics.coefficients.drag.spoiler                            = Conditions()
         self.aerodynamics.coefficients.drag.induced                            = Conditions()
         self.aerodynamics.coefficients.drag.induced.total                      = ones_1col * 0 
         self.aerodynamics.coefficients.drag.induced.inviscid                   = ones_1col * 0 
@@ -264,7 +266,7 @@ class Results(Conditions):
         self.control_surfaces.slat.static_stability.coefficients.L             = ones_1col * 0         
         self.control_surfaces.slat.static_stability.coefficients.M             = ones_1col * 0         
         self.control_surfaces.slat.static_stability.coefficients.N             = ones_1col * 0           
-        self.control_surfaces.slat.static_stability.coefficients.e             = ones_1col * 0 
+        self.control_surfaces.slat.static_stability.coefficients.e             = ones_1col * 0
 
         self.control_surfaces.spoiler                                          = Conditions()
         self.control_surfaces.spoiler.deflection                               = ones_1col * 0         
@@ -445,6 +447,9 @@ class Results(Conditions):
         self.energy.converters                                = Conditions()
         self.energy.propulsors                                = Conditions()
         self.energy.modulators                                = Conditions()
+        self.energy.busses                                    = Conditions()
+        self.energy.fuel_lines                                = Conditions()
+        self.energy.coolant_lines                             = Conditions()
         self.energy.thrust_force_vector                       = ones_3col * 0
         self.energy.thrust_moment_vector                      = ones_3col * 0
         self.energy.power                                     = ones_1col * 0 

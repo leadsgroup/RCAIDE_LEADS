@@ -62,13 +62,7 @@ class Non_Integral_Tank(Fuel_Tank):
         """
         Sets default values for central fuel tank attributes
         """          
-        self.tag                         = 'non_integral_tank'
-        self.fuel_selector_ratio         = 1.0 
-        self.mass_properties.empty_mass  = 0.0   
-        self.secondary_fuel_flow         = 0.0 
-        self.fuel                        = None 
-        self.wing                        = None 
-        self.fuselage                    = None
+        self.tag                         = 'non_integral_tank' 
 
     def __init__ (self, compoment=None):
         """

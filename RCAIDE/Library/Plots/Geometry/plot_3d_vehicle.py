@@ -14,8 +14,8 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import plot_3d_r
 from RCAIDE.Library.Plots.Geometry.plot_3d_fuel_tank            import plot_3d_concetric_fuel_tank, plot_3d_integral_wing_tank
 
 from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
-from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform 
-from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, compute_fuel_volume 
+from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform  
+from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform 
 
 # python imports 
 import numpy as np 
@@ -27,7 +27,7 @@ import sys
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------  
 def plot_3d_vehicle(vehicle,
-                    show_axis                       = False,
+                    show_axis                   = False,
                     save_figure                 = False,
                     save_filename               = "Vehicle_Geometry",
                     alpha                       = 1.0,  
@@ -51,11 +51,12 @@ def plot_3d_vehicle(vehicle,
                     nacelle_color               = 'darkmint', 
                     fuel_tank_color             = 'oranges', 
                     rotor_color                 = 'turbid', 
-                    wing_alpha                  = 1.0, 
-                    fuselage_alpha              = 1.0,
+                    wing_alpha                  = 0.5, 
+                    fuselage_alpha              = 0.5,
                     nacelle_alpha               = 1.0,
                     fuel_tank_alpha             = 1.0,
                     rotor_alpha                 = 1.0,
+                    overwrite_geometry          = True, 
                     show_figure                 = True):
     """
     Creates a complete 3D visualization of an aircraft including all major components.
@@ -189,6 +190,7 @@ def plot_3d_vehicle(vehicle,
                                                                                        nacelle_alpha,
                                                                                        fuel_tank_alpha,
                                                                                        rotor_alpha,
+                                                                                       overwrite_geometry, 
                                                                                        )
     
 
@@ -242,6 +244,7 @@ def generate_3d_vehicle_geometry_data(plot_data,
                                       nacelle_alpha               = 1.0,
                                       fuel_tank_alpha             = 1.0,
                                       rotor_alpha                 = 1.0,
+                                      overwrite_geometry          = True, 
                                       ):
     """
     Generates plot data for all vehicle components.
@@ -311,29 +314,37 @@ def generate_3d_vehicle_geometry_data(plot_data,
 
     # -------------------------------------------------------------------------
     # Run Geoemtry Analysis
-    # ------------------------------------------------------------------------- 
+    # -------------------------------------------------------------------------
+     
+
     # update fuselage properties
-    for fuselage in vehicle.fuselages:
-        fuselage_planform(fuselage, update_fuselage_properties=False)  # These defaults need to be put somewhere else   
+    if overwrite_geometry:
+        for fuselage in vehicle.fuselages:
+            compute_layout_of_passenger_accommodations(fuselage)
+            fuselage_planform(fuselage) 
 
-    # ensure all properties of wing are computed before drag calculations  
     for wing in vehicle.wings: 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
 
-            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
-                compute_layout_of_passenger_accommodations(wing)  # These defaults need to be put somewhere else
+        # ----------------------------
+        #  Blended Wing Body
+        # ----------------------------
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            if overwrite_geometry:
+                compute_layout_of_passenger_accommodations(wing)  
+                update_blended_wing_body_planform(wing)
+            if overwrite_geometry:
+                bwb_wing_planform(wing,overwrite_reference = True)
+                vehicle.reference_area = wing.areas.reference
 
-                update_blended_wing_body_planform(wing, update_planform = False)
-
-            # compute planform properties 
-            wing_planform(wing,overwrite_reference = False)  # These defaults need to be put somewhere else   
+        # ----------------------------
+        # All other Wing Surfaces
+        # ----------------------------
         else:
-            # compute planform properties 
-            wing_planform(wing)  # These default need to be put somewhere else
-
-    #compute fuel volume
-    compute_fuel_volume(vehicle, update_max_fuel=False)    
-    
+            if overwrite_geometry:
+                wing_planform(wing,overwrite_reference =  overwrite_geometry) 
+                if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) and overwrite_geometry:
+                    vehicle.reference_area = wing.areas.reference
+        
     # -------------------------------------------------------------------------
     # PLOT WING
     # ------------------------------------------------------------------------- 

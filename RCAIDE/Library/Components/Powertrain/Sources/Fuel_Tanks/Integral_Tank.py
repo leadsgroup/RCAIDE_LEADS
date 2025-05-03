@@ -62,13 +62,7 @@ class Integral_Tank(Fuel_Tank):
         """
         Sets default values for wing fuel tank attributes
         """          
-        self.tag                         = 'integral_tank'
-        self.fuel_selector_ratio         = 1.0 
-        self.mass_properties.empty_mass  = 0.0   
-        self.secondary_fuel_flow         = 0.0 
-        self.fuel                        = None 
-        self.wing                        = None 
-        self.fuselage                    = None
+        self.tag                         = 'integral_tank' 
 
     def __init__ (self, compoment=None):
         """

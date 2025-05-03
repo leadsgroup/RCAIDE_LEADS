@@ -183,10 +183,8 @@ class Wing(Component):
         self.thickness_to_chord                = 0.0
         self.aerodynamic_center                = [0.0,0.0,0.0]
         self.exposed_root_chord_offset         = 0.0
-        self.total_length                      = 0.0
-        
-        self.has_fuel_tank                     = False
-                                               
+        self.total_length                      = 0.0 
+        self.has_fuel_tank                     = False 
         self.spans                             = Data()
         self.spans.projected                   = 0.0
         self.spans.total                       = 0.0

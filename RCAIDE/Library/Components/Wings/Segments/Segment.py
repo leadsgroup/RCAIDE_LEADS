@@ -98,24 +98,18 @@ class Segment(Component):
         self.taper                               = 0.0
         self.root_chord_percent                  = 0.0
         self.dihedral_outboard                   = 0.0
-        self.thickness_to_chord                  = 0.0
-                    
+        self.thickness_to_chord                  = 0.0 
         self.sweeps                              = Data()
         self.sweeps.quarter_chord                = None
-        self.sweeps.leading_edge                 = None
-                
+        self.sweeps.leading_edge                 = None 
         self.chords                              = Data()
-        self.chords.mean_aerodynamic             = 0.0
-                    
+        self.chords.mean_aerodynamic             = 0.0 
         self.areas                               = Data()
         self.areas.reference                     = 0.0
         self.areas.exposed                       = 0.0
-        self.areas.wetted                        = 0.0  
-         
-        self.has_fuel_tank                       = False
-
-        self.reference_area_root                 = False
-        
+        self.areas.wetted                        = 0.0   
+        self.has_fuel_tank                       = False 
+        self.reference_area_root                 = False 
         self.structural                          = Data()  
         self.structural.rib                      = False   
         self.structural.front_spar_percent_chord = 0.1  

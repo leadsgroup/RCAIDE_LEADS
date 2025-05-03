@@ -31,7 +31,7 @@ from Hydrogen_Fuel_Cell_Twin_Otter   import vehicle_setup , configs_setup
 
 def main():  
  
-    mdot_H2_true         = [0.017789754665082442,0.017401748009852166]
+    mdot_H2_true         = [0.017789754665078317,0.017401748009852166]
     fuel_cell_models     = ['PEM', 'Larminie', ]
     
     for i in range(2): 
@@ -54,7 +54,7 @@ def main():
         results = missions.base_mission.evaluate()  
         
         # Voltage Cell Regression
-        mdot_H2        = results.segments[0].conditions.energy.bus.cryogenic_tank.mass_flow_rate[0,0]
+        mdot_H2        = results.segments[0].conditions.energy.busses['bus'].fuel_tanks['non_integral_tank'].mass_flow_rate[0,0] + results.segments[0].conditions.energy.busses['bus'].fuel_tanks['integral_tank'].mass_flow_rate[0,0] 
         print('Mass Flow Rate: ' + str(mdot_H2))
         mdot_H2_diff   = np.abs(mdot_H2 - mdot_H2_true[i]) 
         print(mdot_H2_diff) 

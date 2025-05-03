@@ -10,10 +10,12 @@ import RCAIDE
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry
-from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series 
-import numpy as np     
+from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series
+from RCAIDE.Library.Methods.Geometry.Planform.compute_fuel_volume import compute_non_dimensional_rib_coordinates
 from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
-import numpy as np   
+
+# python imports
+import numpy as np     
 from scipy.interpolate import interp1d
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -68,12 +70,7 @@ def plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation = 24, color_m
         if seg.has_fuel_tank: 
             segment_list.append(seg.tag)
             if next_seg.tag not in segment_list:
-                segment_list.append(next_seg.tag) 
-    
-    if len(fuselage.segments)>0:
-        dim =  len(segment_list)
-    else:
-        dim = 2
+                segment_list.append(next_seg.tag)  
         
     G  = generate_3d_fuel_tank_points(fuel_tank, segment_list,tessellation = 24 ) 
     num_fus_segs = len(G.PTS[:,0,0])
@@ -503,31 +500,4 @@ def generate_3d_fuel_tank_points(fuel_tank, segment_list, tessellation = 24):
     
     G.PTS  = fuel_tank_points
 
-    return G
-
-
-
-
-def compute_non_dimensional_rib_coordinates(compoment): 
-    if compoment.airfoil != None: 
-        if type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-            geometry = compute_naca_4series(compoment.airfoil.NACA_4_Series_code)
-        elif type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil: 
-            geometry = import_airfoil_geometry(compoment.airfoil.coordinate_file)
-    else:
-        geometry = compute_naca_4series('0012')
-   
-    clearance = 2E-2
-    front_rib_nondim_x       = compoment.structural.front_spar_percent_chord   
-    rear_rib_nondim_x        = compoment.structural.rear_spar_percent_chord 
-    f_upper = interp1d(geometry.x_upper_surface  ,geometry.y_upper_surface, kind='linear')
-    f_lower = interp1d(geometry.x_lower_surface  , geometry.y_lower_surface, kind='linear')
-    
-    # non-wing box dimension coordinates 
-    front_rib_nondim_y_upper = f_upper([front_rib_nondim_x])[0] - clearance
-    rear_rib_nondim_y_upper  = f_upper([rear_rib_nondim_x])[0]  - clearance   
-    front_rib_nondim_y_lower = f_lower([front_rib_nondim_x])[0] + clearance   
-    rear_rib_nondim_y_lower  = f_lower([rear_rib_nondim_x])[0]  + clearance   
-         
-    return front_rib_nondim_y_upper,rear_rib_nondim_y_upper, front_rib_nondim_y_lower, rear_rib_nondim_y_lower
-
+    return G 

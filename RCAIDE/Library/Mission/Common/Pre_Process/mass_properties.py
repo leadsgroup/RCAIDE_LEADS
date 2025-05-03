@@ -69,7 +69,7 @@ def mass_properties(mission):
                         + weights_analysis.vehicle.mass_properties.weight_breakdown.operational_items.total 
 
                     if weights_analysis.vehicle.mass_properties.payload == 0 or weights_analysis.vehicle.mass_properties.fuel == 0:
-                        print('Payload or Fuel Weight Not Defined Assuming Takeoff Weight is MTOW')
+                        print('Warning: Payload or fuel weight not defined; assuming takeoff weight is MTOW')
                         weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff
 
                     else:
@@ -81,8 +81,7 @@ def mass_properties(mission):
                                 raise AssertionError('Prescribed fuel is greater than maxmimum fuel')
 
                         weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.operating_empty \
-                             + weights_analysis.vehicle.mass_properties.payload \
-                                                                            + weights_analysis.vehicle.mass_properties.fuel
+                             + weights_analysis.vehicle.mass_properties.payload + weights_analysis.vehicle.mass_properties.fuel
                         weights_analysis.vehicle.mass_properties.max_zero_fuel = weights_analysis.vehicle.mass_properties.operating_empty \
                              + weights_analysis.vehicle.mass_properties.max_payload 
                         if weights_analysis.print_weight_analysis_report:
@@ -124,10 +123,10 @@ def mass_properties(mission):
                             print(f"{'Max Takeoff Weight':<25}{weights_analysis.vehicle.mass_properties.weight_breakdown.get('max_takeoff', 0):>15.2f}")
                             print("\n===============================\n")
                 else:
-                    print('Takeoff Weight Prescribed skipping weight analysis')        
+                    print('\n Takeoff Weight Prescribed skipping weight analysis')        
 
                 if weights_analysis.vehicle.mass_properties.takeoff > weights_analysis.vehicle.mass_properties.max_takeoff:
-                    print('Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
+                    print('\n Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
 
                 # CG Location  
                 if weights_analysis.settings.update_center_of_gravity:
