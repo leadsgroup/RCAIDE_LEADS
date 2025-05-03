@@ -18,8 +18,7 @@ from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_p
 def geometry(mission):
     """
   
-    """
-     
+    """ 
     last_tag = None
     for tag,segment in mission.segments.items():  
         if hasattr(segment.analyses, 'geometry') and segment.analyses.geometry is not None:
@@ -59,8 +58,8 @@ def geometry(mission):
                 # ----------------------------
                 # Compute Fuel Volume to be added in next PR
                 # ----------------------------
-                #if segment.analyses.geometry.update_fuel_volume:
-                    #compute_fuel_volume(vehicle, update_max_fuel=False)
+                if segment.analyses.geometry.update_fuel_volume:
+                    compute_fuel_volume(vehicle, update_max_fuel=False)
                 
                 last_tag = tag 
 
