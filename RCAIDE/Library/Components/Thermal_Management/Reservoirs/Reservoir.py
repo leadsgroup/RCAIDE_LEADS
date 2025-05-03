@@ -105,7 +105,7 @@ class Reservoir(Component):
         append_reservoir_conditions(self, segment, coolant_line)
         return
     
-    def append_segment_conditions(self, segment, coolant_line, conditions):
+    def append_segment_conditions(self, segment, coolant_line):
         """
         Adds specific segment conditions to the reservoir analysis.
 
@@ -118,7 +118,7 @@ class Reservoir(Component):
         conditions : Data
             Operating conditions for the segment
         """
-        append_reservoir_segment_conditions(self, segment, coolant_line, conditions)
+        append_reservoir_segment_conditions(self, segment, coolant_line)
         return    
 
     def compute_reservior_coolant_temperature(self, state, coolant_line, delta_t, t_idx):
