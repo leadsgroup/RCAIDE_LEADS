@@ -11,7 +11,7 @@ import plotly.graph_objects as go
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------  -Common
-def contour_surface_slice(x, y, z, values, color_scale, showscale = False, 
+def contour_surface_slice(x, y, z, values, color_scale, alpha =1, showscale = False, 
                          colorbar_title = None, colorbar_location = 'right', 
                          colorbar_orientation = 'v'):
     """
@@ -64,17 +64,22 @@ def contour_surface_slice(x, y, z, values, color_scale, showscale = False,
     * Input arrays are 2D and of matching dimensions
     * Values array corresponds to surface points
     * Color scale is valid for plotly
+    
     """
-    return go.Surface(
-        x=x, 
-        y=y, 
-        z=z, 
-        surfacecolor=values, 
-        colorscale=color_scale, 
-        showscale=showscale, 
-        colorbar=dict(
-            title=dict(text=colorbar_title),  # Use a dictionary for title
-            orientation="v"  # Vertical orientation (default)
+    if alpha < 0.3:
+        opacityscale = 'extremes'
+    elif alpha >  0.3 and  alpha < 1.0:
+        opacityscale = 'min'
+    else:
+        opacityscale = 'normalized'
+    
+    data =  go.Surface( x=x,   y=y,  z=z,
+            surfacecolor=values, 
+            colorscale=color_scale, 
+            showscale=showscale,
+            opacityscale = opacityscale, 
+            colorbar=dict( title=dict(text=colorbar_title),   orientation="v" )
         )
-    )
+    
+    return  data
    

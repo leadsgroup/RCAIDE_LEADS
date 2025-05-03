@@ -22,7 +22,7 @@ def plot_propulsor_throttles(results,
                              show_legend = True,
                              save_filename = "Propulsor_Throttles" ,
                              file_type = ".png",
-                             width = 11, height = 7):
+                             width = 5.5, height = 4):
     """
     Creates a plot showing throttle settings for all propulsors throughout the flight mission.
 

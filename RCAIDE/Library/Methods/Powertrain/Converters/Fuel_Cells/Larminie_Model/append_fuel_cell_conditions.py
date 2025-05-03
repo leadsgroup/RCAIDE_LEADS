@@ -47,7 +47,7 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
     
     ones_row = segment.state.ones_row  
                                              
-    bus_conditions                                                                                 = segment.state.conditions.energy[bus.tag]        
+    bus_conditions                                                                                 = segment.state.conditions.energy.busses[bus.tag]
     bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag]                                           = Conditions()
     bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell                                 = Conditions()
     bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.inputs                          = Conditions()
@@ -98,7 +98,7 @@ def append_fuel_cell_segment_conditions(fuel_cell_stack, bus, conditions, segmen
     """ 
     fuel_cell_conditions = conditions[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
     if segment.state.initials:  
-        fuel_cell_initials                                   = segment.state.initials.conditions.energy[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]    
+        fuel_cell_initials                                   = segment.state.initials.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
         fuel_cell_conditions.temperature[:,0]                = fuel_cell_initials.temperature[-1,0]
         fuel_cell_conditions.cell.temperature[:,0]           = fuel_cell_initials.cell.temperature[-1,0]     
     return
@@ -106,6 +106,6 @@ def append_fuel_cell_segment_conditions(fuel_cell_stack, bus, conditions, segmen
 def reuse_stored_fuel_cell_data(fuel_cell_stack,state,bus,stored_results_flag, stored_fuel_cell_stack_tag):
     '''Reuses results from one propulsor for identical fuel cells     
     ''' 
-    state.conditions.energy[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag] = deepcopy(state.conditions.energy[bus.tag].fuel_cell_stacks[stored_fuel_cell_stack_tag])
+    state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag] = deepcopy(state.conditions.energy.busses[bus.tag].fuel_cell_stacks[stored_fuel_cell_stack_tag])
      
     return

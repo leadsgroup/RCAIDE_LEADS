@@ -104,7 +104,7 @@ def plot_battery_module_C_rates(results,
                 if b_i == 0 or bus.identical_battery_modules == False:
                     for i in range(len(results.segments)):  
                         time                  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
-                        battery_conditions    = results.segments[i].conditions.energy[bus.tag].battery_modules[battery.tag]     
+                        battery_conditions    = results.segments[i].conditions.energy.busses[bus.tag].battery_modules[battery.tag]
                         module_energy         = battery_conditions.energy[:,0]
                         module_volts          = battery_conditions.voltage_under_load[:,0] 
                         module_current        = battery_conditions.current[:,0]  

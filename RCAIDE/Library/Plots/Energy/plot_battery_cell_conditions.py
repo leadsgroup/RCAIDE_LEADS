@@ -104,7 +104,7 @@ def plot_battery_cell_conditions(results,
                 if b_i == 0 or bus.identical_battery_modules == False:
                     for i in range(len(results.segments)):  
                         time    = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
-                        battery_conditions  = results.segments[i].conditions.energy[bus.tag].battery_modules[battery.tag]    
+                        battery_conditions  = results.segments[i].conditions.energy.busses[bus.tag].battery_modules[battery.tag]
                         cell_power          = battery_conditions.cell.power[:,0]
                         cell_energy         = battery_conditions.cell.energy[:,0]
                         cell_volts          = battery_conditions.cell.voltage_under_load[:,0]

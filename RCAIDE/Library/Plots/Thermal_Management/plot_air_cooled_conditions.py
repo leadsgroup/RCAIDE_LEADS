@@ -36,7 +36,7 @@ def plot_air_cooled_conditions(air_cooled, results, coolant_line,
         RCAIDE results data structure containing:
             * segments[i].conditions.frames.inertial.time[:,0]
                 Time history for each segment
-            * segments[i].conditions.energy[coolant_line.tag][air_cooled.tag]
+            * segments[i].conditions.energy.coolant_lines[coolant_line.tag][air_cooled.tag]
                 Heat exchanger performance data containing:
                     * effectiveness[:,0]
                         Heat exchanger effectiveness
@@ -120,7 +120,7 @@ def plot_air_cooled_conditions(air_cooled, results, coolant_line,
                 if b_i == 0 or bus.identical_battery_modules == False:
                     for i in range(len(results.segments)): 
                         time                       = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
-                        air_cooled_conditions      = results.segments[i].conditions.energy[coolant_line.tag][air_cooled.tag]   
+                        air_cooled_conditions      = results.segments[i].conditions.energy.coolant_lines[coolant_line.tag][air_cooled.tag]
                         effectiveness              = air_cooled_conditions.effectiveness[:,0]
                         total_heat_removed         = air_cooled_conditions.total_heat_removed[:,0] 
                         

@@ -102,9 +102,9 @@ def plot_battery_temperature(results,
             for b_i, battery in enumerate(bus.battery_modules):
                 if b_i == 0 or bus.identical_battery_modules == False:
                     for i in range(len(results.segments)): 
-                        bus_results         = results.segments[i].conditions.energy[bus.tag]
+                        bus_results         = results.segments[i].conditions.energy.busses[bus.tag]
                         time                = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min                      
-                        battery_conditions  = results.segments[i].conditions.energy[bus.tag].battery_modules[battery.tag]  
+                        battery_conditions  = results.segments[i].conditions.energy.busses[bus.tag].battery_modules[battery.tag]
                         cell_temp           = battery_conditions.cell.temperature[:,0]
                         cell_charge         = battery_conditions.cell.charge_throughput[:,0]
                         pack_Q              = bus_results.heat_energy_generated[:,0]

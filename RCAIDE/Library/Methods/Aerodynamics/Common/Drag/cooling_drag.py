@@ -63,7 +63,7 @@ def cooling_drag(state,settings,geometry):
                 if tag == 'heat_exchangers':
                     for heat_exchanger in  item:
                         # unpack
-                        HEX_results                = conditions.energy[coolant_line.tag][heat_exchanger.tag]
+                        HEX_results                = conditions.energy.coolant_lines[coolant_line.tag][heat_exchanger.tag]
                         mass_flow_hex              = HEX_results.air_mass_flow_rate 
                         hex_pressure_diff          = HEX_results.pressure_diff_air
                         

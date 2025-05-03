@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------   
-def plot_3d_nacelle(plot_data, nacelle, tessellation = 24, number_of_airfoil_points = 21, color_map = 'darkmint'):
+def plot_3d_nacelle(plot_data, nacelle, tessellation = 24, number_of_airfoil_points = 21, color_map = 'darkmint',alpha=1):
     """
     Creates a 3D visualization of a nacelle surface using tessellated panels.
 
@@ -76,7 +76,7 @@ def plot_3d_nacelle(plot_data, nacelle, tessellation = 24, number_of_airfoil_poi
                  [G.PTS[i_seg  ,i_tes+1,2],G.PTS[i_seg+1,i_tes+1,2]]])
              
             values = np.zeros_like(X) 
-            verts = contour_surface_slice(X, Y, Z ,values,color_map)
+            verts = contour_surface_slice(X,Y,Z,values,color_map,alpha)
             plot_data.append(verts)    
 
     return plot_data

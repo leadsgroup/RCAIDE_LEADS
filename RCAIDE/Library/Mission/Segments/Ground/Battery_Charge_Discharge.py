@@ -76,14 +76,33 @@ def initialize_conditions(segment):
     """    
     t_nondim   = segment.state.numerics.dimensionless.control_points
 
+    vehicle = segment.analyses.energy.vehicle
+
+    for network in vehicle.networks:
+        for bus in  network.busses:
+            bus.append_operating_conditions(segment)
+            for battery_module in  bus.battery_modules:
+                battery_module.append_operating_conditions(segment,bus)
+
+            for fuel_cell_stack in  bus.fuel_cell_stacks:
+                fuel_cell_stack.append_operating_conditions(segment,bus)
+
+            for tag, bus_item in bus.items():
+                if issubclass(type(bus_item), RCAIDE.Library.Components.Component):
+                    bus_item.append_operating_conditions(segment,bus)
+
+            for fuel_tank in  bus.fuel_tanks:
+                fuel_tank.append_operating_conditions(segment,bus)
+
+
     if isinstance(segment, RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
-        for network in segment.analyses.energy.vehicle.networks:
+        for network in vehicle.networks:
             time =  []
             for bus in  network.busses:
                 t=0
                 if segment.state.initials.keys():
                     end_of_flight_soc = 1
-                    for battery_module in segment.state.conditions.energy[bus.tag].battery_modules:
+                    for battery_module in segment.state.conditions.energy.busses[bus.tag].battery_modules:
                         end_of_flight_soc = min(end_of_flight_soc,battery_module.cell.state_of_charge[-1])
                 else:
                     end_of_flight_soc =  segment.initial_battery_state_of_charge
