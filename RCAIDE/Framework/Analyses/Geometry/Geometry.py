@@ -1,4 +1,4 @@
-# Planet.py
+# RCAIDE/Framework/Analyses/Geometry/Geometry.py
 #
 # Created:  
 # Modified: Apr 2025, S Shekar
@@ -13,7 +13,7 @@ from RCAIDE.Framework.Analyses import Analysis
 #  Analysis
 # ----------------------------------------------------------------------
 class Geometry(Analysis):
-    """ RCAIDE.Framework.Analyses.Planet()
+    """ RCAIDE.Framework.Analyses.Geometry()
     """
     
     def __defaults__(self):
