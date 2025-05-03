@@ -239,6 +239,6 @@ def compute_fuel_system_weight(vehicle, NENG):
         for fuel_line in network.fuel_lines:
             for fuel_tank in fuel_line.fuel_tanks:
                 Nt +=1
-                Vt += fuel_tank.volume / Units["gallon"]
+                Vt += fuel_tank.internal_volume / Units["gallon"]
     WFSYS = 2.405 * Vt**0.606 * 0.5 * Nt**0.5 
     return WFSYS * Units.lbs

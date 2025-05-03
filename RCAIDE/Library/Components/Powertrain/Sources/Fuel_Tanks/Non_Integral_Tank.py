@@ -67,7 +67,7 @@ class Non_Integral_Tank(Fuel_Tank):
         self.mass_properties.empty_mass  = 0.0   
         self.secondary_fuel_flow         = 0.0 
         self.fuel                        = None 
-        self.wing                        = None
+        self.wing                        = None 
         self.fuselage                    = None
 
     def __init__ (self, compoment=None):
@@ -76,10 +76,10 @@ class Non_Integral_Tank(Fuel_Tank):
         """ 
         if compoment is not None:
             if isinstance(compoment, RCAIDE.Library.Components.Wings.Wing): 
-                self.wing      = compoment          
+                self.wing      = compoment 
             if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage): 
-                self.fuselage     = compoment             
-
+                self.fuselage     = compoment           
+       
     def append_operating_conditions(self,segment,fuel_line):  
         """
         Append fuel tank operating conditions for a flight segment

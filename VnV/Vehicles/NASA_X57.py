@@ -30,7 +30,6 @@ def vehicle_setup(rotor_type):
     vehicle                                           = RCAIDE.Vehicle()
     vehicle.tag                                       = 'X57_Maxwell_Mod2' 
     vehicle.mass_properties.max_takeoff               = 2712. * Units.pounds
-    vehicle.mass_properties.takeoff                   = 2712. * Units.pounds
     vehicle.mass_properties.max_zero_fuel             = 2712. * Units.pounds 
     vehicle.mass_properties.max_payload               = 50.  * Units.pounds  #
     

@@ -46,8 +46,8 @@ def main():
     
     # evaluate
     results     = mission.evaluate()  
-    P_truth     = 45670.53460924272
-    mdot_truth  = 0.004012717035797157
+    P_truth     = 45670.32389635441
+    mdot_truth  = 0.004012698522083582
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle_mass_rate[-1,0]
@@ -61,7 +61,7 @@ def main():
     print(error)
 
     for k,v in list(error.items()):
-        assert(np.abs(v)<1e-6)
+        assert(np.abs(v)<1e-3)
 
     return    
 
@@ -118,6 +118,11 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis

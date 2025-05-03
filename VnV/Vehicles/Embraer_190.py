@@ -136,9 +136,7 @@ def vehicle_setup():
     tip_airfoil.coordinate_file   = rel_path + 'Airfoils' + separator + 'B737d.txt'
     segment.append_airfoil(tip_airfoil)
     wing.segments.append(segment)       
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)        
+   
 
     # control surfaces -------------------------------------------
     flap                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap() 
@@ -173,7 +171,10 @@ def vehicle_setup():
     wing = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag = 'horizontal_stabilizer'
     wing.areas.reference         = 26.0
+    wing.chords.root             = 3.6
+    wing.chords.tip              = 0.72
     wing.aspect_ratio            = 5.5
+    wing.spans.projected         = 12
     wing.sweeps.quarter_chord    = 34.5 * Units.deg
     wing.thickness_to_chord      = 0.1
     wing.taper                   = 0.2
@@ -197,8 +198,11 @@ def vehicle_setup():
     wing = RCAIDE.Library.Components.Wings.Vertical_Tail()
     wing.tag = 'vertical_stabilizer'
     wing.areas.reference         = 16.0
-    wing.aspect_ratio            =  1.7
+    wing.aspect_ratio            = 1.7
+    wing.spans.projected         = 5.21
     wing.sweeps.quarter_chord    = 35. * Units.deg
+    wing.chords.root             = 4.68
+    wing.chords.tip              = 1.45
     wing.thickness_to_chord      = 0.1
     wing.taper                   = 0.31
     wing.dihedral                = 0.00

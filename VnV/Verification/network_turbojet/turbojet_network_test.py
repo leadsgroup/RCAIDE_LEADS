@@ -33,17 +33,6 @@ def main():
 
     # vehicle data
     vehicle  = vehicle_setup()
-
-    # plot vehicle 
-    plot_3d_vehicle(vehicle, 
-                    min_x_axis_limit            = 0,
-                    max_x_axis_limit            = 60,
-                    min_y_axis_limit            = -30,
-                    max_y_axis_limit            = 30,
-                    min_z_axis_limit            = -30,
-                    max_z_axis_limit            = 30,
-                    show_figure                 = False 
-                    )
     
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
@@ -74,9 +63,9 @@ def main():
             print(val)
     
     # Truth values
-    thrust_truth     = 138533.5176593721
-    throttle_truth   = 1.1989753724063823
-    CL_truth         = 0.04712796779870372
+    thrust_truth     = 121879.42334376826
+    throttle_truth   = 0.6824462621445628
+    CL_truth         = 0.17530577886508114
     
     # Store errors 
     error = Data()
@@ -117,6 +106,13 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = False
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights

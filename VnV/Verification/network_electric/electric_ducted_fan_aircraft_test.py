@@ -32,7 +32,7 @@ def main():
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
     
     # truth values 
-    thrust_truth         = [57.356384455604505, 60.034344715791036]
+    thrust_truth         = [57.356384455604505, 61.68751602148854]
    
     for i in range(len(ducted_fan_type)):  
         # vehicle data
@@ -106,6 +106,13 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = True
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
@@ -115,7 +122,6 @@ def base_analysis(vehicle):
     aerodynamics.settings.number_of_chordwise_vortices = 5       
     aerodynamics.settings.model_fuselage               = False
     analyses.append(aerodynamics)
- 
   
     # ------------------------------------------------------------------
     #  Energy
@@ -174,7 +180,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active                  = True           
     segment.assigned_control_variables.throttle.assigned_propulsors     = [['center_propulsor','starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.throttle.initial_guess_values    = [[0.905]]    
+    segment.assigned_control_variables.throttle.initial_guess_values    = [[0.95]]    
     segment.assigned_control_variables.body_angle.active                = True        
     segment.assigned_control_variables.body_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
       

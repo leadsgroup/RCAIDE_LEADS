@@ -16,7 +16,7 @@ from scipy.interpolate import interp1d
 # ----------------------------------------------------------------------------------------------------------------------
 # update_blended_wing_body_planform 
 # ----------------------------------------------------------------------------------------------------------------------
-def update_blended_wing_body_planform(bwb_wing, update_planform = True):
+def update_blended_wing_body_planform(bwb_wing):
     '''
     
     ''' 

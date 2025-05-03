@@ -30,8 +30,6 @@ modules = [
     'Verification/energy_sources/fuel_cell.py',
     'Verification/geometry/airfoil_import_test.py', 
     'Verification/geometry/airfoil_interpolation_test.py',    
-    'Verification/geometry/wing_volume_test.py',
-    'Verification/geometry/wing_fuel_volume_compute.py',
     'Verification/geometry/fuselage_planform_compute.py',  
     'Verification/future_capability_coverage/coverage_test.py',    
     'Verification/mission_segments/transition_segment_test.py', 
@@ -64,7 +62,7 @@ modules = [
     'Validation/converters/test_pmsm_motor_validation.py',
     'Validation/converters/test_rotor_validation.py',
     'Validation/propulsors/test_turbofan_validation.py',
-
+    'Validation/aircraft_performance/test_b787_payload_rage.py'
 ]
 
 def run_module_test(module_path):

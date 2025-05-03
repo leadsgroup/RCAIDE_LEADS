@@ -11,6 +11,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data  
 from RCAIDE.Library.Plots.Common import set_axes, plot_style    
+from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties
  
 # Pacakge imports 
 import numpy as np
@@ -98,9 +99,8 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     initial_segment =  list(mission.segments.keys())[0]
     
     # perform inital weights analysis 
-    weights_analysis   = mission.segments[initial_segment].analyses.weights 
-    weights_analysis.evaluate() # evaluate weights to make sure mass variables are defined 
-    vehicle = weights_analysis.vehicle 
+    mass_properties(mission)
+    vehicle = mission.segments[initial_segment].analyses.weights.vehicle
     
     for network in vehicle.networks:
         if type(network) == RCAIDE.Framework.Networks.Fuel:  

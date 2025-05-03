@@ -7,8 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports
-import RCAIDE
+# RCAIDE imports 
 from RCAIDE.Library.Components          import Component
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 
@@ -78,23 +77,4 @@ class Fuel_Tank(Component):
             Connected fuel line component
         """
         append_fuel_tank_conditions(self,segment, fuel_line)  
-        return
-     
-
-    def append_segment(self, segment):
-        """
-        Adds a new segment to the wing's segment container.
-
-        Parameters
-        ----------
-        segment : Data
-            Wing segment to be added
-        """
-        # Assert database type
-        if not isinstance(segment,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Segments.Segment):
-            raise Exception('input component must be of type Segment')
-
-        # Store data
-        self.segments.append(segment)
-
-        return    
+        return                                          

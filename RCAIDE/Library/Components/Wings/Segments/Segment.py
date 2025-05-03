@@ -113,6 +113,8 @@ class Segment(Component):
         self.areas.wetted                        = 0.0  
          
         self.has_fuel_tank                       = False
+
+        self.reference_area_root                 = False
         
         self.structural                          = Data()  
         self.structural.rib                      = False   

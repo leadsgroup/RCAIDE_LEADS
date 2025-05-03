@@ -1,4 +1,4 @@
-# Planet.py
+# RCAIDE/Framework/Analyses/Geometry/Geometry.py
 #
 # Created:  
 # Modified: Apr 2025, S Shekar
@@ -13,7 +13,7 @@ from RCAIDE.Framework.Analyses import Analysis
 #  Analysis
 # ----------------------------------------------------------------------
 class Geometry(Analysis):
-    """ RCAIDE.Framework.Analyses.Planet()
+    """ RCAIDE.Framework.Analyses.Geometry()
     """
     
     def __defaults__(self):
@@ -37,11 +37,13 @@ class Geometry(Analysis):
             """                  
         
         
-        self.tag      = 'geometry'
-        self.vehicle  = None
-        self.settings = Data()
-        self.settings.update_fuselage_properties=False
-        self.settings.overwrite_reference = False
+        self.tag                                 = 'geometry'
+        self.vehicle                             = None
+        self.settings                            = Data()
+        self.settings.update_fuselage_properties = False
+        self.settings.overwrite_reference        = False
+        self.settings.update_wing_properties     = True
+        self.settings.update_fuel_volume         = False
 
         
         

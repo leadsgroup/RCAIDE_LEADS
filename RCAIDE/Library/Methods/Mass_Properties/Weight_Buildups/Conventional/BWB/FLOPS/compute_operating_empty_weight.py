@@ -7,8 +7,11 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import  RCAIDE
 from RCAIDE.Framework.Core import Data , Units 
-from .compute_cabin_weight          import compute_cabin_weight
 from .compute_aft_centerbody_weight import compute_aft_centerbody_weight
+from .compute_cabin_weight import compute_cabin_weight
+from .compute_systems_weight import compute_systems_weight
+from .compute_bwb_wing_weight import compute_wing_weight
+from .compute_operating_items import compute_operating_items_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport import FLOPS
 from RCAIDE.Library.Attributes.Materials.Aluminum import Aluminum
@@ -161,12 +164,12 @@ def compute_operating_empty_weight(vehicle,settings=None):
     ##-------------------------------------------------------------------------------             
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
-    W_oper = FLOPS.compute_operating_items_weight(vehicle)
+    W_oper = compute_operating_items_weight(vehicle)
     
     ##-------------------------------------------------------------------------------         
     # System Weight
     ##------------------------------------------------------------------------------- 
-    W_systems = FLOPS.compute_systems_weight(vehicle)
+    W_systems = compute_systems_weight(vehicle)
    
     for item in W_systems.keys():
         W_systems[item] *= (1. - W_factors.systems)
@@ -272,7 +275,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
         if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body):
             complexity = settings.FLOPS.complexity 
             sym_wing = generate_represenative_main_wing(wing, vehicle) 
-            W_wing = FLOPS.compute_wing_weight(vehicle, sym_wing, WPOD, complexity, settings, num_main_wings)
+            W_wing = compute_wing_weight(vehicle, sym_wing, WPOD, complexity, settings, num_main_wings)
 
             # Apply weight factor
             W_wing = W_wing * (1. - W_factors.main_wing) * (1. - W_factors.structural)
@@ -321,10 +324,9 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.structural.aft_center_body       = W_aft_centerbody
     output.empty.structural.landing_gear          = landing_gear.main +  landing_gear.nose  
     output.empty.structural.nacelle               = W_energy_network.W_nacelle* (1. - W_factors.nacelle)
-    output.empty.structural.paint = 0  # TODO reconcile FLOPS paint calculations with Raymer and RCAIDE baseline
     output.empty.structural.total = output.empty.structural.wings   + output.empty.structural.center_body + output.empty.structural.aft_center_body + output.empty.structural.landing_gear\
-                                    + output.empty.structural.paint + output.empty.structural.nacelle 
-
+                                    + output.empty.structural.nacelle 
+    
     ##-------------------------------------------------------------------------------                 
     # Accumulate Systems Weight
     ##-------------------------------------------------------------------------------
