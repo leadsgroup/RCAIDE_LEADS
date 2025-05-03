@@ -54,9 +54,14 @@ class Fuel_Tank(Component):
         Sets default values for fuel tank attributes
         """          
         self.tag                         = 'fuel_tank'
-        self.fuel_selector_ratio         = 1.0 
+        self.internal_volume             = 0.0
         self.mass_properties.empty_mass  = 0.0   
         self.secondary_fuel_flow         = 0.0
+        self.fuel_selector_ratio         = 1.0  
+        self.outer_diameter              = 0.0
+        self.wall_clearance              = 0.0
+        self.wall_thickness              = 0.0
+        self.length                      = 0.0 
         self.fuel                        = None
          
 

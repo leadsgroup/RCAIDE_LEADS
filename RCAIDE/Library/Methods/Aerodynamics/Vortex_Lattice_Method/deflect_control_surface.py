@@ -10,7 +10,7 @@
 # ---------------------------------------------------------------------- 
 import RCAIDE 
 from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Components.Wings import All_Moving_Surface
+from RCAIDE.Library.Components.Wings.All_Moving_Surface import All_Moving_Surface
 from .generate_VD_helpers import postprocess_VD
 
 import numpy as np

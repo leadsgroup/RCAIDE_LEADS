@@ -99,7 +99,7 @@ def airframe_noise(microphone_locations, segment, config, settings):
     # Unpack Geometry  
     slots      = 0 
     for wing in config.wings:
-        if type(wing) == RCAIDE.Library.Components.Wings.Main_Wing:
+        if (type(wing) == RCAIDE.Library.Components.Wings.Main_Wing) or  (type(wing) == RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             taper = wing.taper 
             Sw    = wing.areas.reference                
             bw    = wing.spans.projected               

@@ -8,8 +8,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units       
-from RCAIDE.Library.Methods.Geometry.Planform               import segment_properties    
+from RCAIDE.Framework.Core import Units         
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan  import design_turbofan    
 from RCAIDE.Library.Plots                                   import *     
  
@@ -151,9 +150,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = .1
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)    
+   
 
     # control surfaces -------------------------------------------
     slat                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
@@ -231,10 +228,7 @@ def vehicle_setup():
     segment.dihedral_outboard      = 0 * Units.degrees
     segment.sweeps.quarter_chord   = 0 * Units.degrees  
     segment.thickness_to_chord     = .1
-    wing.append_segment(segment)
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)        
+    wing.append_segment(segment)      
 
     # control surfaces -------------------------------------------
     elevator                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
@@ -314,17 +308,14 @@ def vehicle_setup():
     segment.sweeps.quarter_chord          = 0.0    
     segment.thickness_to_chord            = .1  
     wing.append_segment(segment)
-    
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)        
+           
 
     # add to vehicle
     vehicle.append_component(wing)
 
     # ################################################# Fuselage ################################################################ 
     
-    fuselage                                           = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()  
+    fuselage                                           = RCAIDE.Library.Components.Fuselages.Fuselage()  
     
     cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
     first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
@@ -640,7 +631,7 @@ def vehicle_setup():
     fuel_tank.fuel.mass_properties.mass              = vehicle.mass_properties.max_takeoff-vehicle.mass_properties.max_fuel
     fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
     fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center
-    fuel_tank.volume                                 = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.internal_volume                        = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
     fuel_line.fuel_tanks.append(fuel_tank)
     
     #------------------------------------------------------------------------------------------------------------------------------------   

@@ -19,6 +19,7 @@ RCAIDE.Library.Components.Wings.All_Moving_Surface
 
 from .Control_Surface import Control_Surface
 from .Slat            import Slat
+from .Spoiler         import Spoiler
 from .Flap            import Flap
 from .Aileron         import Aileron
 from .Elevator        import Elevator

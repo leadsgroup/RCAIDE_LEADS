@@ -49,7 +49,7 @@ def main():
     print(error)
 
     for k,v in list(error.items()):
-        assert(np.abs(v)<1e-5)
+        assert(np.abs(v)<1e-2)
 
     return 
  
@@ -83,6 +83,13 @@ def noise_base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = True
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis

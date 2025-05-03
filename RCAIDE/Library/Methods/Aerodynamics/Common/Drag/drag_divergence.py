@@ -7,7 +7,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
    
-from RCAIDE.Library.Components.Wings          import Main_Wing 
+from RCAIDE.Library.Components.Wings          import Main_Wing , Blended_Wing_Body
 
 # package imports
 import numpy as np
@@ -44,7 +44,7 @@ def drag_divergence(Mach,geometry, Cl):
     sweep_w   = 0
     high_mach = False 
     for wing in  geometry.wings:
-        if isinstance(wing, Main_Wing):  
+        if isinstance(wing, Main_Wing) or isinstance(wing, Blended_Wing_Body):  
             t_c_w     = wing.thickness_to_chord
             sweep_w   = wing.sweeps.quarter_chord
             high_mach =  wing.high_mach

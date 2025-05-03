@@ -49,10 +49,7 @@ def supersonic_wave_drag_volume_raymer(vehicle,mach,scaling_factor):
         main_wing.sweeps.leading_edge  = convert_sweep(main_wing,old_ref_chord_fraction = 0.25 ,new_ref_chord_fraction = 0.0) 
      
     for fuselage in vehicle.fuselages:
-        if type(fuselage) == RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage:
-            pass
-        else:
-            L =  np.maximum(L, fuselage.lengths.total)
+        L =  np.maximum(L, fuselage.lengths.total)
         
     LE_sweep = main_wing.sweeps.leading_edge / Units.deg
     Ae       = vehicle.maximum_cross_sectional_area

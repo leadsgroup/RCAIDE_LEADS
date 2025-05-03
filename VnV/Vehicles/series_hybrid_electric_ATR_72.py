@@ -8,7 +8,6 @@
 # RCAIDE imports 
 import RCAIDE
 from   RCAIDE.Framework.Core import Units 
-from   RCAIDE.Library.Methods.Geometry.Planform                                           import segment_properties 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator                 import design_turboelectric_generator   
 
@@ -113,11 +112,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.1
     segment.dihedral_outboard             = 0.
     segment.sweeps.quarter_chord          = 0.  
-    wing.append_segment(segment)     
-    
-    # update properties of the wing using segments 
-    wing = segment_properties(wing,update_wet_areas=True,update_ref_areas=True)
-    
+    wing.append_segment(segment)       
     # add to vehicle
     vehicle.append_component(wing)
 
@@ -225,10 +220,7 @@ def vehicle_setup():
     segment.sweeps.leading_edge           = 0 * Units.degrees   
     segment.thickness_to_chord            = 0.1
     wing.append_segment(segment)    
-
-    # update properties of the wing using segments 
-    wing = segment_properties(wing,update_wet_areas=True,update_ref_areas=True)
-    
+  
     # add to vehicle
     vehicle.append_component(wing)
 
@@ -691,7 +683,7 @@ def vehicle_setup():
     fuel_tank.fuel.mass_properties.mass              = vehicle.mass_properties.max_fuel
     fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
     fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center
-    fuel_tank.volume                                 = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.internal_volume                        = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
 
     # apend fuel tank to dataclass of fuel tanks on fuel line 
     fuel_line.fuel_tanks.append(fuel_tank) 

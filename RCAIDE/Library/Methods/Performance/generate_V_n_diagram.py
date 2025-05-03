@@ -134,7 +134,7 @@ def generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA):
     # ------------------------------
     # Computing lift-curve slope
     # ------------------------------ 
-    results =  evalaute_aircraft(vehicle,altitude,Vc) 
+    results =  evalaute_aircraft(vehicle,altitude,Vc)
     CLa     =  results.segments.cruise.conditions.static_stability.derivatives.Clift_alpha[0, 0] 
 
     # -----------------------------------------------------------
@@ -413,8 +413,8 @@ def generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA):
     return V_n_data
 
       
-def evalaute_aircraft(vehicle,altitude,Vc): 
-    
+def evalaute_aircraft(vehicle,altitude,Vc):
+
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
 
@@ -447,8 +447,14 @@ def base_analysis(vehicle):
 
        # ------------------------------------------------------------------
     #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses        = RCAIDE.Framework.Analyses.Vehicle() 
+    # ------------------------------------------------------------------
+    analyses        = RCAIDE.Framework.Analyses.Vehicle()
+    
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    analyses.append(geometry)
+    
 
     # ------------------------------------------------------------------
     #  Weights
@@ -461,18 +467,18 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------
-    aerodynamics                                      = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                              = vehicle  
-    aerodynamics.settings.use_surrogate               = False 
-    aerodynamics.settings.trim_aircraft               = False 
+    aerodynamics                                      = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.vehicle                              = vehicle
+    aerodynamics.settings.use_surrogate               = False
+    aerodynamics.settings.trim_aircraft               = False
     analyses.append(aerodynamics)
-    
-    
+
+
     # ------------------------------------------------------------------
     #  Energy
     # ------------------------------------------------------------------
     energy     = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle = vehicle  
+    energy.vehicle = vehicle
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -486,23 +492,23 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmosphere.features.planet = planet.features
-    analyses.append(atmosphere)   
+    analyses.append(atmosphere)
 
     # done!
     return analyses
 
-  
-def configs_setup(vehicle): 
+
+def configs_setup(vehicle):
     # ------------------------------------------------------------------
     #   Initialize Configurations
-    # ------------------------------------------------------------------ 
-    configs = RCAIDE.Library.Components.Configs.Config.Container() 
+    # ------------------------------------------------------------------
+    configs = RCAIDE.Library.Components.Configs.Config.Container()
     base_config                                                       = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag                                                   = 'base'     
-    configs.append(base_config)  
+    base_config.tag                                                   = 'base'
+    configs.append(base_config)
     return configs
- 
-def base_mission_setup(analyses,altitude,Vc):   
+
+def base_mission_setup(analyses,altitude,Vc):
     '''
     This sets up the nominal cruise of the aircraft
     '''

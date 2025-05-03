@@ -11,7 +11,7 @@ from copy import deepcopy
 import  RCAIDE
 
 from RCAIDE.Framework.Core import  Data
-from RCAIDE.Library.Components.Wings import All_Moving_Surface 
+from RCAIDE.Library.Components.Wings.All_Moving_Surface import All_Moving_Surface 
 from RCAIDE.Library.Components.Wings.Control_Surfaces import Aileron , Elevator , Slat , Flap , Rudder 
 from RCAIDE.Library.Methods.Geometry.Planform import populate_control_sections
 from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments

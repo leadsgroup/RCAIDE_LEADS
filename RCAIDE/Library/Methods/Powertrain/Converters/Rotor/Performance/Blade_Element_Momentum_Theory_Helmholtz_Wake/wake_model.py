@@ -150,7 +150,7 @@ def evaluate_slipstream(rotor,rotor_conditions,geometry,ctrl_pts,wing_instance=N
         nmw = 0
         # check for main wing
         for i,wing in enumerate(geometry.wings):
-            if not isinstance(wing,Wings.Main_Wing): continue
+            if not (isinstance(wing,Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body)): continue
             nmw +=1                
             wing_instance = wing
             wing_instance_idx = i

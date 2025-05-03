@@ -184,6 +184,8 @@ class Wing(Component):
         self.aerodynamic_center                = [0.0,0.0,0.0]
         self.exposed_root_chord_offset         = 0.0
         self.total_length                      = 0.0
+        
+        self.has_fuel_tank                     = False
                                                
         self.spans                             = Data()
         self.spans.projected                   = 0.0
@@ -202,7 +204,7 @@ class Wing(Component):
         self.chords.tip                        = 0.0
                                                
         self.sweeps                            = Data()
-        self.sweeps.quarter_chord              = 0.0
+        self.sweeps.quarter_chord              = None
         self.sweeps.leading_edge               = None
         self.sweeps.half_chord                 = 0.0        
                                                
@@ -224,7 +226,12 @@ class Wing(Component):
         
         self.segments                          = Container()
         self.control_surfaces                  = Container()
-        self.fuel_tanks                        = Container()
+
+        self.structural                          = Data()  
+        self.structural.rib                      = False   
+        self.structural.front_spar_percent_chord = 0.1  
+        self.structural.rear_spar_percent_chord  = 0.6  
+        self.structural.stringer_percent_chords  = []         
 
     def append_segment(self, segment):
         """
@@ -280,24 +287,6 @@ class Wing(Component):
 
         return
     
-    def append_fuel_tank(self, fuel_tank):
-        """
-        Adds a fuel tank to the wing.
-
-        Parameters
-        ----------
-        fuel_tank : Data
-            Fuel tank to be added
-        """
-        # Assert database type
-        if not isinstance(fuel_tank,Data):
-            raise Exception('input component must be of type Data()')
-
-        # Store data
-        self.fuel_tanks.append(fuel_tank)
-
-        return
- 
     def compute_moment_of_inertia(self, mass, center_of_gravity=[[0, 0, 0]], fuel_flag=False): 
         """
         Computes the moment of inertia tensor for the wing.

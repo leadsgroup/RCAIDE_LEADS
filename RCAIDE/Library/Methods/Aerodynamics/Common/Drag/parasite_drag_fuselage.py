@@ -42,21 +42,7 @@ def parasite_drag_fuselage(state,settings,fuselage):
     Returns:
         None 
     """
-    
-    if type(fuselage) == RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage: 
-        # Store data
-        results = Data(
-            wetted_area               = 0.0 , 
-            reference_area            = 1.0,
-            total                     = 0.0,
-            skin_friction             = 0.0,
-            compressibility_factor    = 0.0,
-            reynolds_factor           = 0.0,
-            form_factor               = 0.0,
-        ) 
-        state.conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag] = results
-        return  
-        
+     
     # unpack inputs   
     Sref          = fuselage.areas.front_projected
     Swet          = fuselage.areas.wetted 

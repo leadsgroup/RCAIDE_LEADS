@@ -10,7 +10,7 @@ from RCAIDE.Framework.Core                                     import Units,  Da
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_aircraft_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cuboid_moment_of_inertia
-
+from RCAIDE.Library.Methods.Geometry.Planform                  import wing_planform
 import numpy as  np
 import RCAIDE
 import sys   
@@ -33,9 +33,11 @@ def main():
 
 def Transport_Aircraft_Test():
     vehicle = transport_setup()
-    
+    for wing in vehicle.wings: 
+         wing_planform(wing,overwrite_reference =  False) 
+
     # update fuel weight to 60%
-    vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.wing_fuel_tank.fuel.mass_properties.mass = 0.6 * vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.wing_fuel_tank.fuel.mass_properties.mass
+    vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass = 0.6 * vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass
 
     # ------------------------------------------------------------------
     #   Weight Breakdown 
@@ -68,9 +70,9 @@ def Transport_Aircraft_Test():
     
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI) 
-    accepted  = np.array([[34511560.549699254, 2607978.8783662403, 3264942.719311941],
-                          [2607978.8783662403, 44472082.67654222, -1.4551915228366852e-11],
-                          [3264942.719311941, -1.4551915228366852e-11,62610504.49712051]]) 
+    accepted  = np.array([[34010396.14322192,  2809408.99192064,  3577466.46319108],
+                        [ 2809408.99192064, 43351388.86038262,        0.        ],
+                        [ 3577466.46319108,        0.        , 60799904.58760986]])
     MOI_error     = MOI - accepted
 
     # Check the errors
@@ -96,6 +98,10 @@ def General_Aviation_Test():
     # ------------------------------------------------------------------  
     weight_analysis               = RCAIDE.Framework.Analyses.Weights.Conventional() 
     weight_analysis.vehicle       = general_aviation_setup() 
+    for wing in weight_analysis.vehicle.wings: 
+         wing_planform(wing,overwrite_reference =  True) 
+         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            weight_analysis.vehicle.reference_area = wing.areas.reference
     weight_analysis.method        = 'FLOPS'
     weight_analysis.aircraft_type = 'General_Aviation'
     results                       = weight_analysis.evaluate() 
@@ -113,9 +119,9 @@ def General_Aviation_Test():
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI)
      
-    accepted  = np.array([[2859.945595755493, 17.36583331027025, 21.28699692497282],
-                          [17.36583331027025, 3742.738737133499,    0.        ],
-                          [21.28699692497282,    0.        , 2713.6487787834294]])
+    accepted  = np.array([[2871.19050815,   17.26989442,   21.19147092],
+                            [  17.26989442, 3743.05853172,    0.        ],
+                            [  21.19147092,    0.        , 2724.8281536 ]])
     
     MOI_error     = MOI - accepted
 
@@ -137,7 +143,10 @@ def General_Aviation_Test():
 
 def EVTOL_Aircraft_Test(update_regression_values):
     vehicle = EVTOL_setup(update_regression_values)
-    
+    for wing in vehicle.wings: 
+         wing_planform(wing,overwrite_reference =  True) 
+         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            vehicle.reference_area = wing.areas.reference
     # ------------------------------------------------------------------
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
@@ -164,9 +173,9 @@ def EVTOL_Aircraft_Test(update_regression_values):
     
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI) 
-    accepted  = np.array([[ 6341.318637347449,-548.1230020842031,  -508.1391636975497],
-                          [ -548.1230020842031,  10013.581940459215, -98.17629167907553],
-                          [ -508.1391636975497,  -98.17629167907553, 14937.605093100654]])
+    accepted  = np.array([[ 6362.26795447,  -549.43133391,  -510.4270585 ],
+                            [ -549.43133391, 10028.22643229,   -98.16257761],
+                            [ -510.4270585 ,   -98.16257761, 14970.09371676]])
     MOI_error     = MOI - accepted
 
     # Check the errors

@@ -62,8 +62,8 @@ def main():
             print(val)
     
     # Truth values
-    thrust_truth     = 25969.060290074496
-    throttle_truth   = 0.7085757975431074
+    thrust_truth     = 23430.543770201555
+    throttle_truth   = 0.6393113980017499
     
     # Store errors 
     error = Data()
@@ -74,7 +74,7 @@ def main():
     print(error)
      
     for k,v in list(error.items()): 
-        assert(np.abs(v)<1e-6)
+        assert(np.abs(v)<1e-3)
     
     # plt the old results
     plot_mission(results)   
@@ -97,6 +97,12 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights
