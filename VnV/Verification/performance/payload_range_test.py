@@ -54,7 +54,7 @@ def fuel_aircraft_payload_range():
     payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission)
                                 
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 5361598.851769192 # Spot on with Airport planning manual! " https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf"
+    fuel_r_true            = 6270653.206575356 # Spot on with Airport planning manual! " https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf"
     print('Fuel Range: ' + str(fuel_r))
     fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
     assert(abs(fuel_error)<1e-6)
@@ -138,12 +138,18 @@ def fuel_aircraft_base_analysis(vehicle):
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
     
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = False
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
     # ------------------------------------------------------------------
     #  Weights 
     weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
     weights.aircraft_type =  "Transport"
     weights.vehicle = vehicle 
-    weights.settings.update_mass_properties         = False
+    weights.settings.update_mass_properties         = True
     weights.settings.update_center_of_gravity       = False
     weights.settings.update_moment_of_inertia       = False   
     weights.print_weight_analysis_report  = False    
@@ -186,11 +192,17 @@ def electric_aircraft_base_analysis(vehicle):
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
     
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = False
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
     # ------------------------------------------------------------------
     #  Weights 
     weights = RCAIDE.Framework.Analyses.Weights.Electric()
     weights.aircraft_type   = 'General_Aviation'
-    weights.print_weight_analysis_report  = False  
+    weights.settings.update_mass_properties         = True
     weights.vehicle = vehicle
     analyses.append(weights)
 

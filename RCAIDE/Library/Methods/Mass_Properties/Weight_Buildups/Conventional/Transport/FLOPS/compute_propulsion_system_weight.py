@@ -18,103 +18,61 @@ import  numpy as  np
 #  Propulsion Systems Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_propulsion_system_weight(vehicle,ref_propulsor):
-    """
-    Computes the complete propulsion system weight using NASA FLOPS weight estimation 
-    method. Includes engines, nacelles, thrust reversers, and associated systems.
+    """ Calculate the weight of propulsion system, including:
+        - dry engine weight
+        - fuel system weight
+        - thurst reversers weight
+        - electrical system weight
+        - starter engine weight
+        - nacelle weight
+        - cargo containers
 
-    Parameters
-    ----------
-    vehicle : Vehicle
-        The vehicle instance containing:
-            - networks : list
-                Propulsion systems with:
-                    - propulsors : list
-                        Engine data
-                    - fuel_lines : list
-                        Fuel system data with fuel tanks
-            - design_mach_number : float
-                Design cruise Mach number
-            - mass_properties.max_zero_fuel : float
-                Maximum zero fuel weight [kg]
-            - systems.accessories : str
-                Aircraft type ('short-range', 'commuter', 'medium-range', 
-                'long-range', 'sst', 'cargo')
-    ref_propulsor : Propulsor
-        Reference engine containing:
-            - sealevel_static_thrust : float
-                Sea level static thrust [N]
-            - nacelle : Nacelle
-                Nacelle geometry with:
-                    - diameter : float
-                        Maximum diameter [m]
-                    - length : float
-                        Total length [m]
+        Assumptions:
+            1) Rated thrust per scaled engine and rated thurst for baseline are the same
+            2) Engine weight scaling parameter is 1.15
+            3) Enginge inlet weight scaling exponent is 1
+            4) Baseline inlet weight is 0 lbs as in example files FLOPS
+            5) Baseline nozzle weight is 0 lbs as in example files FLOPS
 
-    Returns
-    -------
-    output : Data
-        Container with propulsion weight breakdown:
-            - W_prop : float
-                Total propulsion system weight [kg]
-            - W_engine : float
-                Dry engine weight [kg]
-            - W_thrust_reverser : float
-                Thrust reverser weight [kg]
-            - W_starter : float
-                Starter system weight [kg]
-            - W_engine_controls : float
-                Engine controls weight [kg]
-            - W_fuel_system : float
-                Fuel system weight [kg]
-            - W_nacelle : float
-                Nacelle weight [kg]
-            - number_of_engines : int
-                Total engine count
-            - number_of_fuel_tanks : int
-                Total fuel tank count
+        Source:
+            The Flight Optimization System Weight Estimation Method
 
-    Notes
-    -----
-    Uses FLOPS correlations developed from transport aircraft database.
+        Inputs:
+            vehicle - data dictionary with vehicle properties                   [dimensionless]
+                -.design_mach_number: design mach number for cruise flight
+                -.mass_properties.max_zero_fuel: zero fuel weight               [kg]
+                -.systems.accessories: type of aircraft (short-range, commuter
+                                                        medium-range, long-range,
+                                                        sst, cargo)
+            nacelle - data dictionary with propulsion system properties 
+                -.diameter: diameter of nacelle                                 [meters]
+                -.length: length of complete engine assembly                    [meters]
+            ref_propulsor.
+                -.sealevel_static_thrust: thrust at sea level                   [N]
 
-    **Major Assumptions**
-        * Engines have a thrust to weight ratio of 5.5
-        * All nacelles are identical
-        * Number of nacelles equals number of engines
-        * Number of thrust reversers equals the number of engines unless there is an odd number of engines in which case it is N - 1
 
-    **Theory**
-    Engine weight is computed using:
-    .. math::
-        W_{eng} = THRUST/5.5
+        Outputs:
+            output - data dictionary with weights                               [kilograms]
+                    - output.W_prop: total propulsive system weight
+                    - output.W_thrust_reverser: thurst reverser weight
+                    - output.starter: starter engine weight
+                    - output.W_engine_controls: engine controls weight
+                    - output.fuel_system: fuel system weight
+                    - output.nacelle: nacelle weight
+                    - output.W_engine: dry engine weight
 
-    Nacelle weight is computed using:
-    .. math::
-        W_{nac} = 0.25N_{nac}D_{nac}L_{nac}T^{0.36}
-
-    Thrust reverser weight is computed using:
-    .. math::
-        W_{rev} = 0.034T N_{nac}
-
-    where:
-        * W_base = baseline engine weight
-        * T = sea level static thrust
-        * N_nac = number of nacelles
-        * D_nac = nacelle diameter
-        * L_nac = nacelle length
-
-    References
-    ----------
-    [1] NASA Flight Optimization System (FLOPS)
+        Properties Used:
+            N/A
     """
      
     NENG =  0 
     number_of_tanks =  0
     ref_nacelle =  None
     for network in  vehicle.networks:
-        for propulsor in network.propulsors: 
-            ref_propulsor = propulsor  
-            NENG  += 1 
+        for propulsor in network.propulsors:
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+                ref_propulsor = propulsor  
+                NENG  += 1 
             if 'nacelle' in propulsor:
                 ref_nacelle =  propulsor.nacelle   
         for fuel_line in network.fuel_lines:
@@ -122,12 +80,12 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor):
                 number_of_tanks +=  1
                   
     if ref_nacelle is not None:
-        WNAC            = compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG ) 
+        WNAC        = compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG ) 
     WFSYS           = compute_fuel_system_weight(vehicle, NENG)
     WENG            = compute_engine_weight(vehicle,ref_propulsor)
     WEC, WSTART     = compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG)
     WTHR            = compute_thrust_reverser_weight(ref_propulsor,NENG)
-    WPRO            = NENG * WENG + WFSYS + WEC + WSTART + WTHR + WNAC
+    WPRO            = NENG * WENG + WFSYS + WEC + WSTART + WTHR # Nacelle weight is not included in the propulsion system weight. it is included in the structural weight. 
 
     output                      = Data()
     output.W_prop               = WPRO

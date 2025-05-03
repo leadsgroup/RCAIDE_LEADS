@@ -9,8 +9,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units      
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan
-from RCAIDE.Library.Methods.Geometry.Planform               import wing_planform, segment_properties
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan 
 from RCAIDE.Library.Plots                 import *     
 
 # python imports 
@@ -140,9 +139,6 @@ def vehicle_setup():
     segment.dihedral_outboard     = -3.5 * Units.degrees
     segment.sweeps.quarter_chord  = 24.0 * Units.degrees
     wing.segments.append(segment)       
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)        
 
     # control surfaces -------------------------------------------
     flap                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap() 
@@ -168,8 +164,7 @@ def vehicle_setup():
     aileron.span_fraction_end     = 0.93
     aileron.deflection            = 0.0 * Units.degrees
     aileron.chord_fraction        = 0.16
-    wing.append_control_surface(aileron)     
-    wing                          = wing_planform(wing) 
+    wing.append_control_surface(aileron)      
 
     # add to vehicle
     vehicle.append_component(wing)
@@ -180,6 +175,7 @@ def vehicle_setup():
 
     wing = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag = 'horizontal_stabilizer'
+    wing.spans.projected         = 20.48
     wing.areas.reference         = 90.2
     wing.aspect_ratio            = 4.653
     wing.sweeps.quarter_chord    = 25.0 * Units.deg
@@ -195,8 +191,7 @@ def vehicle_setup():
     wing.origin                  = [[64.6,0,14.783]]
     wing.vertical                = False
     wing.symmetric               = True       
-    wing.high_lift               = False
-    wing                         = wing_planform(wing)
+    wing.high_lift               = False 
     wing.areas.exposed           = 1.0 * wing.areas.wetted 
     wing.twists.root             = 0 * Units.degrees
     wing.twists.tip              = 0 * Units.degrees    
@@ -221,10 +216,7 @@ def vehicle_setup():
     segment.dihedral_outboard      = -2.0 * Units.degrees
     segment.sweeps.quarter_chord   = 0 * Units.degrees  
     segment.thickness_to_chord     = .1
-    wing.append_segment(segment)
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)        
+    wing.append_segment(segment)      
 
     # control surfaces -------------------------------------------
     elevator                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
@@ -315,10 +307,6 @@ def vehicle_setup():
     rudder.chord_fraction        = 0.25  
     wing.append_control_surface(rudder)    
     
-    
-    # Fill out more segment properties sautomatically
-    wing = segment_properties(wing)        
-
     # add to vehicle
     vehicle.append_component(wing)
     
@@ -326,7 +314,7 @@ def vehicle_setup():
     #  Fuselage
     # ------------------------------------------------------------------
 
-    fuselage                                    = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()  
+    fuselage                                    = RCAIDE.Library.Components.Fuselages.Fuselage()  
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.0
     fuselage.lengths.nose                       = 7.4   * Units.meter
@@ -528,7 +516,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel
     #------------------------------------------------------------------------------------------------------------------------------------   
-    fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Wing_Fuel_Tank()
+    fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank()
     fuel_tank.origin                            = [[23.0,0,3.913]] # vehicle.wings.main_wing.origin   
     fuel_tank.mass_properties.center_of_gravity = [[23.0,0,3.913]] #vehicle.wings.main_wing.mass_properties.center_of_gravity    
     
@@ -539,7 +527,7 @@ def vehicle_setup():
     fuel.mass_properties.center_of_gravity      = [[23.0,0,3.913]] #vehicle.wings.main_wing.mass_properties.center_of_gravity
     fuel.internal_volume                        = fuel.mass_properties.mass/fuel.density  
     fuel_tank.fuel                              = fuel
-    fuel_tank.volume                           = fuel.internal_volume
+    fuel_tank.internal_volume                  = fuel.internal_volume
     fuel_line.fuel_tanks.append(fuel_tank) 
     
 

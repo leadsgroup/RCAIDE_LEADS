@@ -141,10 +141,8 @@ class Fuselage(Component):
 
     See Also
     --------
-    RCAIDE.Library.Components.Fuselages.Tube_Fuselage
-        Implementation for conventional tube-and-wing aircraft
-    RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage
-        Implementation for blended wing body aircraft
+    RCAIDE.Library.Components.Fuselages.Fuselage
+        Implementation for conventional tube-and-wing aircraft 
     """
     
     def __defaults__(self):
@@ -188,14 +186,15 @@ class Fuselage(Component):
         self.fineness.tail                          = 0.0  
         self.nose_curvature                         = 1.5
         self.tail_curvature                         = 1.5   
-    
-        self.fuel_tanks                             = Container()
+
+        self.has_fuel_tank                          = False     
  
         self.vsp_data                               = Data()
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
         self.vsp_data.xsec_num                      = None  # Number if XSecs in fuselage geom. 
         self.segments                               = Container()
         self.cabins                                 = Container()
+        self.cabin_offset                           = 0.0
 
         self.vsp_data                               = Data()
         self.vsp_data.xsec_id                       = ''       

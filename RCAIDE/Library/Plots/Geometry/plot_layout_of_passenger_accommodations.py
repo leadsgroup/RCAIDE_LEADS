@@ -26,7 +26,7 @@ def plot_layout_of_passenger_accommodations(fuselage,
     if  type(fuselage.layout_of_passenger_accommodations) != np.ndarray: 
         compute_layout_of_passenger_accommodations(fuselage)
         
-    LOPA = fuselage.layout_of_passenger_accommodations
+    LOPA = fuselage.layout_of_passenger_accommodations.object_coordinates
     
     fig = go.Figure() 
     # Set axes properties

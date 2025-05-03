@@ -11,7 +11,6 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units   
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine import design_internal_combustion_engine
-from RCAIDE.Library.Methods.Geometry.Planform  import segment_properties
 from RCAIDE.Library.Plots       import *  
 
 # python imports 
@@ -111,11 +110,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = .12
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)     
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)    
-    
-                                          
+                                        
     # control surfaces ------------------------------------------- 
     flap                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
     flap.tag                      = 'flap'
@@ -167,10 +162,9 @@ def vehicle_setup():
     elevator.span_fraction_end            = 0.9
     elevator.deflection                   = 0.0  * Units.deg
     elevator.chord_fraction               = 0.35
-    wing.append_control_surface(elevator)       
-
-    RCAIDE.Library.Methods.Geometry.Planform.wing_planform(wing)     
-
+    wing.append_control_surface(elevator)
+    
+    
     # add to vehicle
     vehicle.append_component(wing)
 
@@ -327,7 +321,7 @@ def vehicle_setup():
     fuel_tank.fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel_tank.fuel.mass_properties.mass                   = 319 *Units.lbs 
     fuel_tank.fuel.mass_properties.center_of_gravity      = wing.mass_properties.center_of_gravity
-    fuel_tank.volume                                      = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.internal_volume                             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
     fuel_line.fuel_tanks.append(fuel_tank)  
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor

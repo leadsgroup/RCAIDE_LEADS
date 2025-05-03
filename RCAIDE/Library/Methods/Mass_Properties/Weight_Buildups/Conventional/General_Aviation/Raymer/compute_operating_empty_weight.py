@@ -156,16 +156,16 @@ def compute_operating_empty_weight(vehicle, settings=None):
         
     """     
 
-    if settings == None: 
-        use_max_fuel_weight = True 
+    if settings == None:
+        use_max_fuel_weight = True
     else:
         use_max_fuel_weight = settings.use_max_fuel_weight
-        
+
     # Unpack inputs
     Nult        = vehicle.flight_envelope.ultimate_load 
-    TOW         = vehicle.mass_properties.max_takeoff 
+    TOW         = vehicle.mass_properties.max_takeoff
     num_pax     = vehicle.passengers
-    W_cargo     = vehicle.mass_properties.cargo 
+    W_cargo     = vehicle.mass_properties.cargo
     mach_number = vehicle.flight_envelope.design_mach_number
  
     landing_weight              = TOW

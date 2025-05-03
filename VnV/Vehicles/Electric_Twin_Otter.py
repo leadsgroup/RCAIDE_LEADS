@@ -9,8 +9,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core                                                                import Units
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
-from RCAIDE.Library.Methods.Geometry.Planform                                             import wing_segmented_planform
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor 
 from RCAIDE.Library.Methods.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger  import design_cross_flow_heat_exchanger
 from RCAIDE.Library.Methods.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel       import design_wavy_channel
 
@@ -107,10 +106,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
     segment.append_airfoil(airfoil)
-    wing.append_segment(segment)    
-    
-    # Fill out more segment properties automatically
-    wing = wing_segmented_planform(wing)           
+    wing.append_segment(segment)
     
     # add to vehicle
     vehicle.append_component(wing)
@@ -173,7 +169,7 @@ def vehicle_setup(cell_chemistry, btms_type):
 
  
     # ##########################################################   Fuselage  ############################################################    
-    fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage() 
+    fuselage = RCAIDE.Library.Components.Fuselages.Fuselage() 
 
     # define cabin
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 

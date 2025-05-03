@@ -11,8 +11,7 @@
 
 import RCAIDE
 from RCAIDE.Framework.Core import Units 
-from RCAIDE.Library.Plots import *      
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform 
+from RCAIDE.Library.Plots import *       
 
 import sys
 import matplotlib.pyplot as plt 
@@ -35,7 +34,6 @@ def main():
     vehicle                           = vehicle_setup()
     vehicle.wings.main_wing.control_surfaces.flap.configuration_type = 'triple_slotted'  
     vehicle.wings.main_wing.high_lift = True
-    vehicle.wings.main_wing           = wing_planform(vehicle.wings.main_wing)
     
     # Set up configs
     configs           = configs_setup(vehicle) 
@@ -63,6 +61,13 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = True
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis

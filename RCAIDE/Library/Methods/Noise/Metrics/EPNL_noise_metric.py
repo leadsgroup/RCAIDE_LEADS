@@ -31,7 +31,7 @@ def EPNL_noise_metric(PNLT):
      
     Properties Used:
         N/A  
-    """           
+    """
     # Maximum PNLT on the time history data    
     PNLT_max = np.max(PNLT,axis=0)
     n_mic_x  = len(PNLT[0,:, 0])
@@ -68,4 +68,4 @@ def EPNL_noise_metric(PNLT):
             # Final EPNL calculation
             EPNL[n_x][n_y] = PNLT_max[n_x][n_y]+duration_correction
     
-    return EPNL   
+    return EPNL

@@ -11,6 +11,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data  
 from RCAIDE.Library.Plots.Common import set_axes, plot_style    
+from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties
  
 # Pacakge imports 
 import numpy as np
@@ -98,9 +99,8 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     initial_segment =  list(mission.segments.keys())[0]
     
     # perform inital weights analysis 
-    weights_analysis   = mission.segments[initial_segment].analyses.weights 
-    weights_analysis.evaluate() # evaluate weights to make sure mass variables are defined 
-    vehicle = weights_analysis.vehicle 
+    mass_properties(mission)
+    vehicle = mission.segments[initial_segment].analyses.weights.vehicle
     
     for network in vehicle.networks:
         if type(network) == RCAIDE.Framework.Networks.Fuel:  
@@ -136,17 +136,17 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         OEW = mass.operating_empty
 
     if not mass.max_zero_fuel:
-        raise AttributeError("Error calculating Payload Range Diagram: Vehicle MZFW not defined") 
+        raise AttributeError("Error calculating Payload Range Diagram: Vehicle MZFW not defined")
     else:
         MZFW = vehicle.mass_properties.max_zero_fuel
 
     if not mass.max_takeoff:
-        raise AttributeError("Error calculating Payload Range Diagram: Vehicle MTOW not defined") 
+        raise AttributeError("Error calculating Payload Range Diagram: Vehicle MTOW not defined")
     else:
         MTOW = vehicle.mass_properties.max_takeoff
 
     if mass.max_payload == 0:
-        MaxPLD = MZFW - OEW  
+        MaxPLD = MZFW - OEW
     else:
         MaxPLD = vehicle.mass_properties.max_payload
         MaxPLD = min(MaxPLD , MZFW - OEW) #limit in structural capability
@@ -225,7 +225,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
                 break
 
         # Allocating resulting range in ouput array.
-        R[i] =  results.segments[-1].conditions.frames.inertial.position_vector[-1,0]   
+        R[i] =  results.segments[-1].conditions.frames.inertial.position_vector[-1,0]
 
     # Inserting point (0,0) in output arrays
     R.insert(0,0)
@@ -270,7 +270,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         set_axes(axis_2) 
         fig.tight_layout()
 
-    return payload_range 
+    return payload_range
  
 def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram):
     """Calculates and plots the payload range diagram for an electric aircraft by modifying the

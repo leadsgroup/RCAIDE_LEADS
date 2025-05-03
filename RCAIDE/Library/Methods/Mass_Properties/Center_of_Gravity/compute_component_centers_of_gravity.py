@@ -54,7 +54,7 @@ def compute_component_centers_of_gravity(vehicle, nose_load = 0.06):
         if wing.sweeps.leading_edge == None:
             wing.sweeps.leading_edge = convert_sweep(wing,old_ref_chord_fraction = 0.25 ,new_ref_chord_fraction = 0.0)
         
-        if isinstance(wing,C.Wings.Main_Wing):
+        if isinstance(wing,C.Wings.Main_Wing) or isinstance(wing,C.Wings.Blended_Wing_Body):
             wing.mass_properties.center_of_gravity[0][0] = .05*wing.chords.mean_aerodynamic +wing.aerodynamic_center[0]           
             
         elif isinstance(wing,C.Wings.Horizontal_Tail):
@@ -101,6 +101,9 @@ def compute_component_centers_of_gravity(vehicle, nose_load = 0.06):
     if len(vehicle.fuselages) == 0.:
         for wing in vehicle.wings:
             if isinstance(wing,C.Wings.Main_Wing):
+                if isinstance(wing,C.Wings.Blended_Wing_Body): 
+                    length       = wing.chords.root
+                    length_scale = length 
                 b = wing.chords.root
                 if b>length_scale:
                     length_scale = b

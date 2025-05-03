@@ -10,6 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core  import Data,Units 
 from RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl import find_take_off_weight_given_tofl
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 
 # package imports
 import numpy as np
@@ -29,6 +30,10 @@ from Embraer_190 import vehicle_setup, configs_setup
 
 def main():   
     vehicle = vehicle_setup()
+    for wing in vehicle.wings: 
+         wing_planform(wing,overwrite_reference =  True) 
+         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            vehicle.reference_area = wing.areas.reference
     configs = configs_setup(vehicle)
     
     # --- Takeoff Configuration ---

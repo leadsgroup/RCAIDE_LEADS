@@ -29,8 +29,8 @@ def main():
          
     battery_types = ['lithium_ion_nmc', 'lithium_ion_lfp']
     btms_types    = ['Liquid_Cooled_Wavy_Channel', 'Air_Cooled', None] 
-    CL_true       = [[ 0.8067419361401738, 0.8067419361401738  , 0.8067419361401738],
-                     [ 0.8067419361401732 ,0.8067419361401734  ,0.8067419361401734]] 
+    CL_true       = [[ 0.8067527163616551, 0.8067527163616532 , 0.8067527163616532],
+                     [ 0.8067527163616521, 0.806752716361654  , 0.806752716361654]] 
     # vehicle data
     for i , battery_type in enumerate(battery_types):
         for j , btms_type in enumerate(btms_types):
@@ -76,6 +76,13 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
+    
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = False
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis  

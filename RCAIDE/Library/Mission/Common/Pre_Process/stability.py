@@ -8,7 +8,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports  
 import  RCAIDE 
-from RCAIDE.Library.Methods.Geometry.Planform  import wing_segmented_planform, wing_planform
+from RCAIDE.Library.Methods.Geometry.Planform  import wing_planform
 # ----------------------------------------------------------------------------------------------------------------------
 #  stability
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -52,9 +52,8 @@ def stability(mission):
 
     **Wing Processing**
     
-    For each wing:
-        - If multi-segmented: Uses wing_segmented_planform
-        - If single segment: Uses wing_planform
+    For each wing: 
+        - Uses wing_planform
 
     **Major Assumptions**
         * Valid wing geometry definitions
@@ -73,11 +72,8 @@ def stability(mission):
         if segment.analyses.stability !=  None: 
             # ensure all properties of wing are computed before drag calculations  
             vehicle =  segment.analyses.stability.vehicle
-            for wing in  vehicle.wings: 
-                if len(wing.segments) > 1: 
-                    wing_segmented_planform(wing)
-                else:
-                    wing_planform(wing)
+            for wing in  vehicle.wings:  
+                wing_planform(wing)
                     
             if  (last_tag!=  None) and  ('compute' in mission.segments[last_tag].analyses.stability.process.keys()): 
                 segment.analyses.stability.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.stability.process.compute.lift.inviscid_wings

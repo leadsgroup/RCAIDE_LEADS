@@ -40,22 +40,15 @@ def fuselage_planform(fuselage, circular_cross_section = True):
     Properties Used:
     N/A
     """
-    # size cabins 
-    compute_layout_of_passenger_accommodations(fuselage)
      
     nose_fineness   = fuselage.fineness.nose
     tail_fineness   = fuselage.fineness.tail
     
-    cabin_length    = 0
-    fuselage_width  = 0
-    for cabin in fuselage.cabins: 
-        cabin_length += cabin.length
-        fuselage_width =  np.maximum(fuselage_width, cabin.width)
+    fuselage_width  = fuselage.width 
         
     nose_length     = nose_fineness * fuselage_width
     tail_length     = tail_fineness * fuselage_width 
-    fuselage_length = cabin_length + nose_length + tail_length 
-    fuselage.lengths.total = fuselage_length    
+    cabin_length    = fuselage.lengths.total -  nose_length - tail_length
 
     if circular_cross_section:
         fuselage_height = fuselage_width
@@ -79,12 +72,12 @@ def fuselage_planform(fuselage, circular_cross_section = True):
     Deff = (a+b)*(64.-3.*R**4)/(64.-16.*R**2)
     wetted_area += 0.75*np.pi*Deff * (nose_length + tail_length)
     
-    # update
+
     fuselage.lengths.nose          = nose_length
     fuselage.lengths.tail          = tail_length
-    fuselage.lengths.cabin         = cabin_length
-    fuselage.lengths.total         = fuselage_length
+    fuselage.lengths.cabin         = cabin_length 
     fuselage.areas.wetted          = wetted_area
     fuselage.areas.front_projected = cross_section_area
     fuselage.effective_diameter    = Deff 
-    return fuselage
+
+    return 

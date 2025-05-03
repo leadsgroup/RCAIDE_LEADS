@@ -5,73 +5,65 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Imports
 # ---------------------------------------------------------------------------------------------------------------------- 
-
-from RCAIDE.Framework.Core import Units
-
+import RCAIDE
+from RCAIDE.Framework.Core import Units  
+import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Cabin Weight 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_cabin_weight(cabin_area, TOGW):
-    """
-    Computes the structural weight of the pressurized cabin section of a BWB aircraft using 
-    regression-based methods derived from FEA studies.
-
-    Parameters
-    ----------
-    cabin_area : float
-        Planform area of pressurized passenger cabin [m²]
-    TOGW : float
-        Takeoff gross weight of aircraft [kg]
-
-    Returns
-    -------
-    W_cabin : float
-        Estimated structural weight of BWB pressurized cabin section [kg]
-
-    Notes
-    -----
-    Uses regression equations derived from detailed FEA studies by Bradley to estimate the structural
-    weight required for the non-circular pressure vessel of a BWB cabin [1].
-
-    **Major Assumptions**
-        * Pressurized sandwich composite structure
-        * Ultimate cabin pressure differential of 18.6 psi
-        * Critical load case is 2.5g maneuver at maximum TOGW
-        * Uniform pressure distribution
-        * Non-buckling design
-        * Structural efficiency similar to baseline FEA model
-
-    **Theory**
-    Weight is computed using:
-    .. math::
-        W_{cabin} = 5.698865 \\cdot 0.316422 \\cdot W^{0.166552} \\cdot S_{cab}^{1.061158}
-
-    where:
-        * W = takeoff weight
-        * S_cab = cabin planform area
-
-    The equation coefficients account for:
-        * Non-circular pressure vessel penalties
-        * Composite material properties
-        * Combined pressure and flight loads
-        * Minimum gauge requirements
-
-    References
-    ----------
-    [1] Bradley, K. R., "A Sizing Methodology for the Conceptual Design of Blended-Wing-Body Transports," NASA/CR-2004-213016, 2004.
-    See Also
-    --------
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_operating_empty_weight
-    """       
+def compute_cabin_weight(vehicle,settings):
+    """ Weight estimate for the cabin (forward section of centerbody) of a BWB.
+    Regression from FEA by K. Bradley (George Washington University).
     
-    # convert to imperial units
-    S_cab    = cabin_area / Units.feet ** 2.0
-    W        = TOGW       / Units.pounds
+    Assumptions:
+        -The centerbody uses a pressurized sandwich composite structure
+        -Ultimate cabin pressure differential of 18.6psi
+        -Critical flight condition: +2.5g maneuver at maximum TOGW
     
-    W_cabin = 5.698865 * 0.316422 * (W ** 0.166552) * S_cab ** 1.061158
+    Sources:
+        Bradley, K. R., "A Sizing Methodology for the Conceptual Design of 
+        Blended-Wing-Body Transports," NASA/CR-2004-213016, 2004.
+        ***** ADD SOURCE********
+    
+    Inputs:
+        cabin_area - the planform area representing the passenger cabin  [meters**2]
+        TOGW - Takeoff gross weight of the aircraft                      [kilograms]
+    Outputs:
+        W_cabin - the estimated structural weight of the BWB cabin      [kilograms]
+            
+    Properties Used:
+    N/A
+    """ 
+    
+    fus_seg_max_percent_span = 0
+    root_chord               = 0
+    span                     = 0
+    segment_le_sweeps        = []
+    for wing in  vehicle.wings:
+
+        if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            A_CB =  wing.areas.center_body / Units['feet^2'] 
+            span =  np.maximum(span,wing.spans.projected )
+            root_chord =  np.maximum(root_chord,wing.chords.root)
+            for segment in wing.segments:
+                if isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
+                    fus_seg_max_percent_span =  np.maximum(fus_seg_max_percent_span,segment.percent_span_location  )
+                    segment_le_sweeps.append(segment.sweeps.leading_edge/Units.degree)
+                  
+    
+     # convert to imperial units
+    TOGW     =  vehicle.mass_properties.max_takeoff*9.81/ Units.lbf
+    THETA_CB = np.sum(np.array(segment_le_sweeps ))/ len(segment_le_sweeps)
+
+    if settings.PRSEUS:
+        SR  = fus_seg_max_percent_span
+        FR  = fus_seg_max_percent_span*span/ root_chord   
+        W_cabin_lbf = 1.06 * 1.20 * 105.95 * (A_CB**0.97) * (TOGW**0.0021) * (FR**-0.75) * (THETA_CB**-0.62) * (SR**-0.0008)
+        W_cabin     = W_cabin_lbf * Units.lbf / 9.81
+    else: 
+        W_cabin = 5.698865 * 0.316422 * (TOGW ** 0.166552) * A_CB ** 1.061158
     
     # convert to SI units
     W_cabin = W_cabin * Units.pounds
     
-    return W_cabin
+    return W_cabin 
