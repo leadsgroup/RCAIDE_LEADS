@@ -4,10 +4,10 @@ from tqdm import tqdm
 
 def sequential_segments(mission):
     print(r"""
-    +----------------------------------------------------+
-    |              MISSION SOLVER INITIATED              |
-    +----------------------------------------------------+
-    """)
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
+          """)
     segments = list(mission.segments.items())
     last_state = None
 
@@ -39,7 +39,7 @@ def sequential_segments(mission):
 
             # the moment we see a non-converged segment, flip to red
             if segment.state.initials != {}:
-                 if not segment.state.initials.numerics.solver.converged and not error_flag:
+                if not segment.state.initials.numerics.solver.converged and not error_flag:
                     pbar.colour = "red"
                     error_flag = True
 

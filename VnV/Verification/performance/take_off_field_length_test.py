@@ -10,7 +10,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
 from RCAIDE.Library.Methods.Performance.estimate_take_off_field_length import estimate_take_off_field_length
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 
 # package imports
 import numpy as np
@@ -33,10 +32,6 @@ def main():
     #   Main
     # ----------------------------------------------------------------------    
     vehicle = vehicle_setup()
-    for wing in vehicle.wings: 
-         wing_planform(wing,overwrite_reference =  True) 
-         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference
     configs = configs_setup(vehicle)
     
     # --- Takeoff Configuration ---
