@@ -8,7 +8,8 @@
 #  IMPORT
 # -----------------------------------------------------------------------------------------------------------------------Common
    
-from .aerodynamics               import aerodynamics 
+from .aerodynamics               import aerodynamics
+from .geometry                   import geometry
 from .stability                  import stability
 from .energy                     import energy
 from .emissions                  import emissions

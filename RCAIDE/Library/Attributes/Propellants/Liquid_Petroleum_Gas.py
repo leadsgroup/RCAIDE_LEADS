@@ -117,6 +117,7 @@ class Liquid_Petroleum_Gas(Propellant):
         
         self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
         self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
         self.global_warming_potential_100.SO2       = -226  # CO2e/kg  
         self.global_warming_potential_100.NOx       = 52    # CO2e/kg  
         self.global_warming_potential_100.Soot      = 1166  # CO2e/kg    

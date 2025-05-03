@@ -83,19 +83,19 @@ SECTION
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-6.5551  0.2    0.2039    1.1581    0.0     
+6.5662  0.2    0.2039    1.1581    0.0     
 CONTROL
 elevator    1.0   0.65   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-6.6341  1.8    0.2039    0.8419    0.0     
+6.7344  1.8    0.2039    0.8419    0.0     
 CONTROL
 elevator    1.0   0.65   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-6.644  2.0    0.2039    0.8024    0.0     
+6.7554  2.0    0.2039    0.8024    0.0     
 
 
 #---------------------------------------------------------
@@ -110,16 +110,16 @@ SECTION
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-7.1548  0.0    0.4519    1.0045    0.0     
+7.1813  0.0    0.4519    1.0045    0.0     
 CONTROL
 rudder    1.0   0.6   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-7.3743  0.0    1.6372    0.5655    0.0     
+7.6127  0.0    1.6372    0.5655    0.0     
 CONTROL
 rudder    1.0   0.6   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
-7.4017  0.0    1.7853    0.5106    0.0     
+7.6666  0.0    1.7853    0.5106    0.0     

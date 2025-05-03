@@ -136,6 +136,11 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
 
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    analyses.append(geometry)
+
     #  Aerodynamics Analysis
     aerodynamics                                     = RCAIDE.Framework.Analyses.Aerodynamics.Athena_Vortex_Lattice()
     aerodynamics.vehicle                             = vehicle 

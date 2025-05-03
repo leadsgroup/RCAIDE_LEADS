@@ -100,6 +100,11 @@ def analyses_setup(configs):
 def base_analysis(vehicle):    
     #   Initialize the Analyses     
     analyses = RCAIDE.Framework.Analyses.Vehicle()  
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    analyses.append(geometry)
     
     #  Energy
     energy          = RCAIDE.Framework.Analyses.Energy.Energy()

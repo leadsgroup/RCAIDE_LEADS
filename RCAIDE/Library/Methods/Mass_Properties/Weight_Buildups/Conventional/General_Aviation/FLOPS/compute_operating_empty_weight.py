@@ -19,16 +19,16 @@ import numpy as np
 def compute_operating_empty_weight(vehicle, settings=None):
     """"Computes the operating empty weight of a vehicle 
     """
-    
+
     if settings == None:
         W_factors = Data()
-        use_max_fuel_weight = True 
+        use_max_fuel_weight = True
     else:
-        use_max_fuel_weight = settings.use_max_fuel_weight 
-        
+        use_max_fuel_weight = settings.use_max_fuel_weight
+
     # Set the factors
     if not hasattr(settings, 'weight_reduction_factors'):
-        W_factors              = Data() 
+        W_factors              = Data()
         W_factors.main_wing    = 0.
         W_factors.empennage    = 0.
         W_factors.fuselage     = 0.
@@ -44,8 +44,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
             W_factors.systems      = 0.
         else:
             W_factors.structural   = 0.
-            W_factors.systems      = 0. 
-    
+            W_factors.systems      = 0.
+
     Wings = RCAIDE.Library.Components.Wings  
 
     # Check vehicle properties:
@@ -185,11 +185,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_tail_horizontal  = 0.0
     W_tail_vertical    = 0.0
     for wing in vehicle.wings:
-        if isinstance(wing, Wings.Main_Wing):
+        if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body):
             num_main_wings += 1
     
     for wing in vehicle.wings:
-        if isinstance(wing, Wings.Main_Wing): # Main wing
+        if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body): # Main wing
             complexity = settings.FLOPS.complexity
             W_wing = FLOPS.compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wings)
 

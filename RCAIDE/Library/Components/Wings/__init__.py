@@ -21,6 +21,7 @@ RCAIDE.Library.Components.Fuselages
 
 from .Wing                      import Wing
 from .Main_Wing                 import Main_Wing
+from .Blended_Wing_Body         import Blended_Wing_Body
 from .Vertical_Tail             import Vertical_Tail
 from .Horizontal_Tail           import Horizontal_Tail
 from .All_Moving_Surface        import All_Moving_Surface

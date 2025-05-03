@@ -149,18 +149,15 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
     # ------------------------------------------------------------------------- 
     # Fuselage
     # ------------------------------------------------------------------------- 
-    for fuselage in vehicle.fuselages:
-        if type(fuselage) !=  RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage: 
-            if verbose:
-                print('Writing '+fuselage.tag+' to OpenVSP Model')
-            try:
-                area_tags = write_vsp_fuselage(fuselage, area_tags, vehicle.wings.main_wing, 
-                                               fuel_tank_set_ind, OML_set_ind)
-            except AttributeError:
-                area_tags = write_vsp_fuselage(fuselage, area_tags, None, fuel_tank_set_ind,
-                                               OML_set_ind)
-        else:
-            print('Blended Wing Body Fuselage defined')
+    for fuselage in vehicle.fuselages: 
+        if verbose:
+            print('Writing '+fuselage.tag+' to OpenVSP Model')
+        try:
+            area_tags = write_vsp_fuselage(fuselage, area_tags, vehicle.wings.main_wing, 
+                                           fuel_tank_set_ind, OML_set_ind)
+        except AttributeError:
+            area_tags = write_vsp_fuselage(fuselage, area_tags, None, fuel_tank_set_ind,
+                                           OML_set_ind) 
     
     vsp.Update()
     

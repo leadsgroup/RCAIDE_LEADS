@@ -18,76 +18,35 @@ import  numpy as  np
 #  Landing Gear Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_landing_gear_weight(vehicle):
-    """
-    Computes the landing gear weight using NASA FLOPS weight estimation method. Accounts for 
-    aircraft type, size, and operational requirements.
+    """ Calculate the weight of the main and nose landing gear of a transport aircraft
 
-    Parameters
-    ----------
-    vehicle : Vehicle
-        The vehicle instance containing:
-            - networks : list
-                Propulsion system data for nacelle dimensions
-            - design_range : float
-                Design range [nmi]
-            - systems.accessories : str
-                Aircraft type ('short-range', 'commuter', 'medium-range', 
-                'long-range', 'sst', 'cargo')
-            - mass_properties.max_takeoff : float
-                Maximum takeoff weight [kg]
-            - wings['main_wing'].dihedral : float
-                Wing dihedral angle [rad]
-            - fuselages['fuselage'] : Fuselage
-                Primary fuselage with:
-                    - width : float
-                        Maximum width [m]
-                    - lengths.total : float
-                        Total length [m]
+        Assumptions:
+            No fighter jet, change DFTE to 1 for a fighter jet
+            Aircraft is not meant for carrier operations, change CARBAS to 1 for carrier-based aircraft
 
-    Returns
-    -------
-    output : Data
-        Container with weight breakdown:
-            - main : float
-                Main landing gear weight [kg]
-            - nose : float
-                Nose landing gear weight [kg]
+        Source:
+            The Flight Optimization System Weight Estimation Method
 
-    Notes
-    -----
-    Uses FLOPS correlations developed from transport aircraft database, with 
-    adjustments for different aircraft types. Please refer to the FLOPS documentation 
-    for more details: https://ntrs.nasa.gov/citations/20170005851  
+        Inputs:
+            vehicle - data dictionary with vehicle properties                   [dimensionless]
+                -.networks: data dictionary containing all propulsion properties
+                -.design_range: design range of aircraft                        [nmi]
+                -.systems.accessories: type of aircraft (short-range, commuter
+                                                        medium-range, long-range,
+                                                        sst, cargo)
+                -.mass_properties.max_takeoff: MTOW                              [kilograms]
+                -.nacelles['nacelle']                                            [meters]
+                -.wings['main_wing'].dihedral                                    [radians]
+                -.fuselages['fuselage'].width: fuselage width                    [meters]
+                -.fuselages['fuselage'].lengths.total: fuselage total length     [meters]
 
-    **Major Assumptions**
-        * Average landing gear
-        * Not designed for carrier operations (CARBAS = 0)
-        * Not a fighter aircraft (DFTE = 0)
-        * Retractable gear configuration
 
-    **Theory**
-    Main gear weight is computed using:
-    .. math::
-        W_{MLG} = (0.0117 - 0.0012D_{FTE})W_{L}^{0.95}X_{MLG}^{0.43}
+        Outputs:
+            output - data dictionary with main and nose landing gear weights    [kilograms]
+                    output.main, output.nose
 
-    Nose gear weight is computed using:
-    .. math::
-        W_{NLG} = (0.048 - 0.0080D_{FTE})W_{L}^{0.67}X_{NLG}^{0.43}(1 + 0.8C_{B})
-
-    where:
-        * W_L = landing weight
-        * X_MLG = extended main gear length
-        * X_NLG = extended nose gear length
-        * D_FTE = fighter aircraft flag
-        * C_B = carrier-based flag
-
-    References
-    ----------
-    [1] NASA Flight Optimization System (FLOPS)
-
-    See Also
-    --------
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight
+        Properties Used:
+            N/A
     """
     DFTE    = 0
     CARBAS  = 0
@@ -97,12 +56,14 @@ def compute_landing_gear_weight(vehicle):
         RFACT = 0.00004
     DESRNG  = vehicle.flight_envelope.design_range / Units.nmi  # Design range in nautical miles
     WLDG    = vehicle.mass_properties.max_takeoff / Units.lbs * (1 - RFACT * DESRNG)
-    
+
+    l_f =  0    
     for wing in vehicle.wings:
         if isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing):
             main_wing = wing
+        if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            l_f =  wing.chords.root
     
-    l_f =  0
     for fuselage in vehicle.fuselages:
         if l_f < fuselage.lengths.total:
             main_fuselage = fuselage 
@@ -118,7 +79,7 @@ def compute_landing_gear_weight(vehicle):
                 WF      = main_fuselage.width / Units.ft
                 XMLG    = 12 * FNAC + (0.26 - np.tan(DIH)) * (YEE - 6 * WF)  # length of extended main landing gear
             else:
-                XMLG    = 0.75 * main_fuselage.lengths.total / Units.ft  # length of extended nose landing gear
+                XMLG    = 0.75 * l_f / Units.ft  # length of extended nose landing gear
     XNLG = 0.7 * XMLG
     WLGM = (0.0117 - 0.0012 * DFTE) * WLDG ** 0.95 * XMLG ** 0.43
     WLGN = (0.048 - 0.0080 * DFTE) * WLDG ** 0.67 * XNLG ** 0.43 * (1 + 0.8 * CARBAS)

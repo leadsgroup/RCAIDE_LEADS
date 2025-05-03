@@ -102,31 +102,31 @@ def main():
     
     # Truth values
     takeoff_thrust_truth     = 99134.30160723036
-    climb_throttle_1_truth   = 0.7488700577449167
-    climb_throttle_2_truth   = 0.6973614059831147
-    climb_throttle_3_truth   = 0.5316863450218582
-    climb_throttle_4_truth   = 0.7945296781347821
-    climb_throttle_5_truth   = 0.8953229866911637
-    climb_throttle_6_truth   = 1.2525333568368964
-    climb_throttle_7_truth   = 1.409316691784725
-    climb_throttle_8_truth   = 0.6310957384731923
-    climb_throttle_9_truth   = 0.918513328305869
-    climb_10_CL_truth        = 1.3889299023270896
-    cruise_CL_1_truth        = 0.678026250556147
-    cruise_CL_2_truth        = 0.6737726921809426
-    cruise_CL_3_truth        = 0.4814363944835985
-    descent_throttle_1_truth = -0.0005739080039203644
-    curved_cruise_CL_truth   = 1.3166077312621909
-    descent_throttle_2_truth = 0.10516364958783522
-    single_pt_CL_1_truth     = 0.2725603742455539
-    single_pt_CL_2_truth     = 0.0007638722002310087
-    cruise_4_CL_truth        = 0.49815681300619447
-    cruise_5_CL_truth        = 0.4981510550101634
-    cruise_6_CL_truth        = 0.33551598451581893
-    cruise_7_CL_truth        = 0.32500492969311423
-    cruise_8_CL_truth        = 0.3156704226822779
-    descent_throttle_3_truth = 0.0536064449638372
-    landing_thrust_truth     = 10914.922590314012
+    climb_throttle_1_truth   = 0.7075601146754613
+    climb_throttle_2_truth   = 0.6331802733525678
+    climb_throttle_3_truth   = 0.44669913702886355
+    climb_throttle_4_truth   = 0.7053976260694119
+    climb_throttle_5_truth   = 0.7918351349081864
+    climb_throttle_6_truth   = 1.1283560601603702
+    climb_throttle_7_truth   = 1.277159896384352
+    climb_throttle_8_truth   = 0.5059516593127343
+    climb_throttle_9_truth   = 0.7700087761106865
+    climb_10_CL_truth        = 1.4057207360961625
+    cruise_CL_1_truth        = 0.6899165006346399
+    cruise_CL_2_truth        = 0.6859593169409225
+    cruise_CL_3_truth        = 0.45438724845603207
+    descent_throttle_1_truth = -0.08720116296026705
+    curved_cruise_CL_truth   = 1.345533094750704
+    descent_throttle_2_truth = 0.0545087700315256
+    single_pt_CL_1_truth     = 0.0006515352755036449
+    single_pt_CL_2_truth     = 0.0006616284953266105
+    cruise_4_CL_truth        = 0.5108735337044964
+    cruise_5_CL_truth        = 0.5108690201740079
+    cruise_6_CL_truth        = 0.34577218033417767
+    cruise_7_CL_truth        = 0.3373935230366758
+    cruise_8_CL_truth        = 0.3299409323597025
+    descent_throttle_3_truth = 0.009671514333555124
+    landing_thrust_truth     = 10914.922642740088
     
     # Store errors 
     error = Data()
@@ -187,13 +187,21 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    
+    # ------------------------------------------------------------------
+    #  geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = False
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Weights
-    #weights                                          = RCAIDE.Framework.Analyses.Weights.Conventional()
-    #weights.aircraft_type                            =  "Transport"
-    #weights.vehicle                                  = vehicle
-    #analyses.append(weights)
+    weights                                          = RCAIDE.Framework.Analyses.Weights.Conventional()
+    weights.aircraft_type                            =  "Transport"
+    weights.vehicle                                  = vehicle
+    analyses.append(weights)
  
     #  Aerodynamics Analysis
     aerodynamics                                        = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()

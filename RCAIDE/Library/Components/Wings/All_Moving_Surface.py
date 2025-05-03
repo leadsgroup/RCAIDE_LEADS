@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports     
 from RCAIDE.Library.Components     import Component 
-from RCAIDE.Framework.Core         import DataOrdered 
 import numpy as np
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
 

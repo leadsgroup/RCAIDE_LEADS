@@ -12,6 +12,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core   import Data , Units 
 from RCAIDE.Library.Methods.Performance.estimate_landing_field_length import estimate_landing_field_length
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 
 import numpy as np
 import pylab as plt
@@ -47,6 +48,11 @@ def main():
 
     # --- Vehicle definition ---
     vehicle = vehicle_setup()
+    for wing in vehicle.wings: 
+         wing_planform(wing,overwrite_reference =  True) 
+         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            vehicle.reference_area = wing.areas.reference
+    configs = configs_setup(vehicle)
     configs = configs_setup(vehicle)
     
     # --- Landing Configuration ---
@@ -71,9 +77,9 @@ def main():
         landing_config.mass_properties.landing = weight
         landing_field_length[id_w] = estimate_landing_field_length(landing_config,analyses)
 
-    truth_LFL = np.array([ 763.53405134,  832.00525818,  900.47646503,  968.94767187,
-       1037.41887872, 1105.89008556, 1174.36129241, 1242.83249925,
-       1311.3037061 , 1379.77491294])
+    truth_LFL = np.array([ 897.76690272,  984.13582308, 1070.50474344, 1156.87366381,
+       1243.24258417, 1329.61150453, 1415.98042489, 1502.34934526,
+       1588.71826562, 1675.08718598])
     LFL_error = np.max(np.abs(landing_field_length-truth_LFL))
     assert(LFL_error<1e-6)
     

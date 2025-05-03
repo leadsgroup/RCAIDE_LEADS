@@ -46,7 +46,10 @@ def import_airfoil_geometry(airfoil_geometry_file, npoints = 201,surface_interpo
     half_npoints = npoints//2         
  
     # Open file and read column names and data block
-    f = open(airfoil_geometry_file) 
+    try:
+        f = open(airfoil_geometry_file) 
+    except:
+        raise FileNotFoundError('Airfoil file not in correct directory. Update file path of airfoil in vehicle setup.')
 
     # Extract data
     data_block = f.readlines()

@@ -21,3 +21,5 @@ RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport
 from .compute_operating_empty_weight   import compute_operating_empty_weight
 from .compute_aft_centerbody_weight    import compute_aft_centerbody_weight
 from .compute_cabin_weight             import compute_cabin_weight
+from .compute_systems_weight           import compute_systems_weight
+from .compute_bwb_wing_weight          import compute_wing_weight

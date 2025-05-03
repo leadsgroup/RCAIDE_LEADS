@@ -48,7 +48,7 @@ def estimate_2ndseg_lift_drag_ratio(state,settings,geometry):
     # getting geometrical data (aspect ratio)
     n_wing = 0
     for wing in geometry.wings:
-        if not isinstance(wing,Wings.Main_Wing): continue
+        if not (isinstance(wing,Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body)): continue
         reference_area = wing.areas.reference
         wing_span      = wing.spans.projected
         try:

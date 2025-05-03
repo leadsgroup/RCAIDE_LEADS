@@ -95,9 +95,7 @@ def vehicle_setup():
     slat.span_fraction_end                      = 0.963     
     slat.deflection                             = 1.0 * Units.deg
     slat.chord_fraction                         = 0.1      
-    wing.append_control_surface(slat)  
-    
-    RCAIDE.Library.Methods.Geometry.Planform.wing_planform(wing) 
+    wing.append_control_surface(slat)   
 
     # add to vehicle
     vehicle.append_component(wing)
@@ -181,7 +179,7 @@ def vehicle_setup():
     # ########################################################## Fuselage ############################################################### 
     #------------------------------------------------------------------------------------------------------------------------------------
     
-    fuselage                                          = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
+    fuselage                                          = RCAIDE.Library.Components.Fuselages.Fuselage()
     
     # define cabin
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
@@ -330,7 +328,7 @@ def vehicle_setup():
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel_tank.fuel.mass_properties.mass         = 319 *Units.lbs 
     fuel_tank.mass_properties.center_of_gravity = wing.mass_properties.center_of_gravity
-    fuel_tank.volume                            = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.internal_volume                   = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
     fuel_line.fuel_tanks.append(fuel_tank)   
 
     #------------------------------------------------------------------------------------------------------------------------------------  

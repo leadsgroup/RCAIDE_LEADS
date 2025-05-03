@@ -172,7 +172,7 @@ def compute_systems_weight(vehicle):
     SFLAP    = 0
     ref_wing = None 
     for wing in  vehicle.wings:
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing)  or isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             SFLAP  += wing.areas.reference * wing.flap_ratio / Units.ft ** 2
             ref_wing  =  wing
     

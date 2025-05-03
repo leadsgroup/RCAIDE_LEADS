@@ -162,6 +162,11 @@ def TW_base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights
@@ -203,11 +208,19 @@ def SR_base_analysis(vehicle):
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
     
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.vehicle = vehicle
+    geometry.settings.overwrite_reference        = True
+    geometry.settings.update_wing_properties     = True
+    analyses.append(geometry)
     # ------------------------------------------------------------------
     #  Weights
     weights         = RCAIDE.Framework.Analyses.Weights.Electric()
     weights.aircraft_type =  "VTOL"
     weights.vehicle = vehicle
+    weights.settings.update_center_of_gravity   = True
+    weights.settings.update_moment_of_inertia   = True
     analyses.append(weights)
 
     # ------------------------------------------------------------------
@@ -329,10 +342,7 @@ def SR_mission_setup(analyses,vehicle):
 
     # base segment           
     base_segment  = Segments.Segment()   
-    # VSTALL Calculation  
-    vehicle_mass   = vehicle.mass_properties.max_takeoff
-    reference_area = vehicle.reference_area 
-    Vstall         = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)      
+    Vstall         = 48.5313220449591
      
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Vertical Climb 
