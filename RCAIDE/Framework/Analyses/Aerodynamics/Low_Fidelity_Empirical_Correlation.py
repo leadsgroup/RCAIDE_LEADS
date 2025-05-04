@@ -12,7 +12,7 @@ from RCAIDE.Framework.Analyses                                    import Process
 from RCAIDE.Library.Methods.Aerodynamics                          import Common
 from .Aerodynamics                                                import Aerodynamics 
 from RCAIDE.Framework.Analyses.Common.Process_Geometry            import Process_Geometry 
-from RCAIDE.Library.Methods.Aerodynamics.Empirical_Correlation    import *   
+from RCAIDE.Library.Methods.Aerodynamics.Low_Fidelity_Empirical_Correlation    import *   
 
 # package imports 
 import numpy as np 
@@ -20,8 +20,8 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice_Method
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Empirical_Correlation(Aerodynamics):
-    """This is a aerodynamic buildup analysis based on the vortex lattice method
+class Low_Fidelity_Empirical_Correlation(Aerodynamics):
+    """This is a aerodynamic buildup analysis based on the low fidelity empiracle correlation
 
      Assumptions:
      Stall effects are negligible 
@@ -57,7 +57,7 @@ class Empirical_Correlation(Aerodynamics):
         Properties Used:
         N/A
         """          
-        self.tag                                                          = 'Emipirical_Correlation'  
+        self.tag                                                          = 'Low_Fidelity_Empirical_Correlation'  
         self.vehicle                                                      = Data()  
         self.process                                                      = Process()
         self.process.initialize                                           = Process()  

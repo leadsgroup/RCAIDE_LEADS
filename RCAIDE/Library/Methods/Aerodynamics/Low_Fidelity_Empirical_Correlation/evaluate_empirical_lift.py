@@ -1,25 +1,19 @@
-# RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/evaluate_VLM.py
+# RCAIDE/Library/Methods/Aerodynamics/Low_Fidelity_Empiracle_Correlation/empiracle_lift.py
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports  
-import RCAIDE 
-from RCAIDE.Framework.Core                                           import Data, orientation_product 
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
-from RCAIDE.Library.Methods.Utilities                                import Cubic_Spline_Blender  
-from RCAIDE.Library.Mission.Common.Update  import orientations
-from RCAIDE.Library.Mission.Common.Unpack_Unknowns import orientation
+import RCAIDE  
 
 # package imports
-import numpy   as np
-from copy      import  deepcopy 
+import numpy   as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
 # ---------------------------------------------------------------------------------------------------------------------- 
-def evaluate_empirical_lift(state,settings,vehicle):
+def empiracle_lift(state,settings,vehicle):
     """Evaluates surrogates forces and moments using built surrogates 
     
     Assumptions:
@@ -36,28 +30,28 @@ def evaluate_empirical_lift(state,settings,vehicle):
     Returns: 
         None  
     """          
-    conditions    = state.conditions
-    aerodynamics  = state.analyses.aerodynamics 
+    conditions    = state.conditions 
     AoA           = np.atleast_2d(conditions.aerodynamics.angles.alpha)    
     Mach          = np.atleast_2d(conditions.freestream.mach_number)
     
-    b  =  0
-    d  =  0
-    e  =  0.9
+    b     =  0
+    d     =  0
+    e     =  0.9
+    sweep =  0
     Cl_alpha =  np.pi * 2 
     for wing in vehicle.wings:
         if type(wing) == RCAIDE.Library.Components.Wings.Main_Wing: 
             b = wing.spans.projected
-            S_ref =  wing.areas.projected
-            S_exp =  wing.areas.exposed
-            AR = wing.aspect_ratio
+            S_ref = wing.areas.reference
+            sweep = wing.sweeps.leading_edge 
+            if  wing.areas.exposed == 0: 
+                S_exp =  wing.areas.reference * 2
+            AR = wing.aspect_ratio 
             
-            
-    for fuselage in vehicle.fuslages:
-        
+    for fuselage in vehicle.fuselages: 
         d =  np.maximum(d,fuselage.width)
         
-    delta_max_t    =  wing.sweep 
+    delta_max_t    = sweep
     F              =  1.07 * (1 + d / b) ** 2
     beta           = np.sqrt(1-Mach**2)
     eta            = Cl_alpha *beta  / (2 * np.pi)
@@ -65,7 +59,7 @@ def evaluate_empirical_lift(state,settings,vehicle):
     CL_alpha       =  (2 * np.pi * AR / (demonominator)) * (S_exp /S_ref) * F
     
     CL =  CL_alpha * AoA
-    CDi  = (CL ** 2) / np.pi * AR * e
+    CDi  = (CL ** 2) / (np.pi * AR * e)
     
     conditions.static_stability.coefficients.lift              =  CL 
     conditions.static_stability.coefficients.drag              =  CDi
