@@ -11,7 +11,6 @@ from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passeng
 from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform 
 from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume
 
-
 # ----------------------------------------------------------------------------------------------------------------------
 #  geometry
 # ----------------------------------------------------------------------------------------------------------------------  

@@ -419,10 +419,6 @@ def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,nacelle_co
             plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
         if 'propeller' in propulsor:
             plot_data = plot_3d_rotor(propulsor.propeller,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
-        if 'rotor' in propulsor: 
-            plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
-        if 'propeller' in propulsor:
-            plot_data = plot_3d_rotor(propulsor.propeller,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
        
         for fuel_line in network.fuel_lines: 
             for fuel_tank in fuel_line.fuel_tanks:   

@@ -1,14 +1,16 @@
+# RCAIDE/Library/Methods/Geometry/Platform.py
+# 
+# 
+# Created:  Apr 2023, M. Clarke
 
-
-# ----------------------------------------------------------------------
-#  Imports
-# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
 
 # ----------------------------------------------------------------------
 #  Methods
 # ----------------------------------------------------------------------
-
 def fuselage_planform(fuselage, circular_cross_section = True):
     """Calculates fuselage geometry values
 
@@ -47,12 +49,8 @@ def fuselage_planform(fuselage, circular_cross_section = True):
         
     nose_length     = nose_fineness * fuselage_width
     tail_length     = tail_fineness * fuselage_width 
-    cabin_length    = fuselage.lengths.total -  nose_length - tail_length
-
-    if circular_cross_section:
-        fuselage_height = fuselage_width
-    else: 
-        fuselage_height = fuselage.heights.maximum
+    cabin_length    = fuselage.lengths.total -  nose_length - tail_length 
+    fuselage_height = fuselage.heights.maximum
             
     wetted_area = 0.0 
     # model constant fuselage cross section as an ellipse

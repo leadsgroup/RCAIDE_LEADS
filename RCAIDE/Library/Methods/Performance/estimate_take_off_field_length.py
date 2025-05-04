@@ -101,23 +101,19 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
 
     atmo            = analyses.atmosphere 
     weight          = vehicle.mass_properties.takeoff
-    reference_area  = vehicle.reference_area
-    try:
-        V2_VS_ratio = vehicle.V2_VS_ratio
-    except:
-        V2_VS_ratio = 1.20
+    reference_area  = vehicle.reference_area 
+    V2_VS_ratio     = vehicle.flight_envelope.V2_VS_ratio 
 
     # ==============================================
     # Computing atmospheric conditions
     # ==============================================
     atmo_values       = atmo.compute_values(altitude,delta_isa)
-    conditions        = RCAIDE.Framework.Mission.Common.Results()
-
-    p   = atmo_values.pressure
-    T   = atmo_values.temperature
-    rho = atmo_values.density
-    a   = atmo_values.speed_of_sound
-    mu  = atmo_values.dynamic_viscosity
+    conditions        = RCAIDE.Framework.Mission.Common.Results() 
+    p                 = atmo_values.pressure
+    T                 = atmo_values.temperature
+    rho               = atmo_values.density
+    a                 = atmo_values.speed_of_sound
+    mu                = atmo_values.dynamic_viscosity
     sea_level_gravity = atmo.planet.sea_level_gravity
 
     # ==============================================
@@ -140,7 +136,6 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     # ==============================================
     stall_speed       = (2 * weight * sea_level_gravity / (rho * reference_area * maximum_lift_coefficient)) ** 0.5
     V2_speed          = V2_VS_ratio * stall_speed
-    speed_for_thrust  = 0.70 * V2_speed
 
     # ==============================================
     # Determining vehicle number of engines
