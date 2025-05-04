@@ -49,32 +49,31 @@ def fuselage_planform(fuselage, circular_cross_section = True):
         
     nose_length     = nose_fineness * fuselage_width
     tail_length     = tail_fineness * fuselage_width 
-    cabin_length    = fuselage.lengths.total -  nose_length - tail_length 
-    fuselage_height = fuselage.heights.maximum
-            
-    wetted_area = 0.0 
-    # model constant fuselage cross section as an ellipse
-    # approximate circumference http://en.wikipedia.org/wiki/Ellipse#Circumference
-    a = fuselage_width/2.
-    b = fuselage_height/2.
-    A = np.pi * a * b  # area
-    R = (a-b)/(a+b) # effective radius
-    C = np.pi*(a+b)*(1.+ ( 3*R**2 )/( 10+np.sqrt(4.-3.*R**2) )) # circumference
+    cabin_length    = fuselage.lengths.total -  nose_length - tail_length  
     
-    wetted_area += C * cabin_length
-    cross_section_area = A
+    fuselage_height =  fuselage.heights.maximum
+    if fuselage.heights.maximum == 0:
+        fuselage.heights.maximum = fuselage_width
+        fuselage_height = fuselage_width 
     
-    # approximate nose and tail wetted area
-    # http://adg.stanford.edu/aa241/drag/wettedarea.html
-    Deff = (a+b)*(64.-3.*R**4)/(64.-16.*R**2)
-    wetted_area += 0.75*np.pi*Deff * (nose_length + tail_length)
+    a     = fuselage_width/2.
+    b     = fuselage_height/2. 
+    R     = (a-b)/(a+b)   
+        
+    side_projected_area  = fuselage.heights.maximum * fuselage.lengths.total  
+    wetted_area          = np.pi*a*(a+ np.sqrt( fuselage.lengths.nose **2 +(a)**2)) + \
+                           np.pi*a*(a+ np.sqrt( fuselage.lengths.tail**2 +(a)**2))+ \
+                           np.pi * fuselage.width * ( fuselage.lengths.total - (fuselage.lengths.tail+ fuselage.lengths.nose))  
+    front_projected_area = np.pi * a *  b
+    effective_diameter   = ((fuselage_width/2)+(fuselage_height/2.))*(64.-3.*R**4)/(64.-16.*R**2) 
     
 
     fuselage.lengths.nose          = nose_length
     fuselage.lengths.tail          = tail_length
     fuselage.lengths.cabin         = cabin_length 
     fuselage.areas.wetted          = wetted_area
-    fuselage.areas.front_projected = cross_section_area
-    fuselage.effective_diameter    = Deff 
+    fuselage.areas.front_projected = front_projected_area
+    fuselage.areas.side_projected  = side_projected_area 
+    fuselage.effective_diameter    = effective_diameter 
 
     return 
