@@ -49,6 +49,9 @@ def evaluate_surrogate(state,settings,vehicle):
     Beta          = np.atleast_2d(conditions.aerodynamics.angles.beta)    
     Mach          = np.atleast_2d(conditions.freestream.mach_number)  
     ones_row      = np.ones_like(AoA)
+
+    if np.isnan(AoA).any():
+        stop = 0
      
     # loop through wings to determine what control surfaces are present  
     for wing in vehicle.wings: 
