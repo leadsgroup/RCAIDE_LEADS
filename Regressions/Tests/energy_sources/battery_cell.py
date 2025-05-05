@@ -23,7 +23,8 @@ import matplotlib.cm as cm
 import sys 
 import os
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
-from Battery_Cell   import vehicle_setup , configs_setup  
+from Battery_Cell   import vehicle_setup , configs_setup 
+import time 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
@@ -101,7 +102,7 @@ def lithium_ion_battery_test():
     electrical_config     = ['Series','Parallel'] 
     for j in range(len(curr)):      
         for i in range(len(battery_chemistry)):
-            
+            print(battery_chemistry[i] + electrical_config[j])
             vehicle  = vehicle_setup(curr[j], C_rat[j], battery_chemistry[i], electrical_config[j]) 
             
             # Set up vehicle configs
@@ -117,22 +118,26 @@ def lithium_ion_battery_test():
             missions = missions_setup(mission) 
              
             # mission analysis 
-            results = missions.base_mission.evaluate()  
+            ti                   = time.time()
             
+            results = missions.base_mission.evaluate()  
+            tf                   = time.time()
+            elapsed_time         = tf-ti
+            print('Simulation Time: ' + str(elapsed_time) + ' secs')  
             # Voltage Cell Regression
             V_ul        = results.segments[0].conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.voltage_under_load[2][0]   
-            print('Under load voltage: ' + str(V_ul))
+            #print('Under load voltage: ' + str(V_ul))
             V_ul_diff   = np.abs(V_ul - V_ul_true[j,i])
-            print('Under load voltage difference')
-            print(V_ul_diff) 
+            #print('Under load voltage difference')
+            #print(V_ul_diff) 
             #assert np.abs((V_ul_diff)/V_ul_true[j,i]) < 1e-6  
            
             # Temperature Regression
             bat_temp        = results.segments[1].conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.temperature[2][0]  
-            print('Cell temperature: ' + str(bat_temp))
+            #print('Cell temperature: ' + str(bat_temp))
             bat_temp_diff   = np.abs(bat_temp  - bat_temp_true[j,i]) 
-            print('cell temperature difference')
-            print(bat_temp_diff)
+            #print('cell temperature difference')
+            #print(bat_temp_diff)
             #assert np.abs((bat_temp_diff)/bat_temp_true[j,i]) < 1e-6
        
             for segment in results.segments.values(): 
@@ -256,7 +261,7 @@ def mission_setup(analyses,vehicle,battery_chemistry,current,mAh):
     segment.analyses.extend(analyses.discharge)  
     segment.tag                             = 'Discharge_1' 
     segment.time                            = time/2  
-    segment.initial_battery_state_of_charge = 1  
+    #segment.initial_battery_state_of_charge = 1  
     mission.append_segment(segment)
     
     segment                                = Segments.Ground.Battery_Discharge(base_segment) 
