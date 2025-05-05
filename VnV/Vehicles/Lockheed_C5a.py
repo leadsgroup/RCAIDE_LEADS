@@ -16,60 +16,8 @@ from RCAIDE.Library.Plots                 import *
 import numpy as np  
 from copy import deepcopy
 import matplotlib.pyplot as plt  
-import os   
+import os
 
-def main():
-    
-    # Step 1 design a vehicle
-    vehicle  = vehicle_setup()    
-    
-    # Step 2 create aircraft configuration based on vehicle 
-    configs  = configs_setup(vehicle)
-
-    # plot vehicle 
-    plot_3d_vehicle(vehicle,
-                    save_filename               = "LM_C5_Top_View",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100, 
-                    top_view                    = True, 
-                    side_view                   = False, 
-                    front_view                  = False, 
-                    show_figure=False)
-    
-
-    plot_3d_vehicle(vehicle,
-                    save_filename               = "LM_C5_Side_View",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100, 
-                    top_view                    = False, 
-                    side_view                   = True, 
-                    front_view                  = False, 
-                    show_figure=False)
-    
-   
-    plot_3d_vehicle(vehicle,
-                    save_filename               = "LM_C5_Front_View",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100, 
-                    top_view                    = False, 
-                    side_view                   = False, 
-                    front_view                  = True,
-                    wing_alpha                  = 0.2, 
-                    show_figure=False)             
-    
-    return
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------

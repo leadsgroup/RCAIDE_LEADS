@@ -23,7 +23,7 @@ from Boeing_787             import vehicle_setup as hydrogen_transport_setup
 def main():
     update_regression_values = False  # should be false unless code functionally changes
     show_figure              = False # leave false for regression
-    
+
     Transport_Aircraft_Test(update_regression_values,show_figure)
     BWB_Aircraft_Test(update_regression_values,show_figure)
     General_Aviation_Test(update_regression_values,show_figure)
@@ -42,7 +42,7 @@ def Transport_Hydrogen_Test(update_regression_values, show_figure):
         for fuel_tank in fuel_line.fuel_tanks:
             fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
             fuel_tank.fuel.gravimetric_efficiency            = 0.5
-         
+
     for method_type in method_types:
         print(f'Testing Transport Aircraft Method: {method_type} | Method: {"Complex"}')        
         weight_analysis = RCAIDE.Framework.Analyses.Weights.Hydrogen()
@@ -54,7 +54,7 @@ def Transport_Hydrogen_Test(update_regression_values, show_figure):
         weight_analysis.method = method_type
         weight_analysis.aircraft_type = 'Transport'
 
-    
+
         weight = weight_analysis.evaluate()
         plot_weight_breakdown(weight_analysis.vehicle, show_figure=show_figure)
 
@@ -83,7 +83,7 @@ def Transport_Aircraft_Test(update_regression_values, show_figure):
     method_types = ['FLOPS', 'Raymer']
     FLOPS_number = 0 
     for advanced_composites in [True, False]:  
-         
+
         for method_type in method_types:
             print(f'Testing Transport Aircraft Method: {method_type} | Advanced Composites: {advanced_composites} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}')        
             weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional()
@@ -139,7 +139,7 @@ def General_Aviation_Test(update_regression_values, show_figure):
         for method_type in method_types:
             print(f'Testing General Aviation Method: {method_type} | Advanced Composites: {advanced_composite} | Method: {("Simple" if FLOPS_number == 0 else "Complex") if method_type == "FLOPS" else "Raymer"}')
 
-            
+
             weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional()
             weight_analysis.vehicle = general_aviation_setup()
             for wing in weight_analysis.vehicle.wings: 
@@ -219,9 +219,9 @@ def General_Aviation_Test(update_regression_values, show_figure):
         old_weight = load_results(save_path)
 
         check_list = [
-                'empty.total', 'empty.structural.wings', 'empty.structural.fuselage',
+            'empty.total', 'empty.structural.wings', 'empty.structural.fuselage',
                 'empty.structural.total', 'empty.propulsion.total', 'empty.systems.total'
-            ]
+        ]
         for k in check_list:
             old_val = old_weight.deep_get(k)
             new_val = weight.deep_get(k)
@@ -229,7 +229,7 @@ def General_Aviation_Test(update_regression_values, show_figure):
             print(f'{k} Error: {err:.6e}')
             assert np.abs(err) < 1e-6, f'Check Failed: {k}'
         print('')
-        
+
 def BWB_Aircraft_Test(update_regression_values,show_figure):
     cabin_types = ['Non-PERSUS','PERSUS']
     for cabin_type in cabin_types:
@@ -250,12 +250,27 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
             weight_analysis.aircraft_type  = 'BWB'
             weight_analysis.settings.FLOPS.complexity = 'Simple' if FLOPS_number == 0 else 'Complex'
             weight                   = weight_analysis.evaluate()
-            plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure) 
+            plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure)
             
+        
+            # plot vehicle 
+            plot_3d_vehicle(weight_analysis.vehicle, 
+                            min_x_axis_limit            = -50,
+                            max_x_axis_limit            = 50,
+                            min_y_axis_limit            = -50,
+                            max_y_axis_limit            = 50,
+                            min_z_axis_limit            = -50,
+                            max_z_axis_limit            = 50, 
+                            wing_alpha                  = 0.2,
+                            front_view                  = True, 
+                            show_figure                 = False 
+                            )             
+            
+
             if update_regression_values:
-               save_results(weight, os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res"))
+                save_results(weight, os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res"))
             old_weight = load_results(os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res"))
-            
+
             check_list = [
                 'empty.total',
                 'empty.structural.wings', 
@@ -275,16 +290,16 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
                 assert np.abs(err) < 1e-6 , 'Check Failed : %s' % k     
 
                 print('')
-        
+
     return
 
 def EVTOL_Aircraft_Test(update_regression_values,show_figure): 
     weight_analysis          = RCAIDE.Framework.Analyses.Weights.Electric()
     weight_analysis.vehicle  = evtol_setup(update_regression_values) 
     for wing in weight_analysis.vehicle.wings: 
-                wing_planform(wing,overwrite_reference =  True) 
-                if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-                    weight_analysis.vehicle.reference_area = wing.areas.reference
+        wing_planform(wing,overwrite_reference =  True) 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            weight_analysis.vehicle.reference_area = wing.areas.reference
     weight_analysis.aircraft_type = 'VTOL'
     weight_analysis.method   = 'Physics_Based'
     weight_analysis.settings.safety_factor = 1.5    # CHECK THIS VALUE
@@ -298,7 +313,7 @@ def EVTOL_Aircraft_Test(update_regression_values,show_figure):
     if update_regression_values:
         save_results(weight, os.path.join(os.path.dirname(__file__), 'weights_EVTOL.res'))
     old_weight = load_results(os.path.join(os.path.dirname(__file__), 'weights_EVTOL.res'))
-    
+
     check_list = [
         'empty.total', 
         'empty.structural.total',
@@ -317,7 +332,7 @@ def EVTOL_Aircraft_Test(update_regression_values,show_figure):
         assert np.abs(err) < 1e-6 , 'Check Failed : %s' % k     
 
         print('')
-     
+
     return
 
 def Jet_engine():
@@ -329,20 +344,20 @@ def Jet_engine():
     turbofan.design_altitude                    = 35000.0*Units.ft
     turbofan.design_mach_number                 = 0.78   
     turbofan.design_thrust                      = 35000.0* Units.N 
-             
+
     # fan                
     fan                                         = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
     fan.tag                                     = 'fan'
     fan.polytropic_efficiency                   = 0.93
     fan.pressure_ratio                          = 1.7   
     turbofan.fan                                = fan        
-                   
+
     # working fluid                   
     turbofan.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air() 
     ram                                         = RCAIDE.Library.Components.Powertrain.Converters.Ram()
     ram.tag                                     = 'ram' 
     turbofan.ram                                = ram 
-          
+
     # inlet nozzle          
     inlet_nozzle                                = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
     inlet_nozzle.tag                            = 'inlet nozzle'
@@ -370,7 +385,7 @@ def Jet_engine():
     low_pressure_turbine.mechanical_efficiency     = 0.99
     low_pressure_turbine.polytropic_efficiency     = 0.93 
     turbofan.low_pressure_turbine                  = low_pressure_turbine
-   
+
     # high pressure turbine     
     high_pressure_turbine                          = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     high_pressure_turbine.tag                      ='hpt'
@@ -394,18 +409,18 @@ def Jet_engine():
     core_nozzle.polytropic_efficiency              = 0.95
     core_nozzle.pressure_ratio                     = 0.99  
     turbofan.core_nozzle                           = core_nozzle
-             
+
     # fan nozzle             
     fan_nozzle                                     = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
     fan_nozzle.tag                                 = 'fan nozzle'
     fan_nozzle.polytropic_efficiency               = 0.95
     fan_nozzle.pressure_ratio                      = 0.99 
     turbofan.fan_nozzle                            = fan_nozzle 
-    
+
     # design turbofan
     design_turbofan(turbofan)  
     # append propulsor to distribution line  
-   
+
     # Nacelle 
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
     nacelle.diameter                            = 2.05
@@ -418,7 +433,7 @@ def Jet_engine():
     nacelle_airfoil.NACA_4_Series_code          = '2410'
     nacelle.append_airfoil(nacelle_airfoil)  
     turbofan.nacelle                            = nacelle
-  
+
     return(turbofan)
 
 if __name__ == '__main__':

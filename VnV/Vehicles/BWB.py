@@ -120,12 +120,7 @@ def vehicle_setup():
     side_economy_class.galley_lavatory_percent_x_locations = [0,1.0] 
     side_economy_class.type_A_exit_percent_x_locations     = [0,0.75, 1.0]
     side_cabin.append_cabin_class(side_economy_class) 
-    wing.append_cabin(side_cabin) 
-
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator  + 'Airfoils'
-    
+    wing.append_cabin(side_cabin)  
 
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
@@ -136,11 +131,8 @@ def vehicle_setup():
     segment.root_chord_percent            = 1.0 
     segment.dihedral_outboard             = 0.23649211364523168 
     segment.thickness_to_chord            = 0.13 
-    segment.sweeps.quarter_chord           = 60 *  Units.degrees 
-    airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 'main_wing_airfoil_XSec_0.dat'
-    segment.percent_chord_cabin_start     = 0.05
-    segment.append_airfoil(airfoil )
+    segment.sweeps.quarter_chord           = 60 *  Units.degrees  
+    segment.percent_chord_cabin_start     = 0.05 
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
@@ -152,10 +144,7 @@ def vehicle_setup():
     segment.dihedral_outboard             =  0.02652900463031381 
     segment.thickness_to_chord            =  0.1379
     segment.sweeps.quarter_chord           =  62.06 *  Units.degrees  
-    segment.percent_chord_cabin_start     = 0.04
-    airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 'main_wing_airfoil_XSec_1.dat'
-    segment.append_airfoil(airfoil )
+    segment.percent_chord_cabin_start     = 0.04 
     wing.append_segment(segment)
 
     segment                               =RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
@@ -167,10 +156,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 8 *  Units.degrees 
     segment.thickness_to_chord            = 0.158 
     segment.sweeps.quarter_chord           = 60 *  Units.degrees   
-    segment.percent_chord_cabin_start     = 0.03
-    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               = rel_path +  'main_wing_airfoil_XSec_2.dat'
-    segment.append_airfoil(airfoil )
+    segment.percent_chord_cabin_start     = 0.03 
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
@@ -182,10 +168,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 12 *  Units.degrees  
     segment.thickness_to_chord            = 0.1
     segment.sweeps.quarter_chord           = 60 *  Units.degrees 
-    segment.percent_chord_cabin_start     = 0.02
-    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               = rel_path +  'main_wing_airfoil_XSec_2.dat'
-    segment.append_airfoil(airfoil )
+    segment.percent_chord_cabin_start     = 0.02 
     wing.append_segment(segment)     
 
 
@@ -198,10 +181,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.06632251157578452
     segment.thickness_to_chord            = 0.15
     segment.sweeps.quarter_chord           = 26.*  Units.degrees
-    segment.has_fuel_tank                 = True
-    airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 'main_wing_airfoil_XSec_3.dat'
-    segment.append_airfoil(airfoil )
+    segment.has_fuel_tank                 = True 
     wing.append_segment(segment)
 
 
@@ -214,10 +194,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.04084070449666731 
     segment.thickness_to_chord            = 0.1154 
     segment.sweeps.quarter_chord          = 30.*  Units.degrees 
-    segment.reference_area_root           = True
-    airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 'main_wing_airfoil_XSec_4.dat'
-    segment.append_airfoil(airfoil )
+    segment.reference_area_root           = True 
     wing.append_segment(segment)  
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -228,10 +205,7 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.08
     segment.dihedral_outboard             = 75 *  Units.degrees 
     segment.thickness_to_chord            = 0.0972 
-    segment.sweeps.quarter_chord           = 60 *  Units.degrees 
-    airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 'main_wing_airfoil_XSec_5.dat'
-    segment.append_airfoil(airfoil )
+    segment.sweeps.quarter_chord           = 60 *  Units.degrees  
     wing.append_segment(segment)  
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -242,10 +216,7 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.05
     segment.dihedral_outboard             = 0 
     segment.thickness_to_chord            = 0.098 
-    segment.sweeps.quarter_chord           = 0.0 
-    airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 'main_wing_airfoil_XSec_6.dat'
-    segment.append_airfoil(airfoil )
+    segment.sweeps.quarter_chord           = 0.0  
     wing.append_segment(segment)
 
     # control surfaces -------------------------------------------
@@ -319,8 +290,7 @@ def vehicle_setup():
     segment.root_chord_percent            = 1.0
     segment.dihedral_outboard             = 70 * Units.degrees 
     segment.thickness_to_chord            = 0.1
-    segment.sweeps.quarter_chord           = 45 * Units.degrees 
-    segment.append_airfoil(airfoil )
+    segment.sweeps.quarter_chord           = 45 * Units.degrees  
     wing.append_segment(segment)  
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()

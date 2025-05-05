@@ -11,11 +11,11 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_fuselage             import plot_3d_f
 from RCAIDE.Library.Plots.Geometry.plot_3d_wing                 import plot_3d_wing 
 from RCAIDE.Library.Plots.Geometry.plot_3d_nacelle              import plot_3d_nacelle
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import plot_3d_rotor
-from RCAIDE.Library.Plots.Geometry.plot_3d_fuel_tank            import plot_3d_concetric_fuel_tank, plot_3d_integral_wing_tank
+from RCAIDE.Library.Plots.Geometry.plot_3d_fuel_tank            import plot_3d_non_integral_fuel_tank, plot_3d_integral_wing_tank, plot_3d_integral_fuselage_tank
 
 from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
 from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform  
-from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform 
+from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume
 
 # python imports 
 import numpy as np 
@@ -42,10 +42,10 @@ def plot_3d_vehicle(vehicle,
                     front_view                  = False, 
                     camera_eye_x                = -1.5,
                     camera_eye_y                = -1.5,
-                    camera_eye_z                = .8,
+                    camera_eye_z                = .0,
                     camera_center_x             = 0.,
                     camera_center_y             = 0.,
-                    camera_center_z             = -0.5,
+                    camera_center_z             = -0.2,
                     wing_color                  = 'greys', 
                     fuselage_color              = 'teal', 
                     nacelle_color               = 'darkmint', 
@@ -134,33 +134,33 @@ def plot_3d_vehicle(vehicle,
         camera_eye_x  = -1 
         camera_eye_y  = 0
         camera_eye_z  = 0
-        camera_center_x  = 0.0
-        camera_center_y  = 0.0
-        camera_center_z  = 0.0
+        camera_center_x  = camera_center_x
+        camera_center_y  = camera_center_y
+        camera_center_z  = camera_center_z
 
     elif side_view:
         camera_eye_x  = 0  
         camera_eye_y  = -1 
         camera_eye_z  = 0 
-        camera_center_x  = 0 
-        camera_center_y  = 0 
-        camera_center_z  = 0 
+        camera_center_x  = camera_center_x 
+        camera_center_y  = camera_center_y 
+        camera_center_z  = camera_center_z 
 
     elif top_view:
         camera_eye_x  = 0
         camera_eye_y  = 0 
         camera_eye_z  = 1 
-        camera_center_x  = 0 
-        camera_center_y  = 0 
-        camera_center_z  = 0 
+        camera_center_x  = camera_center_x 
+        camera_center_y  = camera_center_y 
+        camera_center_z  = camera_center_z 
 
     else: 
         camera_eye_x  = -1.5 
         camera_eye_y  = -1.5 
         camera_eye_z  = .8
-        camera_center_x  = 0 
-        camera_center_y  = 0 
-        camera_center_z  = 0
+        camera_center_x  = camera_center_x 
+        camera_center_y  = camera_center_y 
+        camera_center_z  = camera_center_z
         
         
     print("\nPlotting vehicle") 
@@ -314,37 +314,28 @@ def generate_3d_vehicle_geometry_data(plot_data,
 
     # -------------------------------------------------------------------------
     # Run Geoemtry Analysis
-    # -------------------------------------------------------------------------
-     
-
-    # update fuselage properties
+    # ------------------------------------------------------------------------- 
     if overwrite_geometry:
         for fuselage in vehicle.fuselages:
             compute_layout_of_passenger_accommodations(fuselage)
             fuselage_planform(fuselage) 
 
-    for wing in vehicle.wings: 
-
-        # ----------------------------
-        #  Blended Wing Body
-        # ----------------------------
+    for wing in vehicle.wings:  
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             if overwrite_geometry:
                 compute_layout_of_passenger_accommodations(wing)  
                 update_blended_wing_body_planform(wing)
             if overwrite_geometry:
                 bwb_wing_planform(wing,overwrite_reference = True)
-                vehicle.reference_area = wing.areas.reference
-
-        # ----------------------------
-        # All other Wing Surfaces
-        # ----------------------------
+                vehicle.reference_area = wing.areas.reference 
         else:
             if overwrite_geometry:
                 wing_planform(wing,overwrite_reference =  overwrite_geometry) 
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) and overwrite_geometry:
                     vehicle.reference_area = wing.areas.reference
-        
+         
+    compute_fuel_volume(vehicle, update_max_fuel=False)
+                    
     # -------------------------------------------------------------------------
     # PLOT WING
     # ------------------------------------------------------------------------- 
@@ -412,9 +403,9 @@ def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,nacelle_co
     for propulsor in network.propulsors:   
         number_of_airfoil_points = 21
         tessellation             = 24
-        if 'nacelle' in propulsor: 
-            if propulsor.nacelle !=  None: 
-                plot_data = plot_3d_nacelle(plot_data,propulsor.nacelle,tessellation,number_of_airfoil_points,nacelle_color,nacelle_alpha) 
+        #if 'nacelle' in propulsor: 
+            #if propulsor.nacelle !=  None: 
+                #plot_data = plot_3d_nacelle(plot_data,propulsor.nacelle,tessellation,number_of_airfoil_points,nacelle_color,nacelle_alpha) 
         if 'rotor' in propulsor: 
             plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
         if 'propeller' in propulsor:
@@ -424,10 +415,13 @@ def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,nacelle_co
             for fuel_tank in fuel_line.fuel_tanks:   
                 if fuel_tank.wing != None: 
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                        plot_3d_integral_wing_tank(plot_data,fuel_tank, tessellation, color_map = 'oranges') 
+                        plot_3d_integral_wing_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges') 
                     elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                        plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
+                        plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
                 elif fuel_tank.fuselage != None:   
-                    plot_3d_concetric_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
+                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
+                        plot_3d_integral_fuselage_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges') 
+                    elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
+                        plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
             
     return plot_data

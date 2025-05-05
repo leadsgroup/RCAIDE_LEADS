@@ -176,7 +176,7 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,oute
     epsilon_D = 10 
 
 
-    while epsilon_D > 0.001:
+    while abs(epsilon_D) > 0.001:
         AD =  D / np.cos(upper_slope)
         BC =  D / np.cos(lower_slope)
 
@@ -191,28 +191,28 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,oute
 
         epsilon_D  =  AB + DC - AD - BC
 
-        delta_AD = epsilon_D / (1 +  np.cos(upper_slope) /np.cos(lower_slope) )
+        delta_AD   = epsilon_D / (1 +  np.cos(upper_slope) /np.cos(lower_slope) )
 
-        detla_D  = delta_AD *  np.cos(upper_slope)
+        detla_D    = delta_AD *  np.cos(upper_slope)
 
         D += detla_D 
 
     # get orgin of fuel tank
     spar_sweep       = convert_sweep_segments(inner_segment.sweeps.quarter_chord, inner_segment, outer_segment, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=inner_segment.structural.front_spar_percent_chord) 
     origin_x         = inner_segment.origin[0][0] + (inner_segment.structural.front_spar_percent_chord * inner_segment_chord) +( np.tan(spar_sweep) * D / 2)
-    origin_y         = y_inner_upper + D / 2
+    origin_y         = inner_segment.origin[0][1]+ D / 2
     origin_z         = inner_segment.origin[0][2] + (D / 2) *np.tan(inner_segment.dihedral_outboard)
     fuel_tank.origin = [[origin_x,origin_y,origin_z]]
 
     # store tank diamter (this will set the location of the next segment)
-    fuel_tank.outer_diamter = D
+    fuel_tank.outer_diameter = D
     fuel_tank.inner_diameter = D -  2 * fuel_tank.wall_thickness 
 
     # delete original outer segment and replace with segment 
     tank_span_location = inner_segment.percent_span_location + (2 * D) / wing.spans.projected
 
     # get length of tank
-    l = np.minimum(outer_wingbox_length,inner_wingbox_length) 
+    l =  inner_wingbox_length -  (D / np.tan(spar_sweep)) -  D
 
     r =  fuel_tank.inner_diameter / 2
     volume = np.pi * ( r** 2) * l +  4 / 3 * np.pi * ( r** 3) 
@@ -262,8 +262,11 @@ def compute_segmented_wing_integral_tank_fuel_volume(fuel_tank,wing,inner_segmen
     # volume of truncated prism
     A_1 = inner_wingbox_length * (inner_front_rib_length + inner_rear_rib_length) / 2 
     A_2 = outer_wingbox_length * (outer_front_rib_length + outer_rear_rib_length) / 2
-    h =  (outer_segment.percent_span_location -  inner_segment.percent_span_location) *  wing.spans.projected    
-    volume = (1 /3) * ( A_1 + A_2 + np.sqrt(A_1*A_2)) *h  
+    h =  (outer_segment.percent_span_location -  inner_segment.percent_span_location) *  wing.spans.projected /2    # assumes wing is symmetric
+    volume = (1 /3) * ( A_1 + A_2 + np.sqrt(A_1*A_2)) *h
+
+    if wing.symmetric:
+        volume *= 2    
 
     return volume
 

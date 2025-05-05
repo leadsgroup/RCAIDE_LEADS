@@ -64,9 +64,9 @@ def geometry(mission):
                         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) and segment.analyses.geometry.settings.overwrite_reference:
                             vehicle.reference_area = wing.areas.reference
                     
-                # --------------------------------------------------------------------------------------------------------------------
+            # --------------------------------------------------------------------------------------------------------------------
             # Compute fuel volume  
-                # --------------------------------------------------------------------------------------------------------------------
+            # --------------------------------------------------------------------------------------------------------------------
             if segment.analyses.geometry.settings.update_fuel_volume:
                 compute_fuel_volume(vehicle, update_max_fuel=False)
                 
