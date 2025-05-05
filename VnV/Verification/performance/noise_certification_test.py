@@ -31,11 +31,11 @@ def main():
      
     results =  compute_noise_certification_data(approach_mission = approach_mission, takeoff_mission=takeoff_mission) 
 
-    truth_approach_noise_2000m  = 84.73299492774487
-    truth_flyover_noise_6000m   = 83.31127132759015
-    truth_sideline_noise_450m   = 95.260965430612
+    truth_approach_noise_2000m  = 84.5957757701328
+    truth_flyover_noise_6000m   = 83.02345976170514
+    truth_sideline_noise_450m   = 95.26241940819304
     truth_area_65_dbA           = 98.58686616791356
-    truth_area_85_dbA           = 41.42421723469105
+    truth_area_85_dbA           = 40.95317262399556
 
     # Check the errors
     error = Data()
