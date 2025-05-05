@@ -15,19 +15,46 @@ from scipy import interpolate
 #  Vortex_Lattice
 # ----------------------------------------------------------------------------------------------------------------------   
 def build_VLM_surrogates(aerodynamics):
-    """Build a surrogate using sample evaluation results.
+    """
+    Build surrogate models for aerodynamic coefficients using VLM analysis results.
     
-    Assumptions:
-        None
-        
-    Source:
-        None
-
-    Args:
-        aerodynamics       : VLM analysis          [unitless] 
-        
-    Returns: 
-        None  
+    This function creates interpolation-based surrogate models for various aerodynamic 
+    coefficients across different flight regimes (subsonic, transonic, supersonic).
+    
+    Parameters
+    ----------
+    aerodynamics : Data
+        VLM analysis data structure containing training data and vehicle information
+            - training : Data
+                Training data with aerodynamic coefficients at different conditions
+            - vehicle : Data
+                Vehicle configuration data
+            - surrogates : Data
+                Container to store the created surrogate models
+    
+    Returns
+    -------
+    None
+        Results are stored in the aerodynamics.surrogates data structure
+    
+    Notes
+    -----
+    The function creates separate surrogate models for subsonic, transonic, and 
+    supersonic regimes. For supersonic and transonic regimes, surrogates are only 
+    built if sufficient data points are available (more than 2 Mach points).
+    
+    The surrogate models use interpolation to predict aerodynamic coefficients 
+    at arbitrary flight conditions within the training data range.
+    
+    **Theory**
+    
+    The function uses regular grid interpolation for 2D data (e.g., coefficient vs 
+    angle of attack and Mach number) and 1D interpolation for stability derivatives.
+    
+    **Related Functions:**
+    
+    build_surrogate : Creates individual surrogate models for a specific flight regime
+    no_surrogate : Creates placeholder surrogate structures when data is insufficient
     """
     surrogates = aerodynamics.surrogates
     training   = aerodynamics.training 
@@ -190,8 +217,8 @@ def no_surrogate(aerodynamics, training):
     surrogates.dCN_dbeta        = None  
     surrogates.dCN_dp           = None      
     surrogates.dCN_dr           = None
-    surrogates.neutral_point = training.neutral_point # Double check this
-    surrogates.static_margin = training.static_margin # Double check this
+    surrogates.neutral_point    = None
+    surrogates.static_margin    = None
    
 
     if aerodynamics.aileron_flag:  

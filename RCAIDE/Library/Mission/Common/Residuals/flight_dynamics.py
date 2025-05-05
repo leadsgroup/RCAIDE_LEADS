@@ -16,33 +16,37 @@ from RCAIDE.Framework.Core   import orientation_product, orientation_transpose
 # ---------------------------------------------------------------------------------------------------------------------- 
 def flight_dynamics(segment):
     """
-    Evaluates flight dynamics residuals for mission segment analysis
-
+    Evaluates flight dynamics residuals for mission segment analysis.
+    
     Parameters
     ----------
     segment : Segment
         The mission segment being analyzed
-
+            - state : Data
+                Contains conditions, numerics, and residuals
+            - analyses : Data
+                Contains vehicle analysis objects
+            - flight_dynamics : Data
+                Contains flags for which equations to evaluate
+    
     Returns
     -------
     None
-        Updates segment residuals directly
-
+        Updates segment residuals directly in segment.state.residuals
+    
     Notes
     -----
     This function calculates the residuals for force and moment equations
     in all three axes. It handles special cases for transition and ground
     segments, including acceleration calculations and final velocity constraints.
-
+    
     The function processes:
         1. Force equation residuals (F = ma)
         2. Moment equation residuals (M = Iα)
-        3. Special handling for:
-            - Transition segments
-            - Ground operations (takeoff, landing)
-
+        3. Special handling for transition and ground segments
+    
     **Required Segment State Variables**
-
+    
     state.conditions.frames.inertial:
         - velocity_vector : array
             Vehicle velocity [m/s]
@@ -56,15 +60,15 @@ def flight_dynamics(segment):
             Angular rates [rad/s]
         - angular_acceleration_vector : array
             Angular accelerations [rad/s²]
-
+    
     state.conditions.weights:
         - total_mass : array
             Vehicle mass [kg]
-
+    
     analyses.aerodynamics.vehicle.mass_properties:
         - moments_of_inertia.tensor : array
             Inertia tensor [kg⋅m²]
-
+    
     **Segment Types**
     
     Special handling for:
@@ -76,14 +80,30 @@ def flight_dynamics(segment):
         * Takeoff
         * Landing
         * Ground operations
-
+    
     **Major Assumptions**
         * Rigid body dynamics
         * Principal axes aligned with body axes
-        * Constant inertia properties
+        * Constant inertia properties during segment
         * Valid mass properties
-        * Non-zero final velocity for ground segments
-
+        * Non-zero final velocity for ground segments (minimum 0.01 m/s)
+    
+    **Theory**
+    
+    Force equations (Newton's Second Law):
+    
+    .. math::
+        \\frac{F_i}{m} - a_i = 0
+    
+    Moment equations:
+    
+    .. math::
+        \\frac{M_i}{I_{ii}} - \\alpha_i = 0
+    
+    where :math:`i` represents each axis (x, y, z), :math:`F` is force, 
+    :math:`a` is acceleration, :math:`M` is moment, :math:`I` is moment of inertia,
+    and :math:`\\alpha` is angular acceleration.
+    
     See Also
     --------
     RCAIDE.Framework.Mission.Segments
