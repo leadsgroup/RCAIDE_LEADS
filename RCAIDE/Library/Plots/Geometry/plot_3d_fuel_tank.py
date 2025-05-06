@@ -93,7 +93,7 @@ def plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation = 24, colo
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_3d_integral_fuselage_tank
 # ----------------------------------------------------------------------------------------------------------------------
-def plot_3d_integral_fuselage_tank(plot_data, fuel_tank, tessellation = 24, color_map = 'oranges', alpha=1):
+def plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation = 24, color_map = 'oranges', alpha=1):
     """
     Creates a 3D visualization of a fuel_tank surface using tessellated panels.
 
@@ -132,8 +132,7 @@ def plot_3d_integral_fuselage_tank(plot_data, fuel_tank, tessellation = 24, colo
     generate_3d_fuel_tank_points : Function to generate fuel_tank surface points
     """
 
-    segment_list = []
-    fuselage = fuel_tank.fuselage
+    segment_list = [] 
     segment_tags = list(fuselage.segments.keys())     
     for i in range(len(fuselage.segments) - 1):
         seg =  fuselage.segments[segment_tags[i]]
@@ -164,7 +163,7 @@ def plot_3d_integral_fuselage_tank(plot_data, fuel_tank, tessellation = 24, colo
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_3d_integral_wing_tank
 # ----------------------------------------------------------------------------------------------------------------------  
-def plot_3d_integral_wing_tank(plot_data,fuel_tank, number_of_airfoil_points = 201, color_map='oranges', alpha=1):
+def plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, number_of_airfoil_points = 201, color_map='oranges', alpha=1):
     """
     Creates a 3D visualization of wing surfaces including symmetric sections if applicable.
 
@@ -203,8 +202,7 @@ def plot_3d_integral_wing_tank(plot_data,fuel_tank, number_of_airfoil_points = 2
     * Airfoil sections lie in x-z plane
     * Symmetric wing is mirror image about y-axis
     """ 
-    af_pts     = 4 
-    wing       = fuel_tank.wing
+    af_pts     = 4  
     segment_list = [] 
     segment_tags = list(wing.segments.keys())     
     for i in range(len(wing.segments) - 1):

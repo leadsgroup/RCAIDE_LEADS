@@ -19,7 +19,8 @@ from copy import  deepcopy
 # compute_fuel_volume 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_fuel_volume(vehicle, update_max_fuel =True):
-
+    wings     = vehicle.wings
+    fuselages = vehicle.fuselages
     total_fuel_volume = 0
     total_fuel_mass   = 0
     tank_percent_span_location = 0
@@ -29,8 +30,8 @@ def compute_fuel_volume(vehicle, update_max_fuel =True):
                 fuel_tank.internal_volume = 0 
 
                 # fuel tanks integrated into wings 
-                if fuel_tank.wing != None:
-                    wing = fuel_tank.wing  
+                if fuel_tank.wing_tag != None:
+                    wing = wings[fuel_tank.wing_tag]  
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
 
                         if len(wing.segments) > 1:
@@ -73,7 +74,7 @@ def compute_fuel_volume(vehicle, update_max_fuel =True):
 
                 # fuel tanks integrated into wings 
                 elif fuel_tank.fuselage != None: 
-                    fuselage = fuel_tank.fuselage 
+                    fuselage = fuselages[fuel_tank.fuselage_tag]  
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:
 
                         if len(fuselage.segments) > 1:

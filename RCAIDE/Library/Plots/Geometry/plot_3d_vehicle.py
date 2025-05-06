@@ -361,11 +361,11 @@ def generate_3d_vehicle_geometry_data(plot_data,
     # ------------------------------------------------------------------------- 
     number_of_airfoil_points = 11
     for network in vehicle.networks:
-        plot_data = plot_3d_energy_network(plot_data,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha) 
+        plot_data = plot_3d_energy_network(plot_data,vehicle,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha) 
  
     return plot_data,min_x_axis_limit,max_x_axis_limit,min_y_axis_limit,max_y_axis_limit,min_z_axis_limit,max_z_axis_limit
 
-def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha):
+def plot_3d_energy_network(plot_data,vehicle,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha):
     """
     Generates plot data for vehicle energy network components.
 
@@ -399,13 +399,15 @@ def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,nacelle_co
     save_figure   = False 
     show_figure   = False
     save_filename = 'propulsor'
+    wings         = vehicle.wings
+    fuselages     = vehicle.fuselages
 
     for propulsor in network.propulsors:   
         number_of_airfoil_points = 21
         tessellation             = 24
-        #if 'nacelle' in propulsor: 
-            #if propulsor.nacelle !=  None: 
-                #plot_data = plot_3d_nacelle(plot_data,propulsor.nacelle,tessellation,number_of_airfoil_points,nacelle_color,nacelle_alpha) 
+        if 'nacelle' in propulsor: 
+            if propulsor.nacelle !=  None: 
+                plot_data = plot_3d_nacelle(plot_data,propulsor.nacelle,tessellation,number_of_airfoil_points,nacelle_color,nacelle_alpha) 
         if 'rotor' in propulsor: 
             plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
         if 'propeller' in propulsor:
@@ -413,14 +415,16 @@ def plot_3d_energy_network(plot_data,network,number_of_airfoil_points,nacelle_co
        
         for fuel_line in network.fuel_lines: 
             for fuel_tank in fuel_line.fuel_tanks:   
-                if fuel_tank.wing != None: 
+                if fuel_tank.wing_tag != None:
+                    wing = wings[fuel_tank.wing_tag]
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                        plot_3d_integral_wing_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges') 
+                        plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, tessellation, color_map = 'oranges') 
                     elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
                         plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
-                elif fuel_tank.fuselage != None:   
+                elif fuel_tank.fuselage != None:
+                    fuselage = fuselages[fuel_tank.fuselage_tag]
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                        plot_3d_integral_fuselage_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges') 
+                        plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation, color_map = 'oranges') 
                     elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
                         plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
             

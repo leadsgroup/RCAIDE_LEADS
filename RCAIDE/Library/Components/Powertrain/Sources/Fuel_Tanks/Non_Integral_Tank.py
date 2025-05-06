@@ -69,10 +69,10 @@ class Non_Integral_Tank(Fuel_Tank):
         Initialize  
         """ 
         if compoment is not None:
-            if isinstance(compoment, RCAIDE.Library.Components.Wings.Wing): 
-                self.wing      = compoment 
-            if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage): 
-                self.fuselage     = compoment           
+            if isinstance(compoment, RCAIDE.Library.Components.Wings.Wing):  
+                self.wing_tag  =  compoment.tag  
+            if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage):  
+                self.fuselage_tag = compoment.tag        
        
     def append_operating_conditions(self,segment,fuel_line):  
         """

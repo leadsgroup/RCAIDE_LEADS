@@ -64,8 +64,8 @@ class Fuel_Tank(Component):
         self.length                      = 0.0 
         self.fuel                        = None
         self.symmetric                   = True
-        self.wing                        = None 
-        self.fuselage                    = None
+        self.wing_tag                    = None 
+        self.fuselage_tag                = None
          
 
     def append_operating_conditions(self,segment,fuel_line):  

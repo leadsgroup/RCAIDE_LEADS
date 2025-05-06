@@ -263,7 +263,7 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
                             max_z_axis_limit            = 50, 
                             wing_alpha                  = 0.2,
                             front_view                  = True, 
-                            show_figure                 = False 
+                            show_figure                 = show_figure 
                             )             
             
 
