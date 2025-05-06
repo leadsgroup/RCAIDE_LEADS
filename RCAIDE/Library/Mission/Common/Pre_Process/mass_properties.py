@@ -7,6 +7,7 @@
 #  RCAIDE
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
+import numpy as np
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_aircraft_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity                             import compute_vehicle_center_of_gravity
@@ -129,11 +130,21 @@ def mass_properties(mission):
                 if weights_analysis.vehicle.mass_properties.takeoff > weights_analysis.vehicle.mass_properties.max_takeoff:
                     print('Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
 
-                # CG Location  
+                # CG Location 
+                if not np.any(weights_analysis.vehicle.mass_properties.center_of_gravity):
+                    print('Warning: CG Location is not defined. Running CG calculation')
+                    weights_analysis.settings.update_center_of_gravity = True
+                
                 if weights_analysis.settings.update_center_of_gravity:
                     CG_location, _ = compute_vehicle_center_of_gravity(weights_analysis.vehicle, update_CG= weights_analysis.settings.update_center_of_gravity)  
-
+                else:
+                    CG_location = weights_analysis.vehicle.mass_properties.center_of_gravity
+                
                 # Operating Aircraft MOI    
+                if  np.any(weights_analysis.vehicle.mass_properties.moments_of_inertia.tensor): # Evaluates to False if all elements are 0, true if there are any numbers, nans, or +- infty
+                    print('Warning: Moments of Inertia Tensor is not defined. Running inertia tensor calculation')
+                    weights_analysis.settings.update_moment_of_inertia = True
+                
                 if weights_analysis.settings.update_moment_of_inertia:
                     _, _ = compute_aircraft_moment_of_inertia(weights_analysis.vehicle, CG_location, update_MOI= weights_analysis.settings.update_moment_of_inertia)          
 
