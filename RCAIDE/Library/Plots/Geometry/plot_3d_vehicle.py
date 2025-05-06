@@ -421,7 +421,7 @@ def plot_3d_energy_network(plot_data,vehicle,network,number_of_airfoil_points,na
                         plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, tessellation, color_map = 'oranges') 
                     elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
                         plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
-                elif fuel_tank.fuselage != None:
+                elif fuel_tank.fuselage_tag != None:
                     fuselage = fuselages[fuel_tank.fuselage_tag]
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
                         plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation, color_map = 'oranges') 

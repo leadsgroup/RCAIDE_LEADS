@@ -5,16 +5,14 @@
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------   
-import RCAIDE
+# ----------------------------------------------------------------------------------------------------------------------    
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice 
 from RCAIDE.Library.Methods.Geometry.Planform.compute_fuel_volume import compute_non_dimensional_rib_coordinates
 from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
 
 # python imports
-import numpy as np     
-from scipy.interpolate import interp1d
+import numpy as np      
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_3d_non_integral_fuel_tank
@@ -142,7 +140,7 @@ def plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation 
             if next_seg.tag not in segment_list:
                 segment_list.append(next_seg.tag)  
         
-    G  = generate_integral_fuel_tank_points(fuel_tank, segment_list,tessellation = 24 ) 
+    G  = generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list,tessellation = 24 ) 
     num_fus_segs = len(G.PTS[:,0,0])
     if num_fus_segs > 0:
         tesselation  = len(G.PTS[0,:,0])
@@ -482,7 +480,7 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
     
     return G
 
-def generate_integral_fuel_tank_points(fuel_tank, segment_list, tessellation = 24):
+def generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list, tessellation = 24):
     """
     Generates 3D coordinate points that define a fuel_tank surface.
 
@@ -517,9 +515,7 @@ def generate_integral_fuel_tank_points(fuel_tank, segment_list, tessellation = 2
     See Also
     --------
     plot_3d_fuel_tank : Function to visualize the generated surface
-    """
-    
-    fuselage         = fuel_tank.fuselage
+    """ 
     fus_segs         = fuselage.segments
     num_fus_segs     = len(segment_list) 
     fuel_tank_points = np.zeros((num_fus_segs+2,tessellation ,3))
