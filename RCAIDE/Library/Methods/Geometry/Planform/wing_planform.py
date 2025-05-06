@@ -22,6 +22,7 @@ def wing_planform(wing, overwrite_reference = True):
     Assumptions:
     Multisegmented wing. There is no unexposed wetted area, ie wing area that 
     intersects inside a fuselage. Aerodynamic center is at 25% mean aerodynamic chord.
+    exposed area is 90% of the reference area
     
     Source:
     None
@@ -192,6 +193,7 @@ def wing_planform(wing, overwrite_reference = True):
         wing.aerodynamic_center             = aerodynamic_center
         wing.single_side_aerodynamic_center = single_side_aerodynamic_center
         wing.total_length                   = total_length 
+        wing.areas.exposed                  = wing.areas.reference * 0.9 # assume that 10% of the wing is covered by a fuselage
      
         # Pack stuff
         if overwrite_reference:
@@ -276,6 +278,7 @@ def wing_planform(wing, overwrite_reference = True):
         wing.spans.total                = span_total
         wing.aerodynamic_center         = [x_coord , y_coord, z_coord]
         wing.total_length               = total_length 
+        wing.areas.exposed                  = sref * 0.9 # assume that 10% of the wing is covered by a fuselage
         
     return wing
 

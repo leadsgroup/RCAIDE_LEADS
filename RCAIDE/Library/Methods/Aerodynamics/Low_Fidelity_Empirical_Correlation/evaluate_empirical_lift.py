@@ -19,7 +19,7 @@ def empiracle_lift(state,settings,vehicle):
     Assumptions:
         
     Source:
-        None
+        Raymer, Aircraft Design: A Conceptual Approach, 3rd Ed. (page 324 of third edition, aerodynamics section)
 
     Args:
         aerodynamics : VLM analysis  [unitless]
@@ -44,8 +44,7 @@ def empiracle_lift(state,settings,vehicle):
             b = wing.spans.projected
             S_ref = wing.areas.reference
             sweep = wing.sweeps.leading_edge 
-            if  wing.areas.exposed == 0: 
-                S_exp =  wing.areas.reference * 2
+            S_exp =  wing.areas.exposed
             AR = wing.aspect_ratio 
             
     for fuselage in vehicle.fuselages: 
