@@ -72,6 +72,7 @@ class Low_Fidelity_Empirical_Correlation(Aerodynamics):
         self.settings.drag_reduction_factors.induced_drag                 = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.drag_reduction_factors.compressibility_drag         = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.maximum_lift_coefficient_factor                     = 1.0 
+        self.settings.pylon_parasite_drag_factor                          = 0.1
         self.settings.oswald_efficiency_factor                            = None
         self.settings.span_efficiency                                     = None
         self.settings.viscous_lift_dependent_drag_factor                  = 0.38

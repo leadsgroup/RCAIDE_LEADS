@@ -36,20 +36,25 @@ def empiracle_lift(state,settings,vehicle):
     
     b     =  0
     d     =  0
-    e     =  0.9
+    e     =  0.95
     sweep =  0
     Cl_alpha =  np.pi * 2 
+
+    for fuselage in vehicle.fuselages: 
+      d =  np.maximum(d,fuselage.width)
+    
     for wing in vehicle.wings:
-        if type(wing) == RCAIDE.Library.Components.Wings.Main_Wing: 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing): 
             b = wing.spans.projected
             S_ref = wing.areas.reference
             sweep = wing.sweeps.leading_edge 
             S_exp =  wing.areas.exposed
-            AR = wing.aspect_ratio 
+            AR = b**2 / S_ref
+            if isinstance (wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                for segment in wing.segments:
+                    if isinstance (segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
+                        d  = segment.percent_span_location * wing.spans.projected  # Fuselage width when we have a blended wing body
             
-    for fuselage in vehicle.fuselages: 
-        d =  np.maximum(d,fuselage.width)
-        
     delta_max_t    = sweep
     F              =  1.07 * (1 + d / b) ** 2
     beta           = np.sqrt(1-Mach**2)

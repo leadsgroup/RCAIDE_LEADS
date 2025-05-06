@@ -36,8 +36,8 @@ def update_blended_wing_body_planform(bwb_wing):
     new_cabin_segs = 0
     max_cabin_seg_span = 0
     for seg_i , segment in enumerate(bwb_wing.segments):
-        seg_span = segment.percent_span_location * bwb_wing.spans.projected / 2
-        if type(segment) == RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment: 
+        if isinstance(segment,RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment): 
+            seg_span = segment.percent_span_location * bwb_wing.spans.projected / 2
             max_cabin_seg_span =  np.maximum(max_cabin_seg_span,seg_span)
         
     add_final_cabin_seg = True             
