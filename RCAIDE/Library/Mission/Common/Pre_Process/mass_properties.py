@@ -141,7 +141,7 @@ def mass_properties(mission):
                     CG_location = weights_analysis.vehicle.mass_properties.center_of_gravity
                 
                 # Operating Aircraft MOI    
-                if  np.any(weights_analysis.vehicle.mass_properties.moments_of_inertia.tensor): # Evaluates to False if all elements are 0, true if there are any numbers, nans, or +- infty
+                if  not np.any(weights_analysis.vehicle.mass_properties.moments_of_inertia.tensor): # Evaluates to False if all elements are 0, true if there are any numbers, nans, or +- infty
                     print('Warning: Moments of Inertia Tensor is not defined. Running inertia tensor calculation')
                     weights_analysis.settings.update_moment_of_inertia = True
                 
