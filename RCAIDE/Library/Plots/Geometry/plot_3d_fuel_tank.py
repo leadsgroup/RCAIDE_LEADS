@@ -608,6 +608,7 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
     """  
     fuel_tank_points = np.zeros((12,tessellation ,3))
     R = fuel_tank.outer_diameter / 2
+    L = fuel_tank.length - fuel_tank.outer_diameter
          
     # front segments
     front_angles = np.linspace(0, np.pi/2,6) 
@@ -632,7 +633,7 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
         theta    = np.linspace(0,2*np.pi,tessellation) 
         fus_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
         fus_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
-        fuel_tank_points[6+j,:,0] = R *(np.cos(rear_angles[j]))  + fuel_tank.length + fuel_tank.origin[0][0] 
+        fuel_tank_points[6+j,:,0] = R *(np.cos(rear_angles[j]))  +  L + fuel_tank.origin[0][0] 
         fuel_tank_points[6+j,:,1] = fus_ypts + fuel_tank.origin[0][1]
         fuel_tank_points[6+j,:,2] = fus_zpts + fuel_tank.origin[0][2]
         
