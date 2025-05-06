@@ -73,7 +73,7 @@ def compute_fuel_volume(vehicle, update_max_fuel =True):
                                     total_fuel_mass   += volume * fuel_tank.fuel.density
 
                 # fuel tanks integrated into wings 
-                elif fuel_tank.fuselage != None: 
+                elif fuel_tank.fuselage_tag != None: 
                     fuselage = fuselages[fuel_tank.fuselage_tag]  
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:
 
