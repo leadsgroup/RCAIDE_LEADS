@@ -199,7 +199,6 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment_0,ou
         detla_D    = delta_AD *  np.cos(upper_slope)
 
         D += detla_D 
-
     
     # store tank diamter (this will set the location of the next segment)
     fuel_tank.outer_diameter = D 

@@ -467,16 +467,20 @@ def vehicle_setup():
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
-    #------------------------------------------------------------------------------------------------------------------------- 
+    #-------------------------------------------------------------------------------------------------------------------------  
     # fuel tank
     fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
-    fuel_tank.origin                                 = vehicle.wings.main_wing.origin  
-    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()   
-    fuel_tank.fuel.mass_properties.mass              = vehicle.mass_properties.max_takeoff-vehicle.mass_properties.max_fuel
-    fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
-    fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center
-    fuel_tank.internal_volume                        = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.tag = 'inner_tank'
+    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    fuel_tank.wall_thickness = 2 * Units.inches 
+    fuel_line.fuel_tanks.append(fuel_tank) 
+
+    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing) 
+    fuel_tank.tag = 'outer_tank'
+    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    fuel_tank.wall_thickness = 2 * Units.inches 
     fuel_line.fuel_tanks.append(fuel_tank)
+    
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network      
