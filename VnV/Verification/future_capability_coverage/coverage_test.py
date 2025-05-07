@@ -63,7 +63,10 @@ def main():
     propellant  = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
     propellant  = RCAIDE.Library.Attributes.Propellants.JP7()  
     propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_LH2()  
-    propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_RP1()  
+    propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_RP1()
+    
+    # networks
+    network =  RCAIDE.Framework.Networks.Hydrogen() 
 
     
     return

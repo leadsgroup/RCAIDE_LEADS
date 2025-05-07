@@ -66,9 +66,8 @@ def geometry(mission):
                     
             # --------------------------------------------------------------------------------------------------------------------
             # Compute fuel volume  
-            # --------------------------------------------------------------------------------------------------------------------
-            if segment.analyses.geometry.settings.update_fuel_volume:
-                compute_fuel_volume(vehicle, update_max_fuel=False)
+            # -------------------------------------------------------------------------------------------------------------------- 
+            compute_fuel_volume(vehicle, update_max_fuel=segment.analyses.geometry.settings.update_fuel_volume)
                 
             # update tag name 
             last_tag = tag  

@@ -107,7 +107,7 @@ def plot_battery_pack_conditions(results,
         busses  = network.busses 
         for  b_i , bus in  enumerate(busses): 
             for i in range(len(results.segments)): 
-                no_modules         = len(bus.battery_modules)   
+                no_modules         = len(bus.battery_modules) 
                 bus_config         = bus.battery_module_electric_configuration 
                 battery_module_tag = list(bus.battery_modules.keys())[0]
                 

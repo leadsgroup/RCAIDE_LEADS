@@ -135,6 +135,13 @@ def mission_setup(analyses):
     segment.tag                             = 'Discharge_1' 
     segment.time                            = 60  
     mission.append_segment(segment)
+
+    segment                                 = Segments.Ground.Battery_Discharge(base_segment) 
+    segment.analyses.extend(analyses.discharge)  
+    segment.tag                             = 'Discharge_2' 
+    segment.time                            = 60  
+    mission.append_segment(segment)
+        
      
     return mission 
 

@@ -79,7 +79,7 @@ def energy(segment):
             for fuel_tank in bus.fuel_tanks:
                 if segment.state.initials:
                     bus_initials       = segment.state.initials.conditions.energy.busses[bus.tag]
-                    fuel_tank_initials = bus_initials[fuel_tank.tag]
+                    fuel_tank_initials = bus_initials.fuel_tanks[fuel_tank.tag]
                     conditions.busses[bus.tag].fuel_tanks[fuel_tank.tag].mass[:,0]   = fuel_tank_initials.mass[-1,0]
                 elif vehicle.networks[network.tag].busses[bus.tag].fuel_tanks[fuel_tank.tag].fuel != None:
                         conditions.busses[bus.tag].fuel_tanks[fuel_tank.tag].mass[:,0]  = vehicle.networks[network.tag].busses[bus.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass

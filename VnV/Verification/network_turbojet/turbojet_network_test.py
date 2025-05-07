@@ -32,7 +32,20 @@ def main():
     
 
     # vehicle data
-    vehicle  = vehicle_setup()
+    vehicle  = vehicle_setup() 
+
+    # plot vehicle 
+    plot_3d_vehicle(vehicle, 
+                            min_x_axis_limit            = -50,
+                            max_x_axis_limit            = 50,
+                            min_y_axis_limit            = -50,
+                            max_y_axis_limit            = 50,
+                            min_z_axis_limit            = -50,
+                            max_z_axis_limit            = 50, 
+                            wing_alpha                  = 0.2,
+                            front_view                  = True, 
+                            show_figure                 = False 
+                            )    
     
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
@@ -63,9 +76,9 @@ def main():
             print(val)
     
     # Truth values
-    thrust_truth     = 121879.42334376826
-    throttle_truth   = 0.6824462621445628
-    CL_truth         = 0.17530577886508114
+    thrust_truth     = 122213.30891792665
+    throttle_truth   = 0.6933988884939217
+    CL_truth         = 0.15299182983511703
     
     # Store errors 
     error = Data()

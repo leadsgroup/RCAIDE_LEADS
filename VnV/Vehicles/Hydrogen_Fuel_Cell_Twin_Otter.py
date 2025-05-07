@@ -91,6 +91,7 @@ def vehicle_setup(fuel_cell_model):
     segment.dihedral_outboard             = 3. * Units.degree 
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
+    segment.has_fuel_tank                 = True
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
     
@@ -321,6 +322,114 @@ def vehicle_setup(fuel_cell_model):
 
     # add to vehicle
     vehicle.append_component(fuselage)
+
+    # ------------------------------------------------------------------
+    #   Landing gear
+    # ------------------------------------------------------------------  
+    main_gear                                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.strut_length                      = 12. * Units.inches
+    vehicle.append_component(main_gear) 
+    nose_gear                                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()    
+    nose_gear.strut_length                      = 6. * Units.inches 
+    vehicle.append_component(nose_gear) 
+ 
+    # ########################################################  Energy Network  #########################################################  
+    net                              = RCAIDE.Framework.Networks.Fuel_Cell()   
+
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Bus and Crogenic Line 
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()   
+      
+    if fuel_cell_model == 'PEM': 
+        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
+        fuel_cell_stack.electrical_configuration.series             = 940
+        fuel_cell_stack.electrical_configuration.parallel           = 7
+        fuel_cell_stack.geometrtic_configuration.normal_count       = 940
+        fuel_cell_stack.geometrtic_configuration.parallel_count     = 7
+    if fuel_cell_model == 'Larminie':  
+        fuel_cell_stack   = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack() 
+        fuel_cell_stack.electrical_configuration.series             = 1020
+        fuel_cell_stack.electrical_configuration.parallel           = 1
+        fuel_cell_stack.geometrtic_configuration.normal_count       = 1020
+        fuel_cell_stack.geometrtic_configuration.parallel_count     = 1
+        
+    bus.fuel_cell_stacks.append(fuel_cell_stack)  
+    bus.initialize_bus_properties() 
+      
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Crogenic Tank
+    #------------------------------------------------------------------------------------------------------------------------------------       
+    cryogenic_tank_1 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.fuselages.fuselage)    # for regression, aircraft has two tanks
+    cryogenic_tank_1.fuel_selector_ratio  = 0.5 
+    cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    bus.fuel_tanks.append(cryogenic_tank_1)
+    
+    cryogenic_tank_2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
+    cryogenic_tank_2.fuel_selector_ratio  = 0.5
+    cryogenic_tank_2.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    bus.fuel_tanks.append(cryogenic_tank_2)    
+    
+    cryogenic_tank_3 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
+    cryogenic_tank_3.fuel_selector_ratio  = 0.5
+    cryogenic_tank_3.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    bus.fuel_tanks.append(cryogenic_tank_3)   
+          
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    #  Starboard Propulsor
+    #------------------------------------------------------------------------------------------------------------------------------------   
+    starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
+    starboard_propulsor.tag                          = 'starboard_propulsor'
+    
+    # Electronic Speed Controller       
+    esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
+    esc.tag                                          = 'esc_1'
+    esc.efficiency                                   = 0.95 
+    esc.origin                                       = [[3.8,2.8129,1.22 ]]  
+    esc.bus_voltage                                  = bus.voltage    
+    starboard_propulsor.electronic_speed_controller  = esc   
+     
+    # Propeller              
+    propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
+    propeller.tag                                    = 'propeller_1'  
+    propeller.tip_radius                             = 2.59
+    propeller.number_of_blades                       = 3
+    propeller.hub_radius                             = 10.    * Units.inches
+
+    propeller.cruise.design_freestream_velocity      = 130 * Units.kts      
+    speed_of_sound                                   = 343 
+    propeller.cruise.design_tip_mach                 = 0.65
+    propeller.cruise.design_angular_velocity         = propeller.cruise.design_tip_mach *speed_of_sound/propeller.tip_radius
+    propeller.cruise.design_Cl                       = 0.7
+    propeller.cruise.design_altitude                 = 8000. * Units.feet 
+    propeller.cruise.design_thrust                   = 12500  
+    propeller.clockwise_rotation                     = False
+    propeller.variable_pitch                         = True  
+    propeller.origin                                 = [[3.5,2.8129,1.22 ]]   
+    airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.tag                                      = 'NACA_4412' 
+    airfoil.coordinate_file                          =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   
+    airfoil.polar_files                              = [ rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
+                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
+                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
+                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
+                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
+    propeller.append_airfoil(airfoil)                       
+    propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
+    starboard_propulsor.rotor                        = propeller   
+              
+    # DC_Motor       
+    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    motor.efficiency                                 = 0.98
+    motor.origin                                     = [[4.0,2.8129,1.22 ]]   
+    motor.nominal_voltage                            = bus.voltage 
+    motor.no_load_current                            = 1
+    starboard_propulsor.motor                        = motor 
+
+    # design starboard propulsor 
+    design_electric_rotor(starboard_propulsor)
+    
+
  
     #########################################################   Nacelles  ############################################################    
     nacelle                    = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
@@ -402,115 +511,9 @@ def vehicle_setup(fuel_cell_model):
     nac_segment.percent_z_location = 1.301733333 
     nac_segment.height             = 0.036666667	
     nac_segment.width              = 0.0  
-    nacelle.append_segment(nac_segment)
+    nacelle.append_segment(nac_segment) 
     
-    
-    vehicle.append_component(nacelle)  
-
-    nacelle_2          = deepcopy(nacelle)
-    nacelle_2.tag      = 'nacelle_2'
-    nacelle_2.origin   = [[ 2.81, -3.34 ,1.22]]
-    vehicle.append_component(nacelle_2)    
-
-    # ------------------------------------------------------------------
-    #   Landing gear
-    # ------------------------------------------------------------------  
-    main_gear                                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.strut_length                      = 12. * Units.inches
-    vehicle.append_component(main_gear) 
-    nose_gear                                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()    
-    nose_gear.strut_length                      = 6. * Units.inches 
-    vehicle.append_component(nose_gear) 
- 
-    # ########################################################  Energy Network  #########################################################  
-    net                              = RCAIDE.Framework.Networks.Fuel_Cell()   
-
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Bus and Crogenic Line 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()   
-      
-    if fuel_cell_model == 'PEM': 
-        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
-        fuel_cell_stack.electrical_configuration.series             = 940
-        fuel_cell_stack.electrical_configuration.parallel           = 7
-        fuel_cell_stack.geometrtic_configuration.normal_count       = 940
-        fuel_cell_stack.geometrtic_configuration.parallel_count     = 7
-    if fuel_cell_model == 'Larminie':  
-        fuel_cell_stack   = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack() 
-        fuel_cell_stack.electrical_configuration.series             = 1020
-        fuel_cell_stack.electrical_configuration.parallel           = 1
-        fuel_cell_stack.geometrtic_configuration.normal_count       = 1020
-        fuel_cell_stack.geometrtic_configuration.parallel_count     = 1
-        
-    bus.fuel_cell_stacks.append(fuel_cell_stack)  
-    bus.initialize_bus_properties() 
-      
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Crogenic Tank
-    #------------------------------------------------------------------------------------------------------------------------------------       
-    cryogenic_tank_1 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.fuselages.fuselage)    # for regression, aircraft has two tanks
-    cryogenic_tank_1.fuel_selector_ratio  = 0.5 
-    cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()       
-    cryogenic_tank_2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
-    cryogenic_tank_2.fuel_selector_ratio  = 0.5
-    cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
-    bus.fuel_tanks.append(cryogenic_tank_1)     
-    bus.fuel_tanks.append(cryogenic_tank_2)   
-     
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    #  Starboard Propulsor
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
-    starboard_propulsor.tag                          = 'starboard_propulsor'
-    
-    # Electronic Speed Controller       
-    esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
-    esc.tag                                          = 'esc_1'
-    esc.efficiency                                   = 0.95 
-    esc.origin                                       = [[3.8,2.8129,1.22 ]]  
-    esc.bus_voltage                                  = bus.voltage    
-    starboard_propulsor.electronic_speed_controller  = esc   
-     
-    # Propeller              
-    propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
-    propeller.tag                                    = 'propeller_1'  
-    propeller.tip_radius                             = 2.59
-    propeller.number_of_blades                       = 3
-    propeller.hub_radius                             = 10.    * Units.inches
-
-    propeller.cruise.design_freestream_velocity      = 130 * Units.kts      
-    speed_of_sound                                   = 343 
-    propeller.cruise.design_tip_mach                 = 0.65
-    propeller.cruise.design_angular_velocity         = propeller.cruise.design_tip_mach *speed_of_sound/propeller.tip_radius
-    propeller.cruise.design_Cl                       = 0.7
-    propeller.cruise.design_altitude                 = 8000. * Units.feet 
-    propeller.cruise.design_thrust                   = 12500  
-    propeller.clockwise_rotation                     = False
-    propeller.variable_pitch                         = True  
-    propeller.origin                                 = [[3.5,2.8129,1.22 ]]   
-    airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.tag                                      = 'NACA_4412' 
-    airfoil.coordinate_file                          =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   
-    airfoil.polar_files                              = [ rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
-                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
-                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
-                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
-                                                        rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
-    propeller.append_airfoil(airfoil)                       
-    propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
-    starboard_propulsor.rotor                        = propeller   
-              
-    # DC_Motor       
-    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
-    motor.efficiency                                 = 0.98
-    motor.origin                                     = [[4.0,2.8129,1.22 ]]   
-    motor.nominal_voltage                            = bus.voltage 
-    motor.no_load_current                            = 1
-    starboard_propulsor.motor                        = motor 
-
-    # design starboard propulsor 
-    design_electric_rotor(starboard_propulsor)
+    starboard_propulsor.nacelle =  nacelle   
  
     # append propulsor to distribution line 
     net.propulsors.append(starboard_propulsor) 
@@ -533,11 +536,15 @@ def vehicle_setup(fuel_cell_model):
               
     motor_2                                    = deepcopy(motor)
     motor_2.origin                             =  [[4.0, -2.8129,1.22 ]]        
-    port_propulsor.motor                       = motor_2  
+    port_propulsor.motor                       = motor_2 
+
+    nacelle_2                                  = deepcopy(nacelle)
+    nacelle_2.tag                              = 'nacelle_2'
+    nacelle_2.origin                           = [[ 2.81, -3.34 ,1.22]]
+    port_propulsor.nacelle                     = nacelle_2         
     
     # append propulsor to distribution line 
-    net.propulsors.append(port_propulsor) 
-
+    net.propulsors.append(port_propulsor)  
 
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Payload 

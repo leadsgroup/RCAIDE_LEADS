@@ -53,10 +53,8 @@ def main():
             print('Computed value of coefficient of lift is:', CL)
             error =  abs(CL - CL_true[i][j]) /CL_true[i][j]
             assert(abs(error)<1e-6)
-             
-            if i ==  0 and  j == 0: 
-                # plot the results 
-                plot_results(results)
+              
+            plot_results(results)
 
     return
     
