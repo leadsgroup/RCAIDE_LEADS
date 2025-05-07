@@ -10,6 +10,7 @@ import RCAIDE
 from RCAIDE.Framework.Core            import Data, Units     
 from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import * 
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift import *
+from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy
 from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 
 # package imports
@@ -172,35 +173,26 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     conditions.freestream.gravity                     = np.atleast_2d(planet.sea_level_gravity) 
     conditions.freestream.speed_of_sound              = np.atleast_1d(a)
     conditions.freestream.velocity                    = np.atleast_1d(a*0.01)   
+ 
 
-    # setup conditions   
-    segment                                           = RCAIDE.Framework.Mission.Segments.Segment() 
-    segment.state.conditions                          = conditions
+    analysis                 = RCAIDE.Framework.Analyses.Vehicle() 
+    energy_analysis          = RCAIDE.Framework.Analyses.Energy.Energy()
+    energy_analysis.vehicle  = vehicle 
+    analysis.append(energy_analysis)
+     
+    mission = RCAIDE.Framework.Mission.Sequential_Segments() 
+    segment = RCAIDE.Framework.Mission.Segments.Segment() 
+    segment.hybrid_power_split_ratio            = None
+    segment.battery_fuel_cell_power_split_ratio = None
+    segment.analyses.extend( analysis) 
+    mission.append_segment(segment) 
+    segment.state.conditions  = conditions    
+    
+    # initalize mission
+    energy(mission)      
 
-    thrust =  np.array([[0.0, 0.0, 0.0]])
-
-    analysis = RCAIDE.Framework.Analyses.Vehicle() 
-    energy   = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
-    analysis.append(energy)            
-    segment.analyses = analysis      
-
-    for network in vehicle.networks: 
-        if type(network) == RCAIDE.Framework.Networks.Hybrid:
-            if segment.hybrid_power_split_ratio == None:
-                raise AssertionError('Hybridization power split ratio not set! Specify in mission segment') 
-            if segment.battery_fuel_cell_power_split_ratio == None:
-                raise AssertionError('Battery/Fuel cell power split ratio not set! Specify in mission segment')                 
-        elif type(network) == RCAIDE.Framework.Networks.Fuel:               
-            segment.hybrid_power_split_ratio = 0.0
-            segment.battery_fuel_cell_power_split_ratio = 0.0
-        elif type(network) == RCAIDE.Framework.Networks.Electric:         
-            segment.hybrid_power_split_ratio = 1.0  
-            segment.battery_fuel_cell_power_split_ratio = 1.0
-        elif type(network) == RCAIDE.Framework.Networks.Fuel_Cell:           
-            segment.hybrid_power_split_ratio = 1.0  
-            segment.battery_fuel_cell_power_split_ratio = 0.0 
-        network.add_unknowns_and_residuals_to_segment(segment) 
+    thrust =  np.array([[0.0, 0.0, 0.0]]) 
+    for network in vehicle.networks:   
         for propulsor in  network.propulsors: 
             segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]]) 
         network.evaluate(segment.state,center_of_gravity = vehicle.mass_properties.center_of_gravity) 

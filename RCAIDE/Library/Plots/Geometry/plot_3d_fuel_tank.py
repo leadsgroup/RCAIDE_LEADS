@@ -233,34 +233,22 @@ def plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, number_of_airfoil_poin
             values      = np.ones_like(X) 
             verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
             plot_data.append(verts)
-    if wing.symmetric:
-        if wing.vertical: 
-            for sec in range(dim-1):
-                for loc in range(af_pts):
-                    X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
-                    Y = np.array([[G.YA1[sec,loc],G.YA2[sec,loc]],[G.YB1[sec,loc],G.YB2[sec,loc]]])
-                    Z = np.array([[-G.ZA1[sec,loc], -G.ZA2[sec,loc]],[-G.ZB1[sec,loc], -G.ZB2[sec,loc]]]) 
-                     
-                    values      = np.ones_like(X) 
-                    verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
-                    plot_data.append(verts)
-        else:
-            for sec in range(dim-1):
-                for loc in range(af_pts):
-                    X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
-                    Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
-                    Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
-                     
-                    values      = np.ones_like(X) 
-                    verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
-                    plot_data.append(verts)
+    if wing.symmetric: 
+        for sec in range(dim-1):
+            for loc in range(af_pts):
+                X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
+                Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
+                Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
+                 
+                values      = np.ones_like(X) 
+                verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
+                plot_data.append(verts)
              
     return plot_data
  
 # ----------------------------------------------------------------------------------------------------------------------
-#  helper functions
+#  generate_integral_wing_tank_points
 # ----------------------------------------------------------------------------------------------------------------------  
- 
 def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
     """
     Generates 3D coordinate points that define a wing surface.
@@ -384,8 +372,8 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
         translation      = np.zeros((dim,n_points, 3,1))
     
         front_rib_yu,rear_rib_yu,front_rib_yl,rear_rib_yl = compute_non_dimensional_rib_coordinates(wing)
-        fs = current_seg.structural.front_spar_percent_chord
-        rs = current_seg.structural.rear_spar_percent_chord  
+        fs = wing.structural.front_spar_percent_chord
+        rs = wing.structural.rear_spar_percent_chord  
         x_coordinates =  np.array([rs, rs, fs, fs, rs])
         y_coordinates =  np.array([rear_rib_yl, rear_rib_yu, front_rib_yu,front_rib_yl,rear_rib_yl ]) 
             

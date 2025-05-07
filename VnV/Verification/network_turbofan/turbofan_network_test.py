@@ -45,8 +45,6 @@ def main():
                     max_z_axis_limit            = 100, 
                     show_figure                 = False 
                     )
-    
-
 
     # plot vehicle 
     plot_3d_vehicle(vehicle,

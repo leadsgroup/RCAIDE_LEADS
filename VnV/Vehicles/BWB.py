@@ -8,8 +8,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan      import design_turbofan   
-from RCAIDE.Library.Methods.Geometry.Planform.fuselage_planform import fuselage_planform
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan      import design_turbofan    
 from RCAIDE.Library.Plots                                       import *     
  
 # python imports 
@@ -122,6 +121,10 @@ def vehicle_setup():
     side_cabin.append_cabin_class(side_economy_class) 
     wing.append_cabin(side_cabin)  
 
+    ospath                                = os.path.abspath(__file__)
+    separator                             = os.path.sep
+    rel_path                              = os.path.dirname(ospath) + separator
+    
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
     segment.tag                           = 'Fuselage_Section_1'
@@ -133,6 +136,9 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.13 
     segment.sweeps.quarter_chord           = 60 *  Units.degrees  
     segment.percent_chord_cabin_start     = 0.05 
+    root_airfoil =  RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+    root_airfoil.NACA_4_Series_code    = '0010'
+    segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
@@ -145,6 +151,9 @@ def vehicle_setup():
     segment.thickness_to_chord            =  0.1379
     segment.sweeps.quarter_chord           =  62.06 *  Units.degrees  
     segment.percent_chord_cabin_start     = 0.04 
+    root_airfoil =  RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+    root_airfoil.NACA_4_Series_code    = '0010'
+    segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
     segment                               =RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
@@ -155,8 +164,11 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.725 
     segment.dihedral_outboard             = 8 *  Units.degrees 
     segment.thickness_to_chord            = 0.158 
-    segment.sweeps.quarter_chord           = 60 *  Units.degrees   
+    segment.sweeps.quarter_chord          = 60 *  Units.degrees   
     segment.percent_chord_cabin_start     = 0.03 
+    root_airfoil =  RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+    root_airfoil.NACA_4_Series_code    = '0016'
+    segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
@@ -169,6 +181,9 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.1
     segment.sweeps.quarter_chord           = 60 *  Units.degrees 
     segment.percent_chord_cabin_start     = 0.02 
+    yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
+    yehudi_airfoil.coordinate_file        = rel_path+ 'Airfoils' + separator + 'B737b.txt'
+    segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)     
 
 
@@ -182,6 +197,9 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.15
     segment.sweeps.quarter_chord           = 26.*  Units.degrees
     segment.has_fuel_tank                 = True 
+    yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
+    yehudi_airfoil.coordinate_file        = rel_path+ 'Airfoils' + separator + 'B737b.txt'
+    segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
 
 
@@ -195,6 +213,9 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.1154 
     segment.sweeps.quarter_chord          = 30.*  Units.degrees 
     segment.reference_area_root           = True 
+    yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
+    yehudi_airfoil.coordinate_file        = rel_path+ 'Airfoils' + separator + 'B737b.txt'
+    segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)  
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -205,7 +226,10 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.08
     segment.dihedral_outboard             = 75 *  Units.degrees 
     segment.thickness_to_chord            = 0.0972 
-    segment.sweeps.quarter_chord           = 60 *  Units.degrees  
+    segment.sweeps.quarter_chord          = 60 *  Units.degrees  
+    end_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
+    end_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'B737c.txt'    
+    segment.append_airfoil(end_airfoil)
     wing.append_segment(segment)  
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -216,7 +240,10 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.05
     segment.dihedral_outboard             = 0 
     segment.thickness_to_chord            = 0.098 
-    segment.sweeps.quarter_chord           = 0.0  
+    segment.sweeps.quarter_chord          = 0.0 
+    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
+    tip_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'B737d.txt'    
+    segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
 
     # control surfaces -------------------------------------------
@@ -479,16 +506,7 @@ def vehicle_setup():
     fuel_tank.tag = 'outer_tank'
     fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()
     fuel_tank.wall_thickness = 2 * Units.inches 
-    fuel_line.fuel_tanks.append(fuel_tank)
-    
-
-    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
-    fuel_tank.tag = 'wing_tank'
-    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()
-    fuel_tank.wall_thickness = 2 * Units.inches 
-    fuel_line.fuel_tanks.append(fuel_tank)    
-    
-
+    fuel_line.fuel_tanks.append(fuel_tank)  
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network      
     fuel_line.assigned_propulsors =  [['propulsor_1', 'propulsor_2']]

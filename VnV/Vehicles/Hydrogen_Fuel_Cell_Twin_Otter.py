@@ -306,6 +306,7 @@ def vehicle_setup(fuel_cell_model):
     segment.percent_z_location                  = 0.394233333/ fuselage.lengths.total	 	 
     segment.height                              = 1.558333333	 
     segment.width                               = 1.64
+    segment.has_fuel_tank                       = True
     fuselage.segments.append(segment)
     
 
@@ -369,11 +370,6 @@ def vehicle_setup(fuel_cell_model):
     cryogenic_tank_2.fuel_selector_ratio  = 0.5
     cryogenic_tank_2.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
     bus.fuel_tanks.append(cryogenic_tank_2)    
-    
-    cryogenic_tank_3 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
-    cryogenic_tank_3.fuel_selector_ratio  = 0.5
-    cryogenic_tank_3.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
-    bus.fuel_tanks.append(cryogenic_tank_3)   
           
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor

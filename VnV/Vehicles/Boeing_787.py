@@ -84,12 +84,12 @@ def vehicle_setup(vehicle_name = 'Boeing_787-800', passengers = 296) :
     root_airfoil.coordinate_file          = rel_path  + 'Airfoils' + separator + 'B737a.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Root'
-    segment.percent_span_location         = 0.0
-    #segment.twist                         = 4. * Units.deg
+    segment.percent_span_location         = 0.0 
     segment.root_chord_percent            = 1. 
     segment.dihedral_outboard             = 8.0 * Units.degrees
     segment.sweeps.quarter_chord          = 27.57 * Units.degrees
     segment.thickness_to_chord            = .1
+    segment.has_fuel_tank                 = True
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
@@ -97,12 +97,12 @@ def vehicle_setup(vehicle_name = 'Boeing_787-800', passengers = 296) :
     yehudi_airfoil.coordinate_file        = rel_path+ 'Airfoils' + separator + 'B737b.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Yehudi'
-    segment.percent_span_location         = 0.345
-    #segment.twist                         = 3.0 * Units.deg
+    segment.percent_span_location         = 0.345 
     segment.root_chord_percent            = 0.53 
     segment.dihedral_outboard             = 7.0 * Units.degrees
     segment.sweeps.quarter_chord          = 31. * Units.degrees
     segment.thickness_to_chord            = 0.1
+    segment.has_fuel_tank                 = True
     segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
 
@@ -110,8 +110,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-800', passengers = 296) :
     tip_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'B737c.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Tip'
-    segment.percent_span_location         = 0.95
-    #segment.twist                         = 2.0 * Units.degrees
+    segment.percent_span_location         = 0.95 
     segment.root_chord_percent            = 0.155 
     segment.dihedral_outboard             = 12.0 * Units.degrees
     segment.sweeps.quarter_chord          = 42.0 * Units.degrees
