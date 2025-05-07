@@ -64,47 +64,17 @@ class Vortex_Lattice_Method(Stability):
         self.process                                                    = Process()
         self.process.initialize                                         = Process()  
                    
-        # correction factors 
-        self.settings.fuselage_lift_correction                           = 1.14
-        self.settings.trim_drag_correction_factor                        = 1.1
-        self.settings.wing_parasite_drag_form_factor                     = 1.2
-        self.settings.fuselage_parasite_drag_form_factor                 = 2.4  
-        self.settings.drag_reduction_factors                             = Data()
-        self.settings.drag_reduction_factors.parasite_drag               = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
-        self.settings.drag_reduction_factors.induced_drag                = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
-        self.settings.drag_reduction_factors.compressibility_drag        = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction) 
-        self.settings.maximum_lift_coefficient_factor                    = 1.0        
-        self.settings.lift_to_drag_adjustment                            = 0.0  
-        self.settings.oswald_efficiency_factor                           = None
-        self.settings.span_efficiency                                    = None
-        self.settings.viscous_lift_dependent_drag_factor                 = 0.38
-        self.settings.drag_coefficient_increment                         = 0.0
-        self.settings.spoiler_drag_increment                             = 0.0
-        self.settings.maximum_lift_coefficient                           = np.inf 
-        self.settings.use_surrogate                                      = True
-        self.settings.recalculate_total_wetted_area                      = False
+        # correction factors  
+        self.settings.use_surrogate                                      = True  
         self.settings.propeller_wake_model                               = False 
         self.settings.discretize_control_surfaces                        = True
         self.settings.model_fuselage                                     = False
-        self.settings.trim_aircraft                                      = True 
+        self.settings.trim_aircraft                                      = True
         self.settings.aileron_flag                                       = False
         self.settings.rudder_flag                                        = False
         self.settings.flap_flag                                          = False
         self.settings.elevator_flag                                      = False
-        self.settings.slat_flag                                          = False             
-
-        # correction factors
-        self.settings.supersonic                                         = Data()
-        self.settings.supersonic.peak_mach_number                        = 1.04  
-        self.settings.supersonic.begin_drag_rise_mach_number             = 0.95
-        self.settings.supersonic.end_drag_rise_mach_number               = 1.2
-        self.settings.supersonic.transonic_drag_multiplier               = 1.25  
-        self.settings.supersonic.volume_wave_drag_scaling                = 3.2  
-        self.settings.supersonic.fuselage_parasite_drag_begin_blend_mach = 0.91
-        self.settings.supersonic.fuselage_parasite_drag_end_blend_mach   = 0.99    
-        self.settings.supersonic.cross_sectional_area_calculation_type   = 'Fixed'     
-        self.settings.supersonic.wave_drag_type                          = 'Raymer'    
-    
+        self.settings.slat_flag                                          = False   
         self.settings.number_of_spanwise_vortices                        = 15
         self.settings.number_of_chordwise_vortices                       = 5
         self.settings.wing_spanwise_vortices                             = None
@@ -144,15 +114,7 @@ class Vortex_Lattice_Method(Stability):
         self.training.pitch_rate                                    = np.array([3 ,1.5 ])  * Units.deg / Units.sec
         self.training.roll_rate                                     = np.array([3 ,1.5 ])  * Units.deg / Units.sec
         self.training.yaw_rate                                      = np.array([3 ,1.5 ])  * Units.deg / Units.sec
-    
-        self.reference_values                                       = Data()
-        self.reference_values.S_ref                                 = 0
-        self.reference_values.c_ref                                 = 0
-        self.reference_values.b_ref                                 = 0
-        self.reference_values.X_ref                                 = 0
-        self.reference_values.Y_ref                                 = 0
-        self.reference_values.Z_ref                                 = 0
-        
+            
         # control surface flags                  
         self.aileron_flag                                           = False 
         self.flap_flag                                              = False 
@@ -167,38 +129,7 @@ class Vortex_Lattice_Method(Stability):
         self.hsup_max                                               = 1.15 
                      
         # surrogoate models                 
-        self.surrogates                                             = Data() 
-
-        # Stability derivatives. If these are not user defined, then they will be calculated. 
-        self.stability_derivatives                                  = Data()   
-        self.stability_derivatives.M_0                              = None
-        self.stability_derivatives.Clift_alpha                      = None
-        self.stability_derivatives.CX_alpha                         = None
-        self.stability_derivatives.CX_u                             = None
-        self.stability_derivatives.CY_beta                          = None
-        self.stability_derivatives.CY_r                             = None
-        self.stability_derivatives.CZ_alpha                         = None
-        self.stability_derivatives.CZ_u                             = None
-        self.stability_derivatives.CZ_q                             = None
-        self.stability_derivatives.CL_beta                          = None
-        self.stability_derivatives.CL_p                             = None
-        self.stability_derivatives.CL_r                             = None
-        self.stability_derivatives.CM_alpha                         = None
-        self.stability_derivatives.CM_u                             = None
-        self.stability_derivatives.CM_q                             = None
-        self.stability_derivatives.CN_beta                          = None
-        self.stability_derivatives.CN_p                             = None
-        self.stability_derivatives.CN_r                             = None
-        self.stability_derivatives.CY_delta_a                       = None
-        self.stability_derivatives.CL_delta_a                       = None
-        self.stability_derivatives.CN_delta_a                       = None
-        self.stability_derivatives.CM_delta_e                       = None
-        self.stability_derivatives.CLift_delta_e                    = None
-        self.stability_derivatives.CY_delta_r                       = None
-        self.stability_derivatives.CL_delta_r                       = None
-        self.stability_derivatives.CN_delta_r                       = None
-        self.stability_derivatives.CM_delta_f                       = None
-        self.stability_derivatives.CLift_delta_f                    = None
+        self.surrogates                                             = Data()  
 
         # build the evaluation process
         compute                                                     = Process() 

@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-from RCAIDE.Library.Methods.Geometry.Planform  import  wing_planform
+import  RCAIDE  
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  aerodynamics
@@ -67,13 +67,19 @@ def aerodynamics(mission):
         
     last_tag = None
     for tag,segment in mission.segments.items():  
-        if segment.analyses.aerodynamics != None:                 
-            if (last_tag!=  None) and  ('compute' in mission.segments[last_tag].analyses.aerodynamics.process.keys()): 
-                segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings
-                segment.analyses.aerodynamics.surrogates       = mission.segments[last_tag].analyses.aerodynamics.surrogates 
-                segment.analyses.aerodynamics.reference_values = mission.segments[last_tag].analyses.aerodynamics.reference_values  
-            else:          
-                aero   = segment.analyses.aerodynamics
-                aero.initialize()   
-                last_tag = tag  
+        if segment.analyses.aerodynamics != None:
+            if not segment.analyses.aerodynamics.unique_segment_surrogate: 
+                if (last_tag!=  None) and ('compute' in mission.segments[last_tag].analyses.aerodynamics.process.keys()): 
+                    segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings
+                    segment.analyses.aerodynamics.surrogates       = mission.segments[last_tag].analyses.aerodynamics.surrogates 
+                    segment.analyses.aerodynamics.reference_values = mission.segments[last_tag].analyses.aerodynamics.reference_values  
+            else: 
+                if type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Climb or  \
+                   type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Hover or \
+                   type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Descent:
+                    pass
+                else: 
+                    aero   = segment.analyses.aerodynamics
+                    aero.initialize()   
+                    last_tag = tag  
     return 
