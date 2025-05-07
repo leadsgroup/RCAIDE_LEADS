@@ -8,9 +8,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports 
-from RCAIDE.Framework.Core                                 import Units 
+from RCAIDE.Framework.Core                        import Units 
 from RCAIDE.Framework.Mission.Segments.Evaluate   import Evaluate 
-from RCAIDE.Library.Mission                      import Common,Segments
+from RCAIDE.Library.Mission                       import Common,Segments
+from RCAIDE.Library.Methods.skip                  import skip 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Descent
@@ -59,6 +60,7 @@ class Descent(Evaluate):
         initialize                         = self.process.initialize
         iterate                            = self.process.iterate 
         initialize.conditions              = Segments.Vertical_Flight.Descent.initialize_conditions
+        iterate.conditions.aerodynamics    = skip
         iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
         return
        

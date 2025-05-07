@@ -69,9 +69,9 @@ def tiltwing_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth              = 0.5994692986064568
-    vertical_climb_1_throttle_truth   = 0.6032111666837028
-    vertical_descent_throttle_truth   = 0.5925255481996229
+    hover_throttle_truth              = 0.7498967256208228
+    vertical_climb_1_throttle_truth   = 0.7782652854347681
+    vertical_descent_throttle_truth   = 0.7398408607824889
     
     # Store errors 
     error = Data() 
@@ -291,9 +291,9 @@ def TW_mission_setup(analyses ):
     # ------------------------------------------------------------------ 
     segment                                                          = Segments.Vertical_Flight.Climb(base_segment)
     segment.tag                                                      = "Vertical_Climb_1"   
-    segment.analyses.extend(analyses.vertical_climb)                
+    segment.analyses.extend(analyses.vertical_climb)                   
     segment.altitude_end                                             = 60.  * Units.ft   
-    segment.climb_rate                                               = 500. * Units['ft/min'] 
+    segment.climb_rate                                               = 500. * Units['ft/min']  
           
     # define flight dynamics to model            
     segment.flight_dynamics.force_z                                  = True 

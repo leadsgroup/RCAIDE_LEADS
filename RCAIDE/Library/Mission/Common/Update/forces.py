@@ -44,8 +44,7 @@ def forces(segment):
 
     # unpack transformation matrices
     T_body2inertial = conditions.frames.body.transform_to_inertial
-    T_wind2inertial = conditions.frames.wind.transform_to_inertial
-    T_inertial2body = orientation_transpose(T_body2inertial)
+    T_wind2inertial = conditions.frames.wind.transform_to_inertial 
     T_inertia2wind  = orientation_transpose(T_wind2inertial) 
 
     # transform matrices 
