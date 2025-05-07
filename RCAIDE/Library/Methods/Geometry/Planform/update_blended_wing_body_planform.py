@@ -127,19 +127,19 @@ def update_blended_wing_body_planform(bwb_wing):
         # inner segment 
         inner_cabin_start_percent_x      = inner_segment.percent_chord_cabin_start 
         inner_seg_span                   = inner_segment.percent_span_location * new_bwb_wing.spans.projected /2 
-        inner_section_start_x_location   = interp1d(cc_front[:, 1], cc_front[:, 0])
-        inner_section_end_x_location     = interp1d(cc_rear[:, 1], cc_rear[:, 0])
-        inner_sectional_cabin_chord      = inner_section_end_x_location(inner_seg_span) -  inner_section_start_x_location(inner_seg_span) 
+        inner_section_start_x_location   = interp1d(cc_front[:, 1], cc_front[:, 0]) # function representing leading edge of lopa 
+        inner_section_end_x_location     = interp1d(cc_rear[:, 1], cc_rear[:, 0])   # function representing trailing edge of lopa 
+        inner_sectional_cabin_chord      = inner_section_end_x_location(inner_seg_span) -  inner_section_start_x_location(inner_seg_span) # length of lopa at inner segment span percent location 
 
-        # inner segment 
+        # outer segment 
         outer_cabin_start_percent_x      = outer_segment.percent_chord_cabin_start 
         outer_seg_span                   = outer_segment.percent_span_location * new_bwb_wing.spans.projected /2 
-        outer_section_end_x_location     = interp1d( cc_rear[:, 1],cc_rear[:, 0])
-        outer_section_start_x_location   = interp1d(cc_front[:, 1],cc_front[:, 0])
-        outer_sectional_cabin_chord      = outer_section_end_x_location(outer_seg_span) -  outer_section_start_x_location(outer_seg_span)  
+        outer_section_end_x_location     = interp1d( cc_rear[:, 1],cc_rear[:, 0])  # function representing leading edge of lopa 
+        outer_section_start_x_location   = interp1d(cc_front[:, 1],cc_front[:, 0]) # function representing trailing edge of lopa
+        outer_sectional_cabin_chord      = outer_section_end_x_location(outer_seg_span) -  outer_section_start_x_location(outer_seg_span) # length of lopa at outer segment span percent location   
                              
-        inner_chord =  inner_sectional_cabin_chord / (inner_rs_nondim_x-inner_cabin_start_percent_x ) 
-        outer_chord =  outer_sectional_cabin_chord / (outer_rs_nondim_x-outer_cabin_start_percent_x )
+        inner_chord =  (inner_sectional_cabin_chord / (inner_rs_nondim_x-inner_cabin_start_percent_x ))
+        outer_chord =  (outer_sectional_cabin_chord / (outer_rs_nondim_x-outer_cabin_start_percent_x ))
          
         # update percent root chord values and the location of the lopa 
         if i == 0: 
@@ -157,6 +157,6 @@ def update_blended_wing_body_planform(bwb_wing):
         inner_segment.sweeps.leading_edge = sweep 
         inner_segment.sweeps.quarter_chord = convert_sweep_segments(sweep, inner_segment, outer_segment, new_bwb_wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25) 
         inner_origin_x  = outer_origin_x 
-          
+     
     return 
     

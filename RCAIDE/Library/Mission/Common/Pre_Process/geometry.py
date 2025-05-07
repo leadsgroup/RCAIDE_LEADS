@@ -17,9 +17,9 @@ from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_p
 # ----------------------------------------------------------------------------------------------------------------------  
 def geometry(mission):
     """
-  
+
     """
-     
+
     last_tag = None
     for tag,segment in mission.segments.items():  
         if hasattr(segment.analyses, 'geometry') and segment.analyses.geometry is not None:
@@ -27,13 +27,13 @@ def geometry(mission):
                 segment.analyses.geometry.vehicle = vehicle 
             else: 
                 vehicle  =  segment.analyses.geometry.vehicle
-                
+
                 # update fuselage properties
                 if segment.analyses.geometry.settings.update_fuselage_properties:
                     for fuselage in vehicle.fuselages:
                         compute_layout_of_passenger_accommodations(fuselage)
                         fuselage_planform(fuselage) 
-                
+
                 for wing in vehicle.wings: 
 
                     # ----------------------------
@@ -54,14 +54,14 @@ def geometry(mission):
                         if segment.analyses.geometry.settings.update_wing_properties:
                             wing_planform(wing,overwrite_reference =  segment.analyses.geometry.settings.overwrite_reference) 
                             if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) and segment.analyses.geometry.settings.overwrite_reference:
-                                 vehicle.reference_area = wing.areas.reference
-                        
+                                vehicle.reference_area = wing.areas.reference
+
                 # ----------------------------
                 # Compute Fuel Volume to be added in next PR
                 # ----------------------------
                 #if segment.analyses.geometry.update_fuel_volume:
                     #compute_fuel_volume(vehicle, update_max_fuel=False)
-                
+
                 last_tag = tag 
 
             # update weights vehicle with correct geometric properties                  
