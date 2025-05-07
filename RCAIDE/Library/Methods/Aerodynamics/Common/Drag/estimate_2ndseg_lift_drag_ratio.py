@@ -6,13 +6,11 @@
 # RCAIDE Imports
 from   RCAIDE                    import * 
 from   RCAIDE.Library.Components import Wings
-from   RCAIDE.Framework.Core     import Units, Data
 from   RCAIDE.Library.Methods.Aerodynamics.Common.Lift import compute_max_lift_coeff
 
 # ----------------------------------------------------------------------
 #  Compute 2nd segment lift to drag ratio
 # ----------------------------------------------------------------------
-
 def estimate_2ndseg_lift_drag_ratio(state,settings,geometry):
     """Estimates the 2nd segment climb lift to drag ratio (all engine operating)
     
@@ -36,41 +34,14 @@ def estimate_2ndseg_lift_drag_ratio(state,settings,geometry):
 
     Properties Used:
     N/A
-    """
-    # ==============================================
-	# Unpack
-    # ==============================================
-    try:
-        V2_VS_ratio    = geometry.V2_VS_ratio
-    except:
-        V2_VS_ratio    = 1.20 # typical condition
+    """ 
+    # Unpack 
+    V2_VS_ratio    = geometry.flight_envelope.V2_VS_ratio 
 
-    # getting geometrical data (aspect ratio)
-    n_wing = 0
+    # getting geometrical data (aspect ratio) 
     for wing in geometry.wings:
-        if not (isinstance(wing,Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body)): continue
-        reference_area = wing.areas.reference
-        wing_span      = wing.spans.projected
-        try:
-            aspect_ratio = wing.aspect_ratio
-        except:
-            aspect_ratio = wing_span ** 2 / reference_area
-        n_wing += 1
-
-    if n_wing > 1:
-        print(' More than one Main_Wing in the config. Last one will be considered.')
-    elif n_wing == 0:
-        print('No Main_Wing defined! Using the 1st wing found')
-        for wing in geometry.wings:
-            if not isinstance(wing,Wings.Wing): continue
-            reference_area = wing.areas.reference
-            wing_span      = wing.spans.projected
-            try:
-                aspect_ratio = wing.aspect_ratio
-            except:
-                aspect_ratio = wing_span ** 2 / reference_area
-            break
-
+        if not (isinstance(wing,Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body)): continue 
+        aspect_ratio = wing.aspect_ratio  
 
     # ==============================================
     # Determining vehicle maximum lift coefficient

@@ -63,7 +63,7 @@ def main():
      tail_length_truth   = 9.905999999999999
      cabin_length_truth  = 41.732200000000006
      total_length_truth  = 59.563
-     wetted_area_truth   = 857.4554632035765
+     wetted_area_truth   = 831.939763080519
      frontal_area_truth  = 19.26755189268235
      dia_effective_truth = 4.952999999999999
      

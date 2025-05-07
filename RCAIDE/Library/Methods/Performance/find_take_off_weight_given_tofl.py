@@ -1,21 +1,19 @@
 # find_take_off_weight_given_tofl.py
-#
-# Created:  Sep 2014, C. Ilario, T. Orra 
-# Modified: Jan 2016, E. Botero
 
-
+# Created: Apr 2025, M. Clarke  
 # ----------------------------------------------------------------------
-#  Imports
+#   Imports
 # ----------------------------------------------------------------------
-
+import RCAIDE
 from RCAIDE.Library.Methods.Performance.estimate_take_off_field_length import estimate_take_off_field_length
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 
 import numpy as np
 
 # ----------------------------------------------------------------------
 #  Find Takeoff Weight Given TOFL
 # ----------------------------------------------------------------------
-def find_take_off_weight_given_tofl(vehicle,analyses,target_tofl,altitude = 0, delta_isa = 0,):
+def find_take_off_weight_given_tofl(vehicle,analyses,target_tofl,altitude = 0, delta_isa = 0,overwrite_reference=True):
     """
     Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.
 
@@ -66,6 +64,11 @@ def find_take_off_weight_given_tofl(vehicle,analyses,target_tofl,altitude = 0, d
     RCAIDE.Library.Methods.Performance.estimate_take_off_field_length
     """       
 
+    for wing in vehicle.wings: 
+        wing_planform(wing,overwrite_reference =  True) 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            vehicle.reference_area = wing.areas.reference
+            
     #unpack
     tow_lower = vehicle.mass_properties.operating_empty
     tow_upper = 1.10 * vehicle.mass_properties.max_takeoff

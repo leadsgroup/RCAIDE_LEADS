@@ -41,7 +41,7 @@ def compute_avionics_power_draw(avionics,bus,conditions):
     --------
     RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions
     """
-    bus_conditions                 = conditions.energy[bus.tag]
+    bus_conditions                 = conditions.energy.busses[bus.tag]
     avionics_conditions            = bus_conditions[avionics.tag]    
     avionics_conditions.power[:,0] = avionics.power_draw 
     bus_conditions.power_draw      += avionics_conditions.power*bus.power_split_ratio /bus.efficiency    

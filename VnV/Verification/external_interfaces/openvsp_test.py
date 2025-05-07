@@ -41,7 +41,17 @@ def Transport_Aircraft_Test():
 
         
 def BWB_Aircraft_Test(): 
-    vehicle  = bwb_setup() 
+    vehicle  = bwb_setup()
+     
+    plot_3d_vehicle(vehicle,
+                    save_filename               = "BWB",
+                    min_x_axis_limit            = -100,
+                    max_x_axis_limit            = 100,
+                    min_y_axis_limit            = -100,
+                    max_y_axis_limit            = 100,
+                    min_z_axis_limit            = -100,
+                    max_z_axis_limit            = 100, 
+                    show_figure=False)                 
     
     export_vsp_vehicle(vehicle, 'BWB')
 

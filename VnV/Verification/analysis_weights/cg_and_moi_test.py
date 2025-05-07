@@ -34,7 +34,7 @@ def main():
 def Transport_Aircraft_Test():
     vehicle = transport_setup()
     for wing in vehicle.wings: 
-         wing_planform(wing,overwrite_reference =  False) 
+        wing_planform(wing,overwrite_reference =  False) 
 
     # update fuel weight to 60%
     vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass = 0.6 * vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass
@@ -50,12 +50,12 @@ def Transport_Aircraft_Test():
     weight_analysis.settings.cargo_doors_number   = 2
     weight_analysis.settings.cargo_doors_clamshell= True
     results                                       = weight_analysis.evaluate() 
-    
+
     # ------------------------------------------------------------------
     #   CG Location
     # ------------------------------------------------------------------    
     CG_location, _ = compute_vehicle_center_of_gravity( weight_analysis.vehicle)  
-    
+
     # ------------------------------------------------------------------
     #   Operating Aircraft MOI
     # ------------------------------------------------------------------    
@@ -67,11 +67,11 @@ def Transport_Aircraft_Test():
     Cargo_MOI, mass =  compute_cuboid_moment_of_inertia(CG_location, 99790*Units.kg, 36.0, 3.66, 3, 0, 0, 0, CG_location)
     MOI             += Cargo_MOI
     total_mass      += mass
-    
+
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI) 
     accepted  = np.array([[34010396.14322192,  2809408.99192064,  3577466.46319108],
-                        [ 2809408.99192064, 43351388.86038262,        0.        ],
+                          [ 2809408.99192064, 43351388.86038262,        0.        ],
                         [ 3577466.46319108,        0.        , 60799904.58760986]])
     MOI_error     = MOI - accepted
 
@@ -88,9 +88,9 @@ def Transport_Aircraft_Test():
 
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-6) 
-    
+
     return  
- 
+
 
 def General_Aviation_Test(): 
     # ------------------------------------------------------------------
@@ -99,18 +99,18 @@ def General_Aviation_Test():
     weight_analysis               = RCAIDE.Framework.Analyses.Weights.Conventional() 
     weight_analysis.vehicle       = general_aviation_setup() 
     for wing in weight_analysis.vehicle.wings: 
-         wing_planform(wing,overwrite_reference =  True) 
-         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+        wing_planform(wing,overwrite_reference =  True) 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
             weight_analysis.vehicle.reference_area = wing.areas.reference
     weight_analysis.method        = 'FLOPS'
     weight_analysis.aircraft_type = 'General_Aviation'
     results                       = weight_analysis.evaluate() 
-    
+
     # ------------------------------------------------------------------
     #   CG Location
     # ------------------------------------------------------------------    
     CG_location, _ = compute_vehicle_center_of_gravity(weight_analysis.vehicle)  
-    
+
     # ------------------------------------------------------------------
     #   Operating Aircraft MOI
     # ------------------------------------------------------------------    
@@ -118,11 +118,11 @@ def General_Aviation_Test():
 
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI)
-     
+
     accepted  = np.array([[2871.19050815,   17.26989442,   21.19147092],
-                            [  17.26989442, 3743.05853172,    0.        ],
+                          [  17.26989442, 3743.05853172,    0.        ],
                             [  21.19147092,    0.        , 2724.8281536 ]])
-    
+
     MOI_error     = MOI - accepted
 
     # Check the errors
@@ -138,14 +138,14 @@ def General_Aviation_Test():
 
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-6)   
-    
+
     return
 
 def EVTOL_Aircraft_Test(update_regression_values):
     vehicle = EVTOL_setup(update_regression_values)
     for wing in vehicle.wings: 
-         wing_planform(wing,overwrite_reference =  True) 
-         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+        wing_planform(wing,overwrite_reference =  True) 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
             vehicle.reference_area = wing.areas.reference
     # ------------------------------------------------------------------
     #   Weight Breakdown 
@@ -160,22 +160,22 @@ def EVTOL_Aircraft_Test(update_regression_values):
     weight_analysis.settings.max_g_load                  = 3.8
     weight_analysis.vehicle                              = vehicle
     results                                              = weight_analysis.evaluate() 
-    
+
     # ------------------------------------------------------------------
     #   CG Location
     # ------------------------------------------------------------------    
     CG_location, _ =  compute_vehicle_center_of_gravity( weight_analysis.vehicle)  
-    
+
     # ------------------------------------------------------------------
     #   Operating Aircraft MOI
     # ------------------------------------------------------------------    
     MOI, total_mass = compute_aircraft_moment_of_inertia(weight_analysis.vehicle, CG_location)
-    
+
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI) 
-    accepted  = np.array([[ 6362.26795447,  -549.43133391,  -510.4270585 ],
-                            [ -549.43133391, 10028.22643229,   -98.16257761],
-                            [ -510.4270585 ,   -98.16257761, 14970.09371676]])
+    accepted  = np.array([[ 6362.23866133,  -549.43135397,  -510.42696328],
+                          [ -549.43135397, 10028.21153243,   -98.16265964],
+                          [ -510.42696328,   -98.16265964, 14970.05350936]])
     MOI_error     = MOI - accepted
 
     # Check the errors
@@ -191,7 +191,7 @@ def EVTOL_Aircraft_Test(update_regression_values):
 
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-5) 
-    
+
     return  
 
 if __name__ == '__main__':

@@ -52,9 +52,9 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
  
     # Inlet Properties from mission solver.
     for reservoir in  coolant_line.reservoirs:
-        T_inlet = state.conditions.energy[coolant_line.tag][reservoir.tag].coolant_temperature[t_idx, 0]  
+        T_inlet = state.conditions.energy.coolant_lines[coolant_line.tag][reservoir.tag].coolant_temperature[t_idx, 0]
     #turndown_ratio           = battery_conditions.thermal_management_system.HAS.percent_operation[t_idx,0] 
-    T_cell                   = state.conditions.energy[bus.tag].battery_modules[battery.tag].cell.temperature[t_idx, 0]  
+    T_cell                   = state.conditions.energy.busses[bus.tag].battery_modules[battery.tag].cell.temperature[t_idx, 0]
     heat_transfer_efficiency = HAS.heat_transfer_efficiency   
 
     # Coolant Properties
@@ -179,14 +179,14 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
     dT_dt                   = P_net/(cell_mass*N_cells_geometric_config*Cp_bat)
     T_cell_new              = T_cell + dT_dt*delta_t 
    
-    state.conditions.energy[coolant_line.tag][HAS.tag].heat_removed[t_idx+1]               = Q_convec
-    state.conditions.energy[coolant_line.tag][HAS.tag].outlet_coolant_temperature[t_idx+1] = T_o
-    state.conditions.energy[coolant_line.tag][HAS.tag].coolant_mass_flow_rate[t_idx+1]     = m_coolant
-    state.conditions.energy[coolant_line.tag][HAS.tag].effectiveness[t_idx+1]              = heat_transfer_efficiency
-    state.conditions.energy[coolant_line.tag][HAS.tag].power[t_idx+1]                      = Power
+    state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].heat_removed[t_idx+1]               = Q_convec
+    state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].outlet_coolant_temperature[t_idx+1] = T_o
+    state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].coolant_mass_flow_rate[t_idx+1]     = m_coolant
+    state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].effectiveness[t_idx+1]              = heat_transfer_efficiency
+    state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].power[t_idx+1]                      = Power
     
     if not state.conditions.energy.recharging:
-        state.conditions.energy[bus.tag].power_draw[t_idx+1]                                  += Power 
+        state.conditions.energy.busses[bus.tag].power_draw[t_idx+1]                                  += Power
  
     return T_cell_new
 

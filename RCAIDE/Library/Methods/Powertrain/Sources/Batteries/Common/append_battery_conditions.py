@@ -58,7 +58,7 @@ def append_battery_conditions(battery_module,segment,bus):
         None
     """
  
-    ones_row                                               = segment.state.ones_row
+    ones_row  = segment.state.ones_row
 
     # compute ambient conditions
     atmosphere    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
@@ -67,7 +67,7 @@ def append_battery_conditions(battery_module,segment,bus):
         temp_dev = segment.temperature_deviation    
     atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)  
         
-    bus_results                                       = segment.state.conditions.energy[bus.tag]        
+    bus_results = segment.state.conditions.energy.busses[bus.tag]        
     bus_results.battery_modules[battery_module.tag]          = Conditions() 
     bus_results.battery_modules[battery_module.tag].cell     = Conditions()
 
@@ -158,7 +158,7 @@ def append_battery_conditions(battery_module,segment,bus):
      
     return 
     
-def append_battery_segment_conditions(battery_module, bus, conditions, segment): 
+def append_battery_segment_conditions(battery_module, segment, bus): 
     """Sets the initial battery energy at the start of each segment as the last point from the previous segment 
     
         Assumptions:
@@ -177,9 +177,9 @@ def append_battery_segment_conditions(battery_module, bus, conditions, segment):
         None
     """
 
-    module_conditions = conditions[bus.tag].battery_modules[battery_module.tag]
+    module_conditions = segment.state.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag]
     if segment.state.initials:  
-        battery_initials                                        = segment.state.initials.conditions.energy[bus.tag].battery_modules[battery_module.tag]  
+        battery_initials                                        = segment.state.initials.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag]  
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
             module_conditions.battery_discharge_flag           = False 
         else:                   

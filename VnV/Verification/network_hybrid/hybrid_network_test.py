@@ -310,11 +310,7 @@ def plot_battery_pack_conditions(plot_data,
             cl           = results.segments[i].conditions.aerodynamics.coefficients.lift.total[:,0,None]
             cd           = results.segments[i].conditions.aerodynamics.coefficients.drag.total[:,0,None]
             aoa          = results.segments[i].conditions.aerodynamics.angles.alpha[:,0] / Units.deg
-            l_d          = cl/cd    
-            segment_tag  =  results.segments[i].tag
-            segment_name = segment_tag.replace('_', ' ')
-            
-
+            l_d          = cl/cd     
             # ---------------------------------------------------------------------------
             # Plot battery pack results if any            
             # ---------------------------------------------------------------------------            
@@ -327,7 +323,7 @@ def plot_battery_pack_conditions(plot_data,
                     bus_config         = bus.battery_module_electric_configuration 
                     battery_module_tag = list(bus.battery_modules.keys())[0]
                     
-                    battery_conditions  = results.segments[i].conditions.energy[bus.tag].battery_modules[battery_module_tag] 
+                    battery_conditions  = results.segments[i].conditions.energy.busses['bus'].battery_modules[battery_module_tag] 
                  
                     if bus_config == 'Series':
                         pack_current        = battery_conditions.current[:,0] 

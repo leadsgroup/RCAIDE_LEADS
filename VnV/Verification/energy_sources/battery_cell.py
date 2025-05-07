@@ -117,7 +117,7 @@ def lithium_ion_battery_test():
             results = missions.base_mission.evaluate()  
             
             # Voltage Cell Regression
-            V_ul        = results.segments[0].conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.voltage_under_load[2][0]   
+            V_ul        = results.segments[0].conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.voltage_under_load[2][0]   
             print('Under load voltage: ' + str(V_ul))
             V_ul_diff   = np.abs(V_ul - V_ul_true[j,i])
             print('Under load voltage difference')
@@ -125,7 +125,7 @@ def lithium_ion_battery_test():
             assert np.abs((V_ul_diff)/V_ul_true[j,i]) < 1e-6  
            
             # Temperature Regression
-            bat_temp        = results.segments[1].conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.temperature[2][0]  
+            bat_temp        = results.segments[1].conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.temperature[2][0]  
             print('Cell temperature: ' + str(bat_temp))
             bat_temp_diff   = np.abs(bat_temp  - bat_temp_true[j,i]) 
             print('cell temperature difference')
@@ -133,10 +133,10 @@ def lithium_ion_battery_test():
             assert np.abs((bat_temp_diff)/bat_temp_true[j,i]) < 1e-6
        
             for segment in results.segments.values(): 
-                volts         = segment.conditions.energy.bus.voltage_under_load[:,0] 
-                SOC           = segment.conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.state_of_charge[:,0]   
-                cell_temp     = segment.conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.temperature[:,0]   
-                Amp_Hrs       = segment.conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.charge_throughput[:,0]                   
+                volts         = segment.conditions.energy.busses['bus'].voltage_under_load[:,0] 
+                SOC           = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.state_of_charge[:,0]   
+                cell_temp     = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.temperature[:,0]   
+                Amp_Hrs       = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.charge_throughput[:,0]                   
                   
                 if battery_chemistry[i] == 'lithium_ion_nmc':
                     axes1.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j]  , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 

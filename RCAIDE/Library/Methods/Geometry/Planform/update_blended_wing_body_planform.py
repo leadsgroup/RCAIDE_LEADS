@@ -63,8 +63,9 @@ def update_blended_wing_body_planform(bwb_wing):
                 new_segment.root_chord_percent     = segment.root_chord_percent           
                 new_segment.dihedral_outboard      = segment.dihedral_outboard            
                 new_segment.thickness_to_chord     = segment.thickness_to_chord           
-                new_segment.sweeps.leading_edge    = segment.sweeps.leading_edge          
-                new_segment.append_airfoil(segment.airfoil )      
+                new_segment.sweeps.leading_edge    = segment.sweeps.leading_edge
+                if segment.airfoil != None: 
+                    new_segment.append_airfoil(segment.airfoil )      
                 new_bwb_wing.append_segment(new_segment)
             
         if  cabin_width < seg_span:
@@ -80,8 +81,9 @@ def update_blended_wing_body_planform(bwb_wing):
                 new_segment.root_chord_percent     = cabin_wall_segment.root_chord_percent           
                 new_segment.dihedral_outboard      = cabin_wall_segment.dihedral_outboard            
                 new_segment.thickness_to_chord     = cabin_wall_segment.thickness_to_chord           
-                new_segment.sweeps.leading_edge    = cabin_wall_segment.sweeps.leading_edge          
-                new_segment.append_airfoil(segment.airfoil )      
+                new_segment.sweeps.leading_edge    = cabin_wall_segment.sweeps.leading_edge
+                if segment.airfoil != None: 
+                    new_segment.append_airfoil(segment.airfoil )      
                 new_bwb_wing.append_segment(new_segment)                    
                  
                 add_final_cabin_seg = False  
@@ -98,8 +100,9 @@ def update_blended_wing_body_planform(bwb_wing):
                 new_segment.root_chord_percent     = segment.root_chord_percent           
                 new_segment.dihedral_outboard      = segment.dihedral_outboard            
                 new_segment.thickness_to_chord     = segment.thickness_to_chord           
-                new_segment.sweeps.leading_edge    = segment.sweeps.leading_edge          
-                new_segment.append_airfoil(segment.airfoil )      
+                new_segment.sweeps.leading_edge    = segment.sweeps.leading_edge
+                if segment.airfoil != None: 
+                    new_segment.append_airfoil(segment.airfoil )      
                 new_bwb_wing.append_segment(new_segment)                    
           
     # ----------------------------------------------------------------------------------------------------------------------    

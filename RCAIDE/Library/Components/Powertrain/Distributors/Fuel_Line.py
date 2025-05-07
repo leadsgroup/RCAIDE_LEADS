@@ -9,6 +9,7 @@
 # RCAIDE imports  
 from RCAIDE.Library.Components                                import Component
 from RCAIDE.Library.Components.Component                      import Container    
+from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line import *
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Line
@@ -58,10 +59,38 @@ class Fuel_Line(Component):
             None
         """          
         self.tag                           = 'fuel_line'  
-        self.fuel_tanks                    = Container()
-        self.cryogenic_tanks               = Container()
+        self.fuel_tanks                    = Container() 
         self.assigned_propulsors           = [] 
         self.assigned_converters           = []
         self.converters                    = Container()       
         self.active                        = True 
-        self.efficiency                    = 1.0 
+        self.efficiency                    = 1.0
+        
+
+    def append_operating_conditions(self, segment):
+        """
+        Append operating conditions for a flight segment
+        
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment containing operating conditions
+        """
+        append_fuel_line_conditions(self, segment)
+        return
+
+        
+    def append_segment_conditions(self, segment):
+        """
+        Append segment-specific conditions to the bus
+        
+        Parameters
+        ----------
+        conditions : Data
+            Container for segment conditions
+        segment : Segment
+            Flight segment data
+        """
+        append_fuel_line_segment_conditions(self, segment)
+        return    
+        

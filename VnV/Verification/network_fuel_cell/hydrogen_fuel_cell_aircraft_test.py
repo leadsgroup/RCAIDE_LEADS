@@ -31,7 +31,7 @@ from Hydrogen_Fuel_Cell_Twin_Otter   import vehicle_setup , configs_setup
 
 def main():  
  
-    mdot_H2_true         = [0.017789754665082442,0.017401748009852166]
+    mdot_H2_true         = [0.01781285061698235,0.01742038278605377]
     fuel_cell_models     = ['PEM', 'Larminie', ]
     
     for i in range(2): 
@@ -39,7 +39,20 @@ def main():
         vehicle  = vehicle_setup(fuel_cell_models[i]) 
         
         # Set up vehicle configs
-        configs  = configs_setup(vehicle)
+        configs  = configs_setup(vehicle)  
+    
+        plot_3d_vehicle(vehicle, 
+                                min_x_axis_limit            = -50,
+                                max_x_axis_limit            = 50,
+                                min_y_axis_limit            = -50,
+                                max_y_axis_limit            = 50,
+                                min_z_axis_limit            = -50,
+                                max_z_axis_limit            = 50, 
+                                wing_alpha                  = 0.2,
+                                front_view                  = True, 
+                                show_figure                 = False 
+                                )      
+                
     
         # create analyses
         analyses = analyses_setup(configs)
@@ -54,7 +67,7 @@ def main():
         results = missions.base_mission.evaluate()  
         
         # Voltage Cell Regression
-        mdot_H2        = results.segments[0].conditions.energy.bus.cryogenic_tank.mass_flow_rate[0,0]
+        mdot_H2        = results.segments[0].conditions.energy.busses['bus'].fuel_tanks['non_integral_tank'].mass_flow_rate[0,0] + results.segments[0].conditions.energy.busses['bus'].fuel_tanks['integral_tank'].mass_flow_rate[0,0] 
         print('Mass Flow Rate: ' + str(mdot_H2))
         mdot_H2_diff   = np.abs(mdot_H2 - mdot_H2_true[i]) 
         print(mdot_H2_diff) 
@@ -191,7 +204,7 @@ def missions_setup(mission):
 def plot_results(results):
     # Plots fligh conditions 
     plot_flight_conditions(results)
-    plot_fuel_consumption(results)
+    plot_fuel_consumption(results) 
     return
 
 

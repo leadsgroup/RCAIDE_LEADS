@@ -29,8 +29,8 @@ def main():
          
     battery_types = ['lithium_ion_nmc', 'lithium_ion_lfp']
     btms_types    = ['Liquid_Cooled_Wavy_Channel', 'Air_Cooled', None] 
-    CL_true       = [[ 0.8067527163616551, 0.8067527163616532 , 0.8067527163616532],
-                     [ 0.8067527163616521, 0.806752716361654  , 0.806752716361654]] 
+    CL_true       = [[ 0.8069108727432638 , 0.8069108727432638 ,  0.8069108727432638 ],
+                     [ 0.8069108727432638 , 0.8069108727432638 ,  0.8069108727432638 ]] 
     # vehicle data
     for i , battery_type in enumerate(battery_types):
         for j , btms_type in enumerate(btms_types):
@@ -53,10 +53,8 @@ def main():
             print('Computed value of coefficient of lift is:', CL)
             error =  abs(CL - CL_true[i][j]) /CL_true[i][j]
             assert(abs(error)<1e-6)
-             
-            if i ==  0 and  j == 0: 
-                # plot the results 
-                plot_results(results)
+              
+            plot_results(results)
 
     return
     

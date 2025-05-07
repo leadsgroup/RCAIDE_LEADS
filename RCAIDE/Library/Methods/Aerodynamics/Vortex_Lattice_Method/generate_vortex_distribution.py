@@ -13,7 +13,7 @@ from RCAIDE.Library.Components.Wings.All_Moving_Surface                         
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_VD_helpers      import postprocess_VD
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.make_VLM_wings           import make_VLM_wings 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.deflect_control_surface  import deflect_control_surface
-from RCAIDE.Library.Methods.Geometry.Airfoil                                            import import_airfoil_geometry
+from RCAIDE.Library.Methods.Geometry.Airfoil                                            import compute_naca_4series, import_airfoil_geometry
   
 # package imports 
 import numpy as np
@@ -282,13 +282,6 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
     
     # get geometry of wing  
     span          = wing.spans.projected
-    root_chord    = wing.chords.root
-    tip_chord     = wing.chords.tip
-    sweep_qc      = wing.sweeps.quarter_chord
-    sweep_le      = wing.sweeps.leading_edge 
-    twist_rc      = wing.twists.root
-    twist_tc      = wing.twists.tip
-    dihedral      = wing.dihedral
     sym_para      = wing.symmetric 
     vertical_wing = wing.vertical
     wing_origin   = wing.origin[0]
@@ -365,8 +358,11 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
             break_z_offset[i_break] = span_breaks[i_break].dih_offset
 
         # Get airfoil section VD  
-        if span_breaks[i_break].airfoil:  
-            airfoil_geo_data = import_airfoil_geometry(span_breaks[i_break].airfoil.coordinate_file) 
+        if span_breaks[i_break].airfoil: 
+            if type(span_breaks[i_break].airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
+                airfoil_geo_data = compute_naca_4series(span_breaks[i_break].airfoil.NACA_4_Series_code,span_breaks[i_break].airfoil.number_of_points-2)
+            else:
+                airfoil_geo_data = import_airfoil_geometry(span_breaks[i_break].airfoil.coordinate_file)  
             break_camber_zs.append(airfoil_geo_data.camber_coordinates)
             break_camber_xs.append(airfoil_geo_data.x_lower_surface) 
         else:

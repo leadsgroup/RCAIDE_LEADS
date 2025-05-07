@@ -49,7 +49,7 @@ class Battery_Discharge(Evaluate):
         self.time                   = 1.0 * Units.seconds 
         self.cooling_time           = 0.0 * Units.seconds
         self.overcharge_contingency = 1.10 
-        self.true_course            = 0.0 * Units.degrees 
+        self.true_course            = 0.0 * Units.degrees
 
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 

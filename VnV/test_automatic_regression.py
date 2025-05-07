@@ -15,7 +15,8 @@ modules = [
     'Verification/analysis_aerodynamics/airfoil_panel_method_convergence.py',
     'Verification/analysis_aerodynamics/VLM_control_surface_test.py',    
     'Verification/analysis_aerodynamics/VLM_moving_surface_test.py',   
-    'Verification/analysis_aerodynamics/AVL_test.py',     
+    'Verification/analysis_aerodynamics/AVL_test.py',  
+    'Verification/analysis_aerodynamics/blended_wing_body_aerodynamics_test.py',
     'Verification/atmosphere/atmosphere.py',
     'Verification/atmosphere/constant_temperature.py',
     'Verification/analysis_emissions/emissions_test.py',   
@@ -30,7 +31,8 @@ modules = [
     'Verification/energy_sources/fuel_cell.py',
     'Verification/geometry/airfoil_import_test.py', 
     'Verification/geometry/airfoil_interpolation_test.py',    
-    'Verification/geometry/fuselage_planform_compute.py',  
+    'Verification/geometry/fuselage_planform_compute.py',   
+    'Verification/geometry/fuel_tank_volume_test.py',  
     'Verification/future_capability_coverage/coverage_test.py',    
     'Verification/mission_segments/transition_segment_test.py', 
     'Verification/network_electric/battery_electric_aircraft_test.py',
@@ -62,7 +64,7 @@ modules = [
     'Validation/converters/test_pmsm_motor_validation.py',
     'Validation/converters/test_rotor_validation.py',
     'Validation/propulsors/test_turbofan_validation.py',
-    'Validation/aircraft_performance/test_b787_payload_rage.py'
+    'Validation/aircraft_performance/test_Boeing_787_payload_range.py'
 ]
 
 def run_module_test(module_path):
