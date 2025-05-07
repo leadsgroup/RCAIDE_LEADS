@@ -62,6 +62,7 @@ class Aerodynamics(Analysis):
         self.settings.fuselage_lift_correction                           = 1.14
         self.settings.trim_drag_correction_factor                        = 1.1
         self.settings.wing_parasite_drag_form_factor                     = 1.2
+        self.settings.pylon_parasite_drag_factor                         = 0.0
         self.settings.fuselage_parasite_drag_form_factor                 = 2.4  
         self.settings.drag_reduction_factors                             = Data()
         self.settings.drag_reduction_factors.parasite_drag               = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
@@ -111,12 +112,12 @@ class Aerodynamics(Analysis):
         self.stability_derivatives.CL_delta_a                            = None
         self.stability_derivatives.CN_delta_a                            = None
         self.stability_derivatives.CM_delta_e                            = None
-        self.stability_derivatives.CLift_delta_e                         = None
+        self.stability_derivatives.Clift_delta_e                         = None
         self.stability_derivatives.CY_delta_r                            = None
         self.stability_derivatives.CL_delta_r                            = None
         self.stability_derivatives.CN_delta_r                            = None
         self.stability_derivatives.CM_delta_f                            = None
-        self.stability_derivatives.CLift_delta_f                         = None        
+        self.stability_derivatives.Clift_delta_f                         = None 
         
         
     def evaluate(self,state):

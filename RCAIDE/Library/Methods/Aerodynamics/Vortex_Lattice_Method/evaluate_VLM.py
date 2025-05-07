@@ -123,7 +123,7 @@ def evaluate_surrogate(state,settings,vehicle):
     else:
         conditions.static_stability.derivatives.CM_alpha    = aerodynamics.stability_derivatives.CM_alpha * ones_row
     
-    if aerodynamics.stability_derivatives.CM_0 == None:
+    if aerodynamics.stability_derivatives.M_0 == None:
         conditions.static_stability.derivatives.CM_0        = compute_stability_derivative(sub_sur.CM_0    ,trans_sur.CM_0    ,sup_sur.CM_0    ,h_sub,h_sup,Mach)
     else:
         conditions.static_stability.derivatives.CM_0        = aerodynamics.stability_derivatives.CM_0 * ones_row
