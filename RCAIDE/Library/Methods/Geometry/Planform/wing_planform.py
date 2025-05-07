@@ -300,7 +300,8 @@ def bwb_wing_planform(wing,overwrite_reference = True):
 
             projected_root_chord = segment_root_chord + segnent_start_span * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
             wing.areas.reference = (projected_root_chord + segment_tip_chord)/2 * reference_wing_span
-            wing.areas.exposed                  = wing.areas.reference * 0.9
+            wing.areas.exposed   = wing.areas.reference * 0.9
+            wing.aspect_ratio    = wing.spans.projected **2 / wing.areas.reference
                     
 
     return 

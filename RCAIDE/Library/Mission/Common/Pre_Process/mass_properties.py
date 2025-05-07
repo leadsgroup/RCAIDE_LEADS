@@ -28,6 +28,10 @@ def mass_properties(mission):
                         raise AttributeError('Define Max Takeoff Weight or Weight Analysis Type')
                     else:
                         weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff  
+                if weights_analysis.vehicle.mass_properties.max_fuel == 0:
+                    # An Inital Estimate of max fuel for an estimate of operating empty weight
+                    weights_analysis.vehicle.mass_properties.max_fuel  = 0.437 * weights_analysis.vehicle.mass_properties.max_takeoff \
+                                                                            - weights_analysis.vehicle.mass_properties.min_payload 
 
                 if weights_analysis.vehicle.mass_properties.takeoff == 0 and weights_analysis.aircraft_type != None :
                     _ = weights_analysis.evaluate() 
@@ -79,6 +83,9 @@ def mass_properties(mission):
                         if weights_analysis.vehicle.mass_properties.max_fuel != 0:
                             if weights_analysis.vehicle.mass_properties.fuel >weights_analysis.vehicle.mass_properties.max_fuel:
                                 raise AssertionError('Prescribed fuel is greater than maxmimum fuel')
+                        else:
+                            weights_analysis.vehicle.mass_properties.max_fuel =   weights_analysis.vehicle.mass_properties.takeoff - weights_analysis.vehicle.mass_properties.operating_empty \
+                                                                                  - weights_analysis.vehicle.mass_properties.min_payload 
 
                         weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.operating_empty \
                              + weights_analysis.vehicle.mass_properties.payload \
