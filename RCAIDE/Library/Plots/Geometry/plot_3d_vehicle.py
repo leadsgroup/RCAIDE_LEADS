@@ -399,8 +399,6 @@ def plot_3d_energy_network(plot_data,vehicle,network,number_of_airfoil_points,na
     save_figure   = False 
     show_figure   = False
     save_filename = 'propulsor'
-    wings         = vehicle.wings
-    fuselages     = vehicle.fuselages
 
     for propulsor in network.propulsors:   
         number_of_airfoil_points = 21
@@ -413,19 +411,28 @@ def plot_3d_energy_network(plot_data,vehicle,network,number_of_airfoil_points,na
         if 'propeller' in propulsor:
             plot_data = plot_3d_rotor(propulsor.propeller,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
        
-        for fuel_line in network.fuel_lines: 
-            for fuel_tank in fuel_line.fuel_tanks:   
-                if fuel_tank.wing_tag != None:
-                    wing = wings[fuel_tank.wing_tag]
-                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                        plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, tessellation, color_map = 'oranges') 
-                    elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                        plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
-                elif fuel_tank.fuselage_tag != None:
-                    fuselage = fuselages[fuel_tank.fuselage_tag]
-                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                        plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation, color_map = 'oranges') 
-                    elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                        plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
-            
+    for fuel_line in network.fuel_lines:
+        plot_fuel_tanks(vehicle, fuel_line,plot_data,tessellation) 
+    for bus in network.busses:
+        plot_fuel_tanks(vehicle, bus,plot_data,tessellation)
+        
     return plot_data
+
+def plot_fuel_tanks(vehicle, distributor,plot_data,tessellation):  
+    wings         = vehicle.wings
+    fuselages     = vehicle.fuselages
+    for fuel_tank in distributor.fuel_tanks:   
+        if fuel_tank.wing_tag != None:
+            wing = wings[fuel_tank.wing_tag]
+            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
+                plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, tessellation, color_map = 'oranges') 
+            elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
+                plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
+        elif fuel_tank.fuselage_tag != None:
+            fuselage = fuselages[fuel_tank.fuselage_tag]
+            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
+                plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation, color_map = 'oranges') 
+            elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
+                plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')
+    return 
+        

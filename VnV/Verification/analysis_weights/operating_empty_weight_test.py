@@ -250,22 +250,7 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
             weight_analysis.aircraft_type  = 'BWB'
             weight_analysis.settings.FLOPS.complexity = 'Simple' if FLOPS_number == 0 else 'Complex'
             weight                   = weight_analysis.evaluate()
-            plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure)
-            
-        
-            # plot vehicle 
-            plot_3d_vehicle(weight_analysis.vehicle, 
-                            min_x_axis_limit            = -50,
-                            max_x_axis_limit            = 50,
-                            min_y_axis_limit            = -50,
-                            max_y_axis_limit            = 50,
-                            min_z_axis_limit            = -50,
-                            max_z_axis_limit            = 50, 
-                            wing_alpha                  = 0.2,
-                            front_view                  = True, 
-                            show_figure                 = show_figure 
-                            )             
-            
+            plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure) 
 
             if update_regression_values:
                 save_results(weight, os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_BWB.res"))

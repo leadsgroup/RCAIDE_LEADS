@@ -482,6 +482,13 @@ def vehicle_setup():
     fuel_line.fuel_tanks.append(fuel_tank)
     
 
+    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
+    fuel_tank.tag = 'wing_tank'
+    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    fuel_tank.wall_thickness = 2 * Units.inches 
+    fuel_line.fuel_tanks.append(fuel_tank)    
+    
+
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network      
     fuel_line.assigned_propulsors =  [['propulsor_1', 'propulsor_2']]
@@ -508,7 +515,19 @@ def configs_setup(vehicle):
 
     configs     = RCAIDE.Library.Components.Configs.Config.Container() 
     base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag = 'base'  
+    base_config.tag = 'cruise'  
     configs.append(base_config)
- 
+
+
+    # ------------------------------------------------------------------
+    #   Short Field Takeoff Configuration
+    # ------------------------------------------------------------------  
+
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'reverse_thrust' 
+    config.networks.fuel.reverse_thrust             = True    
+    config.landing_gears.main_gear.gear_extended    = True
+    config.landing_gears.nose_gear.gear_extended    = True  
+    configs.append(config)    
+  
     return configs
