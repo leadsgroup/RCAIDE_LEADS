@@ -7,6 +7,5 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-
 from .compute_layout_of_passenger_accommodations import compute_layout_of_passenger_accommodations 
 from .LOPA_functions import *

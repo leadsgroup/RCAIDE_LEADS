@@ -51,7 +51,8 @@ def main():
                                            compute_eqivalent_noise=True)  
 
     
-    plot_results(results,noise_data,regression_plotting_flag) 
+    plot_results(results,noise_data,regression_plotting_flag)
+    plot_battery_pack_conditions(results) 
 
     X57_SPL        = np.max(results.segments.cruise.conditions.noise.hemisphere_SPL_dBA) 
     X57_SPL_true   = 66.25788939370754

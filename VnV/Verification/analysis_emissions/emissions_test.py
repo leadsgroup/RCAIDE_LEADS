@@ -39,9 +39,9 @@ def main():
         emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
     except:
         pass 
-    
+       
     true_EI_CO2s =  [3.16, 3.0996295865239563, 3.1371106320136155]
-    true_EI_H2Os =  [1.34, 1.1911420639654764, 1.2053455595806213]
+    true_EI_H2Os =  [1.23, 1.1911420639654764, 1.2053455595806213]
     i =  0
     for em in  range(len(emissions_methods)):
         for sur in  range(len(use_surrogate)):

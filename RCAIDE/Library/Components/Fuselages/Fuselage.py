@@ -176,19 +176,15 @@ class Fuselage(Component):
         self.lengths.nose                           = 0.0
         self.lengths.tail                           = 0.0
         self.lengths.total                          = 0.0
-        
         self.x_rotation                             = 0.0
         self.y_rotation                             = 0.0
-        self.z_rotation                             = 0.0 
-
+        self.z_rotation                             = 0.0  
         self.fineness                               = Data() 
         self.fineness.nose                          = 0.0 
         self.fineness.tail                          = 0.0  
         self.nose_curvature                         = 1.5
         self.tail_curvature                         = 1.5   
-
-        self.has_fuel_tank                          = False     
- 
+        self.has_fuel_tank                          = False  
         self.vsp_data                               = Data()
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
         self.vsp_data.xsec_num                      = None  # Number if XSecs in fuselage geom. 

@@ -62,23 +62,17 @@ class Integral_Tank(Fuel_Tank):
         """
         Sets default values for wing fuel tank attributes
         """          
-        self.tag                         = 'integral_tank'
-        self.fuel_selector_ratio         = 1.0 
-        self.mass_properties.empty_mass  = 0.0   
-        self.secondary_fuel_flow         = 0.0 
-        self.fuel                        = None 
-        self.wing                        = None 
-        self.fuselage                    = None
+        self.tag                         = 'integral_tank' 
 
     def __init__ (self, compoment=None):
         """
         Initialize  
         """ 
         if compoment is not None:
-            if isinstance(compoment, RCAIDE.Library.Components.Wings.Wing): 
-                self.wing      = compoment
-            if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage): 
-                self.fuselage     = compoment           
+            if isinstance(compoment, RCAIDE.Library.Components.Wings.Wing):  
+                self.wing_tag  = compoment.tag  
+            if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage):  
+                self.fuselage_tag = compoment.tag   
     def append_operating_conditions(self,segment,fuel_line):  
         """
         Append fuel tank operating conditions for a flight segment

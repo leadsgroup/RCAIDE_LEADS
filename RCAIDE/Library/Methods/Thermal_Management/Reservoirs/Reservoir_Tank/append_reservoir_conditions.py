@@ -39,11 +39,11 @@ def append_reservoir_conditions(reservoir,segment,coolant_line):
     atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)    
 
     ones_row                                                                                        = segment.state.ones_row    
-    segment.state.conditions.energy[coolant_line.tag][reservoir.tag]                                 = Conditions()
-    segment.state.conditions.energy[coolant_line.tag][reservoir.tag].coolant_temperature             = atmo_data.temperature[0,0]* ones_row(1)       
+    segment.state.conditions.energy.coolant_lines[coolant_line.tag][reservoir.tag]                                 = Conditions()
+    segment.state.conditions.energy.coolant_lines[coolant_line.tag][reservoir.tag].coolant_temperature             = atmo_data.temperature[0,0]* ones_row(1)
     return
 
-def append_reservoir_segment_conditions(reservoir,segment,coolant_line,conditions):
+def append_reservoir_segment_conditions(reservoir,segment,coolant_line):
     """Sets the initial reservoir conditions at the start of each segment as the last point from the previous segment 
     
         Assumptions:
@@ -62,9 +62,9 @@ def append_reservoir_segment_conditions(reservoir,segment,coolant_line,condition
         None
     """    
     
-    reservoir_conditions = conditions[coolant_line.tag][reservoir.tag]
+    reservoir_conditions = segment.state.conditions.energy.coolant_lines[coolant_line.tag][reservoir.tag]
     if segment.state.initials:  
-        reservoir_initials                                   = segment.state.initials.conditions.energy[coolant_line.tag][reservoir.tag]
+        reservoir_initials                                   = segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][reservoir.tag]
         reservoir_conditions.coolant_temperature[:,0]        = reservoir_initials.coolant_temperature[-1,0] 
     
     return

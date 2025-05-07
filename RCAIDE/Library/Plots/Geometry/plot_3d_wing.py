@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------  
-def plot_3d_wing(plot_data, wing, number_of_airfoil_points = 21, color_map='greys', alpha=1):
+def plot_3d_wing(plot_data, wing, number_of_airfoil_points = 21, color_map='greys', alpha=0.5):
     """
     Creates a 3D visualization of wing surfaces including symmetric sections if applicable.
 
@@ -77,29 +77,18 @@ def plot_3d_wing(plot_data, wing, number_of_airfoil_points = 21, color_map='grey
                  [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
              
             values      = np.ones_like(X) 
-            verts       = contour_surface_slice(X, Y, Z ,values,color_map)
+            verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
             plot_data.append(verts)
-    if wing.symmetric:
-        if wing.vertical: 
-            for sec in range(dim-1):
-                for loc in range(af_pts):
-                    X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
-                    Y = np.array([[G.YA1[sec,loc],G.YA2[sec,loc]],[G.YB1[sec,loc],G.YB2[sec,loc]]])
-                    Z = np.array([[-G.ZA1[sec,loc], -G.ZA2[sec,loc]],[-G.ZB1[sec,loc], -G.ZB2[sec,loc]]]) 
-                     
-                    values      = np.ones_like(X) 
-                    verts       = contour_surface_slice(X, Y, Z ,values,color_map)
-                    plot_data.append(verts)
-        else:
-            for sec in range(dim-1):
-                for loc in range(af_pts):
-                    X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
-                    Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
-                    Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
-                     
-                    values      = np.ones_like(X) 
-                    verts       = contour_surface_slice(X, Y, Z ,values,color_map)
-                    plot_data.append(verts)
+    if wing.symmetric: 
+        for sec in range(dim-1):
+            for loc in range(af_pts):
+                X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
+                Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
+                Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
+                 
+                values      = np.ones_like(X) 
+                verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
+                plot_data.append(verts)
             
              
     return plot_data
@@ -183,18 +172,8 @@ def generate_3d_wing_points(wing, n_points, dim):
             if (i == n_segments-1):
                 sweep = 0                                 
             else: 
-                next_seg = list(segments.keys())[i+1]                
-                if wing.segments[current_seg].sweeps.leading_edge is not None: 
-                    # If leading edge sweep is defined 
-                    sweep       = wing.segments[current_seg].sweeps.leading_edge  
-                else:   
-                    # If quarter chord sweep is defined, convert it to leading edge sweep
-                    sweep_quarter_chord = wing.segments[current_seg].sweeps.quarter_chord 
-                    chord_fraction      = 0.25                          
-                    segment_root_chord  = root_chord*wing.segments[current_seg].root_chord_percent
-                    segment_tip_chord   = root_chord*wing.segments[next_seg].root_chord_percent
-                    segment_span        = semispan*(wing.segments[next_seg].percent_span_location - wing.segments[current_seg].percent_span_location )
-                    sweep               = np.arctan(((segment_root_chord*chord_fraction) + (np.tan(sweep_quarter_chord )*segment_span - chord_fraction*segment_tip_chord)) /segment_span) 
+                next_seg = list(segments.keys())[i+1]          
+                sweep       = wing.segments[current_seg].sweeps.leading_edge
             dihedral = wing.segments[current_seg].dihedral_outboard    
             twist    = wing.segments[current_seg].twist
             
@@ -253,17 +232,8 @@ def generate_3d_wing_points(wing, n_points, dim):
         else:
             geometry = compute_naca_4series('0012',n_points)
             
-        dihedral              = wing.dihedral
-        if wing.sweeps.leading_edge  is not None: 
-            sweep      = wing.sweeps.leading_edge
-        else:  
-            sweep_quarter_chord = wing.sweeps.quarter_chord 
-            chord_fraction      = 0.25                          
-            segment_root_chord  = wing.chords.root
-            segment_tip_chord   = wing.chords.tip
-            segment_span        = semispan 
-            sweep       = np.arctan(((segment_root_chord*chord_fraction) + (np.tan(sweep_quarter_chord )*segment_span - chord_fraction*segment_tip_chord)) /segment_span)  
-           
+        dihedral   = wing.dihedral 
+        sweep      = wing.sweeps.leading_edge 
         # append root section     
         translation[:, :, 0,:] = origin[0][0]  
         translation[:, :, 1,:] = origin[0][1]  

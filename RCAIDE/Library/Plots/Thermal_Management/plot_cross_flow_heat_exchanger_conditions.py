@@ -34,7 +34,7 @@ def plot_cross_flow_heat_exchanger_conditions(cross_flow_hex, results, coolant_l
             
     results : Results
         RCAIDE results data structure containing:
-            - segments[i].conditions.energy[coolant_line.tag][cross_flow_hex.tag]
+            - segments[i].conditions.energy.coolant_lines[coolant_line.tag][cross_flow_hex.tag]
                 Heat exchanger data containing:
                     - coolant_mass_flow_rate[:,0]
                         Coolant flow rate in kg/s
@@ -130,7 +130,7 @@ def plot_cross_flow_heat_exchanger_conditions(cross_flow_hex, results, coolant_l
                 if b_i == 0 or bus.identical_battery_modules == False:
                     for i in range(len(results.segments)): 
                         time    = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
-                        cross_flow_hex_conditions  = results.segments[i].conditions.energy[coolant_line.tag][cross_flow_hex.tag]  
+                        cross_flow_hex_conditions  = results.segments[i].conditions.energy.coolant_lines[coolant_line.tag][cross_flow_hex.tag]
                 
                         coolant_mass_flow_rate     = cross_flow_hex_conditions.coolant_mass_flow_rate[:,0]        
                         effectiveness_HEX          = cross_flow_hex_conditions.effectiveness_HEX[:,0]   

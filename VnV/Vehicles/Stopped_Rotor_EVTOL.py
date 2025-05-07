@@ -563,9 +563,24 @@ def vehicle_setup(new_regression=True) :
         loaded_propulsor = load_propulsor(os.path.join(local_path, 'cruise_rotor_propulsor.res'))
 
         for key,item in cruise_propulsor_1.rotor.items():
-            cruise_propulsor_1.rotor[key] = loaded_propulsor.rotor[key] 
+            cruise_propulsor_1.rotor[key] = loaded_propulsor.rotor[key]
+            
+    
+               
+        cruise_propulsor_1.rotor.airfoils.airfoil.coordinate_file  =  local_path + 'Airfoils' + separator + 'NACA_4412.txt'
+        cruise_propulsor_1.rotor.airfoils.airfoil.polar_files      = [local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt' ,
+                                                                        local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt' ,
+                                                                        local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt' ,
+                                                                        local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt' ,
+                                                                        local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt',
+                                                                        local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_3500000.txt',
+                                                                        local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
+                                                                        local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ] 
+            
         for key,item in cruise_propulsor_1.motor.items():
             cruise_propulsor_1.motor[key] = loaded_propulsor.motor[key]
+            
+            
             
     
     network.propulsors.append(cruise_propulsor_1)

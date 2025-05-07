@@ -133,7 +133,7 @@ def plot_3d_vehicle_vlm_panelization(vehicle,
         Z = np.array([[VD.ZA1[i],VD.ZA2[i]],[VD.ZB1[i],VD.ZB2[i]]])           
         
         values      = np.ones_like(X) 
-        verts       = contour_surface_slice(X, Y, Z ,values,color_map)
+        verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
         plot_data.append(verts)                 
   
   

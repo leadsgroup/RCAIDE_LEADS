@@ -20,7 +20,7 @@ def plot_drag_components(results,
                          show_legend= True,
                          save_filename="Drag_Components",
                          file_type=".png",
-                        width = 11, height = 7):
+                        width = 5.5, height = 4):
     """
     Generate plots showing the breakdown of aircraft drag components over time.
 
@@ -107,7 +107,7 @@ def plot_drag_components(results,
      
     fig   = plt.figure(save_filename)
     axis_1 = plt.subplot(1,1,1)
-    fig.set_size_inches(12,height)
+    fig.set_size_inches(width,height)
     
     for i in range(len(results.segments)): 
         time   = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min 
@@ -137,8 +137,7 @@ def plot_drag_components(results,
         
     
     if show_legend:                    
-        leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
-        leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})    
+        leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 5)
     
     # Adjusting the sub-plots for legend 
     fig.tight_layout()

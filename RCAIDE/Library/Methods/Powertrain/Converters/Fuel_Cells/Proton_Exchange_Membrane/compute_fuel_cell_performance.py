@@ -108,14 +108,14 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     n_total           = n_series*n_parallel  
      
     # Compute Bus electrical properties  
-    bus_conditions              = state.conditions.energy[bus.tag] 
+    bus_conditions              = state.conditions.energy.busses[bus.tag]
     P_bus                       = bus_conditions.power_draw
     bus_config                  = bus.fuel_cell_stack_electric_configuration 
     P_module                    = P_bus  /len(bus.fuel_cell_stacks)
     P_cell                      = P_module[t_idx]/n_total 
      
     # Compute fuel_cell_stack Conditions 
-    fuel_cell_stack_conditions = state.conditions.energy[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
+    fuel_cell_stack_conditions = state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
     
     # append atmospheric conditions to fuel cell 
     fuel_cell_stack_conditions.fuel_cell.stagnation_temperature[t_idx] = stagnation_temperature[t_idx]

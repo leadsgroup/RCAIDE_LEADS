@@ -16,26 +16,8 @@ from RCAIDE.Library.Plots                 import *
 import numpy as np  
 from copy import deepcopy
 import matplotlib.pyplot as plt  
-import os   
+import os
 
-def main():
-    
-    # Step 1 design a vehicle
-    vehicle  = vehicle_setup()    
-    
-    # Step 2 create aircraft configuration based on vehicle 
-    configs  = configs_setup(vehicle)
-
-    # plot vehicle 
-    plot_3d_vehicle(vehicle,
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100)          
-    
-    return
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
@@ -52,13 +34,13 @@ def vehicle_setup():
     # ------------------------------------------------------------------
 
     # mass properties 
-    vehicle.mass_properties.max_takeoff               =   348812  # kg
+    vehicle.mass_properties.max_takeoff               =   348812 # kg
     vehicle.mass_properties.operating_empty           =   169643 # kg
     vehicle.mass_properties.takeoff                   =   296750 # kg
     vehicle.mass_properties.max_zero_fuel             =   288000 # kg
     vehicle.mass_properties.max_payload               =   118364 # kg
     vehicle.mass_properties.max_fuel                  =   150800 # kg
-    vehicle.mass_properties.payload                   =   99770 # kg
+    vehicle.mass_properties.payload                   =   99770  # kg
     
     fuel_percentage = 1.0
 

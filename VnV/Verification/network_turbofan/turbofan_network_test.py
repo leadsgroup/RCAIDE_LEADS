@@ -37,14 +37,57 @@ def main():
     
     # plot vehicle 
     plot_3d_vehicle(vehicle, 
-                    min_x_axis_limit            = 0,
-                    max_x_axis_limit            = 40,
-                    min_y_axis_limit            = -20,
-                    max_y_axis_limit            = 20,
-                    min_z_axis_limit            = -20,
-                    max_z_axis_limit            = 20,
+                    min_x_axis_limit            = -100,
+                    max_x_axis_limit            = 100,
+                    min_y_axis_limit            = -100,
+                    max_y_axis_limit            = 100,
+                    min_z_axis_limit            = -100,
+                    max_z_axis_limit            = 100, 
                     show_figure                 = False 
-                    )        
+                    )
+
+    # plot vehicle 
+    plot_3d_vehicle(vehicle,
+                    save_filename               = "Boeing_737_Top_View",
+                    min_x_axis_limit            = -100,
+                    max_x_axis_limit            = 100,
+                    min_y_axis_limit            = -100,
+                    max_y_axis_limit            = 100,
+                    min_z_axis_limit            = -100,
+                    max_z_axis_limit            = 100, 
+                    top_view                    = True, 
+                    side_view                   = False, 
+                    front_view                  = False, 
+                    show_figure=False)
+    
+
+    plot_3d_vehicle(vehicle,
+                    save_filename               = "Boeing_737_Side_View",
+                    min_x_axis_limit            = -100,
+                    max_x_axis_limit            = 100,
+                    min_y_axis_limit            = -100,
+                    max_y_axis_limit            = 100,
+                    min_z_axis_limit            = -100,
+                    max_z_axis_limit            = 100, 
+                    top_view                    = False, 
+                    side_view                   = True, 
+                    front_view                  = False, 
+                    show_figure=False)
+    
+   
+    plot_3d_vehicle(vehicle,
+                    save_filename               = "Boeing_737_Front_View",
+                    min_x_axis_limit            = -100,
+                    max_x_axis_limit            = 100,
+                    min_y_axis_limit            = -100,
+                    max_y_axis_limit            = 100,
+                    min_z_axis_limit            = -100,
+                    max_z_axis_limit            = 100, 
+                    top_view                    = False, 
+                    side_view                   = False, 
+                    front_view                  = True,
+                    wing_alpha                  = 0.2, 
+                    show_figure=False)       
     
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
@@ -102,30 +145,30 @@ def main():
     
     # Truth values
     takeoff_thrust_truth     = 99134.30160723036
-    climb_throttle_1_truth   = 0.7075601146754613
-    climb_throttle_2_truth   = 0.6331802733525678
-    climb_throttle_3_truth   = 0.44669913702886355
-    climb_throttle_4_truth   = 0.7053976260694119
-    climb_throttle_5_truth   = 0.7918351349081864
-    climb_throttle_6_truth   = 1.1283560601603702
-    climb_throttle_7_truth   = 1.277159896384352
-    climb_throttle_8_truth   = 0.5059516593127343
-    climb_throttle_9_truth   = 0.7700087761106865
-    climb_10_CL_truth        = 1.4057207360961625
-    cruise_CL_1_truth        = 0.6899165006346399
-    cruise_CL_2_truth        = 0.6859593169409225
-    cruise_CL_3_truth        = 0.45438724845603207
-    descent_throttle_1_truth = -0.08720116296026705
-    curved_cruise_CL_truth   = 1.345533094750704
-    descent_throttle_2_truth = 0.0545087700315256
-    single_pt_CL_1_truth     = 0.0006515352755036449
-    single_pt_CL_2_truth     = 0.0006616284953266105
-    cruise_4_CL_truth        = 0.5108735337044964
-    cruise_5_CL_truth        = 0.5108690201740079
-    cruise_6_CL_truth        = 0.34577218033417767
-    cruise_7_CL_truth        = 0.3373935230366758
-    cruise_8_CL_truth        = 0.3299409323597025
-    descent_throttle_3_truth = 0.009671514333555124
+    climb_throttle_1_truth   = 0.7016348361953055
+    climb_throttle_2_truth   = 0.6267106563383659
+    climb_throttle_3_truth   = 0.43884398757845344
+    climb_throttle_4_truth   = 0.6971081223777067
+    climb_throttle_5_truth   = 0.7823649510641854
+    climb_throttle_6_truth   = 1.1171989705927245
+    climb_throttle_7_truth   = 1.2652452024699403
+    climb_throttle_8_truth   = 0.4947058195543865
+    climb_throttle_9_truth   = 0.7539099454103763
+    climb_10_CL_truth        = 1.3775058917676974
+    cruise_CL_1_truth        = 0.6763840368442674
+    cruise_CL_2_truth        = 0.6725417842032294
+    cruise_CL_3_truth        = 0.44500405036957136
+    descent_throttle_1_truth = -0.09527399671284391
+    curved_cruise_CL_truth   = 1.3196282880722987
+    descent_throttle_2_truth = 0.049643290239086604
+    single_pt_CL_1_truth     = 0.0006241344069661738
+    single_pt_CL_2_truth     = 0.0006476245841509315
+    cruise_4_CL_truth        = 0.5011980469324114
+    cruise_5_CL_truth        = 0.5011937462215134
+    cruise_6_CL_truth        = 0.3393786532899428
+    cruise_7_CL_truth        = 0.33137610888686897
+    cruise_8_CL_truth        = 0.324257259526527
+    descent_throttle_3_truth = 0.005344319083569369
     landing_thrust_truth     = 10914.922642740088
     
     # Store errors 
@@ -154,8 +197,8 @@ def main():
     error.cruise_6_CL        = np.max(np.abs(cruise_6_CL         - cruise_6_CL_truth ))      
     error.cruise_7_CL        = np.max(np.abs(cruise_7_CL         - cruise_7_CL_truth ))      
     error.cruise_8_CL        = np.max(np.abs(cruise_8_CL         - cruise_8_CL_truth ))         
-    error.descent_throttle_3 = np.max(np.abs(descent_throttle_3   - descent_throttle_3_truth))  
-    error.landing_thrust     = np.max(np.abs(landing_thrust       - landing_thrust_truth))
+    error.descent_throttle_3 = np.max(np.abs(descent_throttle_3  - descent_throttle_3_truth))  
+    error.landing_thrust     = np.max(np.abs(landing_thrust      - landing_thrust_truth))
      
     print('Errors:')
     print(error)

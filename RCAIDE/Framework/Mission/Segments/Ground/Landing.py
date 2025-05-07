@@ -63,7 +63,6 @@ class Landing(Evaluate):
         self.friction_coefficient = 0.4
         self.throttle             = 0.1
         self.altitude             = 0.0
-        self.reverse_thrust_ratio = 0.1
         self.true_course          = 0.0 * Units.degrees 
         
         # -------------------------------------------------------------------------------------------------------------- 

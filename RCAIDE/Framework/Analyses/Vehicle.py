@@ -45,6 +45,7 @@ class Vehicle(Analysis.Container):
         self.atmosphere   = None
         self.costs        = None
         self.energy       = None
+        self.geometry     = None
         self.noise        = None
         self.emissions    = None
         self.planet       = None

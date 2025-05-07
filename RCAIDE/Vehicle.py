@@ -81,6 +81,7 @@ class Vehicle(Data):
         self.flight_envelope.alt_vc                                        = 0.0
         self.flight_envelope.alt_gust                                      = 0.0
         self.flight_envelope.max_ceiling                                   = 0.0
+        self.flight_envelope.V2_VS_ratio                                   = 1.2
         self.flight_envelope.maximum_dynamic_pressure                      = 0.0
         self.flight_envelope.maximum_mach_operational                      = 0.0
         self.flight_envelope.maximum_lift_coefficient                      = None

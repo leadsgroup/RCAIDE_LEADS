@@ -75,22 +75,26 @@ def wing_planform(wing, overwrite_reference = True):
             twists.append(seg.twist)
             chords.append(seg.root_chord_percent)
             
-            if seg.sweeps.quarter_chord !=  None: 
-                sweeps.append(seg.sweeps.quarter_chord)                
-            
-            elif seg.sweeps.quarter_chord == None and  seg.sweeps.leading_edge != None:
-                # covert leading edge to quarter chord
-                if i == len(wing.segments) - 1:
-                    sweeps.append(0)
-                    seg.sweeps.quarter_chord = 0
-                else: 
-                    next_seg  = wing.segments[seg_keys[i+1]]                
-                    quarter_chord_sweep =  convert_sweep_segments(seg.sweeps.leading_edge, seg, next_seg, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25)
-                    sweeps.append(quarter_chord_sweep)
-                    seg.sweeps.quarter_chord = quarter_chord_sweep
-
+            if i ==  (len(wing.segments) - 1):
+                sweeps.append(sweeps[-1])
+                seg.sweeps.quarter_chord = sweeps[-1]
+                seg.sweeps.leading_edge  = sweeps[-1]
             else:
-                raise AssertionError("Quarter chord or leading edge sweep must be defined") 
+                if seg.sweeps.quarter_chord !=  None: 
+                    sweeps.append(seg.sweeps.quarter_chord)                
+                
+                elif seg.sweeps.quarter_chord == None and  seg.sweeps.leading_edge != None:
+                    # covert leading edge to quarter chord
+                    if i == len(wing.segments) - 1:
+                        sweeps.append(0)
+                        seg.sweeps.quarter_chord = 0
+                    else: 
+                        next_seg  = wing.segments[seg_keys[i+1]]                
+                        quarter_chord_sweep =  convert_sweep_segments(seg.sweeps.leading_edge, seg, next_seg, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25)
+                        sweeps.append(quarter_chord_sweep)
+                        seg.sweeps.quarter_chord = quarter_chord_sweep 
+                else:
+                    raise AssertionError("Quarter chord or leading edge sweep must be defined") 
                  
             t_cs.append(seg.thickness_to_chord)
             dihedrals.append(seg.dihedral_outboard)

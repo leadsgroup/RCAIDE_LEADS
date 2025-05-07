@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------   
-def plot_3d_fuselage(plot_data, fuselage, tessellation = 24, color_map = 'teal'):
+def plot_3d_fuselage(plot_data, fuselage, tessellation = 24, color_map = 'teal', alpha=1):
     """
     Creates a 3D visualization of a fuselage surface using tessellated panels.
 
@@ -65,7 +65,7 @@ def plot_3d_fuselage(plot_data, fuselage, tessellation = 24, color_map = 'teal')
                               [G.PTS[i_seg  ,i_tes+1,2],G.PTS[i_seg+1,i_tes+1,2]]])  
                  
                 values = np.ones_like(X) 
-                verts  = contour_surface_slice(X, Y, Z,values,color_map )
+                verts  = contour_surface_slice(X, Y, Z,values,color_map,alpha )
                 plot_data.append(verts)          
 
     return plot_data 

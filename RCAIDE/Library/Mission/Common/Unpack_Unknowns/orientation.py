@@ -96,9 +96,7 @@ def orientation(segment):
         if ctrls.body_angle.active: 
             segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.body_angle[:,0]  
         else: 
-            segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.angle_of_attack            
-
-
+            segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.angle_of_attack   
 
     if ctrls.bank_angle.active: 
         segment.state.conditions.frames.body.inertial_rotations[:,0] = segment.state.unknowns.bank_angle[:,0]

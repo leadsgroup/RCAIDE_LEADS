@@ -91,6 +91,7 @@ def vehicle_setup(fuel_cell_model):
     segment.dihedral_outboard             = 3. * Units.degree 
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
+    segment.has_fuel_tank                 = True
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
     
@@ -121,7 +122,7 @@ def vehicle_setup(fuel_cell_model):
     wing.chords.root                      = 1.552 
     wing.chords.tip                       = 1.552 
     wing.chords.mean_aerodynamic          = 1.552  
-    wing.taper                            = 0 
+    wing.taper                            = 1 
     wing.aspect_ratio                     = wing.spans.projected**2. / wing.areas.reference 
     wing.twists.root                      = 0.0 * Units.degree
     wing.twists.tip                       = 0.0 * Units.degree 
@@ -304,7 +305,8 @@ def vehicle_setup(fuel_cell_model):
     segment.percent_x_location                  = 0.716936232 
     segment.percent_z_location                  = 0.394233333/ fuselage.lengths.total	 	 
     segment.height                              = 1.558333333	 
-    segment.width                               = 0.64
+    segment.width                               = 1.64
+    segment.has_fuel_tank                       = True
     fuselage.segments.append(segment)
     
 
@@ -321,96 +323,6 @@ def vehicle_setup(fuel_cell_model):
 
     # add to vehicle
     vehicle.append_component(fuselage)
- 
-    #########################################################   Nacelles  ############################################################    
-    nacelle                    = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
-    nacelle.tag                = 'nacelle_1'
-    nacelle.length             = 2
-    nacelle.diameter           = 0.73480616 
-    nacelle.areas.wetted       = 0.01*(2*np.pi*0.01/2)
-    nacelle.origin             = [[2.81,3.34 , 1.22]]
-    nacelle.flow_through       = False  
-    
-    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                = 'segment_1'
-    nac_segment.percent_x_location = 0.0  
-    nac_segment.height             = 0.0
-    nac_segment.width              = 0.0
-    nacelle.append_segment(nac_segment)   
-    
-    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                = 'segment_2'
-    nac_segment.percent_x_location = 0.042687938 
-    nac_segment.percent_z_location = 1.2284
-    nac_segment.height             = 0.183333333 
-    nac_segment.width              = 0.422484315 
-    nacelle.append_segment(nac_segment)   
-    
-    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                = 'segment_3'
-    nac_segment.percent_x_location = 0.143080714 
-    nac_segment.percent_z_location = 1.246733333
-    nac_segment.height             = 0.44	 
-    nac_segment.width              = 0.685705173 
-    nacelle.append_segment(nac_segment)  
-     
-    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                = 'segment_4'
-    nac_segment.percent_x_location = 0.170379029  
-    nac_segment.percent_z_location = 1.054233333
-    nac_segment.height             = 0.898333333	 
-    nac_segment.width              = 0.73480616 
-    nacelle.append_segment(nac_segment)  
-    
-    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                = 'segment_5'
-    nac_segment.percent_x_location = 0.252189893  
-    nac_segment.percent_z_location = 1.054233333
-    nac_segment.height             = 1.008333333 
-    nac_segment.width              = 0.736964445
-    nacelle.append_segment(nac_segment)   
-    
-    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                = 'segment_6'
-    nac_segment.percent_x_location = 0.383860821   
-    nac_segment.percent_z_location = 1.072566667
-    nac_segment.height             = 0.971666667 
-    nac_segment.width              = 0.736964445 
-    nacelle.append_segment(nac_segment)  
-    
-    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                = 'segment_7'
-    nac_segment.percent_x_location = 0.551826736  
-    nac_segment.percent_z_location = 1.155066667	
-    nac_segment.height             = 0.77	 
-    nac_segment.width              = 0.736964445  
-    nacelle.append_segment(nac_segment)
-    
-
-    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                = 'segment_8'
-    nac_segment.percent_x_location = 0.809871485   
-    nac_segment.percent_z_location = 1.2284
-    nac_segment.height             = 0.366666667 
-    nac_segment.width              = 0.736964445 
-    nacelle.append_segment(nac_segment) 
-    
-
-    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-    nac_segment.tag                = 'segment_9'
-    nac_segment.percent_x_location = 1.0  
-    nac_segment.percent_z_location = 1.301733333 
-    nac_segment.height             = 0.036666667	
-    nac_segment.width              = 0.0  
-    nacelle.append_segment(nac_segment)
-    
-    
-    vehicle.append_component(nacelle)  
-
-    nacelle_2          = deepcopy(nacelle)
-    nacelle_2.tag      = 'nacelle_2'
-    nacelle_2.origin   = [[ 2.81, -3.34 ,1.22]]
-    vehicle.append_component(nacelle_2)    
 
     # ------------------------------------------------------------------
     #   Landing gear
@@ -445,13 +357,20 @@ def vehicle_setup(fuel_cell_model):
         
     bus.fuel_cell_stacks.append(fuel_cell_stack)  
     bus.initialize_bus_properties() 
-
+      
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Crogenic Tank
     #------------------------------------------------------------------------------------------------------------------------------------       
-    cryogenic_tank = RCAIDE.Library.Components.Powertrain.Sources.Cryogenic_Tanks.Cryogenic_Tank()  
-    bus.cryogenic_tanks.append(cryogenic_tank)    
-     
+    cryogenic_tank_1 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.fuselages.fuselage)    # for regression, aircraft has two tanks
+    cryogenic_tank_1.fuel_selector_ratio  = 0.5 
+    cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    bus.fuel_tanks.append(cryogenic_tank_1)
+    
+    cryogenic_tank_2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
+    cryogenic_tank_2.fuel_selector_ratio  = 0.5
+    cryogenic_tank_2.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    bus.fuel_tanks.append(cryogenic_tank_2)    
+          
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
@@ -505,6 +424,89 @@ def vehicle_setup(fuel_cell_model):
 
     # design starboard propulsor 
     design_electric_rotor(starboard_propulsor)
+        
+    nacelle                    = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
+    nacelle.tag                = 'nacelle_1'
+    nacelle.length             = 4
+    nacelle.diameter           = 0.73480616 
+    nacelle.areas.wetted       = 0.01*(2*np.pi*0.01/2)
+    nacelle.origin             = [[3.5,2.8129,1]]
+    nacelle.flow_through       = False  
+    
+    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                = 'segment_1'
+    nac_segment.percent_x_location = 0.0  
+    nac_segment.height             = 0.0
+    nac_segment.width              = 0.0
+    nacelle.append_segment(nac_segment)   
+    
+    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                = 'segment_2'
+    nac_segment.percent_x_location = 0.042687938 
+    nac_segment.percent_z_location = 0.0284/ nacelle.length
+    nac_segment.height             = 0.183333333 
+    nac_segment.width              = 0.422484315 
+    nacelle.append_segment(nac_segment)   
+    
+    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                = 'segment_3'
+    nac_segment.percent_x_location = 0.143080714 
+    nac_segment.percent_z_location = 0.046733333/ nacelle.length
+    nac_segment.height             = 0.44	 
+    nac_segment.width              = 0.685705173 
+    nacelle.append_segment(nac_segment)  
+     
+    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                = 'segment_4'
+    nac_segment.percent_x_location = 0.170379029  
+    nac_segment.percent_z_location = -0.154233333/ nacelle.length
+    nac_segment.height             = 0.898333333	 
+    nac_segment.width              = 0.73480616 
+    nacelle.append_segment(nac_segment)  
+    
+    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                = 'segment_5'
+    nac_segment.percent_x_location = 0.252189893  
+    nac_segment.percent_z_location = -0.154233333/ nacelle.length
+    nac_segment.height             = 1.008333333 
+    nac_segment.width              = 0.736964445
+    nacelle.append_segment(nac_segment)   
+    
+    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                = 'segment_6'
+    nac_segment.percent_x_location = 0.383860821   
+    nac_segment.percent_z_location = -0.072566667/ nacelle.length
+    nac_segment.height             = 0.971666667 
+    nac_segment.width              = 0.736964445 
+    nacelle.append_segment(nac_segment)  
+    
+    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                = 'segment_7'
+    nac_segment.percent_x_location = 0.551826736  
+    nac_segment.percent_z_location = .055066667/ nacelle.length	
+    nac_segment.height             = 0.77	 
+    nac_segment.width              = 0.736964445  
+    nacelle.append_segment(nac_segment)
+    
+
+    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                = 'segment_8'
+    nac_segment.percent_x_location = 0.809871485   
+    nac_segment.percent_z_location = 0.1284/ nacelle.length
+    nac_segment.height             = 0.366666667 
+    nac_segment.width              = 0.736964445 
+    nacelle.append_segment(nac_segment) 
+    
+
+    nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+    nac_segment.tag                = 'segment_9'
+    nac_segment.percent_x_location = 1.0  
+    nac_segment.percent_z_location = 0.201733333 / nacelle.length
+    nac_segment.height             = 0.036666667	
+    nac_segment.width              = 0.0  
+    nacelle.append_segment(nac_segment) 
+    
+    starboard_propulsor.nacelle = nacelle      
  
     # append propulsor to distribution line 
     net.propulsors.append(starboard_propulsor) 
@@ -527,11 +529,15 @@ def vehicle_setup(fuel_cell_model):
               
     motor_2                                    = deepcopy(motor)
     motor_2.origin                             =  [[4.0, -2.8129,1.22 ]]        
-    port_propulsor.motor                       = motor_2  
+    port_propulsor.motor                       = motor_2 
+
+    nacelle_2                                  = deepcopy(nacelle)
+    nacelle_2.tag                              = 'nacelle_2'
+    nacelle_2.origin                           = [[ 2.81, -3.34 ,1.22]]
+    port_propulsor.nacelle                     = nacelle_2         
     
     # append propulsor to distribution line 
-    net.propulsors.append(port_propulsor) 
-
+    net.propulsors.append(port_propulsor)  
 
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Payload 
