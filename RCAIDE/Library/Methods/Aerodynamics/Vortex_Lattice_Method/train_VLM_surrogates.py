@@ -20,19 +20,8 @@ def train_VLM_surrogates(aerodynamics):
     """Call methods to run VLM for sample point evaluation. 
     
     Assumptions:
-        CY_beta multiplied by 2, verified against literature and AVL 
-        CL_p multiplied by -2, verified against literature and AVL 
-        CM_q multiplied by 10, verified against literature and AVL 
-        CN_p multiplied by -3, verified against literature and AVL 
-        CN_r multiplied by 3, verified against literature and AVL 
-        CL_delta_a multiplied by -1, verified against literature and AVL 
-        CLift_delta_e multiplied by 0.5, verified against literature and AVL 
-        CY_alpha multiplied by 0, based on theory 
-        CL_beta multiplied by -1, verified against literature and AVL 
-        p derivatives multiplied by -10, verified against literature and AVL 
-        r derivatives multiplied by -10, verified against literature and AVL 
-        Rudder derivatives multiplied by -1, verified against literature  
-        Aileron derivatives multiplied by -1, verified against literature
+        CY_beta multiplied by -1,  
+        CN Rudder derivatives multiplied by -1, verified against literature
         
     Source:
         None
@@ -370,11 +359,12 @@ def train_model(aerodynamics, Mach):
       
 
     correction_factor = Data() # If a correction factor is not included below then there is no correction
-    correction_factor.dCY_dbeta = -1#10
-    correction_factor.dCL_dp    = 1#-2
-    correction_factor.dCM_dq    = 1#10
-    correction_factor.dCN_dp    = 1#-3
-    correction_factor.dCN_dr    = 1#3
+    correction_factor.dCY_dbeta = -1
+    correction_factor.dCL_dp    = 1
+    correction_factor.dCM_dq    = 1
+    correction_factor.dCN_dp    = 1
+    correction_factor.dCN_dr    = 1
+    correction_factor.dCN_ddelta_r = -1
 
     # STABILITY DERIVATIVES 
     training.dClift_dalpha = (Clift_alpha[0,:] - Clift_alpha[1,:]) / (AoA[0] - AoA[1])       
@@ -484,7 +474,7 @@ def train_model(aerodynamics, Mach):
                   
                 training.dCY_ddelta_r    = (CY_d_r[0,:] - CY_d_r[1,:]) / (delta_r[0] - delta_r[1]) 
                 training.dCL_ddelta_r    = (CL_d_r[0,:] - CL_d_r[1,:]) / (delta_r[0] - delta_r[1])  
-                training.dCN_ddelta_r    = (CN_d_r[0,:] - CN_d_r[1,:]) / (delta_r[0] - delta_r[1])  
+                training.dCN_ddelta_r    = correction_factor.dCN_ddelta_r*(CN_d_r[0,:] - CN_d_r[1,:]) / (delta_r[0] - delta_r[1])  
                     
             # --------------------------------------------------------------------------------------------------------------
             # Flap

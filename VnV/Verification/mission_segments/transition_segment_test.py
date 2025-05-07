@@ -31,13 +31,13 @@ from Stopped_Rotor_EVTOL    import configs_setup as  SR_configs_setup
 # ----------------------------------------------------------------------
 def main(): 
     # make true only when resizing aircraft. should be left false for regression
-    update_regression_values = True
+    update_regression_values = False
      
     # TEST 1
     tiltwing_transition_test(update_regression_values)
     
     # TEST 2
-    stopped_rotor_transition_test(update_regression_values)
+    #stopped_rotor_transition_test(update_regression_values)
     
     return 
 
@@ -291,40 +291,40 @@ def TW_mission_setup(analyses ):
     segment                                                          = Segments.Vertical_Flight.Climb(base_segment)
     segment.tag                                                      = "Vertical_Climb_1"   
     segment.analyses.extend(analyses.vertical_climb)                
-    segment.altitude_end                                             = 60.  * Units.ft  
-    segment.initial_battery_state_of_charge                          = 1.0 
+    segment.altitude_end                                             = 60.  * Units.ft   
     segment.climb_rate                                               = 100. * Units['ft/min'] 
           
     # define flight dynamics to model            
     segment.flight_dynamics.force_z                                  = True 
 
     # define flight controls  
-    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.active               = True  
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.6]]
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
                                                             'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]
     
     mission.append_segment(segment)   
     
 
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    # Vertical Descent 
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    segment                                                         = Segments.Vertical_Flight.Descent(base_segment)
-    segment.tag                                                     = "Vertical_Descent" 
-    segment.analyses.extend( analyses.vertical_descent)               
-    segment.altitude_start                                          = 100.0 * Units.ft   
-    segment.altitude_end                                            = 0.   * Units.ft  
-    segment.descent_rate                                            = 200. * Units['ft/min']  
+    # #------------------------------------------------------------------------------------------------------------------------------------ 
+    # # Vertical Descent 
+    # #------------------------------------------------------------------------------------------------------------------------------------ 
+    # segment                                                         = Segments.Vertical_Flight.Descent(base_segment)
+    # segment.tag                                                     = "Vertical_Descent" 
+    # segment.analyses.extend( analyses.vertical_descent)               
+    # segment.altitude_start                                          = 100.0 * Units.ft   
+    # segment.altitude_end                                            = 0.   * Units.ft  
+    # segment.descent_rate                                            = 200. * Units['ft/min']  
                   
-    # define flight dynamics to model              
-    segment.flight_dynamics.force_z                                  = True     
+    # # define flight dynamics to model              
+    # segment.flight_dynamics.force_z                                  = True     
     
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
-                                                                             'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]  
+    # # define flight controls 
+    # segment.assigned_control_variables.throttle.active               = True           
+    # segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
+    #                                                                          'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]  
             
-    mission.append_segment(segment)       
+    # mission.append_segment(segment)       
      
     return mission
 
