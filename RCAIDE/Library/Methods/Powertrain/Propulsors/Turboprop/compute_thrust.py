@@ -189,10 +189,10 @@ def compute_thrust(turboprop, conditions):
     total_work_output_coefficient                  = propeller_work_output_coefficient + compressor_work_output_coefficient                                                                                              
     
     # Computing Specifc Thrust
-    Fsp                                            = (total_work_output_coefficient*compressor_cp*T0)/(V0)     # [(N*s)/kg] 
+    Fsp                                            = (total_work_output_coefficient*compressor_cp*T0)/(V0)     # [(N*s)/kg] = m/s 
     
     # Computing the TSFC
-    TSFC                                           = (1 - SFC_adjustment) * (fuel_to_air_ratio/(Fsp)) * Units.hour    # [kg/(N*hr)] 
+    TSFC                                           = (1 - SFC_adjustment) * (fuel_to_air_ratio*g/(Fsp)) * Units.hour    # [kg/(N*hr)] 
     
     W_dot_mdot0                                    = total_work_output_coefficient*compressor_cp*T0     # [(W*s)/kg] 
     
@@ -211,7 +211,7 @@ def compute_thrust(turboprop, conditions):
     mdhc                                           = turboprop.compressor_nondimensional_massflow    
     total_temperature_reference                    = turboprop_conditions.total_temperature_reference
     total_pressure_reference                       = turboprop_conditions.total_pressure_reference     
-    mdot_core                                      = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
+    mdot_core                                      = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref) # [-]
 
     # computing the dimensional thrust
     FD2                                            = Fsp*mdot_core*turboprop_conditions.throttle
