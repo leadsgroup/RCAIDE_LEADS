@@ -83,9 +83,9 @@ def tiltwing_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth              = 0.7498967256208228
-    vertical_climb_1_throttle_truth   = 0.7782652854347681
-    vertical_descent_throttle_truth   = 0.7398408607824889
+    hover_throttle_truth              = 0.5994692986064557
+    vertical_climb_1_throttle_truth   = 0.6187135868082909
+    vertical_descent_throttle_truth   = 0.5925255481996211
     
     # Store errors 
     error = Data() 

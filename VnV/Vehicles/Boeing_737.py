@@ -34,7 +34,7 @@ def vehicle_setup():
     vehicle.mass_properties.max_fuel                  = 20897.0 * Units.kilogram 
     vehicle.mass_properties.max_zero_fuel             = 62732.0 * Units.kilogram 
     vehicle.mass_properties.cargo                     = 10000.  * Units.kilogram  
-    vehicle.mass_properties.center_of_gravity         = [[21,0, 0, 0]]
+    vehicle.mass_properties.center_of_gravity         = [[21,0, 0]]
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 2.5 
     vehicle.flight_envelope.design_mach_number        = 0.78 
