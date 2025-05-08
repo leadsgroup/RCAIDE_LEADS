@@ -54,9 +54,6 @@ def aerodynamics(segment):
     CL[CL>CLmax] = CLmax
     CL[CL< -CLmax] = -CLmax
 
-    if np.isnan(CL).any():
-        stop = 0
-
     # dimensionalize
     bank_angle = segment.state.conditions.aerodynamics.angles.phi
     F      = segment.state.ones_row(3) * 0.0 

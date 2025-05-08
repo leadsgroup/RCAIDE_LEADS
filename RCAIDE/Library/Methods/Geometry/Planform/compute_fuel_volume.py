@@ -264,7 +264,6 @@ def compute_segmented_wing_integral_tank_fuel_volume(fuel_tank,wing,inner_segmen
     outer_rear_rib_length   = outer_segment_chord * (abs(outer_rear_rib_yu) + abs(outer_rear_rib_yl) )
     outer_wingbox_length    = outer_segment_chord * (outer_segment.structural.rear_spar_percent_chord -outer_segment.structural.front_spar_percent_chord)  
 
-
     # volume of truncated prism
     A_1 = inner_wingbox_length * (inner_front_rib_length + inner_rear_rib_length) / 2 
     A_2 = outer_wingbox_length * (outer_front_rib_length + outer_rear_rib_length) / 2

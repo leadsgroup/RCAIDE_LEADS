@@ -13,18 +13,19 @@ from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep
 import numpy as np  
 from copy import deepcopy
 from scipy.interpolate import interp1d
+
 # ----------------------------------------------------------------------------------------------------------------------
 # update_blended_wing_body_planform 
 # ----------------------------------------------------------------------------------------------------------------------
-def update_blended_wing_body_planform(bwb_wing):
+def update_blended_wing_body_planform(wing):
     '''
     
-    ''' 
+    '''
+    bwb_wing     = deepcopy(wing)       
     BWB_LOPA     = bwb_wing.layout_of_passenger_accommodations
     cabin_width  = BWB_LOPA.cabin_wdith / 2
-    
-    new_bwb_wing = deepcopy(bwb_wing)
-    new_bwb_wing.segments.clear()
+     
+    wing.segments.clear()
     
     seg_tags = list(bwb_wing.segments.keys())
     
@@ -51,59 +52,47 @@ def update_blended_wing_body_planform(bwb_wing):
             if type(segment) == RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment:
                 segment.structural.rib = True
                 new_cabin_segs += 1
-                new_bwb_wing.append_segment(segment) 
-            
+                wing.append_segment(segment)
+                
             elif type(segment) == RCAIDE.Library.Components.Wings.Segments.Segment:
                 new_segment = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()  
-                new_cabin_segs += 1
-                new_segment.tag                    = 'fuselage_section'               
-                new_segment.taper                  = segment.taper                        
-                new_segment.twist                  = segment.twist                        
-                new_segment.percent_span_location  = segment.percent_span_location        
-                new_segment.root_chord_percent     = segment.root_chord_percent           
-                new_segment.dihedral_outboard      = segment.dihedral_outboard            
-                new_segment.thickness_to_chord     = segment.thickness_to_chord           
-                new_segment.sweeps.leading_edge    = segment.sweeps.leading_edge
+                new_cabin_segs += 1 
+                for key,item in new_segment.items():
+                    new_segment[key] = segment[key] 
+                new_segment.tag                    = 'fuselage_section'           
                 if segment.airfoil != None: 
                     new_segment.append_airfoil(segment.airfoil )      
-                new_bwb_wing.append_segment(new_segment)
+                wing.append_segment(new_segment)
             
-        if  cabin_width < seg_span:
+        else:
             if add_final_cabin_seg:
                 cabin_wall_segment = bwb_wing.segments[seg_tags[seg_i-1]]
                 new_segment = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
-                new_cabin_segs += 1  
+                new_cabin_segs += 1 
+                for key,item in new_segment.items():
+                    new_segment[key] = cabin_wall_segment[key] 
                 new_segment.structural.rib         = True
-                new_segment.tag                    = "cabin_wall_section"                   
-                new_segment.taper                  = cabin_wall_segment.taper                        
-                new_segment.twist                  = cabin_wall_segment.twist                        
-                new_segment.percent_span_location  = max_cabin_seg_span / bwb_wing.spans.projected      
-                new_segment.root_chord_percent     = cabin_wall_segment.root_chord_percent           
-                new_segment.dihedral_outboard      = cabin_wall_segment.dihedral_outboard            
-                new_segment.thickness_to_chord     = cabin_wall_segment.thickness_to_chord           
-                new_segment.sweeps.leading_edge    = cabin_wall_segment.sweeps.leading_edge
+                new_segment.tag                    = "cabin_wall_section"   
+                new_segment.has_fuel_tank          = segment.has_fuel_tank
+                new_segment.dihedral_outboard      = bwb_wing.segments[seg_tags[seg_i]].dihedral_outboard
+                new_segment.percent_span_location  = (2 * cabin_width) / bwb_wing.spans.projected   
                 if segment.airfoil != None: 
                     new_segment.append_airfoil(segment.airfoil )      
-                new_bwb_wing.append_segment(new_segment)                    
+                wing.append_segment(new_segment)                    
                  
                 add_final_cabin_seg = False  
             
             if type(segment) == RCAIDE.Library.Components.Wings.Segments.Segment:
-                new_bwb_wing.append_segment(segment)
+                wing.append_segment(segment)
                 
             elif type(segment) == RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment: 
-                new_segment = RCAIDE.Library.Components.Wings.Segments.Segment()   
-                new_segment.tag                    = 'wing_section'                    
-                new_segment.taper                  = segment.taper                        
-                new_segment.twist                  = segment.twist                        
-                new_segment.percent_span_location  = segment.percent_span_location        
-                new_segment.root_chord_percent     = segment.root_chord_percent           
-                new_segment.dihedral_outboard      = segment.dihedral_outboard            
-                new_segment.thickness_to_chord     = segment.thickness_to_chord           
-                new_segment.sweeps.leading_edge    = segment.sweeps.leading_edge
+                new_segment = RCAIDE.Library.Components.Wings.Segments.Segment() 
+                for key,item in new_segment.items():
+                    new_segment[key] = segment[key] 
+                new_segment.tag     = 'wing_section'                 
                 if segment.airfoil != None: 
                     new_segment.append_airfoil(segment.airfoil )      
-                new_bwb_wing.append_segment(new_segment)                    
+                wing.append_segment(new_segment)                    
           
     # ----------------------------------------------------------------------------------------------------------------------    
     # Step 2: Update sweep and chord based on lopa. outer sweeps not updated
@@ -118,10 +107,10 @@ def update_blended_wing_body_planform(bwb_wing):
     
     inner_origin_x = 0
     outer_origin_x = 0
-    new_seg_tags = list(new_bwb_wing.segments.keys())
+    new_seg_tags = list(wing.segments.keys())
     for  i in range(new_cabin_segs-1): 
-        inner_segment = new_bwb_wing.segments[new_seg_tags[i]] 
-        outer_segment = new_bwb_wing.segments[new_seg_tags[i+1]]  
+        inner_segment = wing.segments[new_seg_tags[i]] 
+        outer_segment = wing.segments[new_seg_tags[i+1]]  
     
         # nondimensionl front spar location coordinates  
         inner_rs_nondim_x       = inner_segment.structural.rear_spar_percent_chord  
@@ -129,14 +118,14 @@ def update_blended_wing_body_planform(bwb_wing):
         
         # inner segment 
         inner_cabin_start_percent_x      = inner_segment.percent_chord_cabin_start 
-        inner_seg_span                   = inner_segment.percent_span_location * new_bwb_wing.spans.projected /2 
+        inner_seg_span                   = inner_segment.percent_span_location * wing.spans.projected /2 
         inner_section_start_x_location   = interp1d(cc_front[:, 1], cc_front[:, 0])
         inner_section_end_x_location     = interp1d(cc_rear[:, 1], cc_rear[:, 0])
         inner_sectional_cabin_chord      = inner_section_end_x_location(inner_seg_span) -  inner_section_start_x_location(inner_seg_span) 
 
         # inner segment 
         outer_cabin_start_percent_x      = outer_segment.percent_chord_cabin_start 
-        outer_seg_span                   = outer_segment.percent_span_location * new_bwb_wing.spans.projected /2 
+        outer_seg_span                   = outer_segment.percent_span_location * wing.spans.projected /2 
         outer_section_end_x_location     = interp1d( cc_rear[:, 1],cc_rear[:, 0])
         outer_section_start_x_location   = interp1d(cc_front[:, 1],cc_front[:, 0])
         outer_sectional_cabin_chord      = outer_section_end_x_location(outer_seg_span) -  outer_section_start_x_location(outer_seg_span)  
@@ -148,7 +137,8 @@ def update_blended_wing_body_planform(bwb_wing):
         if i == 0: 
             bwb_wing.chords.root   =  inner_chord 
             delta_x_0              =  inner_chord *inner_cabin_start_percent_x 
-            outer_origin_x         += delta_x_0
+            outer_origin_x         += delta_x_0     
+
             
         inner_segment.root_chord_percent = inner_chord / bwb_wing.chords.root
         outer_segment.root_chord_percent = outer_chord / bwb_wing.chords.root
@@ -158,8 +148,7 @@ def update_blended_wing_body_planform(bwb_wing):
         sweep           = np.pi /2 -  np.arctan((outer_seg_span-inner_seg_span)/(outer_origin_x-inner_origin_x))
         
         inner_segment.sweeps.leading_edge = sweep 
-        inner_segment.sweeps.quarter_chord = convert_sweep_segments(sweep, inner_segment, outer_segment, new_bwb_wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25) 
+        inner_segment.sweeps.quarter_chord = convert_sweep_segments(sweep, inner_segment, outer_segment, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25) 
         inner_origin_x  = outer_origin_x 
-          
-    return 
+    return
     

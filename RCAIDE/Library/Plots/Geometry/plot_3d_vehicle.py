@@ -42,10 +42,10 @@ def plot_3d_vehicle(vehicle,
                     front_view                  = False, 
                     camera_eye_x                = -1.5,
                     camera_eye_y                = -1.5,
-                    camera_eye_z                = .0,
+                    camera_eye_z                = 1.0,
                     camera_center_x             = 0.,
                     camera_center_y             = 0.,
-                    camera_center_z             = -0.2,
+                    camera_center_z             = 0.4,
                     wing_color                  = 'greys', 
                     fuselage_color              = 'teal', 
                     nacelle_color               = 'darkmint', 
@@ -324,7 +324,7 @@ def generate_3d_vehicle_geometry_data(plot_data,
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             if overwrite_geometry:
                 compute_layout_of_passenger_accommodations(wing)  
-                update_blended_wing_body_planform(wing)
+                update_blended_wing_body_planform(wing) 
             if overwrite_geometry:
                 bwb_wing_planform(wing,overwrite_reference = True)
                 vehicle.reference_area = wing.areas.reference 

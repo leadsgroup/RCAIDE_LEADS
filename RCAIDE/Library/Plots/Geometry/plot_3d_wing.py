@@ -153,11 +153,10 @@ def generate_3d_wing_points(wing, n_points, dim):
         section_twist[:, :, 0, 0] = 1        
         section_twist[:, :, 1, 1] = 1
         section_twist[:, :, 2, 2] = 1 
-        translation        = np.zeros((dim,n_points, 3,1)) 
+        translation        = np.zeros((dim,n_points, 3,1))  
         translation[0, :, 0,:] = origin[0][0]  
         translation[0, :, 1,:] = origin[0][1]  
-        translation[0, :, 2,:] = origin[0][2]  
-        
+        translation[0, :, 2,:] = origin[0][2]   
         for i in range(n_segments):
             current_seg = list(segments.keys())[i]
             airfoil = wing.segments[current_seg].airfoil 
@@ -167,16 +166,9 @@ def generate_3d_wing_points(wing, n_points, dim):
                 elif type(airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil: 
                     geometry     = import_airfoil_geometry(airfoil.coordinate_file,n_points)
             else:
-                geometry = compute_naca_4series('0012',n_points)  
-            
-            if (i == n_segments-1):
-                sweep = 0                                 
-            else: 
-                next_seg = list(segments.keys())[i+1]          
-                sweep       = wing.segments[current_seg].sweeps.leading_edge
-            dihedral = wing.segments[current_seg].dihedral_outboard    
-            twist    = wing.segments[current_seg].twist
-            
+                geometry = compute_naca_4series('0012',n_points)
+                 
+            twist    = wing.segments[current_seg].twist 
             if wing.vertical: 
                 pts[i,:,0,0]   = geometry.x_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root 
                 pts[i,:,1,0]   = geometry.y_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root 
@@ -196,11 +188,19 @@ def generate_3d_wing_points(wing, n_points, dim):
                 section_twist[i,:,0,0] = np.cos(twist) 
                 section_twist[i,:,0,2] = np.sin(twist)  
                 section_twist[i,:,2,0] = -np.sin(twist) 
-                section_twist[i,:,2,2] =  np.cos(twist)  
-             
-            if (i != n_segments-1):
-                # update origin for next segment 
-                segment_percent_span =    wing.segments[next_seg].percent_span_location - wing.segments[current_seg].percent_span_location     
+                section_twist[i,:,2,2] =  np.cos(twist)   
+    
+            translation[i, :, 0,:] += segments[current_seg].origin[0][0]  
+            translation[i, :, 1,:] += segments[current_seg].origin[0][1]  
+            translation[i, :, 2,:] += segments[current_seg].origin[0][2]             
+            if (i == n_segments-1):
+                # update origin for next segment
+                prev_seg = list(segments.keys())[i-1]  
+  
+                sweep    = wing.segments[prev_seg].sweeps.leading_edge
+                dihedral = wing.segments[prev_seg].dihedral_outboard
+            
+                segment_percent_span =  wing.segments[current_seg].percent_span_location  -  wing.segments[prev_seg].percent_span_location   
                 if wing.vertical:
                     dz = semispan*segment_percent_span
                     dy = dz*np.tan(dihedral)
@@ -211,9 +211,9 @@ def generate_3d_wing_points(wing, n_points, dim):
                     dz = dy*np.tan(dihedral)
                     l  = dy/np.cos(dihedral)
                     dx = l*np.tan(sweep)
-                translation[i+1,:,0,:] = translation[i,:,0,:] + dx
-                translation[i+1,:,1,:] = translation[i,:,1,:] + dy
-                translation[i+1,:,2,:] = translation[i,:,2,:] + dz 
+                translation[i,:,0,:] = translation[i-1,:,0,:] + dx
+                translation[i,:,1,:] = translation[i-1,:,1,:] + dy
+                translation[i,:,2,:] = translation[i-1,:,2,:] + dz 
     else:
 
         pts              = np.zeros((dim,n_points, 3,1))  
