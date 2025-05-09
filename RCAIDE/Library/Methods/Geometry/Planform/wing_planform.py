@@ -96,8 +96,19 @@ def wing_planform(wing, overwrite_reference = True):
                         seg.sweeps.quarter_chord = quarter_chord_sweep 
                 else:
                     raise AssertionError("Quarter chord or leading edge sweep must be defined") 
-                 
-            t_cs.append(seg.thickness_to_chord)
+             
+             
+    
+            if seg.airfoil != None: 
+                if type(seg.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
+                    airfoil_geo_data = compute_naca_4series(seg.airfoil.NACA_4_Series_code)
+                    t_c_seg =  airfoil_geo_data.thickness_to_chord
+                else:
+                    airfoil_geo_data = import_airfoil_geometry(seg.airfoil.coordinate_file)    
+                    t_c_seg =  airfoil_geo_data.thickness_to_chord
+            else:
+                t_c_seg =  seg.thickness_to_chord
+            t_cs.append(t_c_seg)
             dihedrals.append(seg.dihedral_outboard)
             
         # Convert to arrays
@@ -396,15 +407,8 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
             segment.areas                   = Data()
             segment.areas.reference         = Sref_seg
             segment.areas.exposed           = S_exposed_seg
-            segment.areas.wetted            = Swet_seg
-            
-            if segment.airfoil != None: 
-                if type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
-                    airfoil_geo_data = compute_naca_4series(segment.airfoil.NACA_4_Series_code)
-                else:
-                    airfoil_geo_data = import_airfoil_geometry(segment.airfoil.coordinate_file)    
-                segment.thickness_to_chord =  airfoil_geo_data.thickness_to_chord
-            total_wetted_area    = total_wetted_area + Swet_seg 
+            segment.areas.wetted            = Swet_seg 
+            total_wetted_area               += Swet_seg 
             if isinstance(segments[segment_names[i_segs+1]], RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
                 center_body_area += Sref_seg 
                 # use S_ref_seg to compute S_center bofy and S_aft_body
