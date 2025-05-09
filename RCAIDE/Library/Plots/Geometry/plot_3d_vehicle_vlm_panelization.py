@@ -9,9 +9,8 @@
 import RCAIDE
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method  import generate_vortex_distribution
 from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice 
-from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
-from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform  
-from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume
+from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations 
+from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume
 
 import numpy as np  
 import plotly.graph_objects as go 
@@ -134,8 +133,7 @@ def plot_3d_vehicle_vlm_panelization(vehicle,
         for wing in vehicle.wings:  
             if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
                 if overwrite_geometry:
-                    compute_layout_of_passenger_accommodations(wing)  
-                    update_blended_wing_body_planform(wing) 
+                    compute_layout_of_passenger_accommodations(wing)
                 if overwrite_geometry:
                     bwb_wing_planform(wing,overwrite_reference = True)
                     vehicle.reference_area = wing.areas.reference 

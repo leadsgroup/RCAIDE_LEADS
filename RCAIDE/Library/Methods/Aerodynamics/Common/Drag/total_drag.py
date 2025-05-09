@@ -39,9 +39,7 @@ def total_drag(state,settings,geometry):
     compressibility_total = drag.compressible.total     
     miscellaneous_drag    = drag.miscellaneous.total
     cooling_drag          = drag.cooling.total 
-    spoiler_drag          = drag.spoiler.total 
-    #flap_drag             = drag.flap.total # Yet to be implemented
-    #slat_drag             = drag.slat.total # Yet to be implemented
+    spoiler_drag          = drag.spoiler.total  
 
     # untrimmed drag 
     untrimmed_drag  =  parasite_total + induced_total  + compressibility_total + miscellaneous_drag + cooling_drag + spoiler_drag # + flap_drag + slat_drag
