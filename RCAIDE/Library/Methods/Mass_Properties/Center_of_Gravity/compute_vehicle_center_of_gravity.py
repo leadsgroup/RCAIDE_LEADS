@@ -48,15 +48,14 @@ def compute_vehicle_center_of_gravity(vehicle, update_CG=True):
     for key in vehicle.keys():
         item = vehicle[key]
         if isinstance(item,Component.Container):
-            Moment, Mass  = sum_moment(item)  
-            total_moment += Moment
-            total_mass   += Mass         
+            Moment, Mass  = sum_moment(item)
+            if Mass != 0: 
+                total_moment += Moment
+                total_mass   += Mass         
     
-    if update_CG:
+    if update_CG and total_mass != 0.0:
         vehicle.mass_properties.center_of_gravity = total_moment/total_mass 
-    
-    CG =  total_moment/total_mass
-   
-    return CG, total_mass
+     
+    return vehicle.mass_properties.center_of_gravity, total_mass
 
 

@@ -125,9 +125,7 @@ def flight_dynamics(segment):
         segment.state.conditions.frames.inertial.acceleration_vector = np.dot(D,v)
 
     FT_i = segment.state.conditions.frames.inertial.total_force_vector
-    a_i  = segment.state.conditions.frames.inertial.acceleration_vector  
-    FT_w = segment.state.conditions.frames.wind.total_force_vector
-    a_w  =  orientation_product(T_inertia2wind,a_i )  
+    a_i  = segment.state.conditions.frames.inertial.acceleration_vector   
 
     if transition_seg_flag: 
         omega = segment.state.conditions.frames.inertial.angular_velocity_vector
@@ -137,33 +135,10 @@ def flight_dynamics(segment):
         segment.state.conditions.frames.wind.angular_acceleration_vector     = orientation_product(T_inertia2wind,ang_acc_i )
 
     MT_i      = segment.state.conditions.frames.inertial.total_moment_vector    
-    ang_acc_i = segment.state.conditions.frames.inertial.angular_acceleration_vector 
-    MT_w      = segment.state.conditions.frames.wind.total_moment_vector
-    
-    
-    ang_acc_w = segment.state.conditions.frames.wind.angular_acceleration_vector   
+    ang_acc_i = segment.state.conditions.frames.inertial.angular_acceleration_vector   
     m         = segment.state.conditions.weights.total_mass
     I         = segment.analyses.aerodynamics.vehicle.mass_properties.moments_of_inertia.tensor  
-
-    #if ground_seg_flag:
-        #vf = segment.velocity_end
-        #if vf == 0.0: vf = 0.01 
-        #segment.state.residuals.force_x[:,0] = FT_w[1:,0]/m[1:,0] - a_w[1:,0] 
-        #segment.state.residuals.final_velocity_error = (v[-1,0] - vf)
-    #else: 
-        #if segment.flight_dynamics.force_x: 
-            #segment.state.residuals.force_x[:,0] = FT_w[:,0]/m[:,0] - a_w[:,0]  
-        #if segment.flight_dynamics.force_y: 
-            #segment.state.residuals.force_y[:,0] = FT_w[:,1]/m[:,0] - a_w[:,1]    
-        #if segment.flight_dynamics.force_z: 
-            #segment.state.residuals.force_z[:,0] = FT_w[:,2]/m[:,0] - a_w[:,2]  
-        #if  segment.flight_dynamics.moment_x:
-            #segment.state.residuals.moment_x[:,0] = MT_w[:,0]/I[0,0] - ang_acc_w[:,0]   
-        #if  segment.flight_dynamics.moment_y:
-            #segment.state.residuals.moment_y[:,0] = MT_w[:,1]/I[1,1] - ang_acc_w[:,1]   
-        #if  segment.flight_dynamics.moment_z:
-            #segment.state.residuals.moment_z[:,0] = MT_w[:,2]/I[2,2] - ang_acc_w[:,2]
-            
+ 
     if ground_seg_flag:
         vf = segment.velocity_end
         if vf == 0.0: vf = 0.01 

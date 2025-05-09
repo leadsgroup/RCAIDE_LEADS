@@ -131,8 +131,8 @@ def mass_properties(mission):
 
                 # CG Location 
                 if not np.any(weights_analysis.vehicle.mass_properties.center_of_gravity):
-                    print('Warning: CG Location is not defined. Running CG calculation')
-                    weights_analysis.settings.update_center_of_gravity = True
+                    print('Warning: No weights analysis is specified. Skipping CG calculation')
+                    weights_analysis.settings.update_center_of_gravity = False
                 
                 if weights_analysis.settings.update_center_of_gravity:
                     CG_location, _ = compute_vehicle_center_of_gravity(weights_analysis.vehicle, update_CG= weights_analysis.settings.update_center_of_gravity)  
@@ -141,10 +141,10 @@ def mass_properties(mission):
                 
                 # Operating Aircraft MOI    
                 if  not np.any(weights_analysis.vehicle.mass_properties.moments_of_inertia.tensor): # Evaluates to False if all elements are 0, true if there are any numbers, nans, or +- infty
-                    print('Warning: Moments of Inertia Tensor is not defined. Running inertia tensor calculation')
-                    weights_analysis.settings.update_moment_of_inertia = True
+                    print('Warning: No weights analysis is specified. Skipping inertia tensor calculation')
+                    weights_analysis.settings.update_moment_of_inertia = False
                 
-                if weights_analysis.settings.update_moment_of_inertia:
+                if weights_analysis.settings.update_moment_of_inertia and weights_analysis.settings.update_center_of_gravity: 
                     _, _ = compute_aircraft_moment_of_inertia(weights_analysis.vehicle, CG_location, update_MOI= weights_analysis.settings.update_moment_of_inertia)          
 
                 last_tag = segment.tag.lower()

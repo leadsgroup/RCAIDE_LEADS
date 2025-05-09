@@ -39,10 +39,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6917625836509467
-    electric_cruise_CL_truth         = 0.6977012994726179
-    series_hybrid_cruise_CL_truth    = 0.6975016870563107
-    parallel_hybrid_cruise_CL_truth  = 0.6976538411330577
+    convetional_cruise_CL_truth      = 0.6917775683899845
+    electric_cruise_CL_truth         = 0.6977019408399342
+    series_hybrid_cruise_CL_truth    = 0.6975024069183404
+    parallel_hybrid_cruise_CL_truth  = 0.6976545006123366
 
     error = Data()
     

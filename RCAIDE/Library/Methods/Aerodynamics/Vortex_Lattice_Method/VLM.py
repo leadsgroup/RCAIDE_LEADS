@@ -17,7 +17,6 @@ from .generate_vortex_distribution       import generate_vortex_distribution
 from .compute_RHS_matrix                 import compute_RHS_matrix 
 from scipy.integrate import trapezoid
 from copy import  deepcopy
-import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------
 #  Vortex Lattice
 # ----------------------------------------------------------------------
@@ -643,6 +642,7 @@ def compute_induced_drag(cl, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_
    
     wing_span_index = 0
     # Induced velocity calculation for this case
+
     for wing_index,wing_segments in enumerate(n_sw):
         wing_span_index_previous = wing_span_index
         wing_span_index += wing_segments
@@ -697,7 +697,7 @@ def compute_induced_drag(cl, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_
                 
                 # Downwash. Dot product of normal vector and induced velocity vector.
                 V_induced[:,j] = np.sum( np.tile(n_hat[:,0][:, None], (1,len(TP_z_centerpoints[0]) )) *v[:,0,:] +  np.tile(n_hat[:,1][:, None], (1,len(TP_z_centerpoints[0]) ))*v[:,1,:], axis=1) 
-        
+
         drag_sum = np.sqrt(np.square(y_control_points[:, 0]) + np.square(z_control_points[:, 0]))
         s_wake   = np.atleast_2d(deepcopy(drag_sum)).T
         for j in range(1,len(y_control_points[0])): 
@@ -715,6 +715,7 @@ def compute_induced_drag(cl, alpha, x_dist, y_dist, z_dist, chord_dist, SURF, n_
 
     CDi_total = np.sum(D_induced, axis=1) / (0.5 * rho * v_inf**2 * SREF)
 
+    # Package results
     results                          = Data()
     results.CDrag_induced            = CDi_total[:, np.newaxis]
     results.sectional_CDrag_induced  = Cd_i_distribution
