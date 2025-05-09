@@ -13,8 +13,7 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_nacelle              import plot_3d_n
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import plot_3d_rotor
 from RCAIDE.Library.Plots.Geometry.plot_3d_fuel_tank            import plot_3d_non_integral_fuel_tank, plot_3d_integral_wing_tank, plot_3d_integral_fuselage_tank
 
-from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
-from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform  
+from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations 
 from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume
 
 # python imports 
@@ -324,7 +323,6 @@ def generate_3d_vehicle_geometry_data(plot_data,
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             if overwrite_geometry:
                 compute_layout_of_passenger_accommodations(wing)  
-                update_blended_wing_body_planform(wing) 
             if overwrite_geometry:
                 bwb_wing_planform(wing,overwrite_reference = True)
                 vehicle.reference_area = wing.areas.reference 

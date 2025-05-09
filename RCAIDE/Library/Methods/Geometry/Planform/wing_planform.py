@@ -9,6 +9,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments, convert_sweep
+from RCAIDE.Library.Methods.Geometry.Airfoil import  import_airfoil_geometry , compute_naca_4series
 
 # package imports 
 import numpy as np
@@ -397,6 +398,12 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
             segment.areas.exposed           = S_exposed_seg
             segment.areas.wetted            = Swet_seg
             
+            if segment.airfoil != None: 
+                if type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
+                    airfoil_geo_data = compute_naca_4series(segment.airfoil.NACA_4_Series_code)
+                else:
+                    airfoil_geo_data = import_airfoil_geometry(segment.airfoil.coordinate_file)    
+                segment.thickness_to_chord =  airfoil_geo_data.thickness_to_chord
             total_wetted_area    = total_wetted_area + Swet_seg 
             if isinstance(segments[segment_names[i_segs+1]], RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
                 center_body_area += Sref_seg 

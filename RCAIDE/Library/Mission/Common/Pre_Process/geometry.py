@@ -7,8 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
-from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform 
+from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations 
 from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -50,7 +49,6 @@ def geometry(mission):
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
                     if segment.analyses.geometry.settings.update_fuselage_properties:
                         compute_layout_of_passenger_accommodations(wing)  
-                        update_blended_wing_body_planform(wing)
                     if segment.analyses.geometry.settings.update_wing_properties and segment.analyses.geometry.settings.overwrite_reference:
                         bwb_wing_planform(wing,overwrite_reference = True)
                         vehicle.reference_area = wing.areas.reference
