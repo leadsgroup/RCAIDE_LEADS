@@ -8,7 +8,10 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 import RCAIDE
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method  import generate_vortex_distribution
-from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
+from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice 
+from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
+from RCAIDE.Library.Methods.Geometry.Planform  import  update_blended_wing_body_planform  
+from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume
 
 import numpy as np  
 import plotly.graph_objects as go 
@@ -27,7 +30,8 @@ def plot_3d_vehicle_vlm_panelization(vehicle,
                                      min_y_axis_limit            =  -20,
                                      max_y_axis_limit            =  20,
                                      min_z_axis_limit            =  -20,
-                                     max_z_axis_limit            =  20, 
+                                     max_z_axis_limit            =  20,
+                                     overwrite_geometry          =True, 
                                      show_figure = True):
     """
     Creates a 3D visualization of vehicle vortex lattice method (VLM) panelization.
@@ -117,6 +121,32 @@ def plot_3d_vehicle_vlm_panelization(vehicle,
         VL.settings.spanwise_cosine_spacing      = False
         VL.settings.model_fuselage               = False
         VL.settings.model_nacelle                = False
+        
+    
+        # -------------------------------------------------------------------------
+        # Run Geoemtry Analysis
+        # ------------------------------------------------------------------------- 
+        if overwrite_geometry:
+            for fuselage in vehicle.fuselages:
+                compute_layout_of_passenger_accommodations(fuselage)
+                fuselage_planform(fuselage) 
+    
+        for wing in vehicle.wings:  
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                if overwrite_geometry:
+                    compute_layout_of_passenger_accommodations(wing)  
+                    update_blended_wing_body_planform(wing) 
+                if overwrite_geometry:
+                    bwb_wing_planform(wing,overwrite_reference = True)
+                    vehicle.reference_area = wing.areas.reference 
+            else:
+                if overwrite_geometry:
+                    wing_planform(wing,overwrite_reference =  overwrite_geometry) 
+                    if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) and overwrite_geometry:
+                        vehicle.reference_area = wing.areas.reference
+             
+        compute_fuel_volume(vehicle, update_max_fuel=False)
+        
         VD = generate_vortex_distribution(vehicle,VL.settings) 
 
     camera        = dict(up=dict(x=0.5, y=0.5, z=1), center=dict(x=0, y=0, z=-.75), eye=dict(x=-1.5, y=-1.5, z=.8))
