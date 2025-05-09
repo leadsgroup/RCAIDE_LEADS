@@ -154,9 +154,9 @@ def generate_3d_wing_points(wing, n_points, dim):
         section_twist[:, :, 1, 1] = 1
         section_twist[:, :, 2, 2] = 1 
         translation        = np.zeros((dim,n_points, 3,1))  
-        translation[0, :, 0,:] = origin[0][0]  
-        translation[0, :, 1,:] = origin[0][1]  
-        translation[0, :, 2,:] = origin[0][2]   
+        translation[:, :, 0,:] = origin[0][0]  
+        translation[:, :, 1,:] = origin[0][1]  
+        translation[:, :, 2,:] = origin[0][2]   
         for i in range(n_segments):
             current_seg = list(segments.keys())[i]
             airfoil = wing.segments[current_seg].airfoil 
