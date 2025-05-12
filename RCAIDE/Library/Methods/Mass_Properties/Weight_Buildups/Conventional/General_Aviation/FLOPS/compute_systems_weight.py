@@ -161,12 +161,7 @@ def compute_systems_weight(vehicle):
                 if propulsor.wing_mounted: 
                     FNEW += 1  
                 else:
-                    FNEF += 1
-                if 'nacelle' in propulsor:
-                    nacelle =  propulsor.nacelle 
-                    FNAC    = nacelle.diameter / Units.ft
-                else:
-                    FNAC    = 0                     
+                    FNEF += 1              
             
     VMAX     = vehicle.flight_envelope.design_mach_number
     SFLAP    = 0

@@ -70,11 +70,14 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor):
     ref_nacelle =  None
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) \
+               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet)\
+               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
                 ref_propulsor = propulsor  
                 NENG  += 1 
-            if 'nacelle' in propulsor:
-                ref_nacelle =  propulsor.nacelle   
+            if 'nacelle' in propulsor: 
+                if propulsor.nacelle !=  None:                
+                    ref_nacelle =  propulsor.nacelle   
         for fuel_line in network.fuel_lines:
             for _ in fuel_line.fuel_tanks:
                 number_of_tanks +=  1

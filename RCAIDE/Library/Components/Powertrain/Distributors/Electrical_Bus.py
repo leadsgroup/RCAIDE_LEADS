@@ -33,10 +33,7 @@ class Electrical_Bus(Component):
         List of propulsion systems powered by this bus
         
     avionics : Component
-        Aircraft avionics system
-        
-    payload : Component
-        Aircraft payload system
+        Aircraft avionics system 
         
     identical_battery_modules : bool
         Flag indicating if all battery modules are identical (default: True)

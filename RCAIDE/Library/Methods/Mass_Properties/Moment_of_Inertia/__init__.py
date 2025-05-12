@@ -12,3 +12,4 @@ from .compute_cuboid_moment_of_inertia   import compute_cuboid_moment_of_inertia
 from .compute_fuselage_moment_of_inertia import compute_fuselage_moment_of_inertia
 from .compute_cylinder_moment_of_inertia import compute_cylinder_moment_of_inertia
 from .compute_aircraft_moment_of_inertia import compute_aircraft_moment_of_inertia
+from .compute_LOPA_moment_of_inertia     import compute_LOPA_moment_of_inertia

@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia, compute_cylinder_moment_of_inertia, compute_wing_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia, compute_cylinder_moment_of_inertia, compute_wing_moment_of_inertia, compute_LOPA_moment_of_inertia
 
 import RCAIDE
 import numpy as  np 
@@ -47,6 +47,11 @@ def compute_aircraft_moment_of_inertia(vehicle, CG_location, update_MOI=True):
         I, mass = fuselage.compute_moment_of_inertia(center_of_gravity = CG_location)
         MOI_tensor += I
         MOI_mass += mass
+
+        #if len(fuselage.cabins) >0:
+            #I, mass     = compute_LOPA_moment_of_inertia(vehicle.payload.passengers,fuselage.layout_of_passenger_accommodations, center_of_gravity =CG_location)  
+            #MOI_tensor += I
+            #MOI_mass   += mass          
     
     # ------------------------------------------------------------------        
     #  Wing(s)
@@ -54,7 +59,19 @@ def compute_aircraft_moment_of_inertia(vehicle, CG_location, update_MOI=True):
     for wing in vehicle.wings:
         I, mass = wing.compute_moment_of_inertia(mass=wing.mass_properties.mass, center_of_gravity =CG_location)
         MOI_tensor += I
-        MOI_mass   += mass
+        MOI_mass   += mass 
+
+        #if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body) and len(wing.cabins) >0:
+            #I, mass  = compute_LOPA_moment_of_inertia(vehicle.payload.passengers, wing.layout_of_passenger_accommodations, center_of_gravity =CG_location)  
+            #MOI_tensor += I
+            #MOI_mass   += mass   
+    # ------------------------------------------------------------------        
+    #  Wing(s)
+    # ------------------------------------------------------------------      
+    for payload in vehicle.payloads:
+        I, mass = wing.compute_moment_of_inertia(payload.mass_properties.mass, payload.length, payload.width, payload.height, 0, 0, 0, CG_location)
+        MOI_tensor += I
+        MOI_mass   += mass     
     
     # ------------------------------------------------------------------        
     #  Energy network

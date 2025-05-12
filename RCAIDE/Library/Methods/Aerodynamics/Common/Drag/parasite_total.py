@@ -60,12 +60,13 @@ def parasite_total(state,settings,geometry):
     # renormalize parasite drag from nacelles and pylons using reference area of aircraft  
     for network in  geometry.networks: 
         for propulsor in network.propulsors:  
-            if 'nacelle' in propulsor:
-                nacelle       = propulsor.nacelle
-                ref_area      = np.pi * nacelle.diameter * nacelle.length 
-                nacelle_parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total * (1+ settings.pylon_parasite_drag_factor) 
-                conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total  = nacelle_parasite_drag * nacelle_parasite_drag/vehicle_reference_area
-                total_parasite_drag += nacelle_parasite_drag * ref_area/vehicle_reference_area
+            if 'nacelle' in propulsor: 
+                if propulsor.nacelle !=  None:                
+                    nacelle       = propulsor.nacelle
+                    ref_area      = np.pi * nacelle.diameter * nacelle.length 
+                    nacelle_parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total * (1+ settings.pylon_parasite_drag_factor) 
+                    conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total  = nacelle_parasite_drag * nacelle_parasite_drag/vehicle_reference_area
+                    total_parasite_drag += nacelle_parasite_drag * ref_area/vehicle_reference_area
                 
     state.conditions.aerodynamics.coefficients.drag.parasite.total = total_parasite_drag * (1 -  settings.drag_reduction_factors.parasite_drag)
 

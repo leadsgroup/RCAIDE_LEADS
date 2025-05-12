@@ -56,7 +56,7 @@ class Wing(Component):
     aerodynamic_center : list
         Location of aerodynamic center [x, y, z], defaults to [0.0, 0.0, 0.0]
         
-    exposed_root_chord_offset : float
+    percent_span_unexposed : float
         Offset of exposed root from centerline, defaults to 0.0
         
     total_length : float
@@ -130,9 +130,6 @@ class Wing(Component):
     transition_x_lower : float
         Lower surface transition location, defaults to 0.0
         
-    dynamic_pressure_ratio : float
-        Local to freestream dynamic pressure ratio, defaults to 0.0
-        
     Airfoil : Container
         Collection of airfoil definitions, initialized empty
         
@@ -182,9 +179,12 @@ class Wing(Component):
         self.aspect_ratio                      = 0.0
         self.thickness_to_chord                = 0.0
         self.aerodynamic_center                = [0.0,0.0,0.0]
-        self.exposed_root_chord_offset         = 0.0
-        self.total_length                      = 0.0 
-        self.has_fuel_tank                     = False 
+        self.percent_span_unexposed            = 0.0
+        self.total_length                      = 0.0
+        
+        self.fuel                              = Data()        
+        self.fuel.tank                = False
+        
         self.spans                             = Data()
         self.spans.projected                   = 0.0
         self.spans.total                       = 0.0
@@ -216,10 +216,7 @@ class Wing(Component):
         self.vortex_lift                       = False
                                                
         self.transition_x_upper                = 0.0
-        self.transition_x_lower                = 0.0
-                                               
-        self.dynamic_pressure_ratio            = 0.0
-                                               
+        self.transition_x_lower                = 0.0 
         self.airfoil                           = None 
         
         self.segments                          = Container()

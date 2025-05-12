@@ -116,9 +116,10 @@ def compute_systems_weight(vehicle):
                 FNEW += 1
             else:
                 FNEF += 1
-            if 'nacelle' in propulsor:
-                nacelle =  propulsor.nacelle
-                FNAC    = nacelle.diameter / Units.ft
+            if 'nacelle' in propulsor: 
+                if propulsor.nacelle !=  None:                
+                    nacelle =  propulsor.nacelle
+                    FNAC    = nacelle.diameter / Units.ft
             else:
                 FNAC    = 0
             

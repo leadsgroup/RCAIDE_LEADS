@@ -156,6 +156,8 @@ def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_c
         seat_data_[:, 3] *= -1 
         seat_data         = np.vstack((seat_data,seat_data_))
         
+    cabin.layout_of_passenger_accommodations.object_coordinates = seat_data
+    cabin.number_of_passengers =  np.sum(seat_data[:,10])
     return seat_data ,cabin_class_origin 
 
 

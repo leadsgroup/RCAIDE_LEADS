@@ -46,8 +46,7 @@ def compute_operating_items_weight(vehicle):
                 -.mass_properties.max_takeoff: MTOW                             [kilograms]
                 -.passengers: number of passengers in aircraft
                 -.design_mach_number: design mach number for cruise flight
-                -.design_range: design range of aircraft                        [nmi]
-                -.mass_properties.cargo: weight of cargo carried                [kilograms]
+                -.design_range: design range of aircraft                        [nmi] 
 
         Outputs:
             output - data dictionary with weights                               [kilograms]
@@ -106,7 +105,11 @@ def compute_operating_items_weight(vehicle):
     vehicle.NPB = NPB
     vehicle.NPT = NPT
     WSRV        = (5.164 * NPF + 3.846 * NPB + 2.529 * NPT) * (DESRNG / VMAX) ** 0.255  # passenger service weight
-    WCON        = 175 * np.ceil(vehicle.mass_properties.cargo / Units.lbs * 1. / 950)  # cargo container weight
+    
+    W_cargo = 0
+    for cargo_bay in vehicle.cargo_bays:
+        W_cargo = cargo_bay.cargo.mass_properties.mass  
+    WCON        = 175 * np.ceil(W_cargo/ Units.lbs * 1. / 950)  # cargo container weight
 
     if vehicle.passengers >= 150:
         NFLCR = 3  # number of flight crew
@@ -124,11 +127,9 @@ def compute_operating_items_weight(vehicle):
 
     # Passenger Service Weight
     WSRV = (5.164*NPF + 3.846*NPB + 2.529*NPT)*(DESRNG/VMAX)**0.225
-
     
-
     output                           = Data()
-    output.misc = WUF * Units.lbs + WOIL * Units.lbs + WSRV * Units.lbs + WCON * Units.lbs
+    output.misc                      = WUF * Units.lbs + WOIL * Units.lbs + WSRV * Units.lbs + WCON * Units.lbs
     output.flight_crew               = WFLCRB * Units.lbs
     output.flight_attendants         = WFLAAB * Units.lbs
     output.passenger_service         = WSRV   * Units.lbs

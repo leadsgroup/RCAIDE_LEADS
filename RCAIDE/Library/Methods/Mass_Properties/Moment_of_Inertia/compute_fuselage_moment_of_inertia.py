@@ -111,7 +111,7 @@ def compute_fuselage_moment_of_inertia(fuselage,center_of_gravity=[[0, 0, 0]]):
     I_global = np.array(I) + mass_cone * (np.array(np.dot(s[0], s[0])) * np.array(np.identity(3)) - s*np.transpose(s))
     
     # Add cone to the fuselage inertia tensor
-    I_total = np.array(I_total) + np.array(I_global)
+    I_total = np.array(I_total) + np.array(I_global) 
     
     return I_total,  mass_fuselage
 

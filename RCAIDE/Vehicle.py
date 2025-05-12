@@ -60,9 +60,9 @@ class Vehicle(Data):
         self.avionics                                                      = Components.Powertrain.Systems.Avionics()
         self.booms                                                         = Components.Booms.Boom.Container()
         self.mass_properties                                               = Vehicle_Mass_Container()
-        self.payload                                                       = Components.Payloads.Payload.Container()
         self.costs                                                         = Data()     
         self.landing_gears                                                 = Components.Landing_Gear.Landing_Gear.Container()  
+        self.cargo_bays                                                    = Components.Cargo_Bays.Cargo_Bay.Container()  
         self.reference_area                                                = 0.0
         self.passengers                                                    = 0.0
         self.maximum_cross_sectional_area                                  = 0.0
@@ -139,11 +139,11 @@ class Vehicle(Data):
             Components.Fuselages.Fuselage              : self['fuselages']        ,
             Components.Wings.Wing                      : self['wings']            ,
             Components.Powertrain.Systems.System       : self['systems']          ,
-            Components.Powertrain.Systems.Avionics     : self['avionics']         ,
-            Components.Payloads.Payload                : self['payload']          , 
+            Components.Powertrain.Systems.Avionics     : self['avionics']         , 
             Components.Nacelles.Nacelle                : self['nacelles']         , 
+            Components.Cargo_Bays.Cargo_Bay            : self['cargo_bays']       , 
             Components.Booms.Boom                      : self['booms']            ,
-            Components.Landing_Gear.Landing_Gear       : self['landing_gears']     ,
+            Components.Landing_Gear.Landing_Gear       : self['landing_gears']    ,
             Vehicle_Mass_Properties                    : self['mass_properties']  ,
         }
          

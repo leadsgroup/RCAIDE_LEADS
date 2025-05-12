@@ -37,24 +37,14 @@ def main():
     
     # plot vehicle 
     plot_3d_vehicle(vehicle, 
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100, 
+                    axis_limit                  = 50, 
                     show_figure                 = False 
                     )
 
     # plot vehicle 
     plot_3d_vehicle(vehicle,
                     save_filename               = "Boeing_737_Top_View",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100, 
+                    axis_limit                  = 50, 
                     top_view                    = True, 
                     side_view                   = False, 
                     front_view                  = False, 
@@ -63,12 +53,7 @@ def main():
 
     plot_3d_vehicle(vehicle,
                     save_filename               = "Boeing_737_Side_View",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100, 
+                    axis_limit                  = 50, 
                     top_view                    = False, 
                     side_view                   = True, 
                     front_view                  = False, 
@@ -77,12 +62,7 @@ def main():
    
     plot_3d_vehicle(vehicle,
                     save_filename               = "Boeing_737_Front_View",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100, 
+                    axis_limit                  = 50, 
                     top_view                    = False, 
                     side_view                   = False, 
                     front_view                  = True,

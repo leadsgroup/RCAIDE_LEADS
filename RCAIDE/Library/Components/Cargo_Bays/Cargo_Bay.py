@@ -1,4 +1,4 @@
-# RCAIDE/Energy/Peripherals/Payload.py
+# RCAIDE/Library/Compoments/Cargo_Bays/Cargo_Bay.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -7,13 +7,16 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
-from RCAIDE.Library.Components import Component  
-from RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions import append_payload_conditions
- 
+from RCAIDE.Framework.Core      import Container
+from RCAIDE.Library.Components  import Component   
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia
+
+import  numpy as  np
+
 # ----------------------------------------------------------------------------------------------------------------------
-#  Avionics
+#  Cargo_Bay
 # ----------------------------------------------------------------------------------------------------------------------              
-class Payload(Component):
+class Cargo_Bay(Component):
     """
     A payload component model for representing mission cargo and equipment.
 
@@ -55,8 +58,7 @@ class Payload(Component):
 
     See Also
     --------
-    RCAIDE.Library.Components.Component
-    RCAIDE.Library.Methods.Powertrain.Systems.append_payload_conditions
+    RCAIDE.Library.Components.Component 
     """          
     def __defaults__(self):
         """This sets the default power draw.
@@ -76,9 +78,38 @@ class Payload(Component):
         Properties Used:
         N/A
         """             
-        self.tag        = 'payload' 
-        self.power_draw = 0.0
-         
-    def append_operating_conditions(self,segment,bus): 
-        append_payload_conditions(self,segment,bus)
-        return 
+        self.tag        = 'cargo_bay'
+        self.length     = 1.0
+        self.width      = 1.0
+        self.height     = 1.0 
+        self.density    = 0.0
+        self.payload    = Component() 
+        self.baggage    = Component() 
+        self.power_draw = 0.0  
+
+    def compute_moment_of_inertia(self, mass,length,width,height, center_of_gravity=[[0, 0, 0]], fuel_flag=False): 
+        """
+        Computes the moment of inertia tensor for the wing.
+
+        Parameters
+        ----------
+        mass : float
+            Wing mass
+        center_of_gravity : list, optional
+            Reference point coordinates, defaults to [[0, 0, 0]]
+        fuel_flag : bool, optional
+            Flag to include fuel mass, defaults to False
+
+        Returns
+        -------
+        ndarray
+            3x3 moment of inertia tensor
+        """ 
+        I = compute_cuboid_moment_of_inertia(self.origin, mass,length,width,height, length_inner = 0, width_inner = 0, height_inner = 0, center_of_gravity = np.array([[0,0,0]]))  
+        return I     
+    
+    
+# ------------------------------------------------------------
+#  Handle Linking
+# ------------------------------------------------------------
+Cargo_Bay.Container = Container    

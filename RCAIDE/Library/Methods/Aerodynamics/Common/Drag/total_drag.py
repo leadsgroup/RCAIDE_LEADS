@@ -42,7 +42,7 @@ def total_drag(state,settings,geometry):
     spoiler_drag          = drag.spoiler.total  
 
     # untrimmed drag 
-    untrimmed_drag  =  parasite_total + induced_total  + compressibility_total + miscellaneous_drag + cooling_drag + spoiler_drag # + flap_drag + slat_drag
+    untrimmed_drag  =  parasite_total + induced_total  + compressibility_total + miscellaneous_drag + cooling_drag + spoiler_drag 
     
     # trim correction
     corrected_aircraft_total_trim_drag = trim_correction_factor * untrimmed_drag   

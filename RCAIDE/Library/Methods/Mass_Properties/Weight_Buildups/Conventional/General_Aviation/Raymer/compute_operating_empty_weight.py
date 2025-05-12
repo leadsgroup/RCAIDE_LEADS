@@ -163,10 +163,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
 
     # Unpack inputs
     Nult        = vehicle.flight_envelope.ultimate_load 
-    TOW         = vehicle.mass_properties.max_takeoff
-    num_pax     = vehicle.passengers
-    W_cargo     = vehicle.mass_properties.cargo
-    mach_number = vehicle.flight_envelope.design_mach_number
+    TOW         = vehicle.mass_properties.max_takeoff 
  
     landing_weight              = TOW
     m_fuel                      =  0
@@ -277,16 +274,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
                           W_tail_horizontal +W_tail_vertical) 
 
     # packup outputs
-    W_payload = Raymer.compute_payload_weight(vehicle)
-    
-    vehicle.payload.passengers = RCAIDE.Library.Components.Component()
-    vehicle.payload.baggage    = RCAIDE.Library.Components.Component()
-    vehicle.payload.cargo      = RCAIDE.Library.Components.Component()
-    
-    vehicle.payload.passengers.mass_properties.mass = W_payload.passengers
-    vehicle.payload.baggage.mass_properties.mass    = W_payload.baggage
-    vehicle.payload.cargo.mass_properties.mass      = W_payload.cargo        
-
+    W_payload = Raymer.compute_payload_weight(vehicle)       
 
     # Distribute all weight in the output fields
     output                                    = Data()

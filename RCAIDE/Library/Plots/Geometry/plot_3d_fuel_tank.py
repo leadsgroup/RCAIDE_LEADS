@@ -135,7 +135,7 @@ def plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation 
     for i in range(len(fuselage.segments) - 1):
         seg =  fuselage.segments[segment_tags[i]]
         next_seg =  fuselage.segments[segment_tags[i+1]]
-        if seg.has_fuel_tank: 
+        if seg.fuel.tank: 
             segment_list.append(seg.tag)
             if next_seg.tag not in segment_list:
                 segment_list.append(next_seg.tag)  
@@ -206,7 +206,7 @@ def plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, number_of_airfoil_poin
     for i in range(len(wing.segments) - 1):
         seg =  wing.segments[segment_tags[i]]
         next_seg =  wing.segments[segment_tags[i+1]]
-        if seg.has_fuel_tank:
+        if seg.fuel.tank:
             if seg.tag not in segment_list:
                 segment_list.append(seg.tag)
             if next_seg.tag not in segment_list:
@@ -217,34 +217,37 @@ def plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, number_of_airfoil_poin
     else:
         dim = 2 
     
-    number_of_airfoil_points = 5
-    G = generate_integral_wing_tank_points(wing,number_of_airfoil_points,dim,segment_list)
-    # ------------------------------------------------------------------------
-    # Plot Rotor Blade
-    # ------------------------------------------------------------------------
-    for sec in range(dim-1):
-        for loc in range(af_pts):
-            X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],
-                 [G.XB1[sec,loc],G.XB2[sec,loc]]])
-            Y = np.array([[G.YA1[sec,loc],G.YA2[sec,loc]],
-                 [G.YB1[sec,loc],G.YB2[sec,loc]]])
-            Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]],
-                 [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
-             
-            values      = np.ones_like(X) 
-            verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
-            plot_data.append(verts)
-    if wing.symmetric: 
+    if  len(segment_list) == 0 and len(wing.segments) > 0:
+        raise AttributeError('Fuel tank defined on segmented wing but no segments have "tank" attribute = True') 
+    else:  
+        number_of_airfoil_points = 5
+        G = generate_integral_wing_tank_points(wing,number_of_airfoil_points,dim,segment_list)
+        # ------------------------------------------------------------------------
+        # Plot Rotor Blade
+        # ------------------------------------------------------------------------
         for sec in range(dim-1):
             for loc in range(af_pts):
-                X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
-                Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
-                Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
+                X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],
+                     [G.XB1[sec,loc],G.XB2[sec,loc]]])
+                Y = np.array([[G.YA1[sec,loc],G.YA2[sec,loc]],
+                     [G.YB1[sec,loc],G.YB2[sec,loc]]])
+                Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]],
+                     [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
                  
                 values      = np.ones_like(X) 
                 verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
                 plot_data.append(verts)
-             
+        if wing.symmetric: 
+            for sec in range(dim-1):
+                for loc in range(af_pts):
+                    X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
+                    Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
+                    Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
+                     
+                    values      = np.ones_like(X) 
+                    verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
+                    plot_data.append(verts)
+                 
     return plot_data
  
 # ----------------------------------------------------------------------------------------------------------------------
@@ -310,9 +313,9 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
         section_twist[:, :, 1, 1] = 1
         section_twist[:, :, 2, 2] = 1 
         translation        = np.zeros((dim,n_points, 3,1))    
-        translation[0, :, 0,:] = origin[0][0]  
-        translation[0, :, 1,:] = origin[0][1]  
-        translation[0, :, 2,:] = origin[0][2]  
+        translation[:, :, 0,:] = origin[0][0]  
+        translation[:, :, 1,:] = origin[0][1]  
+        translation[:, :, 2,:] = origin[0][2]  
         for i in range(len(segment_list)):
             current_seg = segments[segment_list[i]]
             front_rib_yu,rear_rib_yu,front_rib_yl,rear_rib_yl = compute_non_dimensional_rib_coordinates(current_seg)

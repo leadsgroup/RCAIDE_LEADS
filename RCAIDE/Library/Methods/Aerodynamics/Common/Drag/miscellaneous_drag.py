@@ -39,7 +39,7 @@ def miscellaneous_drag(state,settings,geometry):
     S_ref          = geometry.reference_area
     Mach           = conditions.freestream.mach_number 
    
-    if np.all((Mach<=1.0) == True):  # subsonic
+    if np.all((Mach<=1.0) == True):  # Subsonic
         swet_tot       = 0.
         for wing in geometry.wings:
             swet_tot += wing.areas.wetted 
@@ -49,13 +49,14 @@ def miscellaneous_drag(state,settings,geometry):
             swet_tot += boom.areas.wetted
         for network in geometry.networks: 
             for propulsor in network.propulsors:  
-                if 'nacelle' in propulsor:
-                    swet_tot += propulsor.nacelle.areas.wetted
+                if 'nacelle' in propulsor: 
+                    if propulsor.nacelle !=  None:                    
+                        swet_tot += propulsor.nacelle.areas.wetted
                             
-        # total miscellaneous drag 
+        # Total miscellaneous drag 
         miscellaneous_drag =  3 * (0.40* (0.0184 + 0.000469 * swet_tot - 1.13*10**-7 * swet_tot ** 2)) / S_ref
         total_miscellaneous_drag = miscellaneous_drag *np.ones_like(Mach)    
-    else: # supersonic
+    else:  
         # Initialize drag
         total_nacelle_base_drag   = 0.0  
         nacelle_base_drag_results = Data() 
@@ -64,14 +65,15 @@ def miscellaneous_drag(state,settings,geometry):
         for network in  geometry.networks: 
             for propulsor in network.propulsors:  
                 if 'nacelle' in propulsor: 
-                    nacelle_base_drag = 3 *  0.5/12. * np.pi * propulsor.nacelle.diameter * 0.2/S_ref
-                    nacelle_base_drag_results[propulsor.nacelle.tag] = nacelle_base_drag * np.ones_like(Mach)   
-                    total_nacelle_base_drag += nacelle_base_drag     
+                    if propulsor.nacelle !=  None:                    
+                        nacelle_base_drag = 3 *  0.5/12. * np.pi * propulsor.nacelle.diameter * 0.2/S_ref
+                        nacelle_base_drag_results[propulsor.nacelle.tag] = nacelle_base_drag * np.ones_like(Mach)   
+                        total_nacelle_base_drag += nacelle_base_drag     
 
-        #   Fuselage upsweep drag 
+        # Fuselage upsweep drag 
         fuselage_upsweep_drag = 0.006 /S_ref 
          
-        # total miscellaneous drag 
+        # Total miscellaneous drag 
         miscellaneous_drag = total_nacelle_base_drag + fuselage_upsweep_drag
         total_miscellaneous_drag = miscellaneous_drag *np.ones_like(Mach)
         

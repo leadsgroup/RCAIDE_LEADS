@@ -88,7 +88,8 @@ class Segment(Component):
         self.width                   = 0 
         self.curvature               = 2
         self.radius                  = 0
-        self.has_fuel_tank           = False  
+        self.fuel                    = Data()  
+        self.fuel.tank      = False  
         self.vsp_data                = Data()
         self.vsp_data.xsec_id        = ''       
         self.vsp_data.shape          = ''        

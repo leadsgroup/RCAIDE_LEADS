@@ -1,8 +1,8 @@
-# RCAIDE/Energy/Peripherals/__init__.py
+# RCAIDE/Library/Compoments/Cargo_Bays/__init__.py
 # 
 
 """
-RCAIDE Package Setup for Payload Components. This module initializes the payload components package, providing access to various 
+RCAIDE Package Setup for Cargo_Bay Components. This module initializes the payload components package, providing access to various 
 payload-related classes and functionalities.
 """
 
@@ -10,4 +10,4 @@ payload-related classes and functionalities.
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .Payload  import Payload
+from .Cargo_Bay  import Cargo_Bay

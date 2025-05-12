@@ -29,13 +29,8 @@ def plot_3d_vehicle(vehicle,
                     show_axis                   = False,
                     save_figure                 = False,
                     save_filename               = "Vehicle_Geometry",
-                    alpha                       = 1.0,  
-                    min_x_axis_limit            =  -5,
-                    max_x_axis_limit            =  40,
-                    min_y_axis_limit            =  -20,
-                    max_y_axis_limit            =  20,
-                    min_z_axis_limit            =  -20,
-                    max_z_axis_limit            =  20,
+                    alpha                       = 1.0,   
+                    axis_limit                  = 30,
                     top_view                    = False, 
                     side_view                   = False, 
                     front_view                  = False, 
@@ -44,7 +39,7 @@ def plot_3d_vehicle(vehicle,
                     camera_eye_z                = 1.0,
                     camera_center_x             = 0.,
                     camera_center_y             = 0.,
-                    camera_center_z             = 0.4,
+                    camera_center_z             = 0,
                     wing_color                  = 'greys', 
                     fuselage_color              = 'teal', 
                     nacelle_color               = 'darkmint', 
@@ -77,23 +72,8 @@ def plot_3d_vehicle(vehicle,
     alpha : float, optional
         Transparency value between 0 and 1 (default: 1.0)
 
-    min_x_axis_limit : float, optional
-        Minimum x-axis plot limit (default: -5)
-
-    max_x_axis_limit : float, optional
-        Maximum x-axis plot limit (default: 40)
-
-    min_y_axis_limit : float, optional
-        Minimum y-axis plot limit (default: -20)
-
-    max_y_axis_limit : float, optional
-        Maximum y-axis plot limit (default: 20)
-
-    min_z_axis_limit : float, optional
-        Minimum z-axis plot limit (default: -20)
-
-    max_z_axis_limit : float, optional
-        Maximum z-axis plot limit (default: 20)
+    axis_limit : float, optional
+        Minimum plot limit (default: 20) 
 
     camera_eye_x : float, optional
         Camera eye x-position (default: -1.5)
@@ -170,27 +150,21 @@ def plot_3d_vehicle(vehicle,
     
     plot_data     = []
     
-    plot_data,x_min,x_max,y_min,y_max,z_min,z_max  = generate_3d_vehicle_geometry_data(plot_data,
-                                                                                       vehicle,
-                                                                                       alpha,  
-                                                                                       min_x_axis_limit,
-                                                                                       max_x_axis_limit,
-                                                                                       min_y_axis_limit,
-                                                                                       max_y_axis_limit,
-                                                                                       min_z_axis_limit,
-                                                                                       max_z_axis_limit,
-                                                                                       wing_color,
-                                                                                       fuselage_color,
-                                                                                       nacelle_color, 
-                                                                                       fuel_tank_color, 
-                                                                                       rotor_color,
-                                                                                       wing_alpha,
-                                                                                       fuselage_alpha,
-                                                                                       nacelle_alpha,
-                                                                                       fuel_tank_alpha,
-                                                                                       rotor_alpha,
-                                                                                       overwrite_geometry, 
-                                                                                       )
+    plot_data = generate_3d_vehicle_geometry_data(plot_data,
+                                                    vehicle,
+                                                    alpha,   
+                                                    wing_color,
+                                                    fuselage_color,
+                                                    nacelle_color, 
+                                                    fuel_tank_color, 
+                                                    rotor_color,
+                                                    wing_alpha,
+                                                    fuselage_alpha,
+                                                    nacelle_alpha,
+                                                    fuel_tank_alpha,
+                                                    rotor_alpha,
+                                                    overwrite_geometry, 
+                                                    )
     
 
     fig = go.Figure(data=plot_data)
@@ -199,14 +173,13 @@ def plot_3d_vehicle(vehicle,
     fig.update_layout(
         width=1500,
         height=1500,
-        scene=dict(
-            aspectmode='cube',
+        scene=dict( 
             xaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis,
-                       zerolinecolor="white", range=[x_min, x_max], visible=show_axis),
+                       zerolinecolor="white", range=[0, 2 * axis_limit], visible=show_axis),
             yaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis, 
-                       zerolinecolor="white", range=[y_min, y_max], visible=show_axis),
+                       zerolinecolor="white", range=[-axis_limit, axis_limit], visible=show_axis),
             zaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis,
-                       zerolinecolor="white", range=[z_min, z_max], visible=show_axis)
+                       zerolinecolor="white", range=[-axis_limit / 2, axis_limit / 2], visible=show_axis)
         ),
         scene_camera=camera
     )
@@ -226,13 +199,7 @@ def plot_3d_vehicle(vehicle,
 
 def generate_3d_vehicle_geometry_data(plot_data,
                                       vehicle, 
-                                      alpha                       = 1.0,  
-                                      min_x_axis_limit            =  -5,
-                                      max_x_axis_limit            =  40,
-                                      min_y_axis_limit            =  -20,
-                                      max_y_axis_limit            =  20,
-                                      min_z_axis_limit            =  -20,
-                                      max_z_axis_limit            =  20,
+                                      alpha                       = 1.0,   
                                       wing_color                  = 'greys', 
                                       fuselage_color              = 'teal', 
                                       nacelle_color               = 'darkmint', 
@@ -259,23 +226,8 @@ def generate_3d_vehicle_geometry_data(plot_data,
     alpha : float, optional
         Transparency value between 0 and 1 (default: 1.0)
         
-    min_x_axis_limit : float, optional
-        Minimum x-axis plot limit (default: -5)
-        
-    max_x_axis_limit : float, optional
-        Maximum x-axis plot limit (default: 40)
-        
-    min_y_axis_limit : float, optional
-        Minimum y-axis plot limit (default: -20)
-        
-    max_y_axis_limit : float, optional
-        Maximum y-axis plot limit (default: 20)
-        
-    min_z_axis_limit : float, optional
-        Minimum z-axis plot limit (default: -20)
-        
-    max_z_axis_limit : float, optional
-        Maximum z-axis plot limit (default: 20)
+    axis_limit : float, optional
+        Minimum x-axis plot limit (default: 20) 
 
     Returns
     -------
@@ -361,7 +313,7 @@ def generate_3d_vehicle_geometry_data(plot_data,
     for network in vehicle.networks:
         plot_data = plot_3d_energy_network(plot_data,vehicle,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha) 
  
-    return plot_data,min_x_axis_limit,max_x_axis_limit,min_y_axis_limit,max_y_axis_limit,min_z_axis_limit,max_z_axis_limit
+    return plot_data
 
 def plot_3d_energy_network(plot_data,vehicle,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha):
     """

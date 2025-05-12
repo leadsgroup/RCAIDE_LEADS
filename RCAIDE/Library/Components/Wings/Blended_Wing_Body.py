@@ -77,7 +77,7 @@ class Blended_Wing_Body(Main_Wing):
         self.cabin_area                             = 0.0
         self.cabin_offset                           = 0.0
           
-        self.number_of_passengers                   = 0.0  
+        self.number_of_passengers                   = 1.0  
         self.layout_of_passenger_accommodations     = None 
  
         self.effective_diameter                     = 0.0

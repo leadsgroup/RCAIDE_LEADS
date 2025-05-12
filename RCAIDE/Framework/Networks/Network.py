@@ -10,7 +10,6 @@ import  RCAIDE
 from RCAIDE.Framework.Mission.Common                      import Residuals 
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw                import compute_avionics_power_draw
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_payload_power_draw                 import compute_payload_power_draw
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import * 
 from RCAIDE.Library.Components import Component
@@ -49,7 +48,7 @@ class Network(Component):
     turboshafts, motors, pumps etc; and Section 3 computes the thermal mangement of the system as
     well as energy consumtion of the powertrain. The state of storage devices such as covnentional fuel tanks,
     batteries are also updates. Propulsor groups can be "active" or "inactive" to simulate
-    engine out conditions. Energy consumtion from payload and avionics is also modeled 
+    engine out conditions. Energy consumtion from avionics is also modeled 
     
     **Definitions** 
     'Propulsor Group'
@@ -127,14 +126,10 @@ class Network(Component):
                 
         # 1.2 Electric Propulsors         
         for bus in busses:            
-            avionics             = bus.avionics
-            payload              = bus.payload  
+            avionics             = bus.avionics 
     
             # Avionics Power Consumtion 
-            compute_avionics_power_draw(avionics,bus,conditions)
-    
-            # Payload Power 
-            compute_payload_power_draw(payload,bus,conditions)
+            compute_avionics_power_draw(avionics,bus,conditions) 
     
             # Bus Voltage 
             bus_voltage = bus.voltage * state.ones_row(1)       

@@ -24,12 +24,7 @@ def plot_3d_vehicle_vlm_panelization(vehicle,
                                      save_figure = False,
                                      show_wing_control_points = True,
                                      save_filename = "VLM_Panelization",
-                                     min_x_axis_limit            =  -5,
-                                     max_x_axis_limit            =  40,
-                                     min_y_axis_limit            =  -20,
-                                     max_y_axis_limit            =  20,
-                                     min_z_axis_limit            =  -20,
-                                     max_z_axis_limit            =  20,
+                                     axis_limit                  =  20, 
                                      overwrite_geometry          =True, 
                                      show_figure = True):
     """
@@ -55,23 +50,8 @@ def plot_3d_vehicle_vlm_panelization(vehicle,
     save_filename : str, optional
         Name of file for saved figure (default: "VLM_Panelization")
         
-    min_x_axis_limit : float, optional
-        Minimum x-axis plot limit (default: -5)
-        
-    max_x_axis_limit : float, optional
-        Maximum x-axis plot limit (default: 40)
-        
-    min_y_axis_limit : float, optional
-        Minimum y-axis plot limit (default: -20)
-        
-    max_y_axis_limit : float, optional
-        Maximum y-axis plot limit (default: 20)
-        
-    min_z_axis_limit : float, optional
-        Minimum z-axis plot limit (default: -20)
-        
-    max_z_axis_limit : float, optional
-        Maximum z-axis plot limit (default: 20)
+    axis_limit : float, optional
+        Minimum x-axis plot limit (default: 20)  
         
     show_figure : bool, optional
         Flag to display the figure (default: True)
@@ -185,11 +165,11 @@ def plot_3d_vehicle_vlm_panelization(vehicle,
              height    = 1500, 
              scene = dict(
                         xaxis = dict(backgroundcolor="grey", gridcolor="white", showbackground=plot_axis,
-                                     zerolinecolor="white", range=[min_x_axis_limit,max_x_axis_limit]),
+                                     zerolinecolor="white", range=[0,2 * axis_limit]),
                         yaxis = dict(backgroundcolor="grey", gridcolor="white", showbackground=plot_axis, 
-                                     zerolinecolor="white", range=[min_y_axis_limit,max_y_axis_limit]),
+                                     zerolinecolor="white", range=[-axis_limit,axis_limit]),
                         zaxis = dict(backgroundcolor="grey",gridcolor="white",showbackground=plot_axis,
-                                     zerolinecolor="white", range=[min_z_axis_limit,max_z_axis_limit])),             
+                                     zerolinecolor="white", range=[-axis_limit,axis_limit])),             
              scene_camera=camera) 
     fig.update_coloraxes(showscale=False)
     fig.update_traces(opacity = alpha)

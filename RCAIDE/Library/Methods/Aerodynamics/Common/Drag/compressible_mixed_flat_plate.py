@@ -11,7 +11,6 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compressible Mixed Flat Plate
 # ----------------------------------------------------------------------
-
 def compressible_mixed_flat_plate(Re,Ma,Tc,xt):
     """Computes the coefficient of friction for a flat plate given the 
     input parameters. Also returns the correction terms used in the

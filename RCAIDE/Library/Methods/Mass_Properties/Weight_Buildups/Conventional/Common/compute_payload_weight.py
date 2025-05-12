@@ -5,6 +5,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Imports
 # ----------------------------------------------------------------------------------------------------------------------
+import RCAIDE
 from RCAIDE.Framework.Core import Data, Units 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -20,8 +21,7 @@ def compute_payload_weight(vehicle, W_passenger=195 * Units.lbs, W_baggage=30 * 
     vehicle : Vehicle
         The vehicle instance containing:
             - passengers : int
-                Number of passengers
-            - mass_properties.cargo : float
+                Number of passengers 
                 Mass of cargo [kg]
     W_passenger : float, optional
         Standard passenger weight [kg], default 195 lbs
@@ -73,15 +73,31 @@ def compute_payload_weight(vehicle, W_passenger=195 * Units.lbs, W_baggage=30 * 
     W_pax      = W_passenger * num_pax
     W_bag      = W_baggage * num_pax
     if vehicle.mass_properties.payload == 0:
-        vehicle.mass_properties.payload  = W_pax + W_bag + vehicle.mass_properties.cargo
+        vehicle.mass_properties.payload  = W_pax + W_bag
+        W_cargo = 0
     else:
-        vehicle.mass_properties.cargo = vehicle.mass_properties.payload - W_pax - W_bag
-
+        W_cargo = vehicle.mass_properties.payload - W_pax - W_bag
+     
+    # check if cargo bays defined in aircraft, if none, define one 
+    if len(vehicle.cargo_bays) == None:
+        cargo_bay =  RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay
+        vehicle.append_component(cargo_bay)  
+      
+    total_volume =  0
+    for cargo_bay in vehicle.cargo_bays:
+        total_volume += (cargo_bay.length * cargo_bay.width * cargo_bay.height)
+    
+    for cargo_bay in vehicle.cargo_bays:
+        cargo_bay_volume = (cargo_bay.length * cargo_bay.width * cargo_bay.height)
+        cargo_bay.mass_properties.mass         = (W_cargo + W_bag)  (cargo_bay_volume / total_volume)
+        cargo_bay.baggage.mass_properties.mass = W_bag * (cargo_bay_volume / total_volume)
+        cargo_bay.cargo.mass_properties.mass   = W_cargo * (cargo_bay_volume / total_volume)
+        
     # packup outputs
     output              = Data()
     output.total        = vehicle.mass_properties.payload
     output.passengers   = W_pax
     output.baggage      = W_bag
-    output.cargo        = vehicle.mass_properties.cargo
+    output.cargo        =W_cargo
 
     return output
