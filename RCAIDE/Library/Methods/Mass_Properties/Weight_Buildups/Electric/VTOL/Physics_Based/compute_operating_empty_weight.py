@@ -346,9 +346,8 @@ def compute_operating_empty_weight(vehicle,settings = None):
         
         # check if cargo bays defined in aircraft, if none, define one 
         if len(vehicle.cargo_bays) == None:
-            cargo_bay =  RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay
-            vehicle.append_component(cargo_bay)
-            
+            cargo_bay =  RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+            vehicle.cargo_bays.append(cargo_bay) 
         
         ##-------------------------------------------------------------------------------   
         # Cabin
@@ -368,7 +367,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
         
         for cargo_bay in vehicle.cargo_bays:
             cargo_bay_volume = (cargo_bay.length * cargo_bay.width * cargo_bay.height)
-            cargo_bay.mass_properties.mass         = (weight.payload)  (cargo_bay_volume / total_volume)        
+            cargo_bay.mass_properties.mass         = (weight.payload) * (cargo_bay_volume / total_volume)        
 
         diff = MTOW -output.total
         MTOW -= diff

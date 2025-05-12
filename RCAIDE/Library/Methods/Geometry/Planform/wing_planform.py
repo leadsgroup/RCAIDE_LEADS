@@ -183,13 +183,11 @@ def wing_planform(wing, overwrite_reference = True):
     
         aerodynamic_center = (np.dot(np.transpose(Cxys),As)/(ref_area/(1+sym)))
         
-        wing.segments[seg_keys[i]].mass_properties.center_of_gravity = Cxys
         
         single_side_aerodynamic_center = (np.array(aerodynamic_center)*1.)
         single_side_aerodynamic_center[0] = single_side_aerodynamic_center[0] - MAC*.25    
         if sym== True:
-            aerodynamic_center[1] = 0
-            wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][1] = 0
+            aerodynamic_center[1] = 0 
             
         aerodynamic_center[0] = single_side_aerodynamic_center[0]
         
@@ -200,10 +198,16 @@ def wing_planform(wing, overwrite_reference = True):
             for i in range(len(wing.segments) - 1):
                 wing.segments[seg_keys[i]].sweeps.leading_edge = le_sweeps[i]
                 wing.segments[seg_keys[i]].origin = [[dxs[i],dzs[i],dys[i]]]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][0] = Cxys[0][0]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][2] = Cxys[0][2]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][1] = 0 if sym ==True else Cxys[0][1]
         else:
             for i in range(len(wing.segments) - 1):
                 wing.segments[seg_keys[i]].sweeps.leading_edge = le_sweeps[i]
                 wing.segments[seg_keys[i]].origin = [[dxs[i],dys[i],dzs[i]]]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][0] = Cxys[0][0] 
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][1] = 0 if sym ==True else Cxys[0][1]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][2] = Cxys[0][2]
             
         wing.spans.total                    = total_len
         wing.chords.mean_geometric          = mgc
@@ -309,7 +313,7 @@ def bwb_wing_planform(wing,overwrite_reference = True):
 
     seg_keys = list(wing.segments.keys())  
     for tag, segment in enumerate(wing.segments): 
-        if not isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment) and segment.chords.reference_area_root:                      
+        if segment.chords.reference_area_root:                      
             segment_root_chord       = wing.segments[seg_keys[tag]].root_chord_percent * wing.chords.root 
             segment_tip_chord        = wing.segments[seg_keys[tag+1]].root_chord_percent * wing.chords.root 
             segnent_start_span       = wing.segments[seg_keys[tag]].percent_span_location * wing.spans.projected
@@ -409,10 +413,8 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
             else:
                 Swet_seg = (1.977 + 0.52*t_c_w) * S_exposed_seg
                 
-            segment.taper                   = taper
-            segment.chords                  = Data()
-            segment.chords.mean_aerodynamic = mac_seg
-            segment.areas                   = Data()
+            segment.taper                   = taper 
+            segment.chords.mean_aerodynamic = mac_seg 
             segment.areas.reference         = Sref_seg
             segment.areas.exposed           = S_exposed_seg
             segment.areas.wetted            = Swet_seg 

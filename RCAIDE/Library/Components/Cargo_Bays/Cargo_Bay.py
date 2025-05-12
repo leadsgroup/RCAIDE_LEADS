@@ -6,8 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
-# RCAIDE imports  
-from RCAIDE.Framework.Core      import Container
+# RCAIDE imports   
 from RCAIDE.Library.Components  import Component   
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia
 
@@ -18,47 +17,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------              
 class Cargo_Bay(Component):
     """
-    A payload component model for representing mission cargo and equipment.
-
-    Attributes
-    ----------
-    tag : str
-        Identifier for the payload. Default is 'payload'.
-        
-    power_draw : float
-        Power consumption of the payload. Default is 0.0.
-
-    Notes
-    -----
-    The Payload class models mission-specific cargo and equipment, including:
-
-    * Mass properties
-    * Power requirements
-    * Location in vehicle
-    * Energy consumption
-    * Operating conditions
-
-    The model can represent:
-
-    * Scientific instruments
-    * Cargo containers
-    * Passenger accommodations
-    * Mission-specific equipment
-    * Sensor packages
-    * Communication systems
-
-    **Major Assumptions**
-    
-    * Constant power draw during operation
-    * Fixed mass and volume
-    * Rigid mounting to vehicle
-    * No thermal effects on vehicle
-    * No aerodynamic effects
-    * Steady-state operation
-
-    See Also
-    --------
-    RCAIDE.Library.Components.Component 
+     
     """          
     def __defaults__(self):
         """This sets the default power draw.
@@ -83,7 +42,7 @@ class Cargo_Bay(Component):
         self.width      = 1.0
         self.height     = 1.0 
         self.density    = 0.0
-        self.payload    = Component() 
+        self.cargo      = Component() 
         self.baggage    = Component() 
         self.power_draw = 0.0  
 
@@ -106,10 +65,4 @@ class Cargo_Bay(Component):
             3x3 moment of inertia tensor
         """ 
         I = compute_cuboid_moment_of_inertia(self.origin, mass,length,width,height, length_inner = 0, width_inner = 0, height_inner = 0, center_of_gravity = np.array([[0,0,0]]))  
-        return I     
-    
-    
-# ------------------------------------------------------------
-#  Handle Linking
-# ------------------------------------------------------------
-Cargo_Bay.Container = Container    
+        return I      

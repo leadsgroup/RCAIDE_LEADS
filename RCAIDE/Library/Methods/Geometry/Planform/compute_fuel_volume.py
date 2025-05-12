@@ -29,7 +29,7 @@ def compute_fuel_volume(vehicle, update_max_fuel =True):
             for fuel_tank in fuel_line.fuel_tanks: 
                 fuel_tank.internal_volume = 0 
                 tank_moment = 0
-                tank_mass   = 0
+                tank_mass   = 1E-6
 
                 # fuel tanks integrated into wings 
                 if fuel_tank.wing_tag != None:
