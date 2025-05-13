@@ -115,7 +115,7 @@ class Segment(Component):
         self.structural.rear_spar_percent_chord  = 0.6  
         self.structural.stringer_percent_chords  = [] 
         self.fuel                                = Data() 
-        self.fuel.tank                  = False   
+        self.fuel.tank                           = False   
         self.fuel.tank_start_percent_chord       = 0.1  
         self.fuel.tank_end_percent_chord         = 0.6     
         self.airfoil                             = None

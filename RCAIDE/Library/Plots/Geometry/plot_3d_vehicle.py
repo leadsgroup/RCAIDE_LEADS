@@ -30,7 +30,7 @@ def plot_3d_vehicle(vehicle,
                     save_figure                 = False,
                     save_filename               = "Vehicle_Geometry",
                     alpha                       = 1.0,   
-                    axis_limit                  = 30,
+                    axis_limit                  = 35,
                     top_view                    = False, 
                     side_view                   = False, 
                     front_view                  = False, 
@@ -179,7 +179,7 @@ def plot_3d_vehicle(vehicle,
             yaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis, 
                        zerolinecolor="white", range=[-axis_limit, axis_limit], visible=show_axis),
             zaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis,
-                       zerolinecolor="white", range=[-axis_limit / 2, axis_limit / 2], visible=show_axis)
+                       zerolinecolor="white", range=[-axis_limit , axis_limit ], visible=show_axis)
         ),
         scene_camera=camera
     )

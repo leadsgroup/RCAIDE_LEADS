@@ -111,26 +111,35 @@ def train_model(aerodynamics, Mach):
     training       = Data()
     training.Mach  = Mach 
     
-    # loop through wings to determine what control surfaces are present 
+    # loop through wings to determine what control surfaces are present
+    delta_a_0 = 0
+    delta_e_0 = 0
+    delta_r_0 = 0
+    delta_f_0 = 0
     for wing in vehicle.wings: 
-        for control_surface in wing.control_surfaces:
-            control_surface.deflection  =  0.0
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:  
+        for control_surface in wing.control_surfaces: 
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
+                delta_a_0                  =  control_surface.deflection
                 delta_a                    = aerodynamics.training.aileron_deflection
                 len_d_a                    = len(delta_a)
                 aerodynamics.aileron_flag  = True 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator:  
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator:
+                delta_e_0                  =  control_surface.deflection
                 delta_e                    = aerodynamics.training.elevator_deflection
                 len_d_e                    = len(delta_e)   
                 aerodynamics.elevator_flag = True 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:   
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:
+                delta_r_0                  =  control_surface.deflection
                 delta_r                    = aerodynamics.training.rudder_deflection
                 aerodynamics.rudder_flag   = True
                 len_d_r                    = len(delta_r)  
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap: 
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
+                delta_f_0                   =  control_surface.deflection
                 delta_f                     = aerodynamics.training.rudder_deflection
                 len_d_f                     = len(delta_f)  
-                aerodynamics.flap_flag      = True 
+                aerodynamics.flap_flag      = True
+                
+            control_surface.deflection = 0 # set all control surfaces to be 0
              
     u              = aerodynamics.training.u
     pitch_rate     = aerodynamics.training.pitch_rate
@@ -222,7 +231,7 @@ def train_model(aerodynamics, Mach):
     conditions.aerodynamics.angles.alpha            = np.ones_like(Machs) *1E-12
     conditions.aerodynamics.angles.beta             = np.ones_like(Machs)*Betas   
     
-    VLM_results = VLM(conditions,settings,vehicle)
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
     Clift_res = VLM_results.CLift
     Cdrag_res = VLM_results.CDrag_induced
     CX_res    = VLM_results.CX
@@ -252,7 +261,7 @@ def train_model(aerodynamics, Mach):
     conditions.freestream.mach_number               = Machs + Machs*u_s 
     
 
-    VLM_results = VLM(conditions,settings,vehicle)
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
     CX_res    = VLM_results.CX
     CZ_res    = VLM_results.CZ
     CM_res    = VLM_results.CM
@@ -273,7 +282,7 @@ def train_model(aerodynamics, Mach):
     conditions.static_stability.pitch_rate          = np.ones_like(Machs)*q_s     
     conditions.freestream.velocity                  = Machs * 343 # speed of sound   
     
-    VLM_results = VLM(conditions,settings,vehicle)
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
     CM_res    = VLM_results.CM  
     CM_q        = np.reshape(CM_res,(len_Mach,len_q)).T    - CM_alpha_0    
     CZ_q        = np.reshape(CZ_res,(len_Mach,len_q)).T    - CZ_alpha_0
@@ -290,7 +299,7 @@ def train_model(aerodynamics, Mach):
     conditions.aerodynamics.angles.beta             = np.zeros_like(Machs) 
     conditions.static_stability.roll_rate           = np.ones_like(Machs)*p_s 
     conditions.freestream.velocity                  = Machs * 343 # speed of sound           
-    VLM_results = VLM(conditions,settings,vehicle)
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
     CL_res    = VLM_results.CL
     CN_res    = VLM_results.CN
     CY_res    = VLM_results.CY
@@ -311,10 +320,10 @@ def train_model(aerodynamics, Mach):
     conditions.static_stability.yaw_rate            = np.ones_like(Machs)*r_s
     conditions.freestream.velocity                  = Machs * 343
     
-    VLM_results = VLM(conditions,settings,vehicle)
-    CL_res    = VLM_results.CL
-    CN_res    = VLM_results.CN
-    CY_res    = VLM_results.CY
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
+    CL_res      = VLM_results.CL
+    CN_res      = VLM_results.CN
+    CY_res      = VLM_results.CY
     CL_r        = (np.reshape(CL_res,(len_Mach,len_r)).T    - CL_alpha_0   )
     CN_r        = (np.reshape(CN_res,(len_Mach,len_r)).T    - CN_alpha_0   ) 
     CY_r        = (np.reshape(CY_res,(len_Mach,len_r)).T    - CY_alpha_0   )
@@ -400,8 +409,7 @@ def train_model(aerodynamics, Mach):
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
                 CY_d_a         = np.zeros((len_d_a,len_Mach)) 
                 CL_d_a         = np.zeros((len_d_a,len_Mach)) 
-                CN_d_a         = np.zeros((len_d_a,len_Mach))
-                
+                CN_d_a         = np.zeros((len_d_a,len_Mach)) 
                 for a_i in range(len_d_a):    
                     Machs                                           = np.atleast_2d(np.repeat(Mach,1)).T         
                     conditions                                      = RCAIDE.Framework.Mission.Common.Results()
@@ -413,7 +421,6 @@ def train_model(aerodynamics, Mach):
                     CY_res    = VLM_results.CY
                     CL_res    = VLM_results.CL
                     CN_res    = VLM_results.CN
-                    vehicle.wings[wing.tag].control_surfaces.aileron.deflection = 0
                 
                     CY_d_a[a_i,:]    =  -(CY_res[:,0]   - CY_alpha_0[0,:]  ) # Negative sign is due to convention
                     CL_d_a[a_i,:]    =  -(CL_res[:,0]   - CL_alpha_0[0,:]) # Negative sign is due to convention
@@ -421,6 +428,7 @@ def train_model(aerodynamics, Mach):
                 training.dCY_ddelta_a    = (CY_d_a[0,:] - CY_d_a[1,:]) / (delta_a[0] - delta_a[1]) 
                 training.dCL_ddelta_a    = ((CL_d_a[0,:] - CL_d_a[1,:]) / (delta_a[0] - delta_a[1]))
                 training.dCN_ddelta_a    = (CN_d_a[0,:] - CN_d_a[1,:]) / (delta_a[0] - delta_a[1]) 
+                vehicle.wings[wing.tag].control_surfaces.aileron.deflection = delta_a_0
 
             # --------------------------------------------------------------------------------------------------------------
             # Elevator 
@@ -428,8 +436,7 @@ def train_model(aerodynamics, Mach):
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator: 
             
                 Clift_d_e      = np.zeros((len_d_e,len_Mach)) 
-                CM_d_e         = np.zeros((len_d_e,len_Mach)) 
- 
+                CM_d_e         = np.zeros((len_d_e,len_Mach))  
                 for e_i in range(len_d_e): 
                     Machs                                           = np.atleast_2d(np.repeat(Mach,1)).T         
                     conditions                                      = RCAIDE.Framework.Mission.Common.Results()
@@ -442,11 +449,11 @@ def train_model(aerodynamics, Mach):
                     Clift_res = VLM_results.CLift
                     CM_res    = VLM_results.CM
                     
-                    vehicle.wings[wing.tag].control_surfaces.elevator.deflection = 0 
                     Clift_d_e[e_i,:] = Clift_res[:,0]  - Clift_alpha_0[0,:]
                     CM_d_e[e_i,:]    = CM_res[:,0]   - CM_alpha_0[0,:]    
                 training.dClift_ddelta_e = ((Clift_d_e[0,:] - Clift_d_e[1,:]) / (delta_e[0] - delta_e[1]))
                 training.dCM_ddelta_e    = (CM_d_e[0,:] - CM_d_e[1,:]) / (delta_e[0] - delta_e[1])  
+                vehicle.wings[wing.tag].control_surfaces.elevator.deflection = delta_e_0
     
             # --------------------------------------------------------------------------------------------------------------
             # Rudder 
@@ -454,8 +461,7 @@ def train_model(aerodynamics, Mach):
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder: 
                 CY_d_r         = np.zeros((len_d_r,len_Mach)) 
                 CL_d_r         = np.zeros((len_d_r,len_Mach)) 
-                CN_d_r         = np.zeros((len_d_r,len_Mach))
-              
+                CN_d_r         = np.zeros((len_d_r,len_Mach))               
                 for r_i in range(len_d_r): 
                     Machs                                           = np.atleast_2d(np.repeat(Mach,1)).T         
                     conditions                                      = RCAIDE.Framework.Mission.Common.Results()
@@ -467,22 +473,21 @@ def train_model(aerodynamics, Mach):
                     CY_res    = VLM_results.CY
                     CL_res    = VLM_results.CL
                     CN_res    = VLM_results.CN
-                    vehicle.wings[wing.tag].control_surfaces.rudder.deflection = 0 
                     CY_d_r[r_i,:]    =   -(CY_res[:,0]   - CY_alpha_0[0,:]  ) # Negative sign is due to convention
                     CL_d_r[r_i,:]    =   -(CL_res[:,0]   - CL_alpha_0[0,:]  ) # Negative sign is due to convention
                     CN_d_r[r_i,:]    =   (CN_res[:,0]   - CN_alpha_0[0,:] )
                   
                 training.dCY_ddelta_r    = (CY_d_r[0,:] - CY_d_r[1,:]) / (delta_r[0] - delta_r[1]) 
                 training.dCL_ddelta_r    = (CL_d_r[0,:] - CL_d_r[1,:]) / (delta_r[0] - delta_r[1])  
-                training.dCN_ddelta_r    = correction_factor.dCN_ddelta_r*(CN_d_r[0,:] - CN_d_r[1,:]) / (delta_r[0] - delta_r[1])  
+                training.dCN_ddelta_r    = correction_factor.dCN_ddelta_r*(CN_d_r[0,:] - CN_d_r[1,:]) / (delta_r[0] - delta_r[1]) 
+                vehicle.wings[wing.tag].control_surfaces.rudder.deflection = delta_r_0
                     
             # --------------------------------------------------------------------------------------------------------------
             # Flap
             # --------------------------------------------------------------------------------------------------------------  
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
                 CM_d_f         = np.zeros((len_d_f,len_Mach)) 
-                Clift_d_f      = np.zeros((len_d_f,len_Mach)) 
-                
+                Clift_d_f      = np.zeros((len_d_f,len_Mach))   
                 for f_i in range(len_d_f): 
                     Machs                                           = np.atleast_2d(np.repeat(Mach,1)).T         
                     conditions                                      = RCAIDE.Framework.Mission.Common.Results()
@@ -498,6 +503,7 @@ def train_model(aerodynamics, Mach):
                     CM_d_f[f_i,:]    = CM_res[:,0]   - CM_alpha_0[0,:]            
                 training.dClift_ddelta_f  = (Clift_d_f[0,:] - Clift_d_f[1,:]) / (delta_f[0] - delta_f[1]) 
                 training.dCM_ddelta_f    = (CM_d_f[0,:] - CM_d_f[1,:]) / (delta_f[0] - delta_f[1])  
+                vehicle.wings[wing.tag].control_surfaces.flap.deflection = delta_f_0
     
     
     return training

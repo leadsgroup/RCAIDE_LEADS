@@ -251,8 +251,7 @@ def compute_wing_integral_tank_fuel_volume(fuel_tank,wing):
     outer_front_rib_yu,outer_rear_rib_yu,outer_front_rib_yl,outer_rear_rib_yl = compute_non_dimensional_rib_coordinates(wing) 
     outer_front_rib_length  = wing.chords.tip * (abs(outer_front_rib_yu) + abs(outer_front_rib_yl))
     outer_rear_rib_length   = wing.chords.tip * (abs(outer_rear_rib_yu) + abs(outer_rear_rib_yl))
-    outer_wingbox_length    = wing.chords.tip * (wing.fuel.tank_end_percent_chord -wing.fuel.tank_start_percent_chord)  
-
+    outer_wingbox_length    = wing.chords.tip * (wing.fuel.tank_end_percent_chord -wing.fuel.tank_start_percent_chord)   
 
     # volume of truncated prism
     A_1 = inner_wingbox_length * (inner_front_rib_length + inner_rear_rib_length) / 2 
