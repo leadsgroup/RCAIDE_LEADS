@@ -218,8 +218,7 @@ def no_surrogate(aerodynamics, training):
     surrogates.dCN_dp           = None      
     surrogates.dCN_dr           = None
     surrogates.neutral_point    = None
-    surrogates.static_margin    = None
-   
+    surrogates.static_margin    = None 
 
     if aerodynamics.aileron_flag:  
         surrogates.dCY_ddelta_a     = None 
@@ -227,10 +226,9 @@ def no_surrogate(aerodynamics, training):
         surrogates.dCN_ddelta_a     = None        
     
     if aerodynamics.elevator_flag: 
-        surrogates.Clift_delta_e    = None 
-        surrogates.dCM_ddelta_e     = None 
         surrogates.dClift_ddelta_e  = None 
-    
+        surrogates.dCM_ddelta_e     = None 
+        surrogates.dClift_ddelta_e  = None  
     
     if aerodynamics.rudder_flag:  
         surrogates.dCY_ddelta_r     = None 
@@ -238,7 +236,7 @@ def no_surrogate(aerodynamics, training):
         surrogates.dCN_ddelta_r     = None
     
     if aerodynamics.flap_flag:
-        surrogates.Clift_delta_f    = None 
+        surrogates.dClift_ddelta_f  = None 
         surrogates.dCM_ddelta_f     = None  
    
     return surrogates 

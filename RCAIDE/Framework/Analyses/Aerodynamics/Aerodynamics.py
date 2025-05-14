@@ -57,7 +57,7 @@ class Aerodynamics(Analysis):
         self.reference_values.Z_ref                                      = 0
         
         self.settings                                                    = Data()
-        self.settings.unique_segment_surrogate                           = True # should be false
+        self.settings.unique_segment_surrogate                           = False
         self.settings.maximum_lift_coefficient                           = np.inf 
         self.settings.fuselage_lift_correction                           = 1.14
         self.settings.trim_drag_correction_factor                        = 1.05

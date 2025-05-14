@@ -67,27 +67,33 @@ def stability(mission):
     RCAIDE.Framework.Mission.Segments
     """
     last_tag = None
-    for tag,segment in mission.segments.items(): 
-                
-        if segment.analyses.stability !=  None: 
-            # ensure all properties of wing are computed before drag calculations  
-            vehicle =  segment.analyses.stability.vehicle
-            for wing in  vehicle.wings:  
-                wing_planform(wing)
-                    
-            if  (last_tag!=  None) and  ('compute' in mission.segments[last_tag].analyses.stability.process.keys()): 
-                segment.analyses.stability.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.stability.process.compute.lift.inviscid_wings
-                segment.analyses.stability.surrogates       = mission.segments[last_tag].analyses.stability.surrogates 
-                segment.analyses.stability.reference_values = mission.segments[last_tag].analyses.stability.reference_values   
-            else: # use aerodynamic results that have been previously processed 
-                if (type(segment.analyses.aerodynamics) == RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method) or\
-                (type(segment.analyses.aerodynamics) == RCAIDE.Framework.Analyses.Aerodynamics.Athena_Vortex_Lattice) :
-                    segment.analyses.stability.process.compute.lift.inviscid_wings = segment.analyses.aerodynamics.process.compute.lift.inviscid_wings 
-                    segment.analyses.stability.surrogates       = segment.analyses.aerodynamics.surrogates 
-                    segment.analyses.stability.reference_values = segment.analyses.aerodynamics.reference_values 
-                    last_tag = tag                 
-                else: # run new simulation 
-                    stab = segment.analyses.stability
-                    stab.initialize() 
-                    last_tag = tag 
+    for tag,segment in mission.segments.items():
+
+        if type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Climb or  \
+           type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Hover or \
+           type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Descent:
+            pass
+        else:    
+            if segment.analyses.stability !=  None: 
+                if last_tag!=  None:
+                    if segment.analyses.stability.settings.unique_segment_surrogate:
+                        stab   = segment.analyses.stability
+                        stab.initialize()   
+                        last_tag = tag
+                    else:
+                        if 'compute' in mission.segments[last_tag].analyses.stability.process.keys(): 
+                            segment.analyses.stability.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.stability.process.compute.lift.inviscid_wings
+                            segment.analyses.stability.surrogates       = mission.segments[last_tag].analyses.stability.surrogates 
+                            segment.analyses.stability.reference_values = mission.segments[last_tag].analyses.stability.reference_values  
+                else:
+                    if (type(segment.analyses.aerodynamics) == RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method) or\
+                    (type(segment.analyses.aerodynamics) == RCAIDE.Framework.Analyses.Aerodynamics.Athena_Vortex_Lattice) :
+                        segment.analyses.stability.process.compute.lift.inviscid_wings = segment.analyses.aerodynamics.process.compute.lift.inviscid_wings 
+                        segment.analyses.stability.surrogates       = segment.analyses.aerodynamics.surrogates 
+                        segment.analyses.stability.reference_values = segment.analyses.aerodynamics.reference_values 
+                        last_tag = tag                 
+                    else: # run new simulation 
+                        stab = segment.analyses.stability
+                        stab.initialize() 
+                        last_tag = tag 
     return 

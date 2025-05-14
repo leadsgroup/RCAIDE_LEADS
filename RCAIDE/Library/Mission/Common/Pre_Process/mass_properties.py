@@ -5,12 +5,11 @@
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  RCAIDE
-# ----------------------------------------------------------------------------------------------------------------------
-import RCAIDE
-import numpy as np
-from RCAIDE.Framework.Core import Data
+# ---------------------------------------------------------------------------------------------------------------------- 
+import numpy as np 
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_aircraft_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity                             import compute_vehicle_center_of_gravity
+from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 #  mass_properties
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -149,10 +148,14 @@ def mass_properties(mission):
 
                 last_tag = segment.tag.lower()
                 if segment.analyses.aerodynamics != None:   
-                    segment.analyses.aerodynamics.vehicle =  weights_analysis.vehicle
+                    segment.analyses.aerodynamics.vehicle =  deepcopy(weights_analysis.vehicle)
 
-            else:  
-                segment.analyses.weights.vehicle.mass_properties      = mission.segments[last_tag].analyses.weights.vehicle.mass_properties
-                if segment.analyses.aerodynamics != None:   
-                    segment.analyses.aerodynamics.vehicle = mission.segments[last_tag].analyses.aerodynamics.vehicle
+            else:
+                stored_vehicle = deepcopy(segment.analyses.geometry.vehicle) # create copy of old vehicle                 
+                segment.analyses.weights.vehicle  = deepcopy(mission.segments[last_tag].analyses.weights.vehicle) 
+                if segment.analyses.aerodynamics != None: 
+                    segment.analyses.aerodynamics.vehicle =  deepcopy(mission.segments[last_tag].analyses.aerodynamics.vehicle)
+                    for wing in segment.analyses.aerodynamics.vehicle.wings: # reupdate control surface deflection 
+                        for control_surface in wing.control_surfaces:   
+                            control_surface.deflection = stored_vehicle.wings[wing.tag].control_surfaces[control_surface.tag].deflection
     return 
