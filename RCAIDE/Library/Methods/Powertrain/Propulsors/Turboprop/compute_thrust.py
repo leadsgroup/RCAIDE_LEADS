@@ -211,7 +211,7 @@ def compute_thrust(turboprop, conditions):
     mdhc                                           = turboprop.compressor_nondimensional_massflow    
     total_temperature_reference                    = turboprop_conditions.total_temperature_reference
     total_pressure_reference                       = turboprop_conditions.total_pressure_reference     
-    mdot_core                                      = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
+    mdot_core                                      = turboprop_conditions.throttle*mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
 
     # computing the dimensional thrust
     FD2                                            = Fsp*mdot_core
