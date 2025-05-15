@@ -84,22 +84,9 @@ def compute_operating_items_weight(vehicle):
         
     for wing in  vehicle.wings: 
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            NPT =  0
-            NPF =  0
-            NPB =  0
-            if wing.cabins != {}:
-                for cabin in wing.cabins:
-                        for cabin_class in cabin.classes:
-                            if type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy:
-                                NPT =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
-                            elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business:
-                                NPB =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
-                            elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
-                                NPF =  cabin_class.number_of_seats_abrest *  cabin_class.number_of_rows
-            else:
-                NPF = vehicle.passengers / 20.
-                NPB = vehicle.passengers / 10.
-                NPT = vehicle.passengers - NPF - NPB
+            NPF = vehicle.passengers / 20.
+            NPB = vehicle.passengers / 10.
+            NPT = vehicle.passengers - NPF - NPB
             
     vehicle.NPF = NPF
     vehicle.NPB = NPB

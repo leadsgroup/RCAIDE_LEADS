@@ -99,33 +99,31 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
                         
     DG              = vehicle.mass_properties.max_takeoff / Units.lbs  # Design gross weight in lb
 
-    NFUSE = 0
-    for wing in  vehicle.wings:
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            NFUSE   += 1
-            width = 0
-            for segment in wing.segments:
-                if isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
-                    width    += segment.percent_span_location * wing.spans.projected  / Units.ft   
-
     if complexity == 'Simple':
-        for wing in  vehicle.wings:
-            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-                EMS  = 1 - 0.25 * FSTRT  # Wing strut bracing factor
-                TLAM = np.tan(wing.sweeps.quarter_chord) \
-                        - 2 * (1 - TR) / (AR * (1 + TR))  # Tangent of the 3/4 chord sweep angle
-                SLAM = TLAM / np.sqrt(1 + TLAM ** 2)  # sine of 3/4 chord wing sweep angle
-                C6   = 0.5 * FAERT - 0.16 * FSTRT
-                C4   = 1 - 0.5 * FAERT
-                CAYL = (1.0 - SLAM ** 2) * \
-                        (1.0 + C6 * SLAM ** 2 + 0.03 * CAYA * C4 * SLAM)  # Wing sweep factor due to aeroelastic tailoring
-                TCA  = wing.thickness_to_chord
-                BT   = 0.215 * (0.37 + 0.7 * TR) * (SPAN ** 2 / SW) ** EMS / (CAYL * TCA)  # Bending factor
-                CAYE = 1 - 0.03 * NEW
+        EMS  = 1 - 0.25 * FSTRT  # Wing strut bracing factor
+        TLAM = np.tan(wing.sweeps.quarter_chord) \
+               - 2 * (1 - TR) / (AR * (1 + TR))  # Tangent of the 3/4 chord sweep angle
+        SLAM = TLAM / np.sqrt(1 + TLAM ** 2)  # sine of 3/4 chord wing sweep angle
+        C6   = 0.5 * FAERT - 0.16 * FSTRT
+        C4   = 1 - 0.5 * FAERT
+        CAYL = (1.0 - SLAM ** 2) * \
+               (1.0 + C6 * SLAM ** 2 + 0.03 * CAYA * C4 * SLAM)  # Wing sweep factor due to aeroelastic tailoring
+        TCA  = wing.thickness_to_chord
+        BT   = 0.215 * (0.37 + 0.7 * TR) * (SPAN ** 2 / SW) ** EMS / (CAYL * TCA)  # Bending factor
+        CAYE = 1 - 0.03 * NEW
 
     else:
         NSD             = 500
-        N2              = int(NEW / 2)      
+        N2              = int(NEW / 2) 
+       
+        NFUSE = 0
+        for wing in  vehicle.wings:
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                NFUSE   += 1
+            width = 0
+            for segment in wing.segments:
+                if isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
+                    width    += segment.percent_span_location * wing.spans.projected  / Units.ft     
 
         ETA, C, T, SWP  = generate_wing_stations(width, copy.deepcopy(wing))
         NS, Y           = generate_int_stations(NSD, ETA)
@@ -297,6 +295,28 @@ def generate_wing_stations(fuselage_width, wing):
     SEMISPAN    = SPAN / 2
     root_chord  = wing.chords.root / Units.ft
     num_seg     = len(wing.segments.keys())
+
+    if num_seg == 0:
+        segment                         = RCAIDE.Library.Components.Wings.Segments.Segment()
+        segment.tag                     = 'root'
+        segment.percent_span_location   = 0.
+        segment.twist                   = wing.twists.root
+        segment.root_chord_percent      = 1
+        segment.dihedral_outboard       = 0.
+        segment.sweeps.quarter_chord    = wing.sweeps.quarter_chord
+        segment.thickness_to_chord      = wing.thickness_to_chord
+        wing.segments.append(segment)
+
+        segment                         = RCAIDE.Library.Components.Wings.Segments.Segment()
+        segment.tag                     = 'tip'
+        segment.percent_span_location   = 1.
+        segment.twist                   = wing.twists.tip
+        segment.root_chord_percent      = wing.chords.tip / wing.chords.root
+        segment.dihedral_outboard       = 0.
+        segment.sweeps.quarter_chord    = wing.sweeps.quarter_chord
+        segment.thickness_to_chord      = wing.thickness_to_chord
+        wing.segments.append(segment)
+        num_seg = len(wing.segments.keys())
         
     ETA    = np.zeros(num_seg + 1)
     C      = np.zeros(num_seg + 1)
