@@ -33,7 +33,7 @@ def mass_properties(mission):
                     print('\n Warning: Takeoff Weight or Weight Analysis type not defined, using Maximum Takeoff Weight.')
                     weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff  
                 
-                elif weights_analysis.vehicle.mass_properties.payload == None or weights_analysis.vehicle.mass_properties.fuel == None:
+                elif weights_analysis.vehicle.mass_properties.payload == None and weights_analysis.vehicle.mass_properties.fuel == None:
                         print('Warning: Payload or fuel weight not defined; assuming takeoff weight is MTOW')
                         weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff
                 else:
