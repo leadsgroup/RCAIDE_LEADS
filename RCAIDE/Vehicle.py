@@ -282,20 +282,21 @@ class Vehicle_Mass_Properties(Components.Mass_Properties):
             """         
 
         self.tag                         = 'mass_properties'
-        self.operating_empty             = 0.0
-        self.max_takeoff                 = 0.0
-        self.takeoff                     = 0.0
-        self.max_landing                 = 0.0
-        self.landing                     = 0.0
-        self.max_cargo                   = 0.0
-        self.cargo                       = 0.0
-        self.max_payload                 = 0.0
-        self.payload                     = 0.0
-        self.passenger                   = 0.0
-        self.crew                        = 0.0
-        self.max_fuel                    = 0.0
-        self.fuel                        = 0.0
-        self.max_zero_fuel               = 0.0
+        self.operating_empty             = None
+        self.max_takeoff                 = None
+        self.takeoff                     = None
+        self.max_landing                 = None
+        self.landing                     = None
+        self.max_cargo                   = None
+        self.cargo                       = None
+        self.max_payload                 = None
+        self.payload                     = 0
+        self.passenger                   = None
+        self.crew                        = None
+        self.max_fuel                    = None
+        self.min_payload                 = None # added today 
+        self.fuel                        = None
+        self.max_zero_fuel               = None
         self.center_of_gravity           = [[0.0,0.0,0.0]]
         self.zero_fuel_center_of_gravity = np.array([[0.0,0.0,0.0]])    
         

@@ -1,6 +1,10 @@
-# ----------------------------------------------------------------------
-#  Imports
-# ----------------------------------------------------------------------
+# RCAIDE/Framework/Analyses/Weights/Weights.py 
+# 
+# Created:  Jun 2024, M. Clarke 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------   
 import importlib
 
 from RCAIDE.Framework.Core     import Data
@@ -55,8 +59,7 @@ class Weights(Analysis):
         self.settings                                       = Data()
         self.settings.update_mass_properties                = False
         self.settings.update_center_of_gravity              = False
-        self.settings.update_moment_of_inertia              = False
-
+        self.settings.update_moment_of_inertia              = False 
 
         self.settings.weight_reduction_factors              = Data()
         self.settings.weight_reduction_factors.main_wing    = 0.   # Reduction factors are proportional (.1 is a 10% weight reduction)
