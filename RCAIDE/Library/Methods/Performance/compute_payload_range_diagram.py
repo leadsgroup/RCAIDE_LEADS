@@ -20,7 +20,7 @@ from matplotlib import pyplot as plt
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.5, plot_diagram = True, fuel_name=None):  
+def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05, plot_diagram = True, fuel_name=None):  
     """
     Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.
     
