@@ -20,7 +20,7 @@ from matplotlib import pyplot as plt
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0., plot_diagram = True, fuel_name=None):  
+def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.5, plot_diagram = True, fuel_name=None):  
     """
     Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.
     
@@ -157,7 +157,6 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         MaxFuel = vehicle.mass_properties.max_fuel  # If max fuel capacity not defined
         MaxFuel = min(MaxFuel, MTOW - OEW)
 
-
     # Define payload range points
     #Point  = [ RANGE WITH MAX. PLD   , RANGE WITH MAX. FUEL , FERRY RANGE   ]
     TOW     = [ MTOW                               , MTOW                   , OEW + MaxFuel ]
@@ -170,7 +169,6 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
 
     # loop for each point of Payload Range Diagram
     for i in range(len(TOW)):
-        ##    for i in [2]: 
         # Define takeoff weight
         mission.segments[0].analyses.weights.vehicle.mass_properties.takeoff  = TOW[i]
         mission.segments[0].analyses.weights.vehicle.mass_properties.payload  = PLD[i]

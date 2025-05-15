@@ -68,10 +68,10 @@ def compute_aircraft_moment_of_inertia(vehicle, CG_location, update_MOI=True):
     # ------------------------------------------------------------------        
     #  Wing(s)
     # ------------------------------------------------------------------      
-    for payload in vehicle.payloads:
-        I, mass = wing.compute_moment_of_inertia(payload.mass_properties.mass, payload.length, payload.width, payload.height, 0, 0, 0, CG_location)
-        MOI_tensor += I
-        MOI_mass   += mass     
+    #for payload in vehicle.cargo_bays:
+        #I, mass = wing.compute_moment_of_inertia(payload.mass_properties.mass, payload.length, payload.width, payload.height, 0, 0, 0, CG_location)
+        #MOI_tensor += I
+        #MOI_mass   += mass     
     
     # ------------------------------------------------------------------        
     #  Energy network
