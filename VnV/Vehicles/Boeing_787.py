@@ -892,13 +892,11 @@ def base_analysis(vehicle):
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle = vehicle
+    aerodynamics.vehicle = vehicle 
     aerodynamics.settings.number_of_spanwise_vortices   = 40
     aerodynamics.settings.number_of_chordwise_vortices  = 2
-    aerodynamics.settings.viscous_lift_dependent_drag_factor  = 0.8
-    aerodynamics.settings.wing_parasite_drag_form_factor                     = 1.4
-    aerodynamics.settings.fuselage_parasite_drag_form_factor                 = 2.6  
-    aerodynamics.training.angle_of_attack                     = np.array([-2. , 1E-20 , 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0]) * Units.deg 
+    aerodynamics.settings.drag_reduction_factors.parasite_drag  = 0.01
+    aerodynamics.training.Mach                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9])
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
