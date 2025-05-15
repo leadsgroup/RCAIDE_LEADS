@@ -29,7 +29,7 @@ def mass_properties(mission):
                     else:
                         weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff  
 
-                if weights_analysis.vehicle.mass_properties.takeoff == 0 and weights_analysis.aircraft_type != None :
+                if  weights_analysis.aircraft_type != None :
                     _ = weights_analysis.evaluate() 
 
                     for tag, item in weights_analysis.settings.weight_correction_factors.items():
@@ -122,8 +122,7 @@ def mass_properties(mission):
                             print(f"{'Zero Fuel Weight':<25}{weights_analysis.vehicle.mass_properties.weight_breakdown.get('zero_fuel_weight', 0):>15.2f}")
                             print(f"{'Max Takeoff Weight':<25}{weights_analysis.vehicle.mass_properties.weight_breakdown.get('max_takeoff', 0):>15.2f}")
                             print("\n===============================\n")
-                else:
-                    print('\n Takeoff Weight Prescribed skipping weight analysis')        
+                 
 
                 if weights_analysis.vehicle.mass_properties.takeoff > weights_analysis.vehicle.mass_properties.max_takeoff:
                     print('\n Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
