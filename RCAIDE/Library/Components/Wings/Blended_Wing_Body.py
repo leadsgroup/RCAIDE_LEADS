@@ -26,10 +26,10 @@ class Blended_Wing_Body(Main_Wing):
     tag : str
         Unique identifier for the BWB fuselage component, defaults to 'bwb_fuselage'
     
-    aft_centerbody_area : float
+    aft_center_body.area : float
         Cross-sectional area of the aft centerbody section in square meters
         
-    aft_centerbody_taper : float
+    aft_center_body.taper : float
         Taper ratio of the aft centerbody section, defined as the ratio of tip 
         to root chord lengths
         
@@ -70,10 +70,13 @@ class Blended_Wing_Body(Main_Wing):
         """      
           
         self.tag                                    = 'blended_wing_body'  
-                 
-        self.areas.center_body                      = 0.0        
-        self.areas.aft_centerbody                   = 0.0
-        self.aft_centerbody_taper                   = 0.0
+
+        self.center_body                            = Data()             
+        self.center_body.area                       = 0.0
+        self.aft_center_body                        = Data()
+        self.aft_center_body.taper                  = 1.0
+        self.aft_center_body.length                 = 0.0
+        self.aft_center_body.area                   = 0.0
         self.cabin_area                             = 0.0
         self.cabin_offset                           = 0.0
           

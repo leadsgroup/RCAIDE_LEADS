@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/BWB/compute_aft_centerbody_weight.py
+# RCAIDE/Library/Methods/Weights/Correlation_Buildups/BWB/compute_aft_center_body_weight.py
 # 
 # Created: Sep 2024, M. Clarke 
 
@@ -10,7 +10,7 @@ from RCAIDE.Framework.Core import Units
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Aft Centerbody Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_aft_centerbody_weight(no_of_engines, aft_centerbody_area, aft_centerbody_taper, TOGW):
+def compute_aft_center_body_weight(no_of_engines, aft_center_body_area, aft_center_body_taper, TOGW):
     """
     Computes the structural weight of the aft section of a BWB centerbody using regression-based methods.
 
@@ -18,10 +18,10 @@ def compute_aft_centerbody_weight(no_of_engines, aft_centerbody_area, aft_center
     ----------
     no_of_engines : int
         Number of engines mounted on aft centerbody
-    aft_centerbody_area : float
+    aft_center_body_area : float
         Planform area of aft centerbody section [m²]
         Typically measured behind 70% chord
-    aft_centerbody_taper : float
+    aft_center_body_taper : float
         Taper ratio of aft centerbody section
         Excludes chord taken up by pressurized cabin
     TOGW : float
@@ -66,8 +66,8 @@ def compute_aft_centerbody_weight(no_of_engines, aft_centerbody_area, aft_center
     RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_operating_empty_weight
     """         
     # convert to imperial units and shorten variable names 
-    S_aft  = aft_centerbody_area  / Units.feet ** 2.0
-    l_aft  = aft_centerbody_taper
+    S_aft  = aft_center_body_area  / Units.feet ** 2.0
+    l_aft  = aft_center_body_taper
     W      = TOGW/ Units.pounds
     
     W_aft = (1.0 + 0.05*no_of_engines) * 0.53 * S_aft * (W**0.2) * (l_aft + 0.5)

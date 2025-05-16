@@ -372,16 +372,16 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
     segments                  = wing.segments
     segment_names             = list(segments.keys())
     num_segments              = len(segment_names)   
-    total_wetted_area         = 0.
-    total_reference_area      = 0.
+    total_wetted_area         = 0.0
+    total_reference_area      = 0.0
     center_body_area          = 0.0
+    aft_center_body_area      = 0.0
     root_chord                = wing.chords.root      
     
     for i_segs in range(num_segments):
         if i_segs == num_segments-1:
             continue 
-        else:
-        
+        else: 
             t_c_w     = segments[segment_names[i_segs]].thickness_to_chord            
             span_seg  = semispan*(segments[segment_names[i_segs+1]].percent_span_location - segments[segment_names[i_segs]].percent_span_location ) 
             segment   = segments[segment_names[i_segs]]         
@@ -420,14 +420,31 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
             segment.areas.wetted            = Swet_seg 
             total_wetted_area               += Swet_seg 
             if isinstance(segments[segment_names[i_segs+1]], RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
-                center_body_area += Sref_seg 
-                # use S_ref_seg to compute S_center bofy and S_aft_body
+                
+                # center body 
+                center_body_chord_root    = root_chord*segments[segment_names[i_segs]].root_chord_percent  -  wing.aft_center_body.length 
+                center_body_chord_tip     = root_chord*segments[segment_names[i_segs+1]].root_chord_percent -  wing.aft_center_body.length  
+                center_body_Sref_seg      = span_seg*(center_body_chord_root+center_body_chord_tip)*0.5 
+                
+                # aft center body 
+                aft_center_body_chord_root    = wing.aft_center_body.length
+                aft_center_body_chord_tip     = wing.aft_center_body.length
+                aft_center_body_Sref_seg      = span_seg*(aft_center_body_chord_root+aft_center_body_chord_tip)*0.5 
+               
+                if wing.symmetric:
+                    center_body_Sref_seg = center_body_Sref_seg*2 
+                    aft_center_body_Sref_seg = aft_center_body_Sref_seg*2  
+                
+                center_body_area += center_body_Sref_seg
+                aft_center_body_area +=  aft_center_body_Sref_seg 
             else:
                 total_reference_area += Sref_seg  
         
     if wing.areas.reference==0. or update_ref_areas:
-        wing.areas.reference = total_reference_area
-        wing.areas.center_body = center_body_area
+        wing.areas.reference      = total_reference_area
+        if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            wing.center_body.area     = center_body_area
+            wing.aft_center_body.area = aft_center_body_area
         
     if wing.areas.wetted==0. or update_wet_areas:
         wing.areas.wetted    = total_wetted_area

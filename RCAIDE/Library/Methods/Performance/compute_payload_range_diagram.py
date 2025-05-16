@@ -11,7 +11,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data  
 from RCAIDE.Library.Plots.Common import set_axes, plot_style    
-from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties
+from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry
  
 # Pacakge imports 
 import numpy as np
@@ -98,7 +98,14 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     
     initial_segment =  list(mission.segments.keys())[0]
     
-    # perform inital weights analysis 
+    # remove takeoff weight from aircraft if defined
+    for segment in  mission.segments:
+        if segment.analyses.weights == None:
+            AssertionError('Weights analysis not defined!')
+        segment.analyses.weights.vehicle.mass_properties.takeoff = None
+    
+    # perform inital weights analysis
+    geometry(mission)
     mass_properties(mission)
     vehicle = mission.segments[initial_segment].analyses.weights.vehicle
     

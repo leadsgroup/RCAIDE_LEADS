@@ -42,7 +42,7 @@ def compute_cabin_weight(vehicle,settings):
     for wing in  vehicle.wings:
 
         if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            A_CB =  wing.areas.center_body / Units['feet^2'] 
+            A_CB =  wing.center_body.area / Units['feet^2'] 
             span =  np.maximum(span,wing.spans.projected )
             root_chord =  np.maximum(root_chord,wing.chords.root)
             for segment in wing.segments:

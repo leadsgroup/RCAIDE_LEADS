@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import  RCAIDE
 from RCAIDE.Framework.Core import Data , Units 
-from .compute_aft_centerbody_weight import compute_aft_centerbody_weight
+from .compute_aft_center_body_weight import compute_aft_center_body_weight
 from .compute_cabin_weight import compute_cabin_weight
 from .compute_systems_weight import compute_systems_weight
 from .compute_bwb_wing_weight import compute_wing_weight
@@ -46,9 +46,9 @@ def compute_operating_empty_weight(vehicle,settings=None):
                 Maximum takeoff weight [kg]
             - fuselages : list
                 BWB fuselage segments with:
-                    - aft_centerbody_area : float
+                    - aft_center_body_area : float
                         Planform area of aft section [m²]
-                    - aft_centerbody_taper : float
+                    - aft_center_body_taper : float
                         Taper ratio of aft section
                     - cabin_area : float
                         Pressurized cabin area [m²]
@@ -92,7 +92,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     See Also
     --------
     RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_center_body_weight
     RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common
     """
     
@@ -266,8 +266,8 @@ def compute_operating_empty_weight(vehicle,settings=None):
     for wing in vehicle.wings:
         if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body):
             num_main_wings += 1
-            bwb_aft_centerbody_area  = wing.areas.aft_centerbody
-            bwb_aft_centerbody_taper = wing.aft_centerbody_taper 
+            bwb_aft_center_body_area  = wing.aft_center_body.area
+            bwb_aft_center_body_taper = wing.aft_center_body.taper 
             
     
     for wing in vehicle.wings:
@@ -306,7 +306,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
         
     TOW                = vehicle.mass_properties.max_takeoff
     W_cabin            = compute_cabin_weight(vehicle,settings) 
-    W_aft_centerbody   = compute_aft_centerbody_weight(number_of_engines,bwb_aft_centerbody_area, bwb_aft_centerbody_taper, TOW)
+    W_aft_center_body   = compute_aft_center_body_weight(number_of_engines,bwb_aft_center_body_area, bwb_aft_center_body_taper, TOW)
      
     
     ##-------------------------------------------------------------------------------                 
@@ -320,7 +320,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.structural                       = Data()
     output.empty.structural.wings                 = W_main_wing +   W_tail_horizontal +  W_tail_vertical 
     output.empty.structural.center_body           = W_cabin
-    output.empty.structural.aft_center_body       = W_aft_centerbody
+    output.empty.structural.aft_center_body       = W_aft_center_body
     output.empty.structural.landing_gear          = landing_gear.main +  landing_gear.nose  
     output.empty.structural.nacelle               = W_energy_network.W_nacelle* (1. - W_factors.nacelle)
     output.empty.structural.total = output.empty.structural.wings   + output.empty.structural.center_body + output.empty.structural.aft_center_body + output.empty.structural.landing_gear\

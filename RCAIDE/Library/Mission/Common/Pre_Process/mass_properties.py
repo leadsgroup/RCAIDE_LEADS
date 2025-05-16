@@ -26,19 +26,23 @@ def mass_properties(mission):
             
             if weights_analysis.vehicle.mass_properties.takeoff != None:
                 if weights_analysis.vehicle.mass_properties.takeoff > weights_analysis.vehicle.mass_properties.max_takeoff:
-                    print('\n Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
+                    if i == 0: 
+                        print('\n Warning: Takeoff Weight is greater than Maximum Takeoff Weight')
             else: 
 
                 if weights_analysis.aircraft_type == None :
-                    print('\n Warning: Takeoff Weight or Weight Analysis type not defined, using Maximum Takeoff Weight.')
+                    if i == 0: 
+                        print('\n Warning: Takeoff Weight or Weight Analysis type not defined, using Maximum Takeoff Weight.')
                     weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff  
                 
                 elif weights_analysis.vehicle.mass_properties.payload == None and weights_analysis.vehicle.mass_properties.fuel == None:
+                    if i == 0: 
                         print('Warning: Payload or fuel weight not defined; assuming takeoff weight is MTOW')
-                        weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff
+                    weights_analysis.vehicle.mass_properties.takeoff = weights_analysis.vehicle.mass_properties.max_takeoff
                 else:
                     if weights_analysis.vehicle.mass_properties.max_fuel == None or weights_analysis.vehicle.mass_properties.max_zero_fuel == None:
-                        print('\n Warning: Max Fuel or Max Zero Fuel not defined. Iterating to find these values.')
+                        if i == 0: 
+                            print('\n Warning: Max Fuel or Max Zero Fuel not defined. Iterating to find these values.')
 
                         weights_analysis.vehicle.mass_properties.max_fuel =  0.477*weights_analysis.vehicle.mass_properties.max_takeoff -13455
                         weights_analysis.vehicle.mass_properties.max_zero_fuel = 0.6269*weights_analysis.vehicle.mass_properties.max_takeoff + 20505
@@ -111,8 +115,8 @@ def mass_properties(mission):
                             if residual_max_fuel < 10 and residual_max_zero_fuel <10:
                                 break
                             else:
-                                 weights_analysis.vehicle.mass_properties.max_zero_fuel += residual_max_zero_fuel * 0.1
-                                 weights_analysis.vehicle.mass_properties.max_fuel      += residual_max_fuel * 0.1
+                                weights_analysis.vehicle.mass_properties.max_zero_fuel += residual_max_zero_fuel * 0.1
+                                weights_analysis.vehicle.mass_properties.max_fuel      += residual_max_fuel * 0.1
 
                     else:
                         if weights_analysis.vehicle.mass_properties.payload >weights_analysis.vehicle.mass_properties.max_payload:
