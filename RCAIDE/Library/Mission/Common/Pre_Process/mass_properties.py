@@ -178,6 +178,11 @@ def mass_properties(mission):
                         
                     if weights_analysis.print_weight_analysis_report:
                         if i == 0: 
+                            print("\nPerforming Weights Analysis")
+                            print("--------------------------------------------------------")
+                            print("Propulsion Architecture:", weights_analysis.propulsion_architecture)
+                            print("Aircraft Type          :", weights_analysis.aircraft_type)
+                            print("Method                 :", weights_analysis.method)
                             def print_section(title, data):
                                 print(f"{title}")
                                 print(f"{'Component':<25}{'Weight (kg)':>15}")

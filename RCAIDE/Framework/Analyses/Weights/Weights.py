@@ -110,14 +110,6 @@ class Weights(Analysis):
         #try:
         compute_module = importlib.import_module(f"RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.{self.propulsion_architecture}.{self.aircraft_type}.{self.method}.compute_operating_empty_weight")
         if self.print_weight_analysis_report:
-            print("\nPerforming Weights Analysis")
-            print("--------------------------------------------------------")
-            print("Propulsion Architecture:", self.propulsion_architecture)
-            print("Aircraft Type          :", self.aircraft_type)
-            print("Method                 :", self.method)
-            
-            if  self.settings.update_mass_properties:
-                print("Aircraft operating empty weight will be overwritten")
             if  self.settings.update_center_of_gravity:
                 print("Aircraft center of gravity location will be overwritten")
             if  self.settings.update_moment_of_inertia:
