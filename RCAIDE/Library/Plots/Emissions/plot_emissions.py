@@ -113,17 +113,17 @@ def plot_emissions(results,
         emissions_CO        = results.segments[i].conditions.emissions.total.CO[:, 0]  /1E3  
         emissions_NOx       = results.segments[i].conditions.emissions.total.NOx[:, 0] /1E3  
         emissions_H2O       = results.segments[i].conditions.emissions.total.H2O[:, 0] /1E3  
-        emissions_SO2       = results.segments[i].conditions.emissions.total.SO2[:, 0] /1E3  
-        emissions_Contrails = results.segments[i].conditions.emissions.total.Contrails[:, 0]/1E3 
-        emissions_Soot      = results.segments[i].conditions.emissions.total.Soot[:, 0]/1E3
+        # emissions_SO2       = results.segments[i].conditions.emissions.total.SO2[:, 0] /1E3  
+        # emissions_Contrails = results.segments[i].conditions.emissions.total.Contrails[:, 0]/1E3 
+        # emissions_Soot      = results.segments[i].conditions.emissions.total.Soot[:, 0]/1E3
         EI_CO2              = results.segments[i].conditions.emissions.index.CO2[:, 0] 
         EI_CO               = results.segments[i].conditions.emissions.index.CO[:, 0] 
         EI_NOx              = results.segments[i].conditions.emissions.index.NOx[:, 0] 
         EI_H2O              = results.segments[i].conditions.emissions.index.H2O[:, 0] 
-        EI_SO2              = results.segments[i].conditions.emissions.index.SO2[:, 0]        
+        # EI_SO2              = results.segments[i].conditions.emissions.index.SO2[:, 0]        
 
         cum_y0 = np.zeros_like(emissions_CO2)  
-        cum_y1 = cum_y1_0 + emissions_CO2 + emissions_NOx  + emissions_CO +  emissions_H2O  + emissions_Contrails +  emissions_Soot +  emissions_SO2    
+        cum_y1 = cum_y1_0 + emissions_CO2 + emissions_NOx  + emissions_CO +  emissions_H2O  #+ emissions_Contrails +  emissions_Soot +  emissions_SO2    
 
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ') 
@@ -140,14 +140,14 @@ def plot_emissions(results,
             axis_2.plot(time, EI_CO , color = line_colors[i], marker = ps.markers[1],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$CO$" ) 
             axis_2.plot(time, EI_NOx, color = line_colors[i], marker = ps.markers[2],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$NO_x$") 
             axis_2.plot(time, EI_H2O, color = line_colors[i], marker = ps.markers[3],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$H_2O$") 
-            axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$SO_2$")
+            # axis_2.plot(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width, label = r"$SO_2$")
         else:
 
             axis_2.semilogy(time, EI_CO2, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width) 
             axis_2.semilogy(time, EI_CO , color = line_colors[i], marker = ps.markers[1],markersize = ps.marker_size, linewidth = ps.line_width)
             axis_2.semilogy(time, EI_NOx, color = line_colors[i], marker = ps.markers[2],markersize = ps.marker_size, linewidth = ps.line_width) 
             axis_2.semilogy(time, EI_H2O, color = line_colors[i], marker = ps.markers[3],markersize = ps.marker_size, linewidth = ps.line_width) 
-            axis_2.semilogy(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width)             
+            # axis_2.semilogy(time, EI_SO2, color = line_colors[i], marker = ps.markers[4],markersize = ps.marker_size, linewidth = ps.line_width)             
     
         axis_2.set_ylabel(r'Emission Index') 
         axis_2.set_xlabel(r'Time (mins)') 
