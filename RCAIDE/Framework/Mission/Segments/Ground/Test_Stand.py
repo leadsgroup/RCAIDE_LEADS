@@ -60,15 +60,7 @@ class Test_Stand(Evaluate):
 
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
-        # --------------------------------------------------------------------------------------------------------------  
-        #initialize                         = self.process.initialize
-        #initialize.conditions              = Ground.Test_Stand.initialize_conditions
-        #iterate                            = self.process.iterate   
-        #iterate.conditions.forces_ground   = Update.ground_forces
-        #iterate.unknowns.mission           = Unpack_Unknowns.ground
-        #iterate.residuals.flight_dynamics  = Residuals.flight_dynamics
-        
-
+        # --------------------------------------------------------------------------------------------------------------   
         initialize                         = self.process.initialize  
         initialize.conditions              = Ground.Test_Stand.initialize_conditions  
         converge                           = self.process.converge 
@@ -78,8 +70,7 @@ class Test_Stand(Evaluate):
         iterate.conditions.aerodynamics    = skip
         iterate.conditions.stability       = skip  
         post_process                       = self.process.post_process  
-        post_process.noise                 = skip
-        post_process.emissions             = skip        
+        post_process.noise                 = skip      
         
         return
 
