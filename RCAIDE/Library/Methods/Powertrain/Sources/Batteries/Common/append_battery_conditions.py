@@ -156,6 +156,12 @@ def append_battery_conditions(battery_module,segment,bus):
             bus_results.battery_modules[battery_module.tag].cell.loss_of_lithium_inventory               = pybamm_solution['Loss of lithium inventory [%]'].data[-1] * ones_row(1)
             bus_results.battery_modules[battery_module.tag].cell.total_heat_generation                   = pybamm_solution['Total heating [W.m-3]'].data[-1][-1] * ones_row(1) 
             bus_results.battery_modules[battery_module.tag].cell.capacity_lost                           = pybamm_solution['Total capacity lost to side reactions [A.h]'].data[-1] * ones_row(1)
+            bus_results.battery_modules[battery_module.tag].cell.discharge_capacity                      = pybamm_solution['Discharge capacity [A.h]'].data[-1] * ones_row(1)
+            bus_results.battery_modules[battery_module.tag].cell.max_capacity                            = pybamm_solution.summary_variables["Capacity [A.h]"] * ones_row(1)
+            bus_results.battery_modules[battery_module.tag].cell.internal_resistance                     = pybamm_solution['Resistance [Ohm]'].data[-1] * ones_row(1)
+
+            #soc = current energy / max energy or (max capacity - discharge)(same as current capacity) / max capacity
+
    
     else:  
         bus_results.battery_modules[battery_module.tag].energy                    = 0 * ones_row(1)
@@ -166,6 +172,8 @@ def append_battery_conditions(battery_module,segment,bus):
             bus_results.battery_modules[battery_module.tag].cell.loss_of_lithium_inventory              = 0 * ones_row(1)
             bus_results.battery_modules[battery_module.tag].cell.total_heat_generation                  = 0 * ones_row(1) 
             bus_results.battery_modules[battery_module.tag].cell.capacity_lost                          = 0 * ones_row(1) 
+            bus_results.battery_modules[battery_module.tag].cell.discharge_capacity                     = 0 * ones_row(1)
+            bus_results.battery_modules[battery_module.tag].cell.max_capacity                           = 0 * ones_row(1)
             bus_results.battery_modules[battery_module.tag].cell.pybamm_condition  = Container()
             for i in range(n_cpts): 
                 bus_results.battery_modules[battery_module.tag].cell.pybamm_condition['timestep_' + str(i)]  = Container()
@@ -239,6 +247,9 @@ def append_battery_segment_conditions(battery_module, bus, conditions, segment):
             module_conditions.cell.capacity_lost[:,0]               = battery_initials.cell.capacity_lost[-1,0]
             module_conditions.cell.pybamm_condition['timestep_' + str(0)]  = battery_initials.cell.pybamm_condition['timestep_' + str(len(battery_initials.cell.pybamm_condition)-1)]
             module_conditions.cell.voltage_under_load[:,0]         = battery_initials.cell.voltage_under_load[-1,0]
+            module_conditions.cell.discharge_capacity[:,0]        = battery_initials.cell.discharge_capacity[-1,0]
+            module_conditions.cell.max_capacity[:,0]              = battery_initials.cell.max_capacity[-1,0] 
+            module_conditions.cell.internal_resistance[:,0]      = battery_initials.cell.internal_resistance[-1,0]    
     if 'battery_cell_temperature' in segment:       
         module_conditions.temperature[:,0]          = segment.battery_cell_temperature 
         module_conditions.cell.temperature[:,0]     = segment.battery_cell_temperature 
