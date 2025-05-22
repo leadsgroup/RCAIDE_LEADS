@@ -280,17 +280,17 @@ def wing_planform(wing, overwrite_reference = True):
             #compute wing chords at flap start and end
             delta_chord = chord_tip - chord_root
             
-            wing_chord_flap_start = chord_root + delta_chord * flap.span_fraction_start 
-            wing_chord_flap_end   = chord_root + delta_chord * flap.span_fraction_end
-            wing_mac_flap = 2./3.*( wing_chord_flap_start+wing_chord_flap_end - \
-                                    wing_chord_flap_start*wing_chord_flap_end/  \
-                                    (wing_chord_flap_start+wing_chord_flap_end) )
+            wing_chord_cs_start = chord_root + delta_chord * flap.span_fraction_start 
+            wing_chord_cs_end   = chord_root + delta_chord * flap.span_fraction_end
+            wing_mac_flap = 2./3.*( wing_chord_cs_start+wing_chord_cs_end - \
+                                    wing_chord_cs_start*wing_chord_cs_end/  \
+                                    (wing_chord_cs_start+wing_chord_cs_end) )
             
             flap.chord_dimensional = wing_mac_flap * flap.chord_fraction
-            flap_chord_start        = wing_chord_flap_start * flap.chord_fraction
-            flap_chord_end          = wing_chord_flap_end * flap.chord_fraction
-            flap.area               = (flap_chord_start + flap_chord_end) * (flap.span_fraction_end- flap.span_fraction_start)*span / 2.    
-            affected_area           = (wing_chord_flap_start + wing_chord_flap_end) * (flap.span_fraction_end- flap.span_fraction_start)*span / 2.          
+            cs_chord_start        = wing_chord_cs_start * flap.chord_fraction
+            cs_chord_end          = wing_chord_cs_end * flap.chord_fraction
+            flap.area               = (cs_chord_start + cs_chord_end) * (flap.span_fraction_end- flap.span_fraction_start)*span / 2.    
+            affected_area           = (wing_chord_cs_start + wing_chord_cs_end) * (flap.span_fraction_end- flap.span_fraction_start)*span / 2.          
              
         # update
         wing.chords.root                = chord_root
@@ -305,6 +305,23 @@ def wing_planform(wing, overwrite_reference = True):
         wing.aerodynamic_center         = [x_coord , y_coord, z_coord]
         wing.total_length               = total_length 
         
+    # control surface  
+    taper = wing.taper 
+    Sw    = wing.areas.reference                
+    bw    = wing.spans.projected               
+    for cs in  wing.control_surfaces:    
+        cs_span                 = (cs.span_fraction_end - cs.span_fraction_start) * bw
+        chord_root              = 2*Sw/bw/(1+taper) 
+        chord_tip               = taper * chord_root
+        delta_chord             = chord_tip - chord_root 
+        wing_chord_cs_start     = chord_root + delta_chord * cs.span_fraction_start 
+        wing_chord_cs_end       = chord_root + delta_chord * cs.span_fraction_end
+        cs_chord_start          = wing_chord_cs_start* cs.chord_fraction 
+        cs_chord_end            = wing_chord_cs_end* cs.chord_fraction   
+        cf                      = (cs_chord_start +cs_chord_end) /2  
+        Sf                      = cs_span * cf
+        cs.area                 = Sf 
+                 
     return wing
 
 def bwb_wing_planform(wing,overwrite_reference = True):
