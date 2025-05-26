@@ -321,6 +321,9 @@ def wing_planform(wing, overwrite_reference = True):
         cf                      = (cs_chord_start +cs_chord_end) /2  
         Sf                      = cs_span * cf
         cs.area                 = Sf 
+        cs.span                 = cs_span
+        cs.root_chord           = cs_chord_start
+        cs.tip_chord            = cs_chord_end 
                  
     return wing
 
