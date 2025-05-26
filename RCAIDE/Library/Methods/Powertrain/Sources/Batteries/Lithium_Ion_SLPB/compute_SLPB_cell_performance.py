@@ -1,6 +1,6 @@
-# RCAIDE/Methods/Powertrain/Sources/Batteries/Lithium_Ion_P30b/compute_p30b_cell_performance.py
+# RCAIDE/Methods/Powertrain/Sources/Batteries/Lithium_Ion_SLPB/compute_SLPB_cell_performance.py
 
-# Created:  Mar 2025, C. Boggan
+# Created:  May 2025, C. Boggan
 #
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -11,17 +11,17 @@ from copy import  deepcopy
 import pybamm
 
 # ----------------------------------------------------------------------------------------------------------------------
-# Create Base P30b battery model
+# Create Base SLPB battery model
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# compute_p30b_cell_performance
+# compute_SLPB_cell_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, delta_t): 
+def compute_SLPB_cell_performance(battery_module,state,bus,coolant_lines,t_idx, delta_t): 
    
     # ---------------------------------------------------------------------------------    
     # battery cell properties
@@ -182,7 +182,7 @@ def compute_p30b_cell_performance(battery_module,state,bus,coolant_lines,t_idx, 
     return stored_results_flag, stored_battery_module_tag
 
 
-def reuse_stored_p30b_cell_data(battery_module,state,bus,stored_results_flag, stored_battery_module_tag):
+def reuse_stored_SLPB_cell_data(battery_module,state,bus,stored_results_flag, stored_battery_module_tag):
    
     state.conditions.energy[bus.tag].battery_modules[battery_module.tag] = deepcopy(state.conditions.energy[bus.tag].battery_modules[stored_battery_module_tag])
     

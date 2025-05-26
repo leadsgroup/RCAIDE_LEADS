@@ -139,7 +139,7 @@ def append_battery_conditions(battery_module,segment,bus):
         bus_results.battery_modules[battery_module.tag].cell.depth_of_discharge  = 1 - segment.initial_battery_state_of_charge* ones_row(1)
         
 
-        if type(battery_module) == RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b:
+        if type(battery_module) in (RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b, RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_SLPB):
 
             bus_results.battery_modules[battery_module.tag].cell.pybamm_condition  = Container()
             for i in range(n_cpts): 
@@ -168,7 +168,7 @@ def append_battery_conditions(battery_module,segment,bus):
         bus_results.battery_modules[battery_module.tag].state_of_charge           = 0 * ones_row(1)
         bus_results.battery_modules[battery_module.tag].cell.state_of_charge      = 0 * ones_row(1)       
         bus_results.battery_modules[battery_module.tag].cell.depth_of_discharge   = 0 * ones_row(1)
-        if type(battery_module) == RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b:
+        if type(battery_module) in (RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b, RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_SLPB):
             bus_results.battery_modules[battery_module.tag].cell.loss_of_lithium_inventory              = 0 * ones_row(1)
             bus_results.battery_modules[battery_module.tag].cell.total_heat_generation                  = 0 * ones_row(1) 
             bus_results.battery_modules[battery_module.tag].cell.capacity_lost                          = 0 * ones_row(1) 
@@ -241,7 +241,7 @@ def append_battery_segment_conditions(battery_module, bus, conditions, segment):
         module_conditions.cell.state_of_charge[:,0]       = battery_initials.cell.state_of_charge[-1,0]
         module_conditions.cell.energy[:,0]                = battery_initials.cell.energy[-1,0]
         #module_conditions.model_conditions #seems to be tossing an error in regression
-        if type(battery_module) == RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b:
+        if type(battery_module) in (RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_P30b, RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_SLPB):
             module_conditions.cell.loss_of_lithium_inventory[:,0]   = battery_initials.cell.loss_of_lithium_inventory[-1,0] 
             module_conditions.cell.total_heat_generation[:,0]       = battery_initials.cell.total_heat_generation[-1,0] 
             module_conditions.cell.capacity_lost[:,0]               = battery_initials.cell.capacity_lost[-1,0]

@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
+# Modified:  May 2025, C. Boggan
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -61,7 +62,10 @@ def compute_module_properties(battery_module):
     normal_spacing     = battery_module.geometrtic_configuration.normal_spacing   
     parallel_spacing   = battery_module.geometrtic_configuration.parallel_spacing
     volume_factor      = battery_module.volume_packaging_factor
-    cell_diameter      = battery_module.cell.diameter
+    try:
+        cell_diameter = battery_module.cell.diameter
+    except:
+        cell_diameter = battery_module.cell.width
     cell_height        = battery_module.cell.height  
     euler_angles       = battery_module.orientation_euler_angles
     weight_factor      = battery_module.BMS_additional_weight_factor

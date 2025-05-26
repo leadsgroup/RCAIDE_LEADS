@@ -21,3 +21,4 @@ from .Lithium_Ion_NMC        import Lithium_Ion_NMC
 from .Lithium_Sulfur         import Lithium_Sulfur
 from .Lithium_Air            import Lithium_Air 
 from .Lithium_Ion_P30b       import Lithium_Ion_P30b
+from .Lithium_Ion_SLPB       import Lithium_Ion_SLPB
