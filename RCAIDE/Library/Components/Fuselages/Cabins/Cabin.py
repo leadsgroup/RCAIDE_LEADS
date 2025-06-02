@@ -59,14 +59,10 @@ class Cabin(Component):
 
     'Type A Door'
         Large passenger door meeting regulatory requirements for emergency 
-        evacuation, typically 42+ inches wide
-
+        evacuation, typically 42+ inches wide. Refer to https://www.faa.gov/documentLibrary/media/Advisory_Circular/AC25-17A.pdf
+        for additional information on exit door types and dimensions.
     'Fineness Ratio'
         Ratio of length to maximum diameter, affecting aerodynamic properties
-
-    References
-    ----------
-    [1] Federal Aviation Administration, "Aircraft Cabin Safety Standards", 14 CFR Part 25
     """
     
     def __defaults__(self):
