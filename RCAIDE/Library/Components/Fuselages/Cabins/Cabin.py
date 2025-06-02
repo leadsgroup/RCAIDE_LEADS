@@ -24,7 +24,7 @@ class Cabin(Component):
     tag : str
         Identifier for the cabin component
     type_A_door_length : float
-        Length of Type A passenger doors in meters
+        Length of Type A passenger doors
     galley_lavatory_length : float
         Combined length allocated for galley and lavatory facilities in meters
     emergency_exit_seat_pitch : float
