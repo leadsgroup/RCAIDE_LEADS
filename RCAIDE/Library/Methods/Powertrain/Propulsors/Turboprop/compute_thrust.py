@@ -214,7 +214,7 @@ def compute_thrust(turboprop, conditions):
     mdot_core                                      = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
 
     # computing the dimensional thrust
-    FD2                                            = Fsp*mdot_core
+    FD2                                            = Fsp*mdot_core*turboprop_conditions.throttle
 
     # fuel flow rate
     a                                              = np.array([0.]) 

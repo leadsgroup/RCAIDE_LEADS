@@ -226,6 +226,7 @@ def design_turboprop(turboprop):
     lpt_conditions.inputs.static_pressure                 = hpt_conditions.outputs.static_pressure 
     lpt_conditions.inputs.mach_number                     = hpt_conditions.outputs.mach_number     
     lpt_conditions.inputs.compressor                      = Data()
+    # Note line below. This part should be attached to the propeller correct? Total work should not be 0
     lpt_conditions.inputs.compressor.work_done            = 0.0
     lpt_conditions.inputs.compressor.external_shaft_work_done = 0.0
     lpt_conditions.inputs.bypass_ratio                    = 0.0    
