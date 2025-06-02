@@ -33,19 +33,17 @@ class Config(Diffed_Data, Vehicle):
     -----
     The Config class manages vehicle configurations through a differential approach,
     providing:
-
-    * Base configuration management
-    * Configuration differencing
-    * Component relationship tracking
-    * Mass properties aggregation
-    * Multi-configuration support
-    * Dynamic configuration switching
+        * Base configuration management
+        * Configuration differencing
+        * Component relationship tracking
+        * Mass properties aggregation
+        * Multi-configuration support
+        * Dynamic configuration switching
 
     The class uses a base-diff pattern where:
-    
-    * Base configuration (_base) contains default settings
-    * Differential configuration (_diff) contains changes
-    * Final configuration is computed by applying diff to base
+        * Base configuration (_base) contains default settings
+        * Differential configuration (_diff) contains changes
+        * Final configuration is computed by applying diff to base
 
     **Definitions**
 

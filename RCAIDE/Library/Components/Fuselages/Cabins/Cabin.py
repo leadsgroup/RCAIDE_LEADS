@@ -16,6 +16,58 @@ from RCAIDE.Library.Components.Fuselages.Cabins.Classes import First, Economy
 #  Fuselage
 # ---------------------------------------------------------------------------------------------------------------------- 
 class Cabin(Component): 
+    """
+    Aircraft cabin component for modeling passenger compartment configurations and layouts.
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the cabin component
+    type_A_door_length : float
+        Length of Type A passenger doors in meters
+    galley_lavatory_length : float
+        Combined length allocated for galley and lavatory facilities in meters
+    emergency_exit_seat_pitch : float
+        Required seat pitch spacing near emergency exits in meters
+    length : float
+        Total cabin length in meters
+    wide_body : bool
+        Flag indicating if this is a wide-body aircraft cabin configuration
+    tail : Data
+        Tail section geometric properties
+            - fineness_ratio : float
+                Ratio of tail length to maximum diameter
+    nose : Data
+        Nose section geometric properties
+            - fineness_ratio : float
+                Ratio of nose length to maximum diameter
+    classes : Container
+        Collection of cabin class configurations (First, Business, Economy)
+
+    Notes
+    -----
+    The Cabin class serves as the primary container for aircraft passenger 
+    compartment modeling. It defines the overall cabin geometry, door 
+    configurations, and safety requirements while providing a framework 
+    for organizing different passenger class sections.
+
+    Default door and facility dimensions are based on commercial aviation 
+    standards. The wide_body flag affects cabin layout calculations and 
+    passenger capacity modeling.
+
+    **Definitions**
+
+    'Type A Door'
+        Large passenger door meeting regulatory requirements for emergency 
+        evacuation, typically 42+ inches wide
+
+    'Fineness Ratio'
+        Ratio of length to maximum diameter, affecting aerodynamic properties
+
+    References
+    ----------
+    [1] Federal Aviation Administration, "Aircraft Cabin Safety Standards", 14 CFR Part 25
+    """
     
     def __defaults__(self):
         """
