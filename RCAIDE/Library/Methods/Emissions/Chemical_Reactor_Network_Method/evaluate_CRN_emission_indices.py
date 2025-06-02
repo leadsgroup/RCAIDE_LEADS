@@ -127,7 +127,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
 
 
                     separate_zones = int(combustor.joint_mixing_fraction * combustor.N_SZ)
-                    joint_zones    = int((1 - combustor.joint_mixing_fraction) * combustor.N_SZ)
+                    joint_zones    = int(round((1 - combustor.joint_mixing_fraction) * combustor.N_SZ))
 
                     combustor_PZ_phi           = np.zeros((n_cp,combustor.N_PZ))  # [-]
                     combustor_PZ_T             = np.zeros((n_cp,combustor.N_PZ)) # [K]
