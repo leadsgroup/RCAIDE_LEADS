@@ -42,11 +42,10 @@ class Network(Data):
     -----
     The Network class serves as a framework for managing interconnected components. 
     It provides:
-    
-    * Input/output parameter management
-    * Mass tracking for network components
-    * Spatial positioning capabilities
-    * Container functionality for sub-networks
+        * Input/output parameter management
+        * Mass tracking for network components
+        * Spatial positioning capabilities
+        * Container functionality for sub-networks
 
     See Also
     --------
@@ -76,10 +75,9 @@ class Container(ContainerBase):
     -----
     The Container class provides organization and mass calculation functionality 
     for groups of networks. Key features include:
-    
-    * Recursive mass summation
-    * Moment calculation about reference points
-    * Network hierarchy management
+        * Recursive mass summation
+        * Moment calculation about reference points
+        * Network hierarchy management
 
     See Also
     --------

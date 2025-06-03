@@ -14,21 +14,6 @@ import os
 # ---------------------------------------------------------------------------------------------------------------------- 
 def purge_files(filenames_array,directory=''):
 	""" Purges folder folder of conflicting files
-    
-	Assumptions:
-            None
-     
-	Source:
-	    Drela, M. and Youngren, H., AVL, http://web.mit.edu/drela/Public/web/avl
-    
-	Inputs:
-	    None
-    
-	Outputs:
-            None
-    
-	Properties Used:
-	    N/A
 	"""    	
 	for f in filenames_array:
 		try:

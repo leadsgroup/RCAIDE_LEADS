@@ -24,87 +24,60 @@ class Turbojet(Propulsor):
     ----------
     tag : str
         Identifier for the turbojet engine. Default is 'Turbojet'. 
-        
     nacelle : Component
         Nacelle component of the engine. Default is None.
-        
     ram : Component
         Ram inlet component. Default is None.
-        
     inlet_nozzle : Component
         Inlet nozzle component. Default is None.
-        
     low_pressure_compressor : Component
-        Low pressure compressor component. Default is None.
-        
+        Low pressure compressor component. Default is None. 
     high_pressure_compressor : Component
-        High pressure compressor component. Default is None.
-        
+        High pressure compressor component. Default is None. 
     low_pressure_turbine : Component
         Low pressure turbine component. Default is None.
-        
     high_pressure_turbine : Component
         High pressure turbine component. Default is None.
-        
     combustor : Component
         Combustor component. Default is None.
-        
     afterburner : Component
         Afterburner component. Default is None.
-        
     core_nozzle : Component
         Core exhaust nozzle component. Default is None.
-        
     length : float
         Length of the engine [m]. Default is 0.0.
-        
     bypass_ratio : float
         Engine bypass ratio. Default is 0.0.
-        
     design_isa_deviation : float
         ISA temperature deviation at design point [K]. Default is 0.0.
-        
     design_altitude : float
         Design altitude of the engine [m]. Default is 0.0.
-        
     afterburner_active : bool
         Flag indicating if afterburner is in use. Default is False.
-        
     specific_fuel_consumption_reduction_factor : float
         Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
-        
     compressor_nondimensional_massflow : float
         Non-dimensional mass flow through the compressor. Default is 0.0.
-        
     reference_temperature : float
         Reference temperature for calculations [K]. Default is 288.15.
-        
     reference_pressure : float
         Reference pressure for calculations [Pa]. Default is 101325.0.
-        
     design_thrust : float
         Design thrust of the engine [N]. Default is 0.0.
-        
     design_mass_flow_rate : float
         Design mass flow rate [kg/s]. Default is 0.0.
-        
     OpenVSP_flow_through : bool
         Flag for OpenVSP flow-through analysis. Default is False.
-        
     areas : Data
         Collection of engine areas
-
-        - wetted : float
-            Wetted area [m²]. Default is 0.0.
-
-        - maximum : float
-            Maximum cross-sectional area [m²]. Default is 0.0.
-            
-        - exit : float
-            Exit area [m²]. Default is 0.0.
-
-        - inflow : float
-            Inflow area [m²]. Default is 0.0.
+            - wetted : float
+                Wetted area [m²]. Default is 0.0.
+            - maximum : float
+                Maximum cross-sectional area [m²]. Default is 0.0.
+            - exit : float
+                Exit area [m²]. Default is 0.0.
+            - inflow : float
+                Inflow area [m²]. Default is 0.0.
 
     Notes
     -----

@@ -17,23 +17,71 @@ import numpy   as np
 #  Vortex_Lattice
 # ---------------------------------------------------------------------------------------------------------------------- 
 def evaluate_AVL_surrogate(state,settings,vehicle):
-    """Evaluates surrogates forces and moments using built surrogates 
-    
-    Assumptions:
-        None
-        
-    Source:
-        None
+    """
+    Evaluates aerodynamic forces and moments using pre-trained AVL surrogate models.
 
-    Args:
-        aerodynamics : VLM analysis  [unitless]
-        state        : flight conditions     [unitless]
-        settings     : VLM analysis settings [unitless]
-        vehicle      : vehicle configuration [unitless] 
-        
-    Returns: 
-        None  
-    """          
+    Parameters
+    ----------
+    state : Data
+        Aircraft state data containing flight conditions and analysis containers
+            - conditions.freestream.mach_number : array_like
+                Flight Mach numbers
+            - conditions.aerodynamics.angles.alpha : array_like
+                Angles of attack in radians
+            - analyses.aerodynamics : Data
+                Aerodynamics analysis containing surrogate models
+    settings : Data
+        AVL analysis settings and configuration parameters
+    vehicle : Vehicle
+        Vehicle configuration containing mass properties and wing geometry
+            - mass_properties.center_of_gravity : array_like
+                Center of gravity coordinates in meters
+            - wings.main_wing.chords.mean_aerodynamic : float
+                Mean aerodynamic chord in meters
+
+    Returns
+    -------
+    None
+        Results are stored directly in state.conditions
+
+    Notes
+    -----
+    This function provides rapid aerodynamic coefficient evaluation using
+    surrogate models trained from AVL analysis data. The surrogates enable
+    efficient computation during trajectory optimization and mission analysis
+    without requiring repeated calls to the AVL solver. 
+
+    Static stability derivatives and neutral point calculations are included
+    for complete flight dynamics modeling. Static margin is computed relative
+    to the mean aerodynamic chord.
+
+    **Major Assumptions**
+        * Surrogate models adequately represent flight envelope
+        * Linear interpolation provides sufficient accuracy
+        * Static stability calculations are valid for current configuration
+
+    **Theory**
+
+    Static margin calculation:
+
+    .. math::
+        SM = \\frac{x_{np} - x_{cg}}{\\bar{c}}
+
+    where :math:`x_{np}` is neutral point, :math:`x_{cg}` is center of gravity,
+    and :math:`\\bar{c}` is mean aerodynamic chord.
+
+    **Definitions**
+
+    'Static Margin'
+        Distance between neutral point and center of gravity, indicating stability
+
+    'Neutral Point'
+        Aircraft center of pressure location where pitching moment is independent of angle of attack
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.build_AVL_surrogates : Surrogate model training function
+    """
     conditions          = state.conditions
     aerodynamics        = state.analyses.aerodynamics  
     Mach                = conditions.freestream.mach_number
@@ -62,22 +110,51 @@ def evaluate_AVL_surrogate(state,settings,vehicle):
 
 
 def evaluate_AVL_no_surrogate(state,settings,vehicle):
-    """Evaluates forces and moments directly using VLM.
-    
-    Assumptions:
-        None
-        
-    Source:
-        None
+    """
+    Evaluates aerodynamic forces and moments directly using AVL vortex lattice analysis.
 
-    Args:
-        aerodynamics    : AVL analysis  [unitless]
-        state           : flight conditions     [unitless] 
-        vehicle         : vehicle configuration [unitless] 
-        
-    Returns: 
-        None  
-    """          
+    Parameters
+    ----------
+    state : Data
+        Aircraft state data containing flight conditions and analysis containers
+            - conditions : Data
+                Flight condition data for AVL analysis
+            - analyses.aerodynamics : Data
+                Aerodynamics analysis configuration
+    settings : Data
+        AVL analysis settings and configuration parameters
+    vehicle : Vehicle
+        Vehicle configuration for geometric and mass property data
+
+    Returns
+    -------
+    None
+        Results are stored directly in state.conditions
+
+    Notes
+    -----
+    This function performs full AVL vortex lattice analysis for each flight
+    condition. The function automatically handles AVL input file generation, analysis
+    execution, and result parsing. All aerodynamic coefficients and stability
+    derivatives are computed and stored in the flight conditions.
+
+    Use this method when surrogate models are not available or when higher
+    fidelity AVL analysis is required for specific flight conditions. Note, that is
+    requires AVL to be installed and accessible.
+
+    **Definitions**
+
+    'Vortex Lattice Method'
+        Numerical technique for solving inviscid flow around lifting surfaces
+
+    References
+    ----------
+    [1] Drela, M. and Youngren, H., "AVL 3.36 User Primer", MIT, 2017
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.run_AVL_analysis : Core AVL analysis execution function
+    """
 
     # unpack 
     conditions     = state.conditions

@@ -15,33 +15,101 @@ import numpy as np
 # Post Stall Coefficients
 # ----------------------------------------------------------------------------------------------------------------------    
 def post_stall_coefficients(state,settings,geometry):
-    """Uses the AERODAS method to determine poststall parameters for lift and drag for a single wing
+    """
+    Computes post-stall lift and drag coefficients using the AERODAS method for wing sections.
 
-    Assumptions:
-    None
+    Parameters
+    ----------
+    state : Data
+        Aircraft state data containing flight conditions
+            - conditions.aerodynamics.angle_of_attack : array_like
+                Angle of attack in radians
+    settings : Data
+        AERODAS method configuration settings
+            - section_zero_lift_angle_of_attack : float
+                Section zero-lift angle of attack in radians
+    geometry : Data
+        Wing geometry and aerodynamic properties
+            - tag : str
+                Wing identifier
+            - vertical : bool
+                Flag indicating if wing is vertical (rudder/fin)
+            - aspect_ratio : float
+                Wing aspect ratio 
+            - thickness_to_chord : float
+                Maximum thickness to chord ratio
+            - section.angle_attack_max_prestall_lift : float
+                Angle of attack at maximum pre-stall lift in radians
+            - pre_stall_maximum_lift_drag_coefficient : array_like
+                Maximum pre-stall drag coefficient
+            - pre_stall_maximum_drag_coefficient_angle : array_like
+                Angle of attack at maximum pre-stall drag coefficient in radians
 
-    Source:
-    NASA TR: "Models of Lift and Drag Coefficients of Stalled and Unstalled Airfoils in
-      Wind Turbines and Wind Tunnels" by D. A. Spera
+    Returns
+    -------
+    CL2 : array_like
+        Post-stall lift coefficient
+    CD2 : array_like
+        Post-stall drag coefficient
 
-    Inputs:
-    settings.section_zero_lift_angle_of_attack      [radians]
-    geometry.
-      aspect_ratio                                  [Unitless]
-      thickness_to_chord                            [Unitless]
-      section.angle_attack_max_prestall_lift        [radians]
-      pre_stall_maximum_lift_drag_coefficient       [Unitless]
-      pre_stall_maximum_drag_coefficient_angle      [Unitless]
-    state.conditions.aerodynamics.angle_of_attack   [radians]
-      
+    Notes
+    -----
+    The AERODAS post-stall method provides empirical relationships for computing
+    airfoil/wing section aerodynamic coefficients in the separated flow regime. The method accounts
+    for wing geometric parameters including aspect ratio and thickness-to-chord
+    ratio to predict stall characteristics.
 
-    Outputs:
-    CL2 (coefficient of lift)                       [Unitless]
-    CD2 (coefficient of drag)                       [Unitless]
-    (packed in state.conditions.aerodynamics.post_stall_coefficients[geometry.tag])
+    For vertical surfaces (fins, rudders), the angle of attack is set to zero
+    as these surfaces primarily operate in the crossflow direction.
 
-    Properties Used:
-    N/A
+    The method uses different formulations for positive and negative angles of
+    attack, accounting for asymmetric stall behavior. Results are stored in
+    the state conditions for subsequent analysis steps.
+
+    **Major Assumptions**
+        * Post-stall flow conditions (separated flow)
+        * Empirical correlations based on geometric parameters
+        * Steady-state aerodynamics
+
+    **Theory**
+
+    Maximum post-stall lift coefficient:
+
+    .. math::
+        CL_{2max} = F_1 F_2
+
+    where :math:`F_1 = 1.190(1 - t_c^2)` and :math:`F_2 = 0.65 + 0.35e^{-(9/AR)^{2.3}}`.
+
+    Maximum post-stall drag coefficient:
+
+    .. math::
+        CD_{2max} = G_1 G_2
+
+    where :math:`G_1 = 2.3e^{-(0.65 t_c)^{0.9}}` and :math:`G_2 = 0.52 + 0.48e^{-(6.5/AR)^{1.1}}`.
+
+    Post-stall lift coefficient varies with angle of attack:
+
+    .. math::
+        CL_2 = -0.032(\\alpha/deg - 92) \\pm R_{CL2}\\left(\\frac{|92° - \\alpha|}{51°}\\right)^{N_2}
+
+    **Definitions**
+
+    'Post-stall Region'
+        Operating range where flow is separated from the airfoil surface
+
+    'Aspect Ratio'
+        Wing span squared divided by wing planform area
+
+    'Thickness-to-Chord Ratio'
+        Maximum airfoil thickness divided by chord length
+
+    References
+    ----------
+    [1] Spera, D. A., "Models of Lift and Drag Coefficients of Stalled and Unstalled Airfoils in Wind Turbines and Wind Tunnels", NASA, CR-2008-215434, October 2008
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.AERODAS : Complete AERODAS aerodynamic analysis methods
     """  
     
     # unpack inputs

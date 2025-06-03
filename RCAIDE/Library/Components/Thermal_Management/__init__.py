@@ -8,11 +8,10 @@ heat exchangers, batteries, and coolant reservoirs.
 Notes
 -----
 The thermal management system components are organized into several submodules:
-
-* Accessories: Support components for thermal systems
-* Batteries: Thermal management for energy storage systems
-* Heat_Exchangers: Components for heat transfer and rejection
-* Reservoirs: Coolant and thermal storage components
+    * Accessories: Support components for thermal systems
+    * Batteries: Thermal management for energy storage systems
+    * Heat_Exchangers: Components for heat transfer and rejection
+    * Reservoirs: Coolant and thermal storage components
 
 See Also
 --------

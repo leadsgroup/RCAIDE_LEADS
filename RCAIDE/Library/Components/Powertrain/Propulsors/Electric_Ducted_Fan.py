@@ -25,13 +25,10 @@ class Electric_Ducted_Fan(Propulsor):
     ----------
     tag : str
         Identifier for the propulsion system, defaults to 'electric_ducted_fan'
-    
     motor : None or Motor
         The electric motor component that provides rotational power
-        
     ducted_fan : None or DuctedFan
         The ducted fan component that generates thrust
-        
     electronic_speed_controller : None or ESC
         The electronic speed controller that regulates power to the motor
     

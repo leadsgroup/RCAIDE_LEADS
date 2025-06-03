@@ -16,23 +16,50 @@ import numpy as np
 #  read_results
 # ----------------------------------------------------------------------------------------------------------------------  
 def read_results(avl_object):
-    """ This functions reads the results from the results text file created 
-    at the end of an AVL function call
+    """
+    Reads and parses aerodynamic results from AVL output files into structured data format.
 
-    Assumptions:
-        None
-        
-    Source:
-        Drela, M. and Youngren, H., AVL, http://web.mit.edu/drela/Public/web/avl
+    Parameters
+    ----------
+    avl_object : Data
+        AVL analysis object containing case definitions and file references
 
-    Inputs:
-        None
+    Returns
+    -------
+    results : Data
+        Structured aerodynamic results for all analysis cases
+            - aerodynamics : Data
+                Force and moment coefficients
+            - stability : Data
+                Stability and control derivatives
+            - Reference Values
 
-    Outputs:
-        results     
+    Notes
+    -----
+    This function parses multiple AVL output files to extract comprehensive
+    aerodynamic data including force coefficients, stability derivatives,
+    control surface effectiveness, and spanwise load distributions.
 
-    Properties Used:
-        N/A
+    The function handles variable numbers of control surfaces and wings,
+    automatically adjusting file parsing offsets based on configuration
+    complexity. Wing symmetry is accounted for in result extraction.
+
+    High angle of attack conditions may result in AVL convergence issues,
+    which are handled gracefully by setting problematic values to zero.
+
+    **Major Assumptions**
+        * AVL output files follow standard format conventions
+        * All required result files are successfully generated
+        * Wing discretization uses consistent spanwise vortex count
+        * Control surface numbering matches configuration order
+
+    References
+    ----------
+    [1] Drela, M. and Youngren, H., "AVL", MIT, 2022, https://web.mit.edu/drela/Public/web/avl/
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.run_AVL_analysis : Function that generates the result files
     """    
     # unpack
     aircraft = avl_object.vehicle

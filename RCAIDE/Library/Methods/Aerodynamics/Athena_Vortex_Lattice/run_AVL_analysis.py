@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/build_VLM_surrogates.py
+# RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/run_AVL_analysis.py
 #
 # Created: Oct 2024, M. Clarke
 
@@ -29,34 +29,74 @@ from shutil import rmtree
 # run_analysis
 # ---------------------------------------------------------------------------------------------------------------------- 
 def run_AVL_analysis(aerodynamics,run_conditions):
-    """Process vehicle to setup avl geometry, condititons, and configurations.
+    """
+    Executes complete AVL vortex lattice analysis including geometry setup, case generation, and result processing.
 
-    Assumptions:
+    Parameters
+    ----------
+    aerodynamics : Data
+        AVL aerodynamics analysis object containing configuration and settings
+            - vehicle : Vehicle
+                Aircraft configuration with wings, fuselage, and control surfaces
+            - settings : Data
+                Analysis configuration parameters
+                    - trim_aircraft : bool
+                        Flag to enable aircraft trimming for equilibrium flight
+                    - filenames : Data
+                        File path templates and analysis directories
+                    - print_output : bool
+                        Flag to control console output during analysis
+                    - keep_files : bool
+                        Flag to retain AVL files after analysis completion
+    run_conditions : Data
+        Flight conditions for analysis
+            - aerodynamics : Data
+                Flight state data including angles, velocities, and atmospheric properties
+
+    Returns
+    -------
     None
+        Results are stored directly in run_conditions
 
-    Source:
-    N/A
+    Notes
+    -----
+    This function orchestrates the complete AVL analysis workflow including:
+        1. Aircraft geometry translation to AVL format
+        2. Mass properties file generation for trimmed flight
+        3. Analysis case setup from flight conditions
+        4. AVL input deck creation with run commands
+        5. AVL solver execution and monitoring
+        6. Result file parsing and data extraction
+        7. Translation of results back to RCAIDE format
 
-    Inputs:
-    run_conditions <RCAIDE data type> aerodynamic conditions; until input
-            method is finalized, will assume mass_properties are always as 
-            defined in aerodynamics.features
+    Control surfaces are automatically detected and configured for analysis.
+    The function handles both single-point analysis and parametric sweeps
+    across multiple flight conditions.
 
-    Outputs:
-    results        <RCAIDE data type>
+    File management is automated with temporary directories created and
+    optionally cleaned up based on keep_files setting. Analysis progress
+    is tracked through batch indexing for multiple case execution.
 
-    Properties Used:
-    aerodynamics.settings.filenames.
-      run_folder
-      output_template
-      batch_template
-      deck_template
-    aerodynamics.current_status.
-      batch_index
-      batch_file
-      deck_file
-      cases
-    """           
+    **Extra modules required**
+
+    AVL (Athena Vortex Lattice) executable must be installed and accessible
+    in the system PATH or specified in analysis settings.
+
+    **Definitions**
+
+    'Vortex Lattice Method'
+        Numerical technique solving potential flow around discretized lifting surfaces
+
+    'Trimmed Flight'
+        Equilibrium flight condition with zero net forces and moments
+
+    'Influence Coefficient'
+        Mathematical relationship between vortex element and induced velocity
+
+    References
+    ----------
+    [1] Drela, M. and Youngren, H., "AVL 3.36 User Primer", MIT, 2017
+    """
     
     # unpack
     trim_aircraft                    = aerodynamics.settings.trim_aircraft
@@ -145,18 +185,64 @@ def run_AVL_analysis(aerodynamics,run_conditions):
     return 
  
 def call_avl(avl_object,print_output):
-    """ This function calls the AVL executable and executes analyses
-    Assumptions:
-        None
-        
-    Source:
-        None
-    Inputs:
-        avl_object
-    Outputs:
-        exit_status
-    Properties Used:
-        N/A
+    """
+    Executes AVL solver with specified input deck and monitors process completion.
+
+    Parameters
+    ----------
+    avl_object : Data
+        AVL analysis object containing file paths and execution settings
+            - settings : Data
+                Analysis configuration
+                    - new_regression_results : bool
+                        Flag to generate new analysis results
+                    - filenames : Data
+                        File path specifications
+                            - avl_bin_name : str
+                                AVL executable name or path
+                            - features : str
+                                Aircraft geometry file name
+                            - log_filename : str
+                                Analysis log file path
+                            - err_filename : str
+                                Error log file path
+            - current_status.deck_file : str
+                Input command deck file path
+    print_output : bool
+        Flag to control console output display during execution
+
+    Returns
+    -------
+    exit_status : int
+        AVL process exit code (0 for successful completion)
+
+    Notes
+    -----
+    This function manages the AVL solver subprocess execution including:
+        - Command deck file processing
+        - Standard input/output redirection
+        - Process monitoring and error handling
+        - Exit status reporting
+
+    The function supports both interactive and batch execution modes.
+    Console output can be suppressed for automated analysis workflows
+    while maintaining log file generation for debugging purposes.
+
+    For regression testing mode, the function bypasses actual AVL execution
+    and returns successful status to enable testing without AVL installation.
+
+    **Major Assumptions**
+        * Input geometry and command files are valid
+        * System has sufficient resources for analysis completion
+        * File permissions allow creation of output files
+
+    **Definitions**
+
+    'Exit Status'
+        Numeric code returned by process indicating success (0) or error (non-zero)
+
+    'Subprocess'
+        Independent process launched from parent application
     """
     print_output =  True 
     new_regression_results = avl_object.settings.new_regression_results

@@ -24,10 +24,8 @@ class Component(Data):
     ----------
     tag : str
         Unique identifier for the component, defaults to 'Component'
-        
     mass_properties : Mass_Properties
         Mass and inertia properties, initialized empty
-        
     origin : ndarray
         3D coordinates [x, y, z] defining component's reference point, 
         defaults to [0.0, 0.0, 0.0]
@@ -36,10 +34,9 @@ class Component(Data):
     -----
     The Component class serves as the foundation for all physical parts in RCAIDE. 
     It provides:
-    
-    * Basic geometric positioning
-    * Mass properties tracking
-    * Container functionality for sub-components
+        * Basic geometric positioning
+        * Mass properties tracking
+        * Container functionality for sub-components
 
     See Also
     --------

@@ -17,22 +17,49 @@ import os
 #  write_avl_airfoil_file
 # ---------------------------------------------------------------------------------------------------------------------- 
 def write_avl_airfoil_file(rcaide_airfoil_filename):
-    """ This function writes the standard airfoil file format from Airfoil tools 
-    to avl file format
+    """
+    Converts RCAIDE airfoil coordinate files to AVL-compatible format for vortex lattice analysis.
 
-    Assumptions:
-        None
-        
-    Source: 
-   
-    Inputs:
-        filename
-   
-    Outputs:
-        airfoil.dat
-   
-    Properties Used:
-        N/A
+    Parameters
+    ----------
+    rcaide_airfoil_filename : str
+        Path to RCAIDE airfoil coordinate file in standard format
+        File should contain airfoil name on first line followed by x,y coordinate pairs
+
+    Returns
+    -------
+    avl_airfoil_filename : str
+        Generated AVL airfoil filename with .dat extension
+
+    Notes
+    -----
+    This function translates airfoil coordinate files from the standard airfoil
+    tools format used by RCAIDE to the specific format required by AVL. The
+    conversion process includes coordinate reformatting and proper spacing
+    adjustments for AVL compatibility.
+
+    The function automatically generates the output filename by extracting the
+    base name from the input file and appending the .dat extension. Any existing
+    files with the same name are automatically purged before writing new data.
+
+    Coordinate formatting includes proper tab spacing and decimal precision
+    optimized for AVL's input parser. Negative y-coordinates (lower surface)
+    receive different spacing treatment than positive coordinates (upper surface).
+
+    The function skips the midpoint coordinate (typically the trailing edge)
+    to avoid duplicate points that can cause AVL parsing issues.
+
+    **Major Assumptions**
+        * Input file follows standard airfoil tools format
+        * First line contains airfoil name or identifier
+        * Coordinates are normalized (0 ≤ x ≤ 1)
+        * Coordinate ordering starts from trailing edge, goes over upper surface to leading edge, then under lower surface back to trailing edge
+        * File contains valid floating-point coordinate data
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry : Function for reading airfoil coordinate data
+    RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.purge_files : Utility function for cleaning up existing files
     """       
     
 

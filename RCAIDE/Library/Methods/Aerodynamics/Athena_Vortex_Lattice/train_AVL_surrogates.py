@@ -18,19 +18,84 @@ from shutil import rmtree
 #  train_AVL_surrogates
 # ---------------------------------------------------------------------------------------------------------------------- 
 def train_AVL_surrogates(aerodynamics):
-    """Call methods to run VLM for sample point evaluation. 
-    
-    Assumptions:
-        None
-        
-    Source:
-        None
+    """
+    Generates training data for AVL surrogate models by running parametric analysis across flight envelope.
 
-    Args:
-        aerodynamics       : VLM analysis          [unitless] 
-        
-    Returns: 
-        None    
+    Parameters
+    ----------
+    aerodynamics : Data
+        AVL aerodynamics analysis object containing configuration and training parameters
+            - vehicle : Vehicle
+                Aircraft configuration with wings, fuselage, and control surfaces
+            - training : Data
+                Training parameter definitions
+                    - angle_of_attack : array_like
+                        Array of training angles of attack in radians
+                    - Mach : array_like
+                        Array of training Mach numbers
+            - settings : Data
+                Analysis configuration parameters
+                    - side_slip_angle : float
+                        Sideslip angle for analysis in radians
+                    - roll_rate_coefficient : float
+                        Non-dimensional roll rate coefficient
+                    - pitch_rate_coefficient : float
+                        Non-dimensional pitch rate coefficient
+                    - lift_coefficient : float, optional
+                        Target lift coefficient for trimmed analysis
+                    - new_regression_results : bool
+                        Flag to generate new training data files
+                    - filenames : Data
+                        File path configuration for analysis directories
+            - training_file : str, optional
+                Path to existing training data file to load instead of running analysis
+
+    Returns
+    -------
+    None
+        Training data is stored in aerodynamics.training.coefficients and optionally saved to file
+
+    Notes
+    -----
+    This function creates a comprehensive training dataset for surrogate model
+    development by executing AVL analysis across a parametric grid of flight
+    conditions. The training data encompasses the complete flight envelope
+    including angles of attack and Mach numbers specified in the training
+    configuration.
+
+    For each flight condition, the function extracts seven key aerodynamic
+    coefficients: lift (CL), induced drag (CD), span efficiency (e), pitching
+    moment (CM), pitch damping derivative (Cm_alpha), yaw stability derivative
+    (Cn_beta), and neutral point location (NP).
+
+    The function supports both training data generation and loading from
+    existing files. When new_regression_results is enabled, fresh analysis
+    is performed and results are saved. Otherwise, existing training files
+    can be loaded to skip time-intensive analysis.
+
+    **Major Assumptions**
+        * Aircraft configuration remains constant across training envelope
+        * Linear variation of coefficients between training points is adequate
+        * Standard atmospheric conditions at sea level for reference
+
+    **Definitions**
+
+    'Training Data'
+        Systematic collection of input-output pairs used for surrogate model development
+
+    'Flight Envelope'
+        Complete range of operational flight conditions for aircraft
+
+    'Parametric Grid'
+        Regular sampling of independent variables across their operational ranges
+
+    'Span Efficiency Factor'
+        Measure of wing aerodynamic efficiency relative to elliptical lift distribution
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.build_AVL_surrogates : Function that creates surrogate models from training data
+    RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976 : Standard atmosphere model
     """ 
  
     run_folder             = os.path.abspath(aerodynamics.settings.filenames.run_folder)

@@ -53,11 +53,10 @@ class Reservoir(Component):
     Notes
     -----
     The reservoir serves as a thermal buffer and coolant storage system. It provides:
-    
-    * Coolant storage and thermal mass
-    * Temperature stabilization through mixing
-    * Volume compensation for thermal expansion
-    * Air separation and pressure control
+        * Coolant storage and thermal mass
+        * Temperature stabilization through mixing
+        * Volume compensation for thermal expansion
+        * Air separation and pressure control
 
     **Definitions**
 

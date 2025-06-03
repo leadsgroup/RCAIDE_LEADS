@@ -114,16 +114,14 @@ class Cross_Flow_Heat_Exchanger(Component):
     -----
     The cross-flow heat exchanger uses strip fins and is based on the 1/8-19.86 
     surface designation. The design includes:
-    
-    * Liquid coolant passages with strip fins
-    * Air passages with strip fins
-    * Counter-flow arrangement for maximum effectiveness
+        * Liquid coolant passages with strip fins
+        * Air passages with strip fins
+        * Counter-flow arrangement for maximum effectiveness
 
     **Assumptions**
-    
-    * Coolant is 50-50 Glycol Water mixture
-    * Constant entrance and exit loss coefficients
-    * Surface designation of 1/8-19.86 with strip fins
+        * Coolant is 50-50 Glycol Water mixture
+        * Constant entrance and exit loss coefficients
+        * Surface designation of 1/8-19.86 with strip fins
 
     **Definitions**
 

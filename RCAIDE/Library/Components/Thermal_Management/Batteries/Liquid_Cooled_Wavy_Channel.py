@@ -18,9 +18,93 @@ from RCAIDE.Library.Plots.Thermal_Management                                    
 # Liquid_Cooled_Wavy_Channel_Heat_Acquisition_System
 # ----------------------------------------------------------------------------------------------------------------------
 class Liquid_Cooled_Wavy_Channel(Component):
-    '''
-       Wavy Channel Heat Acqusition System
-    '''
+    """
+    Liquid-cooled wavy channel heat acquisition system for battery thermal management.
+
+    Attributes
+    ----------
+    tag : str
+        Identifier for the heat acquisition system. default is 'wavy_channel_heat_acquisition'
+    heat_transfer_efficiency : float
+        Efficiency factor for heat transfer from battery to coolant. default is 1
+    coolant : Coolant
+        Coolant fluid properties and characteristics. Default is Glycol Water
+    coolant_Reynolds_number : float
+        Reynolds number for coolant flow characterization. Default is 1
+    coolant_velocity : float
+        Velocity of coolant flow through channels. Default is 1 m/s
+    coolant_flow_rate : float
+        Volumetric flow rate of coolant. Default is 1 m³/s
+    coolant_inlet_temperature : float
+        Temperature of coolant entering the system. Default is 293.15 K
+    coolant_hydraulic_diameter : float
+        Hydraulic diameter of coolant channels. Default is 1 m
+    channel_side_thickness : float
+        Thickness of channel walls through which conduction occurs. Default is 0.001 m
+    channel_top_thickness : float
+        Thickness of channel top surface where no conduction occurs. Default is 0.001 m
+    channel_width : float
+        Width of individual cooling channels. Default is 0.005 m
+    channel_height : float
+        Height of individual cooling channels. Default is 0.003 m
+    channel_contact_angle : float
+        Contact arc angle between channel and battery surface. Default is 47.5 degrees
+    channel : Material
+        Material properties of the channel structure. Default is Aluminum
+    channel_aspect_ratio : float
+        Ratio of channel width to height. Default is 1
+    channels_per_module : int
+        Number of cooling channels per battery module. Default is 1
+    battery_contact_area : float
+        Total contact area between channels and battery surface in m². Default is 1
+    contact_area_per_module : float
+        Contact area per individual battery module in m². Default is 1
+    power_draw : float
+        Electrical power consumption of the cooling system in Watts. Default is 1
+    single_side_contact : bool
+        Flag indicating if cooling occurs on one side of battery only. Default is True
+    design_heat_removed : float
+        Design heat removal capacity in Watts. Default is None
+    percent_operation : float
+        Operating percentage of full cooling capacity (0.0 to 1.0). Default is 1
+    type : str
+        Type identifier for the cooling system. Default is 'Liquid'
+
+    Notes
+    -----
+    The Liquid_Cooled_Wavy_Channel system provides active thermal management
+    for battery packs through forced convection cooling. The wavy channel
+    geometry enhances heat transfer through increased surface area and
+    improved mixing of the coolant flow.
+
+    Default coolant is glycol-water mixture unless specified otherwise.
+    Channel geometry parameters are initialized with nominal values that
+    should be optimized for specific battery configurations.
+
+    The system operates by circulating coolant through channels in thermal
+    contact with battery modules, removing heat generated during charge/
+    discharge cycles to maintain optimal operating temperatures.
+
+    **Major Assumptions**
+        * Wavy channel heat acquisition loops through entire battery pack
+        * Uniform heat generation across battery modules
+        * Steady-state thermal analysis for each time step
+        * Single-phase coolant flow (no boiling)
+
+    **Definitions**
+
+    'Hydraulic Diameter'
+        Characteristic length scale for non-circular ducts, equal to 4 times
+        the cross-sectional area divided by the wetted perimeter
+
+    'Reynolds Number'
+        Dimensionless parameter characterizing flow regime (laminar vs turbulent)
+
+    See Also
+    --------
+    RCAIDE.Library.Components.Thermal_Management.Batteries.Air_Cooled
+        Air-cooled heat acquisition system
+    """
     
     def __defaults__(self):  
         """This sets the default values.
@@ -28,7 +112,7 @@ class Liquid_Cooled_Wavy_Channel(Component):
         Assumptions:
            The wavy channel heat Acquisition loops through the battery pack.
            The coolant is assumed to be Glycol Water unless specified otherwise. 
-           The geometry parameters are set based on nomrinal values to be further optmized.
+           The geometry parameters are set based on nominal values to be further optmized.
            
         Source:
            None

@@ -14,24 +14,69 @@ from RCAIDE.Library.Components.Wings.Control_Surfaces import Aileron , Elevator 
 #  write_run_cases
 # ---------------------------------------------------------------------------------------------------------------------- 
 def write_run_cases(avl_object,trim_aircraft):
-    """ This function writes the run cases used in the AVL batch analysis
+    """
+    Writes run cases for AVL batch analysis including flight conditions and control surface configurations.
 
-    Assumptions:
-        None
-        
-    Source:
-        Drela, M. and Youngren, H., AVL, http://web.mit.edu/drela/Public/web/avl
-   
-    Inputs:
-        avl_object.current_status.batch_file                    [-]
-        avl_object.vehicle.mass_properties.center_of_gravity   [meters]
-   
-    Outputs:
-        None
-   
-    Properties Used:
-        N/A
-    """       
+    Parameters
+    ----------
+    avl_object : Data
+        AVL analysis object containing aircraft configuration and analysis cases
+            - vehicle : Vehicle
+                Aircraft configuration with mass properties and control surfaces
+                    - mass_properties : Data
+                        Aircraft mass and inertia properties
+                            - center_of_gravity : array_like
+                                CG location [x, y, z] in meters
+                            - mass : float
+                                Aircraft total mass in kg
+                            - moments_of_inertia : Data
+                                Inertia tensor components
+                                    - tensor : array_like
+                                        3x3 inertia tensor in kg⋅m²
+            - current_status : Data
+                Analysis execution status
+                    - batch_file : str
+                        Path to batch run case file
+                    - cases : list
+                        List of analysis cases with flight conditions
+    trim_aircraft : bool
+        Flag to enable aircraft trimming for equilibrium flight conditions
+
+    Returns
+    -------
+    None
+        Run case file is written to disk at specified batch_file location
+
+    Notes
+    -----
+    This function generates the AVL run case input file containing all flight
+    conditions and aircraft configurations for batch analysis execution. Each
+    case includes complete flight state definition, mass properties, and
+    control surface settings.
+
+    For trimmed analysis, control surfaces are automatically configured to
+    maintain equilibrium flight. Untrimmed analysis uses specified angle of
+    attack or lift coefficient without moment balancing.
+
+    The function handles both angle of attack and lift coefficient flight
+    specifications, automatically selecting appropriate analysis modes for
+    each case. Control surface configurations are generated based on surface
+    type and intended control authority.
+
+    Mass properties and moments of inertia are extracted from the aircraft
+    configuration to enable proper dynamic response calculations in AVL.
+
+    **Major Assumptions**
+        * Flight conditions represent steady-state analysis points
+
+    References
+    ----------
+    [1] Drela, M. and Youngren, H., "AVL 3.36 User Primer", MIT, 2017
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.run_AVL_analysis : Function that executes the batch analysis
+    """
     
 
     # unpack avl_inputs
@@ -158,9 +203,55 @@ def write_run_cases(avl_object,trim_aircraft):
     return
 
 def make_controls_case_text(cs_names,avl_aircraft):
-    """ This function writes the text of the control surfaces in the AVL batch analysis.
-    This tells AVL what control surface you want use to control a particular response.
-    """ 
+    """
+    Generates control surface text for AVL run cases based on surface type and control authority.
+
+    Parameters
+    ----------
+    cs_names : list
+        List of control surface names/tags from analysis case
+    avl_aircraft : Vehicle
+        Aircraft configuration containing wing and control surface definitions
+
+    Returns
+    -------
+    control_surface_text : list
+        List of formatted control surface text strings for AVL input
+
+    Notes
+    -----
+    This function creates AVL control surface assignments based on control
+    surface type and intended aerodynamic function. Each surface type receives
+    appropriate variable assignments for trim analysis:
+        - Flaps: Direct deflection control (flap variable)
+        - Ailerons: Roll moment control (Cl roll mom)
+        - Elevators: Pitch moment control (Cm pitch mom)
+        - Rudders: Yaw moment control (Cn yaw mom)
+
+    Slats are excluded from control analysis.
+
+    The function formats control surface names with proper spacing for AVL
+    input file compatibility and assigns zero initial deflections for all
+    surfaces.
+
+    **Major Assumptions**
+        * Control surface types are correctly classified in aircraft definition
+        * Primary control surfaces provide adequate control authority
+        * Control surface naming follows consistent conventions
+        * Zero initial deflections are appropriate starting conditions
+
+    **Definitions**
+
+    'Control Authority'
+        Ability of control surface to generate desired aerodynamic moments
+
+    'Control Variable'
+        AVL parameter that relates control input to aerodynamic response (i.e. pitch, roll, yaw)
+
+    See Also
+    --------
+    RCAIDE.Library.Components.Wings.Control_Surfaces : Control surface type definitions
+    """
     control_surface_text = []
     
     for wing in avl_aircraft.wings: 

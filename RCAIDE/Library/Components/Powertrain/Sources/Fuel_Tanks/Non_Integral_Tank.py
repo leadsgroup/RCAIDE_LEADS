@@ -47,8 +47,8 @@ class Non_Integral_Tank(Fuel_Tank):
 
     Notes
     -----
-    The central fuel tank is located in the aircraft's center section,
-    often integrated with the wing box or fuselage structure. 
+    This tank is not directly integrated with the aircraft structure. 
+    A common use is the central fuel tank is located in the aircraft's center section.
 
     See Also
     --------

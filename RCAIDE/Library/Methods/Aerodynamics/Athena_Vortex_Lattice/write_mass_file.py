@@ -13,8 +13,30 @@ from RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.purge_files      
 #  write_mass_file
 # ---------------------------------------------------------------------------------------------------------------------- 
 def write_mass_file(avl_object,run_conditions):
-    """This function writes the translated aircraft mass into text file read 
-    by AVL when it is called
+    """
+    Writes aircraft mass properties to AVL-compatible file for trimmed flight analysis.
+
+    Parameters
+    ----------
+    avl_object : Data
+        AVL analysis object containing aircraft configuration and file settings
+    run_conditions : Data
+        Flight conditions for analysis reference values
+
+    Returns
+    -------
+    None
+        Mass file is written to disk at specified location
+
+    Notes
+    -----
+    Creates AVL mass properties file containing aircraft weight, center of gravity,
+    and moments of inertia for accurate trim analysis. The function automatically
+    selects between available mass values and formats data according to AVL
+    input requirements.
+
+    **Major Assumptions**
+        * Aircraft moments and products of inertia are defined.
     """    
     
     # unpack inputs
@@ -26,8 +48,8 @@ def write_mass_file(avl_object,run_conditions):
     mass_file_script  = open(mass_file,'w')
 
     with open(mass_file,'w') as mass_file_script:        
-        """This function writes the header using the template required for the AVL executable to read
-        """   
+        #This function writes the header using the template required for the AVL executable to read
+           
         # mass file template
         base_text = \
 '''

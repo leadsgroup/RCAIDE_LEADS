@@ -28,10 +28,9 @@ class Fan(Data):
     -----
     The fan class models forced air movement devices used in thermal management 
     systems. It provides functionality for:
-    
-    * Power consumption calculation
-    * Performance modeling based on operating conditions
-    * Integration with cooling system analysis
+        * Power consumption calculation
+        * Performance modeling based on operating conditions
+        * Integration with cooling system analysis
 
     **Definitions**
 

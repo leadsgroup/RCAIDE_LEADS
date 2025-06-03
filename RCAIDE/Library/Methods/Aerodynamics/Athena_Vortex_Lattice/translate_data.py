@@ -16,28 +16,38 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  translate_data
 # ---------------------------------------------------------------------------------------------------------------------- 
-def translate_conditions_to_cases(avl ,conditions):
-    """ Takes RCAIDE Conditions() data structure and translates to a Container of
-    avl Run_Case()s.
+def translate_conditions_to_cases(avl, conditions):
+    """
+    Translates RCAIDE flight conditions to AVL run case format for analysis execution.
 
-    Assumptions:
-        None
+    Parameters
+    ----------
+    avl : Data
+        AVL analysis object containing aircraft configuration and settings
+    conditions : Data
+        Flight condition data from RCAIDE analysis
         
-    Source:
-        Drela, M. and Youngren, H., AVL, http://web.mit.edu/drela/Public/web/avl
+    Returns
+    -------
+    cases : Container
+        Collection of AVL run case objects ready for analysis execution
+            - Each case contains complete flight condition and configuration data
 
-    Inputs:
-        conditions.aerodynamics.angles.alpha  [radians] 
-        conditions.freestream.mach_number        [-]
-        conditions.freestream.density            [kilograms per meters**3]
-        conditions.freestream.gravity            [meters per second**2]
+    Notes
+    -----
+    This function serves as the primary interface for converting RCAIDE flight
+    conditions into the AVL-specific run case format. Each flight condition
+    becomes an individual analysis case with complete geometric, atmospheric,
+    and control specifications.
 
-    Outputs:
-        cases                                    [data structur]
+    Wing counting accounts for symmetry to properly determine the total number
+    of lifting surfaces for AVL analysis. The function handles both prescribed
+    lift coefficient analysis and free-flight calculations.
 
-    Properties Used:
-        N/A
-    """    
+    All angular quantities are converted from RCAIDE's radian convention to
+    AVL's degree convention during translation.
+
+    """
     # set up aerodynamic Conditions object
     aircraft = avl.vehicle
     cases    = Run_Case.Container()
@@ -70,25 +80,66 @@ def translate_conditions_to_cases(avl ,conditions):
     
     return cases
 
-def translate_results_to_conditions(cases,res,results):
-    """ Takes avl results structure containing the results of each run case stored
-        each in its own Data() object. Translates into the Conditions() data structure.
+def translate_results_to_conditions(cases, res, results):
+    """
+    Converts AVL analysis results from native format to RCAIDE conditions data structure.
 
-    Assumptions:
-        None
-        
-    Source:
-        Drela, M. and Youngren, H., AVL, http://web.mit.edu/drela/Public/web/avl
+    Parameters
+    ----------
+    cases : list
+        List of AVL run case objects containing analysis configuration
+            - num_wings : int
+                Total number of wing surfaces in analysis
+            - n_sw : int
+                Number of spanwise vortex elements per wing
+    res : Data
+        RCAIDE results container to be populated with AVL data
+            - aerodynamics : Data
+                Aerodynamic force and moment results
+            - static_stability : Data
+                Stability derivative and control surface results
+    results : dict
+        Dictionary of AVL analysis results indexed by case tags
+            - Each entry contains complete aerodynamic and stability data
 
-    Inputs:
-        case_res = results 
-            
-     Outputs:
-        cases                        [data_structure]
-   
-    Properties Used:
-        N/A
-    """   
+    Returns
+    -------
+    None
+        Results are stored directly in the res data structure
+
+    Notes
+    -----
+    This function performs comprehensive translation of AVL results including
+    force coefficients, stability derivatives, control surface effectiveness,
+    and spanwise load distributions. The translation handles variable numbers
+    of wings and control surfaces automatically.
+
+    Static stability derivatives are computed using finite differences when
+    multiple angle of attack cases are available. Single-point analyses
+    rely on AVL's internal derivative calculations.
+
+    Wing-specific results include sectional force distributions that enable
+    detailed structural and performance analysis. Control surface data is
+    organized by case for post-processing flexibility.
+
+    **Major Assumptions**
+        * AVL results are organized consistently across all analysis cases
+        * Wing numbering matches between cases and results
+        * Static stability derivatives are computed using small perturbation theory
+        * Spanwise discretization is uniform across wing surfaces
+    
+    **Definitions**
+
+    'Static Stability Derivatives'
+        Partial derivatives of force/moment coefficients with respect to flight variables
+
+    'Spanwise Load Distribution'
+        Variation of aerodynamic loads along wing span
+
+    'Control Surface Effectiveness'
+        Change in aerodynamic coefficients per unit control surface deflection
+
+    """
    
     num_wings = cases[0].num_wings 
     n_sw      = cases[0].n_sw

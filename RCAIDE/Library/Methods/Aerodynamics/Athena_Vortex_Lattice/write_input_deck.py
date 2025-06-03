@@ -15,20 +15,63 @@ from .purge_files import purge_files
 #  write_input_deck
 # ---------------------------------------------------------------------------------------------------------------------- 
 def write_input_deck(avl_object,trim_aircraft,control_surfaces):
-    """ This function writes the execution steps used in the AVL call
-    Assumptions:
-        None
-        
-    Source:
-        Drela, M. and Youngren, H., AVL, http://web.mit.edu/drela/Public/web/avl
-    Inputs:
-        avl_object
-    Outputs:
-        None
- 
-    Properties Used:
-        N/A
-    """     
+    """
+    Writes AVL execution command deck for automated analysis workflow and result extraction.
+
+    Parameters
+    ----------
+    avl_object : Data
+        AVL analysis object containing configuration and file management
+            - current_status : Data
+                Analysis execution status
+                    - batch_file : str
+                        Path to batch run case file
+                    - deck_file : str
+                        Path to command deck file for AVL execution
+                    - cases : list
+                        List of analysis cases to be executed
+            - settings : Data
+                Analysis configuration parameters
+                    - filenames : Data
+                        File naming configuration
+                            - mass_file : str
+                                Aircraft mass properties file path
+    trim_aircraft : bool
+        Flag to enable aircraft trimming for equilibrium flight conditions
+    control_surfaces : bool
+        Flag indicating presence of control surfaces requiring deflection commands
+
+    Returns
+    -------
+    None
+        Command deck file is written to disk for AVL execution
+
+    Notes
+    -----
+    This function creates the AVL command deck that automates the complete
+    analysis workflow including mass property loading, case execution, and
+    result file generation. The deck serves as a script of keyboard commands
+    that would otherwise be entered manually in interactive AVL operation.
+
+    The command sequence includes:
+        1. Mass property file loading for accurate CG and inertia
+        2. Batch case file loading with flight conditions
+        3. Operational mode selection for analysis type
+        4. Individual case execution with result file generation
+        5. Clean exit from AVL environment
+
+    Each case generates multiple result files including stability derivatives,
+    surface forces, strip forces, and body axis derivatives for comprehensive
+    aerodynamic characterization.
+
+    References
+    ----------
+    [1] Drela, M. and Youngren, H., "AVL", MIT, 2022, 
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.run_AVL_analysis : Function that executes the command deck
+    """
     mass_file_input = \
 '''MASS {0}
 mset
@@ -65,22 +108,47 @@ G
 
 
 def make_case_command(avl_object,case,trim_aircraft,control_surfaces):
-    """ Makes commands for case execution in AVL
-    Assumptions:
-        None
-        
-    Source:
-        None
-    Inputs:
-        case.index
-        case.tag
-        case.result_filename
-    Outputs:
-        case_command
- 
-    Properties Used:
-        N/A
-    """  
+    """
+    Creates execution commands for individual analysis case including trim and control surface configurations.
+
+    Parameters
+    ----------
+    avl_object : Data
+        AVL analysis object containing aircraft configuration
+    case : Case
+        Individual analysis case with flight conditions and result file specifications
+    trim_aircraft : bool
+        Flag to enable aircraft trimming commands
+    control_surfaces : bool
+        Flag to include control surface deflection commands
+
+    Returns
+    -------
+    case_command : str
+        Complete command sequence for case execution and result generation
+
+    Notes
+    -----
+    This function generates the detailed command sequence for executing a
+    single analysis case within the AVL environment. The commands include
+    flight condition setup, trim configuration (if enabled), and systematic
+    result file generation.
+
+    Command organization follows AVL's operational flow:
+        1. Case selection and flight condition setup
+        2. Trim parameter configuration (angle of attack or lift coefficient)
+        3. Rate parameter setup (roll/pitch rates, sideslip)
+        4. Analysis execution and result file generation
+
+    Multiple result files are generated to capture different aspects of the
+    aerodynamic solution including force coefficients, stability derivatives,
+    and spanwise load distributions.
+
+    **Major Assumptions**
+        * Case flight conditions are within AVL analysis capabilities
+        * Trim convergence is achievable for specified conditions
+        * All required result directories exist and are writable
+    """
     # This is a template (place holder) for the input deck. Think of it as the actually keys
     # you will type if you were to manually run an analysis
     base_case_command = \
@@ -140,20 +208,39 @@ x
     return case_command
 
 def make_trim_text_command(case,avl_object):
-    """ Writes the trim command currently for a specified AoA or flight CL condition
-    Assumptions:
-        None
-        
-    Source:
-        None
-    Inputs:
-        case
-    Outputs:
-        trim_command
- 
-    Properties Used:
-        N/A
-    """      
+    """
+    Generates trim commands for equilibrium flight analysis with automatic control surface assignment.
+
+    Parameters
+    ----------
+    case : Case
+        Analysis case containing flight condition specifications
+            - conditions.aerodynamics.angles.alpha : float
+                Target angle of attack in radians
+            - conditions.aerodynamics.coefficients.lift.total : float or None
+                Target lift coefficient for trimmed flight
+    avl_object : Data
+        AVL analysis object containing aircraft configuration
+            - vehicle : Vehicle
+                Aircraft with wing and control surface definitions
+
+    Returns
+    -------
+    trim_command : str
+        Complete trim command sequence for AVL execution
+
+    Notes
+    -----
+    This function creates automatic trim commands that configure control
+    surfaces for moment-balanced flight. Control surfaces are automatically
+    assigned to appropriate control variables based on their type:
+        - Ailerons: Roll moment control (RM)
+        - Elevators: Pitch moment control (PM)  
+        - Rudders: Yaw moment control (YM)
+
+    Trim analysis can target either specified angle of attack (A command)
+    or lift coefficient (C command) depending on case configuration.
+    """
      
     cs_template = \
 '''
@@ -204,20 +291,9 @@ c1
     return cs_commands + trim_command
 
 def make_roll_rate_text_command(case):
-    """ Writes the roll rate command currently for a specified flight  condition
-    Assumptions:
-        None
-        
-    Source:
-        None
-    Inputs:
-        case
-    Outputs:
-        trim_command
- 
-    Properties Used:
-        N/A
-    """       
+    """
+    Generates roll rate commands for dynamic stability analysis.
+    """
     base_roll_command = \
 '''
 R
@@ -231,20 +307,9 @@ R
     return roll_command
 
 def make_pitch_rate_text_command(case):
-    """ Writes the pitch rate command currently for a specified flight  condition
-    Assumptions:
-        None
-        
-    Source:
-        None
-    Inputs:
-        case
-    Outputs:
-        trim_command
- 
-    Properties Used:
-        N/A
-    """       
+    """
+    Generates pitch rate commands for longitudinal dynamic stability analysis.
+    """
     base_pitch_command = \
 '''
 Y
@@ -258,20 +323,9 @@ Y
     return blade_pitch_command
 
 def make_beta_text_command(case):
-    """ Writes the roll rate command currently for a specified flight  condition
-    Assumptions:
-        None
-        
-    Source:
-        None
-    Inputs:
-        case
-    Outputs:
-        trim_command
- 
-    Properties Used:
-        N/A
-    """       
+    """
+    Generates sideslip angle commands for lateral-directional analysis.
+    """
     base_roll_command = \
 '''
 B
@@ -284,22 +338,10 @@ B
         beta_command = ''
     return beta_command
 
-def control_surface_deflection_command(case,avl_object): 
-    """Writes the control surface command template
-    Assumptions:
-        None
-        
-    Source:
-        None
-    Inputs:
-        avl_object
-        case
-    Outputs:
-        em_case_command
- 
-    Properties Used:
-        N/A
-    """     
+def control_surface_deflection_command(case,avl_object):
+    """
+    Generates control surface deflection commands for prescribed deflection analysis.
+    """
     cs_template = \
 '''
 D{0}

@@ -15,34 +15,93 @@ import numpy as np
 # Pre Stall Coefficients
 # ----------------------------------------------------------------------------------------------------------------------    
 def pre_stall_coefficients(state,settings,geometry):
-    """Uses the AERODAS method to determine prestall parameters for lift and drag for a single wing
+    """
+    Computes pre-stall lift and drag coefficients using the AERODAS method for wing sections.
 
-    Assumptions:
-    None
+    Parameters
+    ----------
+    state : Data
+        Aircraft state data containing flight conditions
+            - conditions.aerodynamics.angle_of_attack : array_like
+                Angle of attack in radians
+    settings : Data
+        AERODAS method configuration settings
+            - section_zero_lift_angle_of_attack : float
+                Section zero-lift angle of attack in radians
+    geometry : Data
+        Wing geometry and aerodynamic properties
+            - tag : str
+                Wing identifier
+            - vertical : bool
+                Flag indicating if wing is vertical (rudder/fin)
+            - section.angle_attack_max_prestall_lift : array_like
+                Angle of attack at maximum pre-stall lift in radians
+            - section.minimum_drag_coefficient : array_like
+                Minimum section drag coefficient
+            - section.minimum_drag_coefficient_angle_of_attack : array_like
+                Angle of attack at minimum drag coefficient in radians
+            - pre_stall_maximum_drag_coefficient_angle : array_like
+                Angle of attack at maximum pre-stall drag coefficient in radians
+            - pre_stall_maximum_lift_coefficient : array_like
+                Maximum pre-stall lift coefficient
+            - pre_stall_lift_curve_slope : array_like
+                Pre-stall lift curve slope per radian
+            - pre_stall_maximum_lift_drag_coefficient : array_like
+                Maximum pre-stall drag coefficient
 
-    Source:
-    NASA TR: "Models of Lift and Drag Coefficients of Stalled and Unstalled Airfoils in
-      Wind Turbines and Wind Tunnels" by D. A. Spera
+    Returns
+    -------
+    CL1 : array_like
+        Pre-stall lift coefficient
+    CD1 : array_like
+        Pre-stall drag coefficient
 
-    Inputs:
-    state.conditions.aerodynamics.angle_of_attack
-    settings.section_zero_lift_angle_of_attack
-    geometry.
-      section.
-        angle_attack_max_prestall_lift
-        zero_lift_drag_coefficient
-      pre_stall_maximum_drag_coefficient_angle
-      pre_stall_maximum_lift_coefficient
-      pre_stall_lift_curve_slope 
-      pre_stall_maximum_lift_drag_coefficient
+    Notes
+    -----
+    The AERODAS model provides empirical relationships for computing pre-stall aerodynamic 
+    coefficients for a wing section/airfoil based on wing geometry and operating conditions.
 
-    Outputs:
-    CL1 (coefficient of lift)                       [Unitless]
-    CD1 (coefficient of drag)                       [Unitless]
-    (packed in state.conditions.aerodynamics.pre_stall_coefficients[geometry.tag])
+    For vertical surfaces (fins, rudders), the angle of attack is set to zero
+    as these surfaces primarily operate in the crossflow direction.
 
-    Properties Used:
-    N/A
+    The method uses piecewise functions with different formulations depending
+    on the angle of attack relative to the zero-lift angle. Results are stored
+    in the state conditions for subsequent analysis steps.
+
+    **Major Assumptions**
+        * Pre-stall flow conditions (attached flow)
+        * Two-dimensional airfoil section behavior
+        * Steady-state aerodynamics
+
+    **Theory**
+
+    Pre-stall lift coefficient uses a modified linear relationship:
+
+    .. math::
+        CL_1 = S_1(\\alpha - A_0) - R_{CL1}\\left(\\frac{\\alpha - A_0}{A_{CL1} - A_0}\\right)^{N_1}
+
+    where :math:`R_{CL1} = S_1(A_{CL1} - A_0) - CL_{1max}` and :math:`N_1 = 1 + \\frac{CL_{1max}}{R_{CL1}}`.
+
+    Pre-stall drag coefficient follows:
+
+    .. math::
+        CD_1 = CD_{min} + (CD_{1max} - CD_{min})\\left(\\frac{\\alpha - A_{CDmin}}{A_{CD1} - A_{CDmin}}\\right)^M
+
+    **Definitions**
+
+    'Pre-stall Region'
+        Operating range where flow remains attached to the airfoil surface
+
+    'Zero-lift Angle'
+        Angle of attack at which the airfoil produces zero lift
+
+    References
+    ----------
+    [1] Spera, D. A., "Models of Lift and Drag Coefficients of Stalled and Unstalled Airfoils in Wind Turbines and Wind Tunnels", NASA, CR-2008-215434, October 2008
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.AERODAS.post_stall_coefficients : Post-stall lift and drag coefficients
     """  
     
     # unpack inputs
@@ -74,7 +133,7 @@ def pre_stall_coefficients(state,settings,geometry):
     CL1[alpha<A0]  = S1*(alpha[alpha<A0]-A0)+RCL1[alpha<A0]*((A0-alpha[alpha<A0])/(ACL1[alpha<A0]-A0))**N1[alpha<A0]
     
     # M what is m?
-    M              = 2. # Does this need changing
+    M              = 2. # This parameter is airfoil dependent. Does this need changing?
 
     # Equation 7a
     con      = np.logical_and((2*A0-ACD1)<=alpha,alpha<=ACD1)

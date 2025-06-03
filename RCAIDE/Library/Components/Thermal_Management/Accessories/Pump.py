@@ -18,7 +18,6 @@ class Pump(Data):
     ----------
     tag : str
         Unique identifier for the pump component, defaults to 'Pump'
-        
     efficiency : float
         Overall pump efficiency including mechanical and electrical losses, 
         defaults to 1.0
@@ -27,10 +26,9 @@ class Pump(Data):
     -----
     The pump class models liquid circulation devices used in thermal management 
     systems. It provides functionality for:
-    
-    * Power consumption calculation
-    * Performance modeling based on operating conditions
-    * Integration with liquid cooling systems
+        * Power consumption calculation
+        * Performance modeling based on operating conditions
+        * Integration with liquid cooling systems
 
     **Definitions**
 

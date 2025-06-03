@@ -22,10 +22,8 @@ class Constant_Speed_Internal_Combustion_Engine(Propulsor):
     ----------
     tag : str
         Identifier for the propulsion system, defaults to 'ice_constant_speed_propeller'
-        
     engine : None or Engine
         The internal combustion engine component
-        
     propeller : None or Propeller
         The constant-speed propeller component
     

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/build_VLM_surrogates.py
+# RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/build_AVL_surrogates.py
 #
 # Created: Oct 2024, M. Clarke
 
@@ -13,19 +13,59 @@ from scipy.interpolate                                           import RegularG
 #  build_AVL_surrogates
 # ---------------------------------------------------------------------------------------------------------------------- 
 def build_AVL_surrogates(aerodynamics):
-    """Build a surrogate using sample evaluation results.
-    
-    Assumptions:
-        None
-        
-    Source:
-        None
+    """
+    Builds surrogate models from AVL training data for rapid aerodynamic coefficient prediction.
 
-    Args:
-        aerodynamics       : VLM analysis          [unitless] 
-        
-    Returns: 
-        None  
+    Parameters
+    ----------
+    aerodynamics : Data
+        VLM aerodynamics analysis object containing training data and surrogate containers
+            - surrogates : Data
+                Container for storing trained surrogate interpolators
+            - training : Data
+                Training dataset from AVL analysis
+                    - angle_of_attack : array_like
+                        Training angles of attack in radians
+                    - Mach : array_like
+                        Training Mach numbers
+                    - coefficients : array_like
+                        Training aerodynamic coefficients [7, n_aoa, n_mach]
+                            - coefficients[0,:,:] : Lift coefficient (CL)
+                            - coefficients[1,:,:] : Induced drag coefficient (CDi)
+                            - coefficients[2,:,:] : Span efficiency factor (e)
+                            - coefficients[3,:,:] : Moment coefficient (CM)
+                            - coefficients[4,:,:] : Pitch moment derivative (Cm_alpha)
+                            - coefficients[5,:,:] : Yaw moment derivative (Cn_beta)
+                            - coefficients[6,:,:] : Neutral point location (NP)
+
+    Returns
+    -------
+    None
+        Surrogate interpolators are stored directly in aerodynamics.surrogates
+
+    Notes
+    -----
+    This function creates RegularGridInterpolator objects from SciPy.interpolate for each aerodynamic
+    coefficient using linear interpolation. The surrogates enable rapid 
+    evaluation of aerodynamic properties across the flight envelope without
+    requiring repeated AVL analysis.
+
+    The training data must be organized on a regular grid of angle of attack
+    and Mach number points. Linear interpolation is used with extrapolation
+    allowed beyond the training bounds.
+
+    All surrogate models are stored in the aerodynamics.surrogates container
+    with descriptive attribute names for easy access during flight simulation.
+
+    **Major Assumptions**
+        * Training data exists on regular rectangular grid
+        * Linear interpolation provides sufficient accuracy
+        * Extrapolation using nearest values is acceptable. If required, then the user is suggested to change the training points
+        * Aerodynamic coefficients vary smoothly with flight conditions
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.train_AVL_surrogates : Create training data
     """
     surrogates  = aerodynamics.surrogates
     training    = aerodynamics.training  

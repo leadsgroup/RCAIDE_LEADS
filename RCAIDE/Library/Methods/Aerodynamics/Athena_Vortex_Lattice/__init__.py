@@ -1,5 +1,20 @@
 # RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/__init__.py
-""" RCAIDE AVL Interface Package Setup
+"""
+Athena Vortex Lattice (AVL) interface methods for aerodynamic analysis and surrogate modeling.
+
+This module provides a comprehensive interface to the AVL aerodynamic analysis 
+software, including geometry translation, analysis execution, result processing, 
+and surrogate model generation. The interface handles automatic file management, 
+data translation between RCAIDE and AVL formats, and training of surrogate models 
+for efficient aerodynamic predictions. Note, that is that all modules require AVL 
+to be installed and accessible.
+
+Additional information on AVL, including download instructions, can be found at: 
+https://web.mit.edu/drela/Public/web/avl/
+
+See Also
+--------
+RCAIDE.Library.Methods.Aerodynamics : Parent aerodynamics methods module
 """
 
 from .evaluate_AVL              import  *

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/write_mass_file.py
+# RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/write_geometry.py
 #
 # Created: Oct 2024, M. Clarke
 
@@ -14,24 +14,25 @@ from RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.create_avl_datast
 #  write_geometry
 # ---------------------------------------------------------------------------------------------------------------------- 
 def write_geometry(avl_object,run_script_path):
-    """This function writes the translated aircraft geometry into text file read 
-    by AVL when it is called
+    """
+    Writes translated aircraft geometry to AVL-compatible input file for vortex lattice analysis.
 
-    Assumptions:
-        None
-        
-    Source:
-        Drela, M. and Youngren, H., AVL, http://web.mit.edu/drela/Public/web/avl
+    Parameters
+    ----------
+    avl_object : Data
+        AVL analysis object containing aircraft configuration and settings
+            - vehicle : Vehicle
+                Aircraft configuration with wings, fuselages, and mass properties
+            - settings : Data
+                Analysis configuration parameters
+    run_script_path : str
+        Directory path for analysis execution (currently unused but maintained for interface compatibility)
 
-    Inputs:
-        avl_object
-
-    Outputs:
-        None
-
-    Properties Used:
-        N/A
-    """    
+    Returns
+    -------
+    None
+        Geometry file is written to disk at specified location
+    """
     
     # unpack inputs
     aircraft                          = avl_object.vehicle
@@ -70,30 +71,19 @@ def write_geometry(avl_object,run_script_path):
 
 
 def make_header_text(avl_object):  
-    """This function writes the header using the template required for the AVL executable to read
+    """
+    Creates AVL geometry file header with reference values and symmetry settings.
 
-    Assumptions:
-        None
-        
-    Source:
-        None
-
-    Inputs:
-        avl_object.settings.flow_symmetry.xz_plane                      [-]
-        avl_object.settings.flow_symmetry.xy_parallel                   [-]
-        avl_object.settings.flow_symmetry.z_symmetry_plane              [-]
-        avl_object.vehicle.wings['main_wing'].areas.reference          [meters**2]
-        avl_object.vehicle.wings['main_wing'].chords.mean_aerodynamic  [meters]
-        avl_object.vehicle.wings['main_wing'].spans.projected          [meters]
-        avl_object.vehicle.mass_properties.center_of_gravity           [meters]
-        avl_object.vehicle.tag                                         [-]
-    
-    Outputs:
-        header_text                                                     [-]
-
-    Properties Used:
-        N/A
-    """      
+    Parameters
+    ----------
+    avl_object : Data
+        AVL analysis object containing aircraft configuration
+            
+    Returns
+    -------
+    header_text : str
+        Formatted header text for AVL geometry file
+    """
     header_base = \
 '''{0}
 
@@ -131,24 +121,24 @@ def make_header_text(avl_object):
 
 
 def make_surface_text(avl_wing,number_of_spanwise_vortices,number_of_chordwise_vortices):
-    """This function writes the surface text using the template required for the AVL executable to read
+    """
+    Formats wing geometry data into AVL surface definition with sections and control surfaces.
 
-    Assumptions:
-        None
-        
-    Source:
-        None
+    Parameters
+    ----------
+    avl_wing : Wing
+        AVL wing data structure with translated geometry
+    number_of_spanwise_vortices : int
+        Number of spanwise vortex elements for discretization
+    number_of_chordwise_vortices : int
+        Number of chordwise vortex elements for discretization
 
-    Inputs:
-       avl_wing.symmetric
-       avl_wing.tag
-        
-    Outputs:
-        surface_text                                                 
+    Returns
+    -------
+    surface_text : str
+        Complete AVL surface definition text with all sections
 
-    Properties Used:
-        N/A
-    """       
+    """
     ordered_tags = []         
     surface_base = \
         '''
@@ -198,24 +188,22 @@ SURFACE
 
 
 def make_body_text(avl_body,number_of_chordwise_vortices):   
-    """This function writes the body text using the template required for the AVL executable to read
+    """
+    Formats fuselage geometry into AVL body representation using cross-sectional surfaces.
 
-    Assumptions:
-        None
-        
-    Source:
-        None
+    Parameters
+    ----------
+    avl_body : Body
+        AVL body data structure with translated fuselage geometry
+    number_of_chordwise_vortices : int
+        Number of chordwise vortex elements for body surface discretization
 
-    Inputs:
-        avl_body.sections.horizontal
-        avl_body.sections.vertical
-    
-    Outputs:
-        body_text                                                 
+    Returns
+    -------
+    body_text : str
+        Complete AVL body definition with horizontal and vertical surfaces
 
-    Properties Used:
-        N/A
-    """      
+    """
     surface_base = \
 '''
 
@@ -255,26 +243,19 @@ SURFACE
 
 
 def make_wing_section_text(avl_section):
-    """This function writes the wing text using the template required for the AVL executable to read
+    """
+    Formats individual wing section geometry including airfoil and control surface definitions.
 
-    Assumptions:
-        None
-        
-    Source:
-        None
+    Parameters
+    ----------
+    avl_section : Section
+        Wing section data structure
 
-    Inputs:
-       avl_section.origin             [meters]
-       avl_section.chord              [meters]
-       avl_section.twist              [radians]
-       avl_section.airfoil_coord_file [-] 
-        
-    Outputs:
-        wing_section_text                                                 
-
-    Properties Used:
-        N/A
-    """      
+    Returns
+    -------
+    wing_section_text : str
+        Formatted AVL section definition with airfoil and control data
+    """
     section_base = \
 '''
 SECTION
@@ -314,26 +295,19 @@ SECTION
 
     
 def make_body_section_text(avl_body_section):
-    """This function writes the body text using the template required for the AVL executable to read
+    """
+    Formats individual fuselage cross-section for AVL body surface definition.
 
-    Assumptions:
-        None
-        
-    Source:
-        None
+    Parameters
+    ----------
+    avl_body_section : Section
+        Body section data structure
 
-    Inputs:
-       avl_section.origin             [meters]
-       avl_section.chord              [meters]
-       avl_section.twist              [radians]
-       avl_section.airfoil_coord_file [-] 
-                  
-    Outputs:
-        body_section_text                                                 
-
-    Properties Used:
-        N/A
-    """    
+    Returns
+    -------
+    body_section_text : str
+        Formatted AVL body section definition
+    """
     section_base = \
 '''
 SECTION
@@ -361,28 +335,19 @@ SECTION
 
     
 def make_controls_text(avl_control_surface):
-    """This function writes the control surface text using the template required 
-    for the AVL executable to read
+    """
+    Formats control surface definition for AVL analysis including hinge and deflection properties.
 
-    Assumptions:
-        None
-        
-    Source:
-        None
+    Parameters
+    ----------
+    avl_control_surface : Control_Surface
+        Control surface data structure
 
-    Inputs:
-        avl_control_surface.tag             [-]
-        avl_control_surface.gain            [-]
-        avl_control_surface.x_hinge         [-]
-        avl_control_surface.hinge_vector    [-]
-        avl_control_surface.sign_duplicate  [-]
-                  
-    Outputs:
-        control_text                                                 
-
-    Properties Used:
-        N/A
-    """    
+    Returns
+    -------
+    control_text : str
+        Formatted AVL control surface definition
+    """
     control_base = \
 '''CONTROL
 {0}    {1}   {2}   {3}  {4}

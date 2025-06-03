@@ -22,33 +22,30 @@ class Mass_Properties(Data):
     ----------
     mass : float
         Total mass of the component, defaults to 0.0
-        
     volume : float
         Volume of the component, defaults to 0.0
-        
     center_of_gravity : ndarray
         3D coordinates [x, y, z] of the component's center of gravity, 
         defaults to [0.0, 0.0, 0.0]
-        
     moments_of_inertia : Data
         Collection of inertial properties
-        
-        - center : ndarray
-            Reference point for inertia calculations [x, y, z],
-            defaults to [0.0, 0.0, 0.0]
-        - tensor : ndarray
-            3x3 inertia tensor about the reference point,
-            defaults to zero matrix
+            - center : ndarray
+                Reference point for inertia calculations [x, y, z],
+                defaults to [0.0, 0.0, 0.0]
+            - tensor : ndarray
+                3x3 inertia tensor about the reference point,
+                defaults to zero matrix
 
     Notes
     -----
     The Mass_Properties class provides a standardized structure for tracking mass-related 
     properties of components. It includes:
+        * Basic mass and volume
+        * Center of gravity location
+        * Full inertia tensor definition
+        * Reference point specification
     
-    * Basic mass and volume
-    * Center of gravity location
-    * Full inertia tensor definition
-    * Reference point specification
+    This class is integrated into the Component class and individual components.
 
     See Also
     --------

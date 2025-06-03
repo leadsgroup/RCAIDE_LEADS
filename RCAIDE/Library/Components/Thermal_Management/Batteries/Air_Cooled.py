@@ -40,10 +40,9 @@ class Air_Cooled(Component):
     -----
     The air-cooled system provides direct convective cooling for battery thermal 
     management. It includes functionality for:
-    
-    * Operating condition analysis
-    * Thermal performance calculation
-    * Condition plotting and visualization
+        * Operating condition analysis
+        * Thermal performance calculation
+        * Condition plotting and visualization
 
     **Definitions**
 
