@@ -1,7 +1,17 @@
 # RCAIDE/Methods/Aerodynamics/Common/Drag/__init__.py
 # 
 
-""" RCAIDE Package Setup
+"""
+Common drag calculation methods for aerodynamic analysis across multiple frameworks.
+
+This module provides fundamental drag computation utilities including parasite 
+drag estimation, compressibility corrections, and component-specific drag 
+calculations. These methods serve as building blocks for comprehensive drag 
+analysis in various aerodynamic frameworks within RCAIDE.
+
+See Also
+--------
+RCAIDE.Library.Methods.Aerodynamics.Common : Parent common aerodynamics module
 """
 
 # ----------------------------------------------------------------------------------------------------------------------
