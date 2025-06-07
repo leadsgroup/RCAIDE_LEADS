@@ -116,7 +116,7 @@ def compute_systems_weight(vehicle):
                 NENG += 1  
     fuse_w         = ref_fuselage.width / Units.ft
     fuse_h         = ref_fuselage.heights.maximum / Units.ft   
-    cargo_weight   = vehicle.payload.cargo.mass_properties.mass / Units.lbs
+    cargo_weight   = vehicle.mass_properties.payload / Units.lbs
     
     if vehicle.passengers >= 150:
         flight_crew = 3 # number of flight crew
