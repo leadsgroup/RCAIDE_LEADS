@@ -112,6 +112,8 @@ def mass_properties(mission):
                             residual_max_zero_fuel = abs(mew_max_zero_fuel - weights_analysis.vehicle.mass_properties.max_zero_fuel)
                             weights_analysis.vehicle.mass_properties.max_zero_fuel = mew_max_zero_fuel
                             weights_analysis.vehicle.mass_properties.max_fuel = new_max_fuel
+                            
+                            iteration += 1
                             if residual_max_fuel < 10 and residual_max_zero_fuel <10:
                                 break
                             else:
