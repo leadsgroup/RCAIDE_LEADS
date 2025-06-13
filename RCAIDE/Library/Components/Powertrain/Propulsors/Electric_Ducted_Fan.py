@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
- # RCAIDE imports 
+ # RCAIDE imports
+import  RCAIDE
 from .   import Propulsor  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.append_electric_ducted_fan_conditions           import append_electric_ducted_fan_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.unpack_electric_ducted_fan_unknowns             import unpack_electric_ducted_fan_unknowns
@@ -72,16 +73,19 @@ class Electric_Ducted_Fan(Propulsor):
         append_electric_ducted_fan_conditions(self,segment,energy_conditions,noise_conditions)
         return 
 
-    def unpack_propulsor_unknowns(self,segment):  
-        unpack_electric_ducted_fan_unknowns(self,segment)
+    def unpack_propulsor_unknowns(self,segment): 
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:        
+            unpack_electric_ducted_fan_unknowns(self,segment)
         return 
 
     def pack_propulsor_residuals(self,segment): 
-        pack_electric_ducted_fan_residuals(self,segment)
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:        
+            pack_electric_ducted_fan_residuals(self,segment)
         return        
 
     def append_propulsor_unknowns_and_residuals(self,segment):
-        append_electric_ducted_fan_residual_and_unknown(self,segment)
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:
+            append_electric_ducted_fan_residual_and_unknown(self,segment)
         return 
     
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
