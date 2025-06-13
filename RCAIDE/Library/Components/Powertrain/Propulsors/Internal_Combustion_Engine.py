@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
- # RCAIDE imports   
+ # RCAIDE imports
+import  RCAIDE
 from .                import Propulsor  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.unpack_internal_combustion_engine_unknowns   import unpack_internal_combustion_engine_unknowns
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.pack_internal_combustion_engine_residuals    import pack_internal_combustion_engine_residuals
@@ -80,21 +81,24 @@ class Internal_Combustion_Engine(Propulsor):
         """
         Unpacks propulsor unknowns from the segment.
         """
-        unpack_internal_combustion_engine_unknowns(self,segment)
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:
+            unpack_internal_combustion_engine_unknowns(self,segment)
         return 
 
     def pack_propulsor_residuals(self,segment): 
         """
         Packs propulsor residuals into the segment.
         """
-        pack_internal_combustion_engine_residuals(self,segment)
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:
+            pack_internal_combustion_engine_residuals(self,segment)
         return
 
     def append_propulsor_unknowns_and_residuals(self,segment):
         """
         Appends propulsor unknowns and residuals to the segment.
         """
-        append_internal_combustion_engine_residual_and_unknown(self,segment)
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:
+            append_internal_combustion_engine_residual_and_unknown(self,segment)
         return    
     
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
