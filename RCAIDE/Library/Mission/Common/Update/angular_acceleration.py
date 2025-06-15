@@ -40,7 +40,8 @@ def angular_acceleration(segment):
     
     # accelerations
     ang_acc_i = np.dot(D,omega)
-    
+    ang_acc_w = orientation_product(T_inertia2wind,ang_acc_i )
+
     # pack conditions
     segment.state.conditions.frames.inertial.angular_acceleration_vector[:,:] = ang_acc_i[:,:] 
-    segment.state.conditions.frames.wind.angular_acceleration_vector     = orientation_product(T_inertia2wind,ang_acc_i )    
+    segment.state.conditions.frames.wind.angular_acceleration_vector[:,:]     = ang_acc_w[:,:]

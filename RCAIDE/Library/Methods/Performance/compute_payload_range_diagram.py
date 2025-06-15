@@ -135,7 +135,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         Outputs: 
             payload_range       data structure of payload range properties   [m/s]
     """ 
-    #unpack
+    # unpack
     mass = vehicle.mass_properties
     if not mass.operating_empty:
         raise AttributeError("Error calculating Payload Range Diagram: Vehicle Operating Empty not defined") 

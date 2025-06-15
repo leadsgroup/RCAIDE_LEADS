@@ -203,23 +203,6 @@ def set_residuals_and_unknowns(mission):
                     segment.state.unknowns["aileron" ] = ones_row(1) * ctrls.aileron_deflection.initial_guess_values[0][0]
                 else: 
                     segment.state.unknowns["aileron" ] = ones_row(1) * 0.0 * Units.degrees 
-                num_ctrls += 1       
-            
-        ##  Thrust Vector Angle
-        #if ctrls.thrust_vector_angle.active:  
-            #for i in range(len(ctrls.thrust_vector_angle.assigned_propulsors)):  
-                #if ctrls.thrust_vector_angle.initial_guess_values != None:  
-                    #segment.state.unknowns["thrust_vector_" + str(i)] = ones_row(1) * ctrls.thrust_vector_angle.initial_guess_values[i][0]
-                #else:
-                    #segment.state.unknowns["thrust_vector_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
-                #num_ctrls += 1         
-         
-        #if ctrls.rotor_blade_pitch_command.active:  
-            #for i in range(len(ctrls.rotor_blade_pitch_command.assigned_propulsors)):  
-                #if ctrls.rotor_blade_pitch_command.initial_guess_values != None:  
-                    #segment.state.unknowns["blade_pitch_command_" + str(i)] = ones_row(1) * ctrls.rotor_blade_pitch_command.initial_guess_values[i][0]
-                #else:
-                    #segment.state.unknowns["blade_pitch_command_" + str(i)] = ones_row(1) * 0.0 * Units.degrees 
-                #num_ctrls += 1
+                num_ctrls += 1
     return 
                                                                                                                                                                 

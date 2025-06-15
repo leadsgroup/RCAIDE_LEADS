@@ -343,7 +343,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
                                                     + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
  
-    output.payload    = payload 
+    output.payload              = payload 
     output.operational_items    = Data()
     output.operational_items    = W_oper 
     output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 

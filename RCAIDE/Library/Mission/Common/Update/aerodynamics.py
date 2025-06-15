@@ -55,8 +55,7 @@ def aerodynamics(segment):
     CL[CL< -CLmax] = -CLmax
 
     # dimensionalize
-    bank_angle = segment.state.conditions.aerodynamics.angles.phi
-    F      = segment.state.ones_row(3) * 0.0 
+    F      = segment.state.ones_row(3) * 0.0
     F[:,2] = ( -CL * q * Sref )[:,0]
     F[:,1] = (  CY * q * Sref  )[:,0]  
     F[:,0] = ( -CD * q * Sref )[:,0]

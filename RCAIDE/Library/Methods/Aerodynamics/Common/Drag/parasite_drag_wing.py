@@ -64,8 +64,8 @@ def parasite_drag_wing(state,settings,geometry):
     Sref          = wing.areas.reference   
     num_segments  = len(wing.segments.keys())     
 
-    # based on a regression of multiple aircraft (M.Clarke 2025)
-    K = 1 # -3E-06 * (Sref ** 2) + 0.0028*  (Sref) + 0.3999
+    # TO DO # correction factor based on a regression of multiple aircraft
+    K = 1
     
     # if wing has segments, compute and sum parasite drag of each segment 
     xtu       = wing.transition_x_upper

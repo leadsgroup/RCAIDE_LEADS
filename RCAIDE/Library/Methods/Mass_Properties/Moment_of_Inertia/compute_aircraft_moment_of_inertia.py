@@ -5,11 +5,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia, compute_cylinder_moment_of_inertia, compute_wing_moment_of_inertia, compute_LOPA_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia, compute_cylinder_moment_of_inertia, compute_wing_moment_of_inertia
 
 import RCAIDE
-import numpy as  np 
-from copy import deepcopy
+import numpy as  np
 
 # ------------------------------------------------------------------        
 #  Component moments of inertia (MOI) tensors
@@ -48,84 +47,14 @@ def compute_aircraft_moment_of_inertia(vehicle, CG_location, update_MOI=True):
         I, mass = fuselage.compute_moment_of_inertia(center_of_gravity = CG_location)
         MOI_tensor += I
         MOI_mass += mass
-
-        #if len(fuselage.cabins) >0:
-            #I, mass     = compute_LOPA_moment_of_inertia(vehicle.payload.passengers,fuselage.layout_of_passenger_accommodations, center_of_gravity =CG_location)  
-            #MOI_tensor += I
-            #MOI_mass   += mass          
     
     # ------------------------------------------------------------------        
     #  Wing(s)
     # ------------------------------------------------------------------      
     for wing in vehicle.wings:
-
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            wing_cabin = deepcopy(wing)
-            wing_outboard = deepcopy(wing)
-            wing_cabin.segments.clear()
-            wing_outboard.segments.clear()
-            center_fuse_number = 1
-            outboard_segment_number = 1
-            for segment in wing.segments:
-                if isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
-                    if center_fuse_number == 1:
-                        wing_cabin.chords.root = segment.root_chord_percent * wing.chords.root
-                        wing_cabin.thickness_to_chord = segment.thickness_to_chord
-                        net_x_location = wing_cabin.chords.root * 0.25
-                        id_first = segment.tag
-                    else:
-                        net_x_location += wing.spans.total / 2 * (segment.percent_span_location - wing_cabin.segments[id_first].percent_span_location)*np.sin(wing_cabin.segments[id_first].sweeps.quarter_chord)
-                    segment.root_chord_percent = segment.root_chord_percent * wing.chords.root/wing_outboard.chords.root
-                    wing_cabin.chords.tip = segment.root_chord_percent * wing.chords.root
-                    wing_cabin.spans.total = segment.percent_span_location * wing.spans.total
-                    wing_cabin.append_segment(segment)
-                    center_fuse_number += 1
-                    wing_cabin.sweeps.quarter_chord = np.arctan(net_x_location/wing_cabin.spans.total)
-                    tag_last = segment.tag
-                    
-                else:
-                    if outboard_segment_number == 1:
-                        wing_outboard.append_segment(wing.segments[tag_last])
-                        wing_outboard.chords.root = segment.root_chord_percent * wing.chords.root
-                        wing_outboard.thickness_to_chord = segment.thickness_to_chord
-                        wing_outboard.origin = np.array(wing_outboard.origin) + np.array([net_x_location, wing_outboard.segments[tag_last].percent_span_location * wing.spans.total, 0])
-                        wing_outboard.spans.total = (1 - wing_outboard.segments[tag_last].percent_span_location) * wing.spans.total
-                        net_outboard_x_location = wing_outboard.chords.root * 0.25
-                        tag_first = segment.tag
-                    else:
-                        net_outboard_x_location += wing.spans.total / 2 * (segment.percent_span_location - wing_outboard.segments[tag_last].percent_span_location)*np.sin(wing_outboard.segments[tag_last].sweeps.quarter_chord)
-                    
-                    segment.root_chord_percent = segment.root_chord_percent * wing.chords.root/wing_outboard.chords.root
-                    wing_outboard.append_segment(segment)
-                    outboard_segment_number += 1
-                    wing_outboard.chords.tip = segment.root_chord_percent * wing.chords.root
-                    wing_outboard.sweeps.quarter_chord = np.arctan((net_outboard_x_location - net_x_location)/wing_outboard.spans.total)
-                    # need to add wing quarter chord sweep
-
-
-            RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
-            I_outboard, mass_outboard  = wing_outboard.compute_moment_of_inertia(mass=vehicle.mass_properties.weight_breakdown.empty.structural.wings, center_of_gravity =CG_location)
-            centerbody_mass = vehicle.mass_properties.weight_breakdown.empty.structural.aft_center_body + vehicle.mass_properties.weight_breakdown.empty.structural.center_body
-            I_cabin, mass_cabin  = wing_cabin.compute_moment_of_inertia(mass=centerbody_mass, center_of_gravity =CG_location)
-            MOI_tensor += I_outboard + I_cabin
-            MOI_mass   += mass_outboard + mass_cabin   
-
-        #if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body) and len(wing.cabins) >0:
-            #I, mass  = compute_LOPA_moment_of_inertia(vehicle.payload.passengers, wing.layout_of_passenger_accommodations, center_of_gravity =CG_location)  
-            #MOI_tensor += I
-            #MOI_mass   += mass   
-
-    else:
         I, mass = wing.compute_moment_of_inertia(mass=wing.mass_properties.mass, center_of_gravity =CG_location)
         MOI_tensor += I
-        MOI_mass   += mass 
-    # ------------------------------------------------------------------        
-    #  Wing(s)
-    # ------------------------------------------------------------------      
-    #for payload in vehicle.cargo_bays:
-        #I, mass = wing.compute_moment_of_inertia(payload.mass_properties.mass, payload.length, payload.width, payload.height, 0, 0, 0, CG_location)
-        #MOI_tensor += I
-        #MOI_mass   += mass     
+        MOI_mass   += mass
     
     # ------------------------------------------------------------------        
     #  Energy network

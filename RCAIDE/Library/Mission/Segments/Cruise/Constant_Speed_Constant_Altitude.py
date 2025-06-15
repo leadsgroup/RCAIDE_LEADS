@@ -72,7 +72,7 @@ def initialize_conditions(segment):
     RCAIDE.Framework.Mission.Segments
     """        
     
-    # unpack     
+    # unpack
     alt        = segment.altitude
     xf         = segment.distance
     air_speed  = segment.air_speed       

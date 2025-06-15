@@ -39,7 +39,6 @@ def parasite_drag_pylon(state,settings,geometry):
     """
     
     drag          = state.conditions.aerodynamics.coefficients.drag
-    Mach          = state.conditions.freestream.mach_number
     pylon_factor  = 0.2  
 
     # Estimating pylon drag

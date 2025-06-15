@@ -135,7 +135,7 @@ def plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation 
     for i in range(len(fuselage.segments) - 1):
         seg =  fuselage.segments[segment_tags[i]]
         next_seg =  fuselage.segments[segment_tags[i+1]]
-        if seg.fuel.tank: 
+        if seg.has_fuel_tank: 
             segment_list.append(seg.tag)
             if next_seg.tag not in segment_list:
                 segment_list.append(next_seg.tag)  
@@ -206,7 +206,7 @@ def plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, number_of_airfoil_poin
     for i in range(len(wing.segments) - 1):
         seg =  wing.segments[segment_tags[i]]
         next_seg =  wing.segments[segment_tags[i+1]]
-        if seg.fuel.tank:
+        if seg.has_fuel_tank:
             if seg.tag not in segment_list:
                 segment_list.append(seg.tag)
             if next_seg.tag not in segment_list:
@@ -319,8 +319,8 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
         for i in range(len(segment_list)):
             current_seg = segments[segment_list[i]]
             front_rib_yu,rear_rib_yu,front_rib_yl,rear_rib_yl = compute_non_dimensional_rib_coordinates(current_seg)
-            fs = current_seg.fuel.tank_start_percent_chord
-            rs = current_seg.fuel.tank_end_percent_chord  
+            fs = current_seg.fuel_tank.percent_chord_start_location
+            rs = current_seg.fuel_tank.percent_chord_end_location  
             x_coordinates =  np.array([rs, rs, fs, fs, rs])
             y_coordinates =  np.array([rear_rib_yl, rear_rib_yu, front_rib_yu,front_rib_yl,rear_rib_yl ])   
             twist    = current_seg.twist 
@@ -379,8 +379,8 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
         translation      = np.zeros((dim,n_points, 3,1))
     
         front_rib_yu,rear_rib_yu,front_rib_yl,rear_rib_yl = compute_non_dimensional_rib_coordinates(wing)
-        fs = wing.fuel.tank_start_percent_chord
-        rs = wing.fuel.tank_end_percent_chord  
+        fs = wing.fuel_tank.percent_chord_start_location
+        rs = wing.fuel_tank.percent_chord_end_location  
         x_coordinates =  np.array([rs, rs, fs, fs, rs])
         y_coordinates =  np.array([rear_rib_yl, rear_rib_yu, front_rib_yu,front_rib_yl,rear_rib_yl ]) 
             

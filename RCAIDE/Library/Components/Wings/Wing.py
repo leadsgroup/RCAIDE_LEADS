@@ -182,8 +182,8 @@ class Wing(Component):
         self.percent_span_unexposed            = 0.0
         self.total_length                      = 0.0
         
-        self.fuel                              = Data()        
-        self.fuel.tank                = False
+        self.fuel_tanl                         = Data()        
+        self.has_fuel_tank                     = False
         
         self.spans                             = Data()
         self.spans.projected                   = 0.0
