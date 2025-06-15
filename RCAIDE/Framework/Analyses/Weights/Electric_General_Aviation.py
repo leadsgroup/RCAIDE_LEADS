@@ -47,6 +47,5 @@ class Electric_General_Aviation(Electric):
 
         Properties Used:
         N/A
-        """ 
-        self.propulsion_architecture                       = 'General_Aviation' 
+        """  
      

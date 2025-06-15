@@ -49,6 +49,7 @@ class Electric_VTOL(Electric):
         N/A
         """ 
         self.propulsion_architecture                       = 'Electric' 
+        self.aircraft_type                                 = 'VTOL'
         
 
         
