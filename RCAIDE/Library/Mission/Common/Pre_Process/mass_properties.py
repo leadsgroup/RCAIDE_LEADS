@@ -21,18 +21,14 @@ def mass_properties(mission):
          
             # --------------------------------------------------------------------------------------------
             # Pre-checks for weights analysis 
-            # --------------------------------------------------------------------------------------------
-            # Aircraft type check
-            if weights_analysis.aircraft_type == None:
-                raise AttributeError("Aircraft type must be defined for weights analysis")
-            
+            # --------------------------------------------------------------------------------------------             
             # Takeoff weight check 
             if weights_analysis.vehicle.mass_properties.max_takeoff == None:
                 raise AttributeError("Define maximum takeoff weight of aircraft")
             
-            # Max payload weight 
-            if weights_analysis.vehicle.mass_properties.max_payload == None:
-                raise AttributeError("Define maximum payload weight of aircraft")
+            ## Max payload weight 
+            #if weights_analysis.vehicle.mass_properties.max_payload == None:  
+                #raise AttributeError("Define maximum payload weight of aircraft")
             
             # Max fuel weight of aircraft 
             if weights_analysis.vehicle.mass_properties.max_fuel == None:
@@ -114,8 +110,7 @@ def mass_properties(mission):
                     if i == 0: 
                         print("\nPerforming Weights Analysis")
                         print("--------------------------------------------------------")
-                        print("Propulsion Architecture:", weights_analysis.propulsion_architecture)
-                        print("Aircraft Type          :", weights_analysis.aircraft_type)
+                        print("Propulsion Architecture:", weights_analysis.propulsion_architecture) 
                         print("Method                 :", weights_analysis.method)
                         def print_section(title, data):
                             print(f"{title}")

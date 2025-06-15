@@ -42,8 +42,7 @@ def Transport_Aircraft_Test():
     # ------------------------------------------------------------------
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
-    weight_analysis                               = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weight_analysis.aircraft_type                 = "Transport"
+    weight_analysis                               = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
     weight_analysis.vehicle                       = vehicle
     weight_analysis.method                        = 'Raymer'
     weight_analysis.settings.use_max_fuel_weight  = False  
@@ -96,14 +95,13 @@ def General_Aviation_Test():
     # ------------------------------------------------------------------
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
-    weight_analysis               = RCAIDE.Framework.Analyses.Weights.Conventional() 
+    weight_analysis               = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation() 
     weight_analysis.vehicle       = general_aviation_setup() 
     for wing in weight_analysis.vehicle.wings: 
         wing_planform(wing,overwrite_reference =  True) 
         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
             weight_analysis.vehicle.reference_area = wing.areas.reference
-    weight_analysis.method        = 'FLOPS'
-    weight_analysis.aircraft_type = 'General_Aviation'
+    weight_analysis.method        = 'FLOPS' 
     results                       = weight_analysis.evaluate() 
 
     # ------------------------------------------------------------------
@@ -150,9 +148,8 @@ def EVTOL_Aircraft_Test(update_regression_values):
     # ------------------------------------------------------------------
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
-    weight_analysis          = RCAIDE.Framework.Analyses.Weights.Electric()
-    weight_analysis.method    = 'Physics_Based'
-    weight_analysis.aircraft_type = 'VTOL'
+    weight_analysis          = RCAIDE.Framework.Analyses.Weights.Electric_VTOL()
+    weight_analysis.method    = 'Physics_Based' 
     weight_analysis.settings.safety_factor               = 1.5    
     weight_analysis.settings.miscelleneous_weight_factor = 1.1 
     weight_analysis.settings.disk_area_factor            = 1.15

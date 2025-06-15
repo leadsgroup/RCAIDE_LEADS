@@ -146,8 +146,7 @@ def fuel_aircraft_base_analysis(vehicle):
     analyses.append(geometry)
     # ------------------------------------------------------------------
     #  Weights 
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.aircraft_type =  "Transport"
+    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
     weights.vehicle = vehicle 
     weights.settings.update_mass_properties         = True
     weights.settings.update_center_of_gravity       = False
@@ -200,8 +199,7 @@ def electric_aircraft_base_analysis(vehicle):
     analyses.append(geometry)
     # ------------------------------------------------------------------
     #  Weights 
-    weights = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.aircraft_type   = 'General_Aviation'
+    weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation() 
     weights.settings.update_mass_properties         = True
     weights.vehicle = vehicle
     analyses.append(weights)

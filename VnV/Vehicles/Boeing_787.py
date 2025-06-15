@@ -878,8 +878,8 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Weights
     # ------------------------------------------------------------------
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle = vehicle
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
+    weights.vehicle = vehicle   
     weights.settings.FLOPS.complexity                                        = 'Complex' 
     weights.settings.weight_correction_additions.empty.propulsion.battery    = 56 
     weights.settings.weight_correction_additions.empty.structural.paint      = 450 

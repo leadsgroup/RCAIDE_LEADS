@@ -184,8 +184,7 @@ def TW_base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.aircraft_type =  "VTOL"
+    weights         = RCAIDE.Framework.Analyses.Weights.Electric_VTOL() 
     weights.vehicle = vehicle
     analyses.append(weights)
 
@@ -231,8 +230,7 @@ def SR_base_analysis(vehicle):
     analyses.append(geometry)
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.aircraft_type =  "VTOL"
+    weights         = RCAIDE.Framework.Analyses.Weights.Electric_VTOL() 
     weights.vehicle = vehicle
     weights.settings.update_center_of_gravity   = True
     weights.settings.update_moment_of_inertia   = True

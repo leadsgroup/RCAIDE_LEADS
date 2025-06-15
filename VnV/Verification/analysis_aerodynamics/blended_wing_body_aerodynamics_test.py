@@ -84,9 +84,8 @@ def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle = vehicle
-    weights.aircraft_type  = 'BWB'
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_BWB()
+    weights.vehicle = vehicle 
     weights.settings.FLOPS.complexity   = 'Complex'  
     analyses.append(weights)
 

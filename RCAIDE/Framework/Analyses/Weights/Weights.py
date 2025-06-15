@@ -52,8 +52,7 @@ class Weights(Analysis):
         """           
         self.tag                                                    = 'weights' 
         self.method                                                 = None
-        self.vehicle                                                = None
-        self.aircraft_type                                          = None
+        self.vehicle                                                = None 
         self.propulsion_architecture                                = None
         self.print_weight_analysis_report                           = True
         self.settings                                               = Data() 
@@ -101,12 +100,9 @@ class Weights(Analysis):
         results 
         """
         #unpack
-        vehicle = self.vehicle
+        vehicle = self.vehicle 
         
-        if self.aircraft_type ==  None:
-            raise Exception('Specify Aircraft Type. Current options are: "Transport", "BWB", "General_Aviation" and "VTOL" ')
         
-        #try:
         compute_module = importlib.import_module(f"RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.{self.propulsion_architecture}.{self.aircraft_type}.{self.method}.compute_operating_empty_weight")
         if self.print_weight_analysis_report:
             if  self.settings.update_center_of_gravity:

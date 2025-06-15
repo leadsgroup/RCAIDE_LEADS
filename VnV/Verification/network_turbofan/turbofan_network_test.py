@@ -221,8 +221,7 @@ def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Weights
-    weights                                          = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.aircraft_type                            =  "Transport"
+    weights                                          = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
     weights.vehicle                                  = vehicle
     analyses.append(weights)
  
@@ -804,7 +803,7 @@ def mission_setup(analyses):
     # ------------------------------------------------------------------------------------------------------------------------------------ 
     segment = Segments.Descent.Constant_EAS_Constant_Rate(base_segment)
     segment.tag = "descent_3" 
-    segment.analyses.extend( analyses.base ) 
+    segment.analyses.extend( analyses.landing ) 
     segment.altitude_start                                           = 2500  * Units.feet
     segment.altitude_end                                             = 0  * Units.feet 
     segment.descent_rate                                             = 3.  * Units.m / Units.s
@@ -828,7 +827,7 @@ def mission_setup(analyses):
     segment = Segments.Ground.Landing(base_segment)
     segment.tag = "landing"
 
-    segment.analyses.extend( analyses.landing )
+    segment.analyses.extend( analyses.reverse_thrust )
     segment.velocity_start                                                = 150 * Units.knots
     segment.velocity_end                                                  = 100 * Units.knots 
     segment.friction_coefficient                                          = 0.4

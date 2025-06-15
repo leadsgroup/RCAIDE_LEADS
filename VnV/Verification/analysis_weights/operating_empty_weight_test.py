@@ -45,14 +45,13 @@ def Transport_Hydrogen_Test(update_regression_values, show_figure):
 
     for method_type in method_types:
         print(f'Testing Transport Aircraft Method: {method_type} | Method: {"Complex"}')        
-        weight_analysis = RCAIDE.Framework.Analyses.Weights.Hydrogen()
+        weight_analysis = RCAIDE.Framework.Analyses.Weights.Hydrogen_Transport()
         weight_analysis.vehicle = vehicle
         for wing in weight_analysis.vehicle.wings: 
             wing_planform(wing,overwrite_reference =  True) 
             if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
                 weight_analysis.vehicle.reference_area = wing.areas.reference
-        weight_analysis.method = method_type
-        weight_analysis.aircraft_type = 'Transport'
+        weight_analysis.method = method_type 
 
 
         weight = weight_analysis.evaluate()
@@ -86,15 +85,14 @@ def Transport_Aircraft_Test(update_regression_values, show_figure):
 
         for method_type in method_types:
             print(f'Testing Transport Aircraft Method: {method_type} | Advanced Composites: {advanced_composites} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}')        
-            weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional()
+            weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
             weight_analysis.vehicle = transport_setup()
             for wing in weight_analysis.vehicle.wings: 
                 wing_planform(wing,overwrite_reference =  True) 
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
                     weight_analysis.vehicle.reference_area = wing.areas.reference
             weight_analysis.method = method_type
-            weight_analysis.settings.advanced_composites = advanced_composites
-            weight_analysis.aircraft_type = 'Transport'
+            weight_analysis.settings.advanced_composites = advanced_composites 
 
             if method_type == 'FLOPS':
                 save_filename = f'FLOPS_{"Simple" if FLOPS_number == 0 else "Complex"}'
@@ -140,14 +138,13 @@ def General_Aviation_Test(update_regression_values, show_figure):
             print(f'Testing General Aviation Method: {method_type} | Advanced Composites: {advanced_composite} | Method: {("Simple" if FLOPS_number == 0 else "Complex") if method_type == "FLOPS" else "Raymer"}')
 
 
-            weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional()
+            weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
             weight_analysis.vehicle = general_aviation_setup()
             for wing in weight_analysis.vehicle.wings: 
                 wing_planform(wing,overwrite_reference =  True) 
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
                     weight_analysis.vehicle.reference_area = wing.areas.reference
-            weight_analysis.method = method_type
-            weight_analysis.aircraft_type = 'General_Aviation'
+            weight_analysis.method = method_type 
             weight_analysis.settings.advanced_composites = advanced_composite
 
             if method_type == 'FLOPS':
@@ -187,15 +184,14 @@ def General_Aviation_Test(update_regression_values, show_figure):
         # ---------
         # Jet Cessna 172 Variant Testing
         print(f'Testing Jet General Aviation Method: {method_type} | Advanced Composites: {advanced_composite} | Method: {("Simple" if FLOPS_number == 0 else "Complex") if method_type == "FLOPS" else "Raymer"}')
-        weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional()
+        weight_analysis = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
         jet_cessna_172 = general_aviation_setup()
         jet_cessna_172.networks.fuel.propulsors.pop('ice_propeller')
         turbine = Jet_engine()
         jet_cessna_172.networks.fuel.propulsors.append(turbine)
         jet_cessna_172.networks.fuel.fuel_lines['fuel_line'].assigned_propulsors = [[turbine.tag]]
         weight_analysis.vehicle = jet_cessna_172
-        weight_analysis.method = method_type
-        weight_analysis.aircraft_type = 'General_Aviation'
+        weight_analysis.method = method_type 
         weight_analysis.settings.advanced_composites = False
 
         if method_type == 'FLOPS' and FLOPS_number == 0:
@@ -235,7 +231,7 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
     for cabin_type in cabin_types:
         for FLOPS_number in [0,1]:
             print(f'Testing Transport Aircraft Method: BWB| Composites: {cabin_type} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}') 
-            weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional()
+            weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional_BWB()
             weight_analysis.vehicle  = bwb_setup()
             if cabin_type == 'PERSUS':
                 weight_analysis.settings.PRSEUS = True
@@ -246,8 +242,7 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
                     compute_layout_of_passenger_accommodations(wing)  
                     update_blended_wing_body_planform(wing)
                     bwb_wing_planform(wing,overwrite_reference = True)
-                    weight_analysis.vehicle.reference_area = wing.areas.reference
-            weight_analysis.aircraft_type  = 'BWB'
+                    weight_analysis.vehicle.reference_area = wing.areas.reference 
             weight_analysis.settings.FLOPS.complexity = 'Simple' if FLOPS_number == 0 else 'Complex'
             weight                   = weight_analysis.evaluate()
             plot_weight_breakdown(weight_analysis.vehicle, show_figure = show_figure) 
@@ -279,13 +274,12 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
     return
 
 def EVTOL_Aircraft_Test(update_regression_values,show_figure): 
-    weight_analysis          = RCAIDE.Framework.Analyses.Weights.Electric()
+    weight_analysis          = RCAIDE.Framework.Analyses.Weights.Electric_VTOL()
     weight_analysis.vehicle  = evtol_setup(update_regression_values) 
     for wing in weight_analysis.vehicle.wings: 
         wing_planform(wing,overwrite_reference =  True) 
         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            weight_analysis.vehicle.reference_area = wing.areas.reference
-    weight_analysis.aircraft_type = 'VTOL'
+            weight_analysis.vehicle.reference_area = wing.areas.reference 
     weight_analysis.method   = 'Physics_Based'
     weight_analysis.settings.safety_factor = 1.5    # CHECK THIS VALUE
     weight_analysis.settings.miscelleneous_weight_factor = 1.1 # CHECK THIS VALUE

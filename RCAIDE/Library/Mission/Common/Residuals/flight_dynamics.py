@@ -142,8 +142,8 @@ def flight_dynamics(segment):
 
     ang_acc_w = segment.state.conditions.frames.wind.angular_acceleration_vector   
     m         = segment.state.conditions.weights.total_mass
-    I         = segment.analyses.aerodynamics.vehicle.mass_properties.moments_of_inertia.tensor  
-
+    I         = segment.analyses.aerodynamics.vehicle.mass_properties.moments_of_inertia.tensor               
+            
     if ground_seg_flag:
         vf = segment.velocity_end
         if vf == 0.0: vf = 0.01 

@@ -114,8 +114,7 @@ def base_analysis(vehicle,emissions_method, use_surrogate):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.aircraft_type  =  "Transport"
+    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
     weights.vehicle = vehicle
     analyses.append(weights)
     

@@ -32,7 +32,8 @@ def vehicle_setup():
     vehicle.mass_properties.takeoff                   = 79015.8 * Units.kilogram    
     vehicle.mass_properties.operating_empty           = 62746.4 * Units.kilogram  
     vehicle.mass_properties.max_fuel                  = 20897.0 * Units.kilogram 
-    vehicle.mass_properties.max_zero_fuel             = 62732.0 * Units.kilogram 
+    vehicle.mass_properties.max_zero_fuel             = 62732.0 * Units.kilogram
+    vehicle.mass_properties.max_payload               = 20540.0 * Units.kilogram
     vehicle.mass_properties.cargo                     = 10000.  * Units.kilogram  
     vehicle.mass_properties.center_of_gravity         = [[21,0, 0]]
     vehicle.flight_envelope.ultimate_load             = 3.75
@@ -741,6 +742,7 @@ def configs_setup(vehicle):
     config.tag = 'reverse_thrust'
     config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg 
+    config.networks.fuel.reverse_thrust             = True
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
     configs.append(config)    

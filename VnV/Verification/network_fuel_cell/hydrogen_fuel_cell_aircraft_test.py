@@ -106,8 +106,7 @@ def base_analysis(vehicle):
  
     # ------------------------------------------------------------------
     #  Weights
-    weights          = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.aircraft_type   = 'General_Aviation'
+    weights          = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation() 
     weights.settings.update_mass_properties         = False
     weights.settings.update_center_of_gravity       = False
     weights.settings.update_moment_of_inertia       = False 
