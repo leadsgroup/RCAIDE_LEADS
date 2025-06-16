@@ -25,16 +25,17 @@ def vehicle_setup():
     vehicle                                     = RCAIDE.Vehicle()
     vehicle.tag                                 = 'Cessna_172' 
     vehicle.mass_properties.max_takeoff         = 2550. * Units.pounds
-    vehicle.mass_properties.takeoff             = 2550. * Units.pounds
-    vehicle.mass_properties.max_zero_fuel       = 2550. * Units.pounds
+    vehicle.mass_properties.takeoff             = 2550. * Units.pounds 
+    vehicle.mass_properties.max_zero_fuel       = 1680  * Units.pounds 
+    vehicle.mass_properties.max_fuel            = 152.407
     vehicle.mass_properties.cargo               = 0. 
                                                
     # envelope properties                       
     vehicle.flight_envelope.ultimate_load            = 5.7 
     vehicle.flight_envelope.positive_limit_load      = 3.8  
     vehicle.flight_envelope.design_range             = 750 * Units.nmi 
-    vehicle.flight_envelope.design_dynamic_pressure  = 1929.1574740443007
-    vehicle.flight_envelope.design_mach_number       =  0.18745866156304694
+    vehicle.flight_envelope.design_dynamic_pressure  = 2755 # max speed at 10 k feet
+    vehicle.flight_envelope.design_mach_number       = 0.18745866156304694
                                                 
     # basic parameters                          
     vehicle.reference_area                      = 174. * Units.feet**2       
@@ -179,19 +180,7 @@ def vehicle_setup():
     # ########################################################## Fuselage ############################################################### 
     #------------------------------------------------------------------------------------------------------------------------------------
     
-    fuselage                                          = RCAIDE.Library.Components.Fuselages.Fuselage()
-    
-    # define cabin
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
-    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 2
-    economy_class.number_of_rows                      = 2
-    economy_class.galley_lavatory_percent_x_locations = []  
-    economy_class.emergency_exit_percent_x_locations  = []      
-    economy_class.type_A_exit_percent_x_locations     = [] 
-    cabin.append_cabin_class(economy_class)
-    fuselage.append_cabin(cabin)
-    
+    fuselage                                    = RCAIDE.Library.Components.Fuselages.Fuselage() 
     fuselage.differential_pressure              = 8*Units.psi                    # Maximum differential pressure
     fuselage.width                              = 42.         * Units.inches     # Width of the fuselage
     fuselage.heights.maximum                    = 62. * Units.inches    # Height of the fuselage

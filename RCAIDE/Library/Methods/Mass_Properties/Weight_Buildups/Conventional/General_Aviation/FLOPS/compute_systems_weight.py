@@ -220,7 +220,7 @@ def compute_systems_weight(vehicle):
 
 
 
-    output                      = Data()
+    output                     = Data()
     output.W_flight_control    = WSC * Units.lbs
     output.W_hyd_pnu           = WHYD * Units.lbs
     output.W_instruments       = WIN * Units.lbs
@@ -230,5 +230,5 @@ def compute_systems_weight(vehicle):
     output.W_electrical        = WELEC * Units.lbs
     output.W_ac                = 0.0
     output.W_furnish           = WFURN * Units.lbs
-    output.W_systems           = WSC  + WIN + WHYD + WELEC + WAVONC + WFURN + WAC 
+    output.total               = (WSC  + WIN + WHYD + WELEC + WAVONC + WFURN + WAC ) * Units.lbs
     return output

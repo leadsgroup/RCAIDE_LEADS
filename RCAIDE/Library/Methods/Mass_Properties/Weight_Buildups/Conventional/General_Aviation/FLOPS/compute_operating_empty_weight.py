@@ -83,11 +83,12 @@ def compute_operating_empty_weight(vehicle, settings=None):
         if len(fuselage.cabins) == None:
             print("No cabin defined for weights method. Defining default cabin.")  
             cabin =  RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-            cabin.mass_properties.mass = (W_oper.total + payload.passengers + output.W_systems)
+            cabin.mass_properties.mass = (W_oper.total + payload.passengers + W_systems.total)
             vehicle.fuselage.append_cabin(cabin)
         else: 
             for cabin in fuselage.cabins:
-                cabin.mass_properties.mass = (W_oper.total + payload.passengers + output.W_systems) * (cabin.number_of_passengers / fuselage.number_of_passengers )      
+                cabin.mass_properties.mass = (W_oper.total + payload.passengers + W_systems.total) * (cabin.number_of_passengers / fuselage.number_of_passengers )      
+    
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
@@ -130,9 +131,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
         for propulsor in network.propulsors:
-            propulsor.mass_properties.mass = W_energy_network_total / number_of_engines
-        
-        ## CHECK IF THIS IS NEEDED
+            propulsor.mass_properties.mass = W_energy_network_total / number_of_engines 
 
         # Electric-Powered Propulsors  
         for bus in network.busses: 
