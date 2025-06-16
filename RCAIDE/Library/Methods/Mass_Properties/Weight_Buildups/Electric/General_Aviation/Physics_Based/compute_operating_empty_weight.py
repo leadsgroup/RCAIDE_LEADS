@@ -87,9 +87,10 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##------------------------------------------------------------------------------- 
     for fuselage in vehicle.fuselages:
         if len(fuselage.cabins) == None:
+            print("No cabin defined for weights method. Defining default cabin.")
             cabin =  RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
             cabin.mass_properties.mass = (W_oper.total + payload.passengers + output.W_systems)
-            vehicle.fuselage.append_cabin = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+            vehicle.fuselage.append_cabin(cabin)
         else: 
             for cabin in fuselage.cabins:
                 cabin.mass_properties.mass = (W_oper.total + payload.passengers + output.W_systems) * (cabin.number_of_passengers / fuselage.number_of_passengers )      

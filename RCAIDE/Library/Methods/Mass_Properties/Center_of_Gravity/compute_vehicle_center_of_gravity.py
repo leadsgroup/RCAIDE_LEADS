@@ -150,8 +150,9 @@ def compute_vehicle_center_of_gravity(vehicle, nose_load = 0.06, update_CG=True)
     # Cargo Bays 
     #---------------------------------------------------------------------------------
     for cargo_bay in vehicle.cargo_bays:
-        cargo_bay.origin[0][0] = fuselage.lengths.nose 
-        cargo_bay.mass_properties.center_of_gravity[0][0] = cargo_bay.length / 2           
+        if cargo_bay.origin[0][0] == 0: 
+            cargo_bay.origin[0][0] = 0.51 * length_scale  
+        cargo_bay.mass_properties.center_of_gravity = [[cargo_bay.length / 2 ,cargo_bay.width / 2 ,cargo_bay.height / 2 ]]        
     
     #---------------------------------------------------------------------------------
     # Finally, compute aircraft center of gravity  

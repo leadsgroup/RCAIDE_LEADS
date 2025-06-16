@@ -51,12 +51,25 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude = 35000 * Units.feet
     vehicle.flight_envelope.design_mach_number     = 0.75
     
-
+    
     # basic parameters
     vehicle.reference_area         = 565.33
     vehicle.systems.control        = "fully powered"
     vehicle.systems.accessories    = "long range"
 
+
+
+    # ------------------------------------------------------------------
+    # Cargo Bay
+    # ------------------------------------------------------------------    
+    cargo_bay =  RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    cargo_bay.length     = 36.0
+    cargo_bay.width      = 3.66
+    cargo_bay.height     = 3
+    cargo_bay.origin     = [[17.5, 0, 0]]
+    vehicle.cargo_bays.append(cargo_bay) 
+    
+    
     # ------------------------------------------------------------------
     #   Main Wing
     # ------------------------------------------------------------------
