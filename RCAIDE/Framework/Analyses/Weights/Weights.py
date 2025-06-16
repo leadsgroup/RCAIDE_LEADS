@@ -100,8 +100,7 @@ class Weights(Analysis):
         results 
         """
         #unpack
-        vehicle = self.vehicle 
-        
+        vehicle = self.vehicle  
         
         compute_module = importlib.import_module(f"RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.{self.propulsion_architecture}.{self.aircraft_type}.{self.method}.compute_operating_empty_weight")
         if self.print_weight_analysis_report:

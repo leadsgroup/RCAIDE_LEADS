@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  RCAIDE
 # ---------------------------------------------------------------------------------------------------------------------- 
+import RCAIDE
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_aircraft_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity                             import compute_vehicle_center_of_gravity
 from copy import deepcopy
@@ -26,29 +27,29 @@ def mass_properties(mission):
             if weights_analysis.vehicle.mass_properties.max_takeoff == None:
                 raise AttributeError("Define maximum takeoff weight of aircraft")
             
-            ## Max payload weight 
-            #if weights_analysis.vehicle.mass_properties.max_payload == None:  
-                #raise AttributeError("Define maximum payload weight of aircraft")
-            
-            # Max fuel weight of aircraft 
-            if weights_analysis.vehicle.mass_properties.max_fuel == None:
-                raise AttributeError("Define maximum fuel weight of aircraft")            
-             
-            # Payload - Max Paylaod check                
-            if weights_analysis.vehicle.mass_properties.payload > weights_analysis.vehicle.mass_properties.max_payload:
-                raise AssertionError('Prescribed payload is greater than maxmimum payload weight')
-            
-            # Fuel - Max Fuel check
-            if weights_analysis.vehicle.mass_properties.fuel != None:    
-                if weights_analysis.vehicle.mass_properties.fuel > weights_analysis.vehicle.mass_properties.max_fuel:
-                    raise AssertionError('Prescribed fuel weight is greater than maxmimum fuel weight')
-            
             # if takeoff weight is defined, skipping weight analyiss 
             if weights_analysis.vehicle.mass_properties.takeoff != None:
                 if i == 0: # only print on the first segment
                     print('Takeoff weight is defined, skipping weights analysis')
                 
-            else: 
+            else:
+    
+                # Max fuel weight of aircraft 
+                if weights_analysis.vehicle.mass_properties.max_fuel == None:
+                    raise AttributeError("Define maximum fuel weight of aircraft")            
+    
+                # Max payload weight 
+                if weights_analysis.vehicle.mass_properties.max_payload == None:  
+                    raise AttributeError("Define maximum payload weight of aircraft")
+                    
+                # Payload - Max Paylaod check                
+                if weights_analysis.vehicle.mass_properties.payload > weights_analysis.vehicle.mass_properties.max_payload:
+                    raise AssertionError('Prescribed payload is greater than maxmimum payload weight')
+                
+                # Fuel - Max Fuel check
+                if weights_analysis.vehicle.mass_properties.fuel != None:    
+                    if weights_analysis.vehicle.mass_properties.fuel > weights_analysis.vehicle.mass_properties.max_fuel:
+                        raise AssertionError('Prescribed fuel weight is greater than maxmimum fuel weight')                
         
                 # --------------------------------------------------------------------------------------------
                 # Run weights analysis to compute OEW ! 
@@ -174,9 +175,10 @@ def mass_properties(mission):
                 segment.analyses.aerodynamics.vehicle =  deepcopy(weights_analysis.vehicle) 
    
         else: 
-            # --------------------------------------------------------------------------------------------
-            #  If no weights analysis is run, make sure that takeoff weight present 
-            # --------------------------------------------------------------------------------------------             
-            if segment.analyses.aerodynamics.vehicle.mass_properties.takeoff == None:
+            weights = RCAIDE.Framework.Analyses.Weights.Weights()
+            weights.vehicle = deepcopy(segment.analyses.geometry.vehicle)
+            segment.analyses.weights = weights 
+                        
+            if segment.analyses.weights.vehicle.mass_properties.takeoff == None:
                 raise AttributeError("Takeoff weight for aircraft not defined")
     return 
