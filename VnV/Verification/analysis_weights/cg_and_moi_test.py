@@ -26,7 +26,7 @@ from Stopped_Rotor_EVTOL    import vehicle_setup as EVTOL_setup
 def main(): 
     # make true only when resizing aircraft. should be left false for regression
     update_regression_values = False  
-    #Transport_Aircraft_Test()
+    Transport_Aircraft_Test()
     General_Aviation_Test()
     EVTOL_Aircraft_Test(update_regression_values)
     return
@@ -63,9 +63,9 @@ def Transport_Aircraft_Test():
 
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI) 
-    accepted  = np.array([[33414380.219070405, 2786427.672103876,  2756949.790066703],
-                          [2786427.672103876, 31923891.646203026,        0.        ],
-                        [ 2756949.790066703,        0.        , 49400912.34633041]])
+    accepted  = np.array([[33537544.17729216, 3023969.4717367333, 3289494.982706053],
+                          [3023969.4717367333,33868806.88349103,        0.        ],
+                        [ 3289494.982706053,        0.        , 51338355.739521846]])
     MOI_error     = MOI - accepted
 
     # Check the errors
@@ -110,9 +110,9 @@ def General_Aviation_Test():
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI)
 
-    accepted  = np.array([[2871.19050815,   17.26989442,   21.19147092],
-                          [  17.26989442, 3743.05853172,    0.        ],
-                            [  21.19147092,    0.        , 2724.8281536 ]])
+    accepted  = np.array([[3043.83594202,   46.98956732,   63.16362295],
+                          [  46.98956732, 5699.34400455,    0.        ],
+                          [  63.16362295,    0.        , 4514.01066542]])
 
     MOI_error     = MOI - accepted
 
@@ -164,9 +164,9 @@ def EVTOL_Aircraft_Test(update_regression_values):
 
     print(weight_analysis.vehicle.tag + ' Moment of Intertia')
     print(MOI) 
-    accepted  = np.array([[ 6362.23866133,  -549.43135397,  -510.42696328],
-                          [ -549.43135397, 10028.21153243,   -98.16265964],
-                          [ -510.42696328,   -98.16265964, 14970.05350936]])
+    accepted  = np.array([[ 6416.17005204,  -520.42989805,  -433.10013618],
+                          [ -520.42989805, 10150.17674213,  -119.43002111],
+                          [ -433.10013618,  -119.43002111, 15057.14074297]])
     MOI_error     = MOI - accepted
 
     # Check the errors

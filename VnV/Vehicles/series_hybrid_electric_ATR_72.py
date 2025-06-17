@@ -561,21 +561,13 @@ def vehicle_setup():
     port_propulsor.motor.origin                        =  [[ 9.559106394 ,-4.219315295, 1.616135105]]    
 
     # append propulsor to distribution line 
-    net.propulsors.append(port_propulsor) 
-
-    #------------------------------------------------------------------------------------------------------------------------------------           
-    # Payload 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    payload                      = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw           = 10. # Watts
-    payload.mass_properties.mass = 1.0 * Units.kg
-    bus.payload                  = payload
-
+    net.propulsors.append(port_propulsor)
+    
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 20. # Watts
+    avionics.power_draw          = 30. # Watts
     bus.avionics                 = avionics
 
     #------------------------------------------------------------------------------------------------------------------------------------   

@@ -599,11 +599,6 @@ def vehicle_setup(new_regression=True) :
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
     #------------------------------------------------------------------------------------------------------------------------------------     
-    # Payload   
-    payload                        = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw             = 10. # Watts 
-    payload.mass_properties.mass   = 1.0 * Units.kg
-    cruise_bus.payload             = payload 
     
     # Avionics   
     avionics                       = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
@@ -745,16 +740,10 @@ def vehicle_setup(new_regression=True) :
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
-    #------------------------------------------------------------------------------------------------------------------------------------            
-    # Payload   
-    payload                                                 = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw                                      = 10. # Watts 
-    payload.mass_properties.mass                            = 1.0 * Units.kg
-    lift_bus.payload                                        = payload 
-                             
+    #------------------------------------------------------------------------------------------------------------------------------------    
     # Avionics                            
     avionics                                                = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw                                     = 10. # Watts  
+    avionics.power_draw                                     = 20. # Watts  
     avionics.mass_properties.mass                           = 1.0 * Units.kg
     lift_bus.avionics                                       = avionics    
 

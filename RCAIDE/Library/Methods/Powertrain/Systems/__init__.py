@@ -3,7 +3,7 @@
 
 """
 This module provides functionality for setting up and managing systems that draw power from the powertrain system, such as avionics and payloads. 
-It includes methods for configuring operating conditions and appending avionics and payload conditions to simulation results.
+It includes methods for configuring operating conditions and appending avionics and systems conditions to simulation results.
 
 See Also
 --------
@@ -15,4 +15,7 @@ RCAIDE.Library.Methods.Powertrain.Sources
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .append_avionics_conditions             import append_avionics_conditions 
+from .append_avionics_conditions  import  append_avionics_conditions
+from .append_system_conditions    import  append_system_conditions
+from .compute_avionics_power_draw import  compute_avionics_power_draw
+from .compute_system_power_draw   import  compute_system_power_draw

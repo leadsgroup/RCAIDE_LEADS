@@ -54,8 +54,7 @@ class Avionics(Component):
     def __defaults__(self):
         """
         Sets default values for the avionics system attributes.
-        """                 
-        self.power_draw = 0.0
+        """                  
         self.tag        = 'Avionics'
 
     def append_operating_conditions(self, segment, bus): 

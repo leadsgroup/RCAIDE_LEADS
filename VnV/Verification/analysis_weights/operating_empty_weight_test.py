@@ -6,7 +6,7 @@ from RCAIDE.Library.Plots import *
 from RCAIDE.load import load as load_results
 from RCAIDE.save import save as save_results 
 from RCAIDE.Library.Methods.Geometry.LOPA import compute_layout_of_passenger_accommodations
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform,bwb_wing_planform,update_blended_wing_body_planform
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform,bwb_wing_planform
 import numpy as  np 
 import sys
 import os

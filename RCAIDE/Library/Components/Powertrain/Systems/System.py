@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from RCAIDE.Library.Components import Component
+from RCAIDE.Library.Methods.Powertrain.Systems.append_system_conditions import append_system_conditions
  
 # ----------------------------------------------------------------------------------------------------------------------
 # System
@@ -64,5 +65,39 @@ class System(Component):
         """        
         self.tag         = 'System'
         self.origin      = [[0.0,0.0,0.0]]
+        self.power_draw = 0.0
         self.control     = None
-        self.accessories = None 
+        self.accessories = None
+        
+      
+
+    def append_operating_conditions(self, segment, bus): 
+        """
+        Adds operating conditions for the avionics system to a mission segment.
+
+        Parameters
+        ----------
+        segment : Data
+            Mission segment to which conditions are being added
+        bus : Data
+            Electrical bus supplying power to the avionics
+        """
+        append_system_conditions(self, segment, bus)
+        return
+            
+    def power(self):
+        """
+        Calculates the power draw from the avionics system.
+
+        Returns
+        -------
+        float
+            Power draw in Watts
+
+        Notes
+        -----
+        Sets both the input power and returns the power draw value for use
+        in energy calculations.
+        """                 
+        self.inputs.power = self.power_draw
+        return self.power_draw        

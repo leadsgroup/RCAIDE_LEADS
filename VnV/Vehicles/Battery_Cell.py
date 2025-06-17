@@ -40,13 +40,12 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
     bus.battery_modules.append(battery)  
     bus.initialize_bus_properties()
     
-    #------------------------------------------------------------------------------------------------------------------------------------           
-    # Payload 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    payload                      = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw           = current * bus.voltage  
-    payload.mass_properties.mass = 1.0 * Units.kg
-    bus.payload                  = payload  
+    # Avionics
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    systems                     = RCAIDE.Library.Components.Powertrain.Systems.System()
+    systems.power_draw          = current * bus.voltage  
+    bus.systems                 = systems 
       
     # append bus   
     net.busses.append(bus) 

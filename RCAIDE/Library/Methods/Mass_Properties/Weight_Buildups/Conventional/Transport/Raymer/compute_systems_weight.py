@@ -159,5 +159,5 @@ def compute_systems_weight(vehicle):
     output.W_ac                = WAC * Units.lbs
     output.W_furnish           = WFURN * Units.lbs
     output.W_anti_ice          = WAI * Units.lbs
-    output.W_systems           = WSC + WAPUG + WIN + WHYD + WELEC + WAVONCG + WFURN + WAC + WAI
+    output.total               = WSC + WAPUG + WIN + WHYD + WELEC + WAVONCG + WFURN + WAC + WAI
     return output

@@ -590,22 +590,13 @@ def vehicle_setup(cell_chemistry, btms_type):
     port_propulsor.nacelle                       = nacelle_2
     
     # append propulsor to distribution line 
-    net.propulsors.append(port_propulsor) 
-
-
-    #------------------------------------------------------------------------------------------------------------------------------------           
-    # Payload 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    payload                      = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw           = 10. # Watts
-    payload.mass_properties.mass = 1.0 * Units.kg
-    bus.payload                  = payload
-
+    net.propulsors.append(port_propulsor)
+    
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 20. # Watts
+    avionics.power_draw          = 30. # Watts
     bus.avionics                 = avionics
     
     #------------------------------------------------------------------------------------------------------------------------------------   

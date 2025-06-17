@@ -67,7 +67,7 @@ def compute_operating_items_weight(vehicle):
     [1] NASA. (1979). The Flight Optimization System Weights Estimation Method. 
         NASA Technical Report.
     """
-    NFLCR = 1 # Number of flight crew. Assumed to be 1
+    NFLCR = 0 # Number of flight crew. 
     WFLCRB = NFLCR * 225  # flight crew and baggage weight
 
     output                           = Data()
