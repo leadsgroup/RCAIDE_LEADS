@@ -65,13 +65,8 @@ def main():
     fuel_line.fuel_tanks.append(refueling_tank_3)        
 
     plot_3d_vehicle(vehicle,
-                    save_filename               = "Boeing_737_Side_View",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100, 
+                    save_filename               = "Boeing_737_Side_View", 
+                    axis_limit                  = 100, 
                     top_view                    = False, 
                     side_view                   = True, 
                     front_view                  = False, 

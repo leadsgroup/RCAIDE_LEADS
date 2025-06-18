@@ -44,20 +44,15 @@ def BWB_Aircraft_Test():
     vehicle  = bwb_setup()
      
     plot_3d_vehicle(vehicle,
-                    save_filename               = "BWB",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100, 
+                    save_filename               = "BWB", 
+                    axis_limit                  = 100, 
                     show_figure=False)                 
     
     export_vsp_vehicle(vehicle, 'BWB')
 
     propulsor_type = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
     network_type   = RCAIDE.Framework.Networks.Fuel()
-    vsp_vehicle  = import_vsp_vehicle('BWB.vsp3',network_type=network_type,propulsor_type=propulsor_type)
+    vsp_vehicle    = import_vsp_vehicle('BWB.vsp3',network_type=network_type,propulsor_type=propulsor_type)
     
     return
 
@@ -69,7 +64,7 @@ def General_Aviation_Test():
 
     propulsor_type = RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine()
     network_type   = RCAIDE.Framework.Networks.Fuel()
-    vsp_vehicle  = import_vsp_vehicle('Cessna_172.vsp3',network_type=network_type,propulsor_type=propulsor_type)     
+    vsp_vehicle    = import_vsp_vehicle('Cessna_172.vsp3',network_type=network_type,propulsor_type=propulsor_type)     
     return
 
 def EVTOL_Aircraft_Test():  
@@ -79,7 +74,7 @@ def EVTOL_Aircraft_Test():
 
     propulsor_type = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()
     network_type   = RCAIDE.Framework.Networks.Electric()
-    vsp_vehicle  = import_vsp_vehicle('Stopped_Rotor_EVTOL.vsp3',network_type=network_type,propulsor_type=propulsor_type)      
+    vsp_vehicle    = import_vsp_vehicle('Stopped_Rotor_EVTOL.vsp3',network_type=network_type,propulsor_type=propulsor_type)      
     return
  
  

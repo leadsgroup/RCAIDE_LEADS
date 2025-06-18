@@ -31,10 +31,10 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     #   Vehicle-level Properties
     # ------------------------------------------------------------------    
     # mass properties
-    vehicle.mass_properties.max_takeoff   = 227  
-    vehicle.mass_properties.takeoff       = 227  
-    vehicle.mass_properties.max_zero_fuel = 227 
-    vehicle.mass_properties.cargo         = 0.0 
+    vehicle.mass_properties.max_takeoff               = 227  
+    vehicle.mass_properties.takeoff                   = 227  
+    vehicle.mass_properties.max_zero_fuel             = 227 
+    vehicle.mass_properties.cargo                     = 0.0 
     vehicle.flight_envelope.design_mach_number        = 0.12
     vehicle.flight_envelope.design_range              = 5000
     vehicle.flight_envelope.design_dynamic_pressure   = 854.5 

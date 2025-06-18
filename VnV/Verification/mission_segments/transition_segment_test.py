@@ -45,13 +45,8 @@ def tiltwing_transition_test(update_regression_values):
     TW_vehicle  = TW_vehicle_setup(update_regression_values) 
 
     # plot vehicle 
-    plot_3d_vehicle(TW_vehicle, 
-                            min_x_axis_limit            = -50,
-                            max_x_axis_limit            = 50,
-                            min_y_axis_limit            = -50,
-                            max_y_axis_limit            = 50,
-                            min_z_axis_limit            = -50,
-                            max_z_axis_limit            = 50, 
+    plot_3d_vehicle(TW_vehicle,  
+                            axis_limit                  = 50, 
                             wing_alpha                  = 0.2,
                             front_view                  = True, 
                             show_figure                 = False 

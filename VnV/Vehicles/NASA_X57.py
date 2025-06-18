@@ -30,17 +30,14 @@ def vehicle_setup(rotor_type):
     vehicle                                           = RCAIDE.Vehicle()
     vehicle.tag                                       = 'X57_Maxwell_Mod2' 
     vehicle.mass_properties.max_takeoff               = 2712. * Units.pounds
+    vehicle.mass_properties.takeoff                   = 2712. * Units.pounds
     vehicle.mass_properties.max_zero_fuel             = 2712. * Units.pounds 
     vehicle.mass_properties.max_payload               = 50.  * Units.pounds  #
     
     
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 2.5 
-    vehicle.flight_envelope.design_mach_number        = 0.78 
-    # vehicle.flight_envelope.design_cruise_altitude    = 2500. * Units.ft
-    # vehicle.flight_envelope.design_range              = 200 * Units.nmi 
-    # vehicle.flight_envelope.design_dynamic_pressure   = 2072.1614727510914
-    # vehicle.flight_envelope.design_mach_number        = 0.17734782770792362
+    vehicle.flight_envelope.design_mach_number        = 0.78  
     vehicle.flight_envelope.design_cruise_altitude    = 30
     vehicle.flight_envelope.design_range              = 1 * Units.nmi 
     vehicle.flight_envelope.design_dynamic_pressure   = 3735.49

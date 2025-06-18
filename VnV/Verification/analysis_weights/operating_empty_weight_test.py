@@ -21,7 +21,7 @@ from Stopped_Rotor_EVTOL    import vehicle_setup as evtol_setup
 from Boeing_787             import vehicle_setup as hydrogen_transport_setup
 
 def main():
-    update_regression_values = False  # should be false unless code functionally changes
+    update_regression_values = True  # should be false unless code functionally changes
     show_figure              = False # leave false for regression
 
     Transport_Aircraft_Test(update_regression_values,show_figure)

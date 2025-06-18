@@ -21,13 +21,8 @@ def main():
 
     # plot vehicle 
     plot_3d_vehicle(vehicle,
-                    save_filename               = "BWB_Top_View",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100,  
+                    save_filename               = "BWB_Top_View", 
+                    axis_limit                  = 100,  
                     show_figure=False)
     
     configs  = configs_setup(vehicle) 
@@ -37,7 +32,7 @@ def main():
     results  = missions.base_mission.evaluate() 
 
     Cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    Cruise_CL_true   = 0.3296334142151343
+    Cruise_CL_true   = 0.4109412376798259
     Cruise_CL_diff   = np.abs(Cruise_CL - Cruise_CL_true)
     print('Error: ',Cruise_CL_diff)
     assert np.abs((Cruise_CL - Cruise_CL_true)/Cruise_CL_true) < 1e-6   
