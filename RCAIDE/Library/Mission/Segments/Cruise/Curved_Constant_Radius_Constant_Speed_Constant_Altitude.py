@@ -130,12 +130,13 @@ def initialize_conditions(segment):
     v_inertial_y = air_speed * np.sin(true_course_control_points)
     
     # pack
-    segment.state.conditions.freestream.altitude[:,0]             = alt
-    segment.state.conditions.frames.inertial.position_vector[:,2] = -alt # z points down
-    segment.state.conditions.frames.inertial.velocity_vector[:,0] = v_inertial_x[:,0]
-    segment.state.conditions.frames.inertial.velocity_vector[:,1] = v_inertial_y[:,0]
-    segment.state.conditions.frames.body.velocity_vector[:,0]     = v_body_x
-    segment.state.conditions.frames.body.velocity_vector[:,1]     = v_body_y
-    segment.state.conditions.frames.inertial.time[:,0]            = time[:,0]
-    segment.state.conditions.frames.planet.true_heading[:,0]      = true_course_control_points[:,0]
-    segment.state.conditions.frames.planet.true_course[:,0]       = true_course_control_points[:,0]
+    segment.state.conditions.freestream.altitude[:,0]                 = alt
+    segment.state.conditions.frames.inertial.position_vector[:,2]     = -alt # z points down
+    segment.state.conditions.frames.inertial.velocity_vector[:,0]     = v_inertial_x[:,0]
+    segment.state.conditions.frames.inertial.velocity_vector[:,1]     = v_inertial_y[:,0]
+    segment.state.conditions.frames.inertial.acceleration_vector[:,1] = (air_speed ** 2) / radius
+    segment.state.conditions.frames.body.velocity_vector[:,0]         = v_body_x
+    segment.state.conditions.frames.body.velocity_vector[:,1]         = v_body_y
+    segment.state.conditions.frames.inertial.time[:,0]                = time[:,0]
+    segment.state.conditions.frames.planet.true_heading[:,0]          = true_course_control_points[:,0]
+    segment.state.conditions.frames.planet.true_course[:,0]           = true_course_control_points[:,0]

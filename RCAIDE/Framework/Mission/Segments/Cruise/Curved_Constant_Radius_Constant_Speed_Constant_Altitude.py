@@ -10,7 +10,8 @@
 # RCAIDE imports  
 from RCAIDE.Framework.Mission.Segments.Evaluate   import Evaluate 
 from RCAIDE.Framework.Core                        import Units   
-from RCAIDE.Library.Mission                       import Common,Segments
+from RCAIDE.Library.Mission                       import Common,Segments 
+from RCAIDE.Library.Methods.skip                  import skip 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Curved_Constant_Radius_Constant_Speed_Constant_Altitude
@@ -62,8 +63,9 @@ class Curved_Constant_Radius_Constant_Speed_Constant_Altitude(Evaluate):
         initialize                         = self.process.initialize  
         initialize.conditions              = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude.initialize_conditions  
         iterate                            = self.process.iterate     
+        iterate.conditions.acceleration    = skip 
         iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
-        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces
+        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces   
         iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics 
         post_process                       = self.process.post_process 
         post_process.inertial_position     = Common.Update.curvilinear_inertial_horizontal_position
