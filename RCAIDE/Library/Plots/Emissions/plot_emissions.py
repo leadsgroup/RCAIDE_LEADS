@@ -109,13 +109,10 @@ def plot_emissions(results,
     
     for i in range(len(results.segments)): 
         time                = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min 
-        emissions_CO2       = results.segments[i].conditions.emissions.total.CO2[:, 0] /1E3  
-        emissions_CO        = results.segments[i].conditions.emissions.total.CO[:, 0]  /1E3  
-        emissions_NOx       = results.segments[i].conditions.emissions.total.NOx[:, 0] /1E3  
-        emissions_H2O       = results.segments[i].conditions.emissions.total.H2O[:, 0] /1E3  
-        emissions_SO2       = results.segments[i].conditions.emissions.total.SO2[:, 0] /1E3  
-        emissions_Contrails = results.segments[i].conditions.emissions.total.Contrails[:, 0]/1E3 
-        emissions_Soot      = results.segments[i].conditions.emissions.total.Soot[:, 0]/1E3
+        emissions_CO2       = results.segments[i].conditions.emissions.mass.CO2[:, 0] /1E3  
+        emissions_CO        = results.segments[i].conditions.emissions.mass.CO[:, 0]  /1E3  
+        emissions_NOx       = results.segments[i].conditions.emissions.mass.NOx[:, 0] /1E3  
+        emissions_H2O       = results.segments[i].conditions.emissions.mass.H2O[:, 0] /1E3   
         EI_CO2              = results.segments[i].conditions.emissions.index.CO2[:, 0] 
         EI_CO               = results.segments[i].conditions.emissions.index.CO[:, 0] 
         EI_NOx              = results.segments[i].conditions.emissions.index.NOx[:, 0] 

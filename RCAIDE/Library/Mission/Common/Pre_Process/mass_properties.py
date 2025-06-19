@@ -49,7 +49,10 @@ def mass_properties(mission):
                 # Fuel - Max Fuel check
                 if weights_analysis.vehicle.mass_properties.fuel != None:    
                     if weights_analysis.vehicle.mass_properties.fuel > weights_analysis.vehicle.mass_properties.max_fuel:
-                        raise AssertionError('Prescribed fuel weight is greater than maxmimum fuel weight')                
+                        raise AssertionError('Prescribed fuel weight is greater than maxmimum fuel weight')
+                else:
+                    print('Warning: Fuel weight is defined, using max fuel weight')
+                    weights_analysis.vehicle.mass_properties.fuel =  weights_analysis.vehicle.mass_properties.max_fuel 
         
                 # --------------------------------------------------------------------------------------------
                 # Run weights analysis to compute OEW ! 
@@ -98,10 +101,13 @@ def mass_properties(mission):
         
                
                 # Compute takeoff weight 
-                weights_analysis.vehicle.mass_properties.takeoff       = weights_analysis.vehicle.mass_properties.operating_empty + weights_analysis.vehicle.mass_properties.payload + weights_analysis.vehicle.mass_properties.fuel                    
+                weights_analysis.vehicle.mass_properties.takeoff       = weights_analysis.vehicle.mass_properties.operating_empty \
+                                                                        + weights_analysis.vehicle.mass_properties.payload \
+                                                                        + weights_analysis.vehicle.mass_properties.fuel                    
                
                 # Max zero fuel  
-                weights_analysis.vehicle.mass_properties.max_zero_fuel = weights_analysis.vehicle.mass_properties.operating_empty + weights_analysis.vehicle.mass_properties.max_payload
+                weights_analysis.vehicle.mass_properties.max_zero_fuel = weights_analysis.vehicle.mass_properties.operating_empty\
+                                                                       + weights_analysis.vehicle.mass_properties.max_payload
                    
                     
                 # --------------------------------------------------------------------------------------------
