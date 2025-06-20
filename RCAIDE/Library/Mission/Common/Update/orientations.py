@@ -89,18 +89,18 @@ def orientations(segment):
     wind_body_rotations = body_inertial_rotations * 0.
     wind_body_rotations[:,0] = 0          # no roll in wind frame
     wind_body_rotations[:,1] = alpha[:,0] # theta is angle of attack
-    wind_body_rotations[:,2] = 0 # beta       
+    wind_body_rotations[:,2] = beta       
 
     # wind frame tranformation matricies
     T_wind2body     = angles_to_dcms(wind_body_rotations,(2,1,0))   # CHECK 
-    T_wind2inertial = orientation_product(T_wind2body,T_body2inertial) # CHECK
-    T_interial2wind = orientation_transpose(T_wind2inertial)   
+    T_wind2inertial = orientation_product(T_wind2body,T_body2inertial) # CHECK   
 
     # pack wind rotations
     conditions.frames.wind.body_rotations = wind_body_rotations
 
     # pack transformation tensor
     conditions.frames.wind.transform_to_inertial = T_wind2inertial
+    conditions.frames.wind.transform_to_body     = T_wind2body
     
     # ------------------------------------------------------------------
     # Rotation rates 
