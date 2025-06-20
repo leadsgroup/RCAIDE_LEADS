@@ -63,7 +63,6 @@ class Curved_Constant_Radius_Constant_Speed_Constant_Altitude(Evaluate):
         initialize                         = self.process.initialize  
         initialize.conditions              = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude.initialize_conditions  
         iterate                            = self.process.iterate     
-        iterate.conditions.acceleration    = skip 
         iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
         iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces   
         iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics 

@@ -134,8 +134,8 @@ def initialize_conditions(segment):
     segment.state.conditions.frames.inertial.position_vector[:,2]     = -alt # z points down
     segment.state.conditions.frames.inertial.velocity_vector[:,0]     = v_inertial_x[:,0]
     segment.state.conditions.frames.inertial.velocity_vector[:,1]     = v_inertial_y[:,0]
-    segment.state.conditions.frames.inertial.acceleration_vector[:,0] = -(air_speed ** 2) / radius * np.sin(true_course_control_points)[:,0] # Check sign
-    segment.state.conditions.frames.inertial.acceleration_vector[:,1] = (air_speed ** 2) / radius * np.cos(true_course_control_points)[:,0] # Check sign
+    #segment.state.conditions.frames.inertial.acceleration_vector[:,0] = -(air_speed ** 2) / radius * np.sin(true_course_control_points)[:,0] # Check sign
+    #segment.state.conditions.frames.inertial.acceleration_vector[:,1] = (air_speed ** 2) / radius * np.cos(true_course_control_points)[:,0] # Check sign
     segment.state.conditions.frames.body.velocity_vector[:,0]         = v_body_x
     segment.state.conditions.frames.body.velocity_vector[:,1]         = v_body_y
     #segment.state.conditions.frames.body.acceleration_vector[:,1]     = (air_speed ** 2) / radius
