@@ -290,8 +290,8 @@ class Network(Component):
                     tank.compute_tank_properties(state,bus) 
                                  
         if reverse_thrust ==  True:
-            total_thrust =  total_thrust * -0.5  # up to 50 % thrust   
-            total_moment =  total_moment * -0.5  # up to 50 % thrust                       
+            total_thrust =  total_thrust * -0.5  # up to 5 % thrust   
+            total_moment =  total_moment * -0.5  # up to 5 % thrust                       
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.power                = total_mech_power 
         conditions.energy.thrust_moment_vector = total_moment 
