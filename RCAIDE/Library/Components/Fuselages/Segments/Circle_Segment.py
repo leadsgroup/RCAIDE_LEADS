@@ -77,5 +77,5 @@ class Circle_Segment(Segment):
         """
         Sets default values for the fuselage segment attributes.
         """
-        self.tag                     = 'super_ellipse_segment' 
+        self.tag                     = 'circle_segment' 
           

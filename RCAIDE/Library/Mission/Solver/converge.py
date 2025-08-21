@@ -160,8 +160,7 @@ def add_mission_variables(segment):
     # Step 2 : Get segment type 
     ground_seg_flag =  (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Landing) or\
                        (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Takeoff) or \
-                       (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Ground) 
-    constant_throttle_seg = type(segment) == RCAIDE.Framework.Mission.Segments.Cruise.Constant_Throttle_Constant_Altitude 
+                       (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Ground)  
     single_pt_seg = (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude) or\
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_AVL_Trimmed) or \
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion) or \
@@ -176,10 +175,7 @@ def add_mission_variables(segment):
     unknown_keys.remove('tag') 
     if ground_seg_flag: 
         n_points     = segment.state.numerics.number_of_control_points
-        len_inputs = n_points 
-    elif constant_throttle_seg:
-        n_points     = segment.state.numerics.number_of_control_points  
-        len_inputs = n_points*(len(unknown_keys)-1) + 1
+        len_inputs = n_points  
     elif single_pt_seg:
         n_points   = 1
         len_inputs = len(unknown_keys)
@@ -247,19 +243,7 @@ def add_mission_variables(segment):
         input_aliases       = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
         input_aliases[:,0]  = input_names
         input_aliases[0,1]  = 'segment.state.unknowns.'+unknown_keys[0] 
-        input_aliases[1:,1] = input_string
-        
-    elif constant_throttle_seg: 
-        output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16)        
-        for unkn in unknown_keys[:-1]:
-            basic_string_con[unkn] = np.tile('segment.state.unknowns.'+unkn+'[', n_points)
-            input_string.append(np.core.defchararray.add(basic_string_con[unkn],np.array(output_numbers).astype(str)))
-        input_string         = np.ravel(input_string)
-        input_string         = np.core.defchararray.add(input_string, np.tile(']',len_inputs-1)) 
-        input_aliases        = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
-        input_aliases[:,0]   = input_names   
-        input_aliases[:-1,1] = input_string 
-        input_aliases[-1,1]  = 'segment.state.unknowns.'+unknown_keys[-1]
+        input_aliases[1:,1] = input_string 
         
     elif single_pt_seg:  
         for unkn in unknown_keys:

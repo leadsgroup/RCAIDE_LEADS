@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from RCAIDE.Library.Components import Component
-from RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions import append_avionics_conditions
+from RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions import append_avionics_conditions 
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Avionics
@@ -48,15 +48,15 @@ class Avionics(Component):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Systems.System
+    RCAIDE.Library.Components.Powertrain.Systems.Systems
         Base system class
     """        
     def __defaults__(self):
         """
         Sets default values for the avionics system attributes.
-        """                 
-        self.power_draw = 0.0
+        """                  
         self.tag        = 'Avionics'
+        self.power_draw = 0
 
     def append_operating_conditions(self, segment, bus): 
         """
@@ -70,21 +70,4 @@ class Avionics(Component):
             Electrical bus supplying power to the avionics
         """
         append_avionics_conditions(self, segment, bus)
-        return
-            
-    def power(self):
-        """
-        Calculates the power draw from the avionics system.
-
-        Returns
-        -------
-        float
-            Power draw in Watts
-
-        Notes
-        -----
-        Sets both the input power and returns the power draw value for use
-        in energy calculations.
-        """                 
-        self.inputs.power = self.power_draw
-        return self.power_draw
+        return 

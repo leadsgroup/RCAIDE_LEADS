@@ -31,4 +31,5 @@ Fuel\_Tanks
    :recursive:
 
    append_fuel_tank_conditions
+   compute_fuel_tank_properties
 

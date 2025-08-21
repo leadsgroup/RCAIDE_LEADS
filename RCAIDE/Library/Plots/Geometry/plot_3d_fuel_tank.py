@@ -2,17 +2,19 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Aug 2025, S. Shekar
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice 
-from RCAIDE.Library.Methods.Geometry.Planform.compute_fuel_volume import compute_non_dimensional_rib_coordinates
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank import compute_non_dimensional_rib_coordinates
 from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
 
 # python imports
-import numpy as np      
+import numpy as np
+from numpy.ma import mask_cols      
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_3d_non_integral_fuel_tank
@@ -46,14 +48,13 @@ def plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation = 24, colo
     creating surface panels between adjacent cross-sections.
     
     **Major Assumptions**
-    
-    * fuel_tank cross-sections are super-elliptical
-    * Surface is continuous between segments
-    * Tessellation is uniform around circumference
+        * fuel_tank cross-sections are super-elliptical
+        * Surface is continuous between segments
+        * Tessellation is uniform around circumference
     
     See Also
     --------
-    generate_3d_fuel_tank_points : Function to generate fuel_tank surface points
+    RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.generate_non_integral_fuel_tank_points : Function to generate fuel_tank surface points
     """
  
     G  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation = 24 ) 
@@ -120,14 +121,9 @@ def plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation 
     creating surface panels between adjacent cross-sections.
     
     **Major Assumptions**
-    
-    * fuel_tank cross-sections are super-elliptical
-    * Surface is continuous between segments
-    * Tessellation is uniform around circumference
-    
-    See Also
-    --------
-    generate_3d_fuel_tank_points : Function to generate fuel_tank surface points
+        * fuel_tank cross-sections are super-elliptical
+        * Surface is continuous between segments
+        * Tessellation is uniform around circumference
     """
 
     segment_list = [] 
@@ -141,10 +137,10 @@ def plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation 
                 segment_list.append(next_seg.tag)  
         
     G  = generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list,tessellation = 24 ) 
-    num_fus_segs = len(G.PTS[:,0,0])
-    if num_fus_segs > 0:
+    num_tank_segs = len(G.PTS[:,0,0])
+    if num_tank_segs > 0:
         tesselation  = len(G.PTS[0,:,0])
-        for i_seg in range(num_fus_segs-1):
+        for i_seg in range(num_tank_segs-1):
             for i_tes in range(tesselation-1):
                 X = np.array([[G.PTS[i_seg  ,i_tes,0],G.PTS[i_seg+1,i_tes  ,0]],
                               [G.PTS[i_seg  ,i_tes+1,0],G.PTS[i_seg+1,i_tes+1,0]]])
@@ -195,10 +191,9 @@ def plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, number_of_airfoil_poin
         - Adding symmetric wing if specified
     
     **Major Assumptions**
-    
-    * Wing segments are ordered from root to tip
-    * Airfoil sections lie in x-z plane
-    * Symmetric wing is mirror image about y-axis
+        * Wing segments are ordered from root to tip
+        * Airfoil sections lie in x-z plane
+        * Symmetric wing is mirror image about y-axis
     """ 
     af_pts     = 4  
     segment_list = [] 
@@ -206,8 +201,9 @@ def plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, number_of_airfoil_poin
     for i in range(len(wing.segments) - 1):
         seg =  wing.segments[segment_tags[i]]
         next_seg =  wing.segments[segment_tags[i+1]]
-        if seg.has_fuel_tank: 
-            segment_list.append(seg.tag)
+        if seg.has_fuel_tank:
+            if seg.tag not in segment_list:
+                segment_list.append(seg.tag)
             if next_seg.tag not in segment_list:
                 segment_list.append(next_seg.tag) 
     
@@ -216,34 +212,37 @@ def plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, number_of_airfoil_poin
     else:
         dim = 2 
     
-    number_of_airfoil_points = 5
-    G = generate_integral_wing_tank_points(wing,number_of_airfoil_points,dim,segment_list)
-    # ------------------------------------------------------------------------
-    # Plot Rotor Blade
-    # ------------------------------------------------------------------------
-    for sec in range(dim-1):
-        for loc in range(af_pts):
-            X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],
-                 [G.XB1[sec,loc],G.XB2[sec,loc]]])
-            Y = np.array([[G.YA1[sec,loc],G.YA2[sec,loc]],
-                 [G.YB1[sec,loc],G.YB2[sec,loc]]])
-            Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]],
-                 [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
-             
-            values      = np.ones_like(X) 
-            verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
-            plot_data.append(verts)
-    if wing.symmetric: 
+    if  len(segment_list) == 0 and len(wing.segments) > 0:
+        raise AttributeError('Fuel tank defined on segmented wing but no segments have "tank" attribute = True') 
+    else:  
+        number_of_airfoil_points = 5
+        G = generate_integral_wing_tank_points(wing,number_of_airfoil_points,dim,segment_list)
+        # ------------------------------------------------------------------------
+        # Plot Rotor Blade
+        # ------------------------------------------------------------------------
         for sec in range(dim-1):
             for loc in range(af_pts):
-                X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
-                Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
-                Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
+                X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],
+                     [G.XB1[sec,loc],G.XB2[sec,loc]]])
+                Y = np.array([[G.YA1[sec,loc],G.YA2[sec,loc]],
+                     [G.YB1[sec,loc],G.YB2[sec,loc]]])
+                Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]],
+                     [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
                  
                 values      = np.ones_like(X) 
                 verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
                 plot_data.append(verts)
-             
+        if wing.symmetric: 
+            for sec in range(dim-1):
+                for loc in range(af_pts):
+                    X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
+                    Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
+                    Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
+                     
+                    values      = np.ones_like(X) 
+                    verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
+                    plot_data.append(verts)
+                 
     return plot_data
  
 # ----------------------------------------------------------------------------------------------------------------------
@@ -308,22 +307,17 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
         section_twist[:, :, 0, 0] = 1        
         section_twist[:, :, 1, 1] = 1
         section_twist[:, :, 2, 2] = 1 
-        translation        = np.zeros((dim,n_points, 3,1)) 
-        translation[0, :, 0,:] = origin[0][0]  
-        translation[0, :, 1,:] = origin[0][1]  
-        translation[0, :, 2,:] = origin[0][2]   
+        translation        = np.zeros((dim,n_points, 3,1))    
+        translation[:, :, 0,:] = origin[0][0]  
+        translation[:, :, 1,:] = origin[0][1]  
+        translation[:, :, 2,:] = origin[0][2]  
         for i in range(len(segment_list)):
             current_seg = segments[segment_list[i]]
             front_rib_yu,rear_rib_yu,front_rib_yl,rear_rib_yl = compute_non_dimensional_rib_coordinates(current_seg)
-            fs = current_seg.structural.front_spar_percent_chord
-            rs = current_seg.structural.rear_spar_percent_chord  
+            fs = current_seg.fuel_tank.percent_chord_start_location
+            rs = current_seg.fuel_tank.percent_chord_end_location  
             x_coordinates =  np.array([rs, rs, fs, fs, rs])
-            y_coordinates =  np.array([rear_rib_yl, rear_rib_yu, front_rib_yu,front_rib_yl,rear_rib_yl ])              
-            if (i == n_segments-1):
-                sweep = 0                                 
-            else:  
-                sweep               = current_seg.sweeps.leading_edge
-            dihedral = current_seg.dihedral_outboard    
+            y_coordinates =  np.array([rear_rib_yl, rear_rib_yu, front_rib_yu,front_rib_yl,rear_rib_yl ])   
             twist    = current_seg.twist 
             if wing.vertical:  
                 pts[i,:,0,0]   = x_coordinates * current_seg.root_chord_percent * wing.chords.root 
@@ -333,8 +327,7 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
                 section_twist[i,:,0,0] = np.cos(twist) 
                 section_twist[i,:,0,1] = -np.sin(twist)  
                 section_twist[i,:,1,0] = np.sin(twist) 
-                section_twist[i,:,1,1] = np.cos(twist) 
-            
+                section_twist[i,:,1,1] = np.cos(twist)  
             else: 
                 pts[i,:,0,0]   = x_coordinates * current_seg.root_chord_percent * wing.chords.root
                 pts[i,:,1,0]   = np.zeros_like(y_coordinates) 
@@ -344,11 +337,19 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
                 section_twist[i,:,0,2] = np.sin(twist)  
                 section_twist[i,:,2,0] = -np.sin(twist) 
                 section_twist[i,:,2,2] =  np.cos(twist)  
-             
-            if (i != n_segments-1):  
+    
+            translation[i, :, 0,:] += current_seg.origin[0][0]  
+            translation[i, :, 1,:] += current_seg.origin[0][1]  
+            translation[i, :, 2,:] += current_seg.origin[0][2]
+                
+            if (i == n_segments-1):  
                 # update origin for next segment 
-                next_seg             = segments[segment_list[i+1]]                
-                segment_percent_span = next_seg.percent_span_location - current_seg.percent_span_location     
+                prev_seg             = segments[segment_list[i-1]]                
+                segment_percent_span = current_seg.percent_span_location -  prev_seg.percent_span_location
+
+                sweep    = prev_seg.sweeps.leading_edge
+                dihedral = prev_seg.dihedral_outboard
+            
                 if wing.vertical:
                     dz = semispan*segment_percent_span
                     dy = dz*np.tan(dihedral)
@@ -359,9 +360,10 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
                     dz = dy*np.tan(dihedral)
                     l  = dy/np.cos(dihedral)
                     dx = l*np.tan(sweep)
-                translation[i+1,:,0,:] = translation[i,:,0,:] + dx
-                translation[i+1,:,1,:] = translation[i,:,1,:] + dy
-                translation[i+1,:,2,:] = translation[i,:,2,:] + dz 
+                    
+                translation[i,:,0,:] = translation[i-1,:,0,:] + dx
+                translation[i,:,1,:] = translation[i-1,:,1,:] + dy
+                translation[i,:,2,:] = translation[i-1,:,2,:] + dz 
     else:
 
         pts              = np.zeros((dim,n_points, 3,1))  
@@ -372,8 +374,8 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
         translation      = np.zeros((dim,n_points, 3,1))
     
         front_rib_yu,rear_rib_yu,front_rib_yl,rear_rib_yl = compute_non_dimensional_rib_coordinates(wing)
-        fs = wing.structural.front_spar_percent_chord
-        rs = wing.structural.rear_spar_percent_chord  
+        fs = wing.fuel_tank.percent_chord_start_location
+        rs = wing.fuel_tank.percent_chord_end_location  
         x_coordinates =  np.array([rs, rs, fs, fs, rs])
         y_coordinates =  np.array([rear_rib_yl, rear_rib_yu, front_rib_yu,front_rib_yl,rear_rib_yl ]) 
             
@@ -426,7 +428,7 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
             pts[1,:,1,0]   = np.zeros_like(y_coordinates)  
             pts[1,:,2,0]   = y_coordinates *  wing.chords.tip   
     
-            translation[1, :, 0,:] +=  semispan*np.tan(sweep)
+            translation[1, :, 0,:] += semispan*np.tan(sweep)
             translation[1, :, 1,:] += semispan 
             translation[1, :, 2,:] += semispan*np.tan(dihedral)     
 
@@ -484,10 +486,9 @@ def generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list, tessell
     -------
     G : Data
         Data structure containing generated points
-        
-        - PTS : ndarray
-            Array of shape (num_segments, tessellation, 3) containing 
-            x,y,z coordinates of surface points
+            - PTS : ndarray
+                Array of shape (num_segments, tessellation, 3) containing 
+                x,y,z coordinates of surface points
 
     Notes
     -----
@@ -495,56 +496,51 @@ def generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list, tessell
     and positioning them according to segment locations.
     
     **Major Assumptions**
-    
-    * Cross-sections lie in y-z plane
-    * Segments are ordered from nose to tail
-    * Origin is at the nose of the fuel_tank
-    
-    See Also
-    --------
-    plot_3d_fuel_tank : Function to visualize the generated surface
+        * Cross-sections lie in y-z plane
+        * Segments are ordered from nose to tail
+        * Origin is at the nose of the fuel_tank
     """ 
-    fus_segs         = fuselage.segments
-    num_fus_segs     = len(segment_list) 
-    fuel_tank_points = np.zeros((num_fus_segs+2,tessellation ,3))
+    tank_segs         = fuselage.segments
+    num_tank_segs     = len(segment_list) 
+    fuel_tank_points = np.zeros((num_tank_segs+2,tessellation ,3))
         
-    if num_fus_segs > 0: 
+    if num_tank_segs > 0: 
         # first segment
-        segment_start = fus_segs[segment_list[0]]
+        segment_start = tank_segs[segment_list[0]]
         a        = 1E-6
         b        = 1E-6
         n        = segment_start.curvature
         theta    = np.linspace(0,2*np.pi,tessellation) 
-        fus_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
-        fus_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
+        tank_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
+        tank_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
         fuel_tank_points[0,:,0] = segment_start.percent_x_location*fuselage.lengths.total + fuselage.origin[0][0]
-        fuel_tank_points[0,:,1] = fus_ypts + segment_start.percent_y_location*fuselage.lengths.total + fuselage.origin[0][1]
-        fuel_tank_points[0,:,2] = fus_zpts + segment_start.percent_z_location*fuselage.lengths.total + fuselage.origin[0][2]
+        fuel_tank_points[0,:,1] = tank_ypts + segment_start.percent_y_location*fuselage.lengths.total + fuselage.origin[0][1]
+        fuel_tank_points[0,:,2] = tank_zpts + segment_start.percent_z_location*fuselage.lengths.total + fuselage.origin[0][2]
         
                 
-        for i in range(num_fus_segs):  
-            segment = fus_segs[segment_list[i]]  
+        for i in range(num_tank_segs):  
+            segment = tank_segs[segment_list[i]]  
             a = segment.width/2
             b = segment.height/2
             n = segment.curvature
             theta    = np.linspace(0,2*np.pi,tessellation) 
-            fus_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
-            fus_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
+            tank_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
+            tank_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
             fuel_tank_points[i+1,:,0] = segment.percent_x_location*fuselage.lengths.total + fuselage.origin[0][0]
-            fuel_tank_points[i+1,:,1] = fus_ypts + segment.percent_y_location*fuselage.lengths.total + fuselage.origin[0][1]
-            fuel_tank_points[i+1,:,2] = fus_zpts + segment.percent_z_location*fuselage.lengths.total + fuselage.origin[0][2] 
+            fuel_tank_points[i+1,:,1] = tank_ypts + segment.percent_y_location*fuselage.lengths.total + fuselage.origin[0][1]
+            fuel_tank_points[i+1,:,2] = tank_zpts + segment.percent_z_location*fuselage.lengths.total + fuselage.origin[0][2] 
        
         # last segment
-        segment_start = fus_segs[segment_list[-1]]
+        segment_start = tank_segs[segment_list[-1]]
         a        = 1E-6
         b        = 1E-6
         n        = segment_start.curvature
         theta    = np.linspace(0,2*np.pi,tessellation) 
-        fus_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
-        fus_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
+        tank_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
+        tank_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
         fuel_tank_points[-1,:,0] = segment_start.percent_x_location*fuselage.lengths.total + fuselage.origin[0][0]
-        fuel_tank_points[-1,:,1] = fus_ypts + segment_start.percent_y_location*fuselage.lengths.total + fuselage.origin[0][1]
-        fuel_tank_points[-1,:,2] = fus_zpts + segment_start.percent_z_location*fuselage.lengths.total + fuselage.origin[0][2]
+        fuel_tank_points[-1,:,1] = tank_ypts + segment_start.percent_y_location*fuselage.lengths.total + fuselage.origin[0][1]
+        fuel_tank_points[-1,:,2] = tank_zpts + segment_start.percent_z_location*fuselage.lengths.total + fuselage.origin[0][2]
         
     G = Data()
     
@@ -568,10 +564,9 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
     -------
     G : Data
         Data structure containing generated points
-        
-        - PTS : ndarray
-            Array of shape (num_segments, tessellation, 3) containing 
-            x,y,z coordinates of surface points
+            - PTS : ndarray
+                Array of shape (num_segments, tessellation, 3) containing 
+                x,y,z coordinates of surface points
 
     Notes
     -----
@@ -579,48 +574,83 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
     and positioning them according to segment locations.
     
     **Major Assumptions**
-    
-    * Cross-sections lie in y-z plane
-    * Segments are ordered from nose to tail
-    * Origin is at the nose of the fuel_tank
-    
-    See Also
-    --------
-    plot_3d_fuel_tank : Function to visualize the generated surface
+        * Cross-sections lie in y-z plane
+        * Segments are ordered from nose to tail
+        * Origin is at the nose of the fuel_tank
     """  
-    fuel_tank_points = np.zeros((12,tessellation ,3))
+
+    N = 3
+    fuel_tank_points = np.zeros((2*N,tessellation ,3))
     R = fuel_tank.outer_diameter / 2
-    L = fuel_tank.length - fuel_tank.outer_diameter
+    L = fuel_tank.outer_length - fuel_tank.outer_diameter
+    
          
     # front segments
-    front_angles = np.linspace(0, np.pi/2,6) 
+    front_angles = np.linspace(0, np.pi/2,N) 
     for i in range(len(front_angles)):
         a        = np.sin(front_angles[i]) * R 
         b        = np.sin(front_angles[i]) * R 
         n        = 2
         theta    = np.linspace(0,2*np.pi,tessellation) 
-        fus_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
-        fus_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
-        fuel_tank_points[i,:,0] = R  * (1 -  np.cos(front_angles[i])) +  fuel_tank.origin[0][0]
-        fuel_tank_points[i,:,1] = fus_ypts  + fuel_tank.origin[0][1]
-        fuel_tank_points[i,:,2] = fus_zpts  + fuel_tank.origin[0][2]
+        tank_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
+        tank_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
+
+        fuel_tank_points[i,:,0] = R  * (1 -  np.cos(front_angles[i])) 
+        fuel_tank_points[i,:,1] = tank_ypts 
+        fuel_tank_points[i,:,2] = tank_zpts 
       
        
     # rear angles 
-    rear_angles = np.linspace(np.pi/2,0,6) 
+    rear_angles = np.linspace(np.pi/2,0,N) 
     for j in range(len(rear_angles)):
         a        = np.sin(rear_angles[j]) *R 
         b        = np.sin(rear_angles[j]) *R 
         n        = 2
         theta    = np.linspace(0,2*np.pi,tessellation) 
-        fus_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
-        fus_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
-        fuel_tank_points[6+j,:,0] = R *(np.cos(rear_angles[j]))  +  L + fuel_tank.origin[0][0] 
-        fuel_tank_points[6+j,:,1] = fus_ypts + fuel_tank.origin[0][1]
-        fuel_tank_points[6+j,:,2] = fus_zpts + fuel_tank.origin[0][2]
+        tank_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
+        tank_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
         
-    G = Data()
+        fuel_tank_points[i+1+j,:,0] = R *(np.cos(rear_angles[j]))  +  L + R
+        fuel_tank_points[i+1+j,:,1] = tank_ypts 
+        fuel_tank_points[i+1+j,:,2] = tank_zpts 
+
+    x_rotation = np.zeros(( 3, 3))
+    x_rotation[0,0] = 1
+    x_rotation[1,1] = np.cos(fuel_tank.orientation_euler_angles[0])
+    x_rotation[1,2] = -np.sin(fuel_tank.orientation_euler_angles[0])
+    x_rotation[2,1] = np.sin(fuel_tank.orientation_euler_angles[0])
+    x_rotation[2,2] = np.cos(fuel_tank.orientation_euler_angles[0])
+
+    y_rotation = np.zeros((3, 3))
+    y_rotation[0,0] = np.cos(fuel_tank.orientation_euler_angles[1])
+    y_rotation[0,2] = np.sin(fuel_tank.orientation_euler_angles[1])
+    y_rotation[1,1] = 1
+    y_rotation[2,0] = -np.sin(fuel_tank.orientation_euler_angles[1])
+    y_rotation[2,2] = np.cos(fuel_tank.orientation_euler_angles[1]) 
+
+    z_rotation = np.zeros(( 3, 3))
+    z_rotation[0,0] = np.cos(fuel_tank.orientation_euler_angles[2])
+    z_rotation[0,1] = -np.sin(fuel_tank.orientation_euler_angles[2])
+    z_rotation[1,0] = np.sin(fuel_tank.orientation_euler_angles[2])
+    z_rotation[1,1] = np.cos(fuel_tank.orientation_euler_angles[2])
+    z_rotation[2,2] = 1
     
-    G.PTS  = fuel_tank_points
+    R_total = z_rotation @ y_rotation @ x_rotation
+    fuel_tank_points = fuel_tank_points @ R_total.T 
+    
+    # translate to location on aircraft 
+    if fuel_tank.orientation_euler_angles   == [0.,0.,np.pi/2]:
+         fuel_tank_points[:, :, 0] +=  fuel_tank.origin[0][0] - fuel_tank.outer_diameter/2
+         fuel_tank_points[:, :, 1] +=  fuel_tank.origin[0][1] - (R+L/2)
+         fuel_tank_points[:, :, 2] +=  fuel_tank.origin[0][2]
+    else:
+        fuel_tank_points[:, :, 0] += fuel_tank.origin[0][0]
+        fuel_tank_points[:, :, 1] += fuel_tank.origin[0][1]
+        fuel_tank_points[:, :, 2] += fuel_tank.origin[0][2]
+    
+
+  
+    G= Data()
+    G.PTS  = fuel_tank_points 
 
     return G 

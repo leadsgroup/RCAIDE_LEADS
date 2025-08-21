@@ -45,21 +45,20 @@ def main():
     results = missions.base_mission.evaluate() 
 
     elevator_deflection        = results.segments.climb.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
-    elevator_deflection_true   = -1.507380313624374
+    elevator_deflection_true   = -1.3038869012039258
     elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
     print('Error1: ',elevator_deflection_diff)
-    # There is assertion error somehow, not related to any dimension error pertaining to numpy
     assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
 
     aileron_deflection        = results.segments.climb.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
-    aileron_deflection_true   = 0.9604546442510746
+    aileron_deflection_true   = 0.4619222642346069
     aileron_deflection_diff   = np.abs(aileron_deflection - aileron_deflection_true)
     print('Error2: ',aileron_deflection_diff)
     assert np.abs(aileron_deflection_diff/aileron_deflection_true) < 5e-3
 
 
     rudder_deflection        = results.segments.climb.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
-    rudder_deflection_true   = -1.5314912737051678
+    rudder_deflection_true   = 1.411364180817925
     rudder_deflection_diff   = np.abs(rudder_deflection - rudder_deflection_true)
     print('Error3: ',rudder_deflection_diff)
     assert np.abs(rudder_deflection_diff/rudder_deflection_true) < 5e-3    
@@ -78,13 +77,13 @@ def analyses_setup(configs):
 
     # build a base analysis for each config
     for tag,config in configs.items():
-        analysis = base_analysis(config, configs)
+        analysis = base_analysis(config)
         analyses[tag] = analysis
 
     return analyses
 
 
-def base_analysis(vehicle, configs):
+def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #   Initialize the Analyses
@@ -93,9 +92,7 @@ def base_analysis(vehicle, configs):
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
+    geometry.vehicle = vehicle 
     analyses.append(geometry)
 
 
@@ -105,12 +102,10 @@ def base_analysis(vehicle, configs):
     aerodynamics.vehicle                                = vehicle
     aerodynamics.settings.number_of_spanwise_vortices   = 30 
     analyses.append(aerodynamics) 
-      
-    stability                                           = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method() 
-    stability.settings.discretize_control_surfaces      = True
-    stability.settings.model_fuselage                   = True
-    stability.settings.model_nacelle                    = True
-    stability.configuration                             = configs
+
+    # ------------------------------------------------------------------
+    #  Stability Analysis      
+    stability                                           = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()   
     stability.vehicle                                   = vehicle
     analyses.append(stability)
 
@@ -170,7 +165,7 @@ def mission_setup(analyses):
     #   Climb Segment : Constant Speed Constant Rate
     # ------------------------------------------------------------------ 
     segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
-    segment.tag = "climb"
+    segment.tag = "climb"  
     segment.analyses.extend( analyses.base )
     segment.altitude_start                                                      = 0.0 * Units.feet
     segment.altitude_end                                                        = 12000 * Units.feet
@@ -191,7 +186,7 @@ def mission_setup(analyses):
     segment.flight_dynamics.moment_y                                            = True 
     segment.assigned_control_variables.elevator_deflection.active               = True    
     segment.assigned_control_variables.elevator_deflection.assigned_surfaces    = [['elevator']]
-    segment.assigned_control_variables.elevator_deflection.initial_guess_values = [[0]]
+    segment.assigned_control_variables.elevator_deflection.initial_guess_values = [[0.02]]
    
     # Lateral Flight Mechanics 
     segment.flight_dynamics.force_y                                             = True     

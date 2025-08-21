@@ -31,11 +31,11 @@ def main():
      
     results =  compute_noise_certification_data(approach_mission = approach_mission, takeoff_mission=takeoff_mission) 
 
-    truth_approach_noise_2000m  = 84.73299492774487
-    truth_flyover_noise_6000m   = 83.31127132759015
-    truth_sideline_noise_450m   = 95.260965430612
+    truth_approach_noise_2000m  = 85.0692701128015
+    truth_flyover_noise_6000m   = 81.78923225177489
+    truth_sideline_noise_450m   = 95.2371348176776
     truth_area_65_dbA           = 98.58686616791356
-    truth_area_85_dbA           = 41.42421723469105
+    truth_area_85_dbA           = 41.285674702133555
 
     # Check the errors
     error = Data()
@@ -87,8 +87,6 @@ def noise_base_analysis(vehicle):
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
     analyses.append(geometry)
 
     # ------------------------------------------------------------------

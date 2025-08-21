@@ -31,7 +31,7 @@ Systems
    :recursive:
 
    append_avionics_conditions
-   append_payload_conditions
+   append_systems_conditions
    compute_avionics_power_draw
-   compute_payload_power_draw
+   compute_systems_power_draw
 

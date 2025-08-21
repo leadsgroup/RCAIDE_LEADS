@@ -45,13 +45,8 @@ def tiltwing_transition_test(update_regression_values):
     TW_vehicle  = TW_vehicle_setup(update_regression_values) 
 
     # plot vehicle 
-    plot_3d_vehicle(TW_vehicle, 
-                            min_x_axis_limit            = -50,
-                            max_x_axis_limit            = 50,
-                            min_y_axis_limit            = -50,
-                            max_y_axis_limit            = 50,
-                            min_z_axis_limit            = -50,
-                            max_z_axis_limit            = 50, 
+    plot_3d_vehicle(TW_vehicle,  
+                            axis_limit                  = 50, 
                             wing_alpha                  = 0.2,
                             front_view                  = True, 
                             show_figure                 = False 
@@ -83,9 +78,9 @@ def tiltwing_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth              = 0.5994692986064568
-    vertical_climb_1_throttle_truth   = 0.6032111666837028
-    vertical_descent_throttle_truth   = 0.5925255481996229
+    hover_throttle_truth              = 0.5994692986064557
+    vertical_climb_1_throttle_truth   = 0.6187135868082909
+    vertical_descent_throttle_truth   = 0.5925255481996211
     
     # Store errors 
     error = Data() 
@@ -184,15 +179,16 @@ def TW_base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.aircraft_type =  "VTOL"
-    weights.vehicle = vehicle
+    weights         = RCAIDE.Framework.Analyses.Weights.Electric_VTOL() 
+    weights.vehicle = vehicle 
+    weights.settings.update_center_of_gravity    = True    
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle = vehicle 
+    aerodynamics.vehicle = vehicle
+    aerodynamics.settings.unique_segment_surrogate = True
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
@@ -224,14 +220,12 @@ def SR_base_analysis(vehicle):
     
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
+    geometry.vehicle = vehicle 
     analyses.append(geometry)
+    
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.aircraft_type =  "VTOL"
+    weights         = RCAIDE.Framework.Analyses.Weights.Electric_VTOL() 
     weights.vehicle = vehicle
     weights.settings.update_center_of_gravity   = True
     weights.settings.update_moment_of_inertia   = True
@@ -304,16 +298,16 @@ def TW_mission_setup(analyses ):
     # ------------------------------------------------------------------ 
     segment                                                          = Segments.Vertical_Flight.Climb(base_segment)
     segment.tag                                                      = "Vertical_Climb_1"   
-    segment.analyses.extend(analyses.vertical_climb)                
-    segment.altitude_end                                             = 60.  * Units.ft  
-    segment.initial_battery_state_of_charge                          = 1.0 
-    segment.climb_rate                                               = 100. * Units['ft/min'] 
+    segment.analyses.extend(analyses.vertical_climb)                   
+    segment.altitude_end                                             = 60.  * Units.ft   
+    segment.climb_rate                                               = 500. * Units['ft/min']  
           
     # define flight dynamics to model            
     segment.flight_dynamics.force_z                                  = True 
 
     # define flight controls  
-    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.active               = True  
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.6]]
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['prop_rotor_propulsor_1','prop_rotor_propulsor_2','prop_rotor_propulsor_3','prop_rotor_propulsor_4',
                                                             'prop_rotor_propulsor_5','prop_rotor_propulsor_6','prop_rotor_propulsor_7','prop_rotor_propulsor_8']]
     

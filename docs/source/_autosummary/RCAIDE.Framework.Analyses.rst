@@ -37,6 +37,7 @@ Analyses
    Emissions
    Energy
    Geodesics
+   Geometry
    Noise
    Planets
    Process

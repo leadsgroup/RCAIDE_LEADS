@@ -146,10 +146,10 @@ def translate_results_to_conditions(cases, res, results):
     dim       = len(cases)
          
     # aero results 1: total surface forces and coefficeints
-    res.aerodynamics.coefficients.lift.total       = np.zeros((dim,1))
-    res.aerodynamics.wing_areas                    = np.zeros((dim,num_wings)) 
-    res.aerodynamics.wing_CLs                      = np.zeros_like(res.aerodynamics.wing_areas) 
-    res.aerodynamics.wing_CDs                      = np.zeros_like(res.aerodynamics.wing_areas) 
+    res.aerodynamics.coefficients.lift.inviscid.total = np.zeros((dim,1))
+    res.aerodynamics.wing_areas                       = np.zeros((dim,num_wings)) 
+    res.aerodynamics.wing_CLs                         = np.zeros_like(res.aerodynamics.wing_areas) 
+    res.aerodynamics.wing_CDs                         = np.zeros_like(res.aerodynamics.wing_areas) 
 
     # aero results 2 : sectional forces and coefficients 
     res.aerodynamics.wing_local_spans              = np.zeros((dim,num_wings,n_sw))
@@ -165,13 +165,7 @@ def translate_results_to_conditions(cases, res, results):
         tag = 'case_' + mach_case + '_' + aoa_case
         case_res = results[tag]       
         
-        # stability file 
-        res.S_ref[i][0]                                                     = case_res.S_ref 
-        res.c_ref[i][0]                                                     = case_res.c_ref 
-        res.b_ref[i][0]                                                     = case_res.b_ref
-        res.X_ref[i][0]                                                     = case_res.X_ref 
-        res.Y_ref[i][0]                                                     = case_res.Y_ref 
-        res.Z_ref[i][0]                                                     = case_res.Z_ref       
+        # stability file       
         res.aerodynamics.angles.alpha[i][0]                                 = case_res.aerodynamics.AoA * Units.degree
         res.aerodynamics.angles.beta[i][0]                                  = case_res.aerodynamics.beta * Units.degree
         res.static_stability.coefficients.X[i][0]                           = case_res.aerodynamics.CX 
@@ -183,7 +177,7 @@ def translate_results_to_conditions(cases, res, results):
         res.static_stability.coefficients.roll[i][0]                        = case_res.aerodynamics.roll_moment_coefficient
         res.static_stability.coefficients.pitch[i][0]                       = case_res.aerodynamics.pitch_moment_coefficient
         res.static_stability.coefficients.yaw[i][0]                         = case_res.aerodynamics.yaw_moment_coefficient
-        res.aerodynamics.coefficients.lift.total[i][0]                      = case_res.aerodynamics.total_lift_coefficient
+        res.aerodynamics.coefficients.lift.inviscid.total[i][0]             = case_res.aerodynamics.total_lift_coefficient
         res.aerodynamics.coefficients.drag.induced.inviscid[i][0]           = case_res.aerodynamics.induced_drag_coefficient 
         res.aerodynamics.coefficients.drag.induced.efficiency_factor[i][0]  = case_res.aerodynamics.oswald_efficiency 
         res.aerodynamics.oswald_efficiency[i][0]                            = case_res.aerodynamics.oswald_efficiency

@@ -19,28 +19,123 @@ import numpy as np
 #   Parasite Drag Fuselage
 # ---------------------------------------------------------------------------------------------------------------------- 
 def parasite_drag_fuselage(state,settings,fuselage):
-    """Computes the parasite drag due the a fuselage (or boom)
+    """
+    Computes the parasite drag coefficient for a fuselage or boom accounting for compressibility effects.
 
-    Assumptions:
-        None
+    Parameters
+    ----------
+    state : Data
+        Flight conditions containing:
+            - conditions.freestream.mach_number : float
+                Freestream Mach number [unitless]
+            - conditions.freestream.temperature : float
+                Freestream static temperature [K]
+            - conditions.freestream.reynolds_number : float
+                Freestream Reynolds number per unit length [unitless/m]
+    settings : dict
+        Aerodynamic analysis settings containing:
+            - fuselage_parasite_drag_form_factor : float
+                Form factor for fuselage parasite drag [unitless]
+            - supersonic.fuselage_parasite_drag_begin_blend_mach : float
+                Mach number at which supersonic blending begins [unitless]
+            - supersonic.fuselage_parasite_drag_end_blend_mach : float
+                Mach number at which supersonic blending ends [unitless]
+    fuselage : Data
+        Fuselage geometry containing:
+            - tag : str
+                Unique identifier for the fuselage
+            - areas.front_projected : float
+                Front projected area [m²]
+            - areas.wetted : float
+                Wetted area [m²]
+            - lengths.total : float
+                Total length of fuselage [m]
+            - effective_diameter : float
+                Effective diameter of fuselage [m]
 
-    Source:
-        Stanford AA241 A/B Course Notes
+    Returns
+    -------
+    None
+        Results are stored in state.conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag]
 
-    Args:
-        state.conditions.freestream.
-          mach_number                                (numpy.ndarray): mach_number     [Unitless]
-          temperature                                (numpy.ndarray): temperature     [K]
-          reynolds_number                            (numpy.ndarray): Reynolds number [Unitless]
-        settings.fuselage_parasite_drag_form_factor  (numpy.ndarray): form factor     [Unitless]
-        geometry.fuselage.       
-          areas.front_projected                              (float): projected front area [m^2]
-          areas.wetted                                       (float): wetted area          [m^2]
-          lengths.total                                      (float): length               [m]
-          effective_diameter                                 (float): effective diamater   [m]
+    Notes
+    -----
+    This function calculates the parasite drag coefficient for a fuselage or boom using
+    compressible turbulent flat plate theory with form factor corrections. The calculation
+    accounts for compressibility effects through Mach number-dependent form factors and
+    uses cubic spline blending for the transonic regime.
+    
+    **Major Assumptions**
+        * Fully turbulent boundary layer over the entire fuselage
+        * Cylindrical body approximation for form factor calculations
+        * Compressible turbulent flat plate skin friction correlation
+        * Cubic spline blending smooths transition between subsonic and supersonic regimes
+        * Form factor accounts for pressure drag due to body shape
+    
+    **Theory**
 
-    Returns:
-        None 
+    The fuselage Reynolds number is:
+
+    :math:`Re_{fus} = Re \\cdot l_{fus}`
+
+    where :math:`Re` is the freestream Reynolds number per unit length and :math:`l_{fus}` is the fuselage length.
+
+    The skin friction coefficient is calculated using compressible turbulent flat plate theory:
+
+    :math:`C_f = f(Re_{fus}, M, T)`
+
+    The diameter-to-length ratio is:
+
+    :math:`d/l = \\frac{d_{fus}}{l_{fus}}`
+
+    For subsonic flow (M ≤ 1.0), the form factor parameters are:
+
+    :math:`D = \\sqrt{1 - (1-M^2)(d/l)^2}` for M < 0.95
+
+    :math:`D = \\sqrt{1 - (d/l)^2}` for M ≥ 0.95
+
+    :math:`a = \\frac{2(1-M^2)(d/l)^2(\\text{arctanh}(D)-D)}{D^3}` for M < 0.95
+
+    :math:`a = \\frac{2(d/l)^2(\\text{arctanh}(D)-D)}{D^3}` for M ≥ 0.95
+
+    The maximum velocity perturbation is:
+
+    :math:`\\frac{\\Delta u_{max}}{u_{\\infty}} = \\frac{a}{(2-a)\\sqrt{1-M^2}}` for M < 0.95
+
+    :math:`\\frac{\\Delta u_{max}}{u_{\\infty}} = \\frac{a}{2-a}` for M ≥ 0.95
+
+    The form factor is:
+
+    :math:`k_{fus} = (1 + FF \\cdot \\frac{\\Delta u_{max}}{u_{\\infty}})^2`
+
+    where :math:`FF` is the user-specified form factor.
+
+    For supersonic flow, the form factor is calculated using cubic spline blending between
+    subsonic and supersonic correlations.
+
+    The parasite drag coefficient is:
+
+    :math:`C_{D,parasite} = k_{fus} \\cdot C_f \\cdot \\frac{S_{wet}}{S_{ref}}`
+    
+    **Definitions**
+
+    'Parasite Drag'
+        Drag component caused by viscous effects and pressure forces on the aircraft surface.
+    
+    'Form Factor'
+        Multiplier accounting for the increase in drag due to body shape compared to a flat plate.
+    
+    'Compressibility Effects'
+        Changes in aerodynamic characteristics due to compressible flow effects at high Mach numbers.
+
+    References
+    ----------
+    [1] Stanford AA241 Course Notes
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressible_turbulent_flat_plate
+    RCAIDE.Library.Methods.Utilities.Cubic_Spline_Blender
     """
      
     # unpack inputs   
@@ -72,7 +167,7 @@ def parasite_drag_fuselage(state,settings,fuselage):
         a[Mach < 0.95]  = 2 * (1-Mach[Mach < 0.95]**2) * (d_d**2) *(np.arctanh(D[Mach < 0.95])-D[Mach < 0.95]) / (D[Mach < 0.95]**3)
         a[Mach >= 0.95] = 2  * (d_d**2) *(np.arctanh(D[Mach >= 0.95])-D[Mach >= 0.95]) / (D[Mach >= 0.95]**3)
     
-        du_max_u             = np.zeros_like(Mach)    
+        du_max_u               = np.zeros_like(Mach)    
         du_max_u[Mach < 0.95]  = a[Mach < 0.95] / ( (2-a[Mach < 0.95]) * (1-Mach[Mach < 0.95]**2)**0.5 ) 
         du_max_u[Mach >= 0.95] = a[Mach >= 0.95] / ( (2-a[Mach >= 0.95]) )
         
@@ -111,8 +206,8 @@ def parasite_drag_fuselage(state,settings,fuselage):
     
         fuselage_parasite_drag = k_fus * cf_fus * Swet / Sref
          
-    # Store data
-    results = Data(
+    # Store data 
+    state.conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag] = Data(
         wetted_area               = Swet   , 
         reference_area            = Sref   , 
         total                     = fuselage_parasite_drag ,
@@ -120,7 +215,6 @@ def parasite_drag_fuselage(state,settings,fuselage):
         compressibility_factor    = k_comp ,
         reynolds_factor           = k_reyn , 
         form_factor               = k_fus  ,
-    ) 
-    state.conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag] = results        
+    )    
         
     return  

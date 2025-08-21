@@ -138,15 +138,15 @@ def train_AVL_surrogates(aerodynamics):
         run_conditions.aerodynamics.angles.beta            = np.ones_like(run_conditions.aerodynamics.angles.alpha)*side_slip_angle 
         run_conditions.static_stability.coefficients.roll  = np.ones_like(run_conditions.aerodynamics.angles.alpha)*roll_rate_coefficient   
         if lift_coefficient == None: 
-            run_conditions.aerodynamics.coefficients.lift.total= lift_coefficient
+            run_conditions.aerodynamics.coefficients.lift.inviscid.total= lift_coefficient
         else:
-            run_conditions.aerodynamics.coefficients.lift.total= np.array([lift_coefficient]).T  
+            run_conditions.aerodynamics.coefficients.lift.inviscid.total= np.array([lift_coefficient]).T  
         run_conditions.static_stability.coefficients.pitch = np.ones_like(run_conditions.aerodynamics.angles.alpha)*pitch_rate_coefficient 
 
         # Run Analysis at AoA[i] and Mach[i]
         run_AVL_analysis(aerodynamics,run_conditions)
  
-        CL[:,i]       = run_conditions.aerodynamics.coefficients.lift.total[:,0]
+        CL[:,i]       = run_conditions.aerodynamics.coefficients.lift.inviscid.total[:,0]
         CD[:,i]       = run_conditions.aerodynamics.coefficients.drag.induced.total[:,0]      
         e [:,i]       = run_conditions.aerodynamics.coefficients.drag.induced.efficiency_factor[:,0]   
         CM[:,i]       = run_conditions.static_stability.coefficients.pitch[:,0]

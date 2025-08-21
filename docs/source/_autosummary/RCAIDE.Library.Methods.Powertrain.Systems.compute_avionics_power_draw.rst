@@ -11,13 +11,6 @@ compute\_avionics\_power\_draw
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-      :toctree:
-   
-      compute_avionics_power_draw
-   
    
 
    

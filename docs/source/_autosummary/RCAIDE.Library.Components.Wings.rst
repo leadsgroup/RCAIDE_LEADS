@@ -31,6 +31,7 @@ Wings
    :recursive:
 
    All_Moving_Surface
+   Blended_Wing_Body
    Control_Surfaces
    Horizontal_Tail
    Main_Wing

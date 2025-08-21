@@ -23,3 +23,4 @@ RCAIDE.Library.Components.Powertrain.Modulators.Fuel_Selector
 from .Fuel_Tank            import Fuel_Tank
 from .Integral_Tank        import Integral_Tank
 from .Non_Integral_Tank    import Non_Integral_Tank
+from .Liquid_Hydrogen_Tank import Liquid_Hydrogen_Tank

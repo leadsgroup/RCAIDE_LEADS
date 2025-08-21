@@ -17,8 +17,7 @@ import pandas as pd
 def plot_weight_breakdown(vehicle,
                             save_figure    = False,
                             show_figure    = True, 
-                            show_legend    = True,
-                            SI_Units       = True,
+                            show_legend    = True, 
                             save_filename  = "Weight_Breakdown",
                             aircraft_name  = None,
                             file_type      = ".png",
@@ -55,11 +54,7 @@ def plot_weight_breakdown(vehicle,
         Flag to display interactive plot (default: True)
         
     show_legend : bool, optional
-        Flag to display weight legend (default: True)
-        
-    SI_Units : bool, optional
-        If True, display weights in kg
-        If False, display weights in lbs (default: True)
+        Flag to display weight legend (default: True) 
         
     save_filename : str, optional
         Name of file for saved figure (default: "Weight_Breakdown")

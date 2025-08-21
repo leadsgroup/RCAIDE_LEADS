@@ -35,17 +35,26 @@ def sum_moment(component):
     total_mass   = 0
     for key,Comp in component.items():
         if  isinstance(Comp,Component.Container):
-            Moment, Mass  = sum_moment(Comp)  
-            total_moment += Moment
-            total_mass   += Mass 
+            Moment, Mass  = sum_moment(Comp)
+            if Mass != 0: 
+                total_moment += Moment
+                total_mass   += Mass
+            
         elif isinstance(Comp,Component): 
             global_cg_loc = np.array(Comp.mass_properties.center_of_gravity) + np.array(Comp.origin)             
             if global_cg_loc[0][0] == 0:
                 pass
             else:
                 total_moment += Comp.mass_properties.mass*global_cg_loc 
-            total_mass   += Comp.mass_properties.mass
-            
+            total_mass   += Comp.mass_properties.mass 
+        
+            for key in Comp.keys():
+                item = Comp[key]
+                if isinstance(item,Component.Container):
+                    Moment, Mass  = sum_moment(item)
+                    if Mass != 0: 
+                        total_moment += Moment
+                        total_mass   += Mass  
             
     return total_moment , total_mass
 
@@ -76,6 +85,10 @@ def sum_moment_of_inertia(component, vehicle_center_of_gravity = None):
             global_cg_loc = Comp.mass_properties.center_of_gravity + Comp.origin 
             total_I += Comp.mass_properties.moments_of_inertia.center + Comp.mass_properties.mass*((vehicle_center_of_gravity - global_cg_loc)**2)
             
+            for key in Comp.keys():
+                item = Comp[key]
+                if isinstance(item,Component.Container):
+                    total_I += sum_moment_of_inertia(Comp,vehicle_center_of_gravity )             
     return total_I
  
 

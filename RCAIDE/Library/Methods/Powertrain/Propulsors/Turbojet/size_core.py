@@ -99,13 +99,13 @@ def size_core(turbojet, conditions):
     compute_thrust(turbojet,conditions)
 
     #unpack results 
-    Fsp                         = turbojet_conditions.non_dimensional_thrust
-
-    #compute dimensional mass flow rates
-    mdot_core                   = turbojet.design_thrust/(Fsp*a0*throttle)  
-    mdhc                        = mdot_core/ (np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref))
+    Fsp       = turbojet_conditions.non_dimensional_thrust 
+    TSFC      = turbojet_conditions.thrust_specific_fuel_consumption
+    mdot_core = turbojet.design_thrust/(Fsp*a0*throttle)  
+    mdhc      = mdot_core/ (np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref))
 
     #pack outputs
+    turbojet.TSFC                                = TSFC
     turbojet.design_mass_flow_rate               = mdot_core
     turbojet.compressor_nondimensional_massflow  = mdhc
 

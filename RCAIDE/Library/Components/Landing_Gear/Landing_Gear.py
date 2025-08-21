@@ -24,11 +24,8 @@ class Landing_Gear(Component):
     tire_diameter : float
         Diameter of the landing gear tire, defaults to 0
         
-    strut_length : float
-        Length of the landing gear strut assembly, defaults to 0
-        
-    units : int
-        Number of landing gear units in the assembly, defaults to 0
+    tire_width : float
+        Width of the landing gear tire, defaults to 0 
         
     gear_extended : bool
         Flag indicating whether the landing gear is in extended position, 
@@ -36,6 +33,15 @@ class Landing_Gear(Component):
         
     wheels : int
         Number of wheels per landing gear unit, defaults to 0
+        
+    number_of_gear_types_in_tandem : int
+        Number of wheels in tandem on landing gear, defaults to None
+        
+    number_of_wheels_in_gear_type : int
+        Configuration of wheels in tandem, defaults to None
+        
+    fairing : bool
+        Configuration of wheels in tandem, defaults to 0
 
     Notes
     -----
@@ -53,13 +59,13 @@ class Landing_Gear(Component):
     
     **Definitions**
 
-    'Strut'
+    'struct length'
         The main structural member of the landing gear that absorbs landing loads
         and supports the wheel assembly
         
-    'Unit'
-        A complete landing gear assembly including strut, wheels, and associated 
-        mechanisms
+    References
+    ----------
+    [1] https://www.faa.gov/documentLibrary/media/Order/Construction_5300_7.pdf
 
     See Also
     --------
@@ -73,9 +79,14 @@ class Landing_Gear(Component):
         """
         Sets default values for the landing gear attributes.
         """
-        self.tag            = 'landing_gear'   
-        self.tire_diameter  = 0 
-        self.strut_length   = 0 
-        self.units          = 0 
-        self.gear_extended  = False
-        self.wheels         = 0     
+        self.tag                             = 'landing_gear'   
+        self.tire_diameter                   = 0  
+        self.rim_diameter                    = 0  
+        self.tire_width                      = 0 
+        self.strut_length                    = 0  
+        self.wheels                          = 0
+        self.symmetric                       = False
+        self.number_of_gear_types_in_tandem  = None
+        self.number_of_wheels_in_gear_type   = None  
+        self.gear_extended                   = False
+        self.fairing                         = False

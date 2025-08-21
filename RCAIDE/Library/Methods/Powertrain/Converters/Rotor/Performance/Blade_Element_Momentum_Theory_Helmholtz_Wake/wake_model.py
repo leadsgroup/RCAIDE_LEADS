@@ -123,7 +123,7 @@ def evaluate_wake(rotor,wake_inputs,conditions):
         
     return va, vt
 
-def evaluate_slipstream(rotor,rotor_conditions,geometry,ctrl_pts,wing_instance=None):
+def evaluate_slipstream(rotor,VD,conditions,settings,geometry,ctrl_pts,wing_instance=None):
     """
     Evaluates the velocities induced by the rotor on a specified wing of the vehicle.
     If no wing instance is specified, uses main wing or last available wing in geometry.
@@ -145,6 +145,9 @@ def evaluate_slipstream(rotor,rotor_conditions,geometry,ctrl_pts,wing_instance=N
     Properties Used:
     None
     """
+
+    rotor_conditions =  conditions.energy.converters[rotor.tag]
+    
     # Check for wing if wing instance is unspecified
     if wing_instance == None:
         nmw = 0
@@ -164,15 +167,14 @@ def evaluate_slipstream(rotor,rotor_conditions,geometry,ctrl_pts,wing_instance=N
             wing_instance_idx = i
     
     # Isolate the VD components corresponding to this wing instance
-    wing_CPs, slipstream_vd_ids = extract_wing_collocation_points(geometry, wing_instance_idx)
+    wing_CPs, slipstream_vd_ids = extract_wing_collocation_points(VD,conditions,settings,geometry, wing_instance_idx)
     
     # Evaluate rotor slipstream effect on specified wing instance
     rot_V_wake_ind = evaluate_wake_velocities(rotor,rotor_conditions,wing_CPs,ctrl_pts)
     
     # Expand
-    wake_V_ind = np.zeros((ctrl_pts,geometry.vortex_distribution.n_cp,3))
-    wake_V_ind[:,slipstream_vd_ids,:] = rot_V_wake_ind
-    
+    wake_V_ind = np.zeros((ctrl_pts,int(VD.n_cp[0]),3))
+    wake_V_ind[:,slipstream_vd_ids,:] = rot_V_wake_ind 
         
     return wake_V_ind
 

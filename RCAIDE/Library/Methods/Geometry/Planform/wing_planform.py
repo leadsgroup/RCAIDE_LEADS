@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-import RCAIDE
-from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments, convert_sweep
+import RCAIDE 
+from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments, convert_sweep 
+from RCAIDE.Library.Methods.Geometry.Airfoil                import  compute_naca_4series, import_airfoil_geometry
 
 # package imports 
 import numpy as np
@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Wing Segmented Planform
 # ----------------------------------------------------------------------------------------------------------------------    
-def wing_planform(wing, overwrite_reference = True):
+def wing_planform(wing):
     """Computes standard wing planform values.
     
     Assumptions:
@@ -26,9 +26,7 @@ def wing_planform(wing, overwrite_reference = True):
     Source:
     None
     
-    Inputs:
-    overwrite_reference        <boolean> Determines if reference area, wetted area, and aspect
-                                         ratio are overwritten based on the segment values.
+    Inputs: 
     wing.
       chords.root              [m]
       spans.projected          [m]
@@ -53,12 +51,13 @@ def wing_planform(wing, overwrite_reference = True):
     
     Properties Used:
     N/A
-    """
+    """ 
     if len(wing.segments) > 1: 
         # Unpack
-        span = wing.spans.projected
-        RC   = wing.chords.root
-        sym  = wing.symmetric
+        span     = wing.spans.projected
+        RC       = wing.chords.root
+        sym      = wing.symmetric
+        vertical = wing.vertical
         
         # Pull all the segment data into array format
         span_locs = []
@@ -95,8 +94,18 @@ def wing_planform(wing, overwrite_reference = True):
                         seg.sweeps.quarter_chord = quarter_chord_sweep 
                 else:
                     raise AssertionError("Quarter chord or leading edge sweep must be defined") 
-                 
-            t_cs.append(seg.thickness_to_chord)
+             
+            if seg.airfoil != None: 
+                if type(seg.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
+                    seg.airfoil.geometry = compute_naca_4series(seg.airfoil.NACA_4_Series_code) 
+                    seg.thickness_to_chord = seg.airfoil.geometry.thickness_to_chord 
+                else:
+                    seg.airfoil.geometry = import_airfoil_geometry(seg.airfoil.coordinate_file) 
+                    seg.thickness_to_chord =  seg.airfoil.geometry.thickness_to_chord                 
+            
+                t_cs.append(seg.thickness_to_chord) 
+            else: 
+                t_cs.append(seg.thickness_to_chord)
             dihedrals.append(seg.dihedral_outboard)
             
         # Convert to arrays
@@ -113,11 +122,7 @@ def wing_planform(wing, overwrite_reference = True):
         tapers       = chords[1:]/chords[:-1]
         
         # Calculate the areas of each segment
-        As = (lengths_dim*chords_dim[:-1]-(chords_dim[:-1]-chords_dim[1:])*(lengths_dim/2))
-        
-        # Calculate the weighted area, this should not include any unexposed area 
-        A_wets = 2*(1+0.2*t_cs[:-1])*As
-        wet_area = np.sum(A_wets)
+        As = (lengths_dim*chords_dim[:-1]-(chords_dim[:-1]-chords_dim[1:])*(lengths_dim/2)) 
         
         # Calculate the wing area
         ref_area = np.sum(As)*(1+sym)
@@ -170,20 +175,32 @@ def wing_planform(wing, overwrite_reference = True):
                                          As[i], dihedrals[i], chords_dim[i], chords_dim[i+1]))
     
         aerodynamic_center = (np.dot(np.transpose(Cxys),As)/(ref_area/(1+sym)))
-    
+        
+        
         single_side_aerodynamic_center = (np.array(aerodynamic_center)*1.)
         single_side_aerodynamic_center[0] = single_side_aerodynamic_center[0] - MAC*.25    
         if sym== True:
-            aerodynamic_center[1] = 0
+            aerodynamic_center[1] = 0 
             
         aerodynamic_center[0] = single_side_aerodynamic_center[0]
         
         # Total length for supersonics
         total_length = np.tan(le_sweep_total)*semispan + chords[-1]*RC
         
-        for i in range(len(wing.segments) - 1):
-            wing.segments[seg_keys[i]].sweeps.leading_edge = le_sweeps[i]
-            wing.segments[seg_keys[i]].origin = [[dxs[i],dys[i],dzs[i]]]
+        if vertical: 
+            for i in range(len(wing.segments) - 1):
+                wing.segments[seg_keys[i]].sweeps.leading_edge = le_sweeps[i]
+                wing.segments[seg_keys[i]].origin = [[dxs[i],dzs[i],dys[i]]]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][0] = Cxys[0][0]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][2] = Cxys[0][2]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][1] = 0 if sym ==True else Cxys[0][1]
+        else:
+            for i in range(len(wing.segments) - 1):
+                wing.segments[seg_keys[i]].sweeps.leading_edge = le_sweeps[i]
+                wing.segments[seg_keys[i]].origin = [[dxs[i],dys[i],dzs[i]]]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][0] = Cxys[0][0] 
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][1] = 0 if sym ==True else Cxys[0][1]
+                wing.segments[seg_keys[i]].mass_properties.center_of_gravity[0][2] = Cxys[0][2]
             
         wing.spans.total                    = total_len
         wing.chords.mean_geometric          = mgc
@@ -195,14 +212,11 @@ def wing_planform(wing, overwrite_reference = True):
         wing.thickness_to_chord             = t_c
         wing.aerodynamic_center             = aerodynamic_center
         wing.single_side_aerodynamic_center = single_side_aerodynamic_center
-        wing.total_length                   = total_length 
-     
-        # Pack stuff
-        if overwrite_reference:
-            wing.aspect_ratio    = AR
+        wing.total_length                   = total_length  
+        wing.aspect_ratio                   = AR
             
         # update remainder segment properties
-        segment_properties(wing,update_wet_areas=overwrite_reference,update_ref_areas=overwrite_reference)
+        segment_properties(wing)
     else:
         
         # unpack
@@ -210,10 +224,18 @@ def wing_planform(wing, overwrite_reference = True):
         taper       = wing.taper
         sweep       = wing.sweeps.quarter_chord
         ar          = wing.aspect_ratio
-        t_c_w       = wing.thickness_to_chord
         dihedral    = wing.dihedral 
         vertical    = wing.vertical
-        symmetric   = wing.symmetric 
+        symmetric   = wing.symmetric  
+        if wing.airfoil != None: 
+            if type(wing.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
+                wing.airfoil.geometry = compute_naca_4series(wing.airfoil.NACA_4_Series_code) 
+                wing.thickness_to_chord = wing.airfoil.geometry.thickness_to_chord 
+            else:
+                wing.airfoil.geometry   = import_airfoil_geometry(wing.airfoil.coordinate_file) 
+                wing.thickness_to_chord =  wing.airfoil.geometry.thickness_to_chord 
+                
+        t_c_w  = wing.thickness_to_chord   
         
         # calculate
         span       = (ar*sref)**.5
@@ -249,25 +271,6 @@ def wing_planform(wing, overwrite_reference = True):
         # Total length calculation
         total_length = np.tan(le_sweep)*span/2. + chord_tip
             
-        # Computing flap geometry
-        affected_area = 0.
-        if wing.high_lift:
-            flap = wing.control_surfaces.flap
-            #compute wing chords at flap start and end
-            delta_chord = chord_tip - chord_root
-            
-            wing_chord_flap_start = chord_root + delta_chord * flap.span_fraction_start 
-            wing_chord_flap_end   = chord_root + delta_chord * flap.span_fraction_end
-            wing_mac_flap = 2./3.*( wing_chord_flap_start+wing_chord_flap_end - \
-                                    wing_chord_flap_start*wing_chord_flap_end/  \
-                                    (wing_chord_flap_start+wing_chord_flap_end) )
-            
-            flap.chord_dimensional = wing_mac_flap * flap.chord_fraction
-            flap_chord_start        = wing_chord_flap_start * flap.chord_fraction
-            flap_chord_end          = wing_chord_flap_end * flap.chord_fraction
-            flap.area               = (flap_chord_start + flap_chord_end) * (flap.span_fraction_end- flap.span_fraction_start)*span / 2.    
-            affected_area           = (wing_chord_flap_start + wing_chord_flap_end) * (flap.span_fraction_end- flap.span_fraction_start)*span / 2.          
-             
         # update
         wing.chords.root                = chord_root
         wing.chords.tip                 = chord_tip
@@ -275,21 +278,40 @@ def wing_planform(wing, overwrite_reference = True):
         wing.chords.mean_geometric      = mgc
         wing.sweeps.leading_edge        = le_sweep
         wing.areas.wetted               = swet
-        wing.areas.affected             = affected_area
         wing.spans.projected            = span
         wing.spans.total                = span_total
         wing.aerodynamic_center         = [x_coord , y_coord, z_coord]
         wing.total_length               = total_length 
         
+    # control surface  
+    taper = wing.taper 
+    Sw    = wing.areas.reference                
+    bw    = wing.spans.projected               
+    for cs in  wing.control_surfaces:    
+        cs_span                 = (cs.span_fraction_end - cs.span_fraction_start) * bw
+        chord_root              = 2*Sw/bw/(1+taper) 
+        chord_tip               = taper * chord_root
+        delta_chord             = chord_tip - chord_root 
+        wing_chord_cs_start     = chord_root + delta_chord * cs.span_fraction_start 
+        wing_chord_cs_end       = chord_root + delta_chord * cs.span_fraction_end
+        cs_chord_start          = wing_chord_cs_start* cs.chord_fraction 
+        cs_chord_end            = wing_chord_cs_end* cs.chord_fraction   
+        cf                      = (cs_chord_start +cs_chord_end) /2  
+        Sf                      = cs_span * cf
+        cs.area                 = Sf 
+        cs.span                 = cs_span
+        cs.root_chord           = cs_chord_start
+        cs.tip_chord            = cs_chord_end 
+                 
     return wing
 
-def bwb_wing_planform(wing,overwrite_reference = True):
+def bwb_wing_planform(wing):
 
-    wing_planform(wing,overwrite_reference) 
+    wing_planform(wing) 
 
     seg_keys = list(wing.segments.keys())  
     for tag, segment in enumerate(wing.segments): 
-        if not isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment) and segment.reference_area_root:                      
+        if segment.chords.reference_area_root:                      
             segment_root_chord       = wing.segments[seg_keys[tag]].root_chord_percent * wing.chords.root 
             segment_tip_chord        = wing.segments[seg_keys[tag+1]].root_chord_percent * wing.chords.root 
             segnent_start_span       = wing.segments[seg_keys[tag]].percent_span_location * wing.spans.projected
@@ -301,11 +323,10 @@ def bwb_wing_planform(wing,overwrite_reference = True):
 
             projected_root_chord = segment_root_chord + segnent_start_span * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
             wing.areas.reference = (projected_root_chord + segment_tip_chord)/2 * reference_wing_span
-                    
 
     return 
  
-def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
+def segment_properties(wing):
     """Computes detailed segment properties. These are currently used for parasite drag calculations.
 
     Assumptions:
@@ -316,7 +337,7 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
 
     Inputs:
     wing.
-      exposed_root_chord_offset [m]
+      percent_span_unexposed [m]
       symmetric                 [-]
       spans.projected           [m]
       thickness_to_chord        [-]
@@ -343,33 +364,34 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
     """  
         
     # Unpack wing
-    exposed_root_chord_offset = wing.exposed_root_chord_offset
+    percent_span_unexposed    = wing.percent_span_unexposed
     symm                      = wing.symmetric
     semispan                  = wing.spans.projected*0.5 * (2 - symm)
-    t_c_w                     = wing.thickness_to_chord
     segments                  = wing.segments
     segment_names             = list(segments.keys())
     num_segments              = len(segment_names)   
-    total_wetted_area         = 0.
-    total_reference_area      = 0.
+    total_wetted_area         = 0.0
+    total_reference_area      = 0.0
     center_body_area          = 0.0
+    aft_center_body_area      = 0.0
     root_chord                = wing.chords.root      
     
     for i_segs in range(num_segments):
         if i_segs == num_segments-1:
             continue 
-        else:  
+        else: 
+            t_c_w     = segments[segment_names[i_segs]].thickness_to_chord            
             span_seg  = semispan*(segments[segment_names[i_segs+1]].percent_span_location - segments[segment_names[i_segs]].percent_span_location ) 
             segment   = segments[segment_names[i_segs]]         
             
             if i_segs == 0:
                 chord_root    = root_chord*segments[segment_names[i_segs]].root_chord_percent
                 chord_tip     = root_chord*segments[segment_names[i_segs+1]].root_chord_percent   
-                wing_root     = chord_root + exposed_root_chord_offset*((chord_tip - chord_root)/span_seg)
+                wing_root     = chord_root + percent_span_unexposed*((chord_tip - chord_root)/span_seg)
                 taper         = chord_tip/wing_root  
                 mac_seg       = wing_root  * 2/3 * (( 1 + taper  + taper**2 )/( 1 + taper))  
                 Sref_seg      = span_seg*(chord_root+chord_tip)*0.5 
-                S_exposed_seg = (span_seg-exposed_root_chord_offset)*(wing_root+chord_tip)*0.5                    
+                S_exposed_seg = (span_seg-percent_span_unexposed)*(wing_root+chord_tip)*0.5                    
             
             else: 
                 chord_root    = root_chord*segments[segment_names[i_segs]].root_chord_percent
@@ -389,27 +411,40 @@ def segment_properties(wing,update_wet_areas=False,update_ref_areas=False):
             else:
                 Swet_seg = (1.977 + 0.52*t_c_w) * S_exposed_seg
                 
-            segment.taper                   = taper
-            segment.chords                  = Data()
-            segment.chords.mean_aerodynamic = mac_seg
-            segment.areas                   = Data()
+            segment.taper                   = taper 
+            segment.chords.mean_aerodynamic = mac_seg 
             segment.areas.reference         = Sref_seg
+            segment.aspect_ratio            = (span_seg **2) / Sref_seg
             segment.areas.exposed           = S_exposed_seg
-            segment.areas.wetted            = Swet_seg
-            
-            total_wetted_area    = total_wetted_area + Swet_seg 
+            segment.areas.wetted            = Swet_seg 
+            total_wetted_area               += Swet_seg 
             if isinstance(segments[segment_names[i_segs+1]], RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
-                center_body_area += Sref_seg 
-                # use S_ref_seg to compute S_center bofy and S_aft_body
+                
+                # center body 
+                center_body_chord_root    = root_chord*segments[segment_names[i_segs]].root_chord_percent  -  wing.aft_center_body.length 
+                center_body_chord_tip     = root_chord*segments[segment_names[i_segs+1]].root_chord_percent -  wing.aft_center_body.length  
+                center_body_Sref_seg      = span_seg*(center_body_chord_root+center_body_chord_tip)*0.5 
+                
+                # aft center body 
+                aft_center_body_chord_root    = wing.aft_center_body.length
+                aft_center_body_chord_tip     = wing.aft_center_body.length
+                aft_center_body_Sref_seg      = span_seg*(aft_center_body_chord_root+aft_center_body_chord_tip)*0.5 
+               
+                if wing.symmetric:
+                    center_body_Sref_seg = center_body_Sref_seg*2 
+                    aft_center_body_Sref_seg = aft_center_body_Sref_seg*2  
+                
+                center_body_area += center_body_Sref_seg
+                aft_center_body_area +=  aft_center_body_Sref_seg 
             else:
-                total_reference_area += Sref_seg  
-        
-    if wing.areas.reference==0. or update_ref_areas:
-        wing.areas.reference = total_reference_area
-        wing.areas.center_body = center_body_area
-        
-    if wing.areas.wetted==0. or update_wet_areas:
-        wing.areas.wetted    = total_wetted_area
+                total_reference_area += Sref_seg   
+  
+    wing.areas.reference   = total_reference_area
+    if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+        wing.center_body.area     = center_body_area
+        wing.aft_center_body.area = aft_center_body_area 
+
+    wing.areas.wetted    = total_wetted_area
         
     return wing
 

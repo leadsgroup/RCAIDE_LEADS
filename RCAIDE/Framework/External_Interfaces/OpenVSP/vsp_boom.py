@@ -125,7 +125,7 @@ def read_vsp_boom(b_id,fux_idx,sym_flag, units_type='SI', fineness=True, use_sca
     for ii in range(0, boom.vsp_data.xsec_num): 
         # Create the segment
         x_sec                     = vsp.GetXSec(boom.vsp_data.xsec_surf_id, ii) # VSP XSec ID.
-        segment                   = RCAIDE.Library.Components.Booms.Segment()
+        segment                   = RCAIDE.Library.Components.Booms.Segments.Segment()
         segment.vsp_data.xsec_id  = x_sec 
         segment.tag               = 'segment_' + str(ii)
 

@@ -31,8 +31,14 @@ Weights
    :recursive:
 
    Conventional
+   Conventional_BWB
+   Conventional_General_Aviation
+   Conventional_Transport
    Electric
+   Electric_General_Aviation
+   Electric_VTOL
    Hybrid
    Hydrogen
+   Hydrogen_Transport
    Weights
 

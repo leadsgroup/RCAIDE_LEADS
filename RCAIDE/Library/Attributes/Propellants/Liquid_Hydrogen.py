@@ -7,7 +7,13 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
+import RCAIDE
+from pylab import fill
 from .Propellant import Propellant 
+
+import os
+import numpy as np
+from scipy.interpolate  import interp1d 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Liquid Hydrogen
@@ -86,3 +92,86 @@ class Liquid_Hydrogen(Propellant):
         self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''       
+
+        self.materials_properties = self.liquid_hydrogen_properties()
+
+    def liquid_hydrogen_properties(self, T, prop_name):
+        """
+            Return interpolated liquid hydrogen property value at a given temperature.
+
+            Parameters
+            ----------
+            T : float or ndarray
+                Temperature(s) in Kelvin at which the property is requested.  
+            prop_name : str
+                Name of the property to retrieve from the hydrogen data file.  
+                Valid keys include:
+                    - "Temperature (K)"
+                    - "Pressure (MPa)"
+                    - "Density (kg/m3)"
+                    - "Volume (m3/kg)"
+                    - "Internal Energy (kJ/kg)"
+                    - "Enthalpy (kJ/kg)"
+                    - "Entropy (J/g*K)"
+                    - "Cv (J/g*K)"
+                    - "Cp (J/g*K)"
+                    - "Sound Spd. (m/s)"
+                    - "Joule-Thomson (K/MPa)"
+                    - "Viscosity (Pa*s)"
+                    - "Therm. Cond. (W/m*K)"
+                    - "Phase"
+
+            Returns
+            -------
+            prop_value : float or ndarray
+                Interpolated property value(s) corresponding to the input temperature(s).  
+
+            Notes
+            -----
+            * Property data is loaded from ``H2_properties.res`` using 
+            :func:`load_hydrogen_properties`.  
+            * Linear interpolation is applied between tabulated values.  
+            * Extrapolation outside the data range is not supported (``fill_value=None``).  
+            * Phase information is categorical and may not be suitable for interpolation.  
+
+            See Also
+            --------
+            RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.load_hydrogen_properties
+         """
+        data = load_hydrogen_properties()
+        temps = np.array(data["Temperature (K)"], dtype=float)
+        props = np.array(data[prop_name], dtype=float)
+        interp = interp1d(temps, props, kind="linear", fill_value=None)
+        
+        return interp(T)
+
+def load_hydrogen_properties(): 
+    """
+    Load hydrogen property data from the RES file.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    hydrogen_data : dict
+        Raw hydrogen property data loaded from ``H2_properties.res``.
+
+    Notes
+    -----
+    Assumes hydrogen behaves as an ideal gas for the stored properties.  
+
+    Source
+    ------
+    Internal RCAIDE resource file: ``H2_properties.res``
+
+    See Also
+    --------
+    RCAIDE.load : Function used to load RES files
+    """
+    ospath    = os.path.abspath(__file__)
+    separator = os.path.sep
+    rel_path  = os.path.dirname(ospath) + separator     
+
+    return RCAIDE.load(rel_path+ 'H2_properties.res')

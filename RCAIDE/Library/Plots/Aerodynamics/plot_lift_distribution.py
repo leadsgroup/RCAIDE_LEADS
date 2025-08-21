@@ -7,7 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 
-from RCAIDE.Library.Plots.Common import set_axes, plot_style
+from RCAIDE.Library.Plots.Common import plot_style
 import matplotlib.pyplot as plt 
 import numpy as np 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -82,27 +82,24 @@ def plot_lift_distribution(results,
                   'axes.titlesize': ps.title_font_size}
     plt.rcParams.update(parameters)
     
-    VD         = results.segments[0].analyses.aerodynamics.vehicle.vortex_distribution	 	
-    n_w        = VD.n_w
-    b_sw       = np.concatenate(([0],np.cumsum(VD.n_sw)))
-
+    VD         = results.segments[0].analyses.aerodynamics.settings.vortex_distribution	 	 
     img_idx    = 1
     seg_idx    = 1
     for segment in results.segments.values():   	
         num_ctrl_pts = len(segment.conditions.frames.inertial.time)	
-        for ti in range(num_ctrl_pts):  
-            cl_y = segment.conditions.aerodynamics.coefficients.lift.induced.spanwise[ti]
+        for ti in range(num_ctrl_pts):   
             line = ['-b','-b','-r','-r','-k']
             fig  = plt.figure(save_filename + '_' + str(img_idx))
             fig.set_size_inches(8,8)  
-            fig.set_size_inches(width,height)     
+            fig.set_size_inches(width,height)      
+            b_sw = np.concatenate(([0],np.cumsum(VD.n_sw[ti])))
             axes = plt.subplot(1,1,1)
-            for i in range(n_w): 
-                y_pts = VD.Y_SW[b_sw[i]:b_sw[i+1]]
-                z_pts = cl_y[b_sw[i]:b_sw[i+1]]
+            for i in range(int(VD.n_w[ti]) ): 
+                y_pts = VD.Y_SW[ti,b_sw[i]:b_sw[i+1]]
+                z_pts = segment.conditions.aerodynamics.coefficients.lift.inviscid.spanwise[ti,b_sw[i]:b_sw[i+1]]
                 axes.plot(y_pts, z_pts, line[i] ) 
             axes.set_xlabel("Spanwise Location (m)")
-            axes.set_title('$C_{Ly}$')  
+            axes.set_ylabel('$C_{Ly}$')  
 
             if save_figure: 
                 plt.savefig( save_filename + '_' + str(img_idx) + file_type) 	

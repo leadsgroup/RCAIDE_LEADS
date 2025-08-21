@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Find Takeoff Weight Given TOFL
 # ----------------------------------------------------------------------
-def find_take_off_weight_given_tofl(vehicle,analyses,target_tofl,altitude = 0, delta_isa = 0,overwrite_reference=True):
+def find_take_off_weight_given_tofl(vehicle,analyses,target_tofl,altitude = 0, delta_isa = 0):
     """
     Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.
 
@@ -65,7 +65,7 @@ def find_take_off_weight_given_tofl(vehicle,analyses,target_tofl,altitude = 0, d
     """       
 
     for wing in vehicle.wings: 
-        wing_planform(wing,overwrite_reference =  True) 
+        wing_planform(wing) 
         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
             vehicle.reference_area = wing.areas.reference
             

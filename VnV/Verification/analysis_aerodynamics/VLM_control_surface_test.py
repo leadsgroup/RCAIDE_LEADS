@@ -12,6 +12,7 @@ import RCAIDE
 from RCAIDE.Framework.Core                                              import Data, Units
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method          import VLM
 from RCAIDE.Library.Plots                                               import * 
+from RCAIDE.Library.Methods.Geometry.Planform                           import  wing_planform 
 from RCAIDE.load import load 
 from RCAIDE.save import save  
 
@@ -35,7 +36,7 @@ def main():
 
     # get settings and conditions
     conditions = get_conditions()      
-    settings = get_settings()
+    settings   = get_settings()
     
     # create results object
     results     = Data()
@@ -46,14 +47,16 @@ def main():
     # run VLM
     for deflection in deflections:
         geometry    = get_deflected_b737(deflection)
-        data        = VLM(conditions, settings, geometry)
-        
-        plot_title  = "{}, deflection = {} degrees".format(geometry.tag, round(deflection/Units.degrees))
-        plot_3d_vehicle_vlm_panelization(geometry, show_wing_control_points=False, save_filename=plot_title, show_figure=False)        
-        
+         
+        for wing in geometry.wings:   
+            wing_planform(wing)                    
+            geometry.reference_chord  = np.maximum(geometry.reference_chord , wing.chords.mean_aerodynamic)  
+            geometry.reference_span   = np.maximum(geometry.reference_span  , wing.spans.projected)
+            
+        data        = VLM(conditions, settings, geometry) 
         results.CL  = np.append(results.CL , data.CLift.flatten() )
         results.CDi = np.append(results.CDi, data.CDrag_induced.flatten())
-        results.CM  = np.append(results.CM , data.CM.flatten() )
+        results.CM  = np.append(results.CM , data.CM.flatten() ) 
         
     # save/load results
     if update_regression_values:
@@ -103,6 +106,7 @@ def get_conditions():
     aoas       = np.array([-6.  ,0.   ,6.   ,])  *Units.degrees   
     
     conditions = RCAIDE.Framework.Mission.Common.Results()
+    conditions.expand_rows(3)
     atmosphere                              =  RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     speeds_of_sound                         = atmosphere.compute_values(altitudes).speed_of_sound
     v_infs                                  = machs * speeds_of_sound.flatten()
@@ -137,11 +141,17 @@ def get_settings():
 #   Save/Load Utility Functions
 # ----------------------------------------------------------------------
 def load_results():
-    return load('control_surfaces_vlm_results.res')
+    ospath         = os.path.abspath(__file__) 
+    separator      = os.path.sep
+    local_path       = os.path.dirname(ospath) + separator   
+    return load(os.path.join(local_path, 'control_surfaces_vlm_results.res'))
 
 def save_results(results):
+    ospath         = os.path.abspath(__file__) 
+    separator      = os.path.sep
+    local_path       = os.path.dirname(ospath) + separator   
     print('!####! SAVING NEW REGRESSION RESULTS !####!')
-    save(results,'control_surfaces_vlm_results.res')
+    save(results,os.path.join(local_path, 'control_surfaces_vlm_results.res'))
     return
 
 # ----------------------------------------------------------------------        

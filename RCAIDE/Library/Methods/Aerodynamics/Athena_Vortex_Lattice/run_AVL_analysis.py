@@ -119,7 +119,7 @@ def run_AVL_analysis(aerodynamics,run_conditions):
     
     # update current status
     aerodynamics.current_status.batch_index += 1
-    batch_index                      = aerodynamics.current_status.batch_index
+    batch_index                              = aerodynamics.current_status.batch_index
     aerodynamics.current_status.batch_file   = batch_template.format(batch_index)
     aerodynamics.current_status.deck_file    = deck_template.format(batch_index)
            

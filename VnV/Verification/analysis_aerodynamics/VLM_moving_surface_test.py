@@ -11,6 +11,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core                                       import Data, Units
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method   import VLM
+from RCAIDE.Library.Methods.Geometry.Planform                    import  wing_planform 
 from RCAIDE.Library.Plots  import *
 from RCAIDE.load import load  
 from RCAIDE.save import save  
@@ -29,7 +30,7 @@ import matplotlib.pyplot                as plt
 #   Main
 # ----------------------------------------------------------------------
 def main():
-    update_regression_values = True  # should be false unless code functionally changes
+    update_regression_values = False  # should be false unless code functionally changes
     
     # all-moving surface deflection cases
     deflection_configs = get_array_of_deflection_configs()
@@ -44,18 +45,19 @@ def main():
     results.CL     = np.empty(shape=[0,n_cases])
     results.CDi    = np.empty(shape=[0,n_cases])
     results.CM     = np.empty(shape=[0,n_cases])
-    results.CY  = np.empty(shape=[0,n_cases])
+    results.CY     = np.empty(shape=[0,n_cases])
     results.CL_mom = np.empty(shape=[0,n_cases])
-    results.CM = np.empty(shape=[0,n_cases])
+    results.CM     = np.empty(shape=[0,n_cases])
     
     # run VLM
     for i,deflection_config in enumerate(deflection_configs):
         geometry    = vehicle_setup(deflection_config=deflection_config)
+        for wing in geometry.wings:   
+            wing_planform(wing)                    
+            geometry.reference_chord  = np.maximum(geometry.reference_chord , wing.chords.mean_aerodynamic) 
+            geometry.reference_span   = np.maximum(geometry.reference_span  , wing.spans.projected) 
         data        = VLM(conditions, settings, geometry)
-        
-        plot_title  = "Deflection Configuration #{}".format(i+1)
-        plot_3d_vehicle_vlm_panelization(geometry, show_wing_control_points=False, save_filename=plot_title, show_figure=False)        
-        
+         
         results.CL         = np.vstack((results.CL     , data.CLift.flatten()    ))
         results.CDi        = np.vstack((results.CDi    , data.CDrag_induced.flatten()   ))
         results.CM         = np.vstack((results.CM     , data.CM.flatten()    ))

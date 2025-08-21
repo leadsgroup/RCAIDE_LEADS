@@ -9,30 +9,89 @@ import numpy as np
 #  Compressible Turbulent Flat Plate
 # ----------------------------------------------------------------------
 def compressible_turbulent_flat_plate(Re,Ma,Tc):
-    """Computes the coefficient of friction for a flat plate given the 
-    input parameters. Also returns the correction terms used in the
-    computation.
+    """
+    Computes the compressible skin friction coefficient for a fully turbulent flat plate.
 
-    Assumptions:
-    Reynolds number between 10e5 and 10e9
-    Fully turbulent
+    Parameters
+    ----------
+    Re : float
+        Reynolds number based on chord length [unitless]
+    Ma : float
+        Freestream Mach number [unitless]
+    Tc : float
+        Freestream static temperature [K]
 
-    Source:
-    adg.stanford.edu (Stanford AA241 A/B Course Notes)
+    Returns
+    -------
+    cf_comp : float
+        Compressible skin friction coefficient [unitless]
+    k_comp : float
+        Compressibility correction factor [unitless]
+    k_reyn : float
+        Reynolds number correction factor [unitless]
 
-    Inputs:
-    Re (Reynolds number)                                             [Unitless]
-    Ma (Mach number)                                                 [Unitless]
-    Tc (temperature)                                                 [K]
+    Notes
+    -----
+    This function calculates the skin friction coefficient for a flat plate with fully
+    turbulent boundary layer, accounting for compressibility effects through temperature
+    corrections. 
+    
+    **Major Assumptions**
+        * Reynolds number between 10^5 and 10^9
+        * Fully turbulent boundary layer from leading edge
+        * Smooth surface conditions
+        * Adiabatic wall conditions
+        * Perfect gas behavior
+    
+    **Theory**
 
-    Outputs:
-    cf_comp (coefficient of friction)                                [Unitless]
-    k_comp (compressibility correction)                              [Unitless]
-    k_reyn (Reynolds number correction)                              [Unitless]
+    The incompressible turbulent skin friction coefficient follows Schlichting's correlation:
 
-    Properties Used:
-    N/A
-    """     
+    :math:`C_{f,inc} = \\frac{0.455}{(\\log_{10}(Re))^{2.58}}`
+
+    The compressibility correction accounts for temperature effects:
+
+    :math:`T_w = T_c(1 + 0.178 M^2)`
+
+    :math:`T_d = T_c(1 + 0.035 M^2 + 0.45(\\frac{T_w}{T_c} - 1))`
+
+    :math:`k_{comp} = \\frac{T_c}{T_d}`
+
+    where:
+    - :math:`T_w` is the adiabatic wall temperature [K]
+    - :math:`T_d` is the reference temperature for viscosity [K]
+    - :math:`T_c` is the freestream static temperature [K]
+    - :math:`M` is the freestream Mach number
+
+    The Reynolds number correction accounts for temperature-dependent viscosity:
+
+    :math:`Re_d = Re(\\frac{T_d}{T_c})^{1.5}(\\frac{T_d + 216}{T_c + 216})`
+
+    :math:`k_{reyn} = (\\frac{Re}{Re_d})^{0.2}`
+
+    The final compressible skin friction coefficient is:
+
+    :math:`C_{f,comp} = C_{f,inc} \\cdot k_{comp} \\cdot k_{reyn}`
+    
+    **Definitions**
+
+    'Turbulent Boundary Layer'
+        Boundary layer characterized by chaotic, irregular fluid motion and high mixing rates.
+    
+    'Skin Friction Coefficient'
+        Dimensionless measure of the shear stress at the wall normalized by dynamic pressure.
+    
+    'Compressibility Correction'
+        Factor accounting for the effects of compressibility on boundary layer temperature and viscosity.
+
+    References
+    ----------
+    [1] Stanford AA241 Course Notes. adg.stanford.edu
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressible_mixed_flat_plate
+    """
 
     # incompressible skin friction coefficient
     cf_inc = 0.455/(np.log10(Re))**2.58

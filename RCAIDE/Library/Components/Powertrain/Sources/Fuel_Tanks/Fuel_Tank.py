@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Mar 2024, M. Clarke 
+# Modified: Aug 2025, S. Shekar
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -54,19 +55,23 @@ class Fuel_Tank(Component):
         Sets default values for fuel tank attributes
         """          
         self.tag                         = 'fuel_tank'
-        self.internal_volume             = 0.0
         self.mass_properties.empty_mass  = 0.0   
+        self.mass_properties.fuel        = 0.0
         self.secondary_fuel_flow_rate    = 0.0
-        self.fuel_selector_ratio         = 1.0  
-        self.outer_diameter              = 0.0  
+        self.fuel_selector_ratio         = 1.0    
         self.wall_clearance              = 0.0
         self.wall_thickness              = 0.0
-        self.length                      = 0.0 
         self.fuel                        = None
         self.symmetric                   = True
-        self.wing_tag                    = None 
+        self.wing_tag                    = None
         self.fuselage_tag                = None
-         
+        self.inner_length                = 0.0
+        self.outer_length                = 0.0
+        self.inner_diameter              = 0.0
+        self.outer_diameter              = 0.0
+        self.inner_volume                = 0.0
+        self.outer_volume                = 0.0
+        self.fuel_volume                 = 0.0
 
     def append_operating_conditions(self,segment,fuel_line):  
         """
@@ -95,4 +100,4 @@ class Fuel_Tank(Component):
             Connected fuel line component
         """
         compute_fuel_tank_properties(self,state, fuel_line)  
-        return                                              
+        return

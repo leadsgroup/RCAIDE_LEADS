@@ -31,6 +31,5 @@ Sources
    :recursive:
 
    Battery_Modules
-   Cryogenic_Tanks
    Fuel_Tanks
 

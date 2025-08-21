@@ -200,24 +200,32 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
                                      
          
     flight_range    =  state.conditions.frames.inertial.aircraft_range 
-    Contrails_total =  (flight_range -   flight_range[0]) /1000 * fuel.global_warming_potential_100.Contrails
+    Contrails_total =  (flight_range -   flight_range[0]) /1000 
 
-    emissions                 = Data()
-    emissions.total           = Data()
-    emissions.index           = Data() 
-    emissions.total.NOx       = NOx_total   * fuel.global_warming_potential_100.NOx 
-    emissions.total.CO2       = CO2_total   * fuel.global_warming_potential_100.CO2
-    emissions.total.CO        = CO_total    * fuel.global_warming_potential_100.CO
-    emissions.total.H2O       = H2O_total   * fuel.global_warming_potential_100.H2O  
-    emissions.total.SO2       = SO2_total   * fuel.global_warming_potential_100.SO2  
-    emissions.total.Soot      = Soot_total  * fuel.global_warming_potential_100.Soot 
-    emissions.total.Contrails = Contrails_total   
-    emissions.index.NOx       = EI_NOx   * state.ones_row(1)
-    emissions.index.CO2       = EI_CO2   * state.ones_row(1)
-    emissions.index.CO        = EI_CO    * state.ones_row(1)
-    emissions.index.H2O       = EI_H2O   * state.ones_row(1)
-    emissions.index.SO2       = EI_SO2   * state.ones_row(1)
-    emissions.index.Soot      = EI_Soot  * state.ones_row(1)
+    emissions                       = Data()
+    emissions.GWP_100               = Data()
+    emissions.mass                  = Data()
+    emissions.index                 = Data() 
+    emissions.GWP_100.NOx           = NOx_total   * fuel.global_warming_potential_100.NOx 
+    emissions.GWP_100.CO2           = CO2_total   * fuel.global_warming_potential_100.CO2
+    emissions.GWP_100.CO            = CO_total    * fuel.global_warming_potential_100.CO
+    emissions.GWP_100.H2O           = H2O_total   * fuel.global_warming_potential_100.H2O  
+    emissions.GWP_100.SO2           = SO2_total   * fuel.global_warming_potential_100.SO2  
+    emissions.GWP_100.Soot          = Soot_total  * fuel.global_warming_potential_100.Soot 
+    emissions.GWP_100.Contrails     = Contrails_total * fuel.global_warming_potential_100.Contrails  
+    emissions.mass.NOx              = NOx_total    
+    emissions.mass.CO2              = CO2_total    
+    emissions.mass.CO               = CO_total     
+    emissions.mass.H2O              = H2O_total    
+    emissions.mass.SO2              = SO2_total    
+    emissions.mass.Soot             = Soot_total   
+    emissions.mass.Contrails        = Contrails_total
+    emissions.index.NOx             = EI_NOx   * state.ones_row(1)
+    emissions.index.CO2             = EI_CO2   * state.ones_row(1)
+    emissions.index.CO              = EI_CO    * state.ones_row(1)
+    emissions.index.H2O             = EI_H2O   * state.ones_row(1)
+    emissions.index.SO2             = EI_SO2   * state.ones_row(1)
+    emissions.index.Soot            = EI_Soot  * state.ones_row(1)
     
     state.conditions.emissions = emissions
     return   

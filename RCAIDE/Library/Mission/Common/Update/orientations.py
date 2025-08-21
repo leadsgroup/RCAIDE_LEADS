@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
-from RCAIDE.Framework.Core  import  angles_to_dcms, orientation_product, orientation_transpose
+from RCAIDE.Framework.Core  import Units,  angles_to_dcms, orientation_product, orientation_transpose
 
 # package imports 
 import numpy as np
@@ -57,11 +57,12 @@ def orientations(segment):
     # ------------------------------------------------------------------
 
     # body frame rotations
-    phi = body_inertial_rotations[:,0,None] 
+    phi  = body_inertial_rotations[:,0,None] 
+    beta = segment.sideslip_angle
 
     # body frame tranformation matrices
-    T_inertial2body = angles_to_dcms(body_inertial_rotations,(2,1,0))
-    T_body2inertial = orientation_transpose(T_inertial2body)
+    T_inertial2body = angles_to_dcms(body_inertial_rotations,(2,1,0)) 
+    T_body2inertial = orientation_transpose(T_inertial2body) 
 
     # transform inertial velocity to body frame
     V_body = orientation_product(T_inertial2body,V_inertial)
@@ -70,15 +71,12 @@ def orientations(segment):
     V_stability = V_body * 1.
 
     # calculate angle of attack
-    alpha = np.arctan2(V_stability[:,2],V_stability[:,0])[:,None]
-
-    # calculate side slip
-    beta = np.arctan2(V_stability[:,1],V_stability[:,0])[:,None]
+    alpha = np.arctan2(V_stability[:,2],V_stability[:,0])[:,None] 
 
     # pack aerodynamics angles
     conditions.aerodynamics.angles.alpha[:,0] = alpha[:,0]
-    conditions.aerodynamics.angles.beta[:,0]  = beta[:,0]
-    conditions.aerodynamics.angles.phi[:,0]   = phi[:,0]
+    conditions.aerodynamics.angles.beta[:,0]  = beta
+    conditions.aerodynamics.angles.phi[:,0]   = phi[:,0] 
 
     # pack transformation tensor
     conditions.frames.body.transform_to_inertial = T_body2inertial 
@@ -91,17 +89,18 @@ def orientations(segment):
     wind_body_rotations = body_inertial_rotations * 0.
     wind_body_rotations[:,0] = 0          # no roll in wind frame
     wind_body_rotations[:,1] = alpha[:,0] # theta is angle of attack
-    wind_body_rotations[:,2] = beta[:,0]  # beta is side slip angle
+    wind_body_rotations[:,2] = beta       
 
     # wind frame tranformation matricies
-    T_wind2body     = angles_to_dcms(wind_body_rotations,(2,1,0)) 
-    T_wind2inertial = orientation_product(T_wind2body,T_body2inertial)
+    T_wind2body     = angles_to_dcms(wind_body_rotations,(2,1,0))       
+    T_wind2inertial = orientation_product(T_wind2body,T_body2inertial) 
 
     # pack wind rotations
     conditions.frames.wind.body_rotations = wind_body_rotations
 
     # pack transformation tensor
     conditions.frames.wind.transform_to_inertial = T_wind2inertial
+    conditions.frames.wind.transform_to_body     = T_wind2body
     
     # ------------------------------------------------------------------
     # Rotation rates 

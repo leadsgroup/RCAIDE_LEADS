@@ -107,7 +107,7 @@ class Turboprop(Propulsor):
         self.design_altitude                            = 0.0
         self.propeller_efficiency                       = 0.0
         self.gearbox                                    = Data()
-        self.specific_fuel_consumption_reduction_factor =  0.0
+        self.specific_fuel_consumption_reduction_factor = -3.875 
         self.gearbox.gear_ratio                         = 1.0
         self.gearbox.efficiency                         = 0.0 
         self.design_angular_velocity                    = 0.0

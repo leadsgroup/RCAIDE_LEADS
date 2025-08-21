@@ -33,10 +33,7 @@ class Electrical_Bus(Component):
         List of propulsion systems powered by this bus
         
     avionics : Component
-        Aircraft avionics system
-        
-    payload : Component
-        Aircraft payload system
+        Aircraft avionics system 
         
     identical_battery_modules : bool
         Flag indicating if all battery modules are identical (default: True)
@@ -98,7 +95,7 @@ class Electrical_Bus(Component):
         self.assigned_propulsors                    = []
         self.assigned_converters                    = [] 
         self.avionics                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-        self.payload                                = RCAIDE.Library.Components.Payloads.Payload()         
+        self.systems                                = RCAIDE.Library.Components.Powertrain.Systems.Systems()
         self.identical_battery_modules              = True      
         self.identical_fuel_cell_stacks             = True  
         self.active                                 = True

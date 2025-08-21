@@ -44,8 +44,8 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()   
     
-    P_truth     = 45927.53923183845
-    mdot_truth  = 0.004035298046424517
+    P_truth     = 38115.438922880305
+    mdot_truth  = 0.0033489091468128953
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle_mass_rate[-1,0]     
@@ -253,8 +253,6 @@ def base_analysis(vehicle):
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
     analyses.append(geometry)
     
     # ------------------------------------------------------------------

@@ -31,6 +31,7 @@ Geometry
    :recursive:
 
    Common
+   plot_3d_fuel_tank
    plot_3d_fuselage
    plot_3d_nacelle
    plot_3d_rotor

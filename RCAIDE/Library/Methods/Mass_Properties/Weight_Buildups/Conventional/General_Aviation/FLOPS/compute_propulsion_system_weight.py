@@ -28,8 +28,7 @@ def compute_propulsion_system_weight(vehicle,network):
             - networks : list
                 List of all propulsion networks
             - design_mach_number : float
-                Design cruise Mach number
-            - mass_properties.max_zero_fuel : float
+                Design cruise Mach number 
                 Maximum zero fuel weight [kg]
     network : RCAIDE.Network()
         Network data structure
@@ -95,11 +94,14 @@ def compute_propulsion_system_weight(vehicle,network):
     WSTART = 0.0
     WNAC = 0.0
     for network in  vehicle.networks:
-        for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
-                if 'nacelle' in propulsor:
-                    ref_nacelle =  propulsor.nacelle   
-                    WNAC = compute_nacelle_weight(propulsor,ref_nacelle,JNENG)
+        for propulsor in network.propulsors: 
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) \
+               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet)\
+               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):            
+                if 'nacelle' in propulsor: 
+                    if propulsor.nacelle !=  None:                    
+                        ref_nacelle =  propulsor.nacelle   
+                        WNAC = compute_nacelle_weight(propulsor,ref_nacelle,JNENG)
                 WTHR = compute_thrust_reverser_weight(propulsor,JNENG)
                 WEC, WSTART = compute_misc_propulsion_system_weight(vehicle,propulsor,ref_nacelle,JNENG )
     

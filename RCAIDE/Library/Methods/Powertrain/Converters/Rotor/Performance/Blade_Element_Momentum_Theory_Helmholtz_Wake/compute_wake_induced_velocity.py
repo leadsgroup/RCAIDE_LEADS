@@ -108,7 +108,7 @@ def compute_wake_induced_velocity(rotor, rotor_conditions, evaluation_points, ct
     """
 
     # extract vortex distribution
-    n_cp = len(evaluation_points.XC)
+    n_cp = len(evaluation_points.XC[0])
 
     # initialize rotor wake induced velocities
     rotor_V_wake_ind = np.zeros((ctrl_pts,n_cp,3))
@@ -126,36 +126,44 @@ def compute_wake_induced_velocity(rotor, rotor_conditions, evaluation_points, ct
     bool_inboard  = ( evaluation_points.YC > inboard_r[0] )  * ( evaluation_points.YC < inboard_r[-1] )
     bool_outboard = ( evaluation_points.YC > outboard_r[0] ) * ( evaluation_points.YC < outboard_r[-1] )
     bool_in_range = bool_inboard + bool_outboard
-    YC_in_range   = evaluation_points.YC[bool_in_range]
+    new_dim       = np.sum(bool_in_range, axis=1)[0]
+    YC_in_range   = evaluation_points.YC[bool_in_range].reshape(ctrl_pts,new_dim) 
 
     y_vals  = YC_in_range
     val_ids = np.where(bool_in_range==True)
 
-    s  = evaluation_points.XC[val_ids] - rotor.origin[0][0]
+    s  = evaluation_points.XC[val_ids].reshape(ctrl_pts,new_dim)  - rotor.origin[0][0]
     kd = 1 + s/(np.sqrt(s**2 + R**2))    
 
     # extract radial and azimuthal velocities at blade
     va = rotor_conditions.blade_axial_induced_velocity[0]
     vt = rotor_conditions.blade_tangential_induced_velocity[0]
-
+    
+    if rotor.clockwise_rotation:
+        rotation = 1
+    else:
+        rotation =  -1
 
     va_y_range  = np.append(np.flipud(va), va)
-    vt_y_range  = np.append(np.flipud(vt), vt)*rotor.rotation
+    vt_y_range  = np.append(np.flipud(vt), vt)*rotation
     va_interp   = interp1d(rotor_y_range, va_y_range)
     vt_interp   = interp1d(rotor_y_range, vt_y_range)
-
-
+    
     # preallocate va_new and vt_new
     va_new = kd*va_interp((y_vals))
-    vt_new = np.zeros(np.size(val_ids))
+    vt_new = np.zeros((ctrl_pts,new_dim))
 
     # invert inboard vt values
     inboard_bools                = (y_vals < hub_y_center)
     vt_new[inboard_bools]        = -kd[inboard_bools]*vt_interp((y_vals[inboard_bools]))
     vt_new[inboard_bools==False] = kd[inboard_bools==False]*vt_interp((y_vals[inboard_bools==False]))
-
-    rotor_V_wake_ind[0,val_ids,0] = va_new  # axial induced velocity
-    rotor_V_wake_ind[0,val_ids,1] = 0       # spanwise induced velocity; in line with rotor, so 0
-    rotor_V_wake_ind[0,val_ids,2] = vt_new  # vertical induced velocity     
+ 
+    val_ids_x = val_ids + ([0] *ctrl_pts*new_dim,)
+    val_ids_y = val_ids + ([1] *ctrl_pts*new_dim,)
+    val_ids_z = val_ids + ([2] *ctrl_pts*new_dim,) 
+        
+    rotor_V_wake_ind[val_ids_x] = va_new.flatten()  # axial induced velocity
+    rotor_V_wake_ind[val_ids_y] = 0       # spanwise induced velocity; in line with rotor, so 0
+    rotor_V_wake_ind[val_ids_z] = vt_new.flatten()  # vertical induced velocity     
 
     return rotor_V_wake_ind

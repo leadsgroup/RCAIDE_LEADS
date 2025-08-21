@@ -32,7 +32,7 @@ def main():
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
     
     # truth values 
-    thrust_truth         = [57.356384455604505, 61.68751602148854]
+    thrust_truth         = [46.37988724561762, 46.379887245617546]
    
     for i in range(len(ducted_fan_type)):  
         # vehicle data
@@ -109,9 +109,7 @@ def base_analysis(vehicle):
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
+    geometry.vehicle = vehicle 
     analyses.append(geometry)
     
     # ------------------------------------------------------------------

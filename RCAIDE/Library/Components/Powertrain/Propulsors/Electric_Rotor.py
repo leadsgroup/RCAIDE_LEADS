@@ -7,6 +7,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports 
+import  RCAIDE
 from .   import Propulsor 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.unpack_electric_rotor_unknowns             import unpack_electric_rotor_unknowns
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.pack_electric_rotor_residuals              import pack_electric_rotor_residuals
@@ -82,29 +83,32 @@ class Electric_Rotor(Propulsor):
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
         Appends operating conditions to the segment.
-        """
+        """            
         append_electric_rotor_conditions(self,segment,energy_conditions,noise_conditions)
         return
     
     def append_propulsor_unknowns_and_residuals(self,segment):
         """
         Appends propulsor unknowns and residuals to the segment.
-        """
-        append_electric_rotor_residual_and_unknown(self,segment)
+        """ 
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:        
+            append_electric_rotor_residual_and_unknown(self,segment)
         return
 
     def unpack_propulsor_unknowns(self,segment):  
         """
         Unpacks propulsor unknowns from the segment.
-        """
-        unpack_electric_rotor_unknowns(self,segment)
+        """ 
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:        
+            unpack_electric_rotor_unknowns(self,segment)
         return 
 
     def pack_propulsor_residuals(self,segment): 
         """
         Packs propulsor residuals into the segment.
         """
-        pack_electric_rotor_residuals(self,segment)
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:  
+            pack_electric_rotor_residuals(self,segment)
         return    
     
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):

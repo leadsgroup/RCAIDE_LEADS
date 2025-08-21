@@ -112,11 +112,13 @@ def compute_systems_weight(vehicle):
     NENG = 0 
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
                 NENG += 1  
     fuse_w         = ref_fuselage.width / Units.ft
     fuse_h         = ref_fuselage.heights.maximum / Units.ft   
-    cargo_weight   = vehicle.payload.cargo.mass_properties.mass / Units.lbs
+    cargo_weight   = vehicle.mass_properties.payload / Units.lbs
     
     if vehicle.passengers >= 150:
         flight_crew = 3 # number of flight crew
@@ -159,5 +161,5 @@ def compute_systems_weight(vehicle):
     output.W_ac                = WAC * Units.lbs
     output.W_furnish           = WFURN * Units.lbs
     output.W_anti_ice          = WAI * Units.lbs
-    output.W_systems           = WSC + WAPUG + WIN + WHYD + WELEC + WAVONCG + WFURN + WAC + WAI
+    output.W_systems           = (WSC + WAPUG + WIN + WHYD + WELEC + WAVONCG + WFURN + WAC + WAI)*Units.lbs
     return output

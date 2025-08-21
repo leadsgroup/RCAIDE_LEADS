@@ -55,7 +55,7 @@ def main():
     plot_battery_pack_conditions(results) 
 
     X57_SPL        = np.max(results.segments.cruise.conditions.noise.hemisphere_SPL_dBA) 
-    X57_SPL_true   = 66.25788939370754
+    X57_SPL_true   = 65.27118650421842
     X57_diff_SPL   = np.abs(X57_SPL - X57_SPL_true)
     print('Error: ',X57_diff_SPL)
     assert np.abs((X57_SPL - X57_SPL_true)/X57_SPL_true) < 1e-3 
@@ -103,18 +103,9 @@ def base_analysis(vehicle):
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
+    geometry.vehicle = vehicle 
     analyses.append(geometry)
-    
-    # ------------------------------------------------------------------
-    #  Weights
-    weights                 = RCAIDE.Framework.Analyses.Weights.Electric()
-    weights.aircraft_type   = 'General_Aviation'
-    weights.vehicle         = vehicle 
-    analyses.append(weights)
-
+     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 

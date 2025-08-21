@@ -9,8 +9,7 @@
 
 # RCAIDE imports 
 from RCAIDE.Framework.Core                       import Units 
-from RCAIDE.Framework.Mission.Segments.Evaluate  import Evaluate
-from RCAIDE.Framework.Mission.Segments.Cruise    import Constant_Throttle_Constant_Altitude
+from RCAIDE.Framework.Mission.Segments.Evaluate  import Evaluate 
 from RCAIDE.Library.Mission                      import Common,Segments
 from RCAIDE.Framework.Analyses                   import Process  
 

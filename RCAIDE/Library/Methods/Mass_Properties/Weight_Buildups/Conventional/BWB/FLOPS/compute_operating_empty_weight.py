@@ -7,14 +7,13 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import  RCAIDE
 from RCAIDE.Framework.Core import Data , Units 
-from .compute_aft_centerbody_weight import compute_aft_centerbody_weight
+from .compute_aft_center_body_weight import compute_aft_center_body_weight
 from .compute_cabin_weight import compute_cabin_weight
 from .compute_systems_weight import compute_systems_weight
 from .compute_bwb_wing_weight import compute_wing_weight
 from .compute_operating_items import compute_operating_items_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport import FLOPS
-from RCAIDE.Library.Attributes.Materials.Aluminum import Aluminum
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport import FLOPS 
 from RCAIDE.Library.Methods.Geometry.Planform                          import segment_properties  
  
 from copy import deepcopy
@@ -46,9 +45,9 @@ def compute_operating_empty_weight(vehicle,settings=None):
                 Maximum takeoff weight [kg]
             - fuselages : list
                 BWB fuselage segments with:
-                    - aft_centerbody_area : float
+                    - aft_center_body_area : float
                         Planform area of aft section [m²]
-                    - aft_centerbody_taper : float
+                    - aft_center_body_taper : float
                         Taper ratio of aft section
                     - cabin_area : float
                         Pressurized cabin area [m²]
@@ -92,17 +91,9 @@ def compute_operating_empty_weight(vehicle,settings=None):
     See Also
     --------
     RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_cabin_weight
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_centerbody_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_aft_center_body_weight
     RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common
     """
-    
-    
-
-    if settings == None:
-        W_factors = Data()
-        use_max_fuel_weight = True
-    else:
-        use_max_fuel_weight = settings.use_max_fuel_weight
 
     # Set the factors
     if not hasattr(settings, 'weight_reduction_factors'):
@@ -146,25 +137,12 @@ def compute_operating_empty_weight(vehicle,settings=None):
     ##-------------------------------------------------------------------------------             
     # Payload Weight
     ##-------------------------------------------------------------------------------  
-    payload = compute_payload_weight(vehicle)
-    
-    
-    vehicle.payload.passengers                      = RCAIDE.Library.Components.Component()
-    vehicle.payload.passengers.tag                  = 'passengers'
-    vehicle.payload.passengers.mass_properties.mass = payload.passengers
-    
-    vehicle.payload.baggage                         = RCAIDE.Library.Components.Component()
-    vehicle.payload.baggage.tag                     = 'baggage'
-    vehicle.payload.baggage.mass_properties.mass    = payload.baggage
-    
-    vehicle.payload.cargo                           = RCAIDE.Library.Components.Component() 
-    vehicle.payload.cargo.tag                       = 'cargo'   
-    vehicle.payload.cargo.mass_properties.mass      = payload.cargo    
+    payload = compute_payload_weight(vehicle)   
 
     ##-------------------------------------------------------------------------------             
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
-    W_oper = compute_operating_items_weight(vehicle)
+    W_oper = compute_operating_items_weight(vehicle)      
     
     ##-------------------------------------------------------------------------------         
     # System Weight
@@ -172,8 +150,8 @@ def compute_operating_empty_weight(vehicle,settings=None):
     W_systems = compute_systems_weight(vehicle)
    
     for item in W_systems.keys():
-        W_systems[item] *= (1. - W_factors.systems)
-    
+        W_systems[item] *= (1. - W_factors.systems)    
+
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
@@ -241,7 +219,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     # Pod Weight Weight 
     ##-------------------------------------------------------------------------------         
     WPOD  = 0.0             
-    if settings.FLOPS.complexity == 'Complex': 
+    if settings.FLOPS.fidelity == 'Complex': 
         NENG   = number_of_engines
         WTNFA  = W_energy_network.W_engine + W_energy_network.W_thrust_reverser + W_energy_network.W_starter \
                 + 0.25 * W_energy_network.W_engine_controls + 0.11 * W_systems.W_instruments + 0.13 * W_systems.W_electrical \
@@ -267,15 +245,15 @@ def compute_operating_empty_weight(vehicle,settings=None):
     for wing in vehicle.wings:
         if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body):
             num_main_wings += 1
-            bwb_aft_centerbody_area  = wing.areas.aft_centerbody
-            bwb_aft_centerbody_taper = wing.aft_centerbody_taper 
+            bwb_aft_center_body_area  = wing.aft_center_body.area
+            bwb_aft_center_body_taper = wing.aft_center_body.taper 
             
     
     for wing in vehicle.wings:
         if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body):
-            complexity = settings.FLOPS.complexity 
+            fidelity = settings.FLOPS.fidelity 
             sym_wing = generate_represenative_main_wing(wing, vehicle) 
-            W_wing = compute_wing_weight(vehicle, sym_wing, WPOD, complexity, settings, num_main_wings)
+            W_wing = compute_wing_weight(vehicle, sym_wing, WPOD, fidelity, settings, num_main_wings)
 
             # Apply weight factor
             W_wing = W_wing * (1. - W_factors.main_wing) * (1. - W_factors.structural)
@@ -307,7 +285,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
         
     TOW                = vehicle.mass_properties.max_takeoff
     W_cabin            = compute_cabin_weight(vehicle,settings) 
-    W_aft_centerbody   = compute_aft_centerbody_weight(number_of_engines,bwb_aft_centerbody_area, bwb_aft_centerbody_taper, TOW)
+    W_aft_center_body   = compute_aft_center_body_weight(number_of_engines,bwb_aft_center_body_area, bwb_aft_center_body_taper, TOW)
      
     
     ##-------------------------------------------------------------------------------                 
@@ -321,7 +299,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.structural                       = Data()
     output.empty.structural.wings                 = W_main_wing +   W_tail_horizontal +  W_tail_vertical 
     output.empty.structural.center_body           = W_cabin
-    output.empty.structural.aft_center_body       = W_aft_centerbody
+    output.empty.structural.aft_center_body       = W_aft_center_body
     output.empty.structural.landing_gear          = landing_gear.main +  landing_gear.nose  
     output.empty.structural.nacelle               = W_energy_network.W_nacelle* (1. - W_factors.nacelle)
     output.empty.structural.total = output.empty.structural.wings   + output.empty.structural.center_body + output.empty.structural.aft_center_body + output.empty.structural.landing_gear\
@@ -350,18 +328,9 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
     output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff
-    total_fuel_weight           = vehicle.mass_properties.max_takeoff - output.zero_fuel_weight
-
-    # assume fuel is equally distributed in fuel tanks
-    if use_max_fuel_weight:
-        for network in vehicle.networks: 
-            for fuel_line in network.fuel_lines:  
-                for fuel_tank in fuel_line.fuel_tanks:
-                    fuel_weight =  total_fuel_weight/number_of_tanks  
-                    fuel_tank.fuel.mass_properties.mass = fuel_weight
-                    
+    
     nose_landing_gear = False
-    main_landing_gear =  False
+    main_landing_gear = False
     for LG in vehicle.landing_gears:
         if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
             LG.mass_properties.mass = landing_gear.main
@@ -376,42 +345,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     if main_landing_gear == False:
         main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
         main_gear.mass_properties.mass = landing_gear.main  
-        vehicle.landing_gears.append(main_gear)
-
-    control_systems                         = RCAIDE.Library.Components.Component()
-    control_systems.tag                     = 'control_systems'  
-    control_systems.mass_properties.mass    = output.empty.systems.control_systems
-    electrical_systems                      = RCAIDE.Library.Components.Component()
-    electrical_systems.tag                  = 'electrical_systems'
-    electrical_systems.mass_properties.mass = output.empty.systems.electrical
-    furnishings                             = RCAIDE.Library.Components.Component()
-    furnishings.tag                         = 'furnishings'
-    furnishings.mass_properties.mass        = output.empty.systems.furnishings
-    air_conditioner                         = RCAIDE.Library.Components.Component() 
-    air_conditioner.tag                     = 'air_conditioner'
-    air_conditioner.mass_properties.mass    = output.empty.systems.air_conditioner
-    apu                                     = RCAIDE.Library.Components.Component()
-    apu.tag                                 = 'apu'
-    apu.mass_properties.mass                = output.empty.systems.apu
-    hydraulics                              = RCAIDE.Library.Components.Component()
-    hydraulics.tag                          = 'hydraulics' 
-    hydraulics.mass_properties.mass         = output.empty.systems.hydraulics
-    avionics                                = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.mass_properties.mass           = output.empty.systems.avionics + output.empty.systems.instruments
-    optionals                               = RCAIDE.Library.Components.Component()
-    optionals.tag                           = 'optionals'
-    optionals                               = RCAIDE.Library.Components.Component()
-    optionals.mass_properties.mass          = output.operational_items.misc
-    
-    # assign components to vehicle
-    vehicle.systems.control_systems         = control_systems
-    vehicle.systems.electrical_systems      = electrical_systems
-    vehicle.systems.avionics                = avionics
-    vehicle.systems.furnishings             = furnishings
-    vehicle.systems.air_conditioner         = air_conditioner 
-    vehicle.systems.apu                     = apu
-    vehicle.systems.hydraulics              = hydraulics
-    vehicle.systems.optionals               = optionals   
+        vehicle.landing_gears.append(main_gear)   
 
     return output
 
@@ -440,6 +374,6 @@ def generate_represenative_main_wing(wing, vehicle):
         segment.root_chord_percent    = (vehicle.wings[wing.tag].segments[segment.tag].root_chord_percent * vehicle.wings[wing.tag].chords.root ) / bwb_vehicle.wings[wing.tag].chords.root
         
         
-    bwb_wing = segment_properties(bwb_vehicle.wings[wing.tag],update_ref_areas=True) 
+    bwb_wing = segment_properties(bwb_vehicle.wings[wing.tag]) 
         
     return bwb_wing

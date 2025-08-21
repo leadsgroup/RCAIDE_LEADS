@@ -61,8 +61,5 @@ class Nose_Landing_Gear(Landing_Gear):
         """
         Sets default values for the nose landing gear attributes.
         """
-        self.tag           = 'nose_gear'
-        self.tire_diameter = 0.    
-        self.strut_length  = 0.    
-        self.units         = 0. # number of nose landing gear    
-        self.wheels        = 0. # number of wheels on the nose landing gear 
+        self.tag           = 'nose_gear' 
+        self.symmetric     = False        

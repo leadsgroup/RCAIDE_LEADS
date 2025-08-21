@@ -30,5 +30,6 @@ Segments
    :template: custom-module-template.rst
    :recursive:
 
+   Blended_Wing_Body_Fuselage_Segment
    Segment
 

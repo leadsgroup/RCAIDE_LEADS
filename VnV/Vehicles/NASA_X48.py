@@ -7,14 +7,12 @@
 
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units, Data       
+from RCAIDE.Framework.Core import Units 
 from RCAIDE.Library.Plots                                                   import *     
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan       import design_electric_ducted_fan
 
-# python imports 
-import numpy as np  
-from copy import deepcopy 
-import os
+# python imports  
+from copy import deepcopy  
 
 # ----------------------------------------------------------------------
 #   Define the Vehicle
@@ -31,10 +29,10 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     #   Vehicle-level Properties
     # ------------------------------------------------------------------    
     # mass properties
-    vehicle.mass_properties.max_takeoff   = 227  
-    vehicle.mass_properties.takeoff       = 227  
-    vehicle.mass_properties.max_zero_fuel = 227 
-    vehicle.mass_properties.cargo         = 0.0 
+    vehicle.mass_properties.max_takeoff               = 227  
+    vehicle.mass_properties.takeoff                   = 227  
+    vehicle.mass_properties.max_zero_fuel             = 227 
+    vehicle.mass_properties.cargo                     = 0.0 
     vehicle.flight_envelope.design_mach_number        = 0.12
     vehicle.flight_envelope.design_range              = 5000
     vehicle.flight_envelope.design_dynamic_pressure   = 854.5 
@@ -269,20 +267,11 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     # append propulsor to network
     net.propulsors.append(port_propulsor)     
 
-
-    #------------------------------------------------------------------------------------------------------------------------------------           
-    # Payload 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    payload                      = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw           = 10. # Watts
-    payload.mass_properties.mass = 1.0 * Units.kg
-    bus.payload                  = payload
-
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 20. # Watts
+    avionics.power_draw          = 30. # Watts
     bus.avionics                 = avionics   
 
     #------------------------------------------------------------------------------------------------------------------------------------   

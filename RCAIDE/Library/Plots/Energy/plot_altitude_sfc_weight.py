@@ -21,7 +21,7 @@ def plot_altitude_sfc_weight(results,
                              save_figure = False,
                              show_legend = True,
                              save_filename = "Weight_Fuel_Consumption" ,
-                             file_type = ".png",
+                             file_type = ".png", 
                              width = 11, height = 7):
     """
     Creates a four-panel plot showing throttle settings, vehicle weight, specific fuel consumption (SFC), 
@@ -92,35 +92,34 @@ def plot_altitude_sfc_weight(results,
     axis_4 = plt.subplot(2,2,4)
     
     for i in range(len(results.segments)): 
-        time      = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        Weight    = results.segments[i].conditions.weights.total_mass[:, 0] * 9.81   
-        mdot      = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]
-        thrust    = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
-        thrust    = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
-        fuel_mass = results.segments[i].conditions.energy.cumulative_fuel_consumption[:, 0]
-        sfc       = (mdot / Units.lb) / (thrust / Units.lbf) * Units.hr
+        time      = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min 
+        Weight    = (results.segments[i].conditions.weights.total_mass[:, 0] * 9.81)  / Units.lbf
+        mdot      = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]/ Units.lb
+        thrust    = abs(results.segments[i].conditions.frames.body.thrust_force_vector[:, 0])/ Units.lbf
+        fuel_mass = results.segments[i].conditions.energy.cumulative_fuel_consumption[:, 0]/ Units.lb
         
+        axis_1.set_ylabel(r'Weight (lbf)')  
+        axis_2.set_ylabel(r'Fuel Consumption (lb)')
+        axis_3.set_ylabel(r'SFC (lb/lbf-hr)')
+        axis_4.set_ylabel(r'Fuel Rate (lb/s)')  
+        
+        sfc       = (mdot ) / (thrust ) * Units.hr 
 
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')       
-        axis_1.plot(time, Weight/1000 , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name )  
-        axis_1.set_ylabel(r'Weight (kN)')  
+        axis_1.plot(time, Weight , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name )   
         set_axes(axis_1) 
 
         axis_2.plot(time, fuel_mass, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_2.set_xlabel('Time (mins)')
-        axis_2.set_ylabel(r'Fuel Consumption (kg)')
-        set_axes(axis_2)
-        
+        set_axes(axis_2) 
 
         axis_3.plot(time, sfc, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_3.set_xlabel('Time (mins)')
-        axis_3.set_ylabel(r'SFC (lb/lbf-hr)')
         set_axes(axis_3) 
 
         axis_4.plot(time, mdot, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_4.set_xlabel('Time (mins)')
-        axis_4.set_ylabel(r'Fuel Rate (kg/s)')
         set_axes(axis_4)         
         
     

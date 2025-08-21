@@ -248,8 +248,7 @@ def update_seat_map_layout_using_cabin_taper(seat_data,cabin):
         
         if np.any( y_pts > y_border):
             removed_indexes.append(n_idxs[n_i])
-    seat_data = np.delete(seat_data,(removed_indexes), axis=0)
-            
+    seat_data = np.delete(seat_data,(removed_indexes), axis=0) 
         
     # remove components that fall outside of tapered tail region 
     theta2     = np.arctan(cabin_width/tail_length) 

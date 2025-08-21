@@ -8,8 +8,8 @@ import sys
 import os
 
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+
 # the analysis functions
- 
 from BWB    import vehicle_setup  ,  configs_setup
 
 # ----------------------------------------------------------------------
@@ -21,13 +21,8 @@ def main():
 
     # plot vehicle 
     plot_3d_vehicle(vehicle,
-                    save_filename               = "BWB_Top_View",
-                    min_x_axis_limit            = -100,
-                    max_x_axis_limit            = 100,
-                    min_y_axis_limit            = -100,
-                    max_y_axis_limit            = 100,
-                    min_z_axis_limit            = -100,
-                    max_z_axis_limit            = 100,  
+                    save_filename               = "BWB_Top_View", 
+                    axis_limit                  = 100,  
                     show_figure=False)
     
     configs  = configs_setup(vehicle) 
@@ -36,11 +31,25 @@ def main():
     missions = missions_setup(mission)  
     results  = missions.base_mission.evaluate() 
 
+    vortex_distribution = results.segments.cruise.analyses.aerodynamics.settings.vortex_distribution
+    plot_3d_vehicle_vlm_panelization(vortex_distribution=vortex_distribution,
+                    save_filename               = "BWB_Top_View", 
+                    show_wing_control_points    = False, 
+                    axis_limit                  = 100,  
+                    show_figure=False)
+
+    plot_3d_vehicle_vlm_panelization(vortex_distribution=vortex_distribution,
+                    save_filename               = "BWB_Top_View",
+                    show_wing_control_points    = True, 
+                    axis_limit                  = 100,  
+                    show_figure=False)
+
     Cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    Cruise_CL_true   = 0.3521929512828953
+    Cruise_CL_true   = 0.38413007873149724
     Cruise_CL_diff   = np.abs(Cruise_CL - Cruise_CL_true)
     print('Error: ',Cruise_CL_diff)
-    assert np.abs((Cruise_CL - Cruise_CL_true)/Cruise_CL_true) < 1e-6   
+    assert np.abs((Cruise_CL - Cruise_CL_true)/Cruise_CL_true) < 1e-6
+    
     
     return 
 
@@ -76,18 +85,15 @@ def base_analysis(vehicle):
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.vehicle = vehicle
     geometry.settings.update_fuselage_properties = True
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
     geometry.settings.update_fuel_volume         = True
     analyses.append(geometry)
     
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle = vehicle
-    weights.aircraft_type  = 'BWB'
-    weights.settings.FLOPS.complexity   = 'Complex'  
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_BWB()
+    weights.vehicle = vehicle 
+    weights.settings.FLOPS.fidelity     = 'Complex'  
     analyses.append(weights)
 
     # ------------------------------------------------------------------

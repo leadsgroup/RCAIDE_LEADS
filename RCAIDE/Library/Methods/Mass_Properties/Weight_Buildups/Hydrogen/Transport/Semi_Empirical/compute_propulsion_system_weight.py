@@ -40,8 +40,7 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor):
 
         Inputs:
             vehicle - data dictionary with vehicle properties                   [dimensionless]
-                -.design_mach_number: design mach number for cruise flight
-                -.mass_properties.max_zero_fuel: zero fuel weight               [kg]
+                -.design_mach_number: design mach number for cruise flight 
                 -.systems.accessories: type of aircraft (short-range, commuter
                                                         medium-range, long-range,
                                                         sst, cargo)

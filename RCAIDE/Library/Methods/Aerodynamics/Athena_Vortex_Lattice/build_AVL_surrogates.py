@@ -70,8 +70,7 @@ def build_AVL_surrogates(aerodynamics):
     surrogates  = aerodynamics.surrogates
     training    = aerodynamics.training  
     AoA_data    = training.angle_of_attack
-    mach_data   = training.Mach
-    
+    mach_data   = training.Mach 
 
     CL_data       = training.coefficients[0,:,:]
     CDi_data      = training.coefficients[1,:,:]

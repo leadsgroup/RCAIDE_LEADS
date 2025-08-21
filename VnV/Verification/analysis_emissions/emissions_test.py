@@ -114,17 +114,14 @@ def base_analysis(vehicle,emissions_method, use_surrogate):
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.aircraft_type  =  "Transport"
+    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
     weights.vehicle = vehicle
     analyses.append(weights)
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis 
     aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle                               = vehicle
-    aerodynamics.settings.number_of_spanwise_vortices  = 5
-    aerodynamics.settings.number_of_chordwise_vortices = 2       
+    aerodynamics.vehicle                               = vehicle 
     aerodynamics.settings.model_fuselage               = True 
     analyses.append(aerodynamics)
 
@@ -198,7 +195,7 @@ def mission_setup(analyses):
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
+    segment.assigned_control_variables.throttle.assigned_propulsors = [['propulsor_1','propulsor_2']] 
     segment.assigned_control_variables.body_angle.active             = True                
     
     mission.append_segment(segment)    

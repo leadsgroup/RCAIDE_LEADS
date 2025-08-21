@@ -6,38 +6,77 @@
 
 # RCAIDE Imports
 from  RCAIDE import * 
-from   RCAIDE                    import * 
-from   RCAIDE.Library.Components import Wings
-from   RCAIDE.Framework.Core     import Units, Data
+from  RCAIDE                    import * 
+from  RCAIDE.Library.Components import Wings
+from  RCAIDE.Framework.Core     import Data
 
 # ----------------------------------------------------------------------
 #  Compute drag of turbofan in windmilling condition
-# ----------------------------------------------------------------------
-
+# ---------------------------------------------------------------------- 
 def windmilling_drag(geometry,state):
-    """Computes windmilling drag for turbofan engines
+    """
+    Computes windmilling drag coefficient for turbofan engines in windmilling condition.
 
-    Assumptions:
-    None
+    Parameters
+    ----------
+    geometry : Vehicle
+        Vehicle geometry object containing:
+            - reference_area : float, optional
+                Reference area for drag coefficient calculation [m^2]
+            - wings : list
+                List of wing objects with sref attribute [m^2]
+            - networks : list
+                List of propulsion networks containing propulsors
+                    - propulsors : list
+                        List of propulsor objects with nacelle attributes
+                            - nacelle : Nacelle, optional
+                                Nacelle object with areas.wetted attribute [m^2]
+    state : State
+        State object to store results in conditions.aerodynamics.coefficients.drag.windmilling
 
-    Source:
-    http://www.dept.aoe.vt.edu/~mason/Mason_f/AskinThesis2002_13.pdf
+    Returns
+    -------
+    windmilling_drag_coefficient : float
+        Windmilling drag coefficient [unitless]
 
-    Inputs:
-    geometry.
-      max_mach_operational        [Unitless]
-      reference_area              [m^2]
-      wings.sref                  [m^2]
-      networks.
-        areas.wetted              [m^2]
-        length                    [m]
+    Notes
+    -----
+    This function calculates the windmilling drag coefficient for turbofan engines
+    when they are not producing thrust but are still rotating due to incoming airflow.
+    The calculation is based on empirical correlations from wind tunnel testing.
+    
+    **Major Assumptions**
+        * Turbofan engines are in windmilling condition
+        * Drag is primarily due to nacelle wetted area
+        * Linear relationship between wetted area and drag coefficient
+    
+    **Theory**
 
-    Outputs:
-    windmilling_drag_coefficient  [Unitless]
+    The windmilling drag coefficient is calculated using an empirical correlation:
 
-    Properties Used:
-    N/A
-    """    
+    :math:`C_{D,windmilling} = 0.007274 \\frac{S_{wet,nacelle}}{S_{ref}}`
+
+    where:
+        - :math:`C_{D,windmilling}` is the windmilling drag coefficient
+        - :math:`S_{wet,nacelle}` is the total wetted area of all nacelles [m²]
+        - :math:`S_{ref}` is the reference area [m²]
+    
+    **Definitions**
+
+    'Windmilling'
+        Condition where a turbofan engine is not producing thrust but continues to rotate due to incoming airflow, typically during engine failure or shutdown scenarios.
+    
+    'Wetted Area'
+        Total surface area of the nacelle exposed to the airflow, used as a proxy for the drag-producing surface area.
+
+    References
+    ----------
+    [1] Askin, T. (2002). "Aircraft Engine Integration and Installation Effects." Virginia Tech Thesis. http://www.dept.aoe.vt.edu/~mason/Mason_f/AskinThesis2002_13.pdf
+
+    See Also
+    --------
+    RCAIDE.Library.Components.Wings.Main_Wing
+    """
     # ==============================================
         # Unpack
     # ==============================================
@@ -66,8 +105,9 @@ def windmilling_drag(geometry,state):
 
     for network in vehicle.networks: 
         for propulsor in network.propulsors:  
-            if 'nacelle' in propulsor:
-                swet_nac += propulsor.nacelle.areas.wetted 
+            if 'nacelle' in propulsor: 
+                if propulsor.nacelle !=  None:                
+                    swet_nac += propulsor.nacelle.areas.wetted 
     # Compute
     windmilling_drag_coefficient = 0.007274 * swet_nac / reference_area
 

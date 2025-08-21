@@ -60,7 +60,7 @@ from .Ethanol              import Ethanol
 from .Liquid_Hydrogen      import Liquid_Hydrogen
 from .Rocket_LH2           import Rocket_LH2
 from .Rocket_RP1           import Rocket_RP1
-from .Butanol		   import Butanol
-from .Propanol		   import Propanol
+from .Butanol		       import Butanol
+from .Propanol	     	   import Propanol
 from .Alkane_Mixture	   import Alkane_Mixture
 from .Alcohol_Mixture	   import Alcohol_Mixture

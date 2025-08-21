@@ -94,12 +94,14 @@ def write_vsp_nacelle(nacelle, OML_set_ind):
         x_delta = []
         x_poses = []
         z_delta = []
+        radii   = []
         
         segs         = nacelle.segments
         segment_list = list(nacelle.segments.keys())
         for seg in range(num_segs):   
             widths.append(segs[segment_list[seg]].width)
             heights.append(segs[segment_list[seg]].height) 
+            radii.append(segs[segment_list[seg]].curvature) 
             x_poses.append(segs[segment_list[seg]].percent_x_location)
             if seg == 0: 
                 x_delta.append(0)
@@ -110,18 +112,95 @@ def write_vsp_nacelle(nacelle, OML_set_ind):
                
         vsp.CutXSec(nac_id,4) # remove point section at end  
         vsp.CutXSec(nac_id,0) # remove point section at beginning 
-        vsp.CutXSec(nac_id,1) # remove point section at beginning 
-        for _ in range(num_segs-2): # add back the required number of sections
-            vsp.InsertXSec(nac_id, 1, vsp.XS_ELLIPSE)          
-            vsp.Update() 
+        vsp.CutXSec(nac_id,1) # remove point section at beginning
+        
+        # start section 
+        xsecsurf = vsp.GetXSecSurf(nac_id,0)    
+        xsec     = vsp.GetXSec( xsecsurf, 0 )      
+        if type(segs[segment_list[0]]) == RCAIDE.Library.Components.Nacelles.Segments.Circle_Segment:
+            vsp.ChangeXSecShape(xsecsurf,0, vsp.XS_CIRCLE)                    
+        elif type(segs[segment_list[0]]) == RCAIDE.Library.Components.Nacelles.Segments.Ellipse_Segment:
+            vsp.ChangeXSecShape(xsecsurf,0, vsp.XS_ELLIPSE)    
+        elif type(segs[segment_list[0]]) == RCAIDE.Library.Components.Nacelles.Segments.Super_Ellipse_Segment:
+            vsp.ChangeXSecShape(xsecsurf,0, vsp.XS_SUPER_ELLIPSE)    
+        elif type(segs[segment_list[0]]) == RCAIDE.Library.Components.Nacelles.Segments.Rounded_Rectangle_Segment:
+            vsp.ChangeXSecShape(xsecsurf,0, vsp.XS_ROUNDED_RECTANGLE)     
+        else:
+            vsp.ChangeXSecShape(xsecsurf,0, vsp.XS_ELLIPSE) 
         xsec_surf = vsp.GetXSecSurf(nac_id, 0 )  
-        for i3 in reversed(range(num_segs)): 
-            xsec = vsp.GetXSec( xsec_surf, i3 ) 
-            if i3 == 0:
-                pass
+        xsec = vsp.GetXSec( xsec_surf, 0 )             
+        vsp.SetXSecWidthHeight( xsec, widths[0], heights[0])
+        vsp.SetXSecTanAngles(xsec,vsp.XSEC_BOTH_SIDES,0,0,0,0)
+        vsp.SetXSecTanSlews(xsec,vsp.XSEC_BOTH_SIDES,0,0,0,0)
+        vsp.SetXSecTanStrengths( xsec, vsp.XSEC_BOTH_SIDES,0,0,0,0) 
+        vsp.Update() 
+  
+        # end section 
+        xsecsurf = vsp.GetXSecSurf(nac_id,1)
+        xsec    = vsp.GetXSec( xsecsurf, 1 ) 
+        if type(segs[segment_list[-1]]) == RCAIDE.Library.Components.Nacelles.Segments.Circle_Segment:
+            vsp.ChangeXSecShape(xsecsurf,1, vsp.XS_CIRCLE)                    
+        elif type(segs[segment_list[-1]]) == RCAIDE.Library.Components.Nacelles.Segments.Ellipse_Segment:
+            vsp.ChangeXSecShape(xsecsurf,1, vsp.XS_ELLIPSE)    
+        elif type(segs[segment_list[-1]]) == RCAIDE.Library.Components.Nacelles.Segments.Super_Ellipse_Segment:
+            vsp.ChangeXSecShape(xsecsurf,1, vsp.XS_SUPER_ELLIPSE)    
+        elif type(segs[segment_list[-1]]) == RCAIDE.Library.Components.Nacelles.Segments.Rounded_Rectangle_Segment:
+            vsp.ChangeXSecShape(xsecsurf,1, vsp.XS_ROUNDED_RECTANGLE)     
+        else:
+            vsp.ChangeXSecShape(xsecsurf,1, vsp.XS_ELLIPSE) 
+    
+        xsec_surf = vsp.GetXSecSurf(nac_id, 1 )  
+        xsec      = vsp.GetXSec( xsec_surf, 1 )               
+        vsp.SetXSecWidthHeight( xsec, widths[-1], heights[-1])
+        vsp.SetXSecTanAngles(xsec,vsp.XSEC_BOTH_SIDES,0,0,0,0)
+        vsp.SetXSecTanSlews(xsec,vsp.XSEC_BOTH_SIDES,0,0,0,0)
+        vsp.SetXSecTanStrengths( xsec, vsp.XSEC_BOTH_SIDES,0,0,0,0) 
+        vsp.Update()  
+        vsp.SetParmVal(nac_id, "XDelta", "XSec_"+str(1),x_delta[-1])
+        vsp.SetParmVal(nac_id, "ZDelta", "XSec_"+str(1),z_delta[-1])        
+        
+        # add remaining sections 
+        for i1 in range(num_segs-2): # add back the required number of sections 
+            if type(segs[segment_list[i1]]) == RCAIDE.Library.Components.Nacelles.Segments.Circle_Segment:
+                vsp.InsertXSec(nac_id, 1, vsp.XS_CIRCLE)                    
+            elif type(segs[segment_list[i1]]) == RCAIDE.Library.Components.Nacelles.Segments.Ellipse_Segment:
+                vsp.InsertXSec(nac_id, 1, vsp.XS_ELLIPSE)    
+            elif type(segs[segment_list[i1]]) == RCAIDE.Library.Components.Nacelles.Segments.Super_Ellipse_Segment:
+                vsp.InsertXSec(nac_id, 1, vsp.XS_SUPER_ELLIPSE)    
+            elif type(segs[segment_list[i1]]) == RCAIDE.Library.Components.Nacelles.Segments.Rounded_Rectangle_Segment:
+                vsp.InsertXSec(nac_id, 1, vsp.XS_ROUNDED_RECTANGLE)     
             else:
-                vsp.SetParmVal(nac_id, "XDelta", "XSec_"+str(i3),x_delta[i3])
-                vsp.SetParmVal(nac_id, "ZDelta", "XSec_"+str(i3),z_delta[i3])  
+                vsp.InsertXSec(nac_id, 1, vsp.XS_ELLIPSE) 
+            vsp.Update() 
+            
+        xsec_surf = vsp.GetXSecSurf(nac_id, 0 ) 
+        for i3 in reversed(range(num_segs-2)):
+            xsec = vsp.GetXSec( xsec_surf, i3 ) 
+            # order is reversed because sections are initially bunched in the front and cannot be extended passed the next
+            vsp.SetParmVal(nac_id, "XLocPercent", "XSec_"+str(i3+1),x_delta[i3+1])
+            vsp.SetParmVal(nac_id, "ZLocPercent", "XSec_"+str(i3+1),z_delta[i3+1])
+                       
+            if type(segs[segment_list[i3]]) == RCAIDE.Library.Components.Fuselages.Segments.Circle_Segment:
+                vsp.SetParmVal(nac_id, "Circle_Diameter", "XSecCurve_"+str(i3+1), widths[i3+1]) 
+                
+            elif type(segs[segment_list[i3]]) == RCAIDE.Library.Components.Fuselages.Segments.Ellipse_Segment:
+                vsp.SetParmVal(nac_id, "Ellipse_Width", "XSecCurve_"+str(i3+1), widths[i3+1])
+                vsp.SetParmVal(nac_id, "Ellipse_Height", "XSecCurve_"+str(i3+1), heights[i3+1]) 
+
+            elif type(segs[segment_list[i3]]) == RCAIDE.Library.Components.Fuselages.Segments.Super_Ellipse_Segment:
+                vsp.SetParmVal(nac_id, "Super_Width", "XSecCurve_"+str(i3+1), widths[i3+1])
+                vsp.SetParmVal(nac_id, "Super_Height", "XSecCurve_"+str(i3+1), heights[i3+1])
+
+            elif type(segs[segment_list[i3]]) == RCAIDE.Library.Components.Fuselages.Segments.Rounded_Rectangle_Segment:
+                vsp.SetParmVal(nac_id, "RoundedRect_Width", "XSecCurve_"+str(i3+1), widths[i3+1])
+                vsp.SetParmVal(nac_id, "RoundedRect_Height", "XSecCurve_"+str(i3+1), heights[i3+1])
+                vsp.SetParmVal(nac_id, "RoundRectXSec_Radius", "XSecCurve_"+str(i3+1), radii[i3+1]) 
+      
+            else:  
+                vsp.SetParmVal(nac_id, "Ellipse_Width", "XSecCurve_"+str(i3+1), widths[i3+1])
+                vsp.SetParmVal(nac_id, "Ellipse_Height", "XSecCurve_"+str(i3+1), heights[i3+1])  
+            vsp.Update()
+            
             vsp.SetXSecWidthHeight( xsec, widths[i3], heights[i3])
             vsp.SetXSecTanAngles(xsec,vsp.XSEC_BOTH_SIDES,0,0,0,0)
             vsp.SetXSecTanSlews(xsec,vsp.XSEC_BOTH_SIDES,0,0,0,0)

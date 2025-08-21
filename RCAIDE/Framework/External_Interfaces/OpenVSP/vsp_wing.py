@@ -14,7 +14,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data 
 from RCAIDE.Library.Components.Airfoils.Airfoil import Airfoil
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform, bwb_wing_planform 
 
 import numpy as np
 import string
@@ -36,7 +36,7 @@ t_table = str.maketrans( chars          + string.ascii_uppercase ,
 # ----------------------------------------------------------------------------------------------------------------------  
 #  vsp read wing
 # ----------------------------------------------------------------------------------------------------------------------  
-def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil_file=True, use_scaling=True):
+def read_vsp_wing(wing_id, main_wing_tag = None,blended_wing_body = False , last_blended_wing_body_center_body_section_index = None,  units_type='SI', write_airfoil_file=True, use_scaling=True):
     """This reads an OpenVSP wing vehicle geometry and writes it into a RCAIDE wing format.
 
     Assumptions:
@@ -92,9 +92,12 @@ def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil
         wing.vertical = True
         sign = (np.sign(x_rot))
         x_rot = (sign*90 - sign*x_rot) * Units.deg
-    else:
-        # Instantiate a wing
-        wing = RCAIDE.Library.Components.Wings.Wing()
+    else: 
+        if blended_wing_body:
+            wing = RCAIDE.Library.Components.Wings.Blended_Wing_Body()
+        else: 
+            wing = RCAIDE.Library.Components.Wings.Wing()
+             
         x_rot =  x_rot  * Units.deg
 
     y_rot =  y_rot  * Units.deg
@@ -112,7 +115,10 @@ def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil
         tag = vsp.GetGeomName(wing_id)
         tag = tag.translate(t_table) 
         if main_wing_tag == tag:
-            wing = RCAIDE.Library.Components.Wings.Main_Wing()
+            if blended_wing_body:
+                wing = RCAIDE.Library.Components.Wings.Blended_Wing_Body()
+            else: 
+                wing = RCAIDE.Library.Components.Wings.Main_Wing()
         save_filename = os.path.join(sys.path[0], tag )
         wing.tag = tag
 
@@ -180,8 +186,13 @@ def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil
         for i in range(1, segment_num+1):
             # XSec airfoil
             jj = i-1  # Airfoil index i-1 because VSP airfoils and sections are one index off relative to RCAIDE.
-
-            segment = RCAIDE.Library.Components.Wings.Segments.Segment()
+            if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                if i < last_blended_wing_body_center_body_section_index:
+                    segment = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
+                else:
+                    segment = RCAIDE.Library.Components.Wings.Segments.Segment()
+            else:
+                segment = RCAIDE.Library.Components.Wings.Segments.Segment()
             segment.tag                   = 'Section_' + str(i)
             thick_cord                    = vsp.GetParmVal(wing_id, 'ThickChord', 'XSecCurve_' + str(jj))
             segment.thickness_to_chord    = thick_cord	# Thick_cord stored for use in airfoil, below.
@@ -279,7 +290,10 @@ def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil
         wing.chords.mean_geometric    = wing.areas.reference / wing.spans.projected
 
         # Just double calculate and fix things:
-        wing = wing_planform(wing)
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):  
+            bwb_wing_planform(wing)  
+        else: 
+            wing_planform(wing) 
 
 
     else:
@@ -310,8 +324,10 @@ def read_vsp_wing(wing_id, main_wing_tag = None,  units_type='SI', write_airfoil
         wing.thickness_to_chord    = vsp.GetParmVal(x_sec_1_t_parm)
 
         # Just double calculate and fix things:
-        wing = wing_planform(wing)
- 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):  
+            bwb_wing_planform(wing)  
+        else: 
+            wing_planform(wing) 
 
     # Twists
     wing.twists.root      = vsp.GetParmVal(wing_id, 'Twist', 'XSec_0') * Units.deg +  y_rot

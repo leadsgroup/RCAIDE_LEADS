@@ -8,7 +8,7 @@
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia, compute_cylinder_moment_of_inertia, compute_wing_moment_of_inertia
 
 import RCAIDE
-import numpy as  np 
+import numpy as  np
 
 # ------------------------------------------------------------------        
 #  Component moments of inertia (MOI) tensors

@@ -30,17 +30,15 @@ def vehicle_setup(rotor_type):
     vehicle                                           = RCAIDE.Vehicle()
     vehicle.tag                                       = 'X57_Maxwell_Mod2' 
     vehicle.mass_properties.max_takeoff               = 2712. * Units.pounds
+    vehicle.mass_properties.takeoff                   = 2712. * Units.pounds
     vehicle.mass_properties.max_zero_fuel             = 2712. * Units.pounds 
     vehicle.mass_properties.max_payload               = 50.  * Units.pounds  #
+    vehicle.mass_properties.cargo                     = 0. * Units.pounds
     
     
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 2.5 
-    vehicle.flight_envelope.design_mach_number        = 0.78 
-    # vehicle.flight_envelope.design_cruise_altitude    = 2500. * Units.ft
-    # vehicle.flight_envelope.design_range              = 200 * Units.nmi 
-    # vehicle.flight_envelope.design_dynamic_pressure   = 2072.1614727510914
-    # vehicle.flight_envelope.design_mach_number        = 0.17734782770792362
+    vehicle.flight_envelope.design_mach_number        = 0.78  
     vehicle.flight_envelope.design_cruise_altitude    = 30
     vehicle.flight_envelope.design_range              = 1 * Units.nmi 
     vehicle.flight_envelope.design_dynamic_pressure   = 3735.49
@@ -49,7 +47,34 @@ def vehicle_setup(rotor_type):
     vehicle.reference_area                            = 14.76
     vehicle.passengers                                = 4
     vehicle.systems.control                           = "fully powered"
-    vehicle.systems.accessories                       = "commuter"     
+    vehicle.systems.accessories                       = "commuter"
+    
+
+    
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # ##################################################### Landing Gear ################################################################    
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter                  = 6  *  Units.inches 
+    main_gear.rim_diameter                   = 3  *  Units.inches 
+    main_gear.tire_width                     = 6  *  Units.inches 
+    main_gear.strut_length                   = 12  * Units.ft 
+    main_gear.wheels                         = 4   
+    main_gear.number_of_gear_types_in_tandem = 1
+    main_gear.number_of_wheels_in_gear_type  = 2  
+    main_gear.symmetric                      = True
+    vehicle.append_component(main_gear)  
+
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter                  =  5 *  Units.inches   
+    nose_gear.rim_diameter                   =  3 *  Units.inches 
+    nose_gear.tire_width                     =  5 *  Units.inches 
+    nose_gear.strut_length                   =  6.* Units.ft 
+    nose_gear.wheels                         = 2   
+    nose_gear.number_of_gear_types_in_tandem = 1
+    nose_gear.number_of_wheels_in_gear_type  = 2    
+    vehicle.append_component(nose_gear)
+        
          
     #------------------------------------------------------------------------------------------------------------------------------------
     # ######################################################## Wings ####################################################################  
@@ -535,20 +560,11 @@ def vehicle_setup(rotor_type):
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor) 
 
-
-    #------------------------------------------------------------------------------------------------------------------------------------           
-    # Payload 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    payload                      = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw           = 10. # Watts
-    payload.mass_properties.mass = 1.0 * Units.kg
-    bus.payload                  = payload
-
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 20. # Watts
+    avionics.power_draw          = 30. # Watts
     bus.avionics                 = avionics   
  
     #------------------------------------------------------------------------------------------------------------------------------------   

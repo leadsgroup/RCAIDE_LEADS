@@ -39,10 +39,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6917625836509467
-    electric_cruise_CL_truth         = 0.6977012994726179
-    series_hybrid_cruise_CL_truth    = 0.6975016870563107
-    parallel_hybrid_cruise_CL_truth  = 0.6976538411330577
+    convetional_cruise_CL_truth      = 0.6874510105874949
+    electric_cruise_CL_truth         = 0.6937698994826632
+    series_hybrid_cruise_CL_truth    = 0.6923715992248416
+    parallel_hybrid_cruise_CL_truth  = 0.693442029601161
 
     error = Data()
     
@@ -121,9 +121,6 @@ def main():
     
     return
 
-
-
-
 # ----------------------------------------------------------------------
 #   Define the Analyses
 # ----------------------------------------------------------------------
@@ -153,8 +150,6 @@ def base_analysis(vehicle):
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
     analyses.append(geometry)
 
     # ------------------------------------------------------------------

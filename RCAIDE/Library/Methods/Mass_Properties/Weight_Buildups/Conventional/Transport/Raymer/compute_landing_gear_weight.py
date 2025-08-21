@@ -99,11 +99,11 @@ def compute_landing_gear_weight(vehicle):
     Nmss = 2  # number of main gear shock struts assumed to be 2
     for landing_gear in  vehicle.landing_gears:
         if isinstance(landing_gear,RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-            Nmw  = landing_gear.wheels * Nmss    
+            Nmw  = landing_gear.wheels  * Nmss    
             Lm   = landing_gear.strut_length / Units.inch 
         elif isinstance(landing_gear,RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear): 
             Ln          = landing_gear.strut_length / Units.inch
-            Nnw         = landing_gear.wheels  
+            Nnw         = landing_gear.wheels 
         
     Vstall      = (2 * vehicle.mass_properties.max_takeoff * 9.81 / (vehicle.wings.main_wing.areas.reference * 1.225 * 2.5)) ** 0.5 # Assumes max Cl of 2.5, density of 1.225 kg/m^3
     Knp         = 1  # assuming not a kneeling gear

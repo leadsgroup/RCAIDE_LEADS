@@ -45,7 +45,7 @@ def main():
     results = missions.base_mission.evaluate() 
 
     CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0][0]
-    CL_true   = 0.5449920260691193
+    CL_true   = 0.5809553607569893
     CL_diff   = np.abs(CL - CL_true)
     print('Error: ',CL_diff)
     assert np.abs(CL_diff/CL_true) < 1e-6
@@ -77,8 +77,6 @@ def base_analysis(vehicle, configs):
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.vehicle = vehicle
-    geometry.settings.overwrite_reference        = True
-    geometry.settings.update_wing_properties     = True
     geometry.settings.update_fuel_volume         = True
     analyses.append(geometry)
 
@@ -86,12 +84,17 @@ def base_analysis(vehicle, configs):
     #  Aerodynamics Analysis
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.vehicle                               = vehicle
-    aerodynamics.settings.use_surrogate                = False
-    aerodynamics.settings.number_of_spanwise_vortices  = 30 
-    aerodynamics.settings.model_fuselage               = True                
-    aerodynamics.settings.model_nacelle                = True
+    aerodynamics.settings.use_surrogate                = False 
     analyses.append(aerodynamics) 
-       
+
+
+    # ------------------------------------------------------------------
+    #  Stability Analysis
+    stability = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method() 
+    stability.vehicle                               = vehicle
+    stability.settings.use_surrogate                = False 
+    analyses.append(stability)
+    
     # ------------------------------------------------------------------
     #  Energy
     energy= RCAIDE.Framework.Analyses.Energy.Energy()

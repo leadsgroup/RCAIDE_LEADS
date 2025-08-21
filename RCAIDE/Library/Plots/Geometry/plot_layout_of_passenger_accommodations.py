@@ -30,8 +30,8 @@ def plot_layout_of_passenger_accommodations(fuselage,
     
     fig = go.Figure() 
     # Set axes properties
-    fig.update_xaxes(range=[min(LOPA[:,2]) - 1 , max(LOPA[:,2]) + 1], showgrid=False)
-    fig.update_yaxes(range=[ min(LOPA[:,3]) - 1, max(LOPA[:,3])  + 1], showgrid=False)  
+    fig.update_xaxes(range=[min(LOPA[:,2]) - 1 , max(LOPA[:,2]) + 1], showgrid=True)
+    fig.update_yaxes(range=[ min(LOPA[:,3]) - 1, max(LOPA[:,3])  + 1], showgrid=True)  
     fig.update_yaxes(
         scaleanchor = "x",
         scaleratio = 1,)    

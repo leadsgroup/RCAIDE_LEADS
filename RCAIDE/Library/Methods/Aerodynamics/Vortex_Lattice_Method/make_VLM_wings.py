@@ -53,15 +53,12 @@ def make_VLM_wings(geometry, settings):
                 span_fraction_start
                 span_fraction_end
                 deflection
-                chord_fraction
-                
-    settings.discretize_control_surfaces  --> set to True to generate control surface panels
+                chord_fraction 
     
     Properties Used:
     N/A
     """ 
-    # unpack inputs
-    discretize_cs = settings.discretize_control_surfaces
+    # unpack inputs 
     wings         = copy_wings(geometry.wings)
     
     # ------------------------------------------------------------------
@@ -87,7 +84,7 @@ def make_VLM_wings(geometry, settings):
                                      'This function will move the control surfaces to wing segments itself.')  
         
         #move wing control surfaces to from wing to its segments
-        wing = populate_control_sections(wing) if discretize_cs else wing
+        wing = populate_control_sections(wing)  
         
         #ensure wing has attributes that will be needed later
         wing_halfspan = wing.spans.projected * 0.5 if wing.symmetric else wing.spans.projected
@@ -210,8 +207,11 @@ def make_VLM_wings(geometry, settings):
                     else:
                         raise ValueError('VLM does not support multiple control surfaces on the same edge at this time')
                 
+        
+        
         # pack span_breaks
         wing.span_breaks = reprocess_span_breaks(span_breaks)
+        wing.seg_breaks  = seg_breaks 
         
     # ------------------------------------------------------------------
     # Give cs_wings span_breaks arrays
@@ -226,6 +226,7 @@ def make_VLM_wings(geometry, settings):
         span_break  = make_span_break_from_segment(cs_wing.segments[cs_w_segs[1]])
         span_breaks.append(span_break) 
         cs_wing.span_breaks = span_breaks
+        cs_wing.seg_breaks  = cs_wing.segments
     
     return wings
   
@@ -331,6 +332,7 @@ def get_paths(type_str):
                 'vertical',
                 'taper',
                 'dihedral',
+                'aspect_ratio',
                 'thickness_to_chord',
                 'spans.projected',
                 'chords.root',

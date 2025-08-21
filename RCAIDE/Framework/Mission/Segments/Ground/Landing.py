@@ -61,7 +61,7 @@ class Landing(Evaluate):
         self.velocity_start       = 150 * Units.knots
         self.velocity_end         = 0.0
         self.friction_coefficient = 0.4
-        self.throttle             = 0.1
+        self.throttle             = 0.3
         self.altitude             = 0.0
         self.true_course          = 0.0 * Units.degrees 
         

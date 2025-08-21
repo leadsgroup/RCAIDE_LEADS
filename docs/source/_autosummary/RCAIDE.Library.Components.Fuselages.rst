@@ -30,9 +30,7 @@ Fuselages
    :template: custom-module-template.rst
    :recursive:
 
-   Blended_Wing_Body_Fuselage
    Cabins
    Fuselage
    Segments
-   Tube_Fuselage
 

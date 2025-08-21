@@ -31,16 +31,10 @@ Planform
    :recursive:
 
    compute_chord_length_from_span_location
+   compute_fuel_volume
    compute_span_location_from_chord_length
    convert_sweep
-   estimate_wing_internal_volume
    fuselage_planform
-   horizontal_tail_planform
-   horizontal_tail_planform_raymer
    populate_control_sections
-   vertical_tail_planform
-   vertical_tail_planform_raymer
-   wing_fuel_volume
    wing_planform
-   wing_segmented_planform
 

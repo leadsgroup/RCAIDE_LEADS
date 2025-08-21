@@ -22,38 +22,26 @@ import  numpy as  np
 #  create_avl_datastructures
 # ----------------------------------------------------------------------------------------------------------------------  
 def translate_avl_wing(rcaide_wing):
-    """
-    Translates wing geometry from RCAIDE format to AVL wing data structure.
+    """ Translates wing geometry from the vehicle setup to AVL format
 
-    Parameters
-    ----------
-    rcaide_wing : Wing
-        RCAIDE wing component containing geometric and aerodynamic properties
-            - tag : str
-                Wing identifier
-            - symmetric : bool
-                Flag indicating symmetric wing about centerline
-            - vertical : bool
-                Flag indicating vertical orientation (fin/rudder)
-            - spans.projected : float
-                Wing projected span in meters
-            - origin : array_like
-                Wing root origin coordinates [x, y, z] in meters
-            - segments : Container
-                Wing segment definitions with geometric properties
+    Assumptions:
+        None
 
-    Returns
-    -------
-    w : Wing
-        AVL wing data structure with translated geometry and sections
+    Source:
+        None
 
-    Notes
-    -----
-    This function serves as the primary interface for converting RCAIDE wing
-    definitions into the AVL format required for vortex lattice analysis.
-    The translation process handles segmented wings, airfoil definitions,
-    and control surface configurations.
-    """
+    Inputs:
+        rcaide_wing.tag                                                          [-]
+        rcaide_wing.symmetric                                                    [boolean]
+        rcaide_wing.verical                                                      [boolean]
+        rcaide_wing - passed into the populate_wing_sections function            [data stucture]
+
+    Outputs:
+        w - aircraft wing in AVL format                                         [data stucture] 
+
+    Properties Used:
+        N/A
+    """         
     w                 = Wing()
     w.tag             = rcaide_wing.tag
     w.symmetric       = rcaide_wing.symmetric
@@ -63,41 +51,29 @@ def translate_avl_wing(rcaide_wing):
     return w
 
 def translate_avl_body(rcaide_body):
-    """
-    Translates fuselage geometry from RCAIDE format to AVL body data structure.
+    """ Translates body geometry from the vehicle setup to AVL format
 
-    Parameters
-    ----------
-    rcaide_body : Body
-        RCAIDE fuselage component containing geometric properties
-            - tag : str
-                Body identifier
-            - lengths.total : float
-                Total fuselage length in meters
-            - lengths.nose : float
-                Nose section length in meters
-            - lengths.tail : float
-                Tail section length in meters
-            - width : float
-                Maximum fuselage width in meters
-            - heights.maximum : float
-                Maximum fuselage height in meters
+    Assumptions:
+        None
 
-    Returns
-    -------
-    b : Body
-        AVL body data structure with translated geometry and sections
+    Source:
+        None
 
-    Notes
-    -----
-    Translates fuselage geometry for inclusion in AVL analysis. The body
-    is represented by horizontal and vertical cross-sections that capture
-    the three-dimensional shape for interference effects calculation.
+    Inputs:
+        body.tag                                                       [-]  
+        rcaide_body.lengths.nose                                        [meters]
+        rcaide_body.lengths.tail                                        [meters]
+        rcaide_wing.verical                                             [meters]
+        rcaide_body.width                                               [meters]
+        rcaide_body.heights.maximum                                     [meters]
+        rcaide_wing - passed into the populate_body_sections function   [data stucture]
 
-    **Major Assumptions**
-        * Fuselage has elliptical cross-sections
-        * Symmetric body about vertical centerline
-    """
+    Outputs:
+        b - aircraft body in AVL format                                [data stucture] 
+
+    Properties Used:
+        N/A
+    """  
     b                 = Body()
     b.tag             = rcaide_body.tag
     b.symmetric       = True
@@ -111,41 +87,30 @@ def translate_avl_body(rcaide_body):
     return b
 
 def populate_wing_sections(avl_wing,rcaide_wing): 
-    """
-    Creates wing sections and populates AVL wing data structure with geometric details.
+    """ Creates sections of wing geometry and populates the AVL wing data structure
 
-    Parameters
-    ----------
-    avl_wing : Wing
-        AVL wing object to be populated with section data
-    rcaide_wing : Wing
-        RCAIDE wing containing source geometry
-            - spans.projected : float
-                Wing projected span in meters
-            - chords.root : float
-                Root chord length in meters
-            - origin : array_like
-                Wing origin coordinates in meters
-            - segments : Container
-                Wing segments with sweep, twist, and chord definitions
-            - control_surfaces : Container, optional
-                Control surface definitions
+    Assumptions:
+        None
 
-    Returns
-    -------
-    avl_wing : Wing
-        Populated AVL wing with all sections and control surfaces
+    Source:
+        None
 
-    Notes
-    -----
-    This function handles the detailed conversion of wing geometry into
-    AVL sections. It processes both segmented and non-segmented wings,
-    converts sweep angles from quarter-chord to leading-edge definitions,
-    and integrates control surface configurations.
+    Inputs:
+        avl_wing.symmetric                         [boolean]
+        rcaide_wing.spans.projected                 [meters]
+        rcaide_wing.origin                          [meters]
+        rcaide_wing.dihedral                        [radians]
+        rcaide_wing.segments.sweeps.leading_edge    [radians]
+        rcaide_wing.segments.root_chord_percent     [-]
+        rcaide_wing.segments.percent_span_location  [-]
+        rcaide_wing.segments.sweeps.quarter_chord   [radians]
+        rcaide_wing.segment.twist                   [radians]
 
-    For segmented wings, each segment boundary creates a new section.
-    Control surfaces create additional section breaks to properly model
-    hinge lines and deflection regions.
+    Outputs:
+        avl_wing - aircraft wing in AVL format     [data stucture] 
+
+    Properties Used:
+        N/A
     """           
         
     # obtain the geometry for each segment in a loop                                            
@@ -284,67 +249,35 @@ def populate_wing_sections(avl_wing,rcaide_wing):
 def append_avl_wing_control_surfaces(rcaide_wing,avl_wing,semispan,root_chord_percent,tip_chord_percent,tip_percent_span,
                                      root_percent_span,root_twist,tip_twist,tip_airfoil,seg_tag,dihedral,origin,sweep):
 
-    """
-    Converts RCAIDE control surfaces to AVL wing sections with appropriate hinge and deflection properties.
+    """ Converts control surfaces on a rcaide wing to sections in avl wing
 
-    Parameters
-    ----------
-    rcaide_wing : Wing
-        RCAIDE wing containing control surface definitions
-    avl_wing : Wing
-        AVL wing to receive control surface sections
-    semispan : float
-        Wing semispan length in meters
-    root_chord_percent : float
-        Root chord as percentage of wing root chord
-    tip_chord_percent : float
-        Tip chord as percentage of wing root chord
-    tip_percent_span : float
-        Tip location as percentage of wing span
-    root_percent_span : float
-        Root location as percentage of wing span
-    root_twist : float
-        Root section twist angle in radians
-    tip_twist : float
-        Tip section twist angle in radians
-    tip_airfoil : Airfoil
-        Airfoil definition for section
-    seg_tag : str
-        Segment identifier tag
-    dihedral : float
-        Wing dihedral angle in radians
-    origin : array_like
-        Wing section origin coordinates
-    sweep : float
-        Wing sweep angle in radians
+    Assumptions:
+        None
 
-    Returns
-    -------
-    None
-        Control surfaces are appended directly to avl_wing sections
+    Source:
+        None
 
-    Notes
-    -----
-    This function creates wing sections at control surface boundaries and
-    assigns appropriate control surface properties. Different control surface
-    types (aileron, elevator, flap, etc.) receive type-specific configurations
-    including deflection symmetry and gain settings.
+    Inputs: 
+        rcaide_wing           [-]
+        avl_wing             [-]
+        semispan             [meters]
+        root_chord_percent   [unitless]
+        tip_chord_percent    [unitless]
+        tip_percent_span     [unitless]
+        root_percent_span    [unitless]
+        root_twist           [radians]
+        tip_twist            [radians]
+        tip_airfoil          [unitless]
+        seg_tag              [unitless]
+        dihedral             [radians]
+        origin               [meters]
+        sweep                [radians]
+        
+    Outputs: 
+        None
 
-    Section breaks are created at the beginning and end of each control surface
-    to properly model the hinge lines and deflection regions in AVL analysis.
-
-    **Major Assumptions**
-        * Control surfaces span complete wing sections
-        * Hinge lines are straight and aligned with wing sections
-        * Control surface deflections are small angle approximations
-
-    **Definitions**
-
-    'Hinge Line'
-        Axis about which control surface rotates during deflection
-
-    'Control Surface Gain'
-        Scaling factor relating control input to surface deflection
+    Properties Used:
+        N/A
     """         
 
     root_chord    = rcaide_wing.chords.root                    
@@ -470,50 +403,29 @@ def append_avl_wing_control_surfaces(rcaide_wing,avl_wing,semispan,root_chord_pe
                         
     return 
 def populate_body_sections(avl_body,rcaide_body):
-    """
-    Creates horizontal and vertical cross-sections for AVL body representation.
+    """ Creates sections of body geometry and populates the AVL body data structure
 
-    Parameters
-    ----------
-    avl_body : Body
-        AVL body object to be populated with section data
-    rcaide_body : Body
-        RCAIDE body containing source geometry
-            - origin : array_like
-                Body origin coordinates in meters
-            - fineness.nose : float
-                Nose fineness ratio (length/diameter)
-            - fineness.tail : float
-                Tail fineness ratio (length/diameter)
+    Assumptions:
+        None
 
-    Returns
-    -------
-    avl_body : Body
-        Populated AVL body with horizontal and vertical sections
+    Source:
+        None
 
-    Notes
-    -----
-    Creates cross-sectional representations of the fuselage for AVL analysis.
-    The function generates both horizontal and vertical cutting planes through
-    the body to capture three-dimensional shape effects on aerodynamic
-    interference.
+    Inputs:
+        avl_wing.symmetric                       [boolean]
+        avl_body.widths.maximum                  [meters]
+        avl_body.heights.maximum                 [meters]
+        rcaide_body.fineness.nose                 [meters]
+        rcaide_body.fineness.tail                 [meters]
+        avl_body.lengths.total                   [meters]
+        avl_body.lengths.nose                    [meters] 
+        avl_body.lengths.tail                    [meters]  
 
-    Nose and tail curvatures are computed from fineness ratios using empirical
-    relationships. The body is discretized into 11 sections in each direction
-    for adequate geometric fidelity.
+    Outputs:
+        avl_body - aircraft body in AVL format   [data stucture] 
 
-    **Major Assumptions**
-        * Body has smooth, continuous curvature
-        * Fineness ratios adequately characterize nose/tail shapes
-        * Cross-sections are adequate for interference modeling
-
-    **Definitions**
-
-    'Fineness Ratio'
-        Ratio of body length to maximum diameter, affecting shape curvature
-
-    'Cross-Section'
-        Two-dimensional slice through three-dimensional body geometry
+    Properties Used:
+        N/A
     """  
 
     symm = avl_body.symmetric   

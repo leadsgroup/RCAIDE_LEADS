@@ -51,12 +51,25 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude = 35000 * Units.feet
     vehicle.flight_envelope.design_mach_number     = 0.75
     
-
+    
     # basic parameters
     vehicle.reference_area         = 565.33
     vehicle.systems.control        = "fully powered"
     vehicle.systems.accessories    = "long range"
 
+
+
+    # ------------------------------------------------------------------
+    # Cargo Bay
+    # ------------------------------------------------------------------    
+    cargo_bay =  RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    cargo_bay.length     = 36.0
+    cargo_bay.width      = 3.66
+    cargo_bay.height     = 3
+    cargo_bay.origin     = [[17.5, 0, 0]]
+    vehicle.cargo_bays.append(cargo_bay) 
+    
+    
     # ------------------------------------------------------------------
     #   Main Wing
     # ------------------------------------------------------------------
@@ -465,24 +478,40 @@ def vehicle_setup():
     fuselage.segments.append(segment)       
 
     # add to vehicle
-    vehicle.append_component(fuselage)
+    vehicle.append_component(fuselage) 
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    #  Landing Gear
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.tire_diameter       =  1.2* Units.m
-    main_gear.strut_length        =  0.80* Units.m
-    main_gear.wheels              =  6   #number of wheels on the main landing gear
-    main_gear.units               =  4   #number of nose landing gear   
-    vehicle.append_component(main_gear)  
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # ##################################################### Landing Gear ################################################################    
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter                  = 49 *  Units.inches 
+    main_gear.rim_diameter                   = 20 *  Units.inches 
+    main_gear.tire_width                     = 17 *  Units.inches  
+    main_gear.strut_length                   = 0.80* Units.m
+    main_gear.wheels                         = 14    
+    main_gear.number_of_gear_types_in_tandem = 4 
+    main_gear.number_of_wheels_in_gear_type  = 4   
+    main_gear.symmetric                      = True
+    vehicle.append_component(main_gear) 
 
-    nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
-    nose_gear.tire_diameter       =  1.2* Units.m
-    nose_gear.strut_length        =  0.80* Units.m
-    nose_gear.units               =  1   #number of nose landing gear
-    nose_gear.wheels              =  4   #number of wheels on the nose landing gear  
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter                  = 49 *  Units.inches
+    nose_gear.rim_diameter                   = 20 *  Units.inches
+    nose_gear.tire_width                     = 17 *  Units.inches
+    nose_gear.strut_length                   = 0.80* Units.m
+    nose_gear.wheels                         = 4 
+    nose_gear.number_of_gear_types_in_tandem = 1
+    nose_gear.number_of_wheels_in_gear_type  = 4 
     vehicle.append_component(nose_gear)
+    
+      
+  
+  
+  
+  
+  
+  
+  
   
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Turbofan Network
@@ -709,7 +738,6 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['outer_port_propulsor'].fan.angular_velocity      =   3860* Units.rpm 
     config.networks.fuel.propulsors['inner_starboard_propulsor'].fan.angular_velocity =   3860* Units.rpm
     config.networks.fuel.propulsors['inner_port_propulsor'].fan.angular_velocity      =   3860* Units.rpm    
-    config.V2_VS_ratio = 1.21
     configs.append(config)
 
     
@@ -741,8 +769,8 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['outer_port_propulsor'].fan.angular_velocity      =  2316 * Units.rpm
     config.networks.fuel.propulsors['inner_starboard_propulsor'].fan.angular_velocity =  2316 * Units.rpm
     config.networks.fuel.propulsors['inner_port_propulsor'].fan.angular_velocity      =  2316 * Units.rpm    
-    config.landing_gears.main_gear.gear_extended    = True
-    config.landing_gears.nose_gear.gear_extended    = True  
+    for landing_gear in  config.landing_gears:
+        landing_gear.gear_extended = True 
     config.Vref_VS_ratio = 1.3
     configs.append(config)   
      
@@ -758,9 +786,8 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['outer_port_propulsor'].fan.angular_velocity      =   4091* Units.rpm
     config.networks.fuel.propulsors['inner_starboard_propulsor'].fan.angular_velocity =   4091* Units.rpm
     config.networks.fuel.propulsors['inner_port_propulsor'].fan.angular_velocity      =   4091* Units.rpm    
-    config.landing_gears.main_gear.gear_extended    = True
-    config.landing_gears.nose_gear.gear_extended    = True  
-    config.V2_VS_ratio = 1.21 
+    for landing_gear in  config.landing_gears:
+        landing_gear.gear_extended = True 
     configs.append(config)    
 
     # done!

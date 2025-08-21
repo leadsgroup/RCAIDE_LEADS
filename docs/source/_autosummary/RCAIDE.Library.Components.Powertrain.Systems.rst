@@ -31,5 +31,5 @@ Systems
    :recursive:
 
    Avionics
-   System
+   Systems
 

@@ -109,16 +109,18 @@ def design_prop_rotor(rotor, number_of_stations=20, solver_name='SLSQP', iterati
     optimization_problem = optimization_setup(rotor,number_of_stations,print_iterations)
     
     
-    # Commense suppression of console window output  
-    devnull    = open(os.devnull,'w')
-    sys.stdout = devnull 
+    # Commense suppression of console window output
+    if print_iterations == False: 
+        devnull    = open(os.devnull,'w')
+        sys.stdout = devnull 
     outputs    = scipy_setup.SciPy_Solve(optimization_problem,
                                         solver=solver_name,
                                         iter = iterations ,
                                         sense_step = solver_sense_step,
                                         tolerance = solver_tolerance) 
-    # Terminate suppression of console window output   
-    sys.stdout = sys.__stdout__    
+    # Terminate suppression of console window output
+    if print_iterations == False: 
+        sys.stdout = sys.__stdout__    
     if outputs[3] != 0:  
         print('Prop-rotor Optimization Failed: ', outputs[4] )   
     else:

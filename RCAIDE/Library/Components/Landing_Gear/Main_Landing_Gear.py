@@ -64,8 +64,6 @@ class Main_Landing_Gear(Landing_Gear):
         """
         Sets default values for the main landing gear attributes.
         """
-        self.tag           = 'main_gear'
-        self.units         = 0. # number of main landing gear units        
-        self.strut_length  = 0.
-        self.tire_diameter = 0. 
-        self.wheels        = 0. # number of wheels on the main landing gear 
+        self.tag           = 'main_gear'  
+        self.symmetric     = True       
+        self.units         = 1

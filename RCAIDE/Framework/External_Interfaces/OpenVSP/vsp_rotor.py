@@ -167,7 +167,7 @@ def read_vsp_rotor(prop_id, units_type='SI',write_airfoil_file=True):
     rotor.tangential                   = np.array(vsp.GetDoubleResults(rid, "Tangential"))[start:]
 
     # Set rotor rotation
-    rotor.rotation = 1
+    rotor.clockwise_rotation = True
 
     # ---------------------------------------------
     # Rotor Airfoil

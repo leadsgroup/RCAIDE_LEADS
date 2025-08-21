@@ -13,3 +13,4 @@ from .Landing                  import Landing
 from .Takeoff                  import Takeoff
 from .Battery_Discharge        import Battery_Discharge
 from .Battery_Recharge         import Battery_Recharge
+from .Test_Stand               import Test_Stand 

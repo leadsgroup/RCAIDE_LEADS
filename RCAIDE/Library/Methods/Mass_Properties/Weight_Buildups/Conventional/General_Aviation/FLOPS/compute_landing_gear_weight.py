@@ -25,10 +25,7 @@ def compute_landing_gear_weight(vehicle):
     ----------
     vehicle : RCAIDE.Vehicle()
         Vehicle data structure containing:
-            - mass_properties.max_takeoff
-            - landing_gear.nose_wheels
-            - landing_gear.main_wheels
-            - landing_gear.configuration_type
+            - mass_properties.max_takeoff  
             - flight_envelope.design_range
             - wings.main_wing.dihedral
             - fuselages.fuselage.width

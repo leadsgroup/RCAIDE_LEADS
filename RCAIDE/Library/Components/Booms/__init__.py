@@ -10,4 +10,6 @@ boom elements used in aircraft and rotorcraft design.
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .Boom import Boom 
+from .Boom import Boom
+
+from . import Segments

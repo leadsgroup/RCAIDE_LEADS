@@ -156,17 +156,14 @@ def compute_systems_weight(vehicle):
     FNEF = 0 
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or\
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop): 
                 NENG += 1 
                 if propulsor.wing_mounted: 
                     FNEW += 1  
                 else:
-                    FNEF += 1
-                if 'nacelle' in propulsor:
-                    nacelle =  propulsor.nacelle 
-                    FNAC    = nacelle.diameter / Units.ft
-                else:
-                    FNAC    = 0                     
+                    FNEF += 1              
             
     VMAX     = vehicle.flight_envelope.design_mach_number
     SFLAP    = 0
@@ -225,7 +222,7 @@ def compute_systems_weight(vehicle):
 
 
 
-    output                      = Data()
+    output                     = Data()
     output.W_flight_control    = WSC * Units.lbs
     output.W_hyd_pnu           = WHYD * Units.lbs
     output.W_instruments       = WIN * Units.lbs
@@ -235,5 +232,5 @@ def compute_systems_weight(vehicle):
     output.W_electrical        = WELEC * Units.lbs
     output.W_ac                = 0.0
     output.W_furnish           = WFURN * Units.lbs
-    output.W_systems           = WSC  + WIN + WHYD + WELEC + WAVONC + WFURN + WAC 
+    output.total               = (WSC  + WIN + WHYD + WELEC + WAVONC + WFURN + WAC ) * Units.lbs
     return output

@@ -32,6 +32,7 @@ Components
 
    Airfoils
    Booms
+   Cargo_Bays
    Component
    Configs
    Fuselages
@@ -39,7 +40,6 @@ Components
    Mass_Properties
    Nacelles
    Network
-   Payloads
    Powertrain
    Thermal_Management
    Wings

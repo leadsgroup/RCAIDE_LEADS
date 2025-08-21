@@ -97,7 +97,7 @@ def evaluate_AVL_surrogate(state,settings,vehicle):
     MAC                 = vehicle.wings.main_wing.chords.mean_aerodynamic
   
     pts   = np.hstack((AoA,Mach))     
-    conditions.aerodynamics.coefficients.lift.total                   = np.atleast_2d(lift_model(pts)).T  
+    conditions.aerodynamics.coefficients.lift.inviscid.total          = np.atleast_2d(lift_model(pts)).T  
     conditions.aerodynamics.coefficients.drag.induced.inviscid        = np.atleast_2d(drag_model(pts)).T  
     conditions.aerodynamics.span_efficiency                           = np.atleast_2d(e_model(pts)).T  
     conditions.control_surfaces.slat.static_stability.coefficients.M  = np.atleast_2d(moment_model(pts)).T  

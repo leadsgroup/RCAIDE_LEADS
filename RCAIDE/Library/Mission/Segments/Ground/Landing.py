@@ -91,8 +91,7 @@ def initialize_conditions(segment):
     if v0  is None: 
         v0 = np.linalg.norm(segment.state.initials.conditions.frames.inertial.velocity_vector[-1])
         
-    # avoid having zero velocity since aero and propulsion models need non-zero Reynolds number
-    if v0 == 0.0: v0 = 0.01
+    # avoid having zero velocity since aero and propulsion models need non-zero Reynolds number 
     if vf == 0.0: vf = 0.01
     
     # intial and final speed cannot be the same

@@ -93,42 +93,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
         weight.wings                            = Data()
         weight.wings_total                      = 0.0
         weight.thermal_management_system       = Data()
-
-
-        control_systems                                  = RCAIDE.Library.Components.Component()
-        control_systems.tag                              = 'control_systems'
-        electrical_systems                               = RCAIDE.Library.Components.Component()
-        electrical_systems.tag                           = 'electrical_systems'
-        furnishings                                      = RCAIDE.Library.Components.Component()
-        furnishings.tag                                  = 'furnishings'
-        air_conditioner                                  = RCAIDE.Library.Components.Component()
-        air_conditioner.tag                              = 'air_conditioner'
-        apu                                              = RCAIDE.Library.Components.Component()
-        apu.tag                                          = 'apu'
-        hydraulics                                       = RCAIDE.Library.Components.Component()
-        hydraulics.tag                                   = 'hydraulics'
-        avionics                                         = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-        optionals                                        = RCAIDE.Library.Components.Component()
-        optionals.tag                                    = 'optionals'
-
-
-        vehicle.payload.passengers      = RCAIDE.Library.Components.Component()
-        vehicle.payload.passengers.tag  = 'passengers'
-        vehicle.payload.baggage         = RCAIDE.Library.Components.Component()
-        vehicle.payload.baggage.tag     = 'baggage'
-        vehicle.payload.cargo           = RCAIDE.Library.Components.Component()
-        vehicle.payload.cargo.tag       = 'cargo'
-
-        # assign components to vehicle
-        vehicle.systems.control_systems    = control_systems
-        vehicle.systems.electrical_systems = electrical_systems
-        vehicle.systems.avionics           = avionics
-        vehicle.systems.furnishings        = furnishings
-        vehicle.systems.air_conditioner    = air_conditioner
-        vehicle.systems.apu                = apu
-        vehicle.systems.hydraulics         = hydraulics
-        vehicle.systems.optionals          = optionals
-
+        
         #-------------------------------------------------------------------------------
         # Default Values
         #-------------------------------------------------------------------------------
@@ -164,12 +129,6 @@ def compute_operating_empty_weight(vehicle,settings = None):
                     nose_length  = nose
 
         #-------------------------------------------------------------------------------
-        # Environmental Control System
-        #-------------------------------------------------------------------------------
-        vehicle.systems.air_conditioner.origin[0][0]          = 0.51 * length_scale
-        vehicle.systems.air_conditioner.mass_properties.mass  = weight.ECS
-
-        #-------------------------------------------------------------------------------
         # Network Weight
         #-------------------------------------------------------------------------------
         maxLiftPower           = 0
@@ -177,13 +136,11 @@ def compute_operating_empty_weight(vehicle,settings = None):
         maxVTip                = 0
         eta                    = 0
         for network in vehicle.networks:
+
+            #-------------------------------------------------------------------------------
+            # Powertain 
+            #-------------------------------------------------------------------------------            
             for bus in network.busses:
-                #-------------------------------------------------------------------------------
-                # Payload Weight
-                #-------------------------------------------------------------------------------
-                if bus.payload.origin[0][0] == 0:
-                    bus.payload.origin[0][0]  = 0.5 * length_scale
-                weight.payload  += bus.payload.mass_properties.mass * Units.kg
 
                 #-------------------------------------------------------------------------------
                 # Avionics Weight
@@ -210,6 +167,11 @@ def compute_operating_empty_weight(vehicle,settings = None):
                 total_number_of_rotors  = 0.0
                 lift_rotor_servo_weight = 0.0
 
+
+    
+            #-------------------------------------------------------------------------------
+            # Propulsors
+            #-------------------------------------------------------------------------------
             for propulsor in network.propulsors:
                 rotor = propulsor.rotor
                 if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Propeller:
@@ -264,11 +226,10 @@ def compute_operating_empty_weight(vehicle,settings = None):
                     weight.tail_rotor  = EVTOL_Common.compute_rotor_weight(tailrotor, 1.5*maxLiftTorque/(1.25*rTip_ref))*0.2 * Units.kg
                     weight.rotors     += weight.tail_rotor
 
-        #-------------------------------------------------------------------------------
-        # Thermal Management System Weight
-        #-------------------------------------------------------------------------------
-        tms_weight = 0.0
-        for network in vehicle.networks:
+            #-------------------------------------------------------------------------------
+            # Thermal Management System Weight
+            #-------------------------------------------------------------------------------
+            tms_weight = 0.0 
             for coolant_line in network.coolant_lines:
                 weight.thermal_management_system.battery_module = Data()  # Add container for battery module
                 for i, battery_module in enumerate(coolant_line.battery_modules):
@@ -288,6 +249,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
                             weight.thermal_management_system[reservoir.tag] = reservoir.mass_properties.mass
                             tms_weight +=  reservoir.mass_properties.mass
         weight.thermal_management_system.total = tms_weight
+        
         #-------------------------------------------------------------------------------
         # Wing and Motor Wiring Weight
         #-------------------------------------------------------------------------------
@@ -377,16 +339,44 @@ def compute_operating_empty_weight(vehicle,settings = None):
         output.payload.payload    = weight.payload
         output.zero_fuel_weight   = output.empty.total + output.payload.total
         output.fuel               = 0
-        output.total              = output.empty.total + output.payload.total
+        output.total              = output.empty.total + output.payload.total 
 
+        output.operational_items = Data()
+        output.operational_items.total = 0
+        
+        # check if cargo bays defined in aircraft, if none, define one 
+        if len(vehicle.cargo_bays) == 0: 
+            cargo_bay =  RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+            vehicle.cargo_bays.append(cargo_bay) 
+        
+        ##-------------------------------------------------------------------------------   
+        # Cabin
+        ##------------------------------------------------------------------------------- 
+        for fuselage in vehicle.fuselages:
+            if len(fuselage.cabins) == 0:                
+                cabin =  RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+                cabin.mass_properties.mass = output.empty.systems.total  +  output.payload.passengers
+                fuselage.append_cabin(cabin)
+            else: 
+                for cabin in fuselage.cabins:
+                    cabin.mass_properties.mass = (output.payload.passengers + output.empty.systems.total) * (cabin.number_of_passengers / fuselage.number_of_passengers )              
+                 
+        total_volume =  0
+        for cargo_bay in vehicle.cargo_bays:
+            total_volume += (cargo_bay.length * cargo_bay.width * cargo_bay.height)
+        
+        for cargo_bay in vehicle.cargo_bays:
+            cargo_bay_volume = (cargo_bay.length * cargo_bay.width * cargo_bay.height)
+            cargo_bay.mass_properties.mass         = (weight.payload) * (cargo_bay_volume / total_volume)        
 
         diff = MTOW -output.total
         MTOW -= diff
-        iterations     += 1
+        iterations     += 1 
+    
         if iterations == 100:
             print('Weight convergence failed!')
-            return output
-
+            return output 
+        
     print('Converged MTOW = ' + str(round(MTOW)) + ' kg')
 
     return output

@@ -141,7 +141,8 @@ def setup_operating_conditions(component, velocity_range=np.array([10]), altitud
     conditions.frames.inertial.velocity_vector[:, 0]  = np.atleast_2d(velocity_range)
 
     # setup conditions   
-    segment                                          = RCAIDE.Framework.Mission.Segments.Segment()  
+    segment                                          = RCAIDE.Framework.Mission.Segments.Segment()
+    segment.sideslip_angle                           = 0 
     segment.state.conditions                         = conditions    
     orientations(segment) 
     segment.state.residuals.network                  = Residuals()

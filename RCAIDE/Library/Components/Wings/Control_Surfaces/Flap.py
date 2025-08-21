@@ -62,5 +62,6 @@ class Flap(Control_Surface):
         """
         self.tag            = 'flap'
         self.hinge_fraction = 0.0
+        self.type           = 'double_slotted'
         self.sign_duplicate = 1.0
  

@@ -102,7 +102,7 @@ def initialize_conditions(segment):
 
     # discretize on altitude
     alt = t_nondim * (altf-alt0) + alt0
-    conditions.freestream.altitude[:,0]             =  alt[:,0] # positive altitude in this context
+    conditions.freestream.altitude[:,0]  =  alt[:,0] 
     
 
     # Update freestream to get speed of sound

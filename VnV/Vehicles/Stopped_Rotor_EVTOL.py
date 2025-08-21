@@ -38,12 +38,12 @@ def vehicle_setup(new_regression=True) :
     vehicle.configuration = 'eVTOL'
     
     # mass properties 
-    vehicle.mass_properties.max_takeoff       = 2700 
-    vehicle.mass_properties.takeoff           = vehicle.mass_properties.max_takeoff
-    vehicle.mass_properties.operating_empty   = vehicle.mass_properties.max_takeoff
-    vehicle.flight_envelope.ultimate_load     = 5.7   
-    vehicle.flight_envelope.positive_limit_load        = 3.  
-    vehicle.passengers                        = 5 
+    vehicle.mass_properties.max_takeoff         = 2700 
+    vehicle.mass_properties.takeoff             = vehicle.mass_properties.max_takeoff
+    vehicle.mass_properties.operating_empty     = vehicle.mass_properties.max_takeoff
+    vehicle.flight_envelope.ultimate_load       = 5.7   
+    vehicle.flight_envelope.positive_limit_load = 3.  
+    vehicle.passengers                          = 5 
         
     #------------------------------------------------------------------------------------------------------------------------------------
     # ######################################################## Wings ####################################################################  
@@ -151,8 +151,7 @@ def vehicle_setup(new_regression=True) :
     aileron.span_fraction_end     = 0.9 
     aileron.deflection            = 0.0 * Units.degrees
     aileron.chord_fraction        = 0.2
-    wing.append_control_surface(aileron)      
-
+    wing.append_control_surface(aileron)  
         
     # add to vehicle 
     vehicle.append_component(wing)   
@@ -338,7 +337,7 @@ def vehicle_setup(new_regression=True) :
     boom.index                              = 1
     
     # Segment  
-    segment                           = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
+    segment                           = RCAIDE.Library.Components.Booms.Segments.Segment() 
     segment.tag                       = 'segment_1'   
     segment.percent_x_location        = 0.
     segment.percent_z_location        = 0.0 
@@ -347,7 +346,7 @@ def vehicle_setup(new_regression=True) :
     boom.append_segment(segment)           
     
     # Segment                                   
-    segment                           = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment                           = RCAIDE.Library.Components.Booms.Segments.Segment()
     segment.tag                       = 'segment_2'   
     segment.percent_x_location        = 0.03
     segment.percent_z_location        = 0. 
@@ -356,7 +355,7 @@ def vehicle_setup(new_regression=True) :
     boom.append_segment(segment) 
     
     # Segment                                   
-    segment                           = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment                           = RCAIDE.Library.Components.Booms.Segments.Segment()
     segment.tag                       = 'segment_3'    
     segment.percent_x_location        = 0.97
     segment.percent_z_location        = 0. 
@@ -365,7 +364,7 @@ def vehicle_setup(new_regression=True) :
     boom.append_segment(segment)           
     
     # Segment                                  
-    segment                           = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment                           = RCAIDE.Library.Components.Booms.Segments.Segment()
     segment.tag                       = 'segment_4'   
     segment.percent_x_location        = 1.   
     segment.percent_z_location        = 0.   
@@ -454,7 +453,7 @@ def vehicle_setup(new_regression=True) :
     propeller.cruise.design_Cl                             = 0.7
     propeller.cruise.design_altitude                       = 1500 * Units.feet
     propeller.cruise.design_thrust                         = 3150
-    propeller.rotation                                     = 1
+    propeller.clockwise_rotation                           = True
     propeller.variable_pitch                               = True  
     airfoil                                                = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                                = local_path + 'Airfoils' + separator + 'NACA_4412.txt'
@@ -599,11 +598,6 @@ def vehicle_setup(new_regression=True) :
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
     #------------------------------------------------------------------------------------------------------------------------------------     
-    # Payload   
-    payload                        = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw             = 10. # Watts 
-    payload.mass_properties.mass   = 1.0 * Units.kg
-    cruise_bus.payload             = payload 
     
     # Avionics   
     avionics                       = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
@@ -745,16 +739,10 @@ def vehicle_setup(new_regression=True) :
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
-    #------------------------------------------------------------------------------------------------------------------------------------            
-    # Payload   
-    payload                                                 = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw                                      = 10. # Watts 
-    payload.mass_properties.mass                            = 1.0 * Units.kg
-    lift_bus.payload                                        = payload 
-                             
+    #------------------------------------------------------------------------------------------------------------------------------------    
     # Avionics                            
     avionics                                                = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw                                     = 10. # Watts  
+    avionics.power_draw                                     = 20. # Watts  
     avionics.mass_properties.mass                           = 1.0 * Units.kg
     lift_bus.avionics                                       = avionics    
 

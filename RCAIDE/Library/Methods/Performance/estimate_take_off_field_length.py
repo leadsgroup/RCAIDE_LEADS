@@ -19,7 +19,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compute field length required for takeoff
 # ----------------------------------------------------------------------
-def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False,overwrite_reference=True):
+def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
     """
     Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.
 
@@ -96,7 +96,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
         # Unpack
     # ============================================== 
     for wing in vehicle.wings: 
-        wing_planform(wing,overwrite_reference =  True) 
+        wing_planform(wing) 
         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
             vehicle.reference_area = wing.areas.reference
 
@@ -278,3 +278,49 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     else:
         # return only takeoff_field_length
         return takeoff_field_length[0][0],0
+    
+    
+def estimate_2ndseg_lift_drag_ratio(state,settings,geometry):
+    """Estimates the 2nd segment climb lift to drag ratio (all engine operating)
+    
+    Assumptions:
+    All engines operating
+
+    Source:
+    Fig. 27.34 of "Aerodynamic Design of Transport Airplane" - Obert
+
+    Inputs:
+    config.
+      V2_VS_ratio              [Unitless]
+      wings.
+        areas.reference        [m^2]
+	spans.projected        [m]
+	aspect_ratio           [Unitless]
+      maximum_lift_coefficient [Unitless]
+
+    Outputs:
+    lift_drag_ratio            [Unitless]
+
+    Properties Used:
+    N/A
+    """ 
+    # Unpack 
+    V2_VS_ratio    = geometry.flight_envelope.V2_VS_ratio 
+
+    # getting geometrical data (aspect ratio) 
+    for wing in geometry.wings:
+        if not (isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing) or isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body)): continue 
+        aspect_ratio = wing.aspect_ratio  
+
+    # ==============================================
+    # Determining vehicle maximum lift coefficient
+    # ==============================================
+    maximum_lift_coefficient, induced_drag_high_lift = compute_max_lift_coeff(state,settings,geometry)
+
+    # Compute CL in V2
+    lift_coeff = maximum_lift_coefficient / (V2_VS_ratio ** 2)
+
+    # Estimate L/D in 2nd segment condition, ALL ENGINES OPERATIVE!
+    lift_drag_ratio = -6.464 * lift_coeff + 7.264 * aspect_ratio ** 0.5
+
+    return lift_drag_ratio    

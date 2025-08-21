@@ -30,6 +30,5 @@ Center\_of\_Gravity
    :template: custom-module-template.rst
    :recursive:
 
-   compute_component_centers_of_gravity
    compute_vehicle_center_of_gravity
 

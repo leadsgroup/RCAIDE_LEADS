@@ -5,8 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-
-import RCAIDE
+ 
 from RCAIDE.Framework.Core import Data 
 from .Weights import Weights
 
@@ -53,9 +52,7 @@ class Conventional(Weights):
         """
         self.method                                        = 'FLOPS'
         self.aircraft_type                                 = 'Transport'
-        self.propulsion_architecture                       = 'Conventional'
-                 
-        self.settings.use_max_fuel_weight                  = True 
+        self.propulsion_architecture                       = 'Conventional' 
         self.settings.advanced_composites                  = False
         self.settings.PRSEUS                               = True
         self.settings.fuselage_mounted_landing_gear_factor = 1.12 # assumes fuselage mounted landing gear. Change to 1 if False
@@ -64,8 +61,8 @@ class Conventional(Weights):
         
         # FLOPS settings
         self.settings.FLOPS                                = Data() 
-        self.settings.FLOPS.complexity                     = 'Simple' 
-        self.settings.FLOPS.aeroelastic_tailoring_factor   = 0.   # Aeroelastic tailoring factor [0 no aeroelastic tailoring, 1 maximum aeroelastic tailoring] 
+        self.settings.FLOPS.fidelity                       = 'Simple' 
+        self.settings.FLOPS.aeroelastic_tailoring_factor   = 0   # Aeroelastic tailoring factor [0 no aeroelastic tailoring, 1 maximum aeroelastic tailoring] 
         self.settings.FLOPS.strut_braced_wing_factor       = 0.   # Wing strut bracing factor [0 for no struts, 1 for struts]
         
      

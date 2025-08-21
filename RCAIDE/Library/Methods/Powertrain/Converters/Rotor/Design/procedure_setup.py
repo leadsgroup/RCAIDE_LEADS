@@ -11,8 +11,7 @@
 import RCAIDE 
 from RCAIDE.Framework.Core                                                        import Units  
 from RCAIDE.Library.Methods.Noise.Frequency_Domain_Buildup.Rotor                  import compute_rotor_noise 
-from RCAIDE.Framework.Analyses.Process                                            import Process   
-from RCAIDE.Framework.Mission.Common                                              import Conditions
+from RCAIDE.Framework.Analyses.Process                                            import Process    
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import compute_rotor_performance 
 
 # Python package imports   
@@ -502,10 +501,10 @@ def post_process(nexus):
         print("OEI Thrust                   : " + str(nexus.results.oei.thrust)) 
         print("OEI Thrust/Power Residual    : " + str(summary.OEI_hover_thrust_power_residual)) 
         print("OEI Tip Mach                 : " + str(rotor_oei.oei.design_tip_mach))  
-        print("OEI Collective (deg)         : " + str(rotor_oei.design_blade_pitch_command/Units.degrees)) 
+        print("OEI Collective (deg)         : " + str(rotor_oei.hover.design_blade_pitch_command/Units.degrees)) 
         if nexus.prop_rotor_flag:    
             print("Cruise RPM                   : " + str(nexus.results.cruise.omega/Units.rpm))    
-            print("Cruise Collective (deg)      : " + str(rotor_cru.design_blade_pitch_command/Units.degrees)) 
+            print("Cruise Collective (deg)      : " + str(rotor_cru.cruise.design_blade_pitch_command/Units.degrees)) 
             if rotor_cru.cruise.design_thrust == None:  
                 print("Cruise Power                 : " + str(nexus.results.cruise.power)) 
             if rotor_cru.cruise.design_power == None:  

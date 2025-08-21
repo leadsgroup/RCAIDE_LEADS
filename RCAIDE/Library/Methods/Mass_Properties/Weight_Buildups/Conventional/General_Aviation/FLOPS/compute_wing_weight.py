@@ -18,7 +18,7 @@ import  copy
 # ----------------------------------------------------------------------------------------------------------------------
 # Main Wing Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wings):
+def compute_wing_weight(vehicle, wing, WPOD, fidelity  , settings, num_main_wings):
     """
     Calculate the wing weight using FLOPS methodology for general aviation aircraft. The wing weight consists of:
         - Bending Material Weight
@@ -61,7 +61,7 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
                 Flap area to wing area ratio
     WPOD : float
         Weight of engine pod including nacelle [kg]
-    complexity : str
+    fidelity   : str
         Wing weight method, either "simple" or "complex"
     settings : Data()
         Settings containing:
@@ -205,14 +205,16 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
     NEW  = 0
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or\
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop): 
                 NENG += 1  
                 if propulsor.wing_mounted: 
                     NEW += 1
                         
     DG              = vehicle.mass_properties.max_takeoff / Units.lbs  # Design gross weight in lb
 
-    if complexity == 'Simple':
+    if fidelity   == 'Simple':
         EMS  = 1 - 0.25 * FSTRT  # Wing strut bracing factor
         TLAM = np.tan(wing.sweeps.quarter_chord) \
                - 2 * (1 - TR) / (AR * (1 + TR))  # Tangent of the 3/4 chord sweep angle
@@ -562,7 +564,9 @@ def get_spanwise_engine(networks, SEMISPAN):
     EETA =  []
     for network in  networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or\
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop): 
                 if propulsor.wing_mounted and propulsor.origin[0][1] > 0:  
                     EETA.append((propulsor.origin[0][1] / Units.ft) * 1 / SEMISPAN) 
     EETA =  np.array(EETA)

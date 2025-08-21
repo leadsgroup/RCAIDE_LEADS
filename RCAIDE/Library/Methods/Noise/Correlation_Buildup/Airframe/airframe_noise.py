@@ -144,18 +144,16 @@ def airframe_noise(microphone_locations, segment, config, settings):
     
     for landing_gear in  config.landing_gears:
         if isinstance(landing_gear,RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-            Dp                 = landing_gear.tire_diameter           # MLG tyre diameter 
-            Dn                 = landing_gear.strut_length            # NLG tyre diameter 
+            Dp                 = landing_gear.tire_diameter                   # MLG tyre diameter 
+            Dn                 = landing_gear.strut_length                    # NLG tyre diameter 
             main_wheels        = landing_gear.wheels                          # Number of wheels   
             main_gear_extended = landing_gear.gear_extended                   # Gear up or gear down 
             main_units         = landing_gear.units                           # Number of main units
         elif isinstance(landing_gear,RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
-            Hp                 = landing_gear.tire_diameter                 # MLG strut length 
-            Hn                 = landing_gear.strut_length                  # NLG strut length 
+            Hp                 = landing_gear.tire_diameter                   # MLG strut length 
+            Hn                 = landing_gear.strut_length                    # NLG strut length 
             nose_gear_extended = landing_gear.gear_extended                   # Gear up or gear down 
             nose_wheels        = landing_gear.wheels                          # Number of wheels   
-      
-    
     
     viscosity           = segment.conditions.freestream.kinematic_viscosity[:,0] 
     M                   = segment.conditions.freestream.mach_number 
