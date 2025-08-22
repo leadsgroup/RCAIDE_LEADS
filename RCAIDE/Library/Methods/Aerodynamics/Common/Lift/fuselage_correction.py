@@ -6,24 +6,69 @@
 #  Fuselage Correction
 # ----------------------------------------------------------------------------------------------------------------------
 def fuselage_correction(state,settings,geometry):  
-    """Corrects aircraft lift based on fuselage effects
+    """
+    Corrects aircraft lift coefficient based on fuselage interference effects.
 
-    Assumptions:
-        None
+    Parameters
+    ----------
+    state : Data
+        Flight conditions and aerodynamic state containing:
+            - conditions.aerodynamics.coefficients.lift.inviscid.total : float
+                Inviscid lift coefficient [unitless]
+    settings : dict
+        Aerodynamic analysis settings containing:
+            - fuselage_lift_correction : float
+                Fuselage lift correction factor [unitless]
+    geometry : Data
+        Aircraft geometry containing:
+            - fuselages : list
+                List of fuselage objects (may be empty)
 
-    Source:
-        adg.stanford.edu (Stanford AA241 A/B Course Notes)
+    Returns
+    -------
+    None
+        Results are stored in state.conditions.aerodynamics.coefficients.lift.total
 
-    Args:
-        settings.fuselage_lift_correction (float): fuselage lift correction [unitless]
-        state.conditions.
-          freestream.mach_number          (numpy.ndarray): mach number      [unitless]
-          aerodynamics.angles.alpha       (numpy.ndarray): angle of attack  [radians]
-          aerodynamics.coefficients.lift  (numpy.ndarray): lift coefficient [unitless]
+    Notes
+    -----
+    This function applies a fuselage lift correction factor to account for
+    interference effects between the fuselage and wing. The correction
+    modifies the inviscid lift coefficient.
+    
+    **Major Assumptions**
+        * Single fuselage configuration (first fuselage used if multiple exist)
+        * Fuselage lift correction factor is user-defined
+        * Inviscid lift coefficient represents wing-only contribution
+        * Fuselage effects are multiplicative rather than additive
+        * No fuselage results in no correction applied
+    
+    **Theory**
 
-    Returns:
-        aircraft_total_lift               (numpy.ndarray): lift coefficient [unitless]   
-    """        
+    The total aircraft lift coefficient is calculated as:
+
+    :math:`C_{L,total} = C_{L,inviscid} \\cdot f_{fuselage}`
+
+    where:
+        - :math:`C_{L,inviscid}` is the inviscid lift coefficient (wing only)
+        - :math:`f_{fuselage}` is the fuselage lift correction factor
+
+    **Definitions**
+
+    'Fuselage Correction'
+        Factor accounting for the influence of fuselage on total aircraft lift.
+    
+    'Interference Effects'
+        Aerodynamic interactions between different aircraft components that modify individual component performance.
+
+    References
+    ----------
+    [1] Stanford AA241 Course Notes. adg.stanford.edu
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_flap_lift
+    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_slat_lift
+    """
     # unpack
     invs_lift       = state.conditions.aerodynamics.coefficients.lift.inviscid.total
         

@@ -23,7 +23,6 @@ The Aerodynamics module contains several submodules implementing different appro
 
 See Also
 --------
-RCAIDE.Analyses.Aerodynamics
 RCAIDE.Library.Components.Wings
 """
 

@@ -11,24 +11,56 @@ import numpy as np
 # ----------------------------------------------------------------------
 
 def compute_slat_lift(slat_angle,sweep_angle):
-    """Computes the increase in lift due to slats
+    """
+    Computes the increase in lift coefficient due to leading edge slat deployment.
 
-    Assumptions:
-    None
+    Parameters
+    ----------
+    slat_angle : float
+        Slat deflection angle [radians]
+    sweep_angle : float
+        Wing leading edge sweep angle [radians]
 
-    Source:
-    adg.stanford.edu (Stanford AA241 A/B Course Notes)
+    Returns
+    -------
+    dcl_slat : float
+        Lift coefficient increase due to slat deployment [unitless]
 
-    Inputs:
-    slat_angle   [radians]
-    sweep_angle  [radians]
+    Notes
+    -----
+    This function calculates the lift augmentation due to leading edge slat
+    deployment using the Stanford AA241 methodology. The calculation accounts
+    for slat deflection angle and wing sweep effects.
+    
+    **Major Assumptions**
+        * Stanford AA241 methodology is valid for typical slat configurations
+        * Sweep corrections follow cosine relationships
+        * Slat angle effects follow cosine squared relationship
+        * No interference effects between slats and other high-lift devices
+    
+    **Theory**
 
-    Outputs:
-    dcl_slat     [Unitless]
+    The lift coefficient increment due to slats follows the AA241 method:
 
-    Properties Used:
-    N/A
-    """     
+    :math:`\\Delta C_{L,slat} = \\frac{\\delta_{slat}}{23°} \\cdot \\cos^{1.4}(\\Lambda) \\cdot \\cos^2(\\delta_{slat})`
+
+    where:
+        - :math:`\\delta_{slat}` is the slat deflection angle in degrees
+        - :math:`\\Lambda` is the wing leading edge sweep angle in radians
+
+    **Definitions**
+
+    'Slat'
+        High-lift device mounted on the leading edge of a wing to delay stall and increase lift coefficient.
+    
+    References
+    ----------
+    [1] Stanford AA241 Course Notes. adg.stanford.edu
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_flap_lift
+    """
 
     # unpack
     sa = slat_angle  / Units.deg

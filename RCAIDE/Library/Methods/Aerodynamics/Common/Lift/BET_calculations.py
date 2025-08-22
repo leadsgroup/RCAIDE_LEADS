@@ -17,48 +17,114 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------   
 def compute_airfoil_aerodynamics(beta,c,r,R,B,Wa,Wt,a,nu,airfoils,airfoil_locations,ctrl_pts,Nr,Na,tc,use_2d_analysis):
     """
-    Cl, Cdval = compute_airfoil_aerodynamics( beta,c,r,R,B,
-                                              Wa,Wt,a,nu,
-                                              airfoils,a_loc
-                                              ctrl_pts,Nr,Na,tc,use_2d_analysis )
+    Computes aerodynamic forces at sectional blade locations using Blade Element Theory. 
 
-    Computes the aerodynamic forces at sectional blade locations. If airfoil
-    geometry and locations are specified, the forces are computed using the
-    airfoil polar lift and drag surrogates, accounting for the local Reynolds
-    number and local angle of attack.
+    Parameters
+    ----------
+    beta : float
+        Blade twist distribution [radians]
+    c : float
+        Chord distribution [m]
+    r : float
+        Radius distribution [m]
+    R : float
+        Tip radius [m]
+    B : int
+        Number of rotor blades [unitless]
+    Wa : float
+        Axial velocity [m/s]
+    Wt : float
+        Tangential velocity [m/s]
+    a : float
+        Speed of sound [m/s]
+    nu : float
+        Kinematic viscosity [m²/s]
+    airfoils : list
+        List of airfoil objects containing polar data
+    airfoil_locations : list
+        List indicating which airfoil is used at each radial station
+    ctrl_pts : int
+        Number of control points [unitless]
+    Nr : int
+        Number of radial blade sections [unitless]
+    Na : int
+        Number of azimuthal blade stations [unitless]
+    tc : float
+        Thickness-to-chord ratio [unitless]
+    use_2d_analysis : bool
+        Flag for 2D disc vs. 1D single angle analysis
 
-    If the airfoils are not specified, an approximation is used.
+    Returns
+    -------
+    Cl : float
+        Lift coefficients [unitless]
+    Cdval : float
+        Drag coefficients before scaling [unitless]
+    alpha : float
+        Section local angle of attack [radians]
+    alpha_disc : float
+        Angle of attack distribution across disc [radians]
+    Ma : float
+        Local Mach number [unitless]
+    W : float
+        Local velocity magnitude [m/s]
+    Re : float
+        Local Reynolds number [unitless]
+    Re_disc : float
+        Reynolds number distribution across disc [unitless]
 
-    Assumptions:
-    N/A
+    Notes
+    -----
+    This function computes aerodynamic forces at blade sections using either
+    airfoil polar data or empirical approximations. Please note that the empirical correlations
+    are rather coarse and should be used with caution. The calculation accounts
+    for local Reynolds number, Mach number, and angle of attack effects.
+    
+    **Major Assumptions**
+        * Airfoil polars are available if airfoils are specified
+        * Empirical correlations are valid for unspecified airfoils
+        * Compressibility effects follow Karman-Tsien correction
+        * Stall behavior follows standard airfoil characteristics
+    
+    **Theory**
 
-    Source:
-    N/A
+    The local angle of attack accoutning for sideslip and rotation is:
+    :math:`\\alpha = \\beta - \\arctan\\left(\\frac{W_a}{W_t}\\right)`
 
-    Inputs:
-       beta                       blade twist distribution                        [-]
-       c                          chord distribution                              [-]
-       r                          radius distribution                             [-]
-       R                          tip radius                                      [-]
-       B                          number of rotor blades                          [-]
+    The local velocity magnitude is:
+    :math:`W = \\sqrt{W_a^2 + W_t^2}`
 
-       Wa                         axial velocity                                  [-]
-       Wt                         tangential velocity                             [-]
-       a                          speed of sound                                  [-]
-       nu                         viscosity                                       [-]
-       airfoil_data               Data structure of airfoil polar information     [-]
-       ctrl_pts                   Number of control points                        [-]
-       Nr                         Number of radial blade sections                 [-]
-       Na                         Number of azimuthal blade stations              [-]
-       tc                         Thickness to chord                              [-]
-       use_2d_analysis            Specifies 2d disc vs. 1d single angle analysis  [Boolean]
+    The local Mach number is:
+    :math:`M = \\frac{W}{a}`
 
-    Outputs:
-       Cl                       Lift Coefficients                         [-]
-       Cdval                    Drag Coefficients  (before scaling)       [-]
-       alpha                    section local angle of attack             [rad]
+    The local Reynolds number is:
+    :math:`Re = \\frac{Wc}{\\nu}`
 
-    """ 
+    For specified airfoils, lift and drag coefficients are interpolated from polar data.
+    For unspecified airfoils, empirical correlations are used:
+    :math:`C_{L,max} = -0.0009(t/c)^3 + 0.0217(t/c)^2 - 0.0442(t/c) + 0.7005`
+
+    Reynolds number correction:
+    :math:`C_{L,max,Re} = C_{L,max,ref} \\left(\\frac{Re}{Re_{ref}}\\right)^{0.1}`
+
+    Karman-Tsien compressibility correction:
+    :math:`C_L = \\frac{C_L}{(1-M^2)^{0.5} + \\frac{M^2}{1+(1-M^2)^{0.5}}} \\cdot \\frac{C_L}{2}`
+    
+    **Definitions**
+
+    'Blade Element Theory'
+        Method for analyzing rotor aerodynamics by dividing blades into discrete sections.
+    
+    'Airfoil Polar'
+        Relationship between lift and drag coefficients as a function of angle of attack.
+    
+    'Karman-Tsien Correction'
+        Compressibility correction for airfoil characteristics at high subsonic speeds.
+
+    References
+    ----------
+    [1] Unknown
+    """
     alpha    = beta - np.arctan2(Wa,Wt)
     W        = (Wa*Wa + Wt*Wt)**0.5
     Ma       = W/a
@@ -136,28 +202,78 @@ def compute_airfoil_aerodynamics(beta,c,r,R,B,Wa,Wt,a,nu,airfoils,airfoil_locati
 # ----------------------------------------------------------------------------------------------------------------------    
 def compute_inflow_and_tip_loss(r,R,Wa,Wt,B,et1=1,et2=1,et3=1):
     """
-    Computes the inflow, lamdaw, and the tip loss factor, F.
+    Computes the inflow ratio and tip loss factor for rotor analysis.
 
-    Assumptions:
-    N/A
+    Parameters
+    ----------
+    r : float
+        Radius distribution [m]
+    R : float
+        Tip radius [m]
+    Wa : float
+        Axial velocity [m/s]
+    Wt : float
+        Tangential velocity [m/s]
+    B : int
+        Number of rotor blades [unitless]
+    et1 : float, optional
+        Tuning parameter for tip loss function [unitless]
+    et2 : float, optional
+        Tuning parameter for tip loss function [unitless]
+    et3 : float, optional
+        Tuning parameter for tip loss function [unitless]
 
-    Source:
-    N/A
+    Returns
+    -------
+    lamdaw : float
+        Inflow ratio [unitless]
+    Ftip : float
+        Tip loss factor [unitless]
+    piece : float
+        Intermediate calculation result needed for residual computation [unitless]
 
-    Inputs:
-       r          radius distribution                                              [m]
-       R          tip radius                                                       [m]
-       Wa         axial velocity                                                   [m/s]
-       Wt         tangential velocity                                              [m/s]
-       B          number of rotor blades                                           [-]
-       et1        tuning parameter for tip loss function 
-       et2        tuning parameter for tip loss function 
-       et3        tuning parameter for tip loss function 
-       
-    Outputs:               
-       lamdaw     inflow ratio                                                     [-]
-       F          tip loss factor                                                  [-]
-       piece      output of a step in tip loss calculation (needed for residual)   [-]
+    Notes
+    -----
+    This function computes the inflow ratio and tip loss factor using
+    empirical correlations. The tip loss factor accounts for the reduction
+    in lift near the blade tips due to three-dimensional effects.
+    
+    **Major Assumptions**
+        * Empirical tip loss correlation is valid for typical rotor configurations
+        * Inflow ratio is small and positive
+        * Tip loss follows exponential decay function
+        * Tuning parameters allow for correlation adjustment
+        * Blade tip effects are independent of blade number
+    
+    **Theory**
+
+    The inflow ratio is:
+    :math:`\\lambda_w = \\frac{r W_a}{R W_t}`
+
+    where negative values are limited to a small positive number to prevent numerical issues.
+
+    The tip loss factor follows an exponential decay:
+    :math:`F_{tip} = \\frac{2}{\\pi} \\arccos(e^{-f_{tip}})`
+
+    where the tip factor is:
+    :math:`f_{tip} = \\frac{B}{2} \\frac{(R/r)^{\\eta_1} - 1)^{\\eta_2}}{\\lambda_w^{\\eta_3}}`
+
+    and :math:`\\eta_1`, :math:`\\eta_2`, :math:`\\eta_3` are tuning parameters.
+    
+    **Definitions**
+
+    'Inflow Ratio'
+        Ratio of axial to tangential velocity at a given radial station.
+    
+    'Tip Loss Factor'
+        Factor accounting for reduction in lift near blade tips due to 3D effects.
+    
+    'Blade Element Theory'
+        Method for analyzing rotor aerodynamics by dividing blades into discrete sections.
+
+    References
+    ----------
+    [1] Unknown
     """
     lamdaw             = r*Wa/(R*Wt)
     lamdaw[lamdaw<=0.] = 1e-12

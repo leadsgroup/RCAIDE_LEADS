@@ -1,7 +1,7 @@
 # RCAIDE/Methods/Aerodynamics/Vortex_Lattice_Method/__init__.py
 # 
 
-""" RCAIDE Package Setup
+""" This module contains the functions for the Vortex Lattice Method.
 """
 
 # ----------------------------------------------------------------------------------------------------------------------
