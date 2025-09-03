@@ -1,4 +1,4 @@
-# RCAIDE/External_Interfaces/__init__.py
+# RCAIDE/External_Interfaces/GMSH/__init__.py
 # 
 
 """ RCAIDE Package Setup
@@ -7,7 +7,5 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
- 
-from . import OpenVSP
-from . import GMSH
-from . import SU2
+
+from .write_SU2_file import write_SU2_file

@@ -145,7 +145,7 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
     aerodynamics                                     = RCAIDE.Framework.Analyses.Aerodynamics.Athena_Vortex_Lattice()
     aerodynamics.vehicle                             = vehicle 
     aerodynamics.settings.filenames.avl_bin_name     = '/Users/matthewclarke/Documents/LEADS/CODES/AVL/avl3.35'
-    aerodynamics.settings.filenames.run_folder       = 'avl_files' +  folder_name
+    aerodynamics.settings.filenames.run_folder       = os.path.join(os.path.dirname(__file__),'avl_files' +  folder_name)
     aerodynamics.settings.use_surrogate              = use_surrogate
     aerodynamics.settings.trim_aircraft              = trim_aircraft 
     aerodynamics.settings.model_fuselage             = False 
