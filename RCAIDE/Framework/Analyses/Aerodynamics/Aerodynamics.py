@@ -61,17 +61,16 @@ class Aerodynamics(Analysis):
         self.settings.drag_reduction_factors.compressibility_drag        = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction) 
         self.settings.maximum_lift_coefficient_factor                    = 1.0    
         self.settings.viscous_lift_dependent_drag_factor                 = 0.38
-        self.settings.drag_coefficient_increment                         = 0.0 
-        self.settings.maximum_lift_coefficient                           = np.inf  
+        self.settings.drag_coefficient_increment                         = 0.0   
         self.settings.recalculate_total_wetted_area                      = False
         self.settings.oswald_efficiency_factor                           = None
         self.settings.span_efficiency                                    = None
         self.settings.store_training_data                                = False
+        self.settings.use_surrogate                                      = True  
 
-        self.settings.supersonic                                         = Data()
-        self.settings.supersonic.peak_mach_number                        = 1.04  
+        self.settings.supersonic                                         = Data() 
         self.settings.supersonic.begin_drag_rise_mach_number             = 0.95
-        self.settings.supersonic.end_drag_rise_mach_number               = 1.2    
+        self.settings.supersonic.end_drag_rise_mach_number               = 1.15    
         self.settings.supersonic.fuselage_parasite_drag_begin_blend_mach = 0.91
         self.settings.supersonic.fuselage_parasite_drag_end_blend_mach   = 0.99        
     
