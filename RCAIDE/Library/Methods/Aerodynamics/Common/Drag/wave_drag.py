@@ -32,9 +32,7 @@ def wave_drag(state,settings,geometry):
     settings : dict
         Aerodynamic analysis settings containing:
             - supersonic.end_drag_rise_mach_number : float
-                Mach number at which supersonic drag rise ends [unitless]
-            - supersonic.peak_mach_number : float
-                Peak Mach number for drag rise [unitless]
+                Mach number at which supersonic drag rise ends [unitless] 
             - use_surrogate : bool
                 Flag to use surrogate model for transonic wave drag
             - vortex_distribution : Data, optional
@@ -129,15 +127,12 @@ def wave_drag(state,settings,geometry):
     # Unpack
     conditions       = state.conditions
     Mach             = conditions.freestream.mach_number  
-    high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number
-    peak_mach        = settings.supersonic.peak_mach_number
+    high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number 
+    low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number 
 
     # supersonic smoothing 
-    sup_spline = Cubic_Spline_Blender(peak_mach,high_mach_cutoff) 
-    sup_h00    = lambda M:sup_spline.compute(M)
-
-    sup_spline2 = Cubic_Spline_Blender(peak_mach,1.5) 
-    sup_h002    = lambda M:sup_spline2.compute(M)     
+    sup_spline = Cubic_Spline_Blender(low_mach_cutoff,high_mach_cutoff) 
+    sup_h00    = lambda M:sup_spline.compute(M) 
     
     # Wave drag due to volume  
     CD_wave_volume = supersonic_volume_wave_drag(conditions, settings, geometry) *(1-sup_h00(Mach))
@@ -145,8 +140,8 @@ def wave_drag(state,settings,geometry):
     # wave drag due to lift  
     transonic_CDw_lift           = transonic_lift_wave_drag(conditions, settings, geometry) *sup_h00(Mach)
     transonic_CDw_lift[Mach<0.7] = 0
-    transonic_CDw_lift[Mach>0.95]= 0
-    supersonic_CDw_lift          = supersonic_lift_wave_drag(conditions, settings, geometry) *(1-sup_h002(Mach))
+    transonic_CDw_lift[Mach>high_mach_cutoff] = 0
+    supersonic_CDw_lift          = supersonic_lift_wave_drag(conditions, settings, geometry) *(1-sup_h00(Mach))
     supersonic_CDw_lift[Mach<1]  = 0   
    
     # total wave drag  
@@ -248,10 +243,10 @@ def transonic_lift_wave_drag(conditions, settings, geometry):
     
     if settings.use_surrogate or (settings.vortex_distribution == None): 
         Cl                   = conditions.aerodynamics.coefficients.lift.total
-        CD_wave_transonic    = np.array([-1.34E-03,2.35E-05,1.42E-03,1.95E-03,2.23E-03,2.56E-03,
-                                         2.80E-03,3.93E-03,6.11E-03, 9.48E-03,1.48E-02,
-                                         2.31E-02,2.83E-02,3.42E-02,3.96E-02,3.76E-02,2.71E-02]) 
-        CLs                  = np.array([-0.25836715,-0.05233014,0.08334449,0.21608904,0.35012533,0.42120447,0.48458659,0.55214519,0.62108179,0.69313687,0.75284432,0.81921256,0.95662739,1.07911642,1.19681914,1.33118394,1.47947542      ])    
+        CD_wave_transonic    = np.array([-1.34E-03,2.35E-05,1.42E-03,1.95E-03,2.23E-03,2.56E-03,2.80E-03, 4.32E-03,4.89E-03,
+                                         7.11E-03,1.48E-02, 2.31E-02,2.83E-02,3.42E-02,3.96E-02,3.76E-02,2.71E-02]) 
+        CLs                  = np.array([-0.25836715,-0.05233014,0.08334449,0.21608904,0.35012533, 0.42120447,0.48458659,
+                                         0.55214519,0.62108179,0.69313687,0.75284432,0.81921256,0.95662739,1.07911642,1.19681914,1.33118394,1.47947542      ])    
         CD_wave_transonic    = np.interp(Cl, CLs, CD_wave_transonic) 
     else: 
         chords   = settings.vortex_distribution.chord_lengths
@@ -469,4 +464,22 @@ def supersonic_volume_wave_drag(conditions, settings, vehicle):
     CD_wave_vol_frontal = 24 *volume /(L **3)
     
     CD_wave_vol =  CD_wave_vol_frontal * ( Amax / S_ref) *  np.ones_like(conditions.freestream.mach_number) 
-    return CD_wave_vol 
+    return CD_wave_vol
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

@@ -5,8 +5,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from  RCAIDE.Framework.Core import  Units
 from RCAIDE.Library.Methods.Utilities         import Cubic_Spline_Blender
+import  numpy as  np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Form Drag 
@@ -114,31 +114,52 @@ def form_drag(state,settings,geometry):
     """
 
     conditions       = state.conditions   
-    Mach             = conditions.freestream.mach_number
-    low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number 
+    Mach             = conditions.freestream.mach_number 
+    alpha            = conditions.aerodynamics.angles.alpha 
     high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number 
-
-    sub_spline = Cubic_Spline_Blender(low_mach_cutoff, high_mach_cutoff)  
-    sub_h00    = lambda M:sub_spline.compute(M)
+    low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number 
+    CD_form          = 0
     
-    alpha     = conditions.aerodynamics.angles.alpha 
-    CD_form   = 0
+    # supersonic smoothing 
+    sup_spline = Cubic_Spline_Blender(low_mach_cutoff,high_mach_cutoff) 
+    sup_h00    = lambda M:sup_spline.compute(M)
+    
     for wing in geometry.wings:
-        M_correction = 2.9788*(Mach **3) - 6.4381*(Mach **2) + 4.4967*(Mach)  
+        AR            = wing.aspect_ratio
+        AR_correction = -0.0016*(AR **3) + 0.0503*(AR **2) - 0.5201*(AR) + 2.7781
         if type(wing) !=  RCAIDE.Library.Components.Wings.Vertical_Tail():
             CD_form_wing =  0 
             if len(wing.segments) > 0:
                 CD_sep    = 0
                 for i in  range((len(wing.segments) -1)):
                     segs          = list(wing.segments.keys())
-                    segment       = wing.segments[segs[i]]
-                    CD_sep        = (111.41* (alpha**4) - 16.569* (alpha**3) + 1.8* (alpha**2) - 0.0242*alpha + 0.0015)*M_correction
+                    segment       = wing.segments[segs[i]] 
+        
+                    CD_sep_AoA =  np.array([-0.04956595,-0.02293939,-0.00545218,0.01166707,0.02896147,0.03815988,0.04636345,
+                                            0.0552182,0.06408814,0.07361293,0.08121052,0.08995183,
+                                            0.10839088,0.12462768,0.14013284,0.1587665,0.1789329]) 
+                    
+                    CD_sep_data =  np.array([0.009811806,0.003233177,0.001688234,0.001438424,0.0019848,
+                                             0.00238753,0.002799653,0.003118518,0.003888178,0.005521163,0.00737758,0.00912212,
+                                             0.014302608,0.021245786,0.030822828,0.04750903,0.074083351])
+                                   
+                    CD_sep    = np.interp(alpha, CD_sep_AoA, CD_sep_data) *AR_correction                       
                     CD_form_wing  += CD_sep   * segment.areas.reference  
-            else:
-                CD_sep  = (111.41* (alpha**4) - 16.569* (alpha**3) + 1.8* (alpha**2) - 0.0242*alpha + 0.0015)*M_correction
+            else:  
+                CD_sep_AoA =  np.array([-0.04956595,-0.02293939,-0.00545218,0.01166707,0.02896147,0.03815988,0.04636345,
+                                        0.0552182,0.06408814,0.07361293,0.08121052,0.08995183,
+                                        0.10839088,0.12462768,0.14013284,0.1587665,0.1789329]) 
+                
+                CD_sep_data =  np.array([0.009811806,0.003233177,0.001688234,0.001438424,0.0019848,
+                                         0.00238753,0.002799653,0.003118518,0.003888178,0.005521163,0.00737758,0.00912212,
+                                         0.014302608,0.021245786,0.030822828,0.04750903,0.074083351])
+                                   
+                CD_sep    = np.interp(alpha, CD_sep_AoA, CD_sep_data)  *AR_correction                 
+                
+                            
                 CD_form_wing = CD_sep * wing.areas.reference  
         
-            CD_form += CD_form_wing /geometry.reference_area 
+            CD_form += CD_form_wing *sup_h00(Mach) /geometry.reference_area 
         
-    state.conditions.aerodynamics.coefficients.drag.form.total = CD_form * sub_h00(Mach)
+    state.conditions.aerodynamics.coefficients.drag.form.total = CD_form  
     return
