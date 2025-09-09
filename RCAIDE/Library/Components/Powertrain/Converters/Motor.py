@@ -15,7 +15,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions 
 # ----------------------------------------------------------------------------------------------------------------------
 #  DC_Motor  
 # ----------------------------------------------------------------------------------------------------------------------           
-class DC_Motor(Converter):
+class Motor(Converter):
     """
     A direct current electric motor component model for electric propulsion systems.
 

@@ -52,3 +52,22 @@ class Auxiliary_Power_Unit(Turboelectric_Generator):
         self.gearbox                   = Data()
         self.gearbox.gear_ratio        = None  
         self.inverse_calculation       = False
+
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+        """
+        Appends operating conditions to the segment.
+        """  
+        Turboelectric_Generator.append_turboelectric_generator_conditions(self,segment,energy_conditions) 
+        return
+ 
+    def compute_performance(self,state,fuel_line = None,bus = None):
+        """
+        Computes Turboelectric_Generator performance including power.
+        """
+        P_mech,P_elec,stored_results_flag,stored_propulsor_tag =  Turboelectric_Generator.compute_turboelectric_generator_performance(self,state,fuel_line, bus)
+        return P_mech,P_elec,stored_results_flag,stored_propulsor_tag
+    
+    def reuse_stored_data(turboelectric_generator,state,stored_propulsor_tag):
+        power  = Turboelectric_Generator.reuse_stored_turboelectric_generator_data(turboelectric_generator,state,stored_propulsor_tag)
+        return power 
+
