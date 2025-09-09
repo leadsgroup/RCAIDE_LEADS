@@ -96,7 +96,6 @@ class HydraulicSystem(Systems):
         super().__defaults__()
         self.power_draw = 0.0  # Default power draw for hydraulic system
 
-
 class PneumaticSystem(Systems):
     """
     Subclass representing a pneumatic system.

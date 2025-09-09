@@ -1,5 +1,8 @@
 # RCAIDE/Library/Components/Powertrain/Modulators/__init__.py
 # 
+# 
+# Created:  Feb 2024, M. Clarke
+# Modified: Sep 2025, M. Guidotti
 
 """
 Energy modulation components for controlling power flow in aircraft systems

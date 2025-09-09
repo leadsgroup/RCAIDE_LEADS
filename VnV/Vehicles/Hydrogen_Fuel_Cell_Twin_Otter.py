@@ -358,7 +358,7 @@ def vehicle_setup(fuel_cell_model):
     bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()   
       
     if fuel_cell_model == 'PEM': 
-        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
+        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Fuel_Cell() 
         fuel_cell_stack.electrical_configuration.series             = 940
         fuel_cell_stack.electrical_configuration.parallel           = 7
         fuel_cell_stack.geometrtic_configuration.normal_count       = 940
