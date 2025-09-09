@@ -1,7 +1,8 @@
 # RCAIDE/Library/Components/Powertrain/Distributors/Electrical_Bus.py 
 # 
 # Created:  Jul 2023, M. Clarke 
-# Modofied: Jan 2025, M. Clarke 
+# Modified: Jan 2025, M. Clarke 
+#           Sep 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -9,15 +10,15 @@
 
 # RCAIDE imports  
 import RCAIDE 
-from RCAIDE.Library.Components                                 import Component
-from RCAIDE.Library.Components.Component                       import Container
+from RCAIDE.Library.Components                                     import Component
+from RCAIDE.Library.Components.Component                           import Container
 from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
-from RCAIDE.Library.Attributes.Materials import Copper, Polyimide
+from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electrical_Line
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Electrical_Line(Component):
+class Electrical_Bus(Component):
     """
     Class for managing power distribution between aircraft electrical components
     
@@ -89,6 +90,7 @@ class Electrical_Line(Component):
             None
         """                
         self.tag                                    = 'electrical_line' 
+        self.bus_type                               = 'DC'
         self.battery_modules                        = Container()
         self.fuel_cell_stacks                       = Container()
         self.fuel_tanks                             = Container()
@@ -99,11 +101,6 @@ class Electrical_Line(Component):
         self.identical_battery_modules              = True      
         self.identical_fuel_cell_stacks             = True  
         self.active                                 = True
-        self.length                                 = 0.0
-        self.diameter_conductor                     = 0.0
-        self.diameter_insulator                     = 0.0
-        self.conductor_material                     = Copper()
-        self.insulator_material                     = Polyimide()
         self.efficiency                             = 1.0
         self.voltage                                = 0.0 
         self.power_split_ratio                      = 1.0
@@ -163,6 +160,30 @@ class Electrical_Line(Component):
         """
         compute_bus_conditions(self,state,t_idx, delta_t)
         return    
+
+class Electrical_Line(Electrical_Bus):
+    """
+    Subclass of Electrical_Bus for managing specific electrical line configurations.
+    """
+    def __defaults__(self):
+        """Set default values specific to Electrical_Line."""
+        super().__defaults__()  # Call parent defaults
+        self.tag = 'electrical_line'
+        self.current_type = 'DC'  # Default current type
+
+        # Conditional defaults based on current type
+        if self.current_type == 'DC':
+            self.voltage = 400.0  # Default voltage for DC
+            self.efficiency = 0.95  # Default efficiency for DC
+        elif self.current_type == 'AC':
+            self.voltage = 230.0  # Default voltage for AC
+            self.efficiency = 0.90  # Default efficiency for AC
+
+        self.length = 10.0  # Default length for electrical line
+        self.diameter_conductor = 0.005  # Default conductor diameter
+        self.diameter_insulator = 0.01  # Default insulator diameter
+        self.conductor_material = Copper()  # Default conductor material
+        self.insulator_material = Polyimide()  # Default insulator material
     
 def cable_mass(V, E0, r_cond, rho, rho_theta_insul,L, rho_cond, rho_insul, theta_a, I, T_4):
 

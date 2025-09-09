@@ -56,7 +56,7 @@ def compute_generator_performance(generator,conditions):
     # unpack generator conditions 
     generator_conditions = conditions.energy.converters[generator.tag]    
  
-    if type(generator) == RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:   
+    if type(generator) == RCAIDE.Library.Components.Powertrain.Converters.Generator:   
         if generator.inverse_calculation == False:
             power          = generator_conditions.inputs.power 
             Res            = generator.resistance  

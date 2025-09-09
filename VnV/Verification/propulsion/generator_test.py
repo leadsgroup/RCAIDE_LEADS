@@ -109,7 +109,7 @@ def inverse_mode_model():
 def design_test_generator(generator_type): 
     
     if generator_type == 'DC_Generator':
-        generator = RCAIDE.Library.Components.Powertrain.Converters.DC_Generator()
+        generator = RCAIDE.Library.Components.Powertrain.Converters.Generator()
     
         generator.mass_properties.mass    = 9. * Units.kg 
         generator.efficiency              = 0.98    

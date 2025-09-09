@@ -10,7 +10,7 @@
 from RCAIDE.Framework.Core                  import Data 
 from .Converter                             import Converter
 from RCAIDE.Library.Components.Powertrain.Converters.Turboshaft    import Turboshaft 
-from RCAIDE.Library.Components.Powertrain.Converters.DC_Generator  import DC_Generator 
+from RCAIDE.Library.Components.Powertrain.Converters.Generator  import DC_Generator 
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.append_turboelectric_generator_conditions      import append_turboelectric_generator_conditions  
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.compute_turboelectric_generator_performance    import compute_turboelectric_generator_performance, reuse_stored_turboelectric_generator_data
  

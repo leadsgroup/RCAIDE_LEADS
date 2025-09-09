@@ -216,7 +216,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     center_propulsor.ducted_fan                  = ducted_fan    
               
     # DC_Motor       
-    motor                                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    motor                                         = RCAIDE.Library.Components.Powertrain.Converters.Motor()
     motor.efficiency                              = 0.98
     motor.origin                                  = [[2.,  0, 0.95]]
     motor.nominal_voltage                         = bus.voltage 

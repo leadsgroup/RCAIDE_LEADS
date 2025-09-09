@@ -430,7 +430,7 @@ def vehicle_setup(fuel_cell_model):
     starboard_propulsor.rotor                        = propeller   
               
     # DC_Motor       
-    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.Motor()
     motor.efficiency                                 = 0.98
     motor.origin                                     = [[4.0,2.8129,1.22 ]]   
     motor.nominal_voltage                            = bus.voltage 

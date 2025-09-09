@@ -1,6 +1,9 @@
 # RCAIDE/Library/Components/Propulsors/__init__.py
 # 
 # 
+# Created:  Feb 2024, M. Clarke
+# Modified: Sep 2025, M. Guidotti
+
 """
 Collection of propulsion system components for aircraft modeling and simulation.
 
@@ -30,11 +33,11 @@ RCAIDE.Library.Components.Energy
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .Propulsor                                  import Propulsor
-from .Electric_Rotor                             import Electric_Rotor
+from .Constant_Speed_Internal_Combustion_Engine  import Constant_Speed_Internal_Combustion_Engine
 from .Electric_Ducted_Fan                        import Electric_Ducted_Fan
+from .Electric_Rotor                             import Electric_Rotor
 from .Internal_Combustion_Engine                 import Internal_Combustion_Engine
+from .Propulsor                                  import Propulsor
 from .Turbofan                                   import Turbofan
 from .Turbojet                                   import Turbojet
 from .Turboprop                                  import Turboprop
-from .Constant_Speed_Internal_Combustion_Engine  import Constant_Speed_Internal_Combustion_Engine

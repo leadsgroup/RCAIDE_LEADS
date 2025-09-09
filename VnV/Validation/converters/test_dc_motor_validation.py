@@ -29,7 +29,7 @@ def main():
     motor_rpm_vector    = []                     # [rpm]
     motor_torque_vector = []                     # [kgfcm]
 
-    motor = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    motor = RCAIDE.Library.Components.Powertrain.Converters.Motor()
     
     # Input data from Datasheet 
     motor.nominal_voltage               = 12     # [V]            nominal voltage

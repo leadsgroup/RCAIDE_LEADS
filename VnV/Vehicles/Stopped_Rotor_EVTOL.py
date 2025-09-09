@@ -470,7 +470,7 @@ def vehicle_setup(new_regression=True) :
     cruise_propulsor_1.rotor                               = propeller    
                 
     # Propeller Motor              
-    propeller_motor                                        = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    propeller_motor                                        = RCAIDE.Library.Components.Powertrain.Converters.Motor()
     propeller_motor.efficiency                             = 0.95
     propeller_motor.tag                                    = 'propeller_motor_1'  
     propeller_motor.origin                                 = [[6.583, 1.300,  1.092 ]] 
@@ -675,7 +675,7 @@ def vehicle_setup(new_regression=True) :
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Motor  
     #------------------------------------------------------------------------------------------------------------------------------------    
-    lift_rotor_motor                                       = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    lift_rotor_motor                                       = RCAIDE.Library.Components.Powertrain.Converters.Motor()
     lift_rotor_motor.efficiency                            = 0.9
     lift_rotor_motor.nominal_voltage                       = lift_bus.voltage*3/4  
     lift_rotor_motor.propeller_radius                      = lift_rotor.tip_radius 

@@ -537,7 +537,7 @@ def vehicle_setup():
     compressor                                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     compressor.tag                                   = 'lpc'                   
     compressor.pressure_ratio                        = 10 
-    compressor.motor                                 = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    compressor.motor                                 = RCAIDE.Library.Components.Powertrain.Converters.Motor()
     compressor.motor.tag                             =  "starboard_propulsor_compressor_motor"
     compressor.motor.efficiency                      = 0.98 
     compressor.motor.nominal_voltage                 = bus.voltage *  0.7

@@ -1,7 +1,7 @@
 # RCAIDE/Library/Components/Propulsors/Ram_Air_Turbine.py
 # 
 #  
-# Created:  Jan 2025, M. Clarke 
+# Created:  Sep. 2025, M. Guidotti 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT

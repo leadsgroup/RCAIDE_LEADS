@@ -1,6 +1,7 @@
 # RCAIDE/Library/Components/Powertrain/Systems/Systems.py
 # 
 # Created:  Mar 2024, M. Clarke 
+# Modified: Sep 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -80,4 +81,31 @@ class Systems(Component):
             Electrical bus supplying power to the avionics
         """
         append_systems_conditions(self, segment, bus)
-        return        
+        return
+
+class HydraulicSystem(Systems):
+    """
+    Subclass representing a hydraulic system.
+
+    Attributes
+    ----------
+    power_draw : float
+        Power consumption of the hydraulic system, defaults to 5.0
+    """
+    def __defaults__(self):
+        super().__defaults__()
+        self.power_draw = 0.0  # Default power draw for hydraulic system
+
+
+class PneumaticSystem(Systems):
+    """
+    Subclass representing a pneumatic system.
+
+    Attributes
+    ----------
+    power_draw : float
+        Power consumption of the pneumatic system, defaults to 3.0
+    """
+    def __defaults__(self):
+        super().__defaults__()
+        self.power_draw = 0.0  # Default power draw for pneumatic system

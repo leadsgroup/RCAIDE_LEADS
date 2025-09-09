@@ -1,6 +1,7 @@
 # RCAIDE/Library/Components/Powertrain/Distributors/Fuel_Line.py 
 # 
 # Created:  Jul 2023, M. Clarke 
+# Modified: Sep. 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -65,8 +66,10 @@ class Fuel_Line(Component):
         self.converters                    = Container()       
         self.active                        = True 
         self.efficiency                    = 1.0
+        self.inner_diameter                = 0.03
+        self.outer_diameter                = 0.05
+        self.length                        = 1 
         
-
     def append_operating_conditions(self, segment):
         """
         Append operating conditions for a flight segment

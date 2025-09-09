@@ -489,7 +489,7 @@ def vehicle_setup(rotor_type):
         starboard_propulsor.rotor                        = propeller
 
         # DC_Motor       
-        motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+        motor                                            = RCAIDE.Library.Components.Powertrain.Converters.Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
         motor.nominal_voltage                            = bus.voltage * 0.5  
@@ -512,7 +512,7 @@ def vehicle_setup(rotor_type):
         starboard_propulsor.rotor                        = propeller
     
         # DC_Motor       
-        motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+        motor                                            = RCAIDE.Library.Components.Powertrain.Converters.Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
         motor.nominal_voltage                            = bus.voltage 

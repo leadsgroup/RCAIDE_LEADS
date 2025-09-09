@@ -1,5 +1,8 @@
 # RCAIDE/Library/Components/Powertrain/Energy/Sources/__init__.py
 # 
+# 
+# Created:  Feb 2024, M. Clarke
+# Modified: Sep 2025, M. Guidotti
 
 """
 Energy sources module providing components for aircraft power generation and storage
@@ -19,5 +22,6 @@ RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+
 from . import Battery_Modules
 from . import Fuel_Tanks

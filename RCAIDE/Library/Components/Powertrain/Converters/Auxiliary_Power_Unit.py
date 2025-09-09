@@ -1,7 +1,7 @@
-# RCAIDE/Library/Components/Propulsors/Auxiliary_Power_Unit.py
+# RCAIDE/Library/Components/Powertrain/Converters/Auxiliary_Power_Unit.py
 # 
 #  
-# Created:  Jan 2025, M. Clarke 
+# Created:  Sep. 2025, M. Guidotti 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -39,8 +39,8 @@ class Auxiliary_Power_Unit(Turboelectric_Generator):
     -----
     The Auxiliary_Power_Unit class inherits from the Turboshaft class and implements
     methods for computing Auxiliary_Power_Unit engine performance. Unlike other gas turbine
-    engines that produce thrust, a Auxiliary_Power_Unit engine's primary output is shaft
-    power, typically used to drive a helicopter rotor or other mechanical systems. 
+    engines that produce thrust, a Auxiliary_Power_Unit engine's primary output is
+    power. 
 
     See Also
     --------

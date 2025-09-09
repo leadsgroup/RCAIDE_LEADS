@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/PMSM_Generator.py
+# RCAIDE/Library/Components/Propulsors/Converters/DC_Generator.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke 
@@ -8,13 +8,13 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from .Converter  import Converter
-from RCAIDE.Framework.Core                  import Data 
+from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.append_generator_conditions import  append_generator_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Generator  
 # ----------------------------------------------------------------------------------------------------------------------           
-class PMSM_Generator(Converter):
+class Generator(Converter):
     """
     A electric generator component model for electric propulsion systems.
 
@@ -32,14 +32,11 @@ class PMSM_Generator(Converter):
     speed_constant : float
         generator speed constant (Kv). Default is 0.0.
         
-    rotor_radius : float
-        Radius of the generator's rotor [m]. Default is 0.0.
-        
     efficiency : float
         Overall generator efficiency. Default is 1.0.
         
     gearbox.gear_ratio : float
-        Ratio of output shaft speed to generator speed. Default is 1.0.
+        Ratio of output shaft speed to generator speed. Default is 1.0. 
         
     power_split_ratio : float
         Ratio of power distribution when generator drives multiple loads. Default is 0.0.
@@ -94,25 +91,28 @@ class PMSM_Generator(Converter):
         Properties Used:
         None
         """           
-        self.tag                 = 'PMSM_generator'
-        self.active              = True 
-        self.resistance          = 0.0
-        self.no_load_current     = 0.0
-        self.speed_constant      = 0.0 
-        self.efficiency          = 1.0
-        self.gearbox             = Data()
-        self.gearbox.gear_ratio  = 1.0 
-        self.design_torque       = 0.0 
-        self.inner_diameter      = 0.0
-        self.length_of_path      = 0.0
-        self.stack_length        = 0.0
-        self.winding_factor      = 0.0
-        self.mu_0                = 0.0
-        self.mu_r                = 0.0
-        self.inverse_calculation = False
-        self.interpolated_func   = None
+        self.tag                      = 'generator' 
+        self.generator_type           = 'DC'
+        self.active                   = True 
+        self.inverse_calculation      = False
+        self.interpolated_func        = None  
+        self.resistance               = 0.0
+        self.no_load_current          = 0.0
+        self.speed_constant           = 0.0 
+        self.efficiency               = 1.0
+        self.gearbox                  = Data()
+        self.gearbox.gear_ratio       = 1.0 
+        self.design_torque            = 0.0 
+        self.design_current           = 0.0 
+        self.design_angular_velocity  = 0.0 
+        self.inner_diameter           = 0.0
+        self.length_of_path           = 0.0
+        self.stack_length             = 0.0
+        self.winding_factor           = 0.0
+        self.mu_0                     = 0.0
+        self.mu_r                     = 0.0
         
-    def append_operating_conditions(self,segment,energy_conditions, noise_conditions=None): 
-        append_generator_conditions(self,segment,energy_conditions)
+    def append_operating_conditions(self,segment,conditions, noise_conditions=None): 
+        append_generator_conditions(self,segment,conditions)
         return
     

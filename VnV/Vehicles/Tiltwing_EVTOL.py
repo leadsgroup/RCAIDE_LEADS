@@ -290,7 +290,7 @@ def vehicle_setup(new_regression=True):
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Motor  
     #------------------------------------------------------------------------------------------------------------------------------------    
-    prop_rotor_motor                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    prop_rotor_motor                         = RCAIDE.Library.Components.Powertrain.Converters.Motor()
     prop_rotor_motor.efficiency              = 0.95
     prop_rotor_motor.nominal_voltage         = bus.voltage *0.75
     prop_rotor_motor.tag                     = 'motor_1'

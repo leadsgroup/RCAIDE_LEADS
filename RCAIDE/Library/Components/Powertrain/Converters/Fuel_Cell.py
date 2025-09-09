@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Cell/Proton_Exchange_Membrane_Fuel_Cell.py
+# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Cell/Fuel_Cell.py
 # 
 # 
 # Created:  Dec 2024, M. Guidotti and M. Clarke 
@@ -13,9 +13,9 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Mem
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.append_fuel_cell_conditions   import *
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Proton_Exchange_Membrane_Fuel_Cell
+#  Fuel_Cell
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Proton_Exchange_Membrane_Fuel_Cell(Generic_Fuel_Cell_Stack):
+class Fuel_Cell(Generic_Fuel_Cell_Stack):
     """
     Proton Exchange Membrane Fuel Cell class 
     """ 
@@ -112,7 +112,8 @@ class Proton_Exchange_Membrane_Fuel_Cell(Generic_Fuel_Cell_Stack):
         
         """ 
 
-        self.tag                                                               = 'pem_fuel_cell'        
+        self.tag                                                               = 'fuel_cell'    
+        self.fuel_cell_type                                                    = 'PEM'    
         self.fuel_cell.Universal_gas_constant                                  = 8.31   # Universal gas constant (J / (mol*K))
         self.fuel_cell.Faraday_constant                                        = 96485  # Faraday constant (C / mol)
         self.fuel_cell.E_C                                                     = 66000  # Activation energy of ORR (J)

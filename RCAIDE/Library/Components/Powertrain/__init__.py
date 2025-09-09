@@ -1,5 +1,8 @@
 # RCAIDE/Library/Components/Powertrain/__init__.py
 # 
+#
+# Created:  Feb 2024, M. Clarke
+# Modified: Sep 2025, M. Guidotti
 
 """
 Powertrain module providing components and methods for modeling aircraft propulsion
