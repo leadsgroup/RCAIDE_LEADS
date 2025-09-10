@@ -14,6 +14,7 @@ from RCAIDE.Library.Components                                     import Compon
 from RCAIDE.Library.Components.Component                           import Container
 from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
 from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide
+from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Line import Electrical_Line
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electrical_Line
@@ -94,6 +95,7 @@ class Electrical_Bus(Component):
         self.battery_modules                        = Container()
         self.fuel_cell_stacks                       = Container()
         self.fuel_tanks                             = Container()
+        self.electrical_lines                       = Container()
         self.assigned_propulsors                    = []
         self.assigned_converters                    = [] 
         self.avionics                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
@@ -108,6 +110,36 @@ class Electrical_Bus(Component):
         self.charging_c_rate                        = 1.0 
         self.battery_module_electric_configuration  = "Series"
         self.fuel_cell_stack_electric_configuration = "Series"
+
+    def __init__ (self, bus=None):
+
+        # loop over batteries and create lines 
+        for battery_module in bus.battery_modules:
+            electrical_line       = Electrical_Line()
+            electrical_line.to    = battery_module.tag
+            electrical_line.from_ = bus.tag
+            self.electrical_lines.append(electrical_line) 
+ 
+        # loop over fuel_cell and create lines
+        for fuel_cell_stack in bus.fuel_cell_stacks:
+            electrical_line       = Electrical_Line()
+            electrical_line.to    = fuel_cell_stack.tag
+            electrical_line.from_ = bus.tag
+            self.electrical_lines.append(electrical_line) 
+
+        # loop over propulsors and create lines 
+        for propulsor_tag in bus.assigned_propulsors:
+            electrical_line       = Electrical_Line()
+            electrical_line.to    = propulsor_tag
+            electrical_line.from_ = bus.tag
+            self.electrical_lines.append(electrical_line) 
+
+        # loop over converters  and create lines
+        for converter_tag in bus.assigned_converters:
+            electrical_line       = Electrical_Line()
+            electrical_line.to    = converter_tag
+            electrical_line.from_ = bus.tag
+            self.electrical_lines.append(electrical_line) 
         
     def append_operating_conditions(self, segment):
         """
@@ -161,46 +193,4 @@ class Electrical_Bus(Component):
         compute_bus_conditions(self,state,t_idx, delta_t)
         return    
 
-class Electrical_Line(Electrical_Bus):
-    """
-    Subclass of Electrical_Bus for managing specific electrical line configurations.
-    """
-    def __defaults__(self):
-        """Set default values specific to Electrical_Line."""
-        super().__defaults__()  # Call parent defaults
-        self.tag = 'electrical_line'
-        self.current_type = 'DC'  # Default current type
 
-        # Conditional defaults based on current type
-        if self.current_type == 'DC':
-            self.voltage = 400.0  # Default voltage for DC
-            self.efficiency = 0.95  # Default efficiency for DC
-        elif self.current_type == 'AC':
-            self.voltage = 230.0  # Default voltage for AC
-            self.efficiency = 0.90  # Default efficiency for AC
-
-        self.length = 10.0  # Default length for electrical line
-        self.diameter_conductor = 0.005  # Default conductor diameter
-        self.diameter_insulator = 0.01  # Default insulator diameter
-        self.conductor_material = Copper()  # Default conductor material
-        self.insulator_material = Polyimide()  # Default insulator material
-    
-def cable_mass(V, E0, r_cond, rho, rho_theta_insul,L, rho_cond, rho_insul, theta_a, I, T_4):
-
-    # Equation (18): Cable Insulation Radius based on voltage and electric field constraints
-    # E0 is the electric field
-    r_insul = r_cond * np.exp(V / (E0 * r_cond))  # Equation (18)
-
-    # Equation (20): Conductor Resistance (thermal constraint based on material properties)
-    R_prime = rho / (np.pi * r_cond ** 2)  # Equation (20)
-
-    # Equation (21): Thermal Resistance of the insulation
-    T_1 = rho_theta_insul / (2 * np.pi) * np.log(r_insul / r_cond)  # Equation (21)
-
-    # Equation (22): Total Cable Mass calculation based on conductor and insulation volume and density
-    M_cable = np.pi * L * (r_cond ** 2 * rho_cond + (r_insul ** 2 - r_cond ** 2) * rho_insul)  # Equation (22)
-
-    # Equation (19): Maximum Temperature (conductor temperature based on current, resistance, and thermal resistances)
-    theta_max = theta_a + I**2 * R_prime * (T_1 + T_4)  # Equation (19)
-    
-    return M_cable, theta_max

@@ -20,4 +20,5 @@ class Pump(Data):
         """
         self.tag        = 'Pump'
         self.efficiency = 1.0
+        self.delta_p    = 0.0
         return
