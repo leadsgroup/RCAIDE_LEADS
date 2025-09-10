@@ -1,6 +1,7 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Motor/append_motor_conditions.py
 # 
 # Created:  Jan 2025, M. Clarke, M. Guidotti
+# Modified: Sep 2025, M. Guidotti
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 

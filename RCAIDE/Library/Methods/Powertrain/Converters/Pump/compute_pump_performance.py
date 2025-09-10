@@ -3,17 +3,11 @@
 # 
 # Created:  Sep. 2025, M. Guidotti
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports
-import  RCAIDE
-from RCAIDE.Framework.Core import  Units
-
 def compute_pump_performance(pump, line, conditions):
 
-    p_in  = line.pressure
-    p_out = line.pressure + pump.delta_p
-    power = pump.mass_flow_rate * pump.delta_p / (line.density * pump.efficiency)
+    pump_conditions = conditions.converters[pump.tag]
+    pump_conditions.inputs.p_in = line.pressure
+    pump_conditions.outputs.p_out = line.pressure + pump.delta_p
+    pump_conditions.outputs.power = pump.mass_flow_rate * pump.delta_p / (line.density * pump.efficiency)
 
     return

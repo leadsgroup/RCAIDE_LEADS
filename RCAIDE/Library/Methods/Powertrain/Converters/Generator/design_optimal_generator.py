@@ -1,6 +1,7 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/DC_generator/design_optimal_generator.py
 # 
 # Created:  Jul 2024, RCAIDE Team 
+# Modified: Sep 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -92,7 +93,7 @@ def design_optimal_generator(generator):
     RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance
     """
     
-    if type(generator) != RCAIDE.Library.Components.Powertrain.Converters.Generator:
+    if generator.generator_type != 'DC':
         raise Exception('function only supports low-fidelity (DC) generator')
     
     # design properties of the generator 

@@ -17,9 +17,8 @@ def append_pump_conditions(pump,segment,energy_conditions):
     energy_conditions.converters[pump.tag]                         = Conditions()
     energy_conditions.converters[pump.tag].inputs                  = Conditions()
     energy_conditions.converters[pump.tag].outputs                 = Conditions() 
-    energy_conditions.converters[pump.tag].inputs.efficiency       = 0. * ones_row(1)
-    energy_conditions.converters[pump.tag].inputs.delta_p          = 0. * ones_row(1) 
+    energy_conditions.converters[pump.tag].inputs.p_in             = 0. * ones_row(1) 
+    energy_conditions.converters[pump.tag].outputs.p_out           = 0. * ones_row(1)
     energy_conditions.converters[pump.tag].outputs.power           = 0. * ones_row(1)
-    energy_conditions.converters[pump.tag].outputs.mass_flow_rate  = 0. * ones_row(1)
 
     return 

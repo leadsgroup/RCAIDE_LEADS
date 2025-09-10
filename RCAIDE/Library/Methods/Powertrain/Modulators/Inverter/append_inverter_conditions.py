@@ -1,15 +1,16 @@
-# RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/append_motor_conditions.py
+# RCAIDE/Library/Methods/Powertrain/Modulators/Inverter/append_inverter_conditions.py
 # 
-# Created:  Jun 2024, M. Clarke  
+#
+# Created:  Sep 2025, M. Guidotti
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  append_esc_conditions
+#  append_inverter_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_esc_conditions(esc,segment,energy_conditions): 
+def append_inverter_conditions(esc,segment,energy_conditions): 
     """
-
+   
     """
     
     ones_row    = segment.state.ones_row 

@@ -1,0 +1,71 @@
+# RCAIDE/Methods/Powertrain/Modulators/Inverter/compute_inverter_performance.py
+# 
+# 
+# Created:  Sep 2025, M. Guidotti
+
+import numpy as np
+ 
+# ----------------------------------------------------------------------------------------------------------------------
+# compute_inverter_performance
+# ---------------------------------------------------------------------------------------------------------------------- 
+def compute_inverter_performance(Inverter):
+    # ---- Inputs ----
+    Vdc        = float(Inverter.dc_voltage)        # [V]
+    eta_inv    = float(Inverter.efficiency)        # [-] 0<eta<=1
+    f_out      = float(Inverter.frequency)         # [Hz]
+    Vph_sp     = float(Inverter.target_vph_rms)    # [V_rms] per-phase setpoint
+    Zp_in      = Inverter.z_phase
+
+    # Normalize Z_phase to complex
+    Z_phase = Zp_in if isinstance(Zp_in, complex) else complex(float(Zp_in), 0.0)
+
+    # ---- Modulation & synthesized voltages (fundamental only) ----
+    m_target = (2 * np.sqrt(2) * Vph_sp) / Vdc
+    m = np.clip(m_target, 0.0, 1.0)
+    modulation_limited = (m_target > 1.0)
+
+    fs = 200_000
+    t  = np.arange(0, 3 / f_out, 1 / fs)
+    w  = 2 * np.pi * f_out
+
+    Va = (m * Vdc / 2) * np.sin(w * t)
+    Vb = (m * Vdc / 2) * np.sin(w * t - 2 * np.pi / 3)
+    Vc = (m * Vdc / 2) * np.sin(w * t + 2 * np.pi / 3)
+
+    Vph_rms = np.sqrt(np.mean(Va**2))
+    Vll_rms = np.sqrt(np.mean((Va - Vb)**2))  # ≈ √3 * Vph_rms
+
+    # ---- Load currents & power ----
+    Iph_rms = Vph_rms / abs(Z_phase)             # [A_rms] magnitude
+    Y = 1 / Z_phase
+    G, B = np.real(Y), np.imag(Y)                # conductance & susceptance
+
+    P_phase = Vph_rms**2 * G                     # [W] per-phase real power
+    Q_phase = -Vph_rms**2 * B                    # [var] sign: +inductive (lag), -capacitive (lead)
+
+    P_out = 3 * P_phase                          # [W]
+    Q_out = 3 * Q_phase                          # [var]
+    S_phase = Vph_rms * Iph_rms                  # [VA]
+    S_out   = 3 * S_phase                        # [VA]
+    pf = 0.0 if S_phase == 0 else P_phase / S_phase
+
+    # ---- DC side ----
+    P_in = P_out / eta_inv                       # [W]
+    Idc  = P_in / Vdc                            # [A]
+
+    # ---- Output ----
+    Inverter.Vph_rms               = Vph_rms
+    Inverter.Vll_rms               = Vll_rms
+    Inverter.Iph_rms               = Iph_rms
+    Inverter.P_out                 = P_out
+    Inverter.Q_out                 = Q_out
+    Inverter.S_out                 = S_out
+    Inverter.pf                    = pf
+    Inverter.P_in                  = P_in
+    Inverter.Idc                   = Idc
+    Inverter.m                     = m
+    Inverter.m_target              = m_target
+    Inverter.modulation_limited    = modulation_limited
+    Inverter.f_out                 = f_out
+
+    return

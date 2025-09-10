@@ -8,7 +8,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 ## RCAIDE imports
 from RCAIDE.Framework.Core                  import Data 
-from .Components               import Component
+from .Components                            import Component
  
 # ----------------------------------------------------------------------
 #  Ram_Air_Turbine

@@ -1,15 +1,16 @@
-# RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/append_motor_conditions.py
+# RCAIDE/Library/Methods/Powertrain/Modulators/DC_to_DC_Converter/append_dcdc_conditions.py
 # 
-# Created:  Jun 2024, M. Clarke  
+#
+# Created:  Sep 2025, M. Guidotti
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  append_esc_conditions
+#  append_dcdc_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_esc_conditions(esc,segment,energy_conditions): 
+def append_dcdc_conditions(esc,segment,energy_conditions): 
     """
-
+   
     """
     
     ones_row    = segment.state.ones_row 

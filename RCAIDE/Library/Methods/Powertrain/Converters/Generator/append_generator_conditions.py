@@ -1,6 +1,8 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Generator/append_generator_conditions.py
 # 
 # Created:  Feb 2025, M. Guidotti 
+# Modified: Sep 2025, M. Guidotti
+
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
