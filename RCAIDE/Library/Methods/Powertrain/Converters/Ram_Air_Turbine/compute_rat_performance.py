@@ -17,15 +17,15 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turboelectric_generator_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_rat_performance(Ram_Air_Turbine, state, bus=None):
+def compute_rat_performance(ram_air_turbine, state, bus=None):
     """
 
     """
 
     conditions                         = state.conditions
-    generator                          = Ram_Air_Turbine.generator
-    rotor                              = Ram_Air_Turbine.rotor 
-    rat_conditions                     = conditions.energy.converters[Ram_Air_Turbine.tag] 
+    generator                          = ram_air_turbine.generator
+    rotor                              = ram_air_turbine.rotor 
+    rat_conditions                     = conditions.energy.converters[ram_air_turbine.tag] 
     generator_conditions               = conditions.energy.converters[generator.tag]
     rotor_conditions                   = conditions.energy.converters[rotor.tag]
         
@@ -46,7 +46,7 @@ def compute_rat_performance(Ram_Air_Turbine, state, bus=None):
     stored_results_flag    = True
     stored_converter_tag   = rotor.tag
     
-    return P_mech,P_elec,stored_results_flag,stored_converter_tag
+    return P_elec,stored_results_flag,stored_converter_tag
 
 def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,fuel_line,bus,stored_converter_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turboelectric_generator for identical propulsors
