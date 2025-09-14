@@ -8,7 +8,7 @@
 
 # RCAIDE imports  
 from RCAIDE.Library.Components import Component 
-from RCAIDE.Library.Methods.Powertrain.Modulators.Transformer_Rectifier_Unit.append_transformer_rectifier_unit_conditions   import append_transformer_rectifier_unit_conditions 
+from RCAIDE.Library.Methods.Powertrain.Modulators.Transformer_Rectifier_Unit.append_tru_conditions   import append_tru_conditions 
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Transformer_Rectifier_Unit Class
@@ -65,5 +65,5 @@ class Transformer_Rectifier_Unit(Component):
         Updates the segment conditions with Transformer_Rectifier_Unit-specific parameters including
         power throughput and losses.
         """ 
-        append_transformer_rectifier_unit_conditions(self,segment,energy_conditions)
+        append_tru_conditions(self,segment,energy_conditions)
         return 

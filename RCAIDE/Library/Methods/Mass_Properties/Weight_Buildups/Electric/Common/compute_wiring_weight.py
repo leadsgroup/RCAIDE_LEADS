@@ -71,6 +71,15 @@ def compute_wiring_weight(config):
             electrical_line.mass = cable_weight(electrical_line)
             network.electrical_lines.append(electrical_line) 
             total_mass += electrical_line.mass
+
+        for modulator_tag in network.assigned_modulator:
+            electrical_line       = network.Electrical_Line()
+            electrical_line.to    = modulator_tag
+            electrical_line.from_ = network.tag
+            electrical_line.length = manhattan_distance(electrical_line)
+            electrical_line.mass = cable_weight(electrical_line)
+            network.electrical_lines.append(electrical_line) 
+            total_mass += electrical_line.mass
      
     # Determine mass of sensor/communication wires
     

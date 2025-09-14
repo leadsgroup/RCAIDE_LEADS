@@ -8,7 +8,7 @@
 
 # RCAIDE imports  
 from RCAIDE.Library.Components import Component 
-from RCAIDE.Library.Methods.Powertrain.Modulators.DC_to_DC_Converter.append_DC_to_DC_converter_conditions   import append_DC_to_DC_converter_conditions 
+from RCAIDE.Library.Methods.Powertrain.Modulators.DC_to_DC_Converter.append_dcdc_conditions   import append_dcdc_conditions 
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  DC_to_DC_Converter Class
@@ -65,5 +65,5 @@ class DC_to_DC_Converter(Component):
         Updates the segment conditions with DC_to_DC_Converter-specific parameters including
         power throughput and losses.
         """ 
-        append_DC_to_DC_converter_conditions(self,segment,energy_conditions)
+        append_dcdc_conditions(self,segment,energy_conditions)
         return 
