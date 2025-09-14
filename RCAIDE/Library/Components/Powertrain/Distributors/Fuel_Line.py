@@ -61,8 +61,10 @@ class Fuel_Line(Component):
         """          
         self.tag                           = 'fuel_line'  
         self.fuel_tanks                    = Container() 
-        self.assigned_propulsors           = [] 
-        self.assigned_converters           = []
+        self.assigned_propulsors           = []
+        self.assigned_converters           = [] 
+        self.assigned_modulators           = [] 
+        self.assigned_sources              = []
         self.converters                    = Container()       
         self.active                        = True 
         self.efficiency                    = 1.0
