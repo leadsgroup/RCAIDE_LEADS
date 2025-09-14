@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Powertrain/Modulators/Inverter/compute_inverter_performance.py
+# RCAIDE/Methods/Powertrain/Modulators/inverter/compute_inverter_performance.py
 # 
 # 
 # Created:  Sep 2025, M. Guidotti
@@ -8,13 +8,13 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_inverter_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_inverter_performance(Inverter):
+def compute_inverter_performance(inverter):
     # ---- Inputs ----
-    Vdc        = float(Inverter.dc_voltage)        # [V]
-    eta_inv    = float(Inverter.efficiency)        # [-] 0<eta<=1
-    f_out      = float(Inverter.frequency)         # [Hz]
-    Vph_sp     = float(Inverter.target_vph_rms)    # [V_rms] per-phase setpoint
-    Zp_in      = Inverter.z_phase
+    Vdc        = float(inverter.inputs.dc_voltage)        # [V]
+    eta_inv    = float(inverter.inputs.efficiency)        # [-] 0<eta<=1
+    f_out      = float(inverter.inputs.frequency)         # [Hz]
+    Vph_sp     = float(inverter.inputs.target_vph_rms)    # [V_rms] per-phase setpoint
+    Zp_in      = inverter.inputs.z_phase                  # [ohm] per-phase load impedance (can be complex)`
 
     # Normalize Z_phase to complex
     Z_phase = Zp_in if isinstance(Zp_in, complex) else complex(float(Zp_in), 0.0)
@@ -54,18 +54,18 @@ def compute_inverter_performance(Inverter):
     Idc  = P_in / Vdc                            # [A]
 
     # ---- Output ----
-    Inverter.Vph_rms               = Vph_rms
-    Inverter.Vll_rms               = Vll_rms
-    Inverter.Iph_rms               = Iph_rms
-    Inverter.P_out                 = P_out
-    Inverter.Q_out                 = Q_out
-    Inverter.S_out                 = S_out
-    Inverter.pf                    = pf
-    Inverter.P_in                  = P_in
-    Inverter.Idc                   = Idc
-    Inverter.m                     = m
-    Inverter.m_target              = m_target
-    Inverter.modulation_limited    = modulation_limited
-    Inverter.f_out                 = f_out
+    inverter.outputs.Vph_rms               = Vph_rms
+    inverter.outputs.Vll_rms               = Vll_rms
+    inverter.outputs.Iph_rms               = Iph_rms
+    inverter.outputs.P_out                 = P_out
+    inverter.outputs.Q_out                 = Q_out
+    inverter.outputs.S_out                 = S_out
+    inverter.outputs.pf                    = pf
+    inverter.outputs.P_in                  = P_in
+    inverter.outputs.Idc                   = Idc
+    inverter.outputs.m                     = m
+    inverter.outputs.m_target              = m_target
+    inverter.outputs.modulation_limited    = modulation_limited
+    inverter.outputs.f_out                 = f_out
 
     return

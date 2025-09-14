@@ -93,7 +93,7 @@ def design_optimal_generator(generator):
     RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance
     """
     
-    if generator.generator_type != 'DC':
+    if generator.type != 'DC':
         raise Exception('function only supports low-fidelity (DC) generator')
     
     # design properties of the generator 

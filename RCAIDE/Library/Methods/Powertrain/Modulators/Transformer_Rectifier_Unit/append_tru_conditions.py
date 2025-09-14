@@ -48,8 +48,6 @@ def append_tru_conditions(esc,segment,energy_conditions):
     energy_conditions.modulators[esc.tag]                  = Conditions()
     energy_conditions.modulators[esc.tag].inputs           = Conditions()
     energy_conditions.modulators[esc.tag].outputs          = Conditions()
-    energy_conditions.modulators[esc.tag].throttle         = 0. * ones_row(1)  
-    energy_conditions.modulators[esc.tag].outputs.voltage  = 0. * ones_row(1)  
     energy_conditions.modulators[esc.tag].inputs.voltage   = esc.bus_voltage * ones_row(1)   
     
     return 

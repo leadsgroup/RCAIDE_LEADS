@@ -32,7 +32,6 @@ from .Generator                                  import Generator
 from .Generic_Fuel_Cell_Stack                    import Generic_Fuel_Cell_Stack
 from .Lift_Rotor                                 import Lift_Rotor 
 from .Motor                                      import Motor
-from .Offtake_Shaft                              import Offtake_Shaft
 from .Prop_Rotor                                 import Prop_Rotor
 from .Propeller                                  import Propeller
 from .Ram                                        import Ram 

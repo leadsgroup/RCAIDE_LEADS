@@ -14,7 +14,6 @@ from RCAIDE.Library.Components                                     import Compon
 from RCAIDE.Library.Components.Component                           import Container
 from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
 from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide
-from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Line import Electrical_Line
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electrical_Line
@@ -95,7 +94,7 @@ class Electrical_Bus(Component):
         self.battery_modules                        = Container()
         self.fuel_cell_stacks                       = Container()
         self.fuel_tanks                             = Container()
-        self.electrical_lines                       = Container()
+        self.electrical_line                        = Electrical_Line()
         self.assigned_propulsors                    = []
         self.assigned_converters                    = [] 
         self.avionics                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
@@ -110,36 +109,37 @@ class Electrical_Bus(Component):
         self.charging_c_rate                        = 1.0 
         self.battery_module_electric_configuration  = "Series"
         self.fuel_cell_stack_electric_configuration = "Series"
+        
 
-    def __init__ (self, bus=None):
+    # def __init__ (self, bus=None):
 
-        # loop over batteries and create lines 
-        for battery_module in bus.battery_modules:
-            electrical_line       = Electrical_Line()
-            electrical_line.to    = battery_module.tag
-            electrical_line.from_ = bus.tag
-            self.electrical_lines.append(electrical_line) 
+    #     # loop over batteries and create lines 
+    #     for battery_module in bus.battery_modules:
+    #         electrical_line       = Electrical_Line()
+    #         electrical_line.to    = battery_module.tag
+    #         electrical_line.from_ = bus.tag
+    #         self.electrical_lines.append(electrical_line) 
  
-        # loop over fuel_cell and create lines
-        for fuel_cell_stack in bus.fuel_cell_stacks:
-            electrical_line       = Electrical_Line()
-            electrical_line.to    = fuel_cell_stack.tag
-            electrical_line.from_ = bus.tag
-            self.electrical_lines.append(electrical_line) 
+    #     # loop over fuel_cell and create lines
+    #     for fuel_cell_stack in bus.fuel_cell_stacks:
+    #         electrical_line       = Electrical_Line()
+    #         electrical_line.to    = fuel_cell_stack.tag
+    #         electrical_line.from_ = bus.tag
+    #         self.electrical_lines.append(electrical_line) 
 
-        # loop over propulsors and create lines 
-        for propulsor_tag in bus.assigned_propulsors:
-            electrical_line       = Electrical_Line()
-            electrical_line.to    = propulsor_tag
-            electrical_line.from_ = bus.tag
-            self.electrical_lines.append(electrical_line) 
+    #     # loop over propulsors and create lines 
+    #     for propulsor_tag in bus.assigned_propulsors:
+    #         electrical_line       = Electrical_Line()
+    #         electrical_line.to    = propulsor_tag
+    #         electrical_line.from_ = bus.tag
+    #         self.electrical_lines.append(electrical_line) 
 
-        # loop over converters  and create lines
-        for converter_tag in bus.assigned_converters:
-            electrical_line       = Electrical_Line()
-            electrical_line.to    = converter_tag
-            electrical_line.from_ = bus.tag
-            self.electrical_lines.append(electrical_line) 
+    #     # loop over converters  and create lines
+    #     for converter_tag in bus.assigned_converters:
+    #         electrical_line       = Electrical_Line()
+    #         electrical_line.to    = converter_tag
+    #         electrical_line.from_ = bus.tag
+    #         self.electrical_lines.append(electrical_line) 
         
     def append_operating_conditions(self, segment):
         """
@@ -192,5 +192,20 @@ class Electrical_Bus(Component):
         """
         compute_bus_conditions(self,state,t_idx, delta_t)
         return    
+    
+class Electrical_Line(Component):
+    def __defaults__(self):
+        self.tag = 'electrical_line'
+        self.to = None
+        self.from_ = None
+        self.current_type = 'DC'  
+        self.voltage = 0  
+        self.efficiency = 1
+        self.length = 0  
+        self.diameter_conductor = 0.005  # Default conductor diameter
+        self.diameter_insulator = 0.01  # Default insulator diameter
+        self.conductor_material = Copper()  # Default conductor material
+        self.insulator_material = Polyimide()  # Default insulator material
+    
 
 

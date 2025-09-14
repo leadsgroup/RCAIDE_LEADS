@@ -1,213 +1,214 @@
 # RCAIDE/Library/Components/Propulsors/Converters/Motor.py
-# 
-# 
-# Created:  Mar 2024, M. Clarke 
-# Modified: May 2025, M. Guidotti
+#
+# Created:  Mar 2024, M. Clarke
+# Modified: Sep 2025, M. Guidotti (fixes & cleanup by ChatGPT)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------   
-# RCAIDE imports  
-from .Converter  import Converter
-from RCAIDE.Framework.Core                  import Data 
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions import  append_motor_conditions
+# ----------------------------------------------------------------------------------------------------------------------
+# RCAIDE imports
+from .Converter import Converter
+from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions import (
+    append_motor_conditions,
+)
+
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  DC_Motor  
-# ----------------------------------------------------------------------------------------------------------------------           
+#  Motor
+# ----------------------------------------------------------------------------------------------------------------------
 class Motor(Converter):
     """
-    A direct current electric motor component model for electric propulsion systems.
+    Electric motor component model for electric propulsion systems (DC or PMSM).
 
     Attributes
     ----------
     tag : str
         Identifier for the motor. Default is 'motor'.
-        
+
+    type : str
+        Motor type ('DC' or 'PMSM'). Default is 'DC'.
+
     resistance : float
-        Internal electrical resistance of the motor [Ω]. Default is 0.0.
-        
+        Internal electrical resistance of the motor [Ω].
+
     no_load_current : float
-        Current drawn by the motor with no mechanical load [A]. Default is 0.0.
-        
+        Current drawn by the motor with no mechanical load [A].
+
     speed_constant : float
-        Motor speed constant (Kv). Default is 0.0.
-        
+        Motor speed constant (Kv). For DC usage here assumed in [rpm/V] unless
+        otherwise documented by a downstream method.
+
     efficiency : float
-        Overall motor efficiency. Default is 1.0.
-        
+        Overall motor efficiency [-].
+
+    gearbox : Data
+        Container for gearbox properties.
+
     gearbox.gear_ratio : float
-        Ratio of output shaft speed to motor speed. Default is 1.0. 
-          
+        Ratio of output shaft speed to motor speed [-].
+
     power_split_ratio : float
-        Ratio of power distribution when motor drives multiple loads. Default is 0.0.
-        
+        Ratio of power distribution when driving multiple loads [-].
+
+    design_angular_velocity : float
+        Design point angular velocity [rad/s].
+
     design_torque : float
-        Design point torque output [N·m]. Default is 0.0.
-        
-    interpolated_func : callable
-        Function for interpolating motor performance. Default is None.
+        Design point torque output [N·m].
+
+    design_current : float
+        Design point current [A].
+
+    inverse_calculation : bool
+        Flag for inverse sizing/operation flows.
+
+    interpolated_func : callable or None
+        Optional motor performance interpolation function.
 
     Notes
     -----
-    The DC_Motor class models a direct current electric motor's performance
-    characteristics. It accounts for electrical, mechanical, and thermal effects
-    including:
-        * Internal resistance losses
-        * No-load current losses
-        * Gearbox losses
-        * Speed-torque relationships
-        * Power distribution for multiple loads
+    This model is used within RCAIDE powertrain workflows and supports:
+      * Electrical losses (resistive, no-load current)
+      * Gearbox effects
+      * Speed–torque relationships
+      * Power splitting across loads
 
-    **Definitions**
+    Definitions
+    -----------
+    'Kv' (speed constant)
+        Relates voltage to (approx.) unloaded motor speed.
 
-    'Kv'
-        Motor velocity constant, relating voltage to unloaded motor speed
+    'No-load current'
+        Current drawn to overcome internal friction & iron losses when unloaded.
 
-    'No-load Current'
-        Current drawn by motor to overcome internal friction when unloaded
-        
     'Power Split Ratio'
-        Fraction of total power delivered to primary load in multi-load applications
+        Fraction of total power delivered to the primary load in multi-load use.
 
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Motor
-    """      
+    """
+
     def __defaults__(self):
-        """This sets the default values for the component to function.
+        """
+        Set default values so the component can be instantiated safely.
 
-        Assumptions:
-        None
+        Assumptions: None
+        Inputs:      None
+        Outputs:     None
+        """
+        # Always set a tag
+        self.tag = "motor"
 
-        Source:
-        N/A
+        # Initialize a gearbox container up-front so it always exists
+        self.gearbox = Data()
+        self.gearbox.gear_ratio = 1.0  # default unity ratio
 
-        Inputs:
-        None
+        # Some attributes that are common / referenced elsewhere
+        self.power_split_ratio = 0.0
+        self.interpolated_func = None
 
-        Outputs:
-        None
+        # Route to the type setter to initialize consistent defaults
+        # (This will populate resistance, no_load_current, etc.)
+        self.type = "DC"
 
-        Properties Used:
-        None
-        """           
-        self.tag                     = 'motor' 
-        self.type              = 'DC' # or PMSM
+        return
 
-        # General attributes for DC and AC Motors
-        # self.resistance              = 0.0
-        # self.no_load_current         = 0.0
-        # self.speed_constant          = 0.0
-        # self.efficiency              = 1.0
-        # self.gearbox                 = Data()
-        # self.gearbox.gear_ratio      = 1.0 
-        # self.design_angular_velocity = 0.0 
-        # self.design_torque           = 0.0 
-        # self.design_current          = 0.0
-        # self.inverse_calculation     = False
-        # self.interpolated_func       = None
-
-        # Additional properties for AC motor parametrization
-    
-        # # Input data from Datasheet      
-        # self.speed_constant                = 6.56                        # [rpm/V]        speed constant
-        # self.stator_inner_diameter         = 0.16                        # [m]            stator inner diameter
-        # self.stator_outer_diameter         = 0.348                       # [m]            stator outer diameter
-
-        # # Input data from Literature      
-        # self.winding_factor                = 0.95                        # [-]            winding factor
-
-        # # Input data from Assumptions
-        # self.resistance                    = 0.002                       # [Ω]            resistance
-        # self.motor_stack_length            = 0.1140                      # [m]            (It should be around 0.14 m) motor stack length 
-        # self.number_of_turns               = 80                          # [-]            number of turns  
-        # self.length_of_path                = 0.4                         # [m]            length of the path  
-        # self.mu_0                          = 1.256637061e-6              # [N/A**2]       permeability of free space
-        # self.mu_r                          = 1005                        # [N/A**2]       relative permeability of the magnetic material 
-        # self.thermal_conductivity          = 200                         # [W/m*K]        thermal conductivity of the magnetic material
-        # self.Delta_T                       = 10                          # [K]            temperature difference between the inner and outer surfaces of the stator
-        # self.characteristic_length_of_flow = 0.01                    # [m]            characteristic length of the flow
-        # self.thermal_conductivity_fluid    = 0.026                      # [W/m*K]        thermal conductivity of the fluid
-        # self.length_of_conductive_path     = 0.4                         # [m]            length of the conductive path  
-        # self.Re_cooling_flow               = 100000                      # [-]            Reynolds number of the coolingflow
-        # self.Re_airgap                     = 100000                      # [-]            Reynolds number of the flow in the airgap
-        # self.Prandtl_number                = 0.708                       # [-]            Prandtl number of the flow
-        # self.height_of_duct                = 0.005                       # [m]            height of the duct
-        # self.width_of_duct                 = 0.005                       # [m]            width of the duct
-        # self.hydraulic_diameter_of_duct    = 0.005                      # [m]            hydraulic diameter of the duct
-        # self.length_of_channel             = 0.005                       # [m]            length of the channel
-        # self.volume_flow_rate_of_fluid     = 0.005                       # [m**3/s]       volume flow rate of the fluid
-        # self.density_of_fluid              = 1000                        # [kg/m**3]      density of the fluid
-        # self.velocity_of_fluid             = 0.005                       # [m/s]          velocity of the fluid
-        # self.Taylor_number                 = 20                          # [-]            Taylor number 
-        # self.axial_gap_to_radius_of_rotor  = 0.01                     # [-]            ratio of the axial gap to the radius of the rotor 
-        # self.inverse_calculation           = False
-        # self.Conduction_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
-        # self.Convection_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
-        
+    # -----------------------------
+    #  type property
+    # -----------------------------
     @property
-    def motor_type(self):
-        return self._type
+    def type(self):
+        return getattr(self, "_type", "DC")
 
-    @motor_type.setter
-    def motor_type(self, value: str):
+    @type.setter
+    def type(self, value: str):
         self._type = value
 
-        if value == 'DC':
-            self.resistance              = 0.0
-            self.no_load_current         = 0.0
-            self.speed_constant          = 0.0
-            self.efficiency              = 1.0
-            self.gearbox                 = Data()
-            self.gearbox.gear_ratio      = 1.0 
-            self.design_angular_velocity = 0.0 
-            self.design_torque           = 0.0 
-            self.design_current          = 0.0
-            self.inverse_calculation     = False
-            self.interpolated_func       = None
+        # Ensure gearbox exists before we rely on it
+        if not hasattr(self, "gearbox") or self.gearbox is None:
+            self.gearbox = Data()
+        if not hasattr(self.gearbox, "gear_ratio"):
+            self.gearbox.gear_ratio = 1.0
 
-        elif value == 'PMSM':
-            # Input data from Datasheet      
-            self.speed_constant                = 6.56                        # [rpm/V]        speed constant
-            self.stator_inner_diameter         = 0.16                        # [m]            stator inner diameter
-            self.stator_outer_diameter         = 0.348                       # [m]            stator outer diameter
+        # Initialize attributes that both branches may rely on
+        self.interpolated_func = None
+        self.inverse_calculation = False
+        self.design_angular_velocity = 0.0  # [rad/s]
+        self.design_torque = 0.0            # [N·m]
+        self.design_current = 0.0           # [A]
 
-            # Input data from Literature      
-            self.winding_factor                = 0.95                        # [-]            winding factor
+        if value == "DC":
+            # DC motor baseline defaults
+            self.resistance = 0.0           # [Ω]
+            self.no_load_current = 0.0      # [A]
+            self.speed_constant = 0.0       # [rpm/V]
+            self.efficiency = 1.0           # [-]
+            self.gearbox.gear_ratio = 1.0   # [-]
 
-            # Input data from Assumptions
-            self.resistance                    = 0.002                       # [Ω]            resistance
-            self.motor_stack_length            = 0.1140                      # [m]            (It should be around 0.14 m) motor stack length 
-            self.number_of_turns               = 80                          # [-]            number of turns  
-            self.length_of_path                = 0.4                         # [m]            length of the path  
-            self.mu_0                          = 1.256637061e-6              # [N/A**2]       permeability of free space
-            self.mu_r                          = 1005                        # [N/A**2]       relative permeability of the magnetic material 
-            self.thermal_conductivity          = 200                         # [W/m*K]        thermal conductivity of the magnetic material
-            self.Delta_T                       = 10                          # [K]            temperature difference between the inner and outer surfaces of the stator
-            self.characteristic_length_of_flow = 0.01                    # [m]            characteristic length of the flow
-            self.thermal_conductivity_fluid    = 0.026                      # [W/m*K]        thermal conductivity of the fluid
-            self.length_of_conductive_path     = 0.4                         # [m]            length of the conductive path  
-            self.Re_cooling_flow               = 100000                      # [-]            Reynolds number of the coolingflow
-            self.Re_airgap                     = 100000                      # [-]            Reynolds number of the flow in the airgap
-            self.Prandtl_number                = 0.708                       # [-]            Prandtl number of the flow
-            self.height_of_duct                = 0.005                       # [m]            height of the duct
-            self.width_of_duct                 = 0.005                       # [m]            width of the duct
-            self.hydraulic_diameter_of_duct    = 0.005                      # [m]            hydraulic diameter of the duct
-            self.length_of_channel             = 0.005                       # [m]            length of the channel
-            self.volume_flow_rate_of_fluid     = 0.005                       # [m**3/s]       volume flow rate of the fluid
-            self.density_of_fluid              = 1000                        # [kg/m**3]      density of the fluid
-            self.velocity_of_fluid             = 0.005                       # [m/s]          velocity of the fluid
-            self.Taylor_number                 = 20                          # [-]            Taylor number 
-            self.axial_gap_to_radius_of_rotor  = 0.01                     # [-]            ratio of the axial gap to the radius of the rotor 
-            self.inverse_calculation           = False
-            self.Conduction_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
-            self.Convection_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
+        elif value == "PMSM":
+            # PMSM: provide a richer default parameterization
+            # Datasheet-like inputs
+            self.speed_constant = 6.56                 # [rpm/V]
+            self.stator_inner_diameter = 0.16          # [m]
+            self.stator_outer_diameter = 0.348         # [m]
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
-        append_motor_conditions(self,segment,energy_conditions)
+            # Literature / configuration
+            self.winding_factor = 0.95                 # [-]
+
+            # Assumptions (baseline)
+            self.resistance = 0.002                    # [Ω]
+            self.motor_stack_length = 0.1140           # [m]
+            self.number_of_turns = 80                  # [-]
+            self.length_of_path = 0.4                  # [m]
+            self.mu_0 = 1.256637061e-6                 # [N/A^2]
+            self.mu_r = 1005                           # [-]
+            self.thermal_conductivity = 200            # [W/m·K]
+            self.Delta_T = 10                          # [K]
+            self.characteristic_length_of_flow = 0.01  # [m]
+            self.thermal_conductivity_fluid = 0.026    # [W/m·K]
+            self.length_of_conductive_path = 0.4       # [m]
+            self.Re_cooling_flow = 100000              # [-]
+            self.Re_airgap = 100000                    # [-]
+            self.Prandtl_number = 0.708                # [-]
+            self.height_of_duct = 0.005                # [m]
+            self.width_of_duct = 0.005                 # [m]
+            self.hydraulic_diameter_of_duct = 0.005    # [m]
+            self.length_of_channel = 0.005             # [m]
+            self.volume_flow_rate_of_fluid = 0.005     # [m^3/s]
+            self.density_of_fluid = 1000               # [kg/m^3]
+            self.velocity_of_fluid = 0.005             # [m/s]
+            self.Taylor_number = 20                    # [-]
+            self.axial_gap_to_radius_of_rotor = 0.01   # [-]
+            self.Conduction_laminar_flow = True        # [-]
+            self.Convection_laminar_flow = True        # [-]
+
+            # Reasonable gearbox default still unity unless set by user
+            self.gearbox.gear_ratio = 1.0
+
+            # PMSM overall efficiency can be computed downstream; omit hard default
+            self.efficiency = None
+            self.no_load_current = None
+
+        else:
+            # Fallback to DC if an unknown type is provided (fail-safe)
+            self._type = "DC"
+            self.resistance = 0.0
+            self.no_load_current = 0.0
+            self.speed_constant = 0.0
+            self.efficiency = 1.0
+            self.gearbox.gear_ratio = 1.0
+
         return
-    
+
+    # -----------------------------
+    #  operating conditions
+    # -----------------------------
+    def append_operating_conditions(self, segment, energy_conditions, noise_conditions=None):
+        """Attach motor operating conditions to the segment's energy conditions."""
+        append_motor_conditions(self, segment, energy_conditions)
+        return
 
 
     

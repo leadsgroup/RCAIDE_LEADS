@@ -71,7 +71,7 @@ def compute_motor_performance(motor,conditions):
     # Unpack
     motor_conditions = conditions.energy.converters[motor.tag]
     
-    if (motor.motor_type == 'PMSM'): 
+    if (motor.type == 'PMSM'): 
         if motor.inverse_calculation == False:
             Res            = motor.resistance
             G              = motor.gearbox.gear_ratio

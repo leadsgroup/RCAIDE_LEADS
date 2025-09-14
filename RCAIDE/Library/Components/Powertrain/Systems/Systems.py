@@ -94,7 +94,7 @@ class HydraulicSystem(Systems):
     """
     def __defaults__(self):
         super().__defaults__()
-        self.power_draw = 0.0  # Default power draw for hydraulic system
+        self.tag        = 'HydraulicSystem'
 
 class PneumaticSystem(Systems):
     """
@@ -107,4 +107,4 @@ class PneumaticSystem(Systems):
     """
     def __defaults__(self):
         super().__defaults__()
-        self.power_draw = 0.0  # Default power draw for pneumatic system
+        self.tag        = 'PneumaticSystem'`
