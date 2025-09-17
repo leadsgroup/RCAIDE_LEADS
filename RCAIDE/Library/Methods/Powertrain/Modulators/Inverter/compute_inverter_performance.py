@@ -9,14 +9,13 @@ import numpy as np
 # compute_inverter_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_inverter_performance(inverter):
-    # ---- Inputs ----
-    Vdc        = float(inverter.inputs.dc_voltage)        # [V]
-    eta_inv    = float(inverter.inputs.efficiency)        # [-] 0<eta<=1
-    f_out      = float(inverter.inputs.frequency)         # [Hz]
-    Vph_sp     = float(inverter.inputs.target_vph_rms)    # [V_rms] per-phase setpoint
-    Zp_in      = inverter.inputs.z_phase                  # [ohm] per-phase load impedance (can be complex)`
 
-    # Normalize Z_phase to complex
+    Vdc        = float(inverter.inputs.dc_voltage)         # [V]
+    eta_inv    = float(inverter.inputs.efficiency)         # [-] 0<eta<=1
+    f_out      = float(inverter.inputs.frequency)          # [Hz]
+    Vph_sp     = float(inverter.inputs.per_phase_setpoint) # [V_rms] per-phase setpoint
+    Zp_in      = inverter.inputs.per_phase_load_impedance  # [ohm] per-phase load impedance (can be complex)`
+
     Z_phase = Zp_in if isinstance(Zp_in, complex) else complex(float(Zp_in), 0.0)
 
     # ---- Modulation & synthesized voltages (fundamental only) ----
@@ -33,7 +32,7 @@ def compute_inverter_performance(inverter):
     Vc = (m * Vdc / 2) * np.sin(w * t + 2 * np.pi / 3)
 
     Vph_rms = np.sqrt(np.mean(Va**2))
-    Vll_rms = np.sqrt(np.mean((Va - Vb)**2))  # ≈ √3 * Vph_rms
+    Vll_rms = np.sqrt(np.mean((Va - Vb)**2))  
 
     # ---- Load currents & power ----
     Iph_rms = Vph_rms / abs(Z_phase)             # [A_rms] magnitude

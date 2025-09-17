@@ -57,14 +57,14 @@ def compute_tru_performance(tru):
     S_in = P_in / pf_assumed                # [VA] input apparent power
     I_line_rms = S_in / (np.sqrt(3.0) * Vll_rms_primary)  # [A_rms] per-line RMS current
 
-    tru.outputs.Vll_rms_secondary = Vll_rms_sec       # [V_rms] AC secondary line-line
-    tru.outputs.Vdc_ideal = Vdc_ideal                 # [V] ideal no-drop DC
-    tru.outputs.Vdc_no_load = Vdc_no_load             # [V] minus diode drops
-    tru.outputs.Vdc = Vdc                             # [V] averaged DC at load
-    tru.outputs.Idc = Idc                             # [A] DC current
-    tru.outputs.P_out_W = P_out                       # [W] DC real power delivered
-    tru.outputs.P_in_W = P_in                         # [W] AC real power drawn
-    tru.outputs.S_in_VA = S_in                        # [VA] input apparent power
-    tru.outputs.I_line_rms_A = I_line_rms             # [A_rms] input line current per phase
+    tru.outputs.ac_voltage_secondary = Vll_rms_sec       # [V_rms] AC secondary line-line
+    tru.outputs.dc_voltage_ideal = Vdc_ideal                 # [V] ideal no-drop DC
+    tru.outputs.dc_voltage_no_load = Vdc_no_load             # [V] minus diode drops
+    tru.outputs.dc_voltage_average = Vdc                             # [V] averaged DC at load
+    tru.outputs.dc_current = Idc                             # [A] DC current
+    tru.outputs.dc_real_power = P_out                       # [W] DC real power delivered
+    tru.inputs.ac_real_power = P_in                         # [W] AC real power drawn
+    tru.inputs.apparent_power = S_in                        # [VA] input apparent power
+    tru.inputs.line_current_per_phase = I_line_rms             # [A_rms] input line current per phase
 
     return
