@@ -197,18 +197,23 @@ class Electrical_Bus(Component):
     
 class Electrical_Line(Component):
     def __defaults__(self):
-        self.tag = 'electrical_line'
-        self.to = None
-        self.from_ = None
-        self.current_type = 'DC'  
-        self.voltage = 0  
-        self.efficiency = 1
-        self.length = 0  
-        self.diameter_conductor = 0.005  # Default conductor diameter
-        self.diameter_insulator = 0.01  # Default insulator diameter
-        self.conductor_material = Copper()  # Default conductor material
-        self.insulator_material = Polyimide()  # Default insulator material
-        self.duplicates = 2  # Number of duplicate cables for redundancy
+        self.tag                               = 'electrical_line'
+        self.to                                = None
+        self.from_                             = None
+        self.current_type                      = 'DC'  
+        self.voltage                           = 0  
+        self.efficiency                        = 1
+        self.length                            = 0
+        self.design_ambient_temperature        = 273 # kelvin
+        self.maximum_insulator_electric_field  =   # NEED TO CHECK 
+        self.maximum_operating_temperature     =   # NEED TO CHECK 
+        self.maximum_current                   =   # NEED TO CHECK
+        self.environmental_external_thermal_resistance =  # CHECK  IEC 60287-2-1 Section 4.2.1.1.
+        self.conductor_radius                  = None
+        self.conductor_material                = Copper()  # Default conductor material
+        self.insulator_radius                  = None
+        self.insulator_material                = Polyimide()  # Default insulator material 
+        self.duplicate_wires                   =  2# Number of duplicate cables for redundancy
     
 
 

@@ -37,47 +37,47 @@ def compute_wiring_weight(config):
     for network in config.networks:
 
         for battery_module in network.battery_modules:
-            electrical_line       = network.Electrical_Line()
-            electrical_line.to    = battery_module.tag
-            electrical_line.from_ = network.tag
+            electrical_line        = network.Electrical_Line()
+            electrical_line.to     = battery_module.tag
+            electrical_line.from_  = network.tag
             electrical_line.length = manhattan_distance(electrical_line)
-            electrical_line.mass = cable_weight(electrical_line)
+            electrical_line.mass   = cable_weight(electrical_line)
             network.electrical_lines.append(electrical_line) 
             total_mass += electrical_line.mass
  
         for fuel_cell_stack in network.fuel_cell_stacks:
-            electrical_line       = network.Electrical_Line()
-            electrical_line.to    = fuel_cell_stack.tag
-            electrical_line.from_ = network.tag
+            electrical_line        = network.Electrical_Line()
+            electrical_line.to     = fuel_cell_stack.tag
+            electrical_line.from_  = network.tag
             electrical_line.length = manhattan_distance(electrical_line)
-            electrical_line.mass = cable_weight(electrical_line)
+            electrical_line.mass   = cable_weight(electrical_line)
             network.electrical_lines.append(electrical_line) 
             total_mass += electrical_line.mass
 
         for propulsor_tag in network.assigned_propulsors:
-            electrical_line       = network.Electrical_Line()
-            electrical_line.to    = propulsor_tag
-            electrical_line.from_ = network.tag
+            electrical_line        = network.Electrical_Line()
+            electrical_line.to     = propulsor_tag
+            electrical_line.from_  = network.tag
             electrical_line.length = manhattan_distance(electrical_line)
-            electrical_line.mass = cable_weight(electrical_line)
+            electrical_line.mass   = cable_weight(electrical_line)
             network.electrical_lines.append(electrical_line)
             total_mass += electrical_line.mass 
 
         for converter_tag in network.assigned_converters:
-            electrical_line       = network.Electrical_Line()
-            electrical_line.to    = converter_tag
-            electrical_line.from_ = network.tag
+            electrical_line        = network.Electrical_Line()
+            electrical_line.to     = converter_tag
+            electrical_line.from_  = network.tag
             electrical_line.length = manhattan_distance(electrical_line)
-            electrical_line.mass = cable_weight(electrical_line)
+            electrical_line.mass   = cable_weight(electrical_line)
             network.electrical_lines.append(electrical_line) 
             total_mass += electrical_line.mass
 
         for modulator_tag in network.assigned_modulator:
-            electrical_line       = network.Electrical_Line()
-            electrical_line.to    = modulator_tag
-            electrical_line.from_ = network.tag
+            electrical_line        = network.Electrical_Line()
+            electrical_line.to     = modulator_tag
+            electrical_line.from_  = network.tag
             electrical_line.length = manhattan_distance(electrical_line)
-            electrical_line.mass = cable_weight(electrical_line)
+            electrical_line.mass   = cable_weight(electrical_line)
             network.electrical_lines.append(electrical_line) 
             total_mass += electrical_line.mass
      
@@ -111,31 +111,48 @@ def manhattan_distance(electrical_line):
 
 def cable_weight(electrical_line):
 
-    V, 
-    E0,
-    r_cond, 
-    rho, 
-    rho_theta_insul
-    ,L,
-    rho_cond,
-    rho_insul,
-    theta_a,
-    I, T_4
-
-    # Equation (18): Cable Insulation Radius based on voltage and electric field constraints
-    # E0 is the electric field
-    r_insul = r_cond * np.exp(V / (E0 * r_cond))  # Equation (18)
-
-    # Equation (20): Conductor Resistance (thermal constraint based on material properties)
-    R_prime = rho / (np.pi * r_cond ** 2)  # Equation (20)
-
-    # Equation (21): Thermal Resistance of the insulation
-    T_1 = rho_theta_insul / (2 * np.pi) * np.log(r_insul / r_cond)  # Equation (21)
+    V               = electrical_line.voltage
+    E0              = electrical_line.maximum_insulator_electric_field
+    r_cond          = electrical_line.conductor_radius 
+    rho             = electrical_line.conductor_material.electrical_resistivity
+    rho_theta_insul = electrical_line.insulator_material.thermal_resistivity
+    L               = electrical_line.length
+    rho_cond        = electrical_line.conductor_material.density 
+    rho_insul       = electrical_line.insulator_material.density
+    theta_a         = electrical_line.design_temperature 
+    I               = electrical_line.maximum_current
+    T_4             = electrical_line.environmental_external_thermal_resistance
+    theta_max       = 
+    
+    r_cond = 0.0001
+    alpha =  0.01
+    while :
+        
+        # update r_cond
+        r_cond += 
+        
+        # Equation (18): Cable Insulation Radius based on voltage and electric field constraints
+        # E0 is the electric field
+        r_insul = r_cond * np.exp(V / (E0 * r_cond))  # Equation (18)
+    
+        # Equation (20): Conductor Resistance (thermal constraint based on material properties)
+        R_prime = rho / (np.pi * r_cond ** 2)  # Equation (20)
+    
+        # Equation (21): Thermal Resistance of the insulation
+        T_1 = rho_theta_insul / (2 * np.pi) * np.log(r_insul / r_cond)  # Equation (21)
+    
+        # Equation (19): Maximum Temperature (conductor temperature based on current, resistance, and thermal resistances)
+        theta_max_guess = theta_a + I**2 * R_prime * (T_1 + T_4)  # Equation (19)
+        
+        # check if theta max is greater than theta max guess
+        diff =  theta_max_guess - theta_max
+        
 
     # Equation (22): Total Cable Mass calculation based on conductor and insulation volume and density
-    M_cable = np.pi * L * (r_cond ** 2 * rho_cond + (r_insul ** 2 - r_cond ** 2) * rho_insul) * duplicate  # Equation (22)
-
-    # Equation (19): Maximum Temperature (conductor temperature based on current, resistance, and thermal resistances)
-    theta_max = theta_a + I**2 * R_prime * (T_1 + T_4)  # Equation (19)
-
-    return M_cable, theta_max
+    M_cable = np.pi * L * (r_cond ** 2 * rho_cond + (r_insul ** 2 - r_cond ** 2) * rho_insul) * electrical_line.duplicate_wires  # Equation (22)
+        
+        
+        
+    electrical_line.conductor_radius  = r_cond 
+    electrical_line.insulation_radius = r_insul   
+    return M_cable 

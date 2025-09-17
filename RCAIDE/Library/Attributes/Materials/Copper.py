@@ -25,9 +25,9 @@ class Copper(Solid):
     ----------
     density : float
         Material density in kg/m³ (8960.0)
-    conductivity_electrical : float
+    electrical_conductivity : float
         Electrical conductivity in mhos/m (58391886.09)
-    conductivity_thermal : float
+    thermal_conductivity : float
         Thermal conductivity at room temperature in W/(m·K) (392.4)
     interpolate : bool
         Flag to enable interpolation of temperature-dependent properties
@@ -74,8 +74,9 @@ class Copper(Solid):
         """
 
         self.density                    =     8960.0        # [kg/(m**3)]
-        self.conductivity_electrical    = 58391886.09       # [mhos/m]
-        self.conductivity_thermal       =      392.4        # [W/(m*K)]
+        self.electrical_conductivity    = 58391886.09       # [mhos/m]
+        self.thermal_conductivity       =      392.4        # [W/(m*K)]
+        self.electrical_resistivity     = 
         self.interpolate                = False
 
         # Lookup table arrays. Temperature in K, thermal conductivity in W/(m*K)
