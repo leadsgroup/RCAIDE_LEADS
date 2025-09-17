@@ -11,8 +11,8 @@ def compute_dcdc_performance(dc_to_dc_converter):
    
     """
 
-    dc_to_dc_converter.inputs.Vin,                 # [V] input DC voltage
-    dc_to_dc_converter.inputs.eta,                 # [-] converter efficiency (0<eta<=1)
+    dc_to_dc_converter.inputs.voltage,                 # [V] input DC voltage
+    dc_to_dc_converter.inputs.efficiency,                 # [-] converter efficiency (0<eta<=1)
     dc_to_dc_converter.inputs.Vout_target,         # [V] desired output voltage (use sign for polarity; neg for inverting)
     dc_to_dc_converter.inputs.Rload,               # [ohm] DC load (use either Rload or Iout_set)
     dc_to_dc_converter.inputs.Iout_set,            # [A] desired output current

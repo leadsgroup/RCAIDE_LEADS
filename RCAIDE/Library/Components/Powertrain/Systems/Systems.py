@@ -83,7 +83,7 @@ class Systems(Component):
         append_systems_conditions(self, segment, bus)
         return
 
-class HydraulicSystem(Systems):
+class Hydraulic_System(Systems):
     """
     Subclass representing a hydraulic system.
 
@@ -96,7 +96,7 @@ class HydraulicSystem(Systems):
         super().__defaults__()
         self.tag        = 'HydraulicSystem'
 
-class PneumaticSystem(Systems):
+class Pneumatic_System(Systems):
     """
     Subclass representing a pneumatic system.
 

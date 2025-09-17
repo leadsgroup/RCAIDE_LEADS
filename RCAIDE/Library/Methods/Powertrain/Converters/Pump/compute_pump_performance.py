@@ -6,8 +6,8 @@
 def compute_pump_performance(pump, line, conditions):
 
     pump_conditions = conditions.converters[pump.tag]
-    pump_conditions.inputs.p_in = line.pressure
-    pump_conditions.outputs.p_out = line.pressure + pump.delta_p
-    pump_conditions.outputs.power = pump.mass_flow_rate * pump.delta_p / (line.density * pump.efficiency)
+    pump_conditions.inputs.pressure = line.pressure
+    pump_conditions.outputs.pressure = line.pressure + pump.delta_pressure
+    pump_conditions.outputs.power = pump.mass_flow_rate * pump.delta_pressure / (line.density * pump.efficiency)
 
     return

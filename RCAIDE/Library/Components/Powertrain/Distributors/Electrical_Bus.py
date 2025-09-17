@@ -208,6 +208,7 @@ class Electrical_Line(Component):
         self.diameter_insulator = 0.01  # Default insulator diameter
         self.conductor_material = Copper()  # Default conductor material
         self.insulator_material = Polyimide()  # Default insulator material
+        self.duplicates = 2  # Number of duplicate cables for redundancy
     
 
 

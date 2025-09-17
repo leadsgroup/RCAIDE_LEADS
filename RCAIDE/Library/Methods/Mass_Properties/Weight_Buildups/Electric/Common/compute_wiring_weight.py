@@ -111,17 +111,31 @@ def manhattan_distance(electrical_line):
 
 def cable_weight(electrical_line):
 
-    radius_conductor = 0.5 * electrical_line.diameter_conductor
-    radius_insulator = 0.5 * electrical_line.diameter_insulator
+    V, 
+    E0,
+    r_cond, 
+    rho, 
+    rho_theta_insul
+    ,L,
+    rho_cond,
+    rho_insul,
+    theta_a,
+    I, T_4
 
-    area_conductor = np.pi * radius_conductor ** 2 
-    area_insulator = np.pi * (radius_insulator ** 2 - radius_conductor ** 2) 
+    # Equation (18): Cable Insulation Radius based on voltage and electric field constraints
+    # E0 is the electric field
+    r_insul = r_cond * np.exp(V / (E0 * r_cond))  # Equation (18)
 
-    volume_conductor = area_conductor * electrical_line.length
-    volume_insulator  = area_insulator * electrical_line.length
+    # Equation (20): Conductor Resistance (thermal constraint based on material properties)
+    R_prime = rho / (np.pi * r_cond ** 2)  # Equation (20)
 
-    m_conductor = electrical_line.conductor_material.density * volume_conductor
-    m_insulator = electrical_line.insulator_material.density * volume_insulator 
-    m_tot = m_conductor + m_insulator
+    # Equation (21): Thermal Resistance of the insulation
+    T_1 = rho_theta_insul / (2 * np.pi) * np.log(r_insul / r_cond)  # Equation (21)
 
-    return m_tot
+    # Equation (22): Total Cable Mass calculation based on conductor and insulation volume and density
+    M_cable = np.pi * L * (r_cond ** 2 * rho_cond + (r_insul ** 2 - r_cond ** 2) * rho_insul) * duplicate  # Equation (22)
+
+    # Equation (19): Maximum Temperature (conductor temperature based on current, resistance, and thermal resistances)
+    theta_max = theta_a + I**2 * R_prime * (T_1 + T_4)  # Equation (19)
+
+    return M_cable, theta_max
