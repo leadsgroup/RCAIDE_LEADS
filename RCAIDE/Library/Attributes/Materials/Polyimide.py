@@ -51,7 +51,7 @@ class Polyimide(Solid):
         self.dielectric_strength_range  = [6E7,8E7]  # [V/m] 
         self.density                    = 1280 
         self.thermal_conductivity       = 0.4
-        self.thermal_resistivity        =  
+        self.thermal_resistivity        =  0
         self.melting_point              = 653       # Kelvin
         self.temperature_range          = [33, 533] # Kelvin
         self.modulus_of_elasticity      = 3.1E9

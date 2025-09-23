@@ -122,14 +122,14 @@ def cable_weight(electrical_line):
     theta_a         = electrical_line.design_temperature 
     I               = electrical_line.maximum_current
     T_4             = electrical_line.environmental_external_thermal_resistance
-    theta_max       = 
+    theta_max       = electrical_line.maximum_temperature
     
     r_cond = 0.0001
-    alpha =  0.01
-    while :
+    alpha =  1.01
+    while diff > 0.0001:
         
         # update r_cond
-        r_cond += 
+        r_cond += r_cond*alpha
         
         # Equation (18): Cable Insulation Radius based on voltage and electric field constraints
         # E0 is the electric field
@@ -147,11 +147,8 @@ def cable_weight(electrical_line):
         # check if theta max is greater than theta max guess
         diff =  theta_max_guess - theta_max
         
-
     # Equation (22): Total Cable Mass calculation based on conductor and insulation volume and density
     M_cable = np.pi * L * (r_cond ** 2 * rho_cond + (r_insul ** 2 - r_cond ** 2) * rho_insul) * electrical_line.duplicate_wires  # Equation (22)
-        
-        
         
     electrical_line.conductor_radius  = r_cond 
     electrical_line.insulation_radius = r_insul   

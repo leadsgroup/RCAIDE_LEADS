@@ -76,7 +76,7 @@ class Copper(Solid):
         self.density                    =     8960.0        # [kg/(m**3)]
         self.electrical_conductivity    = 58391886.09       # [mhos/m]
         self.thermal_conductivity       =      392.4        # [W/(m*K)]
-        self.electrical_resistivity     = 
+        self.electrical_resistivity     = 0
         self.interpolate                = False
 
         # Lookup table arrays. Temperature in K, thermal conductivity in W/(m*K)

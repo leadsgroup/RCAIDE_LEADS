@@ -33,11 +33,11 @@ RCAIDE.Library.Components.Energy
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
+from .Propulsor                                  import Propulsor
 from .Constant_Speed_Internal_Combustion_Engine  import Constant_Speed_Internal_Combustion_Engine
 from .Electric_Ducted_Fan                        import Electric_Ducted_Fan
 from .Electric_Rotor                             import Electric_Rotor
 from .Internal_Combustion_Engine                 import Internal_Combustion_Engine
-from .Propulsor                                  import Propulsor
 from .Turbofan                                   import Turbofan
 from .Turbojet                                   import Turbojet
 from .Turboprop                                  import Turboprop

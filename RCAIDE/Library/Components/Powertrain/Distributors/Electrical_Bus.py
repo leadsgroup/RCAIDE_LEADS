@@ -205,10 +205,11 @@ class Electrical_Line(Component):
         self.efficiency                        = 1
         self.length                            = 0
         self.design_ambient_temperature        = 273 # kelvin
-        self.maximum_insulator_electric_field  =   # NEED TO CHECK 
-        self.maximum_operating_temperature     =   # NEED TO CHECK 
-        self.maximum_current                   =   # NEED TO CHECK
-        self.environmental_external_thermal_resistance =  # CHECK  IEC 60287-2-1 Section 4.2.1.1.
+        self.maximum_insulator_electric_field  = 0 # NEED TO CHECK 
+        self.maximum_operating_temperature     = 0 # NEED TO CHECK 
+        self.maximum_current                   = 0 # NEED TO CHECK
+        self.maximum_temperature               = 0 # NEED TO CHECK
+        self.environmental_external_thermal_resistance = 0 # CHECK  IEC 60287-2-1 Section 4.2.1.1.
         self.conductor_radius                  = None
         self.conductor_material                = Copper()  # Default conductor material
         self.insulator_radius                  = None
