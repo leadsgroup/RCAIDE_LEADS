@@ -10,6 +10,7 @@
 
 # RCAIDE imports  
 import RCAIDE 
+from RCAIDE.Framework.Core                                      import Data
 from RCAIDE.Library.Components                                     import Component
 from RCAIDE.Library.Components.Component                           import Container
 from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
@@ -95,52 +96,25 @@ class Electrical_Bus(Component):
         self.fuel_cell_stacks                       = Container()
         self.fuel_tanks                             = Container()
         self.electrical_line                        = Electrical_Line()
-        self.assigned_propulsors                    = []
-        self.assigned_converters                    = [] 
-        self.assigned_modulators                    = [] 
-        self.assigned_sources                       = []
+        self.assigned_propulsors                    = Data()
+        self.assigned_converters                    = Data() 
+        self.assigned_distributors                  = Data() 
+        self.assigned_modulators                    = Data() 
+        self.assigned_sources                       = Data()
         self.systems                                = RCAIDE.Library.Components.Powertrain.Systems.Systems()
         self.identical_battery_modules              = True      
         self.identical_fuel_cell_stacks             = True  
         self.active                                 = True
         self.efficiency                             = 1.0
         self.voltage                                = 0.0 
+        self.voltage_phase_to_neutral               = 115.0 
+        self.voltage_phase_to_phase                 = 200.0
+        self.frequency                              = 0.0
         self.power_split_ratio                      = 1.0
         self.nominal_capacity                       = 0.0
         self.charging_c_rate                        = 1.0 
         self.battery_module_electric_configuration  = "Series"
         self.fuel_cell_stack_electric_configuration = "Series"
-        
-
-    # def __init__ (self, bus=None):
-
-    #     # loop over batteries and create lines 
-    #     for battery_module in bus.battery_modules:
-    #         electrical_line       = Electrical_Line()
-    #         electrical_line.to    = battery_module.tag
-    #         electrical_line.from_ = bus.tag
-    #         self.electrical_lines.append(electrical_line) 
- 
-    #     # loop over fuel_cell and create lines
-    #     for fuel_cell_stack in bus.fuel_cell_stacks:
-    #         electrical_line       = Electrical_Line()
-    #         electrical_line.to    = fuel_cell_stack.tag
-    #         electrical_line.from_ = bus.tag
-    #         self.electrical_lines.append(electrical_line) 
-
-    #     # loop over propulsors and create lines 
-    #     for propulsor_tag in bus.assigned_propulsors:
-    #         electrical_line       = Electrical_Line()
-    #         electrical_line.to    = propulsor_tag
-    #         electrical_line.from_ = bus.tag
-    #         self.electrical_lines.append(electrical_line) 
-
-    #     # loop over converters  and create lines
-    #     for converter_tag in bus.assigned_converters:
-    #         electrical_line       = Electrical_Line()
-    #         electrical_line.to    = converter_tag
-    #         electrical_line.from_ = bus.tag
-    #         self.electrical_lines.append(electrical_line) 
         
     def append_operating_conditions(self, segment):
         """

@@ -85,7 +85,7 @@ class Systems(Component):
                     self._children.pop(name, None)
         except Exception:
             pass 
-    
+
     @property
     def power_draw(self) -> float:
         """

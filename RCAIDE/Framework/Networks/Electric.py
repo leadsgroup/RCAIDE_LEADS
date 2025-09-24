@@ -42,4 +42,4 @@ class Electric(Network):
             N/A 
         """         
 
-        self.tag                          = 'electric' 
+        self.tag                          = 'electric_network' 
