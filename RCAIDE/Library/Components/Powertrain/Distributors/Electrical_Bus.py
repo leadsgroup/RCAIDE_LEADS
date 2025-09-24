@@ -99,7 +99,6 @@ class Electrical_Bus(Component):
         self.assigned_converters                    = [] 
         self.assigned_modulators                    = [] 
         self.assigned_sources                       = []
-        self.avionics                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
         self.systems                                = RCAIDE.Library.Components.Powertrain.Systems.Systems()
         self.identical_battery_modules              = True      
         self.identical_fuel_cell_stacks             = True  

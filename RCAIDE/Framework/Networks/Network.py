@@ -9,7 +9,6 @@
 import  RCAIDE 
 from RCAIDE.Framework.Mission.Common                      import Residuals 
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw                import compute_avionics_power_draw
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw                 import compute_systems_power_draw
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import * 
@@ -127,11 +126,9 @@ class Network(Component):
                 
         # 1.2 Electric Propulsors         
         for bus in busses:            
-            avionics             = bus.avionics 
             systems              = bus.systems 
     
             # Avionics Power Consumtion 
-            compute_avionics_power_draw(avionics,bus,conditions) 
             compute_systems_power_draw(systems,bus,conditions) 
     
             # Bus Voltage 

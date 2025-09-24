@@ -13,5 +13,4 @@ for avionics and other aircraft systems.
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .Avionics import Avionics
-from .Systems  import Systems
+from .Systems import Systems, Hydraulic_System, Pneumatic_System, Avionics_System, Environmental_Control_System

@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
+from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components import Component
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
  
@@ -68,6 +69,42 @@ class Systems(Component):
         self.power_draw  = 0.0
         self.control     = None
         self.accessories = None 
+        self._children   = Data() 
+
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+        if name.startswith("_"):
+            return
+        try:
+            if isinstance(value, Systems):
+                if not hasattr(self, "_children") or self._children is None:
+                    super().__setattr__("_children", {})
+                self._children[name] = value
+            else:
+                if hasattr(self, "_children") and name in self._children:
+                    self._children.pop(name, None)
+        except Exception:
+            pass 
+    
+    @property
+    def power_draw(self) -> float:
+        """
+        Total power draw for this node: own '_own_power_draw' plus
+        the aggregated 'power_draw' of all registered child Systems.
+        """
+        total = float(getattr(self, "_own_power_draw", 0.0))
+        children = getattr(self, "_children", {}) or {}
+        for child in children.values():
+            try:
+                total += float(child.power_draw)
+            except Exception:
+                pass
+        return total
+
+    @power_draw.setter
+    def power_draw(self, val: float):
+        """Set this node's own/base power draw (does not overwrite children)."""
+        self._own_power_draw = float(val)
 
     def append_operating_conditions(self, segment, bus): 
         """
@@ -94,7 +131,8 @@ class Hydraulic_System(Systems):
     """
     def __defaults__(self):
         super().__defaults__()
-        self.tag        = 'HydraulicSystem'
+        self.power_draw = 0.0
+        self.tag        = 'hydraulic_system'
 
 class Pneumatic_System(Systems):
     """
@@ -107,4 +145,35 @@ class Pneumatic_System(Systems):
     """
     def __defaults__(self):
         super().__defaults__()
-        self.tag        = 'PneumaticSystem'
+        self.power_draw = 0.0
+        self.tag        = 'pneumatic_system'
+
+class Avionics_System(Systems):
+    """
+    Subclass representing an avionic system.
+
+    Attributes
+    ----------
+    power_draw : float
+        Power consumption of the avionic system, defaults to 3.0
+    """
+    def __defaults__(self):
+        super().__defaults__()
+        self.power_draw = 0.0
+        self.tag        = 'avionics_system'
+
+class Environmental_Control_System(Systems):
+    """
+    Subclass representing an avionic system.
+
+    Attributes
+    ----------
+    power_draw : float
+        Power consumption of the environmental control system, defaults to 3.0
+    """
+    def __defaults__(self):
+        super().__defaults__()
+        self.power_draw = 0.0
+        self.tag        = 'environmental_control_system'
+
+        

@@ -24,6 +24,6 @@ RCAIDE.Library.Components.Powertrain.Sources
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .Coolant_Line                         import Coolant_Line
-from .Electrical_Bus                       import Electrical_Bus
+from .Electrical_Bus                       import Electrical_Bus, Electrical_Line
 from .Fuel_Line                            import Fuel_Line
 
