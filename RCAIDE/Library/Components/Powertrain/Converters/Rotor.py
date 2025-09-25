@@ -170,6 +170,7 @@ class Rotor(Component):
         
         # geometry properties 
         self.number_of_blades                  = 0.0
+        self.number_of_stations                = 20
         self.tip_radius                        = 0.0
         self.hub_radius                        = 0.0
         self.twist_distribution                = 0.0
@@ -205,7 +206,7 @@ class Rotor(Component):
         self.cruise.design_acoustics           = None
         self.cruise.design_performance         = None
         self.cruise.design_SPL_dBA             = None
-        self.cruise.design_blade_pitch_command       = 0.0     
+        self.cruise.design_blade_pitch_command = 0.0     
 
         # operating conditions 
         self.induced_power_factor              = 1.48        # accounts for interference effects
@@ -225,17 +226,22 @@ class Rotor(Component):
         self.electric_propulsion_fraction      = 1.0
  
         # blade optimization parameters     
-        self.optimization_parameters                                    = Data() 
-        self.optimization_parameters.tip_mach_range                     = [0.3,0.7] 
-        self.optimization_parameters.multiobjective_aeroacoustic_weight = 1.0
-        self.optimization_parameters.multiobjective_performance_weight  = 1.0
-        self.optimization_parameters.multiobjective_acoustic_weight     = 1.0
-        self.optimization_parameters.noise_evaluation_angle             = 135 * Units.degrees 
-        self.optimization_parameters.tolerance                          = 1E-4
-        self.optimization_parameters.ideal_SPL_dBA                      = 30
-        self.optimization_parameters.ideal_efficiency                   = 1.0     
-        self.optimization_parameters.ideal_figure_of_merit              = 1.0
-
+        self.design_optimization                                    = Data() 
+        self.design_optimization.solver                             ='SLSQP'
+        self.design_optimization.iterations                         = 200
+        self.design_optimization.solver_sense_step                  = 1E-6
+        self.design_optimization.solver_tolerance                   = 1E-5
+        self.design_optimization.print_iterations                   = False   
+        self.design_optimization.tip_mach_range                     = [0.3,0.7] 
+        self.design_optimization.multiobjective_aeroacoustic_weight = 1.0
+        self.design_optimization.multiobjective_performance_weight  = 1.0
+        self.design_optimization.multiobjective_acoustic_weight     = 1.0
+        self.design_optimization.noise_evaluation_angle             = 135 * Units.degrees 
+        self.design_optimization.tolerance                          = 1E-4
+        self.design_optimization.ideal_SPL_dBA                      = 30
+        self.design_optimization.ideal_efficiency                   = 1.0     
+        self.design_optimization.ideal_figure_of_merit              = 1.0
+        
     def append_operating_conditions(rotor,segment,energy_conditions,noise_conditions=None): 
         append_rotor_conditions(rotor,segment,energy_conditions,noise_conditions)
         return        

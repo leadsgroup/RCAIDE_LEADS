@@ -21,8 +21,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Electric Rotor 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SLSQP', iterations=200,
-                         solver_sense_step=1E-6, solver_tolerance=1E-5, print_iterations=False):
+def design_electric_rotor(electric_rotor, network):
     """
     Computes performance properties of an electrically powered rotor.
     
@@ -105,32 +104,29 @@ def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SL
     RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common.compute_motor_weight
     RCAIDE.Library.Methods.Powertrain.setup_operating_conditions
     """
-
-    if electric_rotor.electronic_speed_controller == None: 
+    if electric_rotor.assigned_electronic_speed_controller not in network.modulators.keys(): 
         raise AssertionError("Electric Speed Controller not defined on propulsor")
     
-    if electric_rotor.electronic_speed_controller.bus_voltage == None: 
-        raise AssertionError("Electric Speed Controller  bus voltage not specified on propulsor") 
-    
-    if electric_rotor.rotor == None:
+    if electric_rotor.assigned_rotor not in network.converters.keys():
         raise AssertionError("Rotor not defined on propulsor")
-    rotor = electric_rotor.rotor
+    else: 
+        rotor = network.converters[electric_rotor.rotor_tag] 
 
-    if electric_rotor.motor == None:
+    if electric_rotor.assigned_motor not in network.converters.keys():
         raise AssertionError("Motor not defined on propulsor")
-    
-    motor = electric_rotor.motor
+    else: 
+        motor = network.converters[electric_rotor.motor_tag]
     
     if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Propeller: 
-        design_propeller(rotor,number_of_stations = number_of_stations)
+        design_propeller(rotor)
         motor.design_torque            = rotor.cruise.design_torque 
         motor.design_angular_velocity  = rotor.cruise.design_angular_velocity 
     elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor:
-        design_prop_rotor(rotor,number_of_stations ,solver_name,iterations,solver_sense_step,solver_tolerance,print_iterations)
+        design_prop_rotor(rotor)
         motor.design_torque            = rotor.hover.design_torque 
         motor.design_angular_velocity  = rotor.hover.design_angular_velocity 
     elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor: 
-        design_lift_rotor(rotor,number_of_stations ,solver_name,iterations,solver_sense_step,solver_tolerance,print_iterations)
+        design_lift_rotor(rotor)
         motor.design_torque            = rotor.hover.design_torque 
         motor.design_angular_velocity  = rotor.hover.design_angular_velocity
     

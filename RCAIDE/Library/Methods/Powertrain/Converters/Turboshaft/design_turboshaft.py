@@ -26,7 +26,7 @@ import numpy                                                                as n
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turboshaft
 # ----------------------------------------------------------------------------------------------------------------------
-def design_turboshaft(turboshaft):  
+def design_turboshaft(turboshaft,network):  
     """
     Designs and sizes a turboshaft engine based on design point conditions and performance requirements.
 
@@ -157,15 +157,16 @@ def design_turboshaft(turboshaft):
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions
     turboshaft.append_operating_conditions(segment,conditions.energy,conditions.noise)  
-            
-    ram                     = turboshaft.ram
-    inlet_nozzle            = turboshaft.inlet_nozzle
-    compressor              = turboshaft.compressor
-    combustor               = turboshaft.combustor
-    high_pressure_turbine   = turboshaft.high_pressure_turbine
-    low_pressure_turbine    = turboshaft.low_pressure_turbine
-    core_nozzle             = turboshaft.core_nozzle
-    
+
+    # extract compoment from network             
+    ram                     = network.converters(turboshaft.ram)
+    inlet_nozzle            = network.converters(turboshaft.inlet_nozzle)
+    compressor              = network.converters(turboshaft.compressor)
+    combustor               = network.converters(turboshaft.combustor)
+    high_pressure_turbine   = network.converters(turboshaft.high_pressure_turbine)
+    low_pressure_turbine    = network.converters(turboshaft.low_pressure_turbine)
+    core_nozzle             = network.converters(turboshaft.core_nozzle)
+                               
     turboshaft_conditions   = conditions.energy.converters[turboshaft.tag]
     ram_conditions          = conditions.energy.converters[ram.tag]     
     inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]

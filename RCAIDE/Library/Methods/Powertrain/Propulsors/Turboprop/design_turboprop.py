@@ -27,7 +27,7 @@ import numpy                                                                as n
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turboshaft
 # ----------------------------------------------------------------------------------------------------------------------   
-def design_turboprop(turboprop):  
+def design_turboprop(turboprop,network):  
     """
     Sizes a turboprop engine based on design point conditions and computes its performance characteristics.
 
@@ -145,14 +145,16 @@ def design_turboprop(turboprop):
     segment                                               = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions                              = conditions 
     turboprop.append_operating_conditions(segment,conditions.energy,conditions.noise)       
-         
-    ram                                                   = turboprop.ram
-    inlet_nozzle                                          = turboprop.inlet_nozzle
-    compressor                                            = turboprop.compressor
-    combustor                                             = turboprop.combustor
-    high_pressure_turbine                                 = turboprop.high_pressure_turbine
-    low_pressure_turbine                                  = turboprop.low_pressure_turbine
-    core_nozzle                                           = turboprop.core_nozzle  
+        
+     # extract compoment from network    
+    ram                     = network.converters(turboprop.ram)
+    inlet_nozzle            = network.converters(turboprop.inlet_nozzle)
+    compressor              = network.converters(turboprop.compressor)
+    combustor               = network.converters(turboprop.combustor)
+    high_pressure_turbine   = network.converters(turboprop.high_pressure_turbine)
+    low_pressure_turbine    = network.converters(turboprop.low_pressure_turbine)
+    core_nozzle             = network.converters(turboprop.core_nozzle)
+    
 
     # unpack component conditions
     turboprop_conditions                                  = conditions.energy.propulsors[turboprop.tag]

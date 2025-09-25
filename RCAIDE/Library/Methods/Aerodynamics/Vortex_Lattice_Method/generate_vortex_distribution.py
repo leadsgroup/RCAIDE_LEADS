@@ -434,7 +434,7 @@ def generate_control_point_vortex_distribution(geometry,settings):
     VD.n_fus      = 0   
     for fus in geometry.fuselages:
         if show_prints: print('discretizing ' + fus.tag)
-        VD = generate_fuselage_and_nacelle_vortex_distribution(VD,fus,n_cw_fuse,n_sw_fuse,precision,model_fuselage)
+        VD = generate_fuselage_and_vortex_distribution(VD,fus,n_cw_fuse,n_sw_fuse,precision,model_fuselage)
 
 
     # ---------------------------------------------------------------------------------------
@@ -1017,10 +1017,9 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
 # ----------------------------------------------------------------------
 #  Discretize Fuselage
 # ----------------------------------------------------------------------
-def generate_fuselage_and_nacelle_vortex_distribution(VD,fus,n_cw,n_sw,precision,model_geometry=False):
-    """ This generates the vortex distribution points on a fuselage or nacelle component
-    Assumptions: 
-    If nacelle has segments defined, the mean width and height of the nacelle is used
+def generate_fuselage_and_vortex_distribution(VD,fus,n_cw,n_sw,precision,model_geometry=False):
+    """ This generates the vortex distribution points on a fuselage component
+    
     Source:   
     None
     

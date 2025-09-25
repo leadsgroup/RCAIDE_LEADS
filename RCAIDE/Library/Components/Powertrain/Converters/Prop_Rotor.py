@@ -89,7 +89,7 @@ class Prop_Rotor(Rotor):
         One engine inoperative performance parameters
         (Similar structure to hover and cruise attributes)
 
-    optimization_parameters : Data
+    design_optimization : Data
         - multiobjective_performance_weight : float
             Weight factor for multi-objective optimization. Default is 0.5.
 
@@ -194,4 +194,4 @@ class Prop_Rotor(Rotor):
         self.cruise.design_power_coefficient     = None  
         self.cruise.design_torque_coefficient    = None       
         
-        self.optimization_parameters.multiobjective_performance_weight  = 0.5
+        self.design_optimization.multiobjective_performance_weight  = 0.5

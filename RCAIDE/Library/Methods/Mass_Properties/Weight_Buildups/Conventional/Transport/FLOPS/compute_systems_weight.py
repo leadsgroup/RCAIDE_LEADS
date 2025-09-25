@@ -108,6 +108,7 @@ def compute_systems_weight(vehicle):
     NENG = 0
     FNEW = 0
     FNEF = 0
+    FNAC = 0
     NPF  = vehicle.first_class_passengers      
     NPB  = vehicle.business_class_passengers   
     NPT  = vehicle.economy_class_passengers  
@@ -118,12 +119,10 @@ def compute_systems_weight(vehicle):
                 FNEW += 1
             else:
                 FNEF += 1
-            if 'nacelle' in propulsor: 
-                if propulsor.nacelle !=  None:                
-                    nacelle =  propulsor.nacelle
-                    FNAC    = nacelle.diameter / Units.ft
-            else:
-                FNAC    = 0
+        for nacelle in network.nacelles:                
+            nacelle = propulsor.nacelle
+            FNAC    += nacelle.diameter / Units.ft
+            
     VMAX     = vehicle.flight_envelope.design_mach_number
     SFLAP    = 0
     ref_wing = None
@@ -169,7 +168,7 @@ def compute_systems_weight(vehicle):
     WFURN   = 127 * NFLCR + 112 * NPF + 78 * NPB + 44 * NPT \
                 + 2.6 * XLP * (WF + DF) * NFUSE  # furnishing weight
     WAC     = (3.2 * (FPAREA * DF) ** 0.6 + 9 * NPASS ** 0.83) * VMAX + 0.075 * WAVONC  # ac weight
-    WAI     = ref_wing.spans.projected / Units.ft * 1. / np.cos(ref_wing.sweeps.quarter_chord) + 3.8 * FNAC * NENG + 1.5 * WF  # anti-ice weight
+    WAI     = ref_wing.spans.projected / Units.ft * 1. / np.cos(ref_wing.sweeps.quarter_chord) + 3.8 * FNAC + 1.5 * WF  # anti-ice weight
     output                      = Data()
     output.W_flight_control    = WSC * Units.lbs
     output.W_apu               = WAPU * Units.lbs

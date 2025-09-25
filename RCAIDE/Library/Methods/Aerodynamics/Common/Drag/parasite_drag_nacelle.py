@@ -54,11 +54,9 @@ def parasite_drag_nacelle(state,settings,geometry):
     """
      
     # Estimating nacelle drag 
-    for network in  geometry.networks: 
-        for propulsor in network.propulsors:  
-            if 'nacelle' in propulsor:
-                if propulsor.nacelle != None:
-                    nacelle_drag(state,settings,propulsor.nacelle)
+    for network in  geometry.networks:
+        for  nacelle in  network.nacelles: 
+            nacelle_drag(state,settings,nacelle)
     return     
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Nacelle Drag 

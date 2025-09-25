@@ -25,7 +25,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_turbofan(turbofan):
+def design_turbofan(turbofan, network):
     """
     Computes performance properties of a turbofan engine at the design point by linking
     and analyzing the thermodynamic cycle of its components.
@@ -170,17 +170,18 @@ def design_turbofan(turbofan):
     segment.state.conditions = conditions 
     turbofan.append_operating_conditions(segment,conditions.energy,conditions.noise)
                     
-    ram                       = turbofan.ram
-    inlet_nozzle              = turbofan.inlet_nozzle
-    fan                       = turbofan.fan
-    low_pressure_compressor   = turbofan.low_pressure_compressor
-    high_pressure_compressor  = turbofan.high_pressure_compressor
-    combustor                 = turbofan.combustor
-    high_pressure_turbine     = turbofan.high_pressure_turbine
-    low_pressure_turbine      = turbofan.low_pressure_turbine
-    core_nozzle               = turbofan.core_nozzle
-    fan_nozzle                = turbofan.fan_nozzle 
-    bypass_ratio              = turbofan.bypass_ratio  
+    # extract compoment from network    
+    ram                       = network.converters(turbofan.ram_tag)
+    inlet_nozzle              = network.converters(turbofan.inlet_nozzle_tag)
+    fan                       = network.converters(turbofan.fan_tag)
+    low_pressure_compressor   = network.converters(turbofan.low_pressure_compressor_tag)
+    high_pressure_compressor  = network.converters(turbofan.high_pressure_compressor_tag)
+    combustor                 = network.converters(turbofan.combustor_tag)
+    high_pressure_turbine     = network.converters(turbofan.high_pressure_turbine_tag)
+    low_pressure_turbine      = network.converters(turbofan.low_pressure_turbine_tag)
+    core_nozzle               = network.converters(turbofan.core_nozzle_tag)
+    fan_nozzle                = network.converters(turbofan.fan_nozzle_tag )
+    bypass_ratio              = network.converters(turbofan.bypass_ratio_tag ) 
 
     # unpack component conditions
     turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]

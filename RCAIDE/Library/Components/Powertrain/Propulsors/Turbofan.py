@@ -142,18 +142,17 @@ class Turbofan(Propulsor):
     """
     def __defaults__(self):    
         # setting the default values
-        self.tag                                        = 'Turbofan'  
-        self.nacelle                                    = None 
-        self.fan                                        = None 
-        self.ram                                        = None 
-        self.inlet_nozzle                               = None 
-        self.low_pressure_compressor                    = None 
-        self.high_pressure_compressor                   = None 
-        self.low_pressure_turbine                       = None 
-        self.high_pressure_turbine                      = None 
-        self.combustor                                  = None 
-        self.core_nozzle                                = None 
-        self.fan_nozzle                                 = None       
+        self.tag                                        = 'Turbofan'   
+        self.fan_tag                                    = []
+        self.ram_tag                                    = []
+        self.inlet_nozzle_tag                           = []
+        self.low_pressure_compressor_tag                = []
+        self.high_pressure_compressor_tag               = []
+        self.low_pressure_turbine_tag                   = []
+        self.high_pressure_turbine_tag                  = []
+        self.combustor_tag                              = []
+        self.core_nozzle_tag                            = []
+        self.fan_nozzle_tag                             = []      
         self.diameter                                   = 0.0      
         self.length                                     = 0.0
         self.height                                     = 0.0     # Engine centerline heigh above the ground plane 

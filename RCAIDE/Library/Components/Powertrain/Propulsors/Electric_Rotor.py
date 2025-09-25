@@ -79,7 +79,8 @@ class Electric_Rotor(Propulsor):
         self.motor                         = None
         self.rotor                         = None 
         self.electronic_speed_controller   = None  
-        self.active_crypgenic_tanks_tanks  = None 
+        self.active_crypgenic_tanks_tanks  = None
+                                 
 
     def intialize_propulsor_design(self,network):
         """

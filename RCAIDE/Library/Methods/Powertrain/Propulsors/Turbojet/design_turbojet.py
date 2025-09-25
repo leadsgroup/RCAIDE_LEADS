@@ -25,7 +25,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turbojet
 # ----------------------------------------------------------------------------------------------------------------------   
-def design_turbojet(turbojet):  
+def design_turbojet(turbojet,network):  
     """
     Designs a turbojet engine by computing performance properties and sizing components based on design conditions.
     
@@ -150,14 +150,15 @@ def design_turbojet(turbojet):
     segment.state.conditions                       = conditions 
     turbojet.append_operating_conditions(segment,conditions.energy,conditions.noise)        
     
-    ram                       = turbojet.ram
-    inlet_nozzle              = turbojet.inlet_nozzle
-    low_pressure_compressor   = turbojet.low_pressure_compressor
-    high_pressure_compressor  = turbojet.high_pressure_compressor
-    combustor                 = turbojet.combustor
-    high_pressure_turbine     = turbojet.high_pressure_turbine
-    low_pressure_turbine      = turbojet.low_pressure_turbine
-    core_nozzle               = turbojet.core_nozzle
+    # extract compoment from network 
+    ram                       = network.converters(turbojet.ram_tag)
+    inlet_nozzle              = network.converters(turbojet.inlet_nozzle_tag)
+    low_pressure_compressor   = network.converters(turbojet.low_pressure_compressor_tag)
+    high_pressure_compressor  = network.converters(turbojet.high_pressure_compressor_tag)
+    combustor                 = network.converters(turbojet.combustor_tag)
+    high_pressure_turbine     = network.converters(turbojet.high_pressure_turbine_tag)
+    low_pressure_turbine      = network.converters(turbojet.low_pressure_turbine_tag)
+    core_nozzle               = network.converters(turbojet.core_nozzle_tag)
 
     # unpack component conditions
     turbojet_conditions     = conditions.energy.propulsors[turbojet.tag]

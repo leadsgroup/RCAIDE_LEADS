@@ -40,7 +40,7 @@ except ImportError:
 # ---------------------------------------------------------------------------------------------------------------------- 
 def import_vsp_vehicle(tag,
                        main_wing_tag = None,
-                       network_type=None, propulsor_type = None, 
+                       propulsor_type = None, 
                        blended_wing_body = False ,
                        last_blended_wing_body_center_body_section_index = None, 
                        units_type='SI',
@@ -131,13 +131,9 @@ def import_vsp_vehicle(tag,
     		tip_radius                                 [m]
     	        hub_radius                                 [m] 
  
-    """  	
-
-    if isinstance(network_type,RCAIDE.Framework.Networks.Network) != True:
-        raise Exception('Vehicle energy network type must be defined. \n Choose from list in RCAIDE.Framework.Networks') 
-
-    if isinstance(propulsor_type,RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor ) != True:
-        raise Exception('Vehicle propulsor type must be defined. \n Choose from list in RCAIDE.Library.Components.Propulsors')     
+    """
+    # define network
+    network =  RCAIDE.Framework.Networks.Network() 
 
     # Get the last path from sys.path
     system_path = sys.path[0]
@@ -242,142 +238,42 @@ def import_vsp_vehicle(tag,
         if calculate_wetted_area:
             wing.areas.wetted = measurements[vsp.GetGeomName(wing_id)] * (units_factor**2)  
         vehicle.append_component(wing)		 
-        
+         
     # ------------------------------------------------------------------			    
-    # Read Enegy Network 
-    # ------------------------------------------------------------------
-    network =  deepcopy(network_type)  
-    i       = 0
-    # Condition when equal number of rotors and nacelles are defined 
-    if len(vsp_rotors) == len(vsp_nacelles):
-        for idx , (rotor_id,nacelle_id) in enumerate(zip(vsp_rotors, vsp_nacelles)):
-            # define new propulsor 
-            propulsor = deepcopy(propulsor_type) 
-            propulsor.tag =  'propulsor_' +  str(i+1)
+    # Read Nacelles 
+    # ------------------------------------------------------------------    
+    for idx ,  nacelle_id in enumerate(vsp_nacelles): 
+        nacelle = read_vsp_nacelle(nacelle_id,vsp_nacelle_type[idx], units_type)
+        if calculate_wetted_area:
+            nacelle.areas.wetted = measurements[vsp.GetGeomName(nacelle_id)] * (units_factor**2)           
+        network.nacelles.appenda(nacelle)   
+        
+        # If symmetry is defined
+        if vsp.GetParmVal(nacelle_id, 'Sym_Planar_Flag', 'Sym')== 2.0: 
+            nacelle_sym = deepcopy(nacelle)
+            nacelle_sym.origin[0][1] *= -1
+            nacelle_sym.areas.wetted = nacelle.areas.wetted 
+            network.nacelles.appenda(nacelle_sym) 
+            
+
+
+    # ------------------------------------------------------------------			    
+    # Read Rotors 
+    # ------------------------------------------------------------------   
+    for idx , rotor_id in enumerate(vsp_rotors): 
+        # Rotor 
+        rotor           = read_vsp_rotor(rotor_id,units_type)
+        rotor.tag       = vsp.GetGeomName(rotor_id) 
+        network.converters.append(rotor) 
+        
+        # If symmetry is defined
+        if vsp.GetParmVal(rotor_id, 'Sym_Planar_Flag', 'Sym')== 2.0:
             
             # Rotor 
-            rotor           = read_vsp_rotor(rotor_id,units_type)
-            rotor.tag       = vsp.GetGeomName(rotor_id) 
-            propulsor.rotor = rotor
-            
-            # Nacelle 
-            nacelle = read_vsp_nacelle(nacelle_id,vsp_nacelle_type[idx], units_type)
-            if calculate_wetted_area:
-                nacelle.areas.wetted = measurements[vsp.GetGeomName(nacelle_id)] * (units_factor**2)           
-            propulsor.nacelle = nacelle          
-             
-            # Append to Network 
-            network.propulsors.append(propulsor)
-            
-            
-            # If symmetry is defined
-            if vsp.GetParmVal(rotor_id, 'Sym_Planar_Flag', 'Sym')== 2.0:
-                # update index 
-                i += 1
-                
-                # define new propulsor 
-                propulsor =  deepcopy(propulsor_type) 
-                propulsor.tag =  'propulsor_' +  str(i+1)
-                
-                
-                # Rotor 
-                rotor_sym = deepcopy(rotor)
-                rotor_sym.origin[0][1] = - rotor_sym.origin[0][1] 
-                propulsor.rotor = rotor_sym
-                
-        
-                # Nacelle 
-                nacelle_sym = deepcopy(nacelle)
-                nacelle_sym.origin[0][1] = - nacelle_sym.origin[0][1]  
-                nacelle_sym.areas.wetted = nacelle.areas.wetted
-                propulsor.nacelle = nacelle          
-                 
-                # Append to Network             
-                network.propulsors.append(propulsor)
-                
-    # Condition when only nacelles are defined 
-    elif (len(vsp_rotors) ==  0) and (len(vsp_nacelles) > 0):
-
-        for idx ,  nacelle_id in enumerate(vsp_nacelles):
-            # define new propulsor 
-            propulsor = deepcopy(propulsor_type) 
-            propulsor.tag =  'propulsor_' +  str(i+1)
-             
-            # Nacelle 
-            nacelle = read_vsp_nacelle(nacelle_id,vsp_nacelle_type[idx], units_type)
-            if calculate_wetted_area:
-                nacelle.areas.wetted = measurements[vsp.GetGeomName(nacelle_id)] * (units_factor**2)           
-            propulsor.nacelle = nacelle          
-             
-            # Append to Network 
-            network.propulsors.append(propulsor)
-            
-            
-            # If symmetry is defined
-            if vsp.GetParmVal(nacelle_id, 'Sym_Planar_Flag', 'Sym')== 2.0:
-                # update index 
-                i += 1
-                
-                # define new propulsor 
-                propulsor =  deepcopy(propulsor_type) 
-                propulsor.tag =  'propulsor_' +  str(i+1)
-                 
-        
-                # Nacelle 
-                nacelle_sym = deepcopy(nacelle)
-                nacelle_sym.origin[0][1] *= -1
-                nacelle_sym.areas.wetted = nacelle.areas.wetted
-                propulsor.nacelle = nacelle_sym          
-                 
-                # Append to Network             
-                network.propulsors.append(propulsor)
-
-    # Condition when only rotors are defined 
-    elif (len(vsp_rotors) >  0) and (len(vsp_nacelles) == 0):
-        for idx , rotor_id in enumerate( vsp_rotors):
-            # define new propulsor 
-            propulsor = deepcopy(propulsor_type) 
-            propulsor.tag =  'propulsor_' +  str(i+1)
-            
-            # Rotor 
-            rotor           = read_vsp_rotor(rotor_id,units_type)
-            rotor.tag       = vsp.GetGeomName(rotor_id) 
-            propulsor.rotor = rotor
-
-            # Nacelle 
-            nacelle = read_vsp_nacelle(nacelle_id,vsp_nacelle_type[idx], units_type)
-            if calculate_wetted_area:
-                nacelle.areas.wetted = measurements[vsp.GetGeomName(nacelle_id)] * (units_factor**2)           
-            propulsor.nacelle = nacelle                      
-            
-            # Append to Network 
-            network.propulsors.append(propulsor)
-            
-            
-            # If symmetry is defined
-            if vsp.GetParmVal(rotor_id, 'Sym_Planar_Flag', 'Sym')== 2.0:
-                # update index 
-                i += 1
-                
-                # define new propulsor 
-                propulsor =  deepcopy(propulsor_type) 
-                propulsor.tag =  'propulsor_' +  str(i+1)
-                
-                
-                # Rotor 
-                rotor_sym = deepcopy(rotor)
-                rotor_sym.origin[0][1] = - rotor_sym.origin[0][1] 
-                propulsor.rotor = rotor_sym  
-                propulsor.nacelle = nacelle          
-                 
-                # Append to Network             
-                network.propulsors.append(propulsor) 
-            
-    else:
-        print ('Unequal numbers of rotors and nacelles defined. Skipping propulsor definition.') 
-                
-    vehicle.networks.append(network)
-   
+            rotor_sym = deepcopy(rotor)
+            rotor_sym.origin[0][1] = - rotor_sym.origin[0][1] 
+            network.converters.append(rotor_sym) 
+    vehicle.networks.append(network) 
     
     # get origin of fuselage
     vsp_origin = 0
@@ -385,8 +281,7 @@ def import_vsp_vehicle(tag,
         vsp_origin = np.minimum(vsp_origin, fuselage.origin[0][0])
         
     # shift all Components to new origin
-    origin_shift =  -vsp_origin
-    
+    origin_shift =  -vsp_origin 
 
     for network in vehicle.networks:
         for p_tag, p_item in network.items():
