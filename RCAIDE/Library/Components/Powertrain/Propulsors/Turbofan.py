@@ -169,6 +169,7 @@ class Turbofan(Propulsor):
         self.reference_pressure                         = 1.01325*10**5 
         self.design_thrust                              = 0.0
         self.mass_flow_rate_design                      = 0.0
+        self.assigned_converters                        = Data() 
 
         self.emission_indices                           = Data()  
         self.emission_indices.NOx                       = None

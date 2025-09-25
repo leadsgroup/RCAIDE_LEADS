@@ -68,11 +68,13 @@ class Network(Component):
         """ This sets the default values for the network to function.
         """        
         self.tag                          = 'network'
-        self.propulsors                   = Container()  
-        self.busses                       = Container()
-        self.coolant_lines                = Container()
-        self.fuel_lines                   = Container()
+        self.propulsors                   = Container() 
         self.converters                   = Container()
+        self.modulators                   = Container()
+        self.distributors                 = Container()
+        self.sources                      = Container()
+        self.systems                      = Container() 
+        self.coolant_lines                = Container()
         self.identical_propulsors         = True 
         self.reverse_thrust               = False
         self.wing_mounted                 = True   
@@ -84,16 +86,26 @@ class Network(Component):
         """  
         # unpack   
         conditions           = state.conditions 
-        busses               = network.busses 
-        fuel_lines           = network.fuel_lines 
+        propulsors           = network.propulsors  
+        converters           = network.converters  
+        modulators           = network.modulators  
+        distributors         = network.distributors
+        sources              = network.sources     
+        systems              = network.systems
         coolant_lines        = network.coolant_lines
-        converters           = network.converters 
         total_thrust         = 0. * state.ones_row(3) 
         total_mech_power     = 0. * state.ones_row(1) 
         total_elec_power     = 0. * state.ones_row(1) 
         total_moment         = 0. * state.ones_row(3)  
         total_mdot           = 0. * state.ones_row(1)   
         reverse_thrust       = network.reverse_thrust 
+
+
+
+
+
+
+
     
         # ----------------------------------------------------------       
         # Section 1.0 Propulsor Performance 

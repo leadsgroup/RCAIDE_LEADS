@@ -23,7 +23,7 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_performance
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of a turbofan engine by analyzing the thermodynamic cycle.
     
@@ -189,7 +189,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     """ 
     conditions                = state.conditions   
     noise_conditions          = conditions.noise.propulsors[turbofan.tag] 
-    turbofan_conditions       = conditions.energy.propulsors[turbofan.tag] 
+    turbofan_conditions       = conditions.energy.propulsors[turbofan.tag]
     U0                        = conditions.freestream.velocity
     T                         = conditions.freestream.temperature
     P                         = conditions.freestream.pressure
@@ -393,19 +393,23 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     
     # compute electrical power if generated/supplied  
     power_elec = 0*state.ones_row(1)
-    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
-        compressor_motor_conditions                 = conditions.energy.converters[low_pressure_compressor.motor.tag] 
-        compressor_motor_conditions.outputs.power   = power *conditions.energy.hybrid_power_split_ratio   
-        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
-        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
-        power_elec =  compressor_motor_conditions.outputs.power  
-    
-    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
-        compressor_generator_conditions                = conditions.energy.converters[low_pressure_compressor.generator.tag] 
-        compressor_generator_conditions.inputs.power   = power *conditions.energy.hybrid_power_split_ratio  
-        compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
-        compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
-        power_elec =  compressor_generator_conditions.inputs.power  
+    for converter in turbofan.assigned_converters:
+
+        if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
+            compressor_motor_conditions                 = conditions.energy.converters[converter] 
+            compressor_motor_conditions.outputs.power   = power * conditions.energy.hybrid_power_split_ratio   
+            compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
+            compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
+            power_elec =  compressor_motor_conditions.outputs.power  
+        
+        if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
+            compressor_generator_conditions                = conditions.energy.converters[converter] 
+            compressor_generator_conditions.inputs.power   = power * conditions.energy.hybrid_power_split_ratio + systems_power_draw
+            compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
+            compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
+            power_elec =  compressor_generator_conditions.inputs.power  
+
+    power_elec
     
   
     # store data

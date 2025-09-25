@@ -8,6 +8,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
+import RCAIDE
+from RCAIDE.Framework.Core                                    import Data
 from RCAIDE.Library.Components                                import Component
 from RCAIDE.Library.Components.Component                      import Container    
 from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line import *
@@ -60,12 +62,12 @@ class Fuel_Line(Component):
             None
         """          
         self.tag                           = 'fuel_line'  
-        self.fuel_tanks                    = Container() 
-        self.assigned_propulsors           = []
-        self.assigned_converters           = [] 
-        self.assigned_modulators           = [] 
-        self.assigned_sources              = []
-        self.converters                    = Container()       
+        self.assigned_propulsors           = Data()
+        self.assigned_converters           = Data() 
+        self.assigned_distributors         = Data() 
+        self.assigned_modulators           = Data() 
+        self.assigned_sources              = Data()
+        self.assigned_systems              = Data()   
         self.active                        = True 
         self.efficiency                    = 1.0
         self.inner_diameter                = 0.03
