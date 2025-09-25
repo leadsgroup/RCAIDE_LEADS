@@ -30,16 +30,9 @@ def energy(mission):
                 for system in bus.assigned_systems[0]:
                     system.bus_voltage = bus.voltage                            
                 
-            
-            # design 
-            
-            
-            
-            
-            
-            
-            
-            
+            # design propulsor 
+            for propulsor in network.propulsor:
+                propulsor.intialize_propulsor_design(network)  
             
             if type(network) == RCAIDE.Framework.Networks.Hybrid:
                 if segment.hybrid_power_split_ratio == None:

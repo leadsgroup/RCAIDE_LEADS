@@ -9,8 +9,9 @@
 ## RCAIDE imports   
 from RCAIDE.Framework.Core      import Data
 from .                          import Propulsor
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet          .append_turbojet_conditions     import append_turbojet_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet          .compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.design_turbojet                import design_turbojet
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.append_turbojet_conditions     import append_turbojet_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data
  
  
 # ----------------------------------------------------------------------
@@ -161,9 +162,15 @@ class Turbojet(Propulsor):
         self.areas.wetted                                = 0.0
         self.areas.maximum                               = 0.0
         self.areas.exit                                  = 0.0
-        self.areas.inflow                                = 0.0 
-
-
+        self.areas.inflow                                = 0.0  
+    
+    def intialize_propulsor_design(self,network):
+        """
+        Designs the propulsor.
+        """          
+        design_turbojet(self,network)
+        return
+    
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         append_turbojet_conditions(self,segment,energy_conditions,noise_conditions)
         return

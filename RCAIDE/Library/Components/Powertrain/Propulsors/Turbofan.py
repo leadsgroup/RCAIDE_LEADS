@@ -10,8 +10,9 @@
  # RCAIDE imports
 from RCAIDE.Framework.Core     import Data
 from .                         import Propulsor
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .append_turbofan_conditions     import append_turbofan_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan                import design_turbofan
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.append_turbofan_conditions     import append_turbofan_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
  
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fan Component
@@ -181,6 +182,13 @@ class Turbofan(Propulsor):
         
         self.OpenVSP_flow_through                       = False
     
+    def intialize_propulsor_design(self,network):
+        """
+        Designs the propulsor.
+        """          
+        design_turbofan(self,network)
+        return 
+        
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
         Appends operating conditions to the segment.

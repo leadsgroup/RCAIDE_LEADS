@@ -8,7 +8,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports 
 import  RCAIDE
-from .   import Propulsor 
+from .   import Propulsor
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.design_electric_rotor                      import design_electric_rotor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.unpack_electric_rotor_unknowns             import unpack_electric_rotor_unknowns
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.pack_electric_rotor_residuals              import pack_electric_rotor_residuals
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.append_electric_rotor_conditions           import append_electric_rotor_conditions
@@ -80,6 +81,13 @@ class Electric_Rotor(Propulsor):
         self.electronic_speed_controller   = None  
         self.active_crypgenic_tanks_tanks  = None 
 
+    def intialize_propulsor_design(self,network):
+        """
+        Designs the propulsor.
+        """            
+        design_electric_rotor(self,network)
+        return
+    
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
         Appends operating conditions to the segment.

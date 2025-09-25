@@ -10,8 +10,9 @@
  # RCAIDE imports   
 from .                     import Propulsor
 from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop          .append_turboprop_conditions     import append_turboprop_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop          .compute_turboprop_performance   import compute_turboprop_performance, reuse_stored_turboprop_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.design_turboprop               import design_turboprop
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.append_turboprop_conditions    import append_turboprop_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_turboprop_performance  import compute_turboprop_performance, reuse_stored_turboprop_data
  
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fan Component
@@ -117,6 +118,13 @@ class Turboprop(Propulsor):
         self.compressor_nondimensional_massflow         = 0.0 
         self.reference_temperature                      = 288.15
         self.reference_pressure                         = 1.01325*10**5  
+
+    def intialize_propulsor_design(self,network):
+        """
+        Designs the propulsor.
+        """          
+        design_turboprop(self,network)
+        return
     
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
