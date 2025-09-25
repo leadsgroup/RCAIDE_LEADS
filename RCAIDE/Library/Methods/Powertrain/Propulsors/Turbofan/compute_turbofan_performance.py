@@ -408,9 +408,6 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
             compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
             compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
             power_elec =  compressor_generator_conditions.inputs.power  
-
-    power_elec
-    
   
     # store data
     core_nozzle_res = Data(

@@ -20,6 +20,10 @@ def energy(mission):
                     raise AssertionError('Hybridization power split ratio not set! Specify in mission segment') 
                 if segment.battery_fuel_cell_power_split_ratio == None:
                     raise AssertionError('Battery/Fuel cell power split ratio not set! Specify in mission segment')                 
+            elif type(network) == RCAIDE.Framework.Networks.Network: 
+                if segment.hybrid_power_split_ratio == None:                
+                    segment.hybrid_power_split_ratio = 0.0
+                    segment.battery_fuel_cell_power_split_ratio = 0.0              
             elif type(network) == RCAIDE.Framework.Networks.Fuel: 
                 if segment.hybrid_power_split_ratio == None:                
                     segment.hybrid_power_split_ratio = 0.0
