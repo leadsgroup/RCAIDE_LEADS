@@ -152,10 +152,7 @@ class Network(Component):
                 
         # ------------------------------------------------------------------------------------------------------------------- 
         # Section 2.0 Converters
-        # -------------------------------------------------------------------------------------------------------------------  
-        # ------------------------------------------------------------------------------------------------------------------- 
-        # Section 2.0 Converters
-        # -------------------------------------------------------------------------------------------------------------------  
+        # -------------------------------------------------------------------------------------------------------------------
         ## 2.1 Fuel Converters 
         #for fuel_line in fuel_lines: 
             #if fuel_line.active: 
@@ -208,83 +205,46 @@ class Network(Component):
         # Section 3.0 Sources
         # ----------------------------------------------------------
 
-        # 3.2 Electric Sources 
         time               = state.conditions.frames.inertial.time[:,0] 
         delta_t            = np.diff(time)
-         
+        
         for distributor in distributors:
-            # ------------------------------------------------------------------------------------------------------------------- 
-            # 3.1 Fuel Tanks 
-            # -------------------------------------------------------------------------------------------------------------------  
-            if distributor.active and isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-    
-                # Update total mass flow of system   
-                total_mdot  += conditions.energy.fuel_lines[distributor.tag].fuel_mass_flow_rate
-    
-                # Determine mass flow from each tank
-                for tank in distributor.fuel_tanks:
-                    tank.compute_tank_properties(state,distributor)   
-    
-             
-            if distributor.active and isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                for t_idx in range(state.numerics.number_of_control_points):            
-                    stored_results_flag       = False
-                    stored_battery_cell_tag   = None
-    
-                    # ------------------------------------------------------------------------------------------------------------------- 
-                    # 3.2 Batteries
-                    # -------------------------------------------------------------------------------------------------------------------                
-                    for battery_module in  network.battery_modules:                   
-                        if distributor.identical_battery_modules == False:
+            for source_tag in distributor.source_tags: 
+                source =  network.sources[source_tag]
+                if issubclass(source,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                    # Determine mass flow from each tank 
+                    source.compute_tank_properties(state,distributor)   
+        
+                    # Update total mass flow of system   
+                    total_mdot  += conditions.energy.fuel_lines[distributor.tag].fuel_mass_flow_rate
+                
+
+                # 3.2 Electric Sources 
+                for t_idx in range(state.numerics.number_of_control_points):   
+                    if issubclass(source,RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):          
+                        stored_results_flag       = False
+                        stored_battery_cell_tag   = None
+                  
+                        if distributor.identical_battery_modules == False and stored_results_flag == False: 
                             # run analysis  
-                            stored_results_flag, stored_battery_cell_tag =  battery_module.energy_calc(state,distributor,coolant_lines, t_idx, delta_t)
+                            stored_results_flag, stored_battery_cell_tag =  source.energy_calc(state,distributor,coolant_lines, t_idx, delta_t)
                         else:             
-                            if stored_results_flag == False: 
-                                # run battery analysis 
-                                stored_results_flag, stored_battery_cell_tag  =  battery_module.energy_calc(state,distributor,coolant_lines, t_idx, delta_t)
-                            else:
-                                # use previous battery results 
-                                battery_module.reuse_stored_data(state,distributor,stored_results_flag, stored_battery_cell_tag)
-    
-                    # ------------------------------------------------------------------------------------------------------------------- 
-                    # 3.3 Fuel Cell Stacks
-                    # ------------------------------------------------------------------------------------------------------------------- 
-                    stored_results_flag       = False   
-                    stored_fuel_cell_tag      = None                  
-                    for fuel_cell_stack in  network.fuel_cell_stacks:                   
-                        if distributor.identical_fuel_cell_stacks == False:
-                            # run analysis  
-                            stored_results_flag, stored_fuel_cell_tag =  fuel_cell_stack.energy_calc(state,distributor,coolant_lines, t_idx, delta_t)
-                        else:             
-                            if stored_results_flag == False: 
-                                # run battery analysis 
-                                stored_results_flag, stored_fuel_cell_tag  =  fuel_cell_stack.energy_calc(state,distributor,coolant_lines, t_idx, delta_t)
-                            else:
-                                # use previous battery results 
-                                fuel_cell_stack.reuse_stored_data(state,distributor,stored_results_flag, stored_fuel_cell_tag)
-    
-                        # compute mass flow rate                    
-                        conditions.energy.busses[distributor.tag].fuel_mass_flow_rate[t_idx]  = state.conditions.energy.busses[distributor.tag].fuel_cell_stacks[fuel_cell_stack.tag].H2_mass_flow_rate[t_idx]      
-    
-    
+                            # use previous battery results 
+                            source.reuse_stored_data(state,distributor,stored_results_flag, stored_battery_cell_tag)
+                
                     # Step 3: Compute bus properties          
                     distributor.compute_distributor_conditions(state,t_idx,delta_t)
-    
-                    # Step 4 : Battery Thermal Management Calculations                    
-                    for coolant_line in coolant_lines:
-                        if t_idx != state.numerics.number_of_control_points-1: 
-                            for heat_exchanger in coolant_line.heat_exchangers: 
-                                heat_exchanger.compute_heat_exchanger_performance(state,distributor,coolant_line,delta_t[t_idx],t_idx) 
-                            for reservoir in coolant_line.reservoirs:   
-                                reservoir.compute_reservior_coolant_temperature(state,coolant_line,delta_t[t_idx],t_idx)
-    
-                # Update total mass flow of system   
-                total_mdot   += conditions.energy.busses[distributor.tag].fuel_mass_flow_rate
-    
-                # Determine mass flow from each tank
-                for tank in distributor.fuel_tanks:  
-                    tank.compute_tank_properties(state,distributor) 
-        
+
+        # ------------------------------------------------------------------------------------------------------------------- 
+        # Section 4.0  Thermal Management
+        # -------------------------------------------------------------------------------------------------------------------        
+        for t_idx in range(state.numerics.number_of_control_points):        
+            for coolant_line in network.coolant_lines:
+                if t_idx != state.numerics.number_of_control_points-1: 
+                    for heat_exchanger in coolant_line.heat_exchangers: 
+                        heat_exchanger.compute_heat_exchanger_performance(state,distributor,coolant_line,delta_t[t_idx],t_idx) 
+                    for reservoir in coolant_line.reservoirs:   
+                        reservoir.compute_reservior_coolant_temperature(state,coolant_line,delta_t[t_idx],t_idx)
                                  
         if reverse_thrust ==  True:
             total_thrust =  total_thrust * -1    
