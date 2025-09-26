@@ -38,11 +38,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          echo "[run]" > .coveragerc
-          echo "omit = */RCAIDE/Framework/External_Interfaces/*" >> .coveragerc
-          echo "       */RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/*" >> .coveragerc
-          echo "  */RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/*" >> .coveragerc
-          pytest --cov=RCAIDE --cov-report=xml -v
+          pytest --cov=RCAIDE --cov-report=xml --cov-config=.coveragerc -v
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -58,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-2022]
         python-version: ["3.8", "3.9","3.10", "3.11", "3.12","3.13"]
 
     steps:
@@ -78,11 +74,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          echo "[run]" > .coveragerc
-          echo "omit = */RCAIDE/Framework/External_Interfaces/*" >> .coveragerc
-          echo "       */RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/*" >> .coveragerc
-          echo "  */RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/*" >> .coveragerc
-          pytest --cov=RCAIDE --cov-report=xml -v
+          pytest --cov=RCAIDE --cov-report=xml --cov-config=.coveragerc -v
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5

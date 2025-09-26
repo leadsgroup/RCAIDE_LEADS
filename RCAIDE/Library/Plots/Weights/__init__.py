@@ -18,3 +18,4 @@ RCAIDE.Library.Analysis.Weights : Weight analysis tools
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .plot_weight_breakdown import plot_weight_breakdown
+from .plot_load_diagram     import plot_load_diagram

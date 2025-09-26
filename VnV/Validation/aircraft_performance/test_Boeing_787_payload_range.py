@@ -29,11 +29,11 @@ def main():
     #     "payload": (([44000, 44000, 9071.8474, 0]) lbs
     #     "payload + oew": (([161025, 161025, 127005.864, 117934.016]) lbs
     truth_values = {
-        "range": np.array([0., 10372385.56834877, 17987562.39084088,18643098.13266074]),
-        "payload": np.array([44000.        , 44000.        ,  8587.76052736,     0.        ]),
-        "oew_plus_payload": np.array([162019.23947264, 162019.23947264, 126607.        , 118019.23947264]),
-        "fuel": np.array([     0.        ,  65910.76052736, 101323.        , 101323.        ]),
-        "takeoff_weight": np.array([     0.        , 227930.        , 227930.        , 219342.23947264]),
+        "range": np.array([0., 10548232.68, 17639207.32, 18364357.92]),
+        "payload": np.array([44000.        , 44000.        ,  10373.47,     0.        ]),
+        "oew_plus_payload": np.array([ 160233.53, 160233.53, 126607.        , 116233.53]),
+        "fuel": np.array([     0.        ,  67696.47, 101323.        , 101323.        ]),
+        "takeoff_weight": np.array([     0.        , 227930.        , 227930.        , 217556.53]),
     }
     # Tolerance checks
     for key in truth_values:
@@ -61,7 +61,7 @@ def payload_range_test():
     missions = Boeing_787.missions_setup(mission)
      
     # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.05)
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.05, delete_training_data = True)
   
     
     return  payload_range_results
@@ -96,6 +96,10 @@ def payload_range_mission_setup(analyses):
     segment.friction_coefficient     = 0.03
     segment.altitude                 = 0.0   
     segment.throttle                 = 1.0
+
+    segment.assigned_control_variables.ground_velocity.active  = True  
+    segment.assigned_control_variables.ground_velocity.bounds  = [[-2, 120]]
+
     mission.append_segment(segment)
       
     #------------------------------------------------------------------

@@ -142,7 +142,7 @@ def compute_stack_properties(fuel_cell_stack):
         fuel_cell_stack.maximum_voltage        = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_power          = P_fuel_cell * series_e 
         fuel_cell_stack.maximum_current        = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
-        fuel_cell_stack.maximum_fuel_flow_rate = mdot_H2 * n_total
+        fuel_cell_stack.maximum_fuel_mass_flow_rate = mdot_H2 * n_total
     
     elif type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Fuel_Cell: 
     
@@ -182,16 +182,16 @@ def compute_stack_properties(fuel_cell_stack):
         m_dot_H2, V_fuel_cell, P_fuel_cell, _, _, _, _, _,_  =  evaluate_PEM(fuel_cell_stack,fuel_cell_stack_conditions, t_idx)
    
         # store properties
-        area_square_meters                     = fuel_cell.interface_area * 0.0001
-        fuel_cell.volume                       = area_square_meters*fuel_cell.wall_thickness
-        fuel_cell.mass                         = fuel_cell.volume*fuel_cell.cell_density*fuel_cell.porosity_coefficient  
-        fuel_cell.density                      = fuel_cell.mass/fuel_cell.volume                      
-        fuel_cell.specific_power               = fuel_cell.max_power/fuel_cell.mass  
-        fuel_cell_stack.mass_properties.mass   = n_total*fuel_cell.mass 
-        fuel_cell_stack.voltage                = V_fuel_cell  * series_e
-        fuel_cell_stack.maximum_voltage        = V_fuel_cell  * series_e
-        fuel_cell_stack.maximum_power          = P_fuel_cell * n_total 
-        fuel_cell_stack.maximum_current        = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
-        fuel_cell_stack.maximum_fuel_flow_rate = m_dot_H2 * n_total         
+        area_square_meters                          = fuel_cell.interface_area * 0.0001
+        fuel_cell.volume                            = area_square_meters*fuel_cell.wall_thickness
+        fuel_cell.mass                              = fuel_cell.volume*fuel_cell.cell_density*fuel_cell.porosity_coefficient  
+        fuel_cell.density                           = fuel_cell.mass/fuel_cell.volume                      
+        fuel_cell.specific_power                    = fuel_cell.max_power/fuel_cell.mass  
+        fuel_cell_stack.mass_properties.mass        = n_total*fuel_cell.mass 
+        fuel_cell_stack.voltage                     = V_fuel_cell  * series_e
+        fuel_cell_stack.maximum_voltage             = V_fuel_cell  * series_e
+        fuel_cell_stack.maximum_power               = P_fuel_cell * n_total 
+        fuel_cell_stack.maximum_current             = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
+        fuel_cell_stack.maximum_fuel_mass_flow_rate = m_dot_H2 * n_total         
          
     return 

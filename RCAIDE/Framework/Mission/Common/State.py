@@ -50,12 +50,14 @@ class State(Conditions):
             None
         """           
         
-        self.tag        = 'state'
-        self.initials   = Conditions()
-        self.numerics   = Numerics()
-        self.unknowns   = Unknowns()
-        self.conditions = Conditions()
-        self.residuals  = Residuals()
+        self.tag                 = 'state'
+        self.initials            = Conditions()
+        self.numerics            = Numerics()
+        self.unknowns            = Unknowns()
+        self.conditions          = Conditions()
+        self.residuals           = Residuals()
+        self.number_of_residuals = 0
+        self.number_of_unknowns  = 0
         
     def expand_rows(self,rows,override=False):
         """ Makes a 1-D array the right size. Often used after a mission is initialized to size out the vectors to the
@@ -85,8 +87,8 @@ class State(Conditions):
                 rank = v.ndim
             except:
                 rank = 0            
-            # don't expand initials or numerics
-            if k in ('initials','numerics'):
+            # don't expand initials or numerics 
+            if k in ('initials'):  
                 continue
             
             # recursion
@@ -94,9 +96,7 @@ class State(Conditions):
                 v.expand_rows(rows,override=override)
             # need arrays here
             elif rank == 2:
-                self[k] = np.resize(v,[rows,v.shape[1]])
-            #: if type
-        #: for each key,value        
+                self[k] = np.resize(v,[rows,v.shape[1]])    
         
 # ----------------------------------------------------------------------------------------------------------------------
 # Container

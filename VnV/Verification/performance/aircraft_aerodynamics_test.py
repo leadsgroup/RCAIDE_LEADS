@@ -49,38 +49,27 @@ def Boeing_737_Drag_Polar():
                                                                       mach_numbers = Mach_number_range,
                                                                       altitude  = 0)
 
-    CL_truth = np.array([-0.41735855, -0.29238238, -0.1674062 , -0.04243003,  0.08293259,
-                         0.20829521,  0.3333446 ,  0.458394  ,  0.58227236,  0.70615071,
-                         0.83002907,  0.95140521,  1.07278135,  1.19415749,  1.31092408,
-                         1.42769068,  1.54445727,  1.66122386])
+    CL_truth = np.array([-0.38186938, -0.10627372,  0.16950056,  0.4455403 ,  0.72072764,
+                         0.99313006,  1.26355613,  1.5300295 ,  1.78970029,  2.04543276,
+                         2.24649627,  2.35313159,  2.4597669 ,  2.56640222,  2.67303754,
+                         2.77967285,  2.88630817,  2.99294349])
+    
+    CD_truth = np.array([0.06682168, 0.03297028, 0.02150798, 0.02273792, 0.04049766,
+                         0.07110456, 0.09480261, 0.10963991, 0.15831249, 0.24051187,
+                         0.36893079, 0.56138268, 0.84474023, 1.24610486, 1.79621305,
+                         2.5294356 , 3.48377719, 4.70087622])
+                      
+    # plot results 
+    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")    
+    
+    # check errors 
+    CL_error = np.max(np.abs(results.lift_coefficient[:, 0]-CL_truth))
+    assert(CL_error<1e-6)
 
-    CD_truth = np.array([0.02559086, 0.02399367, 0.02259914, 0.02140821, 0.02135306,
-                         0.02150681, 0.02263618, 0.02397833, 0.02648091, 0.02918689,
-                         0.03208667, 0.03624975, 0.04057963, 0.04507509, 0.05084044,
-                         0.05677429, 0.06288579, 0.0691809 ]) 
-
-    plot_aircraft_aerodynamics(results)
-
-    #------------------------------------------------------------------------
-    # setup figures
-    #------------------------------------------------------------------------
-    fig = plt.figure()  
-    fig.set_size_inches(12,6) 
-    axis_1 = fig.add_subplot(1, 2, 1)
-    axis_2 = fig.add_subplot(1, 2, 2) 
-
-    axis_1.plot( results.alpha/Units.degree, results.lift_coefficient, 'bo-',  label = 'New Results') 
-    axis_1.plot( results.alpha/Units.degree, CL_truth, 'rs-',  label = 'Old Results') 
-    axis_2.plot( results.alpha/Units.degree, results.drag_coefficient, 'bo-',  label = 'New Results') 
-    axis_2.plot( results.alpha/Units.degree, CD_truth, 'rs-',  label = 'Old Results') 
-
-    axis_1.set_xlabel('AoA') 
-    axis_2.set_xlabel('AoA')  
-    axis_1.set_ylabel('$C_L$') 
-    axis_2.set_ylabel('$C_D$')   
-
-    axis_1.legend()
-    axis_2.legend()
+    CD_truth = np.max(np.abs(results.drag_coefficient[:, 0]-CD_truth))    
+    assert(CL_error<1e-6)
+      
+    
     return  
 
 
@@ -113,34 +102,19 @@ def BWB_Drag_Polar():
     CD_truth = np.array([0.08133093, 0.03386143, 0.01340683, 0.01032553, 0.01485286,
                          0.02576822, 0.05289148, 0.0994132 , 0.16812622, 0.26008066,
                          0.41868775, 0.66980037, 1.03969088, 1.56379824, 2.28231239,
-                         3.24017418, 4.48707534, 6.07745849]) # values are way too high
+                         3.24017418, 4.48707534, 6.07745849])
 
-    plot_aircraft_aerodynamics(results)
-
-    #------------------------------------------------------------------------
-    # setup figures
-    #------------------------------------------------------------------------
-    fig = plt.figure()  
-    fig.set_size_inches(12,6) 
-    axis_1 = fig.add_subplot(1, 2, 1)
-    axis_2 = fig.add_subplot(1, 2, 2) 
-
-    axis_1.plot( results.alpha/Units.degree, results.lift_coefficient, 'bo-',  label = 'New Results') 
-    axis_1.plot( results.alpha/Units.degree, CL_truth, 'rs-',  label = 'Old Results') 
-    axis_2.plot( results.alpha/Units.degree, results.drag_coefficient, 'bo-',  label = 'New Results') 
-    axis_2.plot( results.alpha/Units.degree, CD_truth, 'rs-',  label = 'Old Results') 
-
-    axis_1.set_xlabel('AoA') 
-    axis_2.set_xlabel('AoA')  
-    axis_1.set_ylabel('$C_L$') 
-    axis_2.set_ylabel('$C_D$')   
-
-    axis_1.legend()
-    axis_2.legend()
-    return  
+    plot_aircraft_aerodynamics(results,  save_filename = "BWB_Aircraft_Aerodynamic_Analysis")
 
 
+    CL_error = np.max(np.abs(results.lift_coefficient[:, 0]-CL_truth))
+    assert(CL_error<1e-6)
 
+    CD_truth = np.max(np.abs(results.drag_coefficient[:, 0]-CD_truth))    
+    assert(CL_error<1e-6)
+    
+    return 
+     
 if __name__ == '__main__': 
     main()    
     plt.show()

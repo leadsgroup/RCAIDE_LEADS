@@ -69,12 +69,15 @@ class Takeoff(Evaluate):
 
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission Unknowns and Residuals
-        # -------------------------------------------------------------------------------------------------------------- 
-        ones_row_m1                               = self.state.ones_row_m1
-        self.state.residuals.final_velocity_error = 0.0
-        self.state.residuals.force_x              = ones_row_m1(1) * 0.0    
-        self.state.unknowns.elapsed_time          = 30.                        
-        self.state.unknowns.ground_velocity       = ones_row_m1(1) * 0  
+        # --------------------------------------------------------------------------------------------------------------   
+        ones_row_m1                                             = self.state.ones_row_m1
+        self.flight_dynamics.force_x                            = True   
+        self.flight_dynamics.final_velocity_error               = True 
+        self.state.residuals.force_x                            = ones_row_m1(1) * 0.0  
+        self.state.unknowns.elapsed_time                        = 30.                     
+        self.state.unknowns.ground_velocity                     = ones_row_m1(1) * 0  
+        self.assigned_control_variables.elapsed_time.active     = True   
+        self.assigned_control_variables.ground_velocity.active  = True  
 
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission Conditions 

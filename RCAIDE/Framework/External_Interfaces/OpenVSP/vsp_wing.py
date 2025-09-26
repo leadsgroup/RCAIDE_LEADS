@@ -143,9 +143,9 @@ def read_vsp_wing(wing_id, main_wing_tag = None,blended_wing_body = False , last
 
     # Check for symmetry
     if sym_planar == 2. and sym_origin == 1.: #origin at wing, not vehicle
-        wing.symmetric = True
+        wing.xz_plane_symmetric = True
     else:
-        wing.symmetric = False
+        wing.xz_plane_symmetric = False
 
     #More top level parameters
     total_proj_span      = vsp.GetParmVal(wing_id, 'TotalProjectedSpan', 'WingGeom') * units_factor
@@ -201,7 +201,7 @@ def read_vsp_wing(wing_id, main_wing_tag = None,blended_wing_body = False , last
             else:
                 segment_root_chord    = 0.0
             segment.root_chord_percent    = segment_root_chord / root_chord
-            segment.percent_span_location = proj_span_sum / (total_proj_span/(1+wing.symmetric))
+            segment.percent_span_location = proj_span_sum / (total_proj_span/(1+wing.xz_plane_symmetric))
             segment.twist                 = vsp.GetParmVal(wing_id, 'Twist', 'XSec_' + str(jj)) * Units.deg +  y_rot
 
             if i==1:
@@ -470,7 +470,7 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
     wing_x = wing.origin[0][0]
     wing_y = wing.origin[0][1]
     wing_z = wing.origin[0][2]
-    if wing.symmetric == True:
+    if wing.xz_plane_symmetric == True:
         span   = wing.spans.projected/2. # span of one side
     else:
         span   = wing.spans.projected
@@ -506,7 +506,7 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
         x_sec_curves.append('XSecCurve_' + str(i_segs))
 
     # Apply the basic characteristics of the wing to root and tip
-    if wing.symmetric == False:
+    if wing.xz_plane_symmetric == False:
         vsp.SetParmVal( wing_id,'Sym_Planar_Flag','Sym',0)
     if wing.vertical == True:
         vsp.SetParmVal( wing_id,'X_Rel_Rotation','XForm',90)

@@ -61,7 +61,7 @@ def translate_conditions_to_cases(avl ,conditions):
         n_wings = 0 
         for wing in aircraft.wings:
             n_wings += 1
-            if wing.symmetric == True:
+            if wing.xz_plane_symmetric == True:
                 n_wings += 1                
         case.num_wings                                        = n_wings
         case.n_sw                                             = avl.settings.number_of_spanwise_vortices  

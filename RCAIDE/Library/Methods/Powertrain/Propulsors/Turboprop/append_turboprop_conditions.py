@@ -51,7 +51,7 @@ def append_turboprop_conditions(propulsor, segment, energy_conditions, noise_con
         * throttle
         * commanded_thrust_vector_angle
         * power
-        * fuel_flow_rate
+        * fuel_mass_flow_rate
         * inputs and outputs containers
     
     It also creates a core_nozzle container in the noise conditions.
@@ -73,7 +73,7 @@ def append_turboprop_conditions(propulsor, segment, energy_conditions, noise_con
     energy_conditions.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)     
     energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
     energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
-    energy_conditions.propulsors[propulsor.tag].fuel_flow_rate                = 0. * ones_row(1)
+    energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
     energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
     noise_conditions.propulsors[propulsor.tag]                                = Conditions()  
@@ -81,7 +81,7 @@ def append_turboprop_conditions(propulsor, segment, energy_conditions, noise_con
      
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,energy_conditions) 
+            item.append_operating_conditions(segment,energy_conditions,noise_conditions) 
             for sub_tag, sub_item in  item.items(): 
                 if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
                     sub_item.append_operating_conditions(segment,energy_conditions)      

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Geometry/plot_3d_fuel_tank.py
+# RCAIDE/Library/Plots/Geometry/generate_3d_fuel_tank_points.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -7,244 +7,12 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
-from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank import compute_non_dimensional_rib_coordinates
-from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
+from RCAIDE.Framework.Core import Data 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank import compute_non_dimensional_rib_coordinates 
 
 # python imports
 import numpy as np
-from numpy.ma import mask_cols      
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  plot_3d_non_integral_fuel_tank
-# ----------------------------------------------------------------------------------------------------------------------
-def plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation = 24, color_map = 'oranges', alpha=1):
-    """
-    Creates a 3D visualization of a fuel_tank surface using tessellated panels.
-
-    Parameters
-    ----------
-    plot_data : list
-        Collection of plot vertices to be rendered
-        
-    fuel_tank : fuel_tank
-        RCAIDE fuel_tank data structure containing geometry information
-        
-    tessellation : int, optional
-        Number of points to use in circumferential discretization (default: 24)
-        
-    color_map : str, optional
-        Color specification for the fuel_tank surface (default: 'teal')
-
-    Returns
-    -------
-    plot_data : list
-        Updated collection of plot vertices including fuel_tank surface
-
-    Notes
-    -----
-    Creates a 3D surface by generating points along fuel_tank segments and 
-    creating surface panels between adjacent cross-sections.
-    
-    **Major Assumptions**
-        * fuel_tank cross-sections are super-elliptical
-        * Surface is continuous between segments
-        * Tessellation is uniform around circumference
-    
-    See Also
-    --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.generate_non_integral_fuel_tank_points : Function to generate fuel_tank surface points
-    """
- 
-    G  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation = 24 ) 
-    num_segs = len(G.PTS[:,0,0]) 
-    tesselation  = len(G.PTS[0,:,0])
-    for i_seg in range(num_segs-1):
-        for i_tes in range(tesselation-1):
-            X = np.array([[G.PTS[i_seg  ,i_tes,0],G.PTS[i_seg+1,i_tes  ,0]],
-                          [G.PTS[i_seg  ,i_tes+1,0],G.PTS[i_seg+1,i_tes+1,0]]])
-            Y = np.array([[G.PTS[i_seg  ,i_tes  ,1],G.PTS[i_seg+1,i_tes  ,1]],
-                          [G.PTS[i_seg  ,i_tes+1,1],G.PTS[i_seg+1,i_tes+1,1]]])
-            Z = np.array([[G.PTS[i_seg  ,i_tes  ,2],G.PTS[i_seg+1,i_tes  ,2]],
-                          [G.PTS[i_seg  ,i_tes+1,2],G.PTS[i_seg+1,i_tes+1,2]]])  
-            values = np.ones_like(X) 
-            verts  = contour_surface_slice(X, Y, Z,values,color_map,alpha )
-            plot_data.append(verts)
-    if fuel_tank.symmetric: 
-        for i_seg in range(num_segs-1):
-            for i_tes in range(tesselation-1):
-                X = np.array([[G.PTS[i_seg  ,i_tes,0],G.PTS[i_seg+1,i_tes  ,0]],
-                              [G.PTS[i_seg  ,i_tes+1,0],G.PTS[i_seg+1,i_tes+1,0]]])
-                Y = np.array([[-G.PTS[i_seg  ,i_tes  ,1], -G.PTS[i_seg+1,i_tes  ,1]],
-                              [-G.PTS[i_seg  ,i_tes+1,1], -G.PTS[i_seg+1,i_tes+1,1]]])
-                Z = np.array([[G.PTS[i_seg  ,i_tes  ,2],G.PTS[i_seg+1,i_tes  ,2]],
-                              [G.PTS[i_seg  ,i_tes+1,2],G.PTS[i_seg+1,i_tes+1,2]]])  
-                 
-                values = np.ones_like(X) 
-                verts  = contour_surface_slice(X, Y, Z,values,color_map,alpha )
-                plot_data.append(verts)        
-
-    return plot_data
-
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  plot_3d_integral_fuselage_tank
-# ----------------------------------------------------------------------------------------------------------------------
-def plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation = 24, color_map = 'oranges', alpha=1):
-    """
-    Creates a 3D visualization of a fuel_tank surface using tessellated panels.
-
-    Parameters
-    ----------
-    plot_data : list
-        Collection of plot vertices to be rendered
-        
-    fuel_tank : fuel_tank
-        RCAIDE fuel_tank data structure containing geometry information
-        
-    tessellation : int, optional
-        Number of points to use in circumferential discretization (default: 24)
-        
-    color_map : str, optional
-        Color specification for the fuel_tank surface (default: 'teal')
-
-    Returns
-    -------
-    plot_data : list
-        Updated collection of plot vertices including fuel_tank surface
-
-    Notes
-    -----
-    Creates a 3D surface by generating points along fuel_tank segments and 
-    creating surface panels between adjacent cross-sections.
-    
-    **Major Assumptions**
-        * fuel_tank cross-sections are super-elliptical
-        * Surface is continuous between segments
-        * Tessellation is uniform around circumference
-    """
-
-    segment_list = [] 
-    segment_tags = list(fuselage.segments.keys())     
-    for i in range(len(fuselage.segments) - 1):
-        seg =  fuselage.segments[segment_tags[i]]
-        next_seg =  fuselage.segments[segment_tags[i+1]]
-        if seg.has_fuel_tank: 
-            segment_list.append(seg.tag)
-            if next_seg.tag not in segment_list:
-                segment_list.append(next_seg.tag)  
-        
-    G  = generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list,tessellation = 24 ) 
-    num_tank_segs = len(G.PTS[:,0,0])
-    if num_tank_segs > 0:
-        tesselation  = len(G.PTS[0,:,0])
-        for i_seg in range(num_tank_segs-1):
-            for i_tes in range(tesselation-1):
-                X = np.array([[G.PTS[i_seg  ,i_tes,0],G.PTS[i_seg+1,i_tes  ,0]],
-                              [G.PTS[i_seg  ,i_tes+1,0],G.PTS[i_seg+1,i_tes+1,0]]])
-                Y = np.array([[G.PTS[i_seg  ,i_tes  ,1],G.PTS[i_seg+1,i_tes  ,1]],
-                              [G.PTS[i_seg  ,i_tes+1,1],G.PTS[i_seg+1,i_tes+1,1]]])
-                Z = np.array([[G.PTS[i_seg  ,i_tes  ,2],G.PTS[i_seg+1,i_tes  ,2]],
-                              [G.PTS[i_seg  ,i_tes+1,2],G.PTS[i_seg+1,i_tes+1,2]]])   
-                values = np.ones_like(X) 
-                verts  = contour_surface_slice(X, Y, Z,values,color_map,alpha )
-                plot_data.append(verts)          
-
-    return plot_data 
- 
-# ----------------------------------------------------------------------------------------------------------------------
-#  plot_3d_integral_wing_tank
-# ----------------------------------------------------------------------------------------------------------------------  
-def plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, number_of_airfoil_points = 201, color_map='oranges', alpha=1):
-    """
-    Creates a 3D visualization of wing surfaces including symmetric sections if applicable.
-
-    Parameters
-    ----------
-    plot_data : list
-        Collection of plot vertices to be rendered
-        
-    wing : Wing
-        RCAIDE wing data structure containing geometry information
-        
-    number_of_airfoil_points : int, optional
-        Number of points used to discretize airfoil sections (default: 21)
-        
-    color_map : str, optional
-        Color specification for wing surface (default: 'greys')
-        
-    alpha : float, optional
-        Transparency value between 0 and 1 (default: 1)
-
-    Returns
-    -------
-    plot_data : list
-        Updated collection of plot vertices including wing surfaces
-
-    Notes
-    -----
-    Creates wing visualization by:
-        - Generating points for each segment
-        - Creating surface panels between sections
-        - Adding symmetric wing if specified
-    
-    **Major Assumptions**
-        * Wing segments are ordered from root to tip
-        * Airfoil sections lie in x-z plane
-        * Symmetric wing is mirror image about y-axis
-    """ 
-    af_pts     = 4  
-    segment_list = [] 
-    segment_tags = list(wing.segments.keys())     
-    for i in range(len(wing.segments) - 1):
-        seg =  wing.segments[segment_tags[i]]
-        next_seg =  wing.segments[segment_tags[i+1]]
-        if seg.has_fuel_tank:
-            if seg.tag not in segment_list:
-                segment_list.append(seg.tag)
-            if next_seg.tag not in segment_list:
-                segment_list.append(next_seg.tag) 
-    
-    if len(wing.segments)>0:
-        dim =  len(segment_list)
-    else:
-        dim = 2 
-    
-    if  len(segment_list) == 0 and len(wing.segments) > 0:
-        raise AttributeError('Fuel tank defined on segmented wing but no segments have "tank" attribute = True') 
-    else:  
-        number_of_airfoil_points = 5
-        G = generate_integral_wing_tank_points(wing,number_of_airfoil_points,dim,segment_list)
-        # ------------------------------------------------------------------------
-        # Plot Rotor Blade
-        # ------------------------------------------------------------------------
-        for sec in range(dim-1):
-            for loc in range(af_pts):
-                X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],
-                     [G.XB1[sec,loc],G.XB2[sec,loc]]])
-                Y = np.array([[G.YA1[sec,loc],G.YA2[sec,loc]],
-                     [G.YB1[sec,loc],G.YB2[sec,loc]]])
-                Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]],
-                     [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
-                 
-                values      = np.ones_like(X) 
-                verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
-                plot_data.append(verts)
-        if wing.symmetric: 
-            for sec in range(dim-1):
-                for loc in range(af_pts):
-                    X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
-                    Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
-                    Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
-                     
-                    values      = np.ones_like(X) 
-                    verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
-                    plot_data.append(verts)
-                 
-    return plot_data
- 
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_integral_wing_tank_points
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -295,7 +63,7 @@ def generate_integral_wing_tank_points(wing, n_points, dim, segment_list):
     """    
     # unpack  
     # obtain the geometry for each segment in a loop                                            
-    symm                 = wing.symmetric
+    symm                 = wing.xz_plane_symmetric
     semispan             = wing.spans.projected*0.5 * (2 - symm)  
     segments             = wing.segments
     n_segments           = len(segment_list) 
@@ -640,9 +408,9 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
     
     # translate to location on aircraft 
     if fuel_tank.orientation_euler_angles   == [0.,0.,np.pi/2]:
-         fuel_tank_points[:, :, 0] +=  fuel_tank.origin[0][0] - fuel_tank.outer_diameter/2
-         fuel_tank_points[:, :, 1] +=  fuel_tank.origin[0][1] - (R+L/2)
-         fuel_tank_points[:, :, 2] +=  fuel_tank.origin[0][2]
+        fuel_tank_points[:, :, 0] +=  fuel_tank.origin[0][0] - fuel_tank.outer_diameter/2
+        fuel_tank_points[:, :, 1] +=  fuel_tank.origin[0][1] - (R+L/2)
+        fuel_tank_points[:, :, 2] +=  fuel_tank.origin[0][2]
     else:
         fuel_tank_points[:, :, 0] += fuel_tank.origin[0][0]
         fuel_tank_points[:, :, 1] += fuel_tank.origin[0][1]

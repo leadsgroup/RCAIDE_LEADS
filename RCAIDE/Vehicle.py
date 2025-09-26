@@ -61,18 +61,19 @@ class Vehicle(Data):
         self.landing_gears                                                 = Components.Landing_Gear.Landing_Gear.Container()  
         self.cargo_bays                                                    = Components.Cargo_Bays.Cargo_Bay.Container() 
         self.mass_properties                                               = Vehicle_Mass_Container()
+        self.volume_properties                                             = Vehicle_Volume_Container()
         self.costs                                                         = Data()      
         self.reference_area                                                = 0.0      
         self.reference_span                                                = 0.0      
-        self.reference_chord                                               = 0.0  
-        self.passengers                                                    = 0.0
-        self.first_class_passengers                                        = 0.0
-        self.business_class_passengers                                     = 0.0
-        self.economy_class_passengers                                      = 0.0
+        self.reference_chord                                               = 0.0      
+        self.neutral_point                                                 = None
+        self.number_of_passengers                                          = 0 
+        self.number_of_seats                                               = 0 
+        self.number_of_first_class_seats                                   = 0 
+        self.number_of_business_class_seats                                = 0 
+        self.number_of_economy_class_seats                                 = 0 
         self.maximum_cross_sectional_area                                  = 0.0
-        self.length                                                        = 0.0
-        self.total_fuel_volume                                             = 0.0
-        self.total_fuel_mass                                               = 0.0
+        self.length                                                        = 0.0 
         
         self.flight_envelope                                               = Data()
         self.flight_envelope.design_dynamic_pressure                       = None 
@@ -151,6 +152,7 @@ class Vehicle(Data):
             Components.Landing_Gear.Landing_Gear       : self['landing_gears']    ,
             Components.Cargo_Bays.Cargo_Bay            : self['cargo_bays']       , 
             Vehicle_Mass_Properties                    : self['mass_properties']  ,
+            Vehicle_Volume_Properties                  : self['volume_properties'],
         }
          
         self._energy_network_root_map= {
@@ -158,6 +160,7 @@ class Vehicle(Data):
             }    
         
         self.append_component(Vehicle_Mass_Properties())
+        self.append_component(Vehicle_Volume_Properties())
          
         return
     
@@ -309,6 +312,44 @@ class Vehicle_Mass_Container(Components.Component.Container,Vehicle_Mass_Propert
         
     def append(self,value,key=None):
         """ Appends the vehicle mass, but only let's one ever exist. Keeps the newest one
+        
+            Assumptions:
+                None
+    
+            Source:
+                None
+        """      
+        self.clear()
+        for key in value.keys():
+            self[key] = value[key]
+
+class Vehicle_Volume_Properties(Components.Volume_Properties): 
+    """ The vehicle's mass properties.
+        
+            Assumptions:
+                None
+    
+            Source:
+                None
+    """
+
+    def __defaults__(self):
+        """This sets the default values.
+        
+            Assumptions:
+                None
+    
+            Source:
+                None
+            """         
+
+        self.tag                         = 'volume_properties'
+        self.fuel                        = 0.0
+        
+class Vehicle_Volume_Container(Components.Component.Container,Vehicle_Volume_Properties):
+        
+    def append(self,value,key=None):
+        """ Appends the vehicle volume, but only let's one ever exist. Keeps the newest one
         
             Assumptions:
                 None

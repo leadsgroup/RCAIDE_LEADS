@@ -16,12 +16,14 @@ class First(Component):
     
     def __defaults__(self):
         """
-        Sets default values for all fuselage attributes.
+        Sets default values for first class portion of the cabin.
         """      
         
         self.tag                                 = 'first_class' 
         self.number_of_seats_abrest              = 0
+        self.number_of_passengers                = 0 
         self.number_of_rows                      = 0 
+        self.number_of_seats                     = 0 
         self.seat_width                          = 25 *  Units.inches
         self.seat_arm_rest_width                 = 2 *  Units.inches
         self.seat_length                         = 40 *  Units.inches

@@ -91,7 +91,6 @@ class Athena_Vortex_Lattice(Aerodynamics):
         settings.filenames.err_filename              = 'avl_err.txt'        
         settings.number_of_spanwise_vortices         = 30
         settings.number_of_chordwise_vortices        = 10
-        settings.use_surrogate                       = True 
         settings.trim_aircraft                       = False 
         settings.model_fuselage                      = False 
         settings.print_output                        = False 

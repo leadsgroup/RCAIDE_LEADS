@@ -48,8 +48,7 @@ def compute_cabin_weight(vehicle,settings):
             for segment in wing.segments:
                 if isinstance(segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
                     fus_seg_max_percent_span =  np.maximum(fus_seg_max_percent_span,segment.percent_span_location  )
-                    segment_le_sweeps.append(segment.sweeps.leading_edge/Units.degree)
-                  
+                    segment_le_sweeps.append(segment.sweeps.leading_edge/Units.degree) 
     
      # convert to imperial units
     TOGW     =  vehicle.mass_properties.max_takeoff*9.81/ Units.lbf

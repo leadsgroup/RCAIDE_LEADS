@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports   
-from RCAIDE.Framework.Core                             import Data, Units
-from RCAIDE.Framework.Analyses                         import Process 
-from RCAIDE.Library.Methods.Aerodynamics               import Common
-from .Aerodynamics                                     import Aerodynamics 
-from RCAIDE.Framework.Analyses.Common.Process_Geometry import Process_Geometry 
+from RCAIDE.Framework.Core                                     import Data, Units
+from RCAIDE.Framework.Analyses                                 import Process 
+from RCAIDE.Library.Methods.Aerodynamics                       import Common
+from .Aerodynamics                                             import Aerodynamics 
+from RCAIDE.Framework.Analyses.Common.Process_Geometry         import Process_Geometry 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import *   
 
 # package imports 
@@ -59,12 +59,11 @@ class Vortex_Lattice_Method(Aerodynamics):
         N/A
         """          
         self.tag                                                    = 'Vortex_Lattice_Method'  
-        self.vehicle                                                = Data()  
+        self.vehicle                                                = Data()
         self.process                                                = Process()
         self.process.initialize                                     = Process()  
                     
-        # correction factors               
-        self.settings.use_surrogate                                 = True  
+        # settings              
         self.settings.propeller_wake_model                          = False  
         self.settings.model_fuselage                                = False   
         self.settings.number_of_spanwise_vortices                   = 15
@@ -93,8 +92,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.angle_purtubation                             = 10 * Units.deg          
         self.training.speed_purtubation                             = 5  
         self.training.rate_purtubation                              = 10 * Units.deg / Units.sec   
-        self.training.control_surface_purtubation                   = 10 * Units.deg         
-        self.training.center_of_gravity_purtubation                 = 0.1   
+        self.training.control_surface_purtubation                   = 10 * Units.deg          
         self.training.sideslip_angle                                = np.array([10  , 5.0 ]) * Units.deg
         self.training.aileron_deflection                            = np.array([10  , 5.0 ]) * Units.deg
         self.training.elevator_deflection                           = np.array([10  , 5.0 ]) * Units.deg   
@@ -166,8 +164,10 @@ class Vortex_Lattice_Method(Aerodynamics):
             else:
                 with open(self.filename, 'rb') as file:
                     self.training = pickle.load(file)
+                print(r""" 
+                [INFO] Aerodynamic training data loaded. Delete the file and rerun to regenerate. """)
             # build surrogate
-            build_VLM_surrogates(self)
+            build_VLM_surrogates(self)        
     
         # build the evaluation process
         compute   =  self.process.compute                  

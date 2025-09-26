@@ -46,7 +46,7 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude    = 45000.0*Units.feet 
     vehicle.flight_envelope.design_range              = 5000.0 * Units.nmi
     vehicle.reference_area                            = 592.6575476422672 # 2424.9 * Units['feet**2']    
-    vehicle.passengers                                = 248 # Single class. 242 in dual class (24 business, 21 economy) 
+    vehicle.number_of_passengers                                = 248 # Single class. 242 in dual class (24 business, 21 economy) 
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "long range"  
      
@@ -100,7 +100,7 @@ def vehicle_setup():
     wing.origin                  = [[0.0,  0.0,  0.0]] 
     wing.aerodynamic_center      = [17.43511294,  0.        ,  1.08931241] 
     wing.vertical                = False
-    wing.symmetric               = True
+    wing.xz_plane_symmetric      = True
     wing.t_tail                  = False 
     wing.dynamic_pressure_ratio  = 1.0
      
@@ -340,7 +340,7 @@ def vehicle_setup():
     wing.origin                  = [[27 ,  6.4008    ,  1.39714742]]
     wing.aerodynamic_center      = [3.489773550255852, 0, 2.1541732160090175] 
     wing.vertical                = False
-    wing.symmetric               = True
+    wing.xz_plane_symmetric      = True
     wing.t_tail                  = False 
     wing.dynamic_pressure_ratio  = 1.0 
     
@@ -386,7 +386,7 @@ def vehicle_setup():
     main_gear.wheels                         = 8   
     main_gear.number_of_gear_types_in_tandem = 2
     main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.symmetric                            = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -536,18 +536,14 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
     #-------------------------------------------------------------------------------------------------------------------------  
-    # fuel tank
-    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
-    fuel_tank.tag = 'inner_tank'
-    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()
-    fuel_tank.wall_thickness = 2 * Units.inches 
-    fuel_line.fuel_tanks.append(fuel_tank) 
-
-    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing) 
-    fuel_tank.tag = 'outer_tank'
-    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()
-    fuel_tank.wall_thickness = 2 * Units.inches 
-    fuel_line.fuel_tanks.append(fuel_tank)  
+   # fuel tank
+    fuel_tank_1                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
+    fuel_tank_1.tag                                    = 'H2_Fuel_Tank_1' 
+    fuel_tank_1.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
+    fuel_tank_1.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_1.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Gap_Multilayer_Insulation()
+    fuel_tank_1.fuel.gravimetric_efficiency            = 0.5
+    fuel_line.fuel_tanks.append(fuel_tank_1)
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network      
     fuel_line.assigned_propulsors =  [['propulsor_1', 'propulsor_2']]

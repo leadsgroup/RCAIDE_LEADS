@@ -100,7 +100,7 @@ def main():
     Pt_3                                              = hpc_conditions.outputs.stagnation_pressure
     Tt_4                                              = hpt_conditions.inputs.stagnation_temperature 
     Pt_4                                              = hpt_conditions.inputs.stagnation_pressure 
-    fuel_flow_rate                                    = turbofan_conditions.propulsors[turbofan.tag].fuel_flow_rate
+    fuel_flow_rate                                    = turbofan_conditions.propulsors[turbofan.tag].fuel_mass_flow_rate
     TSFC                                              = turbofan.TSFC # [N/N-s]
 
     rcaide_values = {

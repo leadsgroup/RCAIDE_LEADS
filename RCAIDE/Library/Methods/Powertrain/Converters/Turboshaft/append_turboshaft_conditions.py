@@ -56,7 +56,7 @@ def append_turboshaft_conditions(turboshaft, segment, energy_conditions, noise_c
     energy_conditions.converters[turboshaft.tag].throttle                      = 0. * ones_row(1)     
     energy_conditions.converters[turboshaft.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
     energy_conditions.converters[turboshaft.tag].power                         = 0. * ones_row(1)
-    energy_conditions.converters[turboshaft.tag].fuel_flow_rate                = 0. * ones_row(1)
+    energy_conditions.converters[turboshaft.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     energy_conditions.converters[turboshaft.tag].inputs                        = Conditions()
     energy_conditions.converters[turboshaft.tag].outputs                       = Conditions()
  

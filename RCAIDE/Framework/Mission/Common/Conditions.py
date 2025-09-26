@@ -1,4 +1,4 @@
-# RCAIDE/Framework/Analyses/Mission/Segments/Conditions/Conditions.py
+# RCAIDE/Framework/Mission/Common/Conditions.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke

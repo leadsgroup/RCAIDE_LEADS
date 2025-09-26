@@ -9,7 +9,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------    
 def append_engine_conditions(engine,segment,energy_conditions,noise_conditions=None): 
     """
-    Initializes and appends engine operating conditions to the propulsor conditions data structure.
+    Initializes and appends engine operating conditions of the propulsor conditions data structure.
     
     Parameters
     ----------

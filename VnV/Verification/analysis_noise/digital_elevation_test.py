@@ -55,7 +55,7 @@ def main():
     plot_battery_pack_conditions(results) 
 
     X57_SPL        = np.max(results.segments.cruise.conditions.noise.hemisphere_SPL_dBA) 
-    X57_SPL_true   = 65.16958531814748
+    X57_SPL_true   = 65.90063815104601
     X57_diff_SPL   = np.abs(X57_SPL - X57_SPL_true)
     print('Error: ',X57_diff_SPL)
     assert np.abs((X57_SPL - X57_SPL_true)/X57_SPL_true) < 1e-3 

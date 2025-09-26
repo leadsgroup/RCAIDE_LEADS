@@ -61,5 +61,4 @@ class Nose_Landing_Gear(Landing_Gear):
         """
         Sets default values for the nose landing gear attributes.
         """
-        self.tag           = 'nose_gear' 
-        self.symmetric     = False        
+        self.tag           = 'nose_gear'

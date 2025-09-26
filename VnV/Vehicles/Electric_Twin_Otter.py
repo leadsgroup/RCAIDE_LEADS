@@ -37,7 +37,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     vehicle.mass_properties.takeoff       = 5670  # kg 
     vehicle.mass_properties.max_zero_fuel = 5670  # kg 
     vehicle.reference_area                = 39 
-    vehicle.passengers                    = 19
+    vehicle.number_of_passengers                    = 19
     vehicle.systems.control               = "fully powered"
     vehicle.systems.accessories           = "commuter"    
      
@@ -61,7 +61,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     main_gear.wheels                         = 4   
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -96,7 +96,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     wing.origin                           = [[5.38, 0, 1.35]] 
     wing.aerodynamic_center               = [[5.38 + 0.25 *wing.chords.root , 0, 1.35]]  
     wing.vertical                         = False
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0  
@@ -126,7 +126,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     segment.tag                           = 'tip'
     segment.percent_span_location         = 1.
     segment.twist                         = 0
-    segment.root_chord_percent            = 0.12
+    segment.root_chord_percent            = 1.0
     segment.dihedral_outboard             = 0.
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
@@ -157,7 +157,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     wing.aerodynamic_center               = [[13.17 , 0 , 1.25]]  
     wing.vertical                         = False
     wing.winglet_fraction                 = 0.0  
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = False 
     wing.dynamic_pressure_ratio           = 0.9
 
@@ -184,7 +184,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     wing.origin                           = [[ 12.222 , 0 , 0.385 ]]  
     wing.aerodynamic_center               = [[ 12.222 + 0.25 * wing.chords.root, 0 , 0.385 ]]  
     wing.vertical                         = True 
-    wing.symmetric                        = False
+    wing.xz_plane_symmetric               = False
     wing.t_tail                           = False
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0
@@ -498,7 +498,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     nacelle.length             = 4
     nacelle.diameter           = 0.73480616 
     nacelle.areas.wetted       = 0.01*(2*np.pi*0.01/2)
-    nacelle.origin             = [[3.5,2.8129,1]]
+    nacelle.origin             = [[2.81, 2.8129 ,1.22]]
     nacelle.flow_through       = False  
     
     nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
@@ -601,7 +601,7 @@ def vehicle_setup(cell_chemistry, btms_type):
 
               
     nacelle_2                                    = deepcopy(nacelle)
-    nacelle_2.origin                             =  [[4.0, -2.8129,1.22 ]]        
+    nacelle_2.origin                             =  [[2.81, -2.8129 ,1.22]]        
     port_propulsor.nacelle                       = nacelle_2
     
     # append propulsor to distribution line 

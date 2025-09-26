@@ -7,14 +7,15 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-
 from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Components.Mass_Properties import Mass_Properties
+from RCAIDE.Library.Components import Component
+from RCAIDE.Library.Components.Volume_Properties import Volume_Properties
+from RCAIDE.Library.Components.Mass_Properties   import Mass_Properties
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propellant
 # ----------------------------------------------------------------------------------------------------------------------  
-class Propellant(Data):
+class Propellant(Component):
     """
     Base class for defining propellant properties and characteristics in propulsion systems.
 
@@ -107,37 +108,38 @@ class Propellant(Data):
         Source:
             None
         """    
-        self.tag                       = 'Propellant'
-        self.reactant                  = 'O2'
-        self.density                   = 0.0                       # kg/m^3
-        self.specific_energy           = 0.0                       # MJ/kg
-        self.energy_density            = 0.0                       # MJ/m^3
-        self.lower_heating_value       = 0.0                       # MJ/kg
-        self.mass_properties           = Mass_Properties()
-        self.max_mass_fraction         = Data({'Air' : 0.0, 'O2' : 0.0}) # kg propellant / kg oxidizer
-        self.temperatures              = Data()
-        self.temperatures.flash        = 0.0                       # K
-        self.temperatures.autoignition = 0.0                       # K
-        self.temperatures.freeze       = 0.0                       # K
-        self.temperatures.boiling      = 0.0                       # K
-
-        self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
-        self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
-        self.temperature                   = 0         # [K] Temperature of fuel
-        self.pressure                      = 0         # [Pa] Pressure of fuel
-        self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
-        self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
-        self.oxidizer                      = ''
-        
-        # Emission Indices 
-        self.emission_indices             =  Data() 
-        self.emission_indices.Production  = 0
-        self.emission_indices.CO2         = 0
-        self.emission_indices.H2O         = 0
-        self.emission_indices.CO          = 0
-        self.emission_indices.SO2         = 0
-        self.emission_indices.NOx         = 0
-        self.emission_indices.Soot        = 0 
+        self.tag                                    = 'Propellant'
+        self.reactant                               = 'O2'
+        self.density                                = 0.0                       # kg/m^3
+        self.specific_energy                        = 0.0                       # MJ/kg
+        self.energy_density                         = 0.0                       # MJ/m^3
+        self.lower_heating_value                    = 0.0                       # MJ/kg
+        self.mass_properties                        = Mass_Properties()
+        self.volume_properties                      = Volume_Properties()
+        self.max_mass_fraction                      = Data({'Air' : 0.0, 'O2' : 0.0}) # kg propellant / kg oxidizer
+        self.temperatures                           = Data()
+        self.temperatures.flash                     = 0.0                       # K
+        self.temperatures.autoignition              = 0.0                       # K
+        self.temperatures.freeze                    = 0.0                       # K
+        self.temperatures.boiling                   = 0.0                       # K
+         
+        self.stoichiometric_fuel_air_ratio          = 0         # [-] Stoichiometric Fuel to Air ratio
+        self.heat_of_vaporization                   = 0         # [J/kg] Heat of vaporization at standard conditions
+        self.temperature                            = 0         # [K] Temperature of fuel
+        self.pressure                               = 0         # [Pa] Pressure of fuel
+        self.fuel_surrogate_S1                      = {} # [-] Mole fractions of fuel surrogate species
+        self.kinetic_mechanism                      = '' # [-] Kinetic mechanism for fuel surrogate species
+        self.oxidizer                               = ''
+                 
+        # Emission Indices          
+        self.emission_indices                       = Data() 
+        self.emission_indices.Production            = 0
+        self.emission_indices.CO2                   = 0
+        self.emission_indices.H2O                   = 0
+        self.emission_indices.CO                    = 0
+        self.emission_indices.SO2                   = 0
+        self.emission_indices.NOx                   = 0
+        self.emission_indices.Soot                  = 0 
 
         self.global_warming_potential_100           =  Data() 
         self.global_warming_potential_100.CO2       = 0
@@ -146,4 +148,10 @@ class Propellant(Data):
         self.global_warming_potential_100.CO        = 1     # CO2e/kg  
         self.global_warming_potential_100.NOx       = 0
         self.global_warming_potential_100.Soot      = 0  
-        self.global_warming_potential_100.Contrails = 0        
+        self.global_warming_potential_100.Contrails = 0 
+    
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+        """
+        Appends operating conditions of the combustor.
+        """  
+        return    

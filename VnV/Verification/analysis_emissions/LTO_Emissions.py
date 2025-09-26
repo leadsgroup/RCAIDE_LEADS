@@ -134,7 +134,7 @@ def base_analysis(vehicle):
     weights.vehicle = vehicle 
     weights.settings.FLOPS.fidelity                                          = 'Complex'      
     weights.settings.weight_correction_additions.empty.structural.paint      = 450 
-    weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.passengers
+    weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.number_of_passengers
     weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.1  
     weights.settings.weight_correction_additions.empty.propulsion.battery    = 56   
     weights.settings.weight_correction_factors.empty.systems.electrical      = 2.67 

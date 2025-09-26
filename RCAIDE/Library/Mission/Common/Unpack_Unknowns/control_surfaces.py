@@ -96,4 +96,12 @@ def control_surfaces(segment):
                     control_surfaces.aileron.deflection  = segment.state.unknowns["aileron"]
                 else:
                     control_surfaces.aileron.deflection[:,0]  = control_surface.deflection
+                    
+            # Flap Control 
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:  
+                control_surfaces.flap.deflection[:,0]  = control_surface.deflection
+        
+            # Slat Control 
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:  
+                control_surfaces.slat.deflection[:,0]  = control_surface.deflection                           
     return

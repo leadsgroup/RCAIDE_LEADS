@@ -113,7 +113,7 @@ def optimization_setup(rotor, number_of_stations, print_iterations):
         tm_ll_c          = rotor.design_optimization.tip_mach_range[0]
         tm_ul_c          = rotor.design_optimization.tip_mach_range[1]    
         
-    inputs = []
+    inputs = []  # parameter                  initial val    , lower bound,upper bound,scaling  , units
     inputs.append([ 'chord_r'               ,  0.1*R    , 0.05*R     , 0.2*R     , 1.0     ,  1*Units.less])
     inputs.append([ 'chord_p'               ,  2        , 0.25       , 2.0       , 1.0     ,  1*Units.less])
     inputs.append([ 'chord_q'               ,  1        , 0.25       , 1.5       , 1.0     ,  1*Units.less])
@@ -123,8 +123,8 @@ def optimization_setup(rotor, number_of_stations, print_iterations):
     inputs.append([ 'twist_q'               ,  0.5      , 0.25       , 1.5       , 1.0     ,  1*Units.less])
     inputs.append([ 'twist_t'               ,  np.pi/6  , 0          , np.pi/4   , 1.0     ,  1*Units.less])  
     inputs.append([ 'hover_tip_mach'        , tm_0_h    , tm_ll_h    , tm_ul_h   , 1.0     ,  1*Units.less])
-    inputs.append([ 'OEI_tip_mach'          , tm_0_h    , tm_ll_h    , 0.85      , 1.0     ,  1*Units.less])
-    inputs.append([ 'OEI_collective_pitch'  , np.pi/6   , -np.pi/4   , np.pi/4   , 1.0      ,  1*Units.less])
+    inputs.append([ 'OEI_tip_mach'          , tm_0_h    , tm_ll_h    , 0.85       , 1.0     ,  1*Units.less])
+    inputs.append([ 'OEI_collective_pitch'  , 0         , -np.pi/4   , np.pi/4   , 1.0     ,  1*Units.less])
     if nexus.prop_rotor_flag: 
         inputs.append([ 'cruise_tip_mach'         , tm_ll_c , tm_ll_c    , tm_ul_c  , 1.0     ,  1*Units.less]) 
         inputs.append([ 'cuise_collective_pitch'  , np.pi/8 , -np.pi/4   , np.pi/4  , 1.0     ,  1*Units.less]) 

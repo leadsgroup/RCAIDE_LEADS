@@ -7,49 +7,45 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Library.Plots.Geometry.plot_3d_fuselage             import plot_3d_fuselage
-from RCAIDE.Library.Plots.Geometry.plot_3d_wing                 import plot_3d_wing 
-from RCAIDE.Library.Plots.Geometry.plot_3d_nacelle              import plot_3d_nacelle
-from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import plot_3d_rotor
-from RCAIDE.Library.Plots.Geometry.plot_3d_fuel_tank            import plot_3d_non_integral_fuel_tank, plot_3d_integral_wing_tank, plot_3d_integral_fuselage_tank
-
-from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations 
-from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume
+from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Plots.Geometry.generate_3d_wing_points      import *
+from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
+from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
+from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
+from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume  
+from RCAIDE.Library.Methods.Geometry.LOPA                       import  compute_layout_of_passenger_accommodations  
 
 # python imports 
-import numpy as np 
-import plotly.graph_objects as go  
-import os
-import sys
+import numpy as np  
+from copy import deepcopy 
+import vtk
+import matplotlib.colors as mcolors
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------  
+# ---------------------------------------------------------------------------------------------------------------------- 
 def plot_3d_vehicle(vehicle,
                     show_axis                   = False,
                     save_figure                 = False,
-                    save_filename               = "Vehicle_Geometry",
-                    alpha                       = 1.0,   
-                    axis_limit                  = 35,
+                    save_filename               = "geometry", 
                     top_view                    = False, 
                     side_view                   = False, 
-                    front_view                  = False, 
-                    camera_eye_x                = - 0.75, # -1.5,
-                    camera_eye_y                = - 0.75,#-1.5,
-                    camera_eye_z                =  0.75 ,# 1.0,
-                    camera_center_x             = 0.,
-                    camera_center_y             = 0.,
-                    camera_center_z             = -0.5,
-                    wing_color                  = 'greys', 
-                    fuselage_color              = 'teal', 
-                    nacelle_color               = 'darkmint', 
-                    fuel_tank_color             = 'oranges', 
-                    rotor_color                 = 'turbid', 
-                    wing_alpha                  = 0.5, 
-                    fuselage_alpha              = 0.5,
-                    nacelle_alpha               = 1.0,
-                    fuel_tank_alpha             = 1.0,
-                    rotor_alpha                 = 1.0,
+                    front_view                  = False,   
+                    wing_color                  = 'grey', 
+                    fuselage_color              = 'grey', 
+                    boom_color                  = 'grey', 
+                    nacelle_color               = 'grey', 
+                    fuel_tank_color             = 'orange', 
+                    rotor_color                 = 'black', 
+                    wing_opacity                = 0.5, 
+                    fuselage_opacity            = 1.0,
+                    boom_opacity                = 1.0,
+                    nacelle_opacity             = 1.0,
+                    fuel_tank_opacity           = 0.5,
+                    rotor_opacity               = 0.6, 
+                    number_of_airfoil_points    = 101,
+                    tessellation                = 96,  
                     overwrite_geometry          = True, 
                     show_figure                 = True):
     """
@@ -57,8 +53,8 @@ def plot_3d_vehicle(vehicle,
 
     Parameters
     ----------
-    vehicle : Vehicle
-        RCAIDE vehicle data structure containing all component geometries
+    geometry : geometry
+        RCAIDE geometry data structure containing all component geometries
 
     show_axis : bool, optional
         Flag to display coordinate axes (default: False)
@@ -71,9 +67,6 @@ def plot_3d_vehicle(vehicle,
 
     alpha : float, optional
         Transparency value between 0 and 1 (default: 1.0)
-
-    axis_limit : float, optional
-        Minimum plot limit (default: 20) 
 
     camera_eye_x : float, optional
         Camera eye x-position (default: -1.5)
@@ -102,6 +95,14 @@ def plot_3d_vehicle(vehicle,
 
     Notes
     -----
+                elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
+                    GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
+                    make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+
+                    if wing.xz_plane_symmetric: 
+                        GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
+                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity)
+                        
     Creates an interactive 3D visualization showing:
         - Wings and control surfaces
         - Fuselage sections
@@ -112,279 +113,344 @@ def plot_3d_vehicle(vehicle,
     if front_view:
         camera_eye_x  = -1 
         camera_eye_y  = 0
-        camera_eye_z  = 0
-        camera_center_x  = camera_center_x
-        camera_center_y  = camera_center_y
-        camera_center_z  = camera_center_z
+        camera_eye_z  = 0 
 
     elif side_view:
-        camera_eye_x  = 0  
+        camera_eye_x  =  0  
         camera_eye_y  = -1 
-        camera_eye_z  = 0 
-        camera_center_x  = camera_center_x 
-        camera_center_y  = camera_center_y 
-        camera_center_z  = camera_center_z 
+        camera_eye_z  =  0  
 
     elif top_view:
         camera_eye_x  = 0
         camera_eye_y  = 0 
-        camera_eye_z  = 1 
-        camera_center_x  = camera_center_x 
-        camera_center_y  = camera_center_y 
-        camera_center_z  = camera_center_z 
+        camera_eye_z  = 1  
 
     else: 
-        camera_eye_x  = - 0.5 
-        camera_eye_y  = - 0.5 
-        camera_eye_z  =   0.5 
-        camera_center_x  = camera_center_x 
-        camera_center_y  = camera_center_y 
-        camera_center_z  = camera_center_z
-
-
-    print("\nPlotting vehicle") 
-    camera = dict(
-        eye=dict(x=camera_eye_x, y=camera_eye_y, z=camera_eye_z), 
-        center=dict(x=camera_center_x, y=camera_center_y, z=camera_center_z)
-    )   
-
-    plot_data     = []
-
-    plot_data = generate_3d_vehicle_geometry_data(plot_data,
-                                                  vehicle,
-                                                    alpha,   
-                                                    wing_color,
-                                                    fuselage_color,
-                                                    nacelle_color, 
-                                                    fuel_tank_color, 
-                                                    rotor_color,
-                                                    wing_alpha,
-                                                    fuselage_alpha,
-                                                    nacelle_alpha,
-                                                    fuel_tank_alpha,
-                                                    rotor_alpha,
-                                                    overwrite_geometry, 
-                                                    )
-
-
-    fig = go.Figure(data=plot_data)
-
-    # Use update_layout instead of update_scenes
-    fig.update_layout(
-        width=1400,
-        height=1400,
-        scene=dict( 
-            xaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis,
-                       zerolinecolor="white", range=[0, 2 * axis_limit], visible=show_axis),
-            yaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis, 
-                       zerolinecolor="white", range=[-axis_limit, axis_limit], visible=show_axis),
-            zaxis=dict(backgroundcolor="grey", gridcolor="white", showbackground=show_axis,
-                       zerolinecolor="white", range=[-axis_limit , axis_limit ], visible=show_axis)
-            ),
-        scene_camera=camera
-    )
+        camera_eye_x  = -1 
+        camera_eye_y  = -1 
+        camera_eye_z  = 0.35  
     
-    fig.update_layout(scene_aspectmode='cube')
-    fig.update_coloraxes(showscale=False)   
-    fig.update_traces(opacity=alpha)
-
-    # Use the first path from sys.path
-    save_filename = os.path.join(sys.path[0], save_filename)
-    if save_figure:
-        fig.write_image(save_filename + ".png")
-
-    if show_figure:
-        fig.write_html( save_filename + '.html', auto_open=True) 
-
-    return      
-
-def generate_3d_vehicle_geometry_data(plot_data,
-                                      vehicle, 
-                                      alpha                       = 1.0,   
-                                      wing_color                  = 'greys', 
-                                      fuselage_color              = 'teal', 
-                                      nacelle_color               = 'darkmint', 
-                                      fuel_tank_color             = 'oranges', 
-                                      rotor_color                 = 'turbid', 
-                                      wing_alpha                  = 1.0, 
-                                      fuselage_alpha              = 1.0,
-                                      nacelle_alpha               = 1.0,
-                                      fuel_tank_alpha             = 1.0,
-                                      rotor_alpha                 = 1.0,
-                                      overwrite_geometry          = True, 
-                                      ):
-    """
-    Generates plot data for all vehicle components.
-
-    Parameters
-    ----------
-    plot_data : list
-        Collection of plot vertices to be rendered
-
-    vehicle : Vehicle
-        RCAIDE vehicle data structure containing all component geometries
-
-    alpha : float, optional
-        Transparency value between 0 and 1 (default: 1.0)
-
-    axis_limit : float, optional
-        Minimum x-axis plot limit (default: 20) 
-
-    Returns
-    -------
-    plot_data : list
-        Updated collection of plot vertices
-
-    min_x_axis_limit : float
-        Updated minimum x-axis limit
-
-    max_x_axis_limit : float
-        Updated maximum x-axis limit
-
-    min_y_axis_limit : float
-        Updated minimum y-axis limit
-
-    max_y_axis_limit : float
-        Updated maximum y-axis limit
-
-    min_z_axis_limit : float
-        Updated minimum z-axis limit
-
-    max_z_axis_limit : float
-        Updated maximum z-axis limit
-
-    Notes
-    -----
-    Processes geometry for:
-
-        - Wings (using plot_3d_wing)
-        - Fuselages (using plot_3d_fuselage)
-        - Booms (using plot_3d_fuselage)
-        - Energy networks (using plot_3d_energy_network)
-    """ 
-
-
+    # -------------------------------------------------------------------------
+    # Object RGB Colors  
+    # -------------------------------------------------------------------------    
+    fuel_tank_rgb_color  = mcolors.to_rgb(fuel_tank_color)     
+    wing_rgb_color       = mcolors.to_rgb(wing_color)
+    fuselage_rgb_color   = mcolors.to_rgb(fuselage_color) 
+    nacelle_rgb_color    = mcolors.to_rgb(nacelle_color) 
+    rotor_rgb_color      = mcolors.to_rgb(rotor_color)
+    boom_rgb_color       = mcolors.to_rgb(boom_color)
+     
     # -------------------------------------------------------------------------
     # Run Geoemtry Analysis
-    # ------------------------------------------------------------------------- 
-    if overwrite_geometry:
-        for fuselage in vehicle.fuselages:
-            compute_layout_of_passenger_accommodations(fuselage)
-            fuselage_planform(fuselage) 
-
-    for wing in vehicle.wings:  
+    # -------------------------------------------------------------------------   
+    geometry =  deepcopy(vehicle)  
+    for wing in geometry.wings:  
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             if overwrite_geometry: 
-                bwb_wing_planform(wing)
-                vehicle.reference_area = wing.areas.reference 
+                bwb_wing_planform(wing) 
         else:
             if overwrite_geometry:
-                wing_planform(wing) 
-                if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) and overwrite_geometry:
-                    vehicle.reference_area = wing.areas.reference
+                wing_planform(wing)  
+                     
+    compute_fuel_volume(geometry, update_fuel_volume=True) 
+    
+    for fuselage in  geometry.fuselages:               
+        compute_layout_of_passenger_accommodations(fuselage)
+        fuselage_planform(fuselage) 
+    
+    # -------------------------------------------------------------------------  
+    # Initalize Renderer
+    # -------------------------------------------------------------------------      
+    renderer = vtk.vtkRenderer()
+        
+    # -------------------------------------------------------------------------  
+    # Plot wings
+    # -------------------------------------------------------------------------  
+    for wing in geometry.wings:
+        n_segments = len(wing.segments)
+        dim        = n_segments if n_segments > 0 else 2
+        GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
+        make_object(renderer, GEOM,wing_rgb_color,wing_opacity)
+        if wing.yz_plane_symmetric: 
+            GEOM.PTS[:, :, 0] = -GEOM.PTS[:, :, 0]
+            make_object(renderer, GEOM,wing_rgb_color,wing_opacity)
+        if wing.xz_plane_symmetric: 
+            GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
+            make_object(renderer, GEOM,wing_rgb_color,wing_opacity)
+        if wing.xy_plane_symmetric: 
+            GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]
+            make_object(renderer, GEOM,wing_rgb_color,wing_opacity)
 
-    compute_fuel_volume(vehicle, update_max_fuel=False)
+    # -------------------------------------------------------------------------  
+    # Plot fuselage
+    # -------------------------------------------------------------------------  
+    for fuselage in geometry.fuselages:
+        GEOM = generate_3d_fuselage_points(fuselage, tessellation)
+        make_object(renderer, GEOM, fuselage_rgb_color,fuselage_opacity)
+        
+    # -------------------------------------------------------------------------  
+    # Plot boom
+    # -------------------------------------------------------------------------  
+    for boom in geometry.booms:
+        GEOM = generate_3d_fuselage_points(boom, tessellation)
+        make_object(renderer, GEOM, boom_rgb_color,boom_opacity)
 
-    # -------------------------------------------------------------------------
-    # PLOT WING
+    # -------------------------------------------------------------------------  
+    # Plot Nacelle, Rotors and Fuel Tanks 
     # ------------------------------------------------------------------------- 
-    number_of_airfoil_points = 21
-    for wing in vehicle.wings:
-        plot_data       = plot_3d_wing(plot_data,wing,number_of_airfoil_points , color_map=wing_color,alpha=wing_alpha) 
+    for network in geometry.networks:     
+        for propulsor in network.propulsors: 
+            if 'nacelle' in propulsor: 
+                if propulsor.nacelle !=  None: 
+                    if type(propulsor.nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle: 
+                        GEOM = generate_3d_stack_nacelle_points(propulsor.nacelle,tessellation = tessellation,number_of_airfoil_points = number_of_airfoil_points)
+                    elif type(propulsor.nacelle) == RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle: 
+                        GEOM = generate_3d_BOR_nacelle_points(propulsor.nacelle,tessellation = tessellation,number_of_airfoil_points = number_of_airfoil_points)
+                    else:
+                        GEOM= generate_3d_basic_nacelle_points(propulsor.nacelle,tessellation = tessellation,number_of_airfoil_points = number_of_airfoil_points)
+                    make_object(renderer, GEOM, nacelle_rgb_color,nacelle_opacity)
+                    
+            if 'rotor' in propulsor:  
+                rot       = propulsor.rotor
+                rot_x     = rot.orientation_euler_angles[0]
+                rot_y     = rot.orientation_euler_angles[1]
+                rot_z     = rot.orientation_euler_angles[2]
+                num_B     = int(rot.number_of_blades) 
+                if rot.radius_distribution is None:
+                    make_actuator_disc(renderer, rot.hub_radius, rot.tip_radius, rot.origin, rot_x,rot_y,rot_z, rotor_rgb_color,rotor_opacity) 
+                else:
+                    dim       = len(rot.radius_distribution) 
+                    for i in range(num_B):
+                        GEOM = generate_3d_blade_points(rot,number_of_airfoil_points,dim,i)
+                        make_object(renderer, GEOM, rotor_rgb_color,rotor_opacity) 
 
-    # -------------------------------------------------------------------------
-    # PLOT FUSELAGE
-    # ------------------------------------------------------------------------- 
-    for fus in vehicle.fuselages:
-        plot_data = plot_3d_fuselage(plot_data,fus,color_map =fuselage_color,alpha=fuselage_alpha)
+            if 'propeller' in propulsor:
+                prop      = propulsor.propeller
+                rot_x     = prop.orientation_euler_angles[0]
+                rot_y     = np.pi / 2 +  prop.orientation_euler_angles[1]
+                rot_z     = prop.orientation_euler_angles[2]
+                num_B     = int(prop.number_of_blades) 
+                if prop.radius_distribution is None:
+                    make_actuator_disc(renderer, prop.hub_radius, prop.tip_radius, prop.origin, rot_x,rot_y,rot_z,rotor_rgb_color,rotor_opacity) 
+                else:
+                    dim       = len(prop.radius_distribution)
+                    for i in range(num_B):
+                        GEOM = generate_3d_blade_points(prop,number_of_airfoil_points,dim,i) 
+                        make_object(renderer, GEOM, rotor_rgb_color,rotor_opacity) 
+
+        for fuel_line in network.fuel_lines:        
+            for fuel_tank in fuel_line.fuel_tanks:   
+                if fuel_tank.wing_tag != None:
+                    wing = geometry.wings[fuel_tank.wing_tag]
+                    
+                    if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
+                        GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
+                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+    
+                        if wing.xz_plane_symmetric: 
+                            GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
+                            make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity)
+                        
+                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
+                        segment_list = [] 
+                        segment_tags = list(wing.segments.keys())     
+                        for i in range(len(wing.segments) - 1):
+                            seg =  wing.segments[segment_tags[i]]
+                            next_seg =  wing.segments[segment_tags[i+1]]
+                            if seg.has_fuel_tank:
+                                if seg.tag not in segment_list:
+                                    segment_list.append(seg.tag)
+                                if next_seg.tag not in segment_list:
+                                    segment_list.append(next_seg.tag) 
+
+                        if len(wing.segments)>0:
+                            dim =  len(segment_list)
+                        else:
+                            dim = 2 
+
+                        if  len(segment_list) == 0 and len(wing.segments) > 0:
+                            raise AttributeError('Fuel tank defined on segmented wing but no segments have "tank" attribute = True') 
+                        else:   
+                            GEOM = generate_integral_wing_tank_points(wing,5,dim,segment_list)
+                            make_object(renderer, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)  
+                            if wing.xz_plane_symmetric:
+                                GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
+                                make_object(renderer, GEOM,fuel_tank_rgb_color, fuel_tank_opacity) 
+
+                elif fuel_tank.fuselage_tag != None:
+                    fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
+                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
+                        segment_list = [] 
+                        segment_tags = list(fuselage.segments.keys())     
+                        for i in range(len(fuselage.segments) - 1):
+                            seg =  fuselage.segments[segment_tags[i]]
+                            next_seg =  fuselage.segments[segment_tags[i+1]]
+                            if seg.has_fuel_tank: 
+                                segment_list.append(seg.tag)
+                                if next_seg.tag not in segment_list:
+                                    segment_list.append(next_seg.tag)  
+
+                        GEOM  = generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list,tessellation )
+                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+
+                elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
+                    GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
+                    make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+
+                    if wing.xz_plane_symmetric: 
+                        GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
+                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+
+    # Set camera and background
+    camera = vtk.vtkCamera()
+    camera.SetPosition(camera_eye_x, camera_eye_y, camera_eye_z)
+    camera.SetFocalPoint(0, 0, 0)
+    camera.SetViewUp(0, 0, 1)
+
+    renderer.SetActiveCamera(camera)
+    renderer.ResetCamera()
+    renderer.SetBackground(1.0, 1.0, 1.0)  # Background color 
+    
+    # 5. Create a render window to display the scene
+    renderWindow = vtk.vtkRenderWindow()
+    renderWindow.AddRenderer(renderer)
+    renderWindow.SetSize(1500, 1500)
+    renderWindow.SetWindowName(save_filename)
+    
+    # 6. Create an interactor to handle user input (mouse, keyboard)
+    renderWindowInteractor = vtk.vtkRenderWindowInteractor()
+    renderWindowInteractor.SetRenderWindow(renderWindow)
+
+    # Use the custom interactor style
+    custom_style = vtk.vtkInteractorStyleTrackballCamera() 
+    renderWindowInteractor.SetInteractorStyle(custom_style)
+
+    if save_figure:
+        # Create a vtkWindowToImageFilter to capture the render window content
+        window_to_image = vtk.vtkWindowToImageFilter()
+        window_to_image.SetInput(renderWindow)
+        window_to_image.SetInputBufferTypeToRGBA()  # or RGB
+        window_to_image.ReadFrontBufferOff()  # Read from back buffer for off-screen rendering
+        window_to_image.Update()
+        
+        # Create a vtkPNGWriter to save the image
+        writer = vtk.vtkPNGWriter()
+        writer.SetFileName(save_filename + ".png")
+        writer.SetInputConnection(window_to_image.GetOutputPort())
+        writer.Write()
+        
+    # Start the VTK interactor 
+    if show_figure:      
+        renderWindowInteractor.Initialize()
+        renderWindow.Render() # Render the scene initially
+        renderWindowInteractor.Start()
+
+    return
+
+def make_object(renderer, GEOM,  rgb_color, opacity): 
+
+    actor = generate_vtk_object(GEOM.PTS)
+
+    # Set color of fuselage
+    mapper = actor.GetMapper()
+    mapper.ScalarVisibilityOff()
+    actor.GetProperty().SetColor(rgb_color[0], rgb_color[1], rgb_color[2])  # Set wing color to Light Grey
+    actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+    actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+    actor.GetProperty().SetOpacity(opacity)
+    renderer.AddActor(actor)
+    
+    return
+
+def make_actuator_disc(renderer, inner_radius, outer_radius, origin, rot_x,rot_y,rot_z, rgb_color, opacity): 
+    
+    disk_source = vtk.vtkDiskSource()
+    disk_source.SetInnerRadius(inner_radius)
+    disk_source.SetOuterRadius(outer_radius)
+    disk_source.SetRadialResolution(50)
+    disk_source.SetCircumferentialResolution(50) 
+    
+    # 2. Define a rotation using vtkTransform
+    transform = vtk.vtkTransform()
+    transform.RotateX(rot_x/Units.degrees)  
+    transform.RotateY(rot_y/Units.degrees)  
+    transform.RotateZ(rot_z/Units.degrees)  
+
+    # 3. Apply the transformation with vtkTransformPolyDataFilter
+    transformFilter = vtk.vtkTransformPolyDataFilter()
+    transformFilter.SetTransform(transform)
+    transformFilter.SetInputConnection(disk_source.GetOutputPort()) 
+ 
+    mapper = vtk.vtkPolyDataMapper()
+    mapper.SetInputConnection(transformFilter.GetOutputPort())
+    
+    actor = vtk.vtkActor()
+    actor.SetMapper(mapper) 
+    actor.GetProperty().SetColor(rgb_color[0], rgb_color[1], rgb_color[2])  
+    actor.GetProperty().SetDiffuse(1.0)  
+    actor.GetProperty().SetSpecular(0.0) 
+    actor.GetProperty().SetOpacity(opacity)
+    actor.SetPosition( origin[0][0],  origin[0][1],  origin[0][2]) 
+    renderer.AddActor(actor)
+    return
+    
+def generate_vtk_object(pts):
+    comp = vtk.vtkPolyData()
+    points = vtk.vtkPoints()
+    polys = vtk.vtkCellArray()
+    scalars = vtk.vtkFloatArray()
+
+    size = np.shape(pts)
+    n_r = size[0]
+    n_a = size[1]
+    n = n_a * (n_r - 1)  # total number of cells
+    X = pts.reshape(n_r * n_a, 3)
+    geom_pts = write_azimuthal_cell_values(X, n, n_a)
+
+    size = np.shape(X)
+    for i, fxi in enumerate(X):
+        points.InsertPoint(i, fxi)
+        scalars.InsertTuple1(i, i)
+    for pt in geom_pts:
+        polys.InsertNextCell(mkVtkIdList(pt))
+
+    comp.SetPoints(points)
+    comp.SetPolys(polys)
+    comp.GetPointData().SetScalars(scalars)
+
+    mapper = vtk.vtkPolyDataMapper()
+    mapper.SetInputData(comp)
+    mapper.SetScalarRange(comp.GetScalarRange())
+
+    actor = vtk.vtkActor()
+    actor.SetMapper(mapper)
+
+    return actor
 
 
-    # -------------------------------------------------------------------------
-    # PLOT FUSELAGES AND BOOMS
-    # ------------------------------------------------------------------------- 
-    for boom in vehicle.booms:
-        plot_data = plot_3d_fuselage(plot_data,boom,color_map =fuselage_color,alpha=fuselage_alpha) 
+def mkVtkIdList(it):
+    vil = vtk.vtkIdList()
+    for i in it:
+        vil.InsertNextId(int(i))
+    return vil
 
-    # -------------------------------------------------------------------------
-    # PLOT ENERGY NETWORK
-    # ------------------------------------------------------------------------- 
-    number_of_airfoil_points = 11
-    for network in vehicle.networks:
-        plot_data = plot_3d_energy_network(plot_data,vehicle,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha) 
 
-    return plot_data
+def write_azimuthal_cell_values(f, n_cells, n_a):
+    rlap = 0
+    adjacent_cells = np.zeros((n_cells, 4))
 
-def plot_3d_energy_network(plot_data,vehicle,network,number_of_airfoil_points,nacelle_color, nacelle_alpha, rotor_color, rotor_alpha):
-    """
-    Generates plot data for vehicle energy network components.
-
-    Parameters
-    ----------
-    plot_data : list
-        Collection of plot vertices to be rendered
-
-    network : Network
-        RCAIDE network data structure containing propulsion components
-
-    number_of_airfoil_points : int
-        Number of points used to discretize airfoil sections
-
-    color_map : str
-        Color specification for network components
-
-    Returns
-    -------
-    plot_data : list
-        Updated collection of plot vertices
-
-    Notes
-    -----
-    Processes geometry for:
-        - Nacelles (using plot_3d_nacelle)
-        - Rotors (using plot_3d_rotor)
-        - Propellers (using plot_3d_rotor)
-    """ 
-    show_axis                = False 
-    save_figure              = False 
-    show_figure              = False
-    save_filename            = 'propulsor'
-
-    for propulsor in network.propulsors:  
-        number_of_airfoil_points = 21
-        tessellation             = 24
-        if 'nacelle' in propulsor: 
-            if propulsor.nacelle !=  None: 
-                plot_data = plot_3d_nacelle(plot_data,propulsor.nacelle,tessellation,number_of_airfoil_points,nacelle_color,nacelle_alpha) 
-        if 'rotor' in propulsor: 
-            plot_data = plot_3d_rotor(propulsor.rotor,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
-        if 'propeller' in propulsor:
-            plot_data = plot_3d_rotor(propulsor.propeller,save_filename,save_figure,plot_data,show_figure,show_axis,0,number_of_airfoil_points,rotor_color,rotor_alpha) 
-
-    for fuel_line in network.fuel_lines:
-        plot_fuel_tanks(vehicle, fuel_line,plot_data,tessellation) 
-    for bus in network.busses:
-        plot_fuel_tanks(vehicle, bus,plot_data,tessellation)
-
-    return plot_data
-
-def plot_fuel_tanks(vehicle, distributor,plot_data,tessellation):  
-    wings         = vehicle.wings
-    fuselages     = vehicle.fuselages
-    for fuel_tank in distributor.fuel_tanks:   
-        if fuel_tank.wing_tag != None:
-            wing = wings[fuel_tank.wing_tag]
-            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                plot_3d_integral_wing_tank(plot_data,wing, fuel_tank, tessellation, color_map = 'oranges') 
-            elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')   
-        elif fuel_tank.fuselage_tag != None:
-            fuselage = fuselages[fuel_tank.fuselage_tag]
-            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
-                plot_3d_integral_fuselage_tank(plot_data, fuselage, fuel_tank, tessellation, color_map = 'oranges') 
-            elif type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')
+    for i in range(n_cells):
+        if i == (n_a - 1 + n_a * rlap):
+            b = i - (n_a - 1)
+            c = i + 1
+            rlap += 1
         else:
-            if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank:
-                plot_3d_non_integral_fuel_tank(plot_data, fuel_tank, tessellation, color_map = 'oranges')
-
-    return 
+            b = i + 1
+            c = i + n_a + 1
+        a = i
+        d = i + n_a
+        adjacent_cells[i, 0] = a
+        adjacent_cells[i, 1] = b
+        adjacent_cells[i, 2] = c
+        adjacent_cells[i, 3] = d
+    return adjacent_cells 

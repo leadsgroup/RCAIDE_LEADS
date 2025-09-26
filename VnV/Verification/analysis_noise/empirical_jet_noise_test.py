@@ -49,10 +49,7 @@ def main():
     B737_SPL_true   = 115.17119587122147 # this value is high because its of a hemisphere of radius 20
     B737_diff_SPL   = np.abs(B737_SPL - B737_SPL_true)
     print('SPL difference: ',B737_diff_SPL)
-    assert np.abs((B737_SPL - B737_SPL_true)/B737_SPL_true) < 1e-3
-    
-    # plot aircraft
-    plot_3d_vehicle(vehicle, show_figure=False)
+    assert np.abs((B737_SPL - B737_SPL_true)/B737_SPL_true) < 1e-3 
     return
 
 def base_analysis(vehicle):

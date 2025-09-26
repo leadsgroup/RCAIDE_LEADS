@@ -171,7 +171,7 @@ class Combustor(Converter):
         
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
-        Appends operating conditions to the combustor.
+        Appends operating conditions of the combustor.
         """ 
         append_combustor_conditions(self,segment,energy_conditions)
         return

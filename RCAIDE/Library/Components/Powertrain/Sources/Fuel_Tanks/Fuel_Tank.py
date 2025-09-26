@@ -54,25 +54,22 @@ class Fuel_Tank(Component):
         """
         Sets default values for fuel tank attributes
         """          
-        self.tag                         = 'fuel_tank'
-        self.mass_properties.empty_mass  = 0.0   
-        self.mass_properties.fuel        = 0.0
-        self.secondary_fuel_flow_rate    = 0.0
-        self.fuel_selector_ratio         = 1.0    
-        self.wall_clearance              = 0.0
-        self.wall_thickness              = 0.0
-        self.fuel                        = None
-        self.symmetric                   = True
-        self.wing_tag                    = None
-        self.fuselage_tag                = None
-        self.inner_length                = 0.0
-        self.outer_length                = 0.0
-        self.inner_diameter              = 0.0
-        self.outer_diameter              = 0.0
-        self.inner_volume                = 0.0
-        self.outer_volume                = 0.0
-        self.fuel_volume                 = 0.0
-
+        self.tag                                   = 'fuel_tank'  
+        self.fuel                                  = None
+        self.secondary_mass_flow_rate              = 0.0
+        self.fuel_selector_ratio                   = 1.0    
+        self.wall_clearance                        = 0.0
+        self.wall_thickness                        = 1E-3
+        self.xz_plane_symmetric                    = True
+        self.wing_tag                              = None
+        self.fuselage_tag                          = None
+        self.inner_length                          = 0.0
+        self.outer_length                          = 0.0 
+        self.outer_width                           = 0.0
+        self.outer_height                          = 0.0
+        self.inner_diameter                        = 0.0
+        self.outer_diameter                        = 0.0
+ 
     def append_operating_conditions(self,segment,fuel_line):  
         """
         Append fuel tank operating conditions for a flight segment
@@ -87,17 +84,6 @@ class Fuel_Tank(Component):
         append_fuel_tank_conditions(self,segment, fuel_line)  
         return
     
-
-    def compute_tank_properties(self,state,fuel_line):  
-        """
-        Append fuel tank operating conditions for a flight segment
-        
-        Parameters
-        ----------
-        segment : Segment
-            Flight segment containing state conditions
-        fuel_line : Component
-            Connected fuel line component
-        """
-        compute_fuel_tank_properties(self,state, fuel_line)  
+    def compute_tank_properties(self,state,fuel_line):
+        compute_fuel_tank_properties(self,state,fuel_line)
         return

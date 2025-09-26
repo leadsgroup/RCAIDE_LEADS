@@ -59,7 +59,15 @@ def make_VLM_wings(geometry, settings):
     N/A
     """ 
     # unpack inputs 
-    wings         = copy_wings(geometry.wings)
+    wings         = copy_wings(geometry.wings) 
+
+    # ------------------------------------------------------------------
+    # Remove wings (necessary for some cases of vertical tails that intersect main body)
+    # ------------------------------------------------------------------
+    for wing in wings:
+        for segment in wing.segments: 
+            if segment.ignore_segment:
+                wing.segments.pop(segment.tag) 
     
     # ------------------------------------------------------------------
     # Reformat original wings to have at least 2 segments and additional values for processing later
@@ -87,7 +95,7 @@ def make_VLM_wings(geometry, settings):
         wing = populate_control_sections(wing)  
         
         #ensure wing has attributes that will be needed later
-        wing_halfspan = wing.spans.projected * 0.5 if wing.symmetric else wing.spans.projected
+        wing_halfspan = wing.spans.projected * 0.5 if wing.xz_plane_symmetric else wing.spans.projected
         segment_list  = list(wing.segments.keys())
         for i in range(n_segments):   
             (ia, ib)       = (0, 0) if i==0 else (i-1, i)
@@ -328,7 +336,7 @@ def get_paths(type_str):
     if type_str == 'wings':
         paths = ['tag',
                 'origin',
-                'symmetric',
+                'xz_plane_symmetric',
                 'vertical',
                 'taper',
                 'dihedral',
@@ -341,7 +349,7 @@ def get_paths(type_str):
                 'sweeps.leading_edge',
                 'twists.root',
                 'twists.tip',
-                'vortex_lift',
+                'vortex_lift', 
                 'airfoil',
                 'segments',
                 'control_surfaces',
@@ -364,7 +372,8 @@ def get_paths(type_str):
                  'twist',
                  'root_chord_percent',  
                  'dihedral_outboard',     
-                 'thickness_to_chord',     
+                 'thickness_to_chord',
+                 'ignore_segment', 
                  'sweeps.quarter_chord',         
                  'sweeps.leading_edge', 
                  'airfoil', 
@@ -399,7 +408,7 @@ def make_cs_wing_from_cs(cs, seg_a, seg_b, wing, cs_ID):
     Properties Used:
     N/A
     """      
-    hspan = wing.spans.projected*0.5 if wing.symmetric else wing.spans.projected
+    hspan = wing.spans.projected*0.5 if wing.xz_plane_symmetric else wing.spans.projected
     
     cs_wing                       = copy_data_from_paths(RCAIDE.Library.Components.Wings.Wing(), get_paths("wings"))
     
@@ -425,7 +434,7 @@ def make_cs_wing_from_cs(cs, seg_a, seg_b, wing, cs_ID):
     cs_wing.taper                 = cs_wing.chords.tip / cs_wing.chords.root
     cs_wing.sweeps.quarter_chord  = 0.  # leave at 0. VLM will use leading edge
 
-    cs_wing.symmetric             = wing.symmetric
+    cs_wing.xz_plane_symmetric             = wing.xz_plane_symmetric
     cs_wing.vertical              = wing.vertical
     cs_wing.vortex_lift           = wing.vortex_lift
 
@@ -447,7 +456,7 @@ def make_cs_wing_from_cs(cs, seg_a, seg_b, wing, cs_ID):
     
     #adjustments---------------------------------------------------------------------------------------------------
     #adjust origin - may need to be adjusted later
-    wing_halfspan                 = wing.spans.projected * 0.5 if wing.symmetric else wing.spans.projected
+    wing_halfspan                 = wing.spans.projected * 0.5 if wing.xz_plane_symmetric else wing.spans.projected
     LE_TE_cs_offset               = 0. if cs_wing.is_slat else (1 - cs.chord_fraction)*wing_chord_local_at_cs_root
     cs_wing.origin[0,0]          += np.interp(cs.span_fraction_start, [span_a, span_b], [seg_a.x_offset, seg_b.x_offset]) + LE_TE_cs_offset
     cs_wing.origin[0,1]          += cs.span_fraction_start * wing_halfspan if not wing.vertical else np.interp(cs.span_fraction_start, [span_a, span_b], [seg_a.dih_offset, seg_b.dih_offset])

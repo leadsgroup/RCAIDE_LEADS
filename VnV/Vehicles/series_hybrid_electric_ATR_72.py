@@ -51,7 +51,7 @@ def vehicle_setup():
               
     # basic parameters              
     vehicle.reference_area                            = 61.0  
-    vehicle.passengers                                = 72
+    vehicle.number_of_passengers                                = 72
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "short range"  
 
@@ -66,7 +66,7 @@ def vehicle_setup():
     main_gear.wheels                         = 4   
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -101,7 +101,7 @@ def vehicle_setup():
     wing.origin                           = [[11.52756129,0,2.009316366]]  
     wing.aerodynamic_center               = [11.52756129 + 0.25*wing.chords.root ,0,2.009316366]  
     wing.vertical                         = False   
-    wing.symmetric                        = True  
+    wing.xz_plane_symmetric               = True  
     wing.dynamic_pressure_ratio           = 1.0 
  
 
@@ -159,7 +159,7 @@ def vehicle_setup():
     wing.origin                  = [[25.505088,0,5.510942426]]  
     wing.aerodynamic_center      = [25.505088+ 0.25*wing.chords.root,0,2.009316366] 
     wing.vertical                = False  
-    wing.symmetric               = True  
+    wing.xz_plane_symmetric      = True  
     wing.dynamic_pressure_ratio  = 1.0 
 
     # add to vehicle
@@ -187,7 +187,7 @@ def vehicle_setup():
     wing.origin                            = [[17.34807199,0,1.3]]  
     wing.aerodynamic_center                = [17.34807199,0,1.3+ 0.25*wing.chords.root]   
     wing.vertical                          = True  
-    wing.symmetric                         = False  
+    wing.xz_plane_symmetric                = False  
     wing.t_tail                            = True  
     wing.dynamic_pressure_ratio            = 1.0  
  
@@ -736,7 +736,11 @@ def vehicle_setup():
     design_turboelectric_generator(turboelectric_generator)
     
     net.converters.append(turboelectric_generator)
-    fuel_line.assigned_converters = [[turboelectric_generator.tag]]
+  
+    turboelectric_generator_2 = deepcopy(turboelectric_generator)
+    turboelectric_generator_2.tag  = 'turboelectric_generator_2' 
+    net.converters.append(turboelectric_generator_2)
+    fuel_line.assigned_converters = [[turboelectric_generator.tag,turboelectric_generator_2.tag]]
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
@@ -748,7 +752,7 @@ def vehicle_setup():
     fuel_tank.fuel.mass_properties.mass              = vehicle.mass_properties.max_fuel
     fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
     fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center
-    fuel_tank.internal_volume                        = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.volume_properties.internal             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
 
     # apend fuel tank to dataclass of fuel tanks on fuel line 
     fuel_line.fuel_tanks.append(fuel_tank) 

@@ -64,6 +64,6 @@ class Main_Landing_Gear(Landing_Gear):
         """
         Sets default values for the main landing gear attributes.
         """
-        self.tag           = 'main_gear'  
-        self.symmetric     = True       
-        self.units         = 1
+        self.tag                  = 'main_gear'  
+        self.xz_plane_symmetric   = True 
+        self.units                = 1

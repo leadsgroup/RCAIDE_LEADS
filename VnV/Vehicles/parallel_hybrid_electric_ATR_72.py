@@ -50,7 +50,7 @@ def vehicle_setup():
               
     # basic parameters              
     vehicle.reference_area                            = 61.0  
-    vehicle.passengers                                = 72
+    vehicle.number_of_passengers                                = 72
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "short range"  
 
@@ -67,7 +67,7 @@ def vehicle_setup():
     main_gear.wheels                         = 4   
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -102,7 +102,7 @@ def vehicle_setup():
     wing.origin                           = [[11.52756129,0,2.009316366]]  
     wing.aerodynamic_center               = [11.52756129 + 0.25*wing.chords.root ,0,2.009316366]  
     wing.vertical                         = False   
-    wing.symmetric                        = True  
+    wing.xz_plane_symmetric               = True  
     wing.dynamic_pressure_ratio           = 1.0 
  
 
@@ -160,7 +160,7 @@ def vehicle_setup():
     wing.origin                  = [[25.505088,0,5.510942426]]  
     wing.aerodynamic_center      = [25.505088+ 0.25*wing.chords.root,0,2.009316366] 
     wing.vertical                = False  
-    wing.symmetric               = True  
+    wing.xz_plane_symmetric      = True  
     wing.dynamic_pressure_ratio  = 1.0 
 
     # add to vehicle
@@ -188,7 +188,7 @@ def vehicle_setup():
     wing.origin                            = [[17.34807199,0,1.3]]  
     wing.aerodynamic_center                = [17.34807199,0,1.3+ 0.25*wing.chords.root]   
     wing.vertical                          = True  
-    wing.symmetric                         = False  
+    wing.xz_plane_symmetric                = False  
     wing.t_tail                            = True  
     wing.dynamic_pressure_ratio            = 1.0  
  
@@ -512,14 +512,26 @@ def vehicle_setup():
     starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop()    
     starboard_propulsor.tag                          = 'starboard_propulsor'  
     starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
-    starboard_propulsor.design_altitude              = 25000*Units.ft                                   # [-]         Design Altitude 
-    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts      
-    starboard_propulsor.design_propeller_efficiency  = 0.86
-    starboard_propulsor.design_thrust                = 15000.0 * Units.N                                # [-]         Design Thrust          
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()            
-    starboard_propulsor.design_propeller_efficiency  = 0.83                                             # [-]         Design Propeller Efficiency
-    starboard_propulsor.gearbox.efficiency           = 0.99                                             # [-]         Design Gearbox Efficiency
-    starboard_propulsor.design_angular_velocity      = 3000.0 * Units.rpm
+    starboard_propulsor.gearbox.efficiency           = 0.99                                             
+    starboard_propulsor.design_thrust                = 15000.0 * Units.N 
+    starboard_propulsor.design_altitude              = 25000*Units.ft                                
+    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts  
+
+     #Propeller Design              
+    propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller()   
+    propeller.tag                                    = 'starboard_propulsor_propeller' 
+    propeller.origin                                 = [[9.1,4.219315295, 1.616135105 ]]
+    propeller.active                                 = True          
+    propeller.tip_radius                             = 2.8/2
+    propeller.hub_radius                             = 0.1 
+    propeller.number_of_blades                       = 3   
+    propeller.design_efficiency                      = 0.83      
+    propeller.design_angular_velocity                = 3000.0 * Units.rpm        
+    propeller.design_thrust                          = starboard_propulsor.design_thrust              
+    propeller.design_altitude                        = starboard_propulsor.design_altitude                                        
+    propeller.design_freestream_velocity             = starboard_propulsor.design_freestream_velocity                                                               
+    starboard_propulsor.propeller                    = propeller     
     
     # Ram inlet 
     ram                                              = RCAIDE.Library.Components.Powertrain.Converters.Ram()
@@ -666,6 +678,8 @@ def vehicle_setup():
     port_propulsor.origin                           = [[ 9.559106394 ,-4.219315295, 1.616135105]]  
     port_propulsor.nacelle.tag                      = 'port_propulsor_nacelle' 
     port_propulsor.nacelle.origin                   = [[8.941625295,-4.219315295, 1.616135105 ]]
+    port_propulsor.propeller.tag                    = 'port_propulsor_propeller' 
+    port_propulsor.propeller.origin                 = [[9.1,-4.219315295, 1.616135105 ]]
          
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor)
@@ -684,8 +698,7 @@ def vehicle_setup():
     fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()   
     fuel_tank.fuel.mass_properties.mass              = vehicle.mass_properties.max_fuel
     fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
-    fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center
-    fuel_tank.internal_volume                        = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center  
     
     # apend fuel tank to dataclass of fuel tanks on fuel line 
     fuel_line.fuel_tanks.append(fuel_tank) 

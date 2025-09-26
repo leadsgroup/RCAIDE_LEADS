@@ -72,7 +72,7 @@ class Internal_Combustion_Engine(Propulsor):
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
-        Appends operating conditions to the segment.
+        Appends operating conditions of the segment.
         """
         append_internal_combustion_engine_conditions(self,segment,energy_conditions,noise_conditions)
         return

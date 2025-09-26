@@ -63,7 +63,7 @@ def VLM(conditions,settings,geometry):
          taper                                 [Unitless]
          twists.root                           [radians]
          twists.tip                            [radians]
-         symmetric                             [Boolean]
+         xz_plane_symmetric                    [Boolean]
          aspect_ratio                          [Unitless]
          areas.reference                       [m^2]
          vertical                              [Boolean]
@@ -153,6 +153,8 @@ def VLM(conditions,settings,geometry):
     settings.vortex_distribution.ZB1                      = VD.ZB1
     settings.vortex_distribution.ZB2                      = VD.ZB2 
     settings.vortex_distribution.X                        = VD.X
+    settings.vortex_distribution.Y                        = VD.Y
+    settings.vortex_distribution.Z                        = VD.Z
     settings.vortex_distribution.XC                       = VD.XC
     settings.vortex_distribution.YC                       = VD.YC
     settings.vortex_distribution.ZC                       = VD.ZC
@@ -481,7 +483,7 @@ def VLM(conditions,settings,geometry):
     # Assign the lift and drag and non-dimensionalize
     for wing in geometry.wings.values():
         ref = wing.areas.reference
-        if wing.symmetric:
+        if wing.xz_plane_symmetric:
             Clift_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_lifts[:,i:(i+2)],axis=1)).T/ref
             Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref
             i+=1

@@ -48,4 +48,6 @@ def sequential_segments(mission):
             segment.process.initialize.expand_state = RCAIDE.Library.Methods.skip
 
             segment.evaluate()
+            segment.state.number_of_residuals = 0
+            segment.state.number_of_unknowns  = 0
             pbar.update(1)

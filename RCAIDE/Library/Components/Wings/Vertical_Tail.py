@@ -49,9 +49,9 @@ class Vertical_Tail(Wing):
         """
         Sets default values for the vertical tail attributes.
         """
-        self.tag       = 'vertical_tail'
-        self.vertical  = True
-        self.symmetric = False 
+        self.tag                = 'vertical_tail'
+        self.vertical           = True
+        self.xz_plane_symmetric = False
         
     def make_x_z_reflection(self):
         """
@@ -64,7 +64,7 @@ class Vertical_Tail(Wing):
 
         Notes
         -----
-        * Used when vertical tail's symmetric attribute is True
+        * Used when vertical tail's xz_plane_symmetric attribute is True
         * Reflects dihedral angles and origin location
         * Control surface deflections are reflected according to sign_duplicate
         * Should be called after setting control surface deflections

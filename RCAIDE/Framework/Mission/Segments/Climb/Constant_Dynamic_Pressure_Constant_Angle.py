@@ -57,10 +57,8 @@ class Constant_Dynamic_Pressure_Constant_Angle(Evaluate):
         
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission Specific Unknowns and Residuals 
-        # --------------------------------------------------------------------------------------------------------------    
-        ones_row = self.state.ones_row             
-        self.state.residuals.altitude      = ones_row(1) * 0.0
-        self.state.unknowns.altitude       = ones_row(1) * 0.0                                         
+        # --------------------------------------------------------------------------------------------------------------           
+        self.assigned_control_variables.altitude.active = True                             
         
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 

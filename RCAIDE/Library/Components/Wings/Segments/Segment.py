@@ -99,6 +99,7 @@ class Segment(Component):
         self.root_chord_percent                        = 0.0
         self.dihedral_outboard                         = 0.0
         self.thickness_to_chord                        = 0.0
+        self.ignore_segment                            = False
         self.sweeps                                    = Data()
         self.sweeps.quarter_chord                      = None
         self.sweeps.leading_edge                       = None 
@@ -117,7 +118,8 @@ class Segment(Component):
         self.fuel_tank                                 = Data() 
         self.has_fuel_tank                             = False   
         self.fuel_tank.percent_chord_start_location    = 0.1  
-        self.fuel_tank.percent_chord_end_location      = 0.6     
+        self.fuel_tank.percent_chord_end_location      = 0.6
+        self.fuel_tank.percent_span_location           = 0.0
         self.airfoil                                   = None
         
     def append_airfoil(self, airfoil):

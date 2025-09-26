@@ -121,7 +121,7 @@ def plot_lateral_stability(results,
         segment_name = segment_tag.replace('_', ' ')
         
         axis_1.plot(time, phi, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name)
-        axis_1.set_ylabel(r'$Bank Angle \phi$') 
+        axis_1.set_ylabel(r'$Bank Angle (deg)$') 
         set_axes(axis_1)     
 
         axis_2.plot(time,delta_a , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)

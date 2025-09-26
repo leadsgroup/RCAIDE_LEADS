@@ -18,19 +18,22 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_layout_of_passenger_accommodations
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_layout_of_passenger_accommodations(fuselage, update_fuselage_properties=True):
+def compute_layout_of_passenger_accommodations(fuselage):
     '''
     Creates the layout of passenger accommodations for a vehicle
     '''  
     #  [ x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, seat, emergency-row flag, galley/lav flag, type-A exit flag]    
     LOPA = np.empty(( 0, 14)) 
     side_cabin_offset = 0
+
     for cabin in fuselage.cabins: 
+        cabin_number_of_seats = 0
         cabin_class_origin  = [0, 0, 0]
         for cabin_class in cabin.classes: 
-            seat_data ,cabin_class_origin  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset)
-            side_cabin_offset =  cabin.width / 2
+            seat_data ,cabin_class_origin,cabin_number_of_seats  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset,cabin_number_of_seats)
+            side_cabin_offset = cabin.width / 2
             LOPA = np.vstack((LOPA,seat_data))  
+        cabin.number_of_seats = cabin_number_of_seats
             
     for cabin in fuselage.cabins: 
         for cabin_class in cabin.classes: 
@@ -38,81 +41,78 @@ def compute_layout_of_passenger_accommodations(fuselage, update_fuselage_propert
     
     # add cabin offset to account (useful for BWBs and aircraft with H2 tanks)
     LOPA[:, 2] += fuselage.cabin_offset 
-    fuselage.layout_of_passenger_accommodations                      = Data()
-    fuselage.layout_of_passenger_accommodations.object_coordinates   = LOPA
-    fuselage.layout_of_passenger_accommodations.number_of_passengers = np.sum(LOPA[:,10])
+    fuselage.layout_of_passenger_accommodations                     = Data()
+    fuselage.layout_of_passenger_accommodations.object_coordinates  = LOPA  
+    fuselage.number_of_seats                                        = np.sum(LOPA[:,10])    
     
-    if len(LOPA) > 0: 
-        compute_fuselage_dimensions(fuselage,update_fuselage_properties)
+    if LOPA.size > 0 :
+        # Step 1: plot cabin bounds  
+        # get points at x min 
+        x_min_locs   =  np.where( LOPA[:,2] == min(LOPA[:,2]))[0]
+        x_min        =  LOPA[x_min_locs[0],2] -  LOPA[x_min_locs[0],5]/2
+        x_min_y_max  =  max(LOPA[x_min_locs,3] + LOPA[x_min_locs,6]/2 )
+        x_min_y_min  =  min(LOPA[x_min_locs,3] - LOPA[x_min_locs,6]/2 ) 
+        x_border_pts = [x_min, x_min] 
+        y_border_pts = [x_min_y_min, x_min_y_max] 
 
-    return  
- 
-def compute_fuselage_dimensions(fuselage,update_fuselage_properties):
-    LOPA        = fuselage.layout_of_passenger_accommodations
-    LOPA_coords = LOPA.object_coordinates
-    
-       # Step 1: plot cabin bounds  
-    # get points at x min 
-    x_min_locs   =  np.where( LOPA_coords[:,2] == min(LOPA_coords[:,2]))[0]
-    x_min        =  LOPA_coords[x_min_locs[0],2] -  LOPA_coords[x_min_locs[0],5]/2
-    x_min_y_max  =  max(LOPA_coords[x_min_locs,3] + LOPA_coords[x_min_locs,6]/2 )
-    x_min_y_min  =  min(LOPA_coords[x_min_locs,3] - LOPA_coords[x_min_locs,6]/2 ) 
-    x_border_pts = [x_min, x_min] 
-    y_border_pts = [x_min_y_min, x_min_y_max] 
+        # get points at y max 
+        y_max_locs   =  np.where( LOPA[:,3] == max(LOPA[:,3]))[0]
+        y_max        =  LOPA[y_max_locs[0],3] + LOPA[y_max_locs[0],6]/2 
+        y_max_x_max  =  max(LOPA[y_max_locs,2] + LOPA[y_max_locs[0],5]/2)
+        y_max_x_min  =  min(LOPA[y_max_locs,2] - LOPA[y_max_locs[0],5]/2) 
+        x_border_pts.append(y_max_x_min)
+        x_border_pts.append(y_max_x_max)
+        y_border_pts.append(y_max)
+        y_border_pts.append(y_max) 
 
-    # get points at y max 
-    y_max_locs   =  np.where( LOPA_coords[:,3] == max(LOPA_coords[:,3]))[0]
-    y_max        =  LOPA_coords[y_max_locs[0],3] + LOPA_coords[y_max_locs[0],6]/2 
-    y_max_x_max  =  max(LOPA_coords[y_max_locs,2] + LOPA_coords[y_max_locs[0],5]/2)
-    y_max_x_min  =  min(LOPA_coords[y_max_locs,2] - LOPA_coords[y_max_locs[0],5]/2) 
-    x_border_pts.append(y_max_x_min)
-    x_border_pts.append(y_max_x_max)
-    y_border_pts.append(y_max)
-    y_border_pts.append(y_max) 
+        # get points at x max 
+        x_max_locs   =  np.where( LOPA[:,2] == max(LOPA[:,2]))[0]
+        x_max        =  LOPA[x_max_locs[0],2] + LOPA[x_max_locs[0],5]/2
+        x_max_y_max  =  max(LOPA[x_max_locs,3] + LOPA[x_max_locs,6]/2)
+        x_max_y_min  =  min(LOPA[x_max_locs,3] - LOPA[x_max_locs,6]/2)  
+        x_border_pts.append(x_max)
+        x_border_pts.append(x_max)
+        y_border_pts.append(x_max_y_max)
+        y_border_pts.append(x_max_y_min)
+        
+        # get points at y min  
+        y_min_locs   =  np.where( LOPA[:,3] == min(LOPA[:,3]))[0]
+        y_min        =  LOPA[y_min_locs[0],3] - LOPA[y_min_locs[0],6]/2 
+        y_min_x_max  =  max(LOPA[y_min_locs,2] + LOPA[y_min_locs[0],5]/2)
+        y_min_x_min  =  min(LOPA[y_min_locs,2] - LOPA[y_min_locs[0],5]/2)
+        x_border_pts.append(y_min_x_max)  
+        x_border_pts.append(y_min_x_min)
+        y_border_pts.append(y_min)
+        y_border_pts.append(y_min)    
+        
+        # loop through points and determine if there are duplicates
+        y_border_pts = np.array(y_border_pts)
+        x_border_pts = np.array(x_border_pts)
 
-    # get points at x max 
-    x_max_locs   =  np.where( LOPA_coords[:,2] == max(LOPA_coords[:,2]))[0]
-    x_max        =  LOPA_coords[x_max_locs[0],2] + LOPA_coords[x_max_locs[0],5]/2
-    x_max_y_max  =  max(LOPA_coords[x_max_locs,3] + LOPA_coords[x_max_locs,6]/2)
-    x_max_y_min  =  min(LOPA_coords[x_max_locs,3] - LOPA_coords[x_max_locs,6]/2)  
-    x_border_pts.append(x_max)
-    x_border_pts.append(x_max)
-    y_border_pts.append(x_max_y_max)
-    y_border_pts.append(x_max_y_min)
-    
-    # get points at y min  
-    y_min_locs   =  np.where( LOPA_coords[:,3] == min(LOPA_coords[:,3]))[0]
-    y_min        =  LOPA_coords[y_min_locs[0],3] - LOPA_coords[y_min_locs[0],6]/2 
-    y_min_x_max  =  max(LOPA_coords[y_min_locs,2] + LOPA_coords[y_min_locs[0],5]/2)
-    y_min_x_min  =  min(LOPA_coords[y_min_locs,2] - LOPA_coords[y_min_locs[0],5]/2)
-    x_border_pts.append(y_min_x_max)  
-    x_border_pts.append(y_min_x_min)
-    y_border_pts.append(y_min)
-    y_border_pts.append(y_min)    
-    
-    # loop through points and determine if there are duplicates
-    y_border_pts = np.array(y_border_pts)
-    x_border_pts = np.array(x_border_pts)
+        # cut where y is negative
+        port_idxs  =  np.where(y_border_pts<0)[0]
+        starboard_x_points = np.delete(x_border_pts, port_idxs) 
+        starboard_y_points = np.delete(y_border_pts, port_idxs)
+        
+        fuselage.layout_of_passenger_accommodations.cabin_area_coordinates = np.vstack((starboard_x_points[None,:],starboard_y_points[None, :])).T 
+        fuselage.layout_of_passenger_accommodations.cabin_length = max(starboard_x_points)
+        fuselage.layout_of_passenger_accommodations.cabin_width = 2*max(starboard_y_points)    
 
-    # cut where y is negative
-    port_idxs  =  np.where(y_border_pts<0)[0]
-    starboard_x_points = np.delete(x_border_pts, port_idxs) 
-    starboard_y_points = np.delete(y_border_pts, port_idxs)
-    
-    LOPA.cabin_area_coordinates = np.vstack((starboard_x_points[None,:],starboard_y_points[None, :])).T 
-    LOPA.cabin_length = max(starboard_x_points)
-    LOPA.cabin_wdith = 2*max(starboard_y_points) 
-    
-    if update_fuselage_properties:
-        fuselage.lengths.nose          = fuselage.fineness.nose*LOPA.cabin_wdith
-        fuselage.lengths.tail          = fuselage.fineness.tail*LOPA.cabin_wdith   
-        fuselage.lengths.total         = fuselage.lengths.nose + fuselage.lengths.tail + LOPA.cabin_length
-        fuselage.width                 = LOPA.cabin_wdith
-        fuselage.number_of_passengers  = np.sum(LOPA_coords[:,10])
-    
-    return  
+        if fuselage.width == 0:
+            fuselage.width = fuselage.layout_of_passenger_accommodations.cabin_width
+        # if fuselage.height == 0:
+        #     fuselage.height = fuselage.layout_of_passenger_accommodations.cabin_height
+        if fuselage.lengths.nose == 0:
+            fuselage.lengths.nose          = fuselage.fineness.nose*fuselage.layout_of_passenger_accommodations.cabin_width
+        if fuselage.lengths.tail == 0:
+            fuselage.lengths.tail          = fuselage.fineness.tail*fuselage.layout_of_passenger_accommodations.cabin_width
+        if fuselage.lengths.total == 0:
+            fuselage.lengths.total         = fuselage.lengths.nose + fuselage.lengths.tail + fuselage.layout_of_passenger_accommodations.cabin_length
+        
 
-def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_cabin_offset):  
+    return   
+
+def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_cabin_offset,cabin_number_of_seats):  
     
     s_y_coord, cabin_class_origin = get_seat_y_coords(cabin, cabin_class,cabin_class_origin)
     s_x_coord,object_type, cabin_class_origin = get_seat_x_coords(cabin, cabin_class,cabin_class_origin) 
@@ -142,7 +142,7 @@ def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_c
     elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy: 
         E_c  =  np.ones_like(Z_coords)  
     
-    # [n_rows , n_seats_y, x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, seat, emergency-row flag, galley/lav flag, type-A exit flag]    
+    # [n_rows , n_seats_y, x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, [seat, emergency-row flag, galley/lav flag, type-A exit flag]]    
     seat_data = np.hstack((n_rows , n_seats_y, X_coords,Y_coords, Z_coords, length ,width,F_c,B_c,E_c,object_vec))
      
     if type(cabin) == RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin:
@@ -155,10 +155,10 @@ def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_c
         seat_data_        = deepcopy(seat_data)
         seat_data_[:, 3] *= -1 
         seat_data         = np.vstack((seat_data,seat_data_))
-        
-    cabin.layout_of_passenger_accommodations.object_coordinates = seat_data
-    cabin.number_of_passengers =  np.sum(seat_data[:,10])
-    return seat_data ,cabin_class_origin 
+          
+    cabin_class.number_of_seats = int(np.sum(seat_data[:,10]))
+    cabin_number_of_seats       += int(cabin_class.number_of_seats)
+    return seat_data ,cabin_class_origin,cabin_number_of_seats
 
 
     

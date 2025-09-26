@@ -18,13 +18,6 @@ from BWB    import vehicle_setup  ,  configs_setup
 def main():
     
     vehicle  = vehicle_setup() 
-
-    # plot vehicle 
-    plot_3d_vehicle(vehicle,
-                    save_filename               = "BWB_Top_View", 
-                    axis_limit                  = 100,  
-                    show_figure=False)
-    
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
     mission  = mission_setup(analyses)
@@ -34,18 +27,16 @@ def main():
     vortex_distribution = results.segments.cruise.analyses.aerodynamics.settings.vortex_distribution
     plot_3d_vehicle_vlm_panelization(vortex_distribution=vortex_distribution,
                     save_filename               = "BWB_Top_View", 
-                    show_wing_control_points    = False, 
-                    axis_limit                  = 100,  
-                    show_figure=False)
+                    show_wing_control_points    = False,  
+                    show_figure                 =False)
 
     plot_3d_vehicle_vlm_panelization(vortex_distribution=vortex_distribution,
                     save_filename               = "BWB_Top_View",
-                    show_wing_control_points    = True, 
-                    axis_limit                  = 100,  
-                    show_figure=False)
+                    show_wing_control_points    = True,  
+                    show_figure                 =False)
 
     Cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    Cruise_CL_true   = 0.38413007873149724
+    Cruise_CL_true   = 0.3841007724387933
     Cruise_CL_diff   = np.abs(Cruise_CL - Cruise_CL_true)
     print('Error: ',Cruise_CL_diff)
     assert np.abs((Cruise_CL - Cruise_CL_true)/Cruise_CL_true) < 1e-6
@@ -179,6 +170,7 @@ def mission_setup(analyses):
     
     segment.assigned_control_variables.elapsed_time.active                = True  
     segment.assigned_control_variables.elapsed_time.initial_guess_values  = [[30.]]  
+    segment.assigned_control_variables.elapsed_time.bounds                  = [[-10, 100000000]]
     mission.append_segment(segment)     
 
     return mission

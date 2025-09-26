@@ -18,7 +18,7 @@ import os
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
-def vehicle_setup(fuel_cell_model):     
+def vehicle_setup(fuel_cell_model= 'PEM'):     
 
     #------------------------------------------------------------------------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -43,7 +43,7 @@ def vehicle_setup(fuel_cell_model):
     vehicle.flight_envelope.design_range             = 3500 * Units.nmi
     
     vehicle.reference_area                           = 39 
-    vehicle.passengers                               = 19
+    vehicle.number_of_passengers                               = 19
     vehicle.systems.control                          = "fully powered"
     vehicle.systems.accessories                      = "commuter"  
 
@@ -59,7 +59,7 @@ def vehicle_setup(fuel_cell_model):
     main_gear.wheels                         = 4   
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -93,7 +93,7 @@ def vehicle_setup(fuel_cell_model):
     wing.origin                           = [[5.38, 0, 1.35]] 
     wing.aerodynamic_center               = [[5.38 + 0.25 *wing.chords.root , 0, 1.35]]  
     wing.vertical                         = False
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0  
@@ -124,7 +124,7 @@ def vehicle_setup(fuel_cell_model):
     segment.tag                           = 'tip'
     segment.percent_span_location         = 1.
     segment.twist                         = 0
-    segment.root_chord_percent            = 0.12
+    segment.root_chord_percent            = 1.
     segment.dihedral_outboard             = 0.
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
@@ -155,7 +155,7 @@ def vehicle_setup(fuel_cell_model):
     wing.aerodynamic_center               = [[13.17 , 0 , 1.25]]  
     wing.vertical                         = False
     wing.winglet_fraction                 = 0.0  
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = False 
     wing.dynamic_pressure_ratio           = 0.9
 
@@ -182,7 +182,7 @@ def vehicle_setup(fuel_cell_model):
     wing.origin                           = [[ 12.222 , 0 , 0.385 ]]  
     wing.aerodynamic_center               = [[ 12.222 + 0.25 * wing.chords.root, 0 , 0.385 ]]  
     wing.vertical                         = True 
-    wing.symmetric                        = False
+    wing.xz_plane_symmetric               = False
     wing.t_tail                           = False
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0
@@ -197,7 +197,7 @@ def vehicle_setup(fuel_cell_model):
     cabin         = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
     economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
-    economy_class.number_of_rows                      = 8
+    economy_class.number_of_rows                      = 10
     economy_class.galley_lavatory_percent_x_locations = []  
     economy_class.emergency_exit_percent_x_locations  = []      
     economy_class.type_A_exit_percent_x_locations     = [] 
@@ -445,7 +445,7 @@ def vehicle_setup(fuel_cell_model):
     nacelle.length             = 4
     nacelle.diameter           = 0.73480616 
     nacelle.areas.wetted       = 0.01*(2*np.pi*0.01/2)
-    nacelle.origin             = [[3.5,2.8129,1]]
+    nacelle.origin             = [[2.81,2.8129 ,1.22]]
     nacelle.flow_through       = False  
     
     nac_segment                    = RCAIDE.Library.Components.Nacelles.Segments.Segment()
@@ -548,7 +548,7 @@ def vehicle_setup(fuel_cell_model):
 
     nacelle_2                                  = deepcopy(nacelle)
     nacelle_2.tag                              = 'nacelle_2'
-    nacelle_2.origin                           = [[ 2.81, -3.34 ,1.22]]
+    nacelle_2.origin                           = [[ 2.81, -2.8129 ,1.22]]
     port_propulsor.nacelle                     = nacelle_2         
     
     # append propulsor to distribution line 

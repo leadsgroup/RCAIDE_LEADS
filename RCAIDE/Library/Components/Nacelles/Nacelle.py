@@ -120,7 +120,7 @@ class Nacelle(Component):
 
     def append_operating_conditions(self, segment, energy_conditions, noise_conditions=None): 
         """
-        Placeholder for adding operating conditions to the nacelle.
+        Placeholder for adding operating conditions of the nacelle.
 
         Parameters
         ----------

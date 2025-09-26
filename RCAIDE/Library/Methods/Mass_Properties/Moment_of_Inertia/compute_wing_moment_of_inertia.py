@@ -58,7 +58,7 @@ def compute_wing_moment_of_inertia(wing,mass = 0, center_of_gravity = [[0, 0, 0]
     dihedral    = wing.dihedral # Wing dihedral
     origin_wing = wing.origin + np.array([[cr / 4], [0], [0]]) # moves the origin of the wing to the quarter chord of the root airfoil.
     
-    if wing.symmetric: # Splits the wing weight between the two wings if the wing is symmetric.
+    if wing.xz_plane_symmetric: # Splits the wing weight between the two wings if the wing is symmetric.
         m_wing = mass * 0.5
     else:
         m_wing = mass
@@ -126,7 +126,7 @@ def compute_wing_moment_of_inertia(wing,mass = 0, center_of_gravity = [[0, 0, 0]
     # ----------------------------------------------------------------------------------------------------------------------
     # Symmetric Wing
     # ----------------------------------------------------------------------------------------------------------------------
-    if wing.symmetric: # wing is symmetric
+    if wing.xz_plane_symmetric: # wing is symmetric
         
         # Rotation matrix for dihedral. Note no -1*dihedral for the symmetric wing
         R = np.array([[1, 0, 0], [0, np.cos(dihedral), -1 * np.sin(dihedral)], [0, np.sin(dihedral), np.cos(dihedral)]])        

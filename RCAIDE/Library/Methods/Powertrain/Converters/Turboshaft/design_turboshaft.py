@@ -61,7 +61,7 @@ def design_turboshaft(turboshaft,network):
                 Non-dimensional thrust [-]
             - design_core_mass_flow_rate : float
                 Core mass flow rate [kg/s]
-            - design_fuel_flow_rate : float
+            - design_fuel_mass_flow_rate : float
                 Fuel flow rate [kg/s]
             - design_power : float
                 Power output [W]

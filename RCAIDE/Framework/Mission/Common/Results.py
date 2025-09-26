@@ -267,16 +267,7 @@ class Results(Conditions):
  
         self.static_stability.forces                                           = Conditions()
         self.static_stability.forces.lift                                      = ones_1col * 0
-        self.static_stability.forces.drag                                      = ones_1col * 0
-        self.static_stability.forces.X                                         = ones_1col * 0
-        self.static_stability.forces.Y                                         = ones_1col * 0
-        self.static_stability.forces.Z                                         = ones_1col * 0
-                                                                               
-        self.static_stability.moments                                          = Conditions()
-        self.static_stability.moments.L                                        = ones_1col * 0
-        self.static_stability.moments.M                                        = ones_1col * 0
-        self.static_stability.moments.N                                        = ones_1col * 0
-                                                                               
+        self.static_stability.forces.drag                                      = ones_1col * 0  
         self.static_stability.static_margin                                    = ones_1col * 0
         self.static_stability.neutral_point                                    = ones_1col * 0
         self.static_stability.spiral_criteria                                  = ones_1col * 0 

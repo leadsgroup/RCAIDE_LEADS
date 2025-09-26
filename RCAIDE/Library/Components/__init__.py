@@ -18,9 +18,10 @@ RCAIDE.Library.Components.Mass_Properties
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
  
-from .Component        import Component
-from .Network          import Network
-from .Mass_Properties  import Mass_Properties
+from .Component          import Component
+from .Network            import Network
+from .Mass_Properties    import Mass_Properties
+from .Volume_Properties  import Volume_Properties
   
 from . import Airfoils
 from . import Booms

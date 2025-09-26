@@ -61,7 +61,7 @@ def Test_Rotor(new_regression=True):
         design_lift_rotor(regression_lift_rotor, iterations=2)
         loaded_lift_rotor = load_rotor(os.path.join(test_dir, 'test_rotor.res'))
         
-        for key,item in lift_rotor.items():
+        for key,item in lift_rotor.items(): 
             lift_rotor[key] = loaded_lift_rotor[key] 
     
     return lift_rotor

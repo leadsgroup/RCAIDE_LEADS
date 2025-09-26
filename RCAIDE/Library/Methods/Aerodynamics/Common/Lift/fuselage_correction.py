@@ -33,6 +33,6 @@ def fuselage_correction(state,settings,geometry):
     
         state.conditions.aerodynamics.coefficients.lift.total = aircraft_total_lift
     else:
-        state.conditions.aerodynamics.coefficients.lift.total = invs_lift
+        state.conditions.aerodynamics.coefficients.lift.total = invs_lift 
 
     return 

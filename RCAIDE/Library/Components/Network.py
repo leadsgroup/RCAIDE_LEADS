@@ -6,16 +6,15 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 from RCAIDE.Framework.Core import Container as ContainerBase
-from RCAIDE.Framework.Core import Data
-from .Mass_Properties import Mass_Properties
-
+from RCAIDE.Framework.Core import Data 
+from RCAIDE.Library.Components import Component
 # package imports 
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Network
 # ----------------------------------------------------------------------------------------------------------------------        
-class Network(Data):
+class Network(Component):
     """
     Base class for component networks that manage connections and interactions between 
     system components.
@@ -23,10 +22,7 @@ class Network(Data):
     Attributes
     ----------
     tag : str
-        Unique identifier for the network, defaults to 'Network'
-        
-    mass_properties : Mass_Properties
-        Mass and inertia properties, initialized empty
+        Unique identifier for the network, defaults to 'Network' 
         
     origin : ndarray
         3D coordinates [x, y, z] defining network's reference point, 
@@ -49,9 +45,7 @@ class Network(Data):
     * Container functionality for sub-networks
 
     See Also
-    --------
-    RCAIDE.Library.Components.Mass_Properties
-        Class containing mass and inertia data
+    -------- 
     RCAIDE.Framework.Core.Data
         Parent class providing data structure functionality
     """
@@ -59,9 +53,7 @@ class Network(Data):
         """
         Sets default values for the network attributes.
         """         
-        self.tag             = 'Network' 
-        self.mass_properties = Mass_Properties()
-        self.origin          = np.array([[0.0,0.0,0.0]]) 
+        self.tag             = 'Network'
         self.inputs          = Data()
         self.outputs         = Data()
         

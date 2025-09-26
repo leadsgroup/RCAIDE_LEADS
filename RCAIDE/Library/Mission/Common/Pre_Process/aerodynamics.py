@@ -70,20 +70,12 @@ def aerodynamics(mission):
             pass
         else:        
             if segment.analyses.aerodynamics != None:
-                if last_tag!=  None:
-                    if segment.analyses.aerodynamics.settings.unique_segment_surrogate:
-                        aero   = segment.analyses.aerodynamics
-                        aero.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), mission.tag + "_" + segment.tag +"_aerodynamic_training_data.pkl")
-                        aero.initialize()   
-                        last_tag = tag
-                    else:
-                        if 'compute' in mission.segments[last_tag].analyses.aerodynamics.process.keys(): 
-                            segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings
-                            segment.analyses.aerodynamics.surrogates                          = mission.segments[last_tag].analyses.aerodynamics.surrogates  
-                            segment.analyses.aerodynamics.settings.vortex_distribution        = mission.segments[last_tag].analyses.aerodynamics.settings.vortex_distribution 
-                else: 
-                    aero   = segment.analyses.aerodynamics
-                    aero.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), mission.tag + "_" + segment.tag +"_aerodynamic_training_data.pkl")
-                    aero.initialize()   
+                if last_tag!=  None and 'compute' in mission.segments[last_tag].analyses.aerodynamics.process.keys(): 
+                    segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings
+                    segment.analyses.aerodynamics.surrogates                          = mission.segments[last_tag].analyses.aerodynamics.surrogates  
+                    segment.analyses.aerodynamics.settings.vortex_distribution        = mission.segments[last_tag].analyses.aerodynamics.settings.vortex_distribution 
+                else:  
+                    segment.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), segment.analyses.aerodynamics.tag + "_" + mission.tag+ "_" + os.path.splitext(os.path.basename(sys.argv[0]))[0] +"_aerodynamic_training_data.pkl")
+                    segment.analyses.aerodynamics.initialize()   
                     last_tag = tag  
     return 

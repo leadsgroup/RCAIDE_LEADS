@@ -15,10 +15,7 @@ def get_seat_y_coords(cabin,cabin_class,cabin_class_origin):
 
     n      = cabin_class.number_of_seats_abrest
     s_w    = cabin_class.seat_width
-    ar_w   = cabin_class.seat_arm_rest_width 
-    n      = cabin_class.number_of_seats_abrest 
-    s_w    = cabin_class.seat_width
-    ar_w   = cabin_class.seat_arm_rest_width  
+    ar_w   = cabin_class.seat_arm_rest_width   
     a_w    = cabin_class.aile_width      
 
     # determine number of aisles
@@ -177,9 +174,7 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin):
         else:
             object_type = np.insert(object_type,loc, np.array([0, 0, 0, 1]) , axis=0) 
             s_x_coord[loc:] += A_l
-            s_x_coord   = np.insert(s_x_coord, loc, s_x_coord[loc] - A_l)
-            #if object_type[loc+1, 0] == 1: 
-                #s_x_coord[loc+1:] += s_p / 2 
+            s_x_coord   = np.insert(s_x_coord, loc, s_x_coord[loc] - A_l) 
             
     # shift for emergency rows
     for i in range(len(ex_loc)):
@@ -213,9 +208,9 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin):
     if object_type[-1, 3] == 1: 
         offset_end = A_l / 2
      
-    cabin_class.length =  s_x_coord[-1] + offset_end
-    cabin.length += s_x_coord[-1] + offset_end
-    s_x_coord += cabin_class_origin[0]
+    cabin_class.length    =  s_x_coord[-1] + offset_end
+    cabin.length          += s_x_coord[-1] + offset_end
+    s_x_coord             += cabin_class_origin[0]
     cabin_class_origin[0] = s_x_coord[-1] + offset_end
     return s_x_coord , object_type, cabin_class_origin
  

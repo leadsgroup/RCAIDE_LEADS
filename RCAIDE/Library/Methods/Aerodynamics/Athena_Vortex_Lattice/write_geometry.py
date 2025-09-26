@@ -132,7 +132,7 @@ def make_surface_text(avl_wing,number_of_spanwise_vortices,number_of_chordwise_v
         None
 
     Inputs:
-       avl_wing.symmetric
+       avl_wing.xz_plane_symmetric
        avl_wing.tag
         
     Outputs:
@@ -152,7 +152,7 @@ SURFACE
 {1}         {2}         {3}      {4}{5}
 '''        
     # Unpack inputs
-    symm = avl_wing.symmetric
+    symm = avl_wing.xz_plane_symmetric
     name = avl_wing.tag
 
     if symm:

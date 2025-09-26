@@ -54,6 +54,7 @@ nosetests.xml
 *.gz
 *.zip
 *.tar
+*.pkl
 
 # Mac
 .DS_Store
@@ -77,3 +78,7 @@ nosetests.xml
 .rst
 .png  
 
+# Ignore environment files
+.vscode
+.idea
+*venv*

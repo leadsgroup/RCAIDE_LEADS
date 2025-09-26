@@ -67,7 +67,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     wing.origin                           = [[0,0,0]]
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.dynamic_pressure_ratio           = 1.0
     

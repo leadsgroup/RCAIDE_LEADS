@@ -56,7 +56,7 @@ def append_fuel_line_conditions(fuel_line,segment):
     segment.state.conditions.energy.fuel_lines[fuel_line.tag].efficiency                          = 0 * ones_row(1)
     segment.state.conditions.energy.fuel_lines[fuel_line.tag].temperature                         = 0 * ones_row(1)
     segment.state.conditions.energy.fuel_lines[fuel_line.tag].energy                              = 0 * ones_row(1)  
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_flow_rate                      = 0 * ones_row(1)  
+    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
     segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_tanks                          = Conditions() 
 
     return
@@ -85,5 +85,5 @@ def append_fuel_line_segment_conditions(fuel_line,segment):
     --------
     RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.append_fuel_line_conditions 
     """     
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_flow_rate[:,0]    = 0
+    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate[:,0]    = 0
     return

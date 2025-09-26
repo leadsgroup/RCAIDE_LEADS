@@ -80,7 +80,7 @@ def compute_thrust(turbojet,conditions):
               Non-dimensional thrust
           - core_mass_flow_rate : numpy.ndarray
               Core mass flow rate [kg/s]
-          - fuel_flow_rate : numpy.ndarray
+          - fuel_mass_flow_rate : numpy.ndarray
               Fuel flow rate [kg/s]
           - power : numpy.ndarray
               Power output [W]
@@ -171,7 +171,7 @@ def compute_thrust(turbojet,conditions):
 
     # Fuel flow rate
     a = np.array([0.])        
-    fuel_flow_rate   = np.fmax(FD2*TSFC/g,a)*1./Units.hour
+    m_dot_fuel   = np.fmax(FD2*TSFC/g,a)*1./Units.hour
 
     # Computing the power 
     power            = FD2*u0
@@ -181,7 +181,7 @@ def compute_thrust(turbojet,conditions):
     turbojet_conditions.thrust_specific_fuel_consumption  = TSFC
     turbojet_conditions.non_dimensional_thrust            = Fsp 
     turbojet_conditions.core_mass_flow_rate               = mdot_core
-    turbojet_conditions.fuel_flow_rate                    = fuel_flow_rate    
+    turbojet_conditions.fuel_mass_flow_rate               = m_dot_fuel    
     turbojet_conditions.power                             = power   
     turbojet_conditions.specific_impulse                  = Isp
 

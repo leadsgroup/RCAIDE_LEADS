@@ -71,11 +71,11 @@ def append_bus_conditions(bus,segment):
     segment.state.conditions.energy.busses[bus.tag].temperature                         = 0 * ones_row(1)
     segment.state.conditions.energy.busses[bus.tag].energy                              = 0 * ones_row(1)
     segment.state.conditions.energy.busses[bus.tag].regenerative_power                  = 0 * ones_row(1) 
-    segment.state.conditions.energy.busses[bus.tag].fuel_flow_rate                      = 0 * ones_row(1) 
+    segment.state.conditions.energy.busses[bus.tag].fuel_mass_flow_rate                 = 0 * ones_row(1) 
 
      # first segment  
     if 'initial_battery_state_of_charge' in segment:  
-        initial_battery_energy                                             = segment.initial_battery_state_of_charge*bus.maximum_energy   
+        initial_battery_energy                                                    = segment.initial_battery_state_of_charge*bus.maximum_energy   
         segment.state.conditions.energy.busses[bus.tag].maximum_initial_energy    = initial_battery_energy
         segment.state.conditions.energy.busses[bus.tag].energy                    = initial_battery_energy* ones_row(1)
         segment.state.conditions.energy.busses[bus.tag].state_of_charge           = segment.initial_battery_state_of_charge* ones_row(1) 
@@ -122,10 +122,10 @@ def append_bus_segment_conditions(bus,segment):
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
     """    
-    bus_conditions                        = segment.state.conditions.energy.busses[bus.tag]
-    ones_row                              = segment.state.ones_row
-    bus_conditions.power_draw             = 0 * ones_row(1) 
-    bus_conditions.fuel_flow_rate[:,0]    = 0
+    bus_conditions                          = segment.state.conditions.energy.busses[bus.tag]
+    ones_row                                = segment.state.ones_row
+    bus_conditions.power_draw               = 0 * ones_row(1) 
+    bus_conditions.fuel_mass_flow_rate[:,0] = 0
     
     # Thermal power draw
     if segment.state.initials:

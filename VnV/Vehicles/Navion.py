@@ -39,7 +39,7 @@ def vehicle_setup():
     vehicle.mass_properties.center_of_gravity         = [[2.239696797,0,-0.131189711 ]]
      
     vehicle.reference_area                            = 17.112 
-    vehicle.passengers                                = 2 
+    vehicle.number_of_passengers                                = 2 
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "commuter"       
     
@@ -72,7 +72,7 @@ def vehicle_setup():
     wing.origin                           = [[1.652555594, 0.,-0.6006666]]
     wing.aerodynamic_center               = [1.852555594, 0., 6006666 ] # INCORRECT 
     wing.vertical                         = False
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0    
@@ -152,7 +152,7 @@ def vehicle_setup():
     wing.origin                           = [[ 6.54518625 , 0., 0.203859697]]
     wing.aerodynamic_center               = [[ 6.545186254 + 0.25*wing.spans.projected, 0., 0.203859697]] 
     wing.vertical                         = False 
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = False 
     wing.dynamic_pressure_ratio           = 0.9  
     
@@ -189,7 +189,7 @@ def vehicle_setup():
     wing.origin                           = [[ 7.127369987, 0., 0.303750948]]
     wing.aerodynamic_center               = [ 7.49778005775, 0., 0.67416101875] 
     wing.vertical                         = True 
-    wing.symmetric                        = False
+    wing.xz_plane_symmetric               = False
     wing.t_tail                           = False
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0  
@@ -220,6 +220,7 @@ def vehicle_setup():
     economy_class.galley_lavatory_percent_x_locations = []  
     economy_class.emergency_exit_percent_x_locations  = []      
     economy_class.type_A_exit_percent_x_locations     = [] 
+    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
     cabin.append_cabin_class(economy_class)
     fuselage.append_cabin(cabin)
     
@@ -321,7 +322,7 @@ def vehicle_setup():
     fuel_tank.fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel_tank.fuel.mass_properties.mass                   = 319 *Units.lbs 
     fuel_tank.fuel.mass_properties.center_of_gravity      = wing.mass_properties.center_of_gravity
-    fuel_tank.internal_volume                             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.volume_properties.internal                  = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
     fuel_line.fuel_tanks.append(fuel_tank)  
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor

@@ -66,9 +66,9 @@ def evaluate_surrogate(state,settings,vehicle):
                                          h_sub,h_sup,Mach, pts_alpha)      
     Clift_alpha             = results_alpha.Clift   
     Cdrag_induced_alpha     = results_alpha.Cdrag
+    CM                      = results_alpha.CM
     
     conditions.static_stability.coefficients.M_0 = compute_stability_derivative(sub_sur.CM_0    ,trans_sur.CM_0    ,sup_sur.CM_0    ,h_sub,h_sup,Mach) 
-         
     
     for wing in vehicle.wings:   
         inviscid_wing_lifts = compute_coefficient(sub_sur.Clift_wing_alpha[wing.tag],trans_sur.Clift_wing_alpha[wing.tag],sup_sur.Cdrag_induced_wing_alpha[wing.tag] ,h_sub,h_sup,Mach,pts_alpha)
@@ -166,7 +166,7 @@ def evaluate_surrogate(state,settings,vehicle):
      
     conditions.static_stability.coefficients.Y      = conditions.static_stability.derivatives.CY_beta * Beta
     conditions.static_stability.coefficients.L      = conditions.static_stability.derivatives.CL_beta * Beta 
-    conditions.static_stability.coefficients.M      = conditions.static_stability.coefficients.M_0 + conditions.static_stability.derivatives.CM_alpha * AoA 
+    conditions.static_stability.coefficients.M      = CM  
     conditions.static_stability.coefficients.N      = conditions.static_stability.derivatives.CN_beta * Beta
  
     # -----------------------------------------------------------------------------------------------------------------------
@@ -325,10 +325,7 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.total_drag(state,settings,vehicle)
     
 
-    T_wind2inertial = conditions.frames.wind.transform_to_inertial 
-    Cdrag_visc      = state.conditions.aerodynamics.coefficients.drag.total
-    CX_visc         = orientation_product(T_wind2inertial,Cdrag_visc)[:,0][:,None]   
-
+    T_wind2inertial = conditions.frames.wind.transform_to_inertial   
     no_beta   = np.all(conditions.aerodynamics.angles.beta == 0)
     no_ail    = np.all(conditions.control_surfaces.aileron.deflection == 0) 
     no_rud    = np.all(conditions.control_surfaces.rudder.deflection == 0) 
@@ -482,30 +479,7 @@ def evaluate_no_surrogate(state,settings,base_vehicle):
     conditions.static_stability.derivatives.CZ_alpha    = (CZ_alpha_prime      - CZ_0) / (delta_angle) 
     conditions.static_stability.derivatives.CL_alpha    = (CL_alpha_prime      - CL_0) / (delta_angle)  
     conditions.static_stability.derivatives.CM_alpha    = (CM_alpha_prime      - CM_0) / (delta_angle)  
-    conditions.static_stability.derivatives.CN_alpha    = (CN_alpha_prime      - CN_0) / (delta_angle) 
-
-    # --------------------------------------------------------------------------------------------      
-    # Neutral Point - CG Purtubation 
-    # --------------------------------------------------------------------------------------------
-    perturbation_state                                 = deepcopy(equilibrium_state)
-    pertubation_conditions                             = deepcopy(equilibrium_conditions)  
-    pertubation_conditions.aerodynamics.angles.alpha   += delta_angle
-
-    vehicle_shifted_CG = deepcopy(vehicle)
-    delta_cg = 0.1
-    vehicle_shifted_CG.mass_properties.center_of_gravity[0][0] +=delta_cg 
-    
-    VLM_results        = VLM(pertubation_conditions,settings,vehicle_shifted_CG)  
-    CM_alpha_cg_prime  = VLM_results.CM   
-    dCM_dalpha_cg      = (CM_alpha_cg_prime   - CM_0) / (delta_angle)    
-    dCM_dalpha         = (CM_alpha_prime   - CM_0) / (delta_angle)    
-     
-    m  =  (dCM_dalpha_cg[0] - dCM_dalpha[0]) /delta_cg 
-    b  =  dCM_dalpha_cg[0]  - (m * vehicle_shifted_CG.mass_properties.center_of_gravity[0][0])
-    NP =  -b / m  
-     
-    conditions.static_stability.neutral_point[0,0] = NP
-    vehicle.mass_properties.neutral_point = NP 
+    conditions.static_stability.derivatives.CN_alpha    = (CN_alpha_prime      - CN_0) / (delta_angle)  
     
     # --------------------------------------------------------------------------------------------      
     # Beta Purtubation  

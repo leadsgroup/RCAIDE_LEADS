@@ -103,7 +103,7 @@ def plot_surface_pressures(results,
             idx += 1
         else:
             idx += 1
-        if wing.vertical and wing.symmetric:
+        if wing.vertical and wing.xz_plane_symmetric:
             plot_flag[idx] = 0
             idx += 1
         else:

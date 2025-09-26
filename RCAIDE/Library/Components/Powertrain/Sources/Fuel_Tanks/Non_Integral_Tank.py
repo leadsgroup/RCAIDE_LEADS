@@ -69,12 +69,17 @@ class Non_Integral_Tank(Fuel_Tank):
     fuel : Component, optional
         Fuel type stored in tank (default: None)
 
+    radial_offset : float
+        Reduction in radius for a tank (default: None)
+
     Notes
     -----
     Non-integral tanks provide flexibility in fuel storage placement and can be
     positioned to optimize aircraft balance and structural efficiency. They are
     commonly used in aircraft where integral wing tanks are not feasible or
     additional fuel capacity is required.
+
+
 
     **Definitions**
 
@@ -100,12 +105,14 @@ class Non_Integral_Tank(Fuel_Tank):
         """          
         self.tag                         = 'non_integral_tank' 
         self.orientation_euler_angles    = [0.,0.,0.]
+        self.geometry_type               = 'cylindrical'   # ['prismatic', 'cylindrical']
         self.bwb_aft_tank                = False
         self.aft_tank_start_root_chord   = None
         self.aft_tank_end_rood_chord     = None
         self.aft_tank_end_segment_tag    = None 
         self.wing_root_tag               = None 
-        self.radial_offset               = 0.0
+        self.radial_offset               = None
+        self.aspect_ratio                = None # Defined as the ratio of total length of the tank to the diameter of the tank.
 
 
     def __init__ (self, compoment=None):
@@ -164,11 +171,14 @@ class Non_Integral_Tank(Fuel_Tank):
         --------
         RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume
         """
-        if self.wing_tag != None:
-            wing = wings[self.wing_tag]  
-            compute_wing_non_integral_tank_volume(self,wing)
-        else:
-            if self.bwb_aft_tank == True:
-                wing = wings[self.wing_root_tag]  
-                compute_bwb_aft_tank_volume(self,wing)
+        if self.geometry_type == 'prismatic':
+            compute_prismatic_fuel_tank_volume(self)
+        elif self.geometry_type == 'cylindrical':
+            if self.wing_tag != None:
+                wing = wings[self.wing_tag]  
+                compute_wing_non_integral_tank_volume(self,wing)
+            else:
+                if self.bwb_aft_tank == True:
+                    wing = wings[self.wing_root_tag]  
+                    compute_bwb_aft_tank_volume(self,wing)
         return

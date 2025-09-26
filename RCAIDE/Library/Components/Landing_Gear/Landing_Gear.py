@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports     
 from RCAIDE.Library.Components import Component    
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Landing_Gear
@@ -85,8 +86,36 @@ class Landing_Gear(Component):
         self.tire_width                      = 0 
         self.strut_length                    = 0  
         self.wheels                          = 0
-        self.symmetric                       = False
+        self.length                          = 0 
+        self.width                           = 0 
+        self.height                          = 0
+        self.xz_plane_symmetric              = False
+        self.xy_plane_symmetric              = False
+        self.yz_plane_symmetric              = False
         self.number_of_gear_types_in_tandem  = None
         self.number_of_wheels_in_gear_type   = None  
         self.gear_extended                   = False
         self.fairing                         = False
+        
+
+    def compute_moment_of_inertia(self): 
+        """
+        Computes the moment of inertia tensor for the landing gear.
+
+        Parameters
+        ---------- 
+        center_of_gravity : list, optional
+            Reference point coordinates, defaults to [[0, 0, 0]]
+        
+        Returns
+        -------
+        ndarray
+            3x3 moment of inertia tensor
+        """
+
+        length = self.tire_diameter   
+        width  = self.strut_length 
+        height = self.tire_diameter
+        
+        I = compute_cuboid_moment_of_inertia(self.origin, self.mass_properties.mass,length,width,height, inner_length = 0, width_inner = 0, height_inner = 0, center_of_gravity = [[length / 2,width / 2, height / 2]] )  
+        return I                   

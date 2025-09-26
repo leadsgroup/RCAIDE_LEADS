@@ -49,7 +49,7 @@ def compute_operating_items_weight(vehicle):
         Properties Used:
             N/A
     """
-    num_seats   = vehicle.passengers
+    num_seats   = vehicle.number_of_passengers
     ac_type     = vehicle.systems.accessories
     if ac_type   == "short-range":  # short-range domestic, austere accomodations
         operitems_wt = 17.0 * num_seats * Units.lb
@@ -68,15 +68,15 @@ def compute_operating_items_weight(vehicle):
     else:
         operitems_wt = 28.0 * num_seats * Units.lb
 
-    if vehicle.passengers >= 150:
+    if vehicle.number_of_passengers >= 150:
         flight_crew = 3  # FLOPS: NFLCR
     else:
         flight_crew = 2
 
-    if vehicle.passengers < 51:
+    if vehicle.number_of_passengers < 51:
         flight_attendants = 1  # FLOPS: NSTU
     else:
-        flight_attendants = 1 + np.floor(vehicle.passengers / 40.)
+        flight_attendants = 1 + np.floor(vehicle.number_of_passengers / 40.)
 
     W_flight_attendants = flight_attendants * (170 + 40)  # FLOPS: WSTUAB
     W_flight_crew = flight_crew * (190 + 50)  # FLOPS: WFLCRB

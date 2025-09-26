@@ -43,7 +43,7 @@ def vehicle_setup(new_regression=True) :
     vehicle.mass_properties.operating_empty     = vehicle.mass_properties.max_takeoff
     vehicle.flight_envelope.ultimate_load       = 5.7   
     vehicle.flight_envelope.positive_limit_load = 3.  
-    vehicle.passengers                          = 5 
+    vehicle.number_of_passengers                          = 5 
         
     #------------------------------------------------------------------------------------------------------------------------------------
     # ######################################################## Wings ####################################################################  
@@ -69,7 +69,7 @@ def vehicle_setup(new_regression=True) :
     wing.origin                   = [[1.5, 0., 0.991]]
     wing.aerodynamic_center       = [ 1.567, 0., 0.991]    
     wing.winglet_fraction         = 0.0  
-    wing.symmetric                = True
+    wing.xz_plane_symmetric       = True
     wing.vertical                 = False
     airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil() 
     airfoil.coordinate_file       = local_path + 'Airfoils' + separator + 'NACA_63_412.txt'     
@@ -179,7 +179,7 @@ def vehicle_setup(new_regression=True) :
     wing.origin                   = [[  5.374 ,0.0 ,  0.596]]
     wing.aerodynamic_center       = [   5.374, 0.0,   0.596] 
     wing.winglet_fraction         = 0.0 
-    wing.symmetric                = True
+    wing.xz_plane_symmetric       = True
     
 
     elevator                              = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
@@ -333,7 +333,7 @@ def vehicle_setup(new_regression=True) :
     boom.areas.front_projected              = 0.018 
     boom.effective_diameter                 = 0.15  
     boom.differential_pressure              = 0.  
-    boom.symmetric                          = True 
+    boom.xz_plane_symmetric                 = True 
     boom.index                              = 1
     
     # Segment  

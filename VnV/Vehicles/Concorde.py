@@ -47,7 +47,7 @@ def vehicle_setup():
   
     # basic parameters  
     vehicle.reference_area                 = 358.25      
-    vehicle.passengers                     = 100
+    vehicle.number_of_passengers                     = 100
     vehicle.systems.control                = "fully powered" 
     vehicle.systems.accessories            = "sst"
     vehicle.maximum_cross_sectional_area   = 13.9
@@ -70,7 +70,7 @@ def vehicle_setup():
     main_gear.wheels                         = 8   
     main_gear.number_of_gear_types_in_tandem = 2
     main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
@@ -121,7 +121,7 @@ def vehicle_setup():
     wing.aerodynamic_center        = [35,0,0] 
     
     wing.vertical                  = False
-    wing.symmetric                 = True
+    wing.xz_plane_symmetric        = True
     wing.high_lift                 = True
     wing.vortex_lift               = True
     wing.high_mach                 = True 
@@ -247,7 +247,7 @@ def vehicle_setup():
     wing.origin                  = [[42.,0,1.]]
     wing.aerodynamic_center      = [50,0,0]     
     wing.vertical                = True 
-    wing.symmetric               = False
+    wing.xz_plane_symmetric      = False
     wing.t_tail                  = False
     wing.high_mach               = True     
     
@@ -511,7 +511,7 @@ def vehicle_setup():
     nac_segment.percent_x_location              = 0.0  
     nac_segment.height                          = 2.12
     nac_segment.width                           = 1.5
-    nac_segment.curvature                       = 1
+    nac_segment.curvature                       = 10
     nacelle.append_segment(nac_segment)         
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Rounded_Rectangle_Segment()
@@ -519,7 +519,7 @@ def vehicle_setup():
     nac_segment.percent_x_location              = 1.0
     nac_segment.height                          = 1.5
     nac_segment.width                           = 1.5
-    nac_segment.curvature                       = 1
+    nac_segment.curvature                       = 10
     nacelle.append_segment(nac_segment)      
     outer_right_turbojet.nacelle = nacelle  
     net.propulsors.append(outer_right_turbojet) 

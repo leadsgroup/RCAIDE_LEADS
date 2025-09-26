@@ -88,7 +88,7 @@ def deflect_control_surface(VD,wing):
     # Unpack number of strips for this wing
     n_sw     = wing.n_sw
     n_cw     = wing.n_cw
-    sym_para = wing.symmetric    
+    sym_para = wing.xz_plane_symmetric    
 
 
     # Symmetry loop

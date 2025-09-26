@@ -106,11 +106,11 @@ def compute_operating_empty_weight(vehicle,settings = None):
         #-------------------------------------------------------------------------------
         # Fixed Weights
         #-------------------------------------------------------------------------------
-        weight.seats        = vehicle.passengers * 15.   * Units.kg
-        weight.passengers   = vehicle.passengers * 70.   * Units.kg
+        weight.seats        = vehicle.number_of_passengers * 15.   * Units.kg
+        weight.passengers   = vehicle.number_of_passengers * 70.   * Units.kg
         weight.avionics     = 15.                        * Units.kg
         weight.landing_gear = MTOW * 0.02                * Units.kg
-        weight.ECS          = vehicle.passengers * 7.    * Units.kg
+        weight.ECS          = vehicle.number_of_passengers * 7.    * Units.kg
 
         # Determine length scale
         length_scale = 1.
@@ -344,31 +344,6 @@ def compute_operating_empty_weight(vehicle,settings = None):
         output.operational_items = Data()
         output.operational_items.total = 0
         
-        # check if cargo bays defined in aircraft, if none, define one 
-        if len(vehicle.cargo_bays) == 0: 
-            cargo_bay =  RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-            vehicle.cargo_bays.append(cargo_bay) 
-        
-        ##-------------------------------------------------------------------------------   
-        # Cabin
-        ##------------------------------------------------------------------------------- 
-        for fuselage in vehicle.fuselages:
-            if len(fuselage.cabins) == 0:                
-                cabin =  RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-                cabin.mass_properties.mass = output.empty.systems.total  +  output.payload.passengers
-                fuselage.append_cabin(cabin)
-            else: 
-                for cabin in fuselage.cabins:
-                    cabin.mass_properties.mass = (output.payload.passengers + output.empty.systems.total) * (cabin.number_of_passengers / fuselage.number_of_passengers )              
-                 
-        total_volume =  0
-        for cargo_bay in vehicle.cargo_bays:
-            total_volume += (cargo_bay.length * cargo_bay.width * cargo_bay.height)
-        
-        for cargo_bay in vehicle.cargo_bays:
-            cargo_bay_volume = (cargo_bay.length * cargo_bay.width * cargo_bay.height)
-            cargo_bay.mass_properties.mass         = (weight.payload) * (cargo_bay_volume / total_volume)        
-
         diff = MTOW -output.total
         MTOW -= diff
         iterations     += 1 

@@ -29,8 +29,8 @@ def main():
          
     battery_types = ['lithium_ion_nmc', 'lithium_ion_lfp']
     btms_types    = ['Liquid_Cooled_Wavy_Channel', 'Air_Cooled', None] 
-    CL_true       = [[0.8087720600440024 ,0.8087720600440024,0.8087720600440024  ],
-                     [0.8087720600440024 ,0.8087720600440024 ,0.8087720600440024]] 
+    CL_true       = [[0.8223895495817547,0.8223895495817555  , 0.8223895495817555 ],
+                     [0.8223895495817573,0.8223895495817455  , 0.8223895495817455]] 
     # vehicle data
     for i , battery_type in enumerate(battery_types):
         for j , btms_type in enumerate(btms_types):
@@ -186,8 +186,7 @@ def plot_results(results):
     plot_battery_degradation(results) 
     
     # Plot Propeller Conditions 
-    plot_rotor_conditions(results) 
-    plot_disc_and_power_loading(results)
+    plot_rotor_conditions(results)  
     
     # Plot Electric Motor and Propeller Efficiencies 
     plot_electric_propulsor_efficiencies(results)

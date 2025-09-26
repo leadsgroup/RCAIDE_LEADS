@@ -47,6 +47,7 @@ dependencies = [
     "pytz",
     "shapely",
     "six",
+    "vtk",
     "tenacity",
     "threadpoolctl",
     "zipp"

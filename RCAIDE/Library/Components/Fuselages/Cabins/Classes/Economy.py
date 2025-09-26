@@ -16,12 +16,14 @@ class Economy(Component):
     
     def __defaults__(self):
         """
-        Sets default values for all fuselage attributes.
+        Sets default values for economy class portion of the cabin.
         """      
         
-        self.tag                                 = 'economy_class' 
+        self.tag                                 = 'economy_class'
+        self.number_of_passengers                = 0 
         self.number_of_seats_abrest              = 0
         self.number_of_rows                      = 0 
+        self.number_of_seats                     = 0 
         self.seat_width                          = 18 *  Units.inches
         self.seat_arm_rest_width                 = 2 *  Units.inches
         self.seat_length                         = 18 *  Units.inches

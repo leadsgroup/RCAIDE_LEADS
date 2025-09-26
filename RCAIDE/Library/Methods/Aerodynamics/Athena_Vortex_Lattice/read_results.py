@@ -125,7 +125,7 @@ def read_results(avl_object):
         n_wings = 0 
         for wing in aircraft.wings:
             n_wings += 1
-            if wing.symmetric:
+            if wing.xz_plane_symmetric:
                 n_wings += 1   
         n_fus_sec = 0
         for fuselage in aircraft.fuselages: 

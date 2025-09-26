@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Geometry/plot_3d_wing.py
+# RCAIDE/Library/Plots/Geometry/generate_3d_wing_points.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -8,91 +8,13 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry
 from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series 
 import numpy as np     
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------  
-def plot_3d_wing(plot_data, wing, number_of_airfoil_points = 21, color_map='greys', alpha=0.5):
-    """
-    Creates a 3D visualization of wing surfaces including symmetric sections if applicable.
-
-    Parameters
-    ----------
-    plot_data : list
-        Collection of plot vertices to be rendered
-        
-    wing : Wing
-        RCAIDE wing data structure containing geometry information
-        
-    number_of_airfoil_points : int, optional
-        Number of points used to discretize airfoil sections (default: 21)
-        
-    color_map : str, optional
-        Color specification for wing surface (default: 'greys')
-        
-    alpha : float, optional
-        Transparency value between 0 and 1 (default: 1)
-
-    Returns
-    -------
-    plot_data : list
-        Updated collection of plot vertices including wing surfaces
-
-    Notes
-    -----
-    Creates wing visualization by:
-        - Generating points for each segment
-        - Creating surface panels between sections
-        - Adding symmetric wing if specified
-    
-    **Major Assumptions**
-    
-    * Wing segments are ordered from root to tip
-    * Airfoil sections lie in x-z plane
-    * Symmetric wing is mirror image about y-axis
-    """
-     
-    af_pts    = number_of_airfoil_points-1 
-    n_segments = len(wing.segments)  
-    if n_segments>0:
-        dim =  n_segments
-    else:
-        dim = 2 
- 
-    G = generate_3d_wing_points(wing,number_of_airfoil_points,dim)
-    # ------------------------------------------------------------------------
-    # Plot Rotor Blade
-    # ------------------------------------------------------------------------
-    for sec in range(dim-1):
-        for loc in range(af_pts):
-            X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],
-                 [G.XB1[sec,loc],G.XB2[sec,loc]]])
-            Y = np.array([[G.YA1[sec,loc],G.YA2[sec,loc]],
-                 [G.YB1[sec,loc],G.YB2[sec,loc]]])
-            Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]],
-                 [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
-             
-            values      = np.ones_like(X) 
-            verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
-            plot_data.append(verts)
-    if wing.symmetric: 
-        for sec in range(dim-1):
-            for loc in range(af_pts):
-                X = np.array([[G.XA1[sec,loc],G.XA2[sec,loc]],[G.XB1[sec,loc],G.XB2[sec,loc]]])
-                Y = np.array([[-G.YA1[sec,loc], -G.YA2[sec,loc]], [-G.YB1[sec,loc], -G.YB2[sec,loc]]])
-                Z = np.array([[G.ZA1[sec,loc],G.ZA2[sec,loc]], [G.ZB1[sec,loc],G.ZB2[sec,loc]]]) 
-                 
-                values      = np.ones_like(X) 
-                verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
-                plot_data.append(verts)
-            
-             
-    return plot_data
- 
+#  generate_3d_wing_points
+# ----------------------------------------------------------------------------------------------------------------------   
 def generate_3d_wing_points(wing, n_points, dim):
     """
     Generates 3D coordinate points that define a wing surface.
@@ -140,7 +62,7 @@ def generate_3d_wing_points(wing, n_points, dim):
     """    
     # unpack  
     # obtain the geometry for each segment in a loop                                            
-    symm                 = wing.symmetric
+    symm                 = wing.xz_plane_symmetric
     semispan             = wing.spans.projected*0.5 * (2 - symm) 
     root_chord           = wing.chords.root
     segments             = wing.segments

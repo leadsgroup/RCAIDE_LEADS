@@ -45,19 +45,19 @@ def main():
     results = missions.base_mission.evaluate() 
 
     elevator_deflection        = results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
-    elevator_deflection_true   = -2.018772944377962
+    elevator_deflection_true   = -1.894419465055113
     elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
     print('Error1: ',elevator_deflection_diff)
     assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
 
     aileron_deflection        = results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
-    aileron_deflection_true   = 9.630686598302654
+    aileron_deflection_true   = 9.640198538382613
     aileron_deflection_diff   = np.abs(aileron_deflection - aileron_deflection_true)
     print('Error2: ',aileron_deflection_diff)
     assert np.abs(aileron_deflection_diff/aileron_deflection_true) < 5e-3
 
     rudder_deflection        = results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
-    rudder_deflection_true   = -12.221227727988088
+    rudder_deflection_true   = -12.219675807145688
     rudder_deflection_diff   = np.abs(rudder_deflection - rudder_deflection_true)
     print('Error3: ',rudder_deflection_diff)
     assert np.abs(rudder_deflection_diff/rudder_deflection_true) < 5e-3    
@@ -123,6 +123,7 @@ def base_analysis(vehicle, configs):
      
     stability                                       = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()   
     stability.vehicle                               = vehicle
+    stability.settings.update_center_of_gravity     = False
     analyses.append(stability)
 
     # ------------------------------------------------------------------
@@ -183,7 +184,7 @@ def sideslip_cruise_mission_setup(analyses):
     segment.analyses.extend( analyses.base )   
     segment.altitude                                                            = 1000. * Units.feet
     segment.air_speed                                                           = 50.00
-    segment.sideslip_angle                                                      = 10.0 * Units.deg   
+    segment.sideslip_angle                                                      = 10.0 * Units.deg  
     
     # equations of motion
     segment.flight_dynamics.force_x                                             = True    
@@ -218,7 +219,7 @@ def sideslip_cruise_mission_setup(analyses):
     segment.analyses.extend( analyses.base )   
     segment.altitude                                                            = 1000. * Units.feet
     segment.air_speed                                                           = 50.00
-    segment.sideslip_angle                                                      = 10.0 * Units.deg   
+    segment.sideslip_angle                                                      = 10.0 * Units.deg    
     
     # equations of motion
     segment.flight_dynamics.force_x                                             = True    
@@ -239,8 +240,7 @@ def sideslip_cruise_mission_setup(analyses):
     segment.analyses.extend( analyses.base )   
     segment.altitude                                                            = 1000. * Units.feet
     segment.air_speed                                                           = 50.00
-    segment.sideslip_angle                                                      = 10.0 * Units.deg   
-    segment.analyses.stability.settings.unique_segment_surrogate                = True
+    segment.sideslip_angle                                                      = 10.0 * Units.deg    
 
     # equations of motion
     segment.flight_dynamics.force_x                                             = True    

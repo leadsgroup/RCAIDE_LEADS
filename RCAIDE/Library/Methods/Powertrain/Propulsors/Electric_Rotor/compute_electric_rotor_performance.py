@@ -118,9 +118,9 @@ def compute_electric_rotor_performance(propulsor, state, center_of_gravity=[[0.0
     compute_motor_performance(motor,conditions) 
     
     # Spin the rotor 
-    conditions.energy.converters[rotor.tag].omega           = conditions.energy.converters[motor.tag].outputs.omega
-    conditions.energy.converters[rotor.tag].throttle        = conditions.energy.modulators[esc.tag].throttle      
-    conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle =  conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
+    conditions.energy.converters[rotor.tag].omega                         = conditions.energy.converters[motor.tag].outputs.omega
+    conditions.energy.converters[rotor.tag].throttle                      = conditions.energy.modulators[esc.tag].throttle      
+    conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle = conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
     compute_rotor_performance(rotor,conditions)
  
     # Compute moment 

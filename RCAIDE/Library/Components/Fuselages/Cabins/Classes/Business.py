@@ -16,12 +16,14 @@ class Business(Component):
     
     def __defaults__(self):
         """
-        Sets default values for all fuselage attributes.
+        Sets default values for business class portion of the cabin.
         """      
         
         self.tag                                 = 'business_class' 
+        self.number_of_passengers                = 0 
         self.number_of_seats_abrest              = 0
         self.number_of_rows                      = 0 
+        self.number_of_seats                     = 0 
         self.seat_width                          = 18 *  Units.inches
         self.seat_arm_rest_width                 = 2 *  Units.inches
         self.seat_length                         = 25 *  Units.inches

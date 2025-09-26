@@ -21,7 +21,7 @@ import os,sys
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05, plot_diagram = True, fuel_name=None):  
+def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05, plot_diagram = True, fuel_name=None, delete_training_data=True):  
     """
     Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.
     
@@ -96,6 +96,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
             
     if mission == None:
         raise AssertionError('Mission not specifed!')
+    mission.tag = "payload_range_mission"
     
     initial_segment =  list(mission.segments.keys())[0]
     
@@ -115,9 +116,10 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         else:
             payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram)
     
-    for fname in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))):
-        if fname.endswith(".pkl"):
-            os.remove(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), fname))
+    if delete_training_data:
+        for fname in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))):
+            if fname.endswith(".pkl") and "payload_range_mission" in fname:
+                os.remove(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), fname))
 
     print("\n============== Payload Range Report ==============\n")            
     try:
@@ -226,7 +228,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         # Evaluate mission with current TOW
         results = mission.evaluate()
         segment = results.segments[cruise_segment_tag]
-
+        
         # Distance convergency in order to have total fuel equal to target fuel
         #
         # User don't have the option of run a mission for a given fuel. So, we
@@ -289,7 +291,6 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     payload_range.fuel                     = np.array(FUEL)
     payload_range.takeoff_weight           = np.array(TOW)
     payload_range.fuel_reserve_percentage  = fuel_reserve_percentage
-     
     if plot_diagram:  
         # get plotting style 
         ps      = plot_style()  
@@ -383,7 +384,7 @@ def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagr
     payload_range.range             = np.array(R)
     payload_range.payload           = np.array(PLD)
     payload_range.takeoff_weight    = np.array(TOW)
-
+    
     if plot_diagram: 
         # get plotting style 
         ps      = plot_style()  

@@ -32,7 +32,7 @@
  X_cg      =   2.239696797     m
  Y_cg      =   0     m
  Z_cg      =   -0.131189711     m
- mass      =   0.0     kg
+ mass      =   0     kg
  Ixx       =   164627.7     kg-m^2
  Iyy       =   471262.4     kg-m^2
  Izz       =   554518.7     kg-m^2

@@ -77,7 +77,10 @@ def plot_rotor_conditions(results,
     RCAIDE.Library.Plots.Common.set_axes : Standardized axis formatting
     RCAIDE.Library.Plots.Common.plot_style : RCAIDE plot styling
     RCAIDE.Library.Analysis.Performance.propulsion : Analysis modules
-    """	   
+    """
+    save_filename_1 =  save_filename + '_1'
+    save_filename_2 =  save_filename + '_2'
+    
     # get plotting style 
     ps      = plot_style()  
 
@@ -90,37 +93,49 @@ def plot_rotor_conditions(results,
     # get line colors for plots 
     line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))   
 
-    fig = plt.figure(save_filename)
-    fig.set_size_inches(width,height)  
-    axis_1 = plt.subplot(3,2,1)
-    axis_2 = plt.subplot(3,2,2)
-    axis_3 = plt.subplot(3,2,3) 
-    axis_4 = plt.subplot(3,2,4) 
-    axis_5 = plt.subplot(3,2,5) 
-    axis_6 = plt.subplot(3,2,6)     
+    fig_1 = plt.figure(save_filename_1)
+    fig_1.set_size_inches(width,height)  
+    axis_1_1 = fig_1.add_subplot(2,2,1)
+    axis_1_2 = fig_1.add_subplot(2,2,2)
+    axis_1_3 = fig_1.add_subplot(2,2,3) 
+    axis_1_4 = fig_1.add_subplot(2,2,4)
+    
+
+    fig_2 = plt.figure(save_filename_2)
+    fig_2.set_size_inches(width,height)  
+    axis_2_1 = fig_2.add_subplot(2,2,1)
+    axis_2_2 = fig_2.add_subplot(2,2,2)
+    axis_2_3 = fig_2.add_subplot(2,2,3) 
+    axis_2_4 = fig_2.add_subplot(2,2,4)      
  
     for network in results.segments[0].analyses.energy.vehicle.networks: 
         for p_i, propulsor in enumerate(network.propulsors): 
             if (p_i == 0) or (network.identical_propulsors == False):            
-                plot_propulsor_data(results,propulsor,axis_1,axis_2,axis_3,axis_4, axis_5, axis_6,line_colors,ps,p_i)                  
+                plot_propulsor_data(results,propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1_4, axis_2_1, axis_2_2, axis_2_3, axis_2_4,line_colors,ps,p_i)                  
               
     if show_legend:                
-        leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
+        leg =  fig_1.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
         leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})    
+        leg =  fig_2.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
+        leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})   
     
     # Adjusting the sub-plots for legend
-    fig.tight_layout() 
-    fig.subplots_adjust(top=0.8) 
+    fig_1.tight_layout() 
+    fig_1.subplots_adjust(top=0.8) 
+    fig_2.tight_layout() 
+    fig_2.subplots_adjust(top=0.8) 
     
     # set title of plot 
     title_text  =  'Rotor Performance' 
-    fig.suptitle(title_text)
+    fig_1.suptitle(title_text)
+    fig_2.suptitle(title_text)
     if save_figure:
-        plt.savefig(save_filename + file_type) 
+        plt.savefig(save_filename_1 + file_type) 
+        plt.savefig(save_filename_2 + file_type) 
                  
-    return fig 
+    return (fig_1, fig_2)
 
-def plot_propulsor_data(results, propulsor, axis_1, axis_2, axis_3, axis_4, axis_5, axis_6, line_colors, ps, p_i):
+def plot_propulsor_data(results, propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1_4, axis_2_1, axis_2_2, axis_2_3, axis_2_4, line_colors, ps, p_i):
     """
     Plot operating conditions data for a single propulsor across mission segments.
 
@@ -197,36 +212,48 @@ def plot_propulsor_data(results, propulsor, axis_1, axis_2, axis_3, axis_4, axis
     for i in range(len(results.segments)):  
         time         =  results.segments[i].conditions.frames.inertial.time[:,0] / Units.min   
         rpm          =  results.segments[i].conditions.energy.converters[thrustor.tag].rpm[:,0]
-        thrust       =  np.linalg.norm(results.segments[i].conditions.energy.converters[thrustor.tag].thrust , axis =1)
-        torque       =  results.segments[i].conditions.energy.converters[thrustor.tag].torque[:,0]
         eta          =  results.segments[i].conditions.energy.converters[thrustor.tag].efficiency[:,0]
         angle        =  results.segments[i].conditions.energy.converters[thrustor.tag].commanded_thrust_vector_angle[:,0]
-        beta         =  results.segments[i].conditions.energy.converters[thrustor.tag].blade_pitch_command[:,0]
-  
-        if  i == 0 :
-            axis_1.plot(time,rpm, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width, label = thrustor.tag)
+        beta         =  results.segments[i].conditions.energy.converters[thrustor.tag].blade_pitch_command[:,0] 
+        DL           = results.segments[i].conditions.energy.converters[thrustor.tag].disc_loading[:,0]
+        PL           = results.segments[i].conditions.energy.converters[thrustor.tag].power_loading[:,0]  
+        thrust       =  np.linalg.norm(results.segments[i].conditions.energy.converters[thrustor.tag].thrust , axis =1)
+        torque       =  results.segments[i].conditions.energy.converters[thrustor.tag].torque[:,0] 
+        if p_i == 0 and i ==0: 
+            axis_1_1.plot(time,DL, color = line_colors[i], marker = ps.markers[p_i], linewidth = ps.line_width, label = thrustor.tag) 
+            axis_2_1.plot(time,rpm, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width, label = thrustor.tag)
         else:
-            axis_1.plot(time,rpm, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width)
-        axis_1.set_ylabel(r'RPM')
-        set_axes(axis_1)    
-         
-        axis_2.plot(time, angle/Units.degrees, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width) 
-        axis_2.set_ylabel(r'Rotor Angle')
-        set_axes(axis_2) 
+            axis_1_1.plot(time,DL, color = line_colors[i], marker = ps.markers[p_i], linewidth = ps.line_width) 
+            axis_2_1.plot(time,rpm, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width)
+    
+        axis_1_1.set_ylabel(r'Disc Loading (N/m^2)')
+        set_axes(axis_1_1)    
+        axis_2_1.set_ylabel(r'RPM')
+        set_axes(axis_2_1)    
+        
+        axis_1_2.plot(time,PL, color = line_colors[i], marker = ps.markers[p_i], linewidth = ps.line_width)
+        axis_1_2.set_xlabel('Time (mins)')
+        axis_1_2.set_ylabel(r'Power Loading (N/W)')
+        set_axes(axis_1_2) 
  
-        axis_3.plot(time,thrust, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
-        axis_3.set_ylabel(r'Thrust (N)')
-        set_axes(axis_3) 
+        axis_1_3.plot(time,thrust, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_1_3.set_ylabel(r'Thrust (N)')
+        set_axes(axis_1_3) 
          
-        axis_4.plot(time,torque, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
-        axis_4.set_ylabel(r'Torque (N-m)')
-        set_axes(axis_4) 
+        axis_1_4.plot(time,torque, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_1_4.set_ylabel(r'Torque (N-m)')
+        set_axes(axis_1_4)
+ 
+        axis_2_2.plot(time, angle/Units.degrees, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width) 
+        axis_2_2.set_ylabel(r'Thrust Vector (deg)')
+        set_axes(axis_2_2) 
 
-        axis_5.plot(time,beta, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
-        axis_5.set_ylabel(r'Pitch Command')
-        set_axes(axis_5)
+        axis_2_3.plot(time,beta, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_2_3.set_ylabel(r'Pitch Command  (deg)')
+        set_axes(axis_2_3)
 
-        axis_6.plot(time,eta, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
-        axis_6.set_ylabel(r'Efficiency')
-        set_axes(axis_6)             
+        axis_2_4.plot(time,eta, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_2_4.set_ylabel(r'Efficiency')
+        set_axes(axis_2_4)
+                
     return 

@@ -56,11 +56,11 @@ def append_fuel_tank_conditions(tank, segment, distributor):
         distributor_conditions = segment.state.conditions.energy.fuel_lines[distributor.tag]
         
     distributor_conditions.fuel_tanks[tank.tag]                           = Conditions()  
-    distributor_conditions.fuel_tanks[tank.tag].mass                      = 0 * ones_row(1)  
+    distributor_conditions.fuel_tanks[tank.tag].fuel_mass                 = tank.fuel.mass_properties.mass * ones_row(1)  
     distributor_conditions.fuel_tanks[tank.tag].mass_flow_rate            = 0 * ones_row(1)  
     distributor_conditions.fuel_tanks[tank.tag].surface_temperature       = 0 * ones_row(1)  
     distributor_conditions.fuel_tanks[tank.tag].boil_off_flow_rate        = 0 * ones_row(1)  
     distributor_conditions.fuel_tanks[tank.tag].ullage                    = 0 * ones_row(1)
-    distributor_conditions.fuel_tanks[tank.tag].secondary_fuel_flow_rate  = tank.secondary_fuel_flow_rate * ones_row(1) 
+    distributor_conditions.fuel_tanks[tank.tag].secondary_mass_flow_rate  = tank.secondary_mass_flow_rate * ones_row(1) 
          
     return 

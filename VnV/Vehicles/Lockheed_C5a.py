@@ -87,7 +87,7 @@ def vehicle_setup():
     wing.spans.projected                   = 66.3
     wing.origin                            = [[20.0,0,3.913]]
     wing.vertical                          = False
-    wing.symmetric                         = True       
+    wing.xz_plane_symmetric                = True       
     wing.high_lift                         = True
     wing.areas.exposed                     =  1.0* wing.areas.wetted        
     wing.twists.root                       =  0.0* Units.degrees
@@ -185,7 +185,7 @@ def vehicle_setup():
     wing.anhedral                = 2.0 * Units.degrees
     wing.origin                  = [[64.6,0,14.783]]
     wing.vertical                = False
-    wing.symmetric               = True       
+    wing.xz_plane_symmetric      = True       
     wing.high_lift               = False 
     wing.areas.exposed           = 1.0 * wing.areas.wetted 
     wing.twists.root             = 0 * Units.degrees
@@ -255,7 +255,7 @@ def vehicle_setup():
     wing.aerodynamic_center      = [0,0,0]
 
     wing.vertical                = True
-    wing.symmetric               = False
+    wing.xz_plane_symmetric      = False
     wing.t_tail                  = True
 
     wing.dynamic_pressure_ratio  = 1.0
@@ -491,7 +491,7 @@ def vehicle_setup():
     main_gear.wheels                         = 14    
     main_gear.number_of_gear_types_in_tandem = 4 
     main_gear.number_of_wheels_in_gear_type  = 4   
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear) 
 
     nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -535,10 +535,8 @@ def vehicle_setup():
     fuel                                        = RCAIDE.Library.Attributes.Propellants.Jet_A1()   
     fuel.mass_properties.mass                   = fuel_percentage * vehicle.mass_properties.max_fuel
     fuel.origin                                 = [[23.0,0,3.913]]# vehicle.wings.main_wing.origin    
-    fuel.mass_properties.center_of_gravity      = [[23.0,0,3.913]] #vehicle.wings.main_wing.mass_properties.center_of_gravity
-    fuel.internal_volume                        = fuel.mass_properties.mass/fuel.density  
-    fuel_tank.fuel                              = fuel
-    fuel_tank.internal_volume                  = fuel.internal_volume
+    fuel.mass_properties.center_of_gravity      = [[23.0,0,3.913]] #vehicle.wings.main_wing.mass_properties.center_of_gravity 
+    fuel_tank.fuel                              = fuel 
     fuel_line.fuel_tanks.append(fuel_tank) 
     
 

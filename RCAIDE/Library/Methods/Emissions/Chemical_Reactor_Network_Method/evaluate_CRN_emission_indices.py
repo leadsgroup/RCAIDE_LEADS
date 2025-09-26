@@ -118,7 +118,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                     mdot = propulsor_conditions.core_mass_flow_rate
                     FAR  = combustor_conditions.outputs.fuel_to_air_ratio
 
-                    mdot_fuel = propulsor_conditions.fuel_flow_rate
+                    mdot_fuel = propulsor_conditions.fuel_mass_flow_rate
 
                     EI_CO2_comb    = 0 * state.ones_row(1)
                     EI_CO_comb     = 0 * state.ones_row(1)
@@ -436,7 +436,7 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
                     mdot = propulsor_conditions.core_mass_flow_rate 
                     FAR  = combustor_conditions.outputs.fuel_to_air_ratio 
 
-                    mdot_fuel = propulsor_conditions.fuel_flow_rate
+                    mdot_fuel = propulsor_conditions.fuel_mass_flow_rate
                     
                     pts = np.hstack((T,P,mdot,FAR)) 
 

@@ -122,7 +122,7 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor, sta
     compute_throttle_from_power(engine,conditions) 
     
     # Create the outputs
-    ice_cs_conditions.fuel_flow_rate         = conditions.energy.converters[engine.tag].fuel_flow_rate  
+    ice_cs_conditions.fuel_mass_flow_rate    = conditions.energy.converters[engine.tag].fuel_mass_flow_rate  
     stored_results_flag                      = True
     stored_propulsor_tag                     = propulsor.tag  
 

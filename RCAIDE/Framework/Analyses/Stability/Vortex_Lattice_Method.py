@@ -76,9 +76,13 @@ class Vortex_Lattice_Method(Stability):
         self.settings.floating_point_precision                      = np.float32 
         
         # conditions table, used for surrogate model training
-        self.training                                               = Data() 
-        self.training.angle_purtubation                             = 10 * Units.deg          
-        self.training.center_of_gravity_purtubation                 = 0.1   
+        self.training                                               = Data()  
+        self.training.angle_of_attack                               = np.array([-5., -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45., 75.]) * Units.deg 
+        self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])             
+                      
+        self.training.subsonic                                      = None
+        self.training.supersonic                                    = None
+        self.training.transonic                                     = None  
                          
         # blending function                  
         self.hsub_min                                               = 0.85
@@ -91,19 +95,14 @@ class Vortex_Lattice_Method(Stability):
 
         # build the evaluation process
         compute                                                     = Process() 
-        compute.static_stability                                    = None 
+        compute.static_stability                                    = evaluate
         compute.dynamic_stability                                   = Common.compute_dynamic_flight_modes    
         self.process.compute                                        = compute 
 
-    def initialize(self):  
-        use_surrogate   = self.settings.use_surrogate   
-    
-        # build the evaluation process
-        compute   =  self.process.compute                  
-        if use_surrogate == True: 
-            compute.static_stability  = evaluate_surrogate
-        else:
-            compute.static_stability  = evaluate_no_surrogate  
+    def initialize(self): 
+        
+        # compute neutral point 
+        compute_neutral_point(self)            
         return 
     
          

@@ -37,6 +37,7 @@ modules = [
     'Verification/geometry/fuel_tank_volume_test.py',
     'Verification/future_capability_coverage/coverage_test.py',    
     'Verification/mission_segments/transition_segment_test.py', 
+    'Verification/mission_segments/active_transition_test.py',
     'Verification/network_electric/battery_electric_aircraft_test.py',
     'Verification/network_electric/electric_ducted_fan_aircraft_test.py',
     'Verification/network_fuel_cell/hydrogen_fuel_cell_aircraft_test.py', 
@@ -54,8 +55,10 @@ modules = [
     'Verification/performance/take_off_field_length_test.py',
     'Verification/performance/take_off_weight_from_tofl_test.py',
     'Verification/performance/aircraft_aerodynamics_test.py', 
-    'Verification/performance/noise_certification_test.py', 
+    'Verification/performance/noise_certification_test.py',
+    'Verification/performance/loading_and_trim_diagram_test.py',
     'Verification/performance/V_n_diagram_test.py', 
+    'Verification/plots/plot_test.py', 
     'Verification/propulsion/rotor_performance_test.py',  
     'Verification/propulsion/propeller_non_uniform_inflow.py',    
     'Verification/propulsion/propeller_wing_interaction_test.py', 
@@ -121,6 +124,9 @@ def run_module_test(module_path):
         print(f'# Test Duration: {elapsed:.4f} min\n')
         sys.stdout.flush()
         sys.stderr.flush()
+        for fname in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))):
+            if fname.endswith(".pkl"):
+                os.remove(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), fname))
 
     return passed
 

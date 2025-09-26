@@ -10,13 +10,12 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import  Data  
-from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform  
-
-
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
  
 # Pacakge imports 
 import numpy as np  
 import os, sys
+from copy import deepcopy
 
 #------------------------------------------------------------------------------
 # aircraft_aerodynamic_analysis
@@ -25,8 +24,7 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None,
                                   angle_of_attacks                 = None,
                                   mach_numbers                     = None,
                                   non_dimensional_reynolds_numbers = None,
-                                  temperatures                     = None,
-                                  update_fuselage_properties       = True, 
+                                  temperatures                     = None, 
                                   overwrite_reference              = True,  
                                   altitude = None ):
     """
@@ -77,52 +75,13 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None,
     RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976
     """
 
-    #------------------------------------------------------------------------  
-    # Preprocess Geometry
-    #------------------------------------------------------------------------     
-    vehicle =  aerodynamics_analysis.vehicle
-    
-
-    # update fuselage properties
-    total_length = 0
-    A_fuselage   = 0  
-    for fuselage in vehicle.fuselages: 
-        fuselage_planform(fuselage) 
-        total_length = np.maximum(total_length, fuselage.lengths.total)
-        A_fuselage   = np.maximum(A_fuselage,fuselage.areas.front_projected)
-             
-    # update landing gear properties 
-    for landing_gear in  vehicle.landing_gears:
-        if (landing_gear.number_of_gear_types_in_tandem != None) and  (landing_gear.number_of_wheels_in_gear_type != None):
-            landing_gear.wheels = landing_gear.number_of_gear_types_in_tandem * landing_gear.number_of_wheels_in_gear_type
-            if landing_gear.symmetric:
-                landing_gear.wheels *= 2
-    
-    # update wing properties
-    Amax_wing =  0
-    for wing in vehicle.wings: 
-        #  Blended Wing Body 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
-            bwb_wing_planform(wing)
-            if overwrite_reference:
-                vehicle.reference_area = wing.areas.reference 
-        # All other wing surfaces 
-        else: 
-            wing_planform(wing) 
-            if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) and overwrite_reference:
-                vehicle.reference_area = wing.areas.reference 
-        
-        # total length 
-        total_length = np.maximum(total_length, wing.chords.root)                         
-        
-        # max cross sectional area 
-        A_wing    = wing.spans.projected * wing.thickness_to_chord * wing.chords.mean_geometric
-        Amax_wing = np.maximum(Amax_wing,A_wing)
-         
-
-    vehicle.maximum_cross_sectional_area  = Amax_wing + A_fuselage
-    vehicle.length                        = total_length
-    
+    #------------------------------------------------------------------------   
+    # Preprocess Geometry 
+    #------------------------------------------------------------------------
+    geometry_analysis          = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry_analysis.vehicle  = deepcopy(aerodynamics_analysis.vehicle) 
+    geometry_preprocess_routine(geometry_analysis)
+    aerodynamics_analysis.vehicle = geometry_analysis.vehicle 
     #------------------------------------------------------------------------  
     # Check size of arrays 
     #------------------------------------------------------------------------
@@ -230,3 +189,4 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None,
     )  
           
     return results  
+ 

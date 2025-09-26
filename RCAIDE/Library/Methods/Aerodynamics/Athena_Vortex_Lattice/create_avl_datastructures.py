@@ -32,7 +32,7 @@ def translate_avl_wing(rcaide_wing):
 
     Inputs:
         rcaide_wing.tag                                                          [-]
-        rcaide_wing.symmetric                                                    [boolean]
+        rcaide_wing.xz_plane_symmetric                                                    [boolean]
         rcaide_wing.verical                                                      [boolean]
         rcaide_wing - passed into the populate_wing_sections function            [data stucture]
 
@@ -42,11 +42,11 @@ def translate_avl_wing(rcaide_wing):
     Properties Used:
         N/A
     """         
-    w                 = Wing()
-    w.tag             = rcaide_wing.tag
-    w.symmetric       = rcaide_wing.symmetric
-    w.vertical        = rcaide_wing.vertical
-    w                 = populate_wing_sections(w,rcaide_wing)
+    w                     = Wing()
+    w.tag                 = rcaide_wing.tag
+    w.xz_plane_symmetric  = rcaide_wing.xz_plane_symmetric
+    w.vertical            = rcaide_wing.vertical
+    w                     = populate_wing_sections(w,rcaide_wing)
 
     return w
 
@@ -74,15 +74,15 @@ def translate_avl_body(rcaide_body):
     Properties Used:
         N/A
     """  
-    b                 = Body()
-    b.tag             = rcaide_body.tag
-    b.symmetric       = True
-    b.lengths.total   = rcaide_body.lengths.total
-    b.lengths.nose    = rcaide_body.lengths.nose
-    b.lengths.tail    = rcaide_body.lengths.tail
-    b.widths.maximum  = rcaide_body.width
-    b.heights.maximum = rcaide_body.heights.maximum
-    b                 = populate_body_sections(b,rcaide_body)
+    b                          = Body()
+    b.tag                      = rcaide_body.tag
+    b.xz_plane_symmetric       = True
+    b.lengths.total            = rcaide_body.lengths.total
+    b.lengths.nose             = rcaide_body.lengths.nose
+    b.lengths.tail             = rcaide_body.lengths.tail
+    b.widths.maximum           = rcaide_body.width
+    b.heights.maximum          = rcaide_body.heights.maximum
+    b                          = populate_body_sections(b,rcaide_body)
 
     return b
 
@@ -96,7 +96,7 @@ def populate_wing_sections(avl_wing,rcaide_wing):
         None
 
     Inputs:
-        avl_wing.symmetric                         [boolean]
+        avl_wing.xz_plane_symmetric                         [boolean]
         rcaide_wing.spans.projected                 [meters]
         rcaide_wing.origin                          [meters]
         rcaide_wing.dihedral                        [radians]
@@ -114,7 +114,7 @@ def populate_wing_sections(avl_wing,rcaide_wing):
     """           
         
     # obtain the geometry for each segment in a loop                                            
-    symm                 = avl_wing.symmetric
+    symm                 = avl_wing.xz_plane_symmetric
     semispan             = rcaide_wing.spans.projected*0.5 * (2 - symm)
     avl_wing.semispan    = semispan   
     root_chord           = rcaide_wing.chords.root
@@ -412,7 +412,7 @@ def populate_body_sections(avl_body,rcaide_body):
         None
 
     Inputs:
-        avl_wing.symmetric                       [boolean]
+        avl_wing.xz_plane_symmetric                       [boolean]
         avl_body.widths.maximum                  [meters]
         avl_body.heights.maximum                 [meters]
         rcaide_body.fineness.nose                 [meters]
@@ -428,7 +428,7 @@ def populate_body_sections(avl_body,rcaide_body):
         N/A
     """  
 
-    symm = avl_body.symmetric   
+    symm = avl_body.xz_plane_symmetric   
     semispan_h = avl_body.widths.maximum * 0.5 * (2 - symm)
     semispan_v = avl_body.heights.maximum * 0.5
     origin = rcaide_body.origin[0]

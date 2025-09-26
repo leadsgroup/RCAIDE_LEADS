@@ -30,6 +30,7 @@ from .Aluminum_2219                       import Aluminum_2219
 from .Bidirectional_Carbon_Fiber          import Bidirectional_Carbon_Fiber
 from .CrossLinked_Polyethylene            import CrossLinked_Polyethylene
 from .Copper                              import Copper
+from .Cycom_5320                          import Cycom_5320
 from .Epoxy                               import Epoxy 
 from .Nickel                              import Nickel
 from .Magnesium                           import Magnesium

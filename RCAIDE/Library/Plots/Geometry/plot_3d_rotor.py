@@ -7,21 +7,29 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
+from RCAIDE.Framework.Core import Data 
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry
-from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series
+from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series 
 
 # python imports 
 import numpy as np 
-import plotly.graph_objects as go     
+import vtk
+import matplotlib.colors as mcolors   
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------    
-def plot_3d_rotor(rotor, save_filename = "Rotor", save_figure = False, plot_data = None,
-                  show_figure = True, plot_axis = False, cpt = 0, 
-                  number_of_airfoil_points = 21, color_map = 'turbid', alpha = 1):
+# ------------------------- ---------------------------------------------------------------------------------------------     
+def plot_3d_rotor(rotor,
+                  save_filename            = "rotor",
+                  save_figure              = False,
+                  plot_data                = None, 
+                  show_figure              = True, 
+                  camera_eye_x             = -1, 
+                  camera_eye_y             = -1, 
+                  camera_eye_z             = 0.35,                 
+                  number_of_airfoil_points = 101,
+                  color                    = 'black',
+                  opacity                  = 1):
     """
     Creates a 3D visualization of a rotor with multiple blades.
 
@@ -40,13 +48,7 @@ def plot_3d_rotor(rotor, save_filename = "Rotor", save_figure = False, plot_data
         Existing plot data to append to (default: None)
         
     show_figure : bool, optional
-        Flag to display the figure (default: True)
-        
-    plot_axis : bool, optional
-        Flag to show coordinate axes (default: False)
-        
-    cpt : int, optional
-        Control point at which to plot the rotor (default: 0)
+        Flag to display the figure (default: True) 
         
     number_of_airfoil_points : int, optional
         Number of points used to discretize airfoil sections (default: 21)
@@ -71,64 +73,65 @@ def plot_3d_rotor(rotor, save_filename = "Rotor", save_figure = False, plot_data
         - Adjustable view angles
     
     """
-    plot_propeller_only = False
-    if plot_data == None: 
-        print("\nPlotting rotor") 
+
+    rotor_rgb_color      = mcolors.to_rgb(color)
     
-        plot_propeller_only = True         
-        camera        = dict(up=dict(x=0.5, y=0.5, z=1), center=dict(x=0, y=0, z=-0.5), eye=dict(x=1.5, y=1.5, z=.8))
-        plot_data     = []
-        
-    num_B     = rotor.number_of_blades 
-    af_pts    = number_of_airfoil_points-1
+    # -------------------------------------------------------------------------  
+    # Initalize Renderer
+    # -------------------------------------------------------------------------      
+    renderer  = vtk.vtkRenderer() 
+    num_B     = rotor.number_of_blades  
     dim       = len(rotor.radius_distribution)
 
     for i in range(num_B):
-        G = generate_3d_blade_points(rotor,number_of_airfoil_points,dim,i)
-        # ------------------------------------------------------------------------
-        # Plot Rotor Blade
-        # ------------------------------------------------------------------------
-        for sec in range(dim-1):
-            for loc in range(af_pts):
-                X = np.array([[G.XA1[cpt,sec,loc],G.XA2[cpt,sec,loc]],
-                     [G.XB1[cpt,sec,loc],G.XB2[cpt,sec,loc]]])
-                Y = np.array([[G.YA1[cpt,sec,loc],G.YA2[cpt,sec,loc]],
-                     [G.YB1[cpt,sec,loc],G.YB2[cpt,sec,loc]]])
-                Z = np.array([[G.ZA1[cpt,sec,loc],G.ZA2[cpt,sec,loc]],
-                     [G.ZB1[cpt,sec,loc],G.ZB2[cpt,sec,loc]]]) 
-                 
-                values      = np.ones_like(X) 
-                verts       = contour_surface_slice(X,Y,Z,values,color_map,alpha)
-                plot_data.append(verts)      
+        GEOM = generate_3d_blade_points(rotor,number_of_airfoil_points,dim,i)
+        make_object(renderer, GEOM, rotor_rgb_color,opacity)   
             
-    axis_limits = np.maximum(np.max(G.XA1), np.maximum(np.max(G.YA1),np.max(G.ZA1)))*2 
-    if plot_propeller_only:
-        fig = go.Figure(data=plot_data)
-        fig.update_scenes(aspectmode   = 'auto',
-                          xaxis_visible=plot_axis,
-                          yaxis_visible=plot_axis,
-                          zaxis_visible=plot_axis
-                          )
-        fig.update_layout( 
-                 width     = 1500,
-                 height    = 1500, 
-                 scene = dict(
-                            xaxis = dict(backgroundcolor="lightgrey", gridcolor="white", showbackground=plot_axis,
-                                         zerolinecolor="white", range=[-axis_limits,axis_limits]),
-                            yaxis = dict(backgroundcolor="lightgrey", gridcolor="white", showbackground=plot_axis, 
-                                         zerolinecolor="white", range=[-axis_limits,axis_limits]),
-                            zaxis = dict(backgroundcolor="lightgrey",gridcolor="white",showbackground=plot_axis,
-                                         zerolinecolor="white", range=[-axis_limits,axis_limits])),             
-                 scene_camera=camera) 
-        fig.update_coloraxes(showscale=False)
-        fig.update_traces(opacity = alpha) 
-        if save_figure: 
-            fig.write_image(save_filename + ".png")
-        if show_figure:
-            fig.write_html( save_filename + '.html', auto_open=True)
-        return 
-    else: 
-        return plot_data
+    # Set camera and background
+    camera = vtk.vtkCamera()
+    camera.SetPosition(camera_eye_x, camera_eye_y, camera_eye_z)
+    camera.SetFocalPoint(0, 0, 0)
+    camera.SetViewUp(0, 0, 1)
+
+    renderer.SetActiveCamera(camera)
+    renderer.ResetCamera()
+    renderer.SetBackground(1.0, 1.0, 1.0)  
+    
+    # 5. Create a render window to display the scene
+    renderWindow = vtk.vtkRenderWindow()
+    renderWindow.AddRenderer(renderer)
+    renderWindow.SetSize(1500, 1500)
+    renderWindow.SetWindowName(save_filename)
+    
+    # 6. Create an interactor to handle user input (mouse, keyboard)
+    renderWindowInteractor = vtk.vtkRenderWindowInteractor()
+    renderWindowInteractor.SetRenderWindow(renderWindow)
+
+    # Use the custom interactor style
+    custom_style = vtk.vtkInteractorStyleTrackballCamera()  
+    renderWindowInteractor.SetInteractorStyle(custom_style)
+    
+    if save_figure:
+        # Create a vtkWindowToImageFilter to capture the render window content
+        window_to_image = vtk.vtkWindowToImageFilter()
+        window_to_image.SetInput(renderWindow)
+        window_to_image.SetInputBufferTypeToRGBA()  # or RGB
+        window_to_image.ReadFrontBufferOff()  # Read from back buffer for off-screen rendering
+        window_to_image.Update()
+        
+        # Create a vtkPNGWriter to save the image
+        writer = vtk.vtkPNGWriter()
+        writer.SetFileName(save_filename + ".png")
+        writer.SetInputConnection(window_to_image.GetOutputPort())
+        writer.Write() 
+
+    # Start the VTK interactor
+    if show_figure:  
+        renderWindowInteractor.Initialize()
+        renderWindow.Render() # Render the scene initially
+        renderWindowInteractor.Start()
+
+    return  
  
 def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     """
@@ -279,29 +282,103 @@ def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     G = Data()
 
     # store node points
-    G.X  = mat[:,:,:,0] + origin[0][0]
-    G.Y  = mat[:,:,:,1] + origin[0][1]
-    G.Z  = mat[:,:,:,2] + origin[0][2]
+    G.X  = mat[0,:,:,0] + origin[0][0]
+    G.Y  = mat[0,:,:,1] + origin[0][1]
+    G.Z  = mat[0,:,:,2] + origin[0][2]
 
-    G.PTS = np.zeros((cpts,len(zp),n_points,3))    
-    G.PTS[:,:,:,0] =  mat[:,:,:,0] + origin[0][0]    
-    G.PTS[:,:,:,1] =  mat[:,:,:,1] + origin[0][1]    
-    G.PTS[:,:,:,2] =  mat[:,:,:,2] + origin[0][2]    
+    G.PTS = np.zeros((len(zp),n_points,3))    
+    G.PTS[:,:,0] =  mat[0,:,:,0] + origin[0][0]    
+    G.PTS[:,:,1] =  mat[0,:,:,1] + origin[0][1]    
+    G.PTS[:,:,2] =  mat[0,:,:,2] + origin[0][2]    
 
     # store points
-    G.XA1  = mat[:,:-1,:-1,0] + origin[0][0]
-    G.YA1  = mat[:,:-1,:-1,1] + origin[0][1]
-    G.ZA1  = mat[:,:-1,:-1,2] + origin[0][2]
-    G.XA2  = mat[:,:-1,1:,0]  + origin[0][0]
-    G.YA2  = mat[:,:-1,1:,1]  + origin[0][1]
-    G.ZA2  = mat[:,:-1,1:,2]  + origin[0][2]
+    G.XA1  = mat[0,:-1,:-1,0] + origin[0][0]
+    G.YA1  = mat[0,:-1,:-1,1] + origin[0][1]
+    G.ZA1  = mat[0,:-1,:-1,2] + origin[0][2]
+    G.XA2  = mat[0,:-1,1:,0]  + origin[0][0]
+    G.YA2  = mat[0,:-1,1:,1]  + origin[0][1]
+    G.ZA2  = mat[0,:-1,1:,2]  + origin[0][2]
 
-    G.XB1  = mat[:,1:,:-1,0] + origin[0][0]
-    G.YB1  = mat[:,1:,:-1,1] + origin[0][1]
-    G.ZB1  = mat[:,1:,:-1,2] + origin[0][2]
-    G.XB2  = mat[:,1:,1:,0]  + origin[0][0]
-    G.YB2  = mat[:,1:,1:,1]  + origin[0][1]
-    G.ZB2  = mat[:,1:,1:,2]  + origin[0][2]    
+    G.XB1  = mat[0,1:,:-1,0] + origin[0][0]
+    G.YB1  = mat[0,1:,:-1,1] + origin[0][1]
+    G.ZB1  = mat[0,1:,:-1,2] + origin[0][2]
+    G.XB2  = mat[0,1:,1:,0]  + origin[0][0]
+    G.YB2  = mat[0,1:,1:,1]  + origin[0][1]
+    G.ZB2  = mat[0,1:,1:,2]  + origin[0][2]    
     
     return G
- 
+
+def make_object(renderer, GEOM,  rgb_color, opacity): 
+
+    actor = generate_vtk_object(GEOM.PTS)
+
+    # Set color of fuselage
+    mapper = actor.GetMapper()
+    mapper.ScalarVisibilityOff()
+    actor.GetProperty().SetColor(rgb_color[0], rgb_color[1], rgb_color[2])  # Set wing color to Light Grey
+    actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
+    actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
+    actor.GetProperty().SetOpacity(opacity)
+    renderer.AddActor(actor)
+    
+    return 
+def generate_vtk_object(pts):
+    comp = vtk.vtkPolyData()
+    points = vtk.vtkPoints()
+    polys = vtk.vtkCellArray()
+    scalars = vtk.vtkFloatArray()
+
+    size = np.shape(pts)
+    n_r = size[0]
+    n_a = size[1]
+    n = n_a * (n_r - 1)  # total number of cells
+    X = pts.reshape(n_r * n_a, 3)
+    geom_pts = write_azimuthal_cell_values(X, n, n_a)
+
+    size = np.shape(X)
+    for i, fxi in enumerate(X):
+        points.InsertPoint(i, fxi)
+        scalars.InsertTuple1(i, i)
+    for pt in geom_pts:
+        polys.InsertNextCell(mkVtkIdList(pt))
+
+    comp.SetPoints(points)
+    comp.SetPolys(polys)
+    comp.GetPointData().SetScalars(scalars)
+
+    mapper = vtk.vtkPolyDataMapper()
+    mapper.SetInputData(comp)
+    mapper.SetScalarRange(comp.GetScalarRange())
+
+    actor = vtk.vtkActor()
+    actor.SetMapper(mapper)
+
+    return actor
+
+
+def mkVtkIdList(it):
+    vil = vtk.vtkIdList()
+    for i in it:
+        vil.InsertNextId(int(i))
+    return vil
+
+
+def write_azimuthal_cell_values(f, n_cells, n_a):
+    rlap = 0
+    adjacent_cells = np.zeros((n_cells, 4))
+
+    for i in range(n_cells):
+        if i == (n_a - 1 + n_a * rlap):
+            b = i - (n_a - 1)
+            c = i + 1
+            rlap += 1
+        else:
+            b = i + 1
+            c = i + n_a + 1
+        a = i
+        d = i + n_a
+        adjacent_cells[i, 0] = a
+        adjacent_cells[i, 1] = b
+        adjacent_cells[i, 2] = c
+        adjacent_cells[i, 3] = d
+    return adjacent_cells 

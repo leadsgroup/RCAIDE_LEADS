@@ -41,6 +41,7 @@ def main():
     material            = RCAIDE.Library.Attributes.Materials.Aerogel()
     material            = RCAIDE.Library.Attributes.Materials.Polyurethane_Foam()
     material            = RCAIDE.Library.Attributes.Materials.Vacuum_Multilayer_Insulation()
+    material            = RCAIDE.Library.Attributes.Materials.Cycom_5320()
     
 
       

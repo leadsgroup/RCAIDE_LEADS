@@ -54,7 +54,7 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
         * thrust
         * power
         * moment
-        * fuel_flow_rate
+        * fuel_mass_flow_rate
         * inputs and outputs containers
     
     It also creates the following containers in noise_conditions:
@@ -81,7 +81,7 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
     energy_conditions.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
     energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
     energy_conditions.propulsors[propulsor.tag].moment                        = 0. * ones_row(3) 
-    energy_conditions.propulsors[propulsor.tag].fuel_flow_rate                = 0. * ones_row(1)
+    energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
     energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
     noise_conditions.propulsors[propulsor.tag]                                = Conditions()  

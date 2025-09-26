@@ -144,8 +144,7 @@ def plot_aerodynamic_coefficients(results,
         axis_4 = plt.subplot(2,2,4)        
         axis_4.plot(time, cd, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width)
         axis_4.set_xlabel('Time (mins)')
-        axis_4.set_ylabel(r'$C_D$')
-        axis_4.set_ylim([0,0.1])
+        axis_4.set_ylabel(r'$C_D$') 
         set_axes(axis_4) 
         
     if show_legend:

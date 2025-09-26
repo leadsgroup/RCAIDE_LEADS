@@ -44,8 +44,8 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()   
     
-    P_truth     = 38115.438922880305
-    mdot_truth  = 0.0033489091468128953
+    P_truth     = 42081.530690631174
+    mdot_truth  = 0.0036973789893088482
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle_mass_rate[-1,0]     
@@ -86,8 +86,7 @@ def ICE_CS(vehicle):
     fuel_tank.origin                            = vehicle.wings.main_wing.origin  
     fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel.mass_properties.mass                   = 319 *Units.lbs 
-    fuel.mass_properties.center_of_gravity      =  vehicle.wings.main_wing.mass_properties.center_of_gravity
-    fuel.internal_volume                        = fuel.mass_properties.mass/fuel.density  
+    fuel.mass_properties.center_of_gravity      =  vehicle.wings.main_wing.mass_properties.center_of_gravity 
     fuel_tank.fuel                              = fuel  
     fuel_line.fuel_tanks.append(fuel_tank)
 

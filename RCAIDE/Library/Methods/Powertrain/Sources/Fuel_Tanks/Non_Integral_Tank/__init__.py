@@ -13,6 +13,4 @@ See Also
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-
-
-from .compute_non_integral_tank_volume import compute_wing_non_integral_tank_volume,compute_bwb_aft_tank_volume, compute_non_dimensional_rib_coordinates
+from .compute_non_integral_tank_volume import * 

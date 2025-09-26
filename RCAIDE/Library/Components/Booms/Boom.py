@@ -189,21 +189,7 @@ class Boom(Component):
         return
 
 class Container(Component.Container):
-    def get_children(self):
-        """ :meta private: """
-        #Returns the components that can go inside
-    
-        #Assumptions:
-        #    None
-            
-        #Source:
-        #    None
-
-        #Args:
-        #    self       : container of booms [unitless]    
-            
-        #Outputs:
-        #    Boom       : boom               [unitless] 
+    def get_children(self): 
         
         return [Boom]
 

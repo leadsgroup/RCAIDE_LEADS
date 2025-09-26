@@ -108,7 +108,7 @@ def compute_systems_weight(vehicle):
     DG             = vehicle.mass_properties.max_takeoff / Units.lbs
     Scs            = flap_ratio * vehicle.reference_area / Units.ft**2
     design_mach    = vehicle.flight_envelope.design_mach_number
-    num_pax        = vehicle.passengers 
+    num_pax        = vehicle.number_of_passengers 
     NENG = 0 
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
@@ -120,7 +120,7 @@ def compute_systems_weight(vehicle):
     fuse_h         = ref_fuselage.heights.maximum / Units.ft   
     cargo_weight   = vehicle.mass_properties.payload / Units.lbs
     
-    if vehicle.passengers >= 150:
+    if vehicle.number_of_passengers >= 150:
         flight_crew = 3 # number of flight crew
     else:
         flight_crew = 2

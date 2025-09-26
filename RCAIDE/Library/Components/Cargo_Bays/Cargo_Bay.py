@@ -16,8 +16,7 @@ import  numpy as  np
 #  Cargo_Bay
 # ----------------------------------------------------------------------------------------------------------------------              
 class Cargo_Bay(Component):
-    """
-     
+    """Base class for a cargo bay     
     """          
     def __defaults__(self):
         """This sets the default power draw.
@@ -46,23 +45,19 @@ class Cargo_Bay(Component):
         self.baggage    = Component() 
         self.power_draw = 0.0  
 
-    def compute_moment_of_inertia(self, mass,length,width,height, center_of_gravity=[[0, 0, 0]], fuel_flag=False): 
+    def compute_moment_of_inertia(self, center_of_gravity=[[0, 0, 0]]): 
         """
-        Computes the moment of inertia tensor for the wing.
+        Computes the moment of inertia tensor for the cargo bay.
 
         Parameters
-        ----------
-        mass : float
-            Wing mass
+        ---------- 
         center_of_gravity : list, optional
             Reference point coordinates, defaults to [[0, 0, 0]]
-        fuel_flag : bool, optional
-            Flag to include fuel mass, defaults to False
-
+ 
         Returns
         -------
         ndarray
             3x3 moment of inertia tensor
         """ 
-        I = compute_cuboid_moment_of_inertia(self.origin, mass,length,width,height, length_inner = 0, width_inner = 0, height_inner = 0, center_of_gravity = np.array([[0,0,0]]))  
+        I = compute_cuboid_moment_of_inertia(self.origin, self.mass_properties.mass,self.length,self.width,self.height, inner_length = 0, width_inner = 0, height_inner = 0, center_of_gravity = np.array([[0,0,0]]))  
         return I      

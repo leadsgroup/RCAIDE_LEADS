@@ -218,7 +218,7 @@ def plot_flight_conditions(results,
     set_axes(axis_3)
     
     axis_4.set_xlabel('Time (mins)')
-    axis_4.set_ylabel(r'Control Surface Deflection (deg)')
+    axis_4.set_ylabel(r'Ctrl/ Surf Defl.(deg)')
     set_axes(axis_4)
     
     if show_legend:        

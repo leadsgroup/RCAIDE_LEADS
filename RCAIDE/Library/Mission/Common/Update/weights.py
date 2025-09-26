@@ -7,8 +7,10 @@
 #  Imports
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
-import numpy as np
 
+# package imports 
+import numpy as np  
+    
 # ----------------------------------------------------------------------------------------------------------------------
 # Update Weights
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -37,50 +39,32 @@ def weights(segment):
     """ 
     
     # unpack
-    conditions   = segment.state.conditions
-    I            = segment.state.numerics.time.integrate  
-    m0           = conditions.weights.total_mass[0,0]
-    mdot         = conditions.weights.vehicle_mass_rate
-    g            = conditions.freestream.gravity   
-    
-    networks = segment.analyses.energy.vehicle.networks 
+    conditions     = segment.state.conditions
+    I              = segment.state.numerics.time.integrate  
+    m_0_vehicle    = conditions.weights.total_mass[0,0]
+    m_dot_vehicle  = conditions.weights.vehicle_mass_rate
+    g              = conditions.freestream.gravity    
+
+    # --------------------------------------------------------------------------       
+    # update mass 
+    # --------------------------------------------------------------------------       
     if (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude) or\
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_AVL_Trimmed) or \
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion) or \
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Throttle): 
         
-        # --------------------------------------------------------------------------       
-        # update mass 
-        # --------------------------------------------------------------------------   
-        W = m0*g 
+        W = m_0_vehicle*g 
         conditions.frames.inertial.gravity_force_vector[:,2] = W[:,0]
         
-    else: 
-        for network in networks:
-            if 'fuel_lines' in network:
-                for fuel_line in network.fuel_lines:  
-                    fuel_line_results   = conditions.energy.fuel_lines[fuel_line.tag]
-                    for fuel_tank in fuel_line.fuel_tanks: 
-                        fuel_line_results.fuel_tanks[fuel_tank.tag].mass[:,0]  =  fuel_line_results.fuel_tanks[fuel_tank.tag].mass[0,0]  +\
-                            np.dot(I, -fuel_line_results.fuel_tanks[fuel_tank.tag].mass_flow_rate[:,0])
+    else:
         
-        # --------------------------------------------------------------------------       
-        # update mass 
-        # --------------------------------------------------------------------------   
-        m = m0 + np.dot(I, -mdot)
+        m = m_0_vehicle + np.dot(I, -m_dot_vehicle)
     
         # weight
         W = m*g
         
         # pack
         conditions.weights.total_mass[1:,0]                  = m[1:,0]  
-        conditions.frames.inertial.gravity_force_vector[:,2] = W[:,0]
-        
-
-        # --------------------------------------------------------------------------       
-        # update mass 
-        # --------------------------------------------------------------------------   
-        # TO DO: conditions.weights.center_of_gravity     
-
+        conditions.frames.inertial.gravity_force_vector[:,2] = W[:,0]     
     return
  

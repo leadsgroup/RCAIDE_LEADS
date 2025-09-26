@@ -114,8 +114,7 @@ def design_prop_rotor(rotor, number_of_stations=20, solver_name='SLSQP', iterati
     
     # start optimization 
     ti                   = time.time()   
-    optimization_problem = optimization_setup(rotor,number_of_stations,print_iterations)
-    
+    optimization_problem = optimization_setup(rotor,number_of_stations,print_iterations) 
     
     # Commense suppression of console window output
     if print_iterations == False: 

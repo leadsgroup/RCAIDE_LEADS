@@ -8,6 +8,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 import RCAIDE
+
+# package imports 
+import numpy as np  
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -15,7 +18,10 @@ def compute_fuel_tank_properties(tank,state,distributor):
     '''
     SAI HEADER
     ''' 
+    # unpack  
+    I  = state.numerics.time.integrate
     
+    # pull out distributor
     if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
         distributor_conditions = state.conditions.energy.busses[distributor.tag] 
     elif  type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line: 
@@ -43,8 +49,10 @@ def compute_fuel_tank_properties(tank,state,distributor):
         m_dot_boil_off = 0 #Q_dot_liquid / h_fg
          
         tank_conditions.boil_off_flow_rate =  m_dot_boil_off 
-                    
-    tank_conditions.mass_flow_rate  = tank.fuel_selector_ratio*distributor_conditions.fuel_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_fuel_flow_rate
-    tank_conditions.mass -= tank_conditions.mass_flow_rate 
-  
+     
+    m_0_fuel                                       = tank_conditions.fuel_mass[0,0]
+    mass_flow_rate                                 = tank.fuel_selector_ratio*distributor_conditions.fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
+    tank_conditions.mass_flow_rate                 = mass_flow_rate
+    if len(mass_flow_rate) > 1: 
+        tank_conditions.fuel_mass[:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten()   
     return 

@@ -141,7 +141,7 @@ class Prop_Rotor(Rotor):
 
         self.tag                                 = 'prop_rotor'
         self.orientation_euler_angles            = [0.,0.,0.] # This is X-direction thrust in vehicle frame
-        self.use_2d_analysis                     = False    
+        self.use_2d_analysis                     = False
         
         self.hover                               = Data()
         self.hover.design_thrust                 = None

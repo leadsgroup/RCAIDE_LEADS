@@ -11,7 +11,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Compute Cuboid Moment of Intertia
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_cuboid_moment_of_inertia(origin, mass, length_outer, width_outer, height_outer, length_inner = 0, width_inner = 0, height_inner = 0, center_of_gravity = np.array([[0,0,0]])):  
+def compute_cuboid_moment_of_inertia(origin, mass, outer_length, width_outer, height_outer, inner_length = 0, width_inner = 0, height_inner = 0, center_of_gravity = np.array([[0,0,0]])):  
     ''' computes the moment of inertia tensor for a hollow cuboid
 
     Assumptions:
@@ -40,21 +40,21 @@ def compute_cuboid_moment_of_inertia(origin, mass, length_outer, width_outer, he
     I = np.zeros((3, 3)) 
     
     # calcualte volumes
-    V2 = length_outer * width_outer * height_outer # Outer volume
-    V1 = length_inner * width_inner * height_inner # Inner volume
+    V2 = outer_length * width_outer * height_outer # Outer volume
+    V1 = inner_length * width_inner * height_inner # Inner volume
     
-    if  V2 == 0 and V1 == 0:
+    if  V2 == V1:
         temp = 0.000001 # Assigns an arbitrary value to avoid a divide by zero error. This will not affect results as V2 and V1 will be 0
         # Treats object as a point mass
     else:
         temp = (V2 - V1)
     
     # ----------------------------------------------------------------------------------------------------------------------    
-    # Calculate inertia tensor. Equations from Moulton adn Hunsaker [1]
+    # Calculate inertia tensor. Equations from Moulton and Hunsaker [1]
     # ----------------------------------------------------------------------------------------------------------------------    
     I[0][0] = mass / 12 * (V2 * (width_outer ** 2 + height_outer ** 2) - V1 * (width_inner ** 2 + height_inner ** 2)) / temp
-    I[1][1] = mass / 12 * (V2 * (length_outer ** 2 + height_outer ** 2) - V1 * (length_inner ** 2 + height_inner ** 2)) / temp
-    I[2][2] = mass / 12 * (V2 * (length_outer ** 2 + width_outer ** 2) - V1 * (length_inner ** 2 + width_inner ** 2)) / temp
+    I[1][1] = mass / 12 * (V2 * (outer_length ** 2 + height_outer ** 2) - V1 * (inner_length ** 2 + height_inner ** 2)) / temp
+    I[2][2] = mass / 12 * (V2 * (outer_length ** 2 + width_outer ** 2) - V1 * (inner_length ** 2 + width_inner ** 2)) / temp
     
     # ----------------------------------------------------------------------------------------------------------------------    
     # transform moment of inertia to the global system

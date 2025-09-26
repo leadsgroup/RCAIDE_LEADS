@@ -154,7 +154,8 @@ class Fuselage(Component):
         self.origin                                 = [[0.0,0.0,0.0]]
         self.aerodynamic_center                     = [0.0,0.0,0.0] 
         self.differential_pressure                  = 0.0
-        self.number_of_passengers                   = 1.0
+        self.number_of_passengers                   = 1  
+        self.number_of_seats                        = 1  
         self.supersonic                             = False
         self.layout_of_passenger_accommodations     = None 
         self.areas                                  = Data()

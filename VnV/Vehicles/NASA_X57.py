@@ -45,7 +45,7 @@ def vehicle_setup(rotor_type):
     vehicle.flight_envelope.design_mach_number        = 0.228
     
     vehicle.reference_area                            = 14.76
-    vehicle.passengers                                = 4
+    vehicle.number_of_passengers                                = 4
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "commuter"
     
@@ -62,7 +62,7 @@ def vehicle_setup(rotor_type):
     main_gear.wheels                         = 4   
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -99,7 +99,7 @@ def vehicle_setup(rotor_type):
     wing.origin                           = [[2.93, 0., 1.01]]
     wing.aerodynamic_center               = [3., 0., 1.01] 
     wing.vertical                         = False
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0  
@@ -184,7 +184,7 @@ def vehicle_setup(rotor_type):
     wing.aerodynamic_center               = [7.8, 0., 0.25] 
     wing.vertical                         = False
     wing.winglet_fraction                 = 0.0  
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = False 
     wing.dynamic_pressure_ratio           = 0.9
 
@@ -211,7 +211,7 @@ def vehicle_setup(rotor_type):
     wing.origin                           = [[6.75 ,0, 0.623]]
     wing.aerodynamic_center               = [0.508 ,0,0]  
     wing.vertical                         = True 
-    wing.symmetric                        = False
+    wing.xz_plane_symmetric               = False
     wing.t_tail                           = False
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0

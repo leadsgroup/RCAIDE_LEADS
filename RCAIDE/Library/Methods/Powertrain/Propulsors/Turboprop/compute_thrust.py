@@ -43,7 +43,7 @@ def compute_thrust(turboprop, conditions):
                         Mechanical efficiency of the turbine
             - core_nozzle : Data
                 Core nozzle component
-            - propeller_efficiency : float
+            - propeller.efficiency : float
                 Efficiency of the propeller
             - gearbox : Data
                 Gearbox component
@@ -94,7 +94,7 @@ def compute_thrust(turboprop, conditions):
                 Non-dimensional thrust
             - core_mass_flow_rate : numpy.ndarray
                 Core mass flow rate [kg/s]
-            - fuel_flow_rate : numpy.ndarray
+            - fuel_mass_flow_rate : numpy.ndarray
                 Fuel flow rate [kg/s]
             - power : numpy.ndarray
                 Shaft power output [W]
@@ -157,7 +157,7 @@ def compute_thrust(turboprop, conditions):
     low_pressure_turbine                           = turboprop.low_pressure_turbine
     core_nozzle                                    = turboprop.core_nozzle  
     Tt4                                            = turboprop.combustor.turbine_inlet_temperature                                                               
-    propeller_efficiency                           = turboprop.propeller_efficiency                                                                      
+    propeller_efficiency                           = turboprop.propeller.design_efficiency                                                                      
     gearbox_efficiency                             = turboprop.gearbox.efficiency                                                                        
     low_pressure_turbine_mechanical_efficiency     = turboprop.low_pressure_turbine.mechanical_efficiency                                                       
     lower_heating_value                            = turboprop.combustor.fuel_data.lower_heating_value 
@@ -218,7 +218,7 @@ def compute_thrust(turboprop, conditions):
 
     # fuel flow rate
     a                                              = np.array([0.]) 
-    fuel_flow_rate                                 = np.fmax(FD2*TSFC/g,a)*1./Units.hour    
+    m_dot_fuel                                     = np.fmax(FD2*TSFC/g,a)*1./Units.hour    
 
     # computing the power 
     power                                          = FD2*V0 
@@ -228,7 +228,7 @@ def compute_thrust(turboprop, conditions):
     turboprop_conditions.thrust_specific_fuel_consumption  = TSFC
     turboprop_conditions.non_dimensional_thrust            = Fsp 
     turboprop_conditions.core_mass_flow_rate               = mdot_core
-    turboprop_conditions.fuel_flow_rate                    = fuel_flow_rate    
+    turboprop_conditions.fuel_mass_flow_rate               = m_dot_fuel    
     turboprop_conditions.power                             = power  
     turboprop_conditions.specific_power                    = W_dot_mdot0  
     turboprop_conditions.power_specific_fuel_consumption   = PSFC 

@@ -60,6 +60,7 @@ def vehicle_setup(fuel_cell_model):
     # Crogenic Tank
     #------------------------------------------------------------------------------------------------------------------------------------       
     cryogenic_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()  
+    cryogenic_tank.fuel = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     bus.fuel_tanks.append(cryogenic_tank)     
 
     # append bus   

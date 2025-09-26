@@ -8,7 +8,7 @@
 import RCAIDE 
 from RCAIDE.Framework.Core import  Data 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM 
-from copy import deepcopy
+from copy import deepcopy 
 
 # package imports
 import numpy  as np
@@ -69,8 +69,7 @@ def train_model(aerodynamics, Mach):
     vehicle        = deepcopy(aerodynamics.vehicle)
     settings       = aerodynamics.settings
     AoA            = aerodynamics.training.angle_of_attack                  
-    Beta           = aerodynamics.training.sideslip_angle
-    delta_CG       = aerodynamics.training.center_of_gravity_purtubation   
+    Beta           = aerodynamics.training.sideslip_angle 
     training       = Data()
     training.Mach  = Mach 
     
@@ -164,18 +163,8 @@ def train_model(aerodynamics, Mach):
     Cdrag_induced_wing_alpha = Data() 
     for wing in vehicle.wings: 
         Clift_wing_alpha[wing.tag] = np.reshape(VLM_results.CLift_wings[wing.tag],(len_Mach,len_AoA)).T    
-        Cdrag_induced_wing_alpha[wing.tag] = np.reshape(VLM_results.CDrag_induced_wings[wing.tag],(len_Mach,len_AoA)).T   
-   
-    # --------------------------------------------------------------------------------------------------------------
-    # Shifted C.G vehicle  
-    # --------------------------------------------------------------------------------------------------------------   
-    vehicle_shifted_CG = deepcopy(vehicle)
-    vehicle_shifted_CG.mass_properties.center_of_gravity[0][0] += delta_CG
-    VLM_results = VLM(conditions,settings,vehicle_shifted_CG)  
-    CM_res_shifted_CG       = VLM_results.CM 
-    CM_alpha_shifted_CG     = np.reshape(CM_res_shifted_CG,(len_Mach,len_AoA)).T  
-    CM_alpha_0_shifted_CG   = np.tile(CM_alpha_shifted_CG[2][None,:],(2, 1))  
-            
+        Cdrag_induced_wing_alpha[wing.tag] = np.reshape(VLM_results.CDrag_induced_wings[wing.tag],(len_Mach,len_AoA)).T
+        
     # --------------------------------------------------------------------------------------------------------------
     # Beta 
     # --------------------------------------------------------------------------------------------------------------
@@ -188,23 +177,23 @@ def train_model(aerodynamics, Mach):
     conditions.aerodynamics.angles.beta             = np.ones_like(Machs)*Betas   
     
     VLM_results = VLM(conditions,settings,clean_wing_vehicle)
-    Clift_res = VLM_results.CLift
-    Cdrag_res = VLM_results.CDrag_induced
-    CX_res    = VLM_results.CX
-    CY_res    = VLM_results.CY
-    CZ_res    = VLM_results.CZ
-    CL_res    = VLM_results.CL
-    CM_res    = VLM_results.CM
-    CN_res    = VLM_results.CN
+    Clift_res   = VLM_results.CLift
+    Cdrag_res   = VLM_results.CDrag_induced
+    CX_res      = VLM_results.CX
+    CY_res      = VLM_results.CY
+    CZ_res      = VLM_results.CZ
+    CL_res      = VLM_results.CL
+    CM_res      = VLM_results.CM
+    CN_res      = VLM_results.CN
     
-    Clift_beta =    np.reshape(Clift_res,(len_Mach,len_Beta)).T - Clift_alpha_0
+    Clift_beta         =    np.reshape(Clift_res,(len_Mach,len_Beta)).T - Clift_alpha_0
     Cdrag_induced_beta =    np.reshape(Cdrag_res,(len_Mach,len_Beta)).T - Cdrag_alpha_0                                
-    CX_beta    =    np.reshape(CX_res,(len_Mach,len_Beta)).T    - CX_alpha_0   
-    CY_beta    =    - np.reshape(CY_res,(len_Mach,len_Beta)).T    - CY_alpha_0    
-    CZ_beta    =    np.reshape(CZ_res,(len_Mach,len_Beta)).T    - CZ_alpha_0   
-    CL_beta    = - (np.reshape(CL_res,(len_Mach,len_Beta)).T    - CL_alpha_0)  
-    CM_beta    =    np.reshape(CM_res,(len_Mach,len_Beta)).T    - CM_alpha_0   
-    CN_beta    =    np.reshape(CN_res,(len_Mach,len_Beta)).T    - CN_alpha_0  
+    CX_beta            =    np.reshape(CX_res,(len_Mach,len_Beta)).T    - CX_alpha_0   
+    CY_beta            =    - np.reshape(CY_res,(len_Mach,len_Beta)).T    - CY_alpha_0    
+    CZ_beta            =    np.reshape(CZ_res,(len_Mach,len_Beta)).T    - CZ_alpha_0   
+    CL_beta            = - (np.reshape(CL_res,(len_Mach,len_Beta)).T    - CL_alpha_0)  
+    CM_beta            =    np.reshape(CM_res,(len_Mach,len_Beta)).T    - CM_alpha_0   
+    CN_beta            =    np.reshape(CN_res,(len_Mach,len_Beta)).T    - CN_alpha_0  
  
     # -------------------------------------------------------      
     # Velocity u 
@@ -236,7 +225,7 @@ def train_model(aerodynamics, Mach):
     conditions.freestream.velocity                  = Machs * 343 # speed of sound   
     
     VLM_results = VLM(conditions,settings,clean_wing_vehicle)
-    CM_res    = VLM_results.CM  
+    CM_res      = VLM_results.CM  
     CM_q        = np.reshape(CM_res,(len_Mach,len_q)).T    - CM_alpha_0    
     CZ_q        = np.reshape(CZ_res,(len_Mach,len_q)).T    - CZ_alpha_0
 
@@ -252,9 +241,9 @@ def train_model(aerodynamics, Mach):
     conditions.static_stability.roll_rate           = np.ones_like(Machs)*p_s 
     conditions.freestream.velocity                  = Machs * 343 # speed of sound           
     VLM_results = VLM(conditions,settings,clean_wing_vehicle)
-    CL_res    = VLM_results.CL
-    CN_res    = VLM_results.CN
-    CY_res    = VLM_results.CY
+    CL_res      = VLM_results.CL
+    CN_res      = VLM_results.CN
+    CY_res      = VLM_results.CY
     CL_p        = -1*(np.reshape(CL_res,(len_Mach,len_p)).T    - CL_alpha_0   ) # Note negative sign correction
     CN_p        = -1*(np.reshape(CN_res,(len_Mach,len_p)).T    - CN_alpha_0   ) # Note negative sign correction
     CY_p        = -1*(np.reshape(CY_res,(len_Mach,len_p)).T    - CY_alpha_0   ) # Note negative sign correction
@@ -263,7 +252,7 @@ def train_model(aerodynamics, Mach):
     # Yaw Rate 
     # -------------------------------------------------------        
     r_s     = np.atleast_2d(np.tile(yaw_rate, len_Mach).T.flatten()).T 
-    Machs         = np.atleast_2d(np.repeat(Mach,len_r)).T
+    Machs   = np.atleast_2d(np.repeat(Mach,len_r)).T
 
     conditions                                      = RCAIDE.Framework.Mission.Common.Results()  
     conditions.aerodynamics.angles.alpha            = np.ones_like(Machs)*1E-2 
@@ -291,8 +280,7 @@ def train_model(aerodynamics, Mach):
     training.CL_alpha                  = CL_alpha   
     training.CM_alpha                  = CM_alpha 
     training.CN_alpha                  = CN_alpha    
-    training.CM_0                      = CM_alpha_0[0]
-    training.CM_0_shifted_CG           = CM_alpha_0_shifted_CG[0]
+    training.CM_0                      = CM_alpha_0[0] 
             
             
     training.Clift_beta                = Clift_beta 
@@ -343,8 +331,7 @@ def train_model(aerodynamics, Mach):
     training.dCN_dp     = ((CN_p[0,:] - CN_p[1,:]) / (roll_rate[0]-roll_rate[1]))    
     training.dCN_dr     = ((CN_r[0,:] - CN_r[1,:]) / (yaw_rate[0]-yaw_rate[1])) 
 
-    '''  for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces'''
-
+    # for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces  
     Machs                                 = np.atleast_2d(np.repeat(Mach,1)).T         
     for wing in vehicle.wings: 
         for control_surface in wing.control_surfaces: 
@@ -449,9 +436,7 @@ def train_model(aerodynamics, Mach):
                 
     # reset vortex distribution after training 
     settings.vortex_distribution = VD_0
-    return training
-        
-        
+    return training 
 
 def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub_Mach, sup_Mach): 
     """Sub function that call methods to run VLM for sample point evaluation. 
@@ -490,8 +475,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     CL_alpha              =  np.concatenate((training_subsonic.CL_alpha[:,-1][:,None]    , training_supersonic.CL_alpha[:,0][:,None] ), axis = 1)   
     CM_alpha              =  np.concatenate((training_subsonic.CM_alpha[:,-1][:,None]    , training_supersonic.CM_alpha[:,0][:,None] ), axis = 1)   
     CN_alpha              =  np.concatenate((training_subsonic.CN_alpha[:,-1][:,None]    , training_supersonic.CN_alpha[:,0][:,None] ), axis = 1) 
-    CM_0                  =  np.concatenate((training_subsonic.CM_0[:][-1,None]    , training_supersonic.CM_0[:][0,None] ))     
-    CM_0_shifted_CG       =  np.concatenate((training_subsonic.CM_0_shifted_CG[:][-1,None]    , training_supersonic.CM_0_shifted_CG[:][0,None] ))     
+    CM_0                  =  np.concatenate((training_subsonic.CM_0[:][-1,None]    , training_supersonic.CM_0[:][0,None] ))      
 
     Clift_wing_alpha = Data()
     Cdrag_induced_wing_alpha = Data() 
@@ -551,8 +535,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     training.CL_alpha                  = CL_alpha
     training.CM_alpha                  = CM_alpha  
     training.CN_alpha                  = CN_alpha
-    training.CM_0                      = CM_0 
-    training.CM_0_shifted_CG           = CM_0_shifted_CG 
+    training.CM_0                      = CM_0  
     
     
     training.Clift_beta                = Clift_beta
@@ -621,4 +604,26 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
         training.dClift_ddelta_f = np.array([training_subsonic.dClift_ddelta_f[-1] , training_subsonic.dClift_ddelta_f[0]]) 
         training.dCM_ddelta_f    = np.array([training_subsonic.dCM_ddelta_f[-1]    , training_subsonic.dCM_ddelta_f[0]   ])
          
-    return training 
+    return training
+
+
+def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_np,Mach,AoA):
+
+    len_Mach       = len(Mach)        
+    len_AoA        = len(AoA)
+    
+    # update neutral point
+    clean_wing_vehicle_np.mass_properties.center_of_gravity[0][0] =  cg_location[0]
+    
+    # run VLM 
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle_np)    
+    
+    AoA       = conditions.aerodynamics.angles.alpha
+    CM_res    = VLM_results.CM
+    CM        = np.reshape(CM_res,(len_Mach,len_AoA)).T 
+    
+    # compute dCM_dalpha 
+    dCM_dalpha = ( CM[2, 0] - CM[1, 0]) /( AoA[2] - AoA[1])
+     
+    # find abs 
+    return  abs(dCM_dalpha)

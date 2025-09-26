@@ -6,6 +6,7 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
+from copy import deepcopy
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 
@@ -76,17 +77,37 @@ def compute_thermal_performance(fuel_tank):
     ).x
 
     # Insulation geometry and mass
-    a_ins = 2 * np.pi * ro * (li - 2 * ri) + 4 * np.pi * ro**2
-    v_ins = (np.pi * (ro + t_ins)**2 * (li - 2 * ri) + (4/3) * np.pi * (ro + t_ins)**3) \
-          - (np.pi * ro**2 * (li - 2 * ri) + (4/3) * np.pi * ro**3)
+    a_ins = 2 * np.pi * ro * (li) + 4 * np.pi * ro**2
+    v_ins = (np.pi * (ro + t_ins)**2 * (li) + (4/3) * np.pi * (ro + t_ins)**3) \
+          - (np.pi * ro**2 * (li) + (4/3) * np.pi * ro**3)
 
     mass_ins = (v_ins * fuel_tank.insulation_material.density
                + a_ins * fuel_tank.insulation_material.specific_density)
 
     # Store results
-    fuel_tank.wall_thickness = t_ins[0]
-    mass_ins = mass_ins[0]
+    fuel_tank.wall_thickness += t_ins[0]
+
+    # add the insulation mass to the tank weight
+    fuel_tank.mass_properties.mass +=  mass_ins[0]
+    if fuel_tank.xz_plane_symmetric:
+        fuel_tank.mass_properties.mass *= 2
+
+    # Recompute net tank volume based on the updated thickness
+    r_in   = (fuel_tank.outer_diameter -  2 * fuel_tank.wall_thickness ) / 2
+    l_in = fuel_tank.aspect_ratio * fuel_tank.inner_diameter
+
+    fuel_tank.inner_length = l_in - fuel_tank.inner_diameter
+    tank_volume_i = np.pi * ( r_in** 2) * (fuel_tank.inner_length )  +  4 / 3 * np.pi * ( r_in** 3) 
+    fuel_volume = (1 - fuel_tank.ullage_volume_fraction)  * tank_volume_i
     
+    if fuel_tank.xz_plane_symmetric:
+        tank_volume_i *= 2 
+        fuel_volume   *=2
+
+    fuel_tank.volume_properties.net_volume      = float(tank_volume_i)
+    fuel_tank.fuel.volume_properties.net_volume = float(deepcopy(fuel_volume))
+    fuel_tank.fuel.mass_properties.mass         = float(deepcopy(fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density))
+
     return 
 
 
@@ -129,7 +150,7 @@ def insulation_width(t_ins, Ta, PI_Q, fuel_tank, atmo_data):
 
     Qc_mat = fuel_tank.insulation_wall_conductive_heat_transfer
 
-    return np.abs(PI_Q * Qc_mat / (2*np.pi*ri*(li - 2*ri) + 4*np.pi*ri**2) - Qo)
+    return np.abs(PI_Q * Qc_mat / (2*np.pi*ri*(li) + 4*np.pi*ri**2) - Qo)
 
 
 def heat_transfer_wrap(Te, t_ins, fuel_tank, atmo_data):
@@ -179,11 +200,11 @@ def heat_transfer_wrap(Te, t_ins, fuel_tank, atmo_data):
     Nu_cyl = (0.60 + 0.387 * Ra**(1/6) / (1 + (0.559/Pr)**(9/16))**(8/27))**2
     h_cyl  = Nu_cyl * k_air / (2*ro + 2*t_ins)
 
-    Qv_cyl = h_cyl * (np.pi * (2*ro + 2*t_ins) * (li - 2*ri)) * (Ta - Te)
-    Qr_cyl = (5.67e-8) * 0.03 * (np.pi * (2*ro + 2*t_ins) * (li - 2*ri)) * (Ta**4 - Te**4)
+    Qv_cyl = h_cyl * (np.pi * (2*ro + 2*t_ins) * (li)) * (Ta - Te)
+    Qr_cyl = (5.67e-8) * 0.03 * (np.pi * (2*ro + 2*t_ins) * (li)) * (Ta**4 - Te**4)
     Qc_cyl = (Te - Ti) / (
-        np.log(ro/ri) / (2*np.pi*(li - 2*ri)*fuel_tank.material.thermal_conductivity)
-        + np.log((ro+t_ins)/ro) / (2*np.pi*(li - 2*ri)*fuel_tank.insulation_material.thermal_conductivity)
+        np.log(ro/ri) / (2*np.pi*(li)*fuel_tank.material.thermal_conductivity)
+        + np.log((ro+t_ins)/ro) / (2*np.pi*(li)*fuel_tank.insulation_material.thermal_conductivity)
     )
 
     # ---- Spherical end caps ----

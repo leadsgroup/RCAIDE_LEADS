@@ -12,7 +12,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Compute Cylinder Moment of Intertia
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_cylinder_moment_of_inertia(origin,mass,length_outer,radius_outer,length_inner = 0,radius_inner = 0,center_of_gravity = np.array([[0,0,0]])):  
+def compute_cylinder_moment_of_inertia(origin,mass,outer_length,outer_radius,inner_length = 0,inner_radius = 0,center_of_gravity = np.array([[0,0,0]])):  
     ''' computes the moment of inertia tensor for a hollow cylinder
 
     Assumptions:
@@ -26,7 +26,7 @@ def compute_cylinder_moment_of_inertia(origin,mass,length_outer,radius_outer,len
     6.2023-2432
  
     Inputs:
-    - Component properties (origin, mass, length_outer, radius_outer)
+    - Component properties (origin, mass, outer_length, outer_radius)
     - Center of gravity
 
     Outputs:
@@ -46,15 +46,15 @@ def compute_cylinder_moment_of_inertia(origin,mass,length_outer,radius_outer,len
     # ----------------------------------------------------------------------------------------------------------------------
     
     # Avoid divide by zero error for a point mass
-    if  (radius_outer == 0 or length_outer == 0):
+    if  (outer_radius == 0 or outer_length == 0):
         volume = 1
     else:
-        volume = (np.pi * radius_outer ** 2 * length_outer - np.pi * radius_inner ** 2 * length_inner) 
+        volume = (np.pi * outer_radius ** 2 * outer_length) - (np.pi * inner_radius ** 2 * inner_length) 
     
     rho     = mass / volume
-    I[0][0] = rho * (1 / 2 * np.pi * (radius_outer ** 4 * length_outer) - 1 / 2 * np.pi * (radius_inner ** 4 * length_inner)) # Ixx
-    I[1][1] = rho * (1 / 12 * (3 *np.pi*(radius_outer ** 4)*length_outer + np.pi * radius_outer ** 2 * length_outer ** 2) - 1 / 12 * (3 * (radius_inner ** 4) *np.pi *length_inner + np.pi * radius_inner ** 2 * length_inner ** 2)) # Iyy
-    I[2][2] = rho * (1 / 12 * (3 *np.pi*(radius_outer ** 4)*length_outer + np.pi * radius_outer ** 2 * length_outer ** 2) - 1 / 12 * (3 * (radius_inner ** 4) *np.pi *length_inner + np.pi * radius_inner ** 2 * length_inner ** 2)) # Izz
+    I[0][0] = rho * (1 / 2 * np.pi * (outer_radius ** 4 * outer_length) - 1 / 2 * np.pi * (inner_radius ** 4 * inner_length)) # Ixx
+    I[1][1] = rho * (1 / 12 * (3 *np.pi*(outer_radius ** 4)*outer_length + np.pi * outer_radius ** 2 * outer_length ** 2) - 1 / 12 * (3 * (inner_radius ** 4) *np.pi *inner_length + np.pi * inner_radius ** 2 * inner_length ** 2)) # Iyy
+    I[2][2] = rho * (1 / 12 * (3 *np.pi*(outer_radius ** 4)*outer_length + np.pi * outer_radius ** 2 * outer_length ** 2) - 1 / 12 * (3 * (inner_radius ** 4) *np.pi *inner_length + np.pi * inner_radius ** 2 * inner_length ** 2)) # Izz
     
     # ----------------------------------------------------------------------------------------------------------------------    
     # transform moment of inertia to the global system

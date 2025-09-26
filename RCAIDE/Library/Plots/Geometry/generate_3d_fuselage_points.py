@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Geometry/plot_3d_fuselage.py
+# RCAIDE/Library/Plots/Geometry/generate_3d_fuselage_points.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -6,70 +6,12 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
+from RCAIDE.Framework.Core import Data 
 import numpy as np   
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
-def plot_3d_fuselage(plot_data, fuselage, tessellation = 24, color_map = 'teal', alpha=1):
-    """
-    Creates a 3D visualization of a fuselage surface using tessellated panels.
-
-    Parameters
-    ----------
-    plot_data : list
-        Collection of plot vertices to be rendered
-        
-    fuselage : Fuselage
-        RCAIDE fuselage data structure containing geometry information
-        
-    tessellation : int, optional
-        Number of points to use in circumferential discretization (default: 24)
-        
-    color_map : str, optional
-        Color specification for the fuselage surface (default: 'teal')
-
-    Returns
-    -------
-    plot_data : list
-        Updated collection of plot vertices including fuselage surface
-
-    Notes
-    -----
-    Creates a 3D surface by generating points along fuselage segments and 
-    creating surface panels between adjacent cross-sections.
-    
-    **Major Assumptions**
-    
-    * Fuselage cross-sections are super-elliptical
-    * Surface is continuous between segments
-    * Tessellation is uniform around circumference
-    
-    See Also
-    --------
-    generate_3d_fuselage_points : Function to generate fuselage surface points
-    """
-    G  = generate_3d_fuselage_points(fuselage,tessellation = 24 ) 
-    num_fus_segs = len(G.PTS[:,0,0])
-    if num_fus_segs > 0:
-        tesselation  = len(G.PTS[0,:,0])
-        for i_seg in range(num_fus_segs-1):
-            for i_tes in range(tesselation-1):
-                X = np.array([[G.PTS[i_seg  ,i_tes,0],G.PTS[i_seg+1,i_tes  ,0]],
-                              [G.PTS[i_seg  ,i_tes+1,0],G.PTS[i_seg+1,i_tes+1,0]]])
-                Y = np.array([[G.PTS[i_seg  ,i_tes  ,1],G.PTS[i_seg+1,i_tes  ,1]],
-                              [G.PTS[i_seg  ,i_tes+1,1],G.PTS[i_seg+1,i_tes+1,1]]])
-                Z = np.array([[G.PTS[i_seg  ,i_tes  ,2],G.PTS[i_seg+1,i_tes  ,2]],
-                              [G.PTS[i_seg  ,i_tes+1,2],G.PTS[i_seg+1,i_tes+1,2]]])  
-                 
-                values = np.ones_like(X) 
-                verts  = contour_surface_slice(X, Y, Z,values,color_map,alpha )
-                plot_data.append(verts)          
-
-    return plot_data 
-
+# ----------------------------------------------------------------------------------------------------------------------  
 def generate_3d_fuselage_points(fuselage, tessellation = 24):
     """
     Generates 3D coordinate points that define a fuselage surface.
