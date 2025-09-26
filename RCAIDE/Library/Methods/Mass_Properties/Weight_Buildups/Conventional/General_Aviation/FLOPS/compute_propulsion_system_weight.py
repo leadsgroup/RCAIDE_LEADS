@@ -109,7 +109,7 @@ def compute_propulsion_system_weight(vehicle,network):
                   
     WFSYS           = compute_fuel_system_weight(vehicle, NENG)
     
-    WPRO            = NENG * WENG + WFSYS
+    WPRO            = WENG + WFSYS
 
     output                      = Data()
     output.W_prop               = WPRO
