@@ -99,7 +99,7 @@ def compute_propulsion_system_weight(vehicle,network):
             if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) \
                or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet)\
                or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):  
-                    WNAC = compute_nacelle_weight(propulsor,nacelle,JNENG)
+                WNAC = compute_nacelle_weight(propulsor,nacelle,JNENG)
                 WTHR = compute_thrust_reverser_weight(propulsor,JNENG)
                 WEC, WSTART = compute_misc_propulsion_system_weight(vehicle,propulsor,nacelle,JNENG )
     
