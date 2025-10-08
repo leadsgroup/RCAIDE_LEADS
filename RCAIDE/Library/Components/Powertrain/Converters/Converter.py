@@ -27,3 +27,5 @@ class Converter(Component):
         self.tag                      = 'tag' 
         self.working_fluid            = Data()
         self.active                   = True
+        self.assigned_converters      = []
+        self.assigned_modulators      = []

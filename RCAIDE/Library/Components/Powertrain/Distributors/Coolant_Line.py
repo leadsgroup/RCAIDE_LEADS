@@ -7,7 +7,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports  
 from RCAIDE.Library.Components                                import Component
-from RCAIDE.Library.Components.Component                      import Container    
+from RCAIDE.Library.Components.Component                      import Container   
+from RCAIDE.Framework.Core                                    import Data 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Coolant Line
@@ -76,6 +77,12 @@ class Coolant_Line(Component):
         self.tag                            = 'coolant_line' 
         self.heat_exchangers                = Container()
         self.reservoirs                     = Container() 
+        self.assigned_propulsors            = Data()
+        self.assigned_converters            = Data() 
+        self.assigned_distributors          = Data() 
+        self.assigned_modulators            = Data() 
+        self.assigned_sources               = Data()
+        self.assigned_systems               = Data()
 
                     
     def __init__ (self, distributor=None):
