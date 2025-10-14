@@ -1,8 +1,7 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Motor/compute_motor_performance.py
-#
+
 # 
 # Created:  Jan 2025, M. Clarke, M. Guidotti
-# Modified: Sep 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -71,7 +70,7 @@ def compute_motor_performance(motor,conditions):
     # Unpack
     motor_conditions = conditions.energy.converters[motor.tag]
     
-    if (motor.type == 'PMSM'): 
+    if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
         if motor.inverse_calculation == False:
             Res            = motor.resistance
             G              = motor.gearbox.gear_ratio

@@ -128,7 +128,7 @@ class Turboshaft(Converter):
         """
         Appends operating conditions of the segment.
         """  
-        append_turboshaft_conditions(self,segment,energy_conditions,noise_conditions) 
+        append_turboshaft_conditions(self,segment) 
         return
 
     def unpack_propulsor_unknowns(self,segment):   

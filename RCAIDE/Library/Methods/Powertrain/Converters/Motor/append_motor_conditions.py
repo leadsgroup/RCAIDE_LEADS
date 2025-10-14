@@ -1,14 +1,13 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Motor/append_motor_conditions.py
 # 
 # Created:  Jan 2025, M. Clarke, M. Guidotti
-# Modified: Sep 2025, M. Guidotti
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_motor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_motor_conditions(motor,segment,energy_conditions): 
+def append_motor_conditions(motor,segment): 
 
     """
     Initializes motor operating conditions for a mission segment.
@@ -19,19 +18,17 @@ def append_motor_conditions(motor,segment,energy_conditions):
         Motor component (DC_Motor or PMSM_Motor) for which conditions are being initialized
     segment : Segment
         Mission segment containing the state conditions
-    energy_conditions : Conditions
-        Container for propulsor operating conditions
 
     Returns
     -------
     None
-        Modifies energy_conditions in-place by adding motor-specific conditions
+        Modifies segment.state.conditions.energy in-place by adding motor-specific conditions
 
     Notes
     -----
     This function initializes arrays of zeros for key motor operating parameters during
     a mission segment. The conditions are stored in a nested structure under the motor's
-    tag within energy_conditions.
+    tag within segment.state.conditions.energy.
 
     The following conditions are initialized:
         - torque: Motor output torque [N-m]
@@ -47,15 +44,15 @@ def append_motor_conditions(motor,segment,energy_conditions):
 
 
     ones_row    = segment.state.ones_row 
-    energy_conditions.converters[motor.tag]                         = Conditions()
-    energy_conditions.converters[motor.tag].inputs                  = Conditions()
-    energy_conditions.converters[motor.tag].outputs                 = Conditions()
-    energy_conditions.converters[motor.tag].efficiency              = 0. * ones_row(1)  
-    energy_conditions.converters[motor.tag].inputs.voltage          = 0. * ones_row(1)
-    energy_conditions.converters[motor.tag].inputs.current          = 0. * ones_row(1)
-    energy_conditions.converters[motor.tag].outputs.work_done       = 0. * ones_row(1) 
-    energy_conditions.converters[motor.tag].outputs.power           = 0. * ones_row(1)
-    energy_conditions.converters[motor.tag].outputs.torque          = 0. * ones_row(1)  
-    energy_conditions.converters[motor.tag].outputs.omega           = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag]                         = Conditions()
+    segment.state.conditions.energy.converters[motor.tag].inputs                  = Conditions()
+    segment.state.conditions.energy.converters[motor.tag].outputs                 = Conditions()
+    segment.state.conditions.energy.converters[motor.tag].efficiency              = 0. * ones_row(1)  
+    segment.state.conditions.energy.converters[motor.tag].inputs.voltage          = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag].inputs.current          = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag].outputs.work_done       = 0. * ones_row(1) 
+    segment.state.conditions.energy.converters[motor.tag].outputs.power           = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag].outputs.torque          = 0. * ones_row(1)  
+    segment.state.conditions.energy.converters[motor.tag].outputs.omega           = 0. * ones_row(1)
     return 
 

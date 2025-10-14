@@ -84,6 +84,6 @@ class Engine(Converter):
         self.power_specific_fuel_consumption = 0.36
 
     def append_operating_conditions(self,segment):   
-        append_engine_conditions(self,segment,energy_conditions,noise_conditions) 
+        append_engine_conditions(self,segment) 
         return                
 

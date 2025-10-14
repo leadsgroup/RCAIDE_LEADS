@@ -67,5 +67,5 @@ class Electronic_Speed_Controller(Component):
         Updates the segment conditions with ESC-specific parameters including
         power throughput and losses.
         """ 
-        append_esc_conditions(self,segment,energy_conditions)
+        append_esc_conditions(self,segment)
         return 

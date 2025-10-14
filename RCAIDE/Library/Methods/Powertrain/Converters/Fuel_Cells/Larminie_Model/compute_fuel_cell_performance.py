@@ -129,7 +129,8 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     fuel_cell_stack_conditions.fuel_cell.power[t_idx]                      = P_cell
     fuel_cell_stack_conditions.fuel_cell.current[t_idx]                    = P_cell / V_fuel_cell 
     fuel_cell_stack_conditions.fuel_cell.inlet_H2_mass_flow_rate[t_idx]    = mdot_cell  
-    fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]                    = mdot_cell * n_total
+    fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]                    = mdot_cell * n_total # add fuel Line tag
+
     
     stored_results_flag            = True
     stored_fuel_cell_stack_tag     = fuel_cell_stack.tag  

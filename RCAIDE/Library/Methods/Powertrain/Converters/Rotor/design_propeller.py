@@ -18,7 +18,7 @@ from scipy.optimize import root
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Propeller
 # ----------------------------------------------------------------------------------------------------------------------   
-def design_propeller(prop):
+def design_propeller(prop, number_of_stations=20):
     """
     Optimizes propeller chord and twist distribution given input parameters.
     
@@ -133,15 +133,6 @@ def design_propeller(prop):
     RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series
     RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry
     """
-    # unpack optimization parameters  
-    number_of_stations  = prop
-    design_optimization = prop.design_optimization
-    solver_name         = design_optimization.solver_name 
-    iterations          = design_optimization.iterations 
-    solver_sense_step   = design_optimization.solver_sense_step 
-    solver_tolerance    = design_optimization.solver_tolerance 
-    print_iterations    = design_optimization.print_iterations 
-                             
     if prop.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
         # Unpack
         N            = number_of_stations       # this number determines the discretization of the propeller into stations

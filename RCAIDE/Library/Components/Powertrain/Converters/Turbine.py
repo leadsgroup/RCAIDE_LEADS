@@ -77,6 +77,6 @@ class Turbine(Converter):
         self.polytropic_efficiency             = 1.0
 
     def append_operating_conditions(self,segment):  
-        append_turbine_conditions(self,segment,energy_conditions)
+        append_turbine_conditions(self,segment)
         return                            
     

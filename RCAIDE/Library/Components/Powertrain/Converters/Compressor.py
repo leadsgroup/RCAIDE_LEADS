@@ -69,5 +69,5 @@ class Compressor(Converter):
         self.nondimensional_massflow         = 0.0
 
     def append_operating_conditions(self,segment):  
-        append_compressor_conditions(self,segment,energy_conditions)
+        append_compressor_conditions(self,segment)
         return        

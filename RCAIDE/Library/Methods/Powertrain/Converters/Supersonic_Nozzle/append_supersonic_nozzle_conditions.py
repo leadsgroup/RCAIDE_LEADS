@@ -7,7 +7,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 # append_supersonic_nozzle_conditions 
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_supersonic_nozzle_conditions(supersonic_nozzle, segment, energy_conditions): 
+def append_supersonic_nozzle_conditions(supersonic_nozzle, segment): 
     """
     Initializes and appends supersonic nozzle conditions data structures to the propulsor conditions dictionary.
     
@@ -17,8 +17,6 @@ def append_supersonic_nozzle_conditions(supersonic_nozzle, segment, energy_condi
         The supersonic nozzle component for which conditions are being initialized.
     segment : Segment
         The mission segment in which the supersonic nozzle is operating.
-    energy_conditions : dict
-        Dictionary containing conditions for all propulsion components.
     
     Returns
     -------
@@ -35,7 +33,7 @@ def append_supersonic_nozzle_conditions(supersonic_nozzle, segment, energy_condi
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.compute_supersonic_nozzle_performance
     """
-    energy_conditions.converters[supersonic_nozzle.tag]                     = Conditions()
-    energy_conditions.converters[supersonic_nozzle.tag].inputs              = Conditions()
-    energy_conditions.converters[supersonic_nozzle.tag].outputs             = Conditions()
+    segment.state.conditions.energy.converters[supersonic_nozzle.tag]                     = Conditions()
+    segment.state.conditions.energy.converters[supersonic_nozzle.tag].inputs              = Conditions()
+    segment.state.conditions.energy.converters[supersonic_nozzle.tag].outputs             = Conditions()
     return 

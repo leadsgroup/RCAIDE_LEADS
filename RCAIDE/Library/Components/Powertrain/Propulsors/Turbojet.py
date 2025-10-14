@@ -171,8 +171,8 @@ class Turbojet(Propulsor):
         design_turbojet(self,network)
         return
     
-    def append_operating_conditions(self,segment, network):
-        append_turbojet_conditions(self,segment,energy_conditions,noise_conditions)
+    def append_operating_conditions(self,segment):
+        append_turbojet_conditions(self,segment)
         return
 
     def unpack_propulsor_unknowns(self,segment):   

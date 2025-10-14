@@ -9,8 +9,7 @@
 
 # RCAIDE Imports     
 import RCAIDE
-from RCAIDE.Framework.Core                                           import Data
-from RCAIDE.Framework.Mission.Common                                 import Conditions
+from RCAIDE.Framework.Core                                           import Data 
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor          import compute_combustor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor         import compute_compressor_performance
@@ -19,6 +18,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft         import size_core  
 from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions 
+from RCAIDE.Library.Mission.Common.Update.orientations               import orientations
 
 # Python package imports   
 import numpy                                                                as np
@@ -26,7 +26,7 @@ import numpy                                                                as n
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turboshaft
 # ----------------------------------------------------------------------------------------------------------------------
-def design_turboshaft(turboshaft,network):  
+def design_turboshaft(turboshaft):  
     """
     Designs and sizes a turboshaft engine based on design point conditions and performance requirements.
 
@@ -156,17 +156,16 @@ def design_turboshaft(turboshaft,network):
     
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions
-    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.noise)  
-
-    # extract compoment from network             
-    ram                     = network.converters(turboshaft.ram)
-    inlet_nozzle            = network.converters(turboshaft.inlet_nozzle)
-    compressor              = network.converters(turboshaft.compressor)
-    combustor               = network.converters(turboshaft.combustor)
-    high_pressure_turbine   = network.converters(turboshaft.high_pressure_turbine)
-    low_pressure_turbine    = network.converters(turboshaft.low_pressure_turbine)
-    core_nozzle             = network.converters(turboshaft.core_nozzle)
-                               
+    turboshaft.append_operating_conditions(segment)  
+            
+    ram                     = turboshaft.ram
+    inlet_nozzle            = turboshaft.inlet_nozzle
+    compressor              = turboshaft.compressor
+    combustor               = turboshaft.combustor
+    high_pressure_turbine   = turboshaft.high_pressure_turbine
+    low_pressure_turbine    = turboshaft.low_pressure_turbine
+    core_nozzle             = turboshaft.core_nozzle
+    
     turboshaft_conditions   = conditions.energy.converters[turboshaft.tag]
     ram_conditions          = conditions.energy.converters[ram.tag]     
     inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
@@ -290,14 +289,12 @@ def design_turboshaft(turboshaft,network):
     # Step 25: Size the core of the turboshaft  
     size_core(turboshaft,conditions)
     
-    # Step 26: Static Sea Level Thrust  
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmo_data_sea_level  = atmosphere.compute_values(0.0,0.0)   
-    V                    = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state      = setup_operating_conditions(turboshaft,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0,temperature_deviation=0)  
-    operating_state.conditions.energy.converters[turboshaft.tag].throttle[:,0] = 1.0  
-    sls_P,_,_                                                       = turboshaft.compute_performance(operating_state,fuel_line) 
-    turboshaft.sealevel_static_power                                = sls_P[0][0]
-     
+    # Step 26: Static Sea Level Thrust   
+    atmo_data_sea_level                 = atmosphere.compute_values(0.0,0.0)   
+    V                                   = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
+    segment.state.conditions            = setup_operating_conditions(turboshaft,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
+    orientations(segment) 
+    sls_P,_,_                           = turboshaft.compute_performance(segment.state)  
+    turboshaft.sealevel_static_power    = sls_P[0][0]     
     return      
   

@@ -52,3 +52,8 @@ class Ram_Air_Turbine(Component):
         self.gearbox                   = Data()
         self.rotor                     = None
         self.generator                 = None
+
+    def append_operating_conditions(self, segment):
+        """Attach motor operating conditions to the segment's energy conditions."""
+        append_rat_conditions(self, segment)
+        return

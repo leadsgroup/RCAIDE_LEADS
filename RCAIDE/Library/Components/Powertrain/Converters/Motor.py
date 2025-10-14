@@ -205,9 +205,9 @@ class Motor(Converter):
     # -----------------------------
     #  operating conditions
     # -----------------------------
-    def append_operating_conditions(self, segment, energy_conditions, noise_conditions=None):
+    def append_operating_conditions(self, segment):
         """Attach motor operating conditions to the segment's energy conditions."""
-        append_motor_conditions(self, segment, energy_conditions)
+        append_motor_conditions(self, segment)
         return
 
 

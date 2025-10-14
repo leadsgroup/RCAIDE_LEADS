@@ -69,8 +69,8 @@ class Electric_Ducted_Fan(Propulsor):
         self.ducted_fan                   = None 
         self.electronic_speed_controller  = None
 
-    def append_operating_conditions(self,segment,network):
-        append_electric_ducted_fan_conditions(self,segment,network)
+    def append_operating_conditions(self,segment):
+        append_electric_ducted_fan_conditions(self,segment)
         return 
 
     def unpack_propulsor_unknowns(self,segment): 

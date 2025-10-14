@@ -57,6 +57,6 @@ class Auxiliary_Power_Unit(Turboelectric_Generator):
         """
         Appends operating conditions of the combustor.
         """ 
-        # append_apu_conditions(self,segment)
+        append_apu_conditions(self,segment)
         return
 

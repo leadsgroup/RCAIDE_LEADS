@@ -65,5 +65,5 @@ class DC_to_DC_Converter(Component):
         Updates the segment conditions with DC_to_DC_Converter-specific parameters including
         power throughput and losses.
         """ 
-        append_dcdc_conditions(self,segment,energy_conditions)
+        append_dcdc_conditions(self,segment)
         return 

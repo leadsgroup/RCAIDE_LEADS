@@ -15,7 +15,7 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # append_fuel_cell_conditions
 # ----------------------------------------------------------------------------------------------------------------------  
-def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
+def append_fuel_cell_conditions(fuel_cell_stack,segment):
     """
     Appends the initial fuel_cell conditions. 
 
@@ -68,21 +68,21 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
     # Conditions for recharging fuel_cell 
     if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
         segment.state.conditions.energy.recharging  = True 
-        segment.state.unknowns['recharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['recharge'] =  0* ones_row(1)
-        segment.state.number_of_unknowns  += 1
-        segment.state.number_of_residuals += 1    
+        segment.state.unknowns.mission['recharge']          =  0* ones_row(1)  
+        segment.state.residuals.mission.network['recharge'] =  0* ones_row(1)
+        segment.state.number_of_mission_unknowns  += 1
+        segment.state.number_of_mission_residuals += 1    
     elif type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
         segment.state.conditions.energy.recharging   = False 
-        segment.state.unknowns['discharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['discharge'] =  0* ones_row(1) 
-        segment.state.number_of_unknowns  += 1
-        segment.state.number_of_residuals += 1        
+        segment.state.unknowns.mission['discharge']          =  0* ones_row(1)  
+        segment.state.residuals.mission.network['discharge'] =  0* ones_row(1) 
+        segment.state.number_of_mission_unknowns  += 1
+        segment.state.number_of_mission_residuals += 1        
     else:
         segment.state.conditions.energy.recharging  = False             
     return
  
-def append_fuel_cell_segment_conditions(fuel_cell_stack, bus, conditions, segment): 
+def append_fuel_cell_segment_conditions(fuel_cell_stack, segment): 
     """
     Sets the initial fuel cell energy at the start of each segment as the last point from the previous segment
     
@@ -100,7 +100,7 @@ def append_fuel_cell_segment_conditions(fuel_cell_stack, bus, conditions, segmen
     Returns
     -------  
     """ 
-    fuel_cell_conditions = conditions[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
+    fuel_cell_conditions = segment.state.conditions[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
     if segment.state.initials:  
         fuel_cell_initials                                   = segment.state.initials.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
         fuel_cell_conditions.temperature[:,0]                = fuel_cell_initials.temperature[-1,0]

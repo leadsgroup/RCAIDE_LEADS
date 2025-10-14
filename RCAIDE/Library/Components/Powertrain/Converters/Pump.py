@@ -22,3 +22,8 @@ class Pump(Data):
         self.efficiency = 1.0
         self.delta_p    = 0.0
         return
+    
+    def append_operating_conditions(self, segment):
+        """Attach motor operating conditions to the segment's energy conditions."""
+        append_pump_conditions(self, segment)
+        return

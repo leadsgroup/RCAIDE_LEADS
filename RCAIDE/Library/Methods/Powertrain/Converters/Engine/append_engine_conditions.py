@@ -7,7 +7,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_engine_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_engine_conditions(engine,segment, network): 
+def append_engine_conditions(engine, segment): 
     """
     Initializes and appends engine operating conditions of the propulsor conditions data structure.
     
@@ -17,10 +17,6 @@ def append_engine_conditions(engine,segment, network):
         Engine system instance for which conditions are being initialized
     segment : RCAIDE.Framework.Mission.Segments.Segment
         Mission segment instance containing flight conditions
-    energy_conditions : dict
-        variable onto which engine operating conditions are appended
-    noise_conditions : dict, optional
-        variable onto which engine noise conditions are appended. Unused for now.
         
     Returns
     -------
@@ -34,10 +30,10 @@ def append_engine_conditions(engine,segment, network):
     """
     # unpack 
     ones_row          = segment.state.ones_row
-    
-    energy_conditions.converters[engine.tag]                      = Conditions() 
-    energy_conditions.converters[engine.tag].inputs               = Conditions()
-    energy_conditions.converters[engine.tag].outputs              = Conditions()
-    energy_conditions.converters[engine.tag].omega                = engine.rated_speed * ones_row(1)   
+    segment.state.conditions.energy.converters[engine.tag]                      = Conditions() 
+    segment.state.conditions.energy.converters[engine.tag].inputs               = Conditions()
+    segment.state.conditions.energy.converters[engine.tag].outputs              = Conditions()
+    segment.state.conditions.energy.converters[engine.tag].torque               = 0 * ones_row(1)   
+    segment.state.conditions.energy.converters[engine.tag].omega                = engine.rated_speed * ones_row(1)   
     
     return 

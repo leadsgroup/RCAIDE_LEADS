@@ -65,5 +65,5 @@ class Transformer_Rectifier_Unit(Component):
         Updates the segment conditions with Transformer_Rectifier_Unit-specific parameters including
         power throughput and losses.
         """ 
-        append_tru_conditions(self,segment,energy_conditions)
+        append_tru_conditions(self,segment)
         return 

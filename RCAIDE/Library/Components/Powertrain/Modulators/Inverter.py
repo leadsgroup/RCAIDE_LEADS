@@ -65,5 +65,5 @@ class Inverter(Component):
         Updates the segment conditions with inverter-specific parameters including
         power throughput and losses.
         """ 
-        append_inverter_conditions(self,segment,energy_conditions)
+        append_inverter_conditions(self,segment)
         return 

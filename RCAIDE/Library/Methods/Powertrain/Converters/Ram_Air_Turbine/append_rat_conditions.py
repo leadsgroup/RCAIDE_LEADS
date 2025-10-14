@@ -1,13 +1,11 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Ram/append_ram_conditions.py
-# 
-# Created:  Jun 2024, M. Clarke  
+
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_ram_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_ram_conditions(ram, segment):
+def append_rat_conditions(rat, segment):
     """
     Initializes ram air converter operating conditions for a mission segment.
     
@@ -48,7 +46,7 @@ def append_ram_conditions(ram, segment):
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance
     """
-    segment.state.conditions.energy.converters[ram.tag]                              = Conditions() 
-    segment.state.conditions.energy.converters[ram.tag].inputs                       = Conditions() 
-    segment.state.conditions.energy.converters[ram.tag].outputs                      = Conditions() 
+    segment.state.conditions.energy.converters[rat.tag]                              = Conditions() 
+    segment.state.conditions.energy.converters[rat.tag].inputs                       = Conditions() 
+    segment.state.conditions.energy.converters[rat.tag].outputs                      = Conditions() 
     return 

@@ -8,7 +8,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_ducted_fan_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_ducted_fan_conditions(ducted_fan,segment, network): 
+def append_ducted_fan_conditions(ducted_fan, segment): 
 
     """
     Initializes ducted fan operating conditions for a mission segment.
@@ -19,19 +19,17 @@ def append_ducted_fan_conditions(ducted_fan,segment, network):
         Ducted fan component for which conditions are being initialized
     segment : Segment
         Mission segment containing the state conditions
-    energy_conditions : Conditions
-        Container for energy system operating conditions
     
     Returns
     -------
     None
-        Modifies energy_conditions in-place by adding ducted-fan-specific conditions
+        Modifies segment.state.conditions.energy in-place by adding ducted-fan-specific conditions
     
     Notes
     -----
     This function initializes arrays for key ducted fan operating parameters during
     a mission segment. The conditions are stored in a nested structure under the 
-    ducted fan's tag within energy_conditions.
+    ducted fan's tag within segment.state.conditions.energy.
     
     The following conditions are initialized:
         - orientation : array(3)
@@ -74,20 +72,20 @@ def append_ducted_fan_conditions(ducted_fan,segment, network):
     """
 
     ones_row    = segment.state.ones_row 
-    energy_conditions.converters[ducted_fan.tag]                               = Conditions()   
-    energy_conditions.converters[ducted_fan.tag].orientation                   = 0. * ones_row(3) 
-    energy_conditions.converters[ducted_fan.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
-    energy_conditions.converters[ducted_fan.tag].torque                        = 0. * ones_row(1)
-    energy_conditions.converters[ducted_fan.tag].throttle                      = ones_row(1)
-    energy_conditions.converters[ducted_fan.tag].thrust                        = 0. * ones_row(1)
-    energy_conditions.converters[ducted_fan.tag].rpm                           = 0. * ones_row(1)
-    energy_conditions.converters[ducted_fan.tag].omega                         = 0. * ones_row(1)
-    energy_conditions.converters[ducted_fan.tag].disc_loading                  = 0. * ones_row(1)                 
-    energy_conditions.converters[ducted_fan.tag].power_loading                 = 0. * ones_row(1)
-    energy_conditions.converters[ducted_fan.tag].tip_mach                      = 0. * ones_row(1)
-    energy_conditions.converters[ducted_fan.tag].efficiency                    = 0. * ones_row(1)
-    energy_conditions.converters[ducted_fan.tag].figure_of_merit               = 0. * ones_row(1)
-    energy_conditions.converters[ducted_fan.tag].power_coefficient             = 0. * ones_row(1)  
+    segment.state.conditions.energy.converters[ducted_fan.tag]                               = Conditions()   
+    segment.state.conditions.energy.converters[ducted_fan.tag].orientation                   = 0. * ones_row(3) 
+    segment.state.conditions.energy.converters[ducted_fan.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
+    segment.state.conditions.energy.converters[ducted_fan.tag].torque                        = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[ducted_fan.tag].throttle                      = ones_row(1)
+    segment.state.conditions.energy.converters[ducted_fan.tag].thrust                        = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[ducted_fan.tag].rpm                           = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[ducted_fan.tag].omega                         = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[ducted_fan.tag].disc_loading                  = 0. * ones_row(1)                 
+    segment.state.conditions.energy.converters[ducted_fan.tag].power_loading                 = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[ducted_fan.tag].tip_mach                      = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[ducted_fan.tag].efficiency                    = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[ducted_fan.tag].figure_of_merit               = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[ducted_fan.tag].power_coefficient             = 0. * ones_row(1)  
     return 
 
 

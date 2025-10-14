@@ -112,7 +112,7 @@ class Generator(Converter):
         self.mu_0                     = 0.0
         self.mu_r                     = 0.0
         
-    def append_operating_conditions(self,segment,conditions, noise_conditions=None): 
-        append_generator_conditions(self,segment,conditions)
+    def append_operating_conditions(self,segment): 
+        append_generator_conditions(self,segment)
         return
     

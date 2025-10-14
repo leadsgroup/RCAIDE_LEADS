@@ -7,7 +7,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_ram_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_ram_conditions(ram, segment):
+def append_reformer_conditions(reformer, segment):
     """
     Initializes ram air converter operating conditions for a mission segment.
     
@@ -48,7 +48,7 @@ def append_ram_conditions(ram, segment):
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance
     """
-    segment.state.conditions.energy.converters[ram.tag]                              = Conditions() 
-    segment.state.conditions.energy.converters[ram.tag].inputs                       = Conditions() 
-    segment.state.conditions.energy.converters[ram.tag].outputs                      = Conditions() 
+    segment.state.conditions.energy.converters[reformer.tag]                              = Conditions() 
+    segment.state.conditions.energy.converters[reformer.tag].inputs                       = Conditions() 
+    segment.state.conditions.energy.converters[reformer.tag].outputs                      = Conditions() 
     return 

@@ -70,7 +70,7 @@ class Fuel_Tank(Component):
         self.inner_diameter                        = 0.0
         self.outer_diameter                        = 0.0
  
-    def append_operating_conditions(self,segment,fuel_line):  
+    def append_operating_conditions(self,segment):  
         """
         Append fuel tank operating conditions for a flight segment
         
@@ -81,7 +81,7 @@ class Fuel_Tank(Component):
         fuel_line : Component
             Connected fuel line component
         """
-        append_fuel_tank_conditions(self,segment, fuel_line)  
+        append_fuel_tank_conditions(self,segment)  
         return
     
     def compute_tank_properties(self,state,fuel_line):

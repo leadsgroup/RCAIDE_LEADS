@@ -118,8 +118,8 @@ class Generic_Fuel_Cell_Stack(Component):
         
         return stored_results_flag, stored_battery_tag 
 
-    def append_operating_conditions(self,segment,bus):  
-        append_fuel_cell_conditions(self,segment,bus)  
+    def append_operating_conditions(self,segment):  
+        append_fuel_cell_conditions(self,segment)  
         return
     
     def append_fuel_cell_segment_conditions(self,bus, conditions, segment):

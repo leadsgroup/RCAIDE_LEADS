@@ -106,7 +106,7 @@ class Systems(Component):
         """Set this node's own/base power draw (does not overwrite children)."""
         self._own_power_draw = float(val)
 
-    def append_operating_conditions(self, segment, bus): 
+    def append_operating_conditions(self, segment): 
         """
         Adds operating conditions for the avionics system to a mission segment.
 
@@ -117,7 +117,7 @@ class Systems(Component):
         bus : Data
             Electrical bus supplying power to the avionics
         """
-        append_systems_conditions(self, segment, bus)
+        append_systems_conditions(self, segment)
         return
 
 class Hydraulic_System(Systems):

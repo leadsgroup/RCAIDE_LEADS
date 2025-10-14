@@ -7,7 +7,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_rotor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_rotor_conditions(rotor, segment, energy_conditions, noise_conditions): 
+def append_rotor_conditions(rotor, segment): 
     """
     Initializes and appends rotor conditions to the energy and noise conditions dictionaries.
     
@@ -17,15 +17,11 @@ def append_rotor_conditions(rotor, segment, energy_conditions, noise_conditions)
         The rotor component for which conditions are being initialized.
     segment : Segment
         The mission segment in which the rotor is operating.
-    energy_conditions : dict
-        Dictionary containing energy-related conditions for all propulsion components.
-    noise_conditions : dict
-        Dictionary containing noise-related conditions for all propulsion components.
     
     Returns
     -------
     None
-        This function modifies the energy_conditions and noise_conditions dictionaries in-place.
+        This function modifies the segment.state.conditions.energy and segment.state.conditions.noise dictionaries in-place.
     
     Notes
     -----
@@ -51,21 +47,21 @@ def append_rotor_conditions(rotor, segment, energy_conditions, noise_conditions)
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance
     """
     ones_row    = segment.state.ones_row 
-    energy_conditions.converters[rotor.tag]                               = Conditions()   
-    energy_conditions.converters[rotor.tag].orientation                   = 0. * ones_row(3) 
-    energy_conditions.converters[rotor.tag].design_flag                   = False 
-    energy_conditions.converters[rotor.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
-    energy_conditions.converters[rotor.tag].blade_pitch_command           = ones_row(1) * rotor.blade_pitch_command 
-    energy_conditions.converters[rotor.tag].torque                        = 0. * ones_row(1)
-    energy_conditions.converters[rotor.tag].throttle                      = ones_row(1)
-    energy_conditions.converters[rotor.tag].thrust                        = 0. * ones_row(1)
-    energy_conditions.converters[rotor.tag].rpm                           = 0. * ones_row(1)
-    energy_conditions.converters[rotor.tag].omega                         = 0. * ones_row(1)
-    energy_conditions.converters[rotor.tag].disc_loading                  = 0. * ones_row(1)                 
-    energy_conditions.converters[rotor.tag].power_loading                 = 0. * ones_row(1)
-    energy_conditions.converters[rotor.tag].tip_mach                      = 0. * ones_row(1)
-    energy_conditions.converters[rotor.tag].efficiency                    = 0. * ones_row(1)
-    energy_conditions.converters[rotor.tag].figure_of_merit               = 0. * ones_row(1)
-    energy_conditions.converters[rotor.tag].power_coefficient             = 0. * ones_row(1) 
-    noise_conditions.converters[rotor.tag]                                = Conditions() 
+    segment.state.conditions.energy.converters[rotor.tag]                               = Conditions()   
+    segment.state.conditions.energy.converters[rotor.tag].orientation                   = 0. * ones_row(3) 
+    segment.state.conditions.energy.converters[rotor.tag].design_flag                   = False 
+    segment.state.conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
+    segment.state.conditions.energy.converters[rotor.tag].blade_pitch_command           = ones_row(1) * rotor.blade_pitch_command 
+    segment.state.conditions.energy.converters[rotor.tag].torque                        = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[rotor.tag].throttle                      = ones_row(1)
+    segment.state.conditions.energy.converters[rotor.tag].thrust                        = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[rotor.tag].rpm                           = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[rotor.tag].omega                         = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[rotor.tag].disc_loading                  = 0. * ones_row(1)                 
+    segment.state.conditions.energy.converters[rotor.tag].power_loading                 = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[rotor.tag].tip_mach                      = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[rotor.tag].efficiency                    = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[rotor.tag].figure_of_merit               = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[rotor.tag].power_coefficient             = 0. * ones_row(1) 
+    segment.state.conditions.noise.converters[rotor.tag]                                = Conditions() 
     return 

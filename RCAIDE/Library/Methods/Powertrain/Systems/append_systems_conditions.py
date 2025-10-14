@@ -7,7 +7,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_system_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_systems_conditions(system, segment, bus):  
+def append_systems_conditions(system, segment):  
     """
     Initializes and appends empty system conditions data structures to the segment state conditions.
     

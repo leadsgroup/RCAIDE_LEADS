@@ -112,3 +112,4 @@ class Coolant_Line(Component):
                         self.battery_modules = Container()
                     for battery in item:
                         self.battery_modules[battery.tag] = Container()
+

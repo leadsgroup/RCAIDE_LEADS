@@ -188,11 +188,11 @@ class Turbofan(Propulsor):
         design_turbofan(self,network)
         return 
         
-    def append_operating_conditions(self, segment, network, energy_conditions,noise_conditions):
+    def append_operating_conditions(self, segment):
         """
         Appends operating conditions to the segment.
         """
-        append_turbofan_conditions(self, segment, network, energy_conditions, noise_conditions)
+        append_turbofan_conditions(self, segment)
         return
 
     def unpack_propulsor_unknowns(self,segment):   

@@ -201,7 +201,7 @@ class Ducted_Fan(Converter):
         return 
 
     def append_operating_conditions(ducted_fan,segment):  
-        append_ducted_fan_conditions(ducted_fan,segment,energy_conditions,noise_conditions)
+        append_ducted_fan_conditions(ducted_fan,segment)
         return        
           
     def vec_to_vel(self):

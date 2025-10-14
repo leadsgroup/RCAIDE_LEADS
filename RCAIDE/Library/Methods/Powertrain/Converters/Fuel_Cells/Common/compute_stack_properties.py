@@ -144,7 +144,7 @@ def compute_stack_properties(fuel_cell_stack):
         fuel_cell_stack.maximum_current        = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
         fuel_cell_stack.maximum_fuel_mass_flow_rate = mdot_H2 * n_total
     
-    elif type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Fuel_Cell: 
+    elif type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell: 
     
         # check if mach number and temperature are passed
         design_altitude =  0

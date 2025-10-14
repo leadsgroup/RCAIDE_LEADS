@@ -106,5 +106,5 @@ class Supersonic_Nozzle(Converter):
         self.min_area_ratio                  = 0.
 
     def append_operating_conditions(self,segment):  
-        append_supersonic_nozzle_conditions(self,segment,energy_conditions)
+        append_supersonic_nozzle_conditions(self,segment)
         return 

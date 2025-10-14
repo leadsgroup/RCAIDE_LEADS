@@ -243,7 +243,7 @@ class Rotor(Component):
         self.design_optimization.ideal_figure_of_merit              = 1.0
         
     def append_operating_conditions(rotor,segment): 
-        append_rotor_conditions(rotor,segment,energy_conditions,noise_conditions)
+        append_rotor_conditions(rotor,segment)
         return        
          
     def append_airfoil(self,airfoil):

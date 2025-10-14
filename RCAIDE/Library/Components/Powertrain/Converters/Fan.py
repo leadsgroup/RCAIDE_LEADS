@@ -90,5 +90,5 @@ class Fan(Converter):
 
 
     def append_operating_conditions(self,segment):  
-        append_fan_conditions(self,segment,energy_conditions)
+        append_fan_conditions(self,segment)
         return                                

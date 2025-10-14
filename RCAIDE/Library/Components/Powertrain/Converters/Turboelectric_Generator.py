@@ -63,7 +63,7 @@ class Turboelectric_Generator(Converter):
         """
         Appends operating conditions of the segment.
         """  
-        append_turboelectric_generator_conditions(self,segment,energy_conditions) 
+        append_turboelectric_generator_conditions(self,segment) 
         return
  
     def compute_performance(self,state,fuel_line = None,bus = None):

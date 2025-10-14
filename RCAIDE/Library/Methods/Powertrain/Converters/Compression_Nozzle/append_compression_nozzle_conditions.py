@@ -21,8 +21,6 @@ def append_compression_nozzle_conditions(compression_nozzle,segment):
         The compression nozzle component for which conditions are being initialized.
     segment : Segment
         The mission segment in which the compression nozzle is operating.
-    energy_conditions : dict
-        Dictionary containing conditions for all propulsion components.
     
     Returns
     -------
@@ -31,14 +29,14 @@ def append_compression_nozzle_conditions(compression_nozzle,segment):
     Notes
     -----
     This function creates empty Conditions objects for the compression nozzle's inputs and outputs
-    within the segment.state.energy dictionary. These conditions will be populated during
+    within the segment.state.conditions.energy dictionary. These conditions will be populated during
     the mission analysis process.
     
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle.compute_compression_nozzle_performance
     """
-    segment.state.energy.converters[compression_nozzle.tag]                     = Conditions()
-    segment.state.energy.converters[compression_nozzle.tag].inputs              = Conditions()
-    segment.state.energy.converters[compression_nozzle.tag].outputs             = Conditions()
+    segment.state.conditions.energy.converters[compression_nozzle.tag]                     = Conditions()
+    segment.state.conditions.energy.converters[compression_nozzle.tag].inputs              = Conditions()
+    segment.state.conditions.energy.converters[compression_nozzle.tag].outputs             = Conditions()
     return 

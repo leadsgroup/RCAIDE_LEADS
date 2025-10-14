@@ -14,7 +14,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # append_fuel_cell_conditions
 # ----------------------------------------------------------------------------------------------------------------------  
-def append_fuel_cell_conditions(fuel_cell_stack,segment,bus): 
+def append_fuel_cell_conditions(fuel_cell_stack,segment): 
     """
     Appends the initial fuel_cell conditions. 
 
@@ -93,8 +93,8 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
     # Conditions for recharging fuel_cell         
     if type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
         segment.state.conditions.energy.recharging   = False     
-        segment.state.unknowns['recharge']           = 0* ones_row(1)  
-        segment.state.residuals['recharge']          = 0* ones_row(1)
+        segment.state.unknowns.mission['recharge']           = 0* ones_row(1)  
+        segment.state.residuals.mission['recharge']          = 0* ones_row(1)
     else:
         segment.state.conditions.energy.recharging  = False            
     

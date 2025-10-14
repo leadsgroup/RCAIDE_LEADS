@@ -89,11 +89,11 @@ class Electric_Rotor(Propulsor):
         design_electric_rotor(self,network)
         return
     
-    def append_operating_conditions(self,segment, network):
+    def append_operating_conditions(self,segment):
         """
         Appends operating conditions of the segment.
         """            
-        append_electric_rotor_conditions(self,segment,energy_conditions,noise_conditions)
+        append_electric_rotor_conditions(self,segment)
         return
     
     def append_propulsor_unknowns_and_residuals(self,segment):

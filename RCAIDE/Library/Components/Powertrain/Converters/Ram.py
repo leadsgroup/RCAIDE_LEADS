@@ -87,5 +87,5 @@ class Ram(Converter):
 
 
     def append_operating_conditions(self,segment):
-        append_ram_conditions(self,segment,energy_conditions)
+        append_ram_conditions(self,segment)
         return                         

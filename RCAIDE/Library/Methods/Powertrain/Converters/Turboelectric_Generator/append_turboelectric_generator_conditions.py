@@ -6,7 +6,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_turboelectric_generator_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turboelectric_generator_conditions(turboelectric_generator,segment,energy_conditions):  
+def append_turboelectric_generator_conditions(turboelectric_generator,segment):  
     """
     Initializes and appends operating conditions data structures for a turboelectric generator to the energy conditions structure.
     
@@ -16,13 +16,11 @@ def append_turboelectric_generator_conditions(turboelectric_generator,segment,en
         The turboelectric generator component for which conditions are being appended
     segment : RCAIDE.Analyses.Mission.Segments
         The mission segment being evaluated
-    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Container for energy-related conditions during the mission segment
         
     Returns
     -------
     None
-        This function modifies the energy_conditions object in-place
+        This function modifies the segment.state.conditions.energy object in-place
         
     Notes
     -----
@@ -33,16 +31,16 @@ def append_turboelectric_generator_conditions(turboelectric_generator,segment,en
 
     ones_row    = segment.state.ones_row   
  
-    energy_conditions.converters[turboelectric_generator.tag] = Conditions() 
-    energy_conditions.converters[turboelectric_generator.tag].throttle                                   = 0. * ones_row(1)     
-    energy_conditions.converters[turboelectric_generator.tag].commanded_thrust_vector_angle              = 0. * ones_row(1)   
-    energy_conditions.converters[turboelectric_generator.tag].power                                      = 0. * ones_row(1)
-    energy_conditions.converters[turboelectric_generator.tag].fuel_mass_flow_rate                        = 0. * ones_row(1)
-    energy_conditions.converters[turboelectric_generator.tag].inputs                                     = Conditions()
-    energy_conditions.converters[turboelectric_generator.tag].outputs                                    = Conditions() 
+    segment.state.conditions.energy.converters[turboelectric_generator.tag] = Conditions() 
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].throttle                                   = 0. * ones_row(1)     
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].commanded_thrust_vector_angle              = 0. * ones_row(1)   
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].power                                      = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].fuel_mass_flow_rate                        = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs                                     = Conditions()
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs                                    = Conditions() 
   
     turboshaft = turboelectric_generator.turboshaft
     generator  = turboelectric_generator.generator
-    turboshaft.append_operating_conditions(segment,energy_conditions)
-    generator.append_operating_conditions(segment,energy_conditions)
+    turboshaft.append_operating_conditions(segment)
+    generator.append_operating_conditions(segment)
     return 

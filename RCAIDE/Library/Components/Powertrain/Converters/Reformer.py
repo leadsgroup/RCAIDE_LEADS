@@ -104,3 +104,8 @@ class Reformer(Converter):
         self.LHV_CO       = 283.1    # [kJ/g-mol]        Lower heating value of Carbon Monoxide
         self.V_cat        = 9.653    # [cm**3]           Catalyst bed volume
         self.eta          = 0.9
+
+    def append_operating_conditions(self, segment):
+        """Attach motor operating conditions to the segment's energy conditions."""
+        append_reformer_conditions(self, segment)
+        return

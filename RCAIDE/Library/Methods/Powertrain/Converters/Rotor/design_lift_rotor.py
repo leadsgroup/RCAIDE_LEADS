@@ -20,7 +20,8 @@ import sys
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Lift-rotor
 # ----------------------------------------------------------------------------------------------------------------------  
-def design_lift_rotor(rotor):
+def design_lift_rotor(rotor, number_of_stations=20, solver_name='SLSQP', iterations=200,
+                      solver_sense_step=1E-6, solver_tolerance=1E-5, print_iterations=False):
     """
     Optimizes rotor chord and twist distribution to meet design power or thrust requirements.
     
@@ -44,7 +45,7 @@ def design_lift_rotor(rotor):
                 Design lift coefficient
             - airfoil_data : dict
                 Dictionary of airfoil data
-            - design_optimization : Data
+            - optimization_parameters : Data
                 Optimization parameters
                     - slack_constraint : float
                         Slack constraint value
@@ -98,15 +99,6 @@ def design_lift_rotor(rotor):
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.set_optimized_parameters
     RCAIDE.Framework.Optimization.Packages.scipy.scipy_setup
     """    
-    # unpack optimization parameters  
-    number_of_stations  = rotor
-    design_optimization = rotor.design_optimization
-    solver_name         = design_optimization.solver_name 
-    iterations          = design_optimization.iterations 
-    solver_sense_step   = design_optimization.solver_sense_step 
-    solver_tolerance    = design_optimization.solver_tolerance 
-    print_iterations    = design_optimization.print_iterations
-    
     # Unpack rotor geometry  
     rotor_tag     = rotor.tag
     rotor.tag     = 'rotor'
