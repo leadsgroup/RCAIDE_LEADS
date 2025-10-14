@@ -104,4 +104,4 @@ def energy(segment):
                         fuel_tank_initials = fuel_line_initials.fuel_tanks[fuel_tank[0]]
                         conditions.fuel_lines[distributor.tag].fuel_tanks[fuel_tank[0]].fuel_mass[:,0]   = fuel_tank_initials.fuel_mass[-1,0]
                     elif  vehicle.networks[network.tag].sources[fuel_tank[0]].fuel != None:
-                        conditions.fuel_lines[distributor.tag].fuel_tanks[fuel_tank[0]].fuel_mass[:,0]   = vehicle.networks[network.tag].fuel_lines[distributor.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
+                        conditions.fuel_lines[distributor.tag].fuel_tanks[fuel_tank[0]].fuel_mass[:,0]   = vehicle.networks[network.tag].sources[fuel_tank[0]].fuel.mass_properties.mass

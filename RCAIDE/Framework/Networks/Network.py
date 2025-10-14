@@ -131,7 +131,7 @@ class Network(Component):
                         else:             
                             if stored_results_flag == False: 
                                 # run propulsor analysis 
-                                T,M,P,P_elec,stored_results_flag,stored_propulsor_tag = propulsor.compute_performance(state,center_of_gravity= center_of_gravity)
+                                T,M,P,P_elec,stored_results_flag,stored_propulsor_tag = propulsor.compute_performance(state, network, center_of_gravity= center_of_gravity)
                             else:
                                 # use previous propulsor results 
                                 T,M,P,P_elec = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag,center_of_gravity= center_of_gravity)
@@ -142,7 +142,7 @@ class Network(Component):
                         total_elec_power  += P_elec   
          
                         if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                            conditions.energy.fuel_lines[distributor.tag].fuel_flow_rate += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
+                            conditions.energy.fuel_lines[distributor.tag].fuel_mass_flow_rate += conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate
                         
                         if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                             conditions.energy.busses[distributor.tag].power_draw         += (P_elec) * distributor.power_split_ratio /distributor.efficiency
@@ -357,10 +357,7 @@ class Network(Component):
                 converter.append_operating_conditions(segment)  
 
             for modulator in network.modulators: 
-                modulator.append_operating_conditions(segment)  
-
-            for source in  network.sources: 
-                source.append_operating_conditions(segment)               
+                modulator.append_operating_conditions(segment)                
     
             for distributor_i, distributor in enumerate(network.distributors):
                 
@@ -375,6 +372,9 @@ class Network(Component):
                     for converter_group in  distributor.assigned_converters:
                         propulsor =  network.propulsors[propulsor_group[0]]
                         propulsor.append_propulsor_unknowns_and_residuals(segment)
+
+                    for source in  network.sources: 
+                        source.append_operating_conditions(segment, distributor) 
                                                                     
             for coolant_line_i, coolant_line in enumerate(network.coolant_lines):  
                 # ------------------------------------------------------------------------------------------------------            

@@ -13,7 +13,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
-def append_fuel_tank_conditions(tank, segment):
+def append_fuel_tank_conditions(tank, segment, distributor):
     """
     Appends initial conditions for fuel tank component during later mission analysis.
     

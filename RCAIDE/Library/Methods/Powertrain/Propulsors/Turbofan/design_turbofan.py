@@ -168,7 +168,7 @@ def design_turbofan(turbofan, network):
      
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions 
-    turbofan.append_operating_conditions(segment)
+    turbofan.append_operating_conditions(segment, network)
 
                     
     # extract compoment from network    
@@ -183,17 +183,6 @@ def design_turbofan(turbofan, network):
     core_nozzle               = network.converters[turbofan.assigned_converters.core_nozzle_tag[0][0]]
     fan_nozzle                = network.converters[turbofan.assigned_converters.fan_nozzle_tag[0][0]]
     bypass_ratio              = turbofan.bypass_ratio
-
-    ram.append_operating_conditions(segment)
-    inlet_nozzle.append_operating_conditions(segment)
-    fan.append_operating_conditions(segment)
-    low_pressure_compressor.append_operating_conditions(segment)
-    high_pressure_compressor.append_operating_conditions(segment)
-    combustor.append_operating_conditions(segment)
-    high_pressure_turbine.append_operating_conditions(segment)
-    low_pressure_turbine.append_operating_conditions(segment)
-    core_nozzle.append_operating_conditions(segment)
-    fan_nozzle.append_operating_conditions(segment)
 
     # unpack component conditions
     turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]
@@ -345,7 +334,7 @@ def design_turbofan(turbofan, network):
     # Step 23: Static Sea Level Thrust  
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(turbofan, velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
+    operating_state       = setup_operating_conditions(turbofan, network, velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0  
     sls_T,_,sls_P,_,_,_                          = turbofan.compute_performance(operating_state, network) 
     turbofan.sealevel_static_thrust              = sls_T[0][0]
