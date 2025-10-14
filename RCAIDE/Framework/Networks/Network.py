@@ -279,18 +279,17 @@ class Network(Component):
         unknowns(segment)  
         for network in segment.analyses.energy.vehicle.networks:
             # Fuel unknowns 
-            for fuel_line_i, fuel_line in enumerate(network.fuel_lines):    
-                if fuel_line.active:
-                    for propulsor_group in  fuel_line.assigned_propulsors:
-                        propulsor = network.propulsors[propulsor_group[0]]
-                        propulsor.unpack_propulsor_unknowns(segment)
-                        
-            # electric unknowns 
-            for bus_i, bus in enumerate(network.busses):    
-                if bus.active:
-                    for propulsor_group in  bus.assigned_propulsors:
-                        propulsor = network.propulsors[propulsor_group[0]]
-                        propulsor.unpack_propulsor_unknowns(segment) 
+            for item_i, item in enumerate(network.distributors):
+                if isinstance(item,RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                    if item.active:
+                        for propulsor_group in  item.assigned_propulsors:
+                            propulsor = network.propulsors[propulsor_group[0]]
+                            propulsor.unpack_propulsor_unknowns(segment)
+                elif isinstance(item,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):   
+                    if item.active:
+                        for propulsor_group in  item.assigned_propulsors:
+                            propulsor = network.propulsors[propulsor_group[0]]
+                            propulsor.unpack_propulsor_unknowns(segment) 
         return    
      
     def residuals(self,segment):
@@ -352,7 +351,7 @@ class Network(Component):
         for network in segment.analyses.energy.vehicle.networks:
             
             for propulsor in network.propulsors: 
-                propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)     
+                propulsor.append_operating_conditions(segment, network, segment.state.conditions.energy,segment.state.conditions.noise)     
     
             for converter in network.converters: 
                 converter.append_operating_conditions(segment,segment.state.conditions.energy)                 
@@ -369,9 +368,10 @@ class Network(Component):
                             propulsor.append_propulsor_unknowns_and_residuals(segment)
                             
                     # Assign sub component results data structures  
-                    for fuel_tank in  distributor.fuel_tanks: 
-                        fuel_tank.append_operating_conditions(segment,distributor) 
-    
+                    for item in  distributor.assigned_sources:
+                        if issubclass(type(item), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                            item.append_operating_conditions(segment,distributor) 
+
                 # ------------------------------------------------------------------------------------------------------            
                 # Create bus results data structure  
                 # ------------------------------------------------------------------------------------------------------     

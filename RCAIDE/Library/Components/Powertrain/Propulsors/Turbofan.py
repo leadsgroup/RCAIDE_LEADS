@@ -188,11 +188,11 @@ class Turbofan(Propulsor):
         design_turbofan(self,network)
         return 
         
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+    def append_operating_conditions(self, segment, network, energy_conditions,noise_conditions):
         """
         Appends operating conditions to the segment.
         """
-        append_turbofan_conditions(self,segment,energy_conditions,noise_conditions)
+        append_turbofan_conditions(self, segment, network, energy_conditions, noise_conditions)
         return
 
     def unpack_propulsor_unknowns(self,segment):   
@@ -204,11 +204,11 @@ class Turbofan(Propulsor):
     def append_propulsor_unknowns_and_residuals(self,segment): 
         return
     
-    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state, network, center_of_gravity = [[0, 0, 0]]):
         """
         Computes turbofan performance including thrust, moment, and power.
         """
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turbofan_performance(self,state,center_of_gravity)
+        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turbofan_performance(self,state, network, center_of_gravity)
         return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
     
     def reuse_stored_data(turbofan,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
