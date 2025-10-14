@@ -358,44 +358,27 @@ class Network(Component):
     
             for distributor_i, distributor in enumerate(network.distributors):
                 
-                if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line:
-                    distributor.append_operating_conditions(segment)              
-                    
-                    # Assign network-specific  residuals, unknowns and results data structures 
-                    if distributor.active:
-                        for propulsor_group in  distributor.assigned_propulsors:
-                            propulsor =  network.propulsors[propulsor_group[0]]
-                            propulsor.append_propulsor_unknowns_and_residuals(segment)
-                            
-                    # Assign sub component results data structures  
-                    for item in  distributor.assigned_sources:
-                        if issubclass(type(item), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                            item.append_operating_conditions(segment,distributor) 
+                distributor.append_operating_conditions(segment)              
+                
+                # Assign network-specific  residuals, unknowns and results data structures 
+                if distributor.active:
+                    for propulsor_group in  distributor.assigned_propulsors:
+                        propulsor =  network.propulsors[propulsor_group[0]]
+                        propulsor.append_propulsor_unknowns_and_residuals(segment)
 
-                # ------------------------------------------------------------------------------------------------------            
-                # Create bus results data structure  
-                # ------------------------------------------------------------------------------------------------------     
-                elif type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
+                    for converter_group in  distributor.assigned_converters:
+                        propulsor =  network.propulsors[propulsor_group[0]]
+                        propulsor.append_propulsor_unknowns_and_residuals(segment)
                     
-                    distributor.append_operating_conditions(segment)                  
-        
-                    # ------------------------------------------------------------------------------------------------------
-                    # Assign network-specific  residuals, unknowns and results data structures
-                    # ------------------------------------------------------------------------------------------------------
-                    if distributor.active:
-                        for propulsor_group in  distributor.assigned_propulsors:
-                            propulsor =  network.propulsors[propulsor_group[0]]
-                            propulsor.append_propulsor_unknowns_and_residuals(segment)
-                            
-                    # ------------------------------------------------------------------------------------------------------
-                    # Assign sub component results data structures
-                    # ------------------------------------------------------------------------------------------------------ 
-                    for source in  distributor.assigned_sources: 
-                        source.append_operating_conditions(segment,distributor)    
-                        
-                    for tag, item in distributor.items():  
-                        if issubclass(type(item), RCAIDE.Library.Components.Component):
-                            item.append_operating_conditions(segment,distributor)
+                # ------------------------------------------------------------------------------------------------------
+                # Assign sub component results data structures
+                # ------------------------------------------------------------------------------------------------------ 
+                for source in  distributor.assigned_sources: 
+                    source.append_operating_conditions(segment,distributor)    
+                    
+                for tag, item in distributor.items():  
+                    if issubclass(type(item), RCAIDE.Library.Components.Component):
+                        item.append_operating_conditions(segment,distributor)
                                                                     
             for coolant_line_i, coolant_line in enumerate(network.coolant_lines):  
                 # ------------------------------------------------------------------------------------------------------            
