@@ -58,7 +58,7 @@ class Constant_Speed_Internal_Combustion_Engine(Propulsor):
         self.length      = 0.5
           
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+    def append_operating_conditions(self,segment, network):
         append_constant_speed_internal_combustion_engine_conditions(self,segment,energy_conditions,noise_conditions)
         return
 

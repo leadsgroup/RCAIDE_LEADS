@@ -122,7 +122,7 @@ class Turboprop(Propulsor):
         design_turboprop(self,network)
         return
     
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+    def append_operating_conditions(self,segment, network):
         """
         Appends operating conditions of the segment.
         """

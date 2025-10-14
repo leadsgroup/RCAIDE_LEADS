@@ -51,7 +51,7 @@ class Electronic_Speed_Controller(Component):
         self.bus_voltage      = None
         self.efficiency       = 0.0 
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+    def append_operating_conditions(self,segment): 
         """
         Append ESC operating conditions for a flight segment
         

@@ -89,6 +89,6 @@ class Fan(Converter):
         self.design_angular_velocity        = 3000 *  Units.rpm
 
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
+    def append_operating_conditions(self,segment):  
         append_fan_conditions(self,segment,energy_conditions)
         return                                

@@ -169,9 +169,9 @@ class Combustor(Converter):
         self.air_data                                = Air()          # [-] Air object
         self.fuel_data                               = RCAIDE.Library.Attributes.Propellants.Jet_A1()       # [-] Fuel object
         
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+    def append_operating_conditions(self,segment):
         """
         Appends operating conditions of the combustor.
         """ 
-        append_combustor_conditions(self,segment,energy_conditions)
+        append_combustor_conditions(self,segment)
         return

@@ -8,7 +8,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_combustor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_combustor_conditions(combustor, segment, energy_conditions):
+def append_combustor_conditions(combustor, segment):
     """
     Initializes combustor operating conditions for a mission segment.
     
@@ -24,13 +24,13 @@ def append_combustor_conditions(combustor, segment, energy_conditions):
                 Segment state
                     - ones_row : function
                         Function to create array of ones with specified length
-    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
+    segment.state.energy : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where combustor conditions will be stored
     
     Returns
     -------
     None
-        Results are stored in energy_conditions.converters[combustor.tag]
+        Results are stored in segment.state.energy.converters[combustor.tag]
     
     Notes
     -----
@@ -39,7 +39,7 @@ def append_combustor_conditions(combustor, segment, energy_conditions):
     combustor in the energy conditions and initializes the non-dimensional mass ratio
     with ones.
     
-    The function initializes the following in energy_conditions.converters[combustor.tag]:
+    The function initializes the following in segment.state.energy.converters[combustor.tag]:
         - inputs : Conditions
             Input conditions container
                 - nondim_mass_ratio : numpy.ndarray
@@ -58,8 +58,8 @@ def append_combustor_conditions(combustor, segment, energy_conditions):
     RCAIDE.Library.Methods.Powertrain.Converters.Combustor.compute_combustor_performance
     """
     ones_row    = segment.state.ones_row 
-    energy_conditions.converters[combustor.tag]                           = Conditions() 
-    energy_conditions.converters[combustor.tag].inputs                    = Conditions() 
-    energy_conditions.converters[combustor.tag].inputs.nondim_mass_ratio  = ones_row(1)
-    energy_conditions.converters[combustor.tag].outputs                   = Conditions()
+    segment.state.energy.converters[combustor.tag]                           = Conditions() 
+    segment.state.energy.converters[combustor.tag].inputs                    = Conditions() 
+    segment.state.energy.converters[combustor.tag].inputs.nondim_mass_ratio  = ones_row(1)
+    segment.state.energy.converters[combustor.tag].outputs                   = Conditions()
     return 

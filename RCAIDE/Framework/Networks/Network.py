@@ -351,10 +351,16 @@ class Network(Component):
         for network in segment.analyses.energy.vehicle.networks:
             
             for propulsor in network.propulsors: 
-                propulsor.append_operating_conditions(segment, network, segment.state.conditions.energy,segment.state.conditions.noise)     
+                propulsor.append_operating_conditions(segment, network)     
     
             for converter in network.converters: 
-                converter.append_operating_conditions(segment,segment.state.conditions.energy)                 
+                converter.append_operating_conditions(segment)  
+
+            for modulator in network.modulators: 
+                modulator.append_operating_conditions(segment)  
+
+            for source in  network.sources: 
+                source.append_operating_conditions(segment)               
     
             for distributor_i, distributor in enumerate(network.distributors):
                 
@@ -369,16 +375,6 @@ class Network(Component):
                     for converter_group in  distributor.assigned_converters:
                         propulsor =  network.propulsors[propulsor_group[0]]
                         propulsor.append_propulsor_unknowns_and_residuals(segment)
-                    
-                # ------------------------------------------------------------------------------------------------------
-                # Assign sub component results data structures
-                # ------------------------------------------------------------------------------------------------------ 
-                for source in  distributor.assigned_sources: 
-                    source.append_operating_conditions(segment,distributor)    
-                    
-                for tag, item in distributor.items():  
-                    if issubclass(type(item), RCAIDE.Library.Components.Component):
-                        item.append_operating_conditions(segment,distributor)
                                                                     
             for coolant_line_i, coolant_line in enumerate(network.coolant_lines):  
                 # ------------------------------------------------------------------------------------------------------            

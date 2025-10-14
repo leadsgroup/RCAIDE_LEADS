@@ -70,7 +70,7 @@ class Internal_Combustion_Engine(Propulsor):
         self.diameter    = 0.4    
         self.length      = 0.5
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+    def append_operating_conditions(self,segment, network):
         """
         Appends operating conditions of the segment.
         """

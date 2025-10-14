@@ -49,7 +49,7 @@ class Transformer_Rectifier_Unit(Component):
         self.bus_voltage      = None
         self.efficiency       = 1.0 
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+    def append_operating_conditions(self,segment): 
         """
         Append Transformer_Rectifier_Unit operating conditions for a flight segment
         

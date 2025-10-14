@@ -53,3 +53,10 @@ class Auxiliary_Power_Unit(Turboelectric_Generator):
         self.gearbox.gear_ratio        = None  
         self.inverse_calculation       = False
 
+    def append_operating_conditions(self,segment):
+        """
+        Appends operating conditions of the combustor.
+        """ 
+        # append_apu_conditions(self,segment)
+        return
+

@@ -49,7 +49,7 @@ class DC_to_DC_Converter(Component):
         self.bus_voltage      = None
         self.efficiency       = 1.0 
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+    def append_operating_conditions(self,segment): 
         """
         Append DC_to_DC_Converter operating conditions for a flight segment
         
