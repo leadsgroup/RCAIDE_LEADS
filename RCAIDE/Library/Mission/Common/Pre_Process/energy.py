@@ -15,23 +15,25 @@ def energy(mission):
     """       
     for segment in mission.segments: 
         for network in segment.analyses.energy.vehicle.networks:
+
+            if isinstance(network.distributors, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
             
-            # determine bus properties
-            for bus in  network.busses:
-                bus.initialize_bus_properties()                  
-            
-                # update bus voltage on each electrical component
-                for converter in bus.assigned_converters[0]:
-                    converter.bus_voltage = bus.voltage
-                     
-                for modulator in bus.assigned_modulators[0]:
-                    modulator.bus_voltage = bus.voltage
-    
-                for system in bus.assigned_systems[0]:
-                    system.bus_voltage = bus.voltage                            
+                # determine bus properties
+                for bus in  network.busses:
+                    bus.initialize_bus_properties()                  
                 
+                    # update bus voltage on each electrical component
+                    for converter in bus.assigned_converters[0]:
+                        converter.bus_voltage = bus.voltage
+                        
+                    for modulator in bus.assigned_modulators[0]:
+                        modulator.bus_voltage = bus.voltage
+        
+                    for system in bus.assigned_systems[0]:
+                        system.bus_voltage = bus.voltage                            
+                    
             # design propulsor 
-            for propulsor in network.propulsor:
+            for propulsor in network.propulsors:
                 propulsor.intialize_propulsor_design(network)  
             
             if type(network) == RCAIDE.Framework.Networks.Hybrid:

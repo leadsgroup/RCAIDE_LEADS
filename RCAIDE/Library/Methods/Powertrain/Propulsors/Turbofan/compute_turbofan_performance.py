@@ -215,8 +215,7 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
-    fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
-
+    fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag] 
  
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbofan.working_fluid

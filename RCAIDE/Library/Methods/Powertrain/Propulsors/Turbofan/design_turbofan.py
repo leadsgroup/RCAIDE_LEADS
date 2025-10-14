@@ -171,17 +171,17 @@ def design_turbofan(turbofan, network):
     turbofan.append_operating_conditions(segment,conditions.energy,conditions.noise)
                     
     # extract compoment from network    
-    ram                       = network.converters(turbofan.ram_tag)
-    inlet_nozzle              = network.converters(turbofan.inlet_nozzle_tag)
-    fan                       = network.converters(turbofan.fan_tag)
-    low_pressure_compressor   = network.converters(turbofan.low_pressure_compressor_tag)
-    high_pressure_compressor  = network.converters(turbofan.high_pressure_compressor_tag)
-    combustor                 = network.converters(turbofan.combustor_tag)
-    high_pressure_turbine     = network.converters(turbofan.high_pressure_turbine_tag)
-    low_pressure_turbine      = network.converters(turbofan.low_pressure_turbine_tag)
-    core_nozzle               = network.converters(turbofan.core_nozzle_tag)
-    fan_nozzle                = network.converters(turbofan.fan_nozzle_tag )
-    bypass_ratio              = network.converters(turbofan.bypass_ratio_tag ) 
+    ram                       = network.converters[turbofan.ram_tag[0][0]]
+    inlet_nozzle              = network.converters[turbofan.inlet_nozzle_tag[0][0]]
+    fan                       = network.converters[turbofan.fan_tag[0][0]]
+    low_pressure_compressor   = network.converters[turbofan.low_pressure_compressor_tag[0][0]]
+    high_pressure_compressor  = network.converters[turbofan.high_pressure_compressor_tag[0][0]]
+    combustor                 = network.converters[turbofan.combustor_tag[0][0]]
+    high_pressure_turbine     = network.converters[turbofan.high_pressure_turbine_tag[0][0]]
+    low_pressure_turbine      = network.converters[turbofan.low_pressure_turbine_tag[0][0]]
+    core_nozzle               = network.converters[turbofan.core_nozzle_tag[0][0]]
+    fan_nozzle                = network.converters[turbofan.fan_nozzle_tag[0][0]]
+    bypass_ratio              = turbofan.bypass_ratio
 
     # unpack component conditions
     turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]

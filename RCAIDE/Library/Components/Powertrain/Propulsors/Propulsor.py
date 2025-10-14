@@ -89,3 +89,4 @@ class Propulsor(Component):
         self.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()
         self.assigned_converters          = []
         self.assigned_modulators          = []
+        self.nacelle                      = []

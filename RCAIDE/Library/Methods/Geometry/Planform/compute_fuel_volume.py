@@ -68,20 +68,21 @@ def compute_fuel_volume(vehicle, update_fuel_volume = False):
     total_fuel_volume = 0
     total_fuel_mass   = 0
     for network in vehicle.networks: 
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
-                try:
-                    compute_fuel_tank_volume = fuel_tank.compute_volume
-                except Exception as e:
-                    total_fuel_volume += getattr(fuel_tank.fuel.volume_properties, "net_volume", None)
-                    total_fuel_mass   += getattr(fuel_tank.fuel.mass_properties, "mass", None)
-                else:
-                    # if no error getting the method, run it normally
-                    if update_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages) 
-                        fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
-                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
-                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass 
+        for fuel_line in network.distributors:
+            if fuel_line.tag == "Fuel Line": 
+                for fuel_tank in fuel_line.assigned_sources:
+                    try:
+                        compute_fuel_tank_volume = fuel_tank.compute_volume
+                    except Exception as e:
+                        total_fuel_volume += getattr(fuel_tank.fuel.volume_properties, "net_volume", None)
+                        total_fuel_mass   += getattr(fuel_tank.fuel.mass_properties, "mass", None)
+                    else:
+                        # if no error getting the method, run it normally
+                        if update_fuel_volume:
+                            compute_fuel_tank_volume(wings, fuselages) 
+                            fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
+                        total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
+                        total_fuel_mass   += fuel_tank.fuel.mass_properties.mass 
                     
     # Assign Total Fuel Volume and Mass to Vehicle 
     vehicle.volume_properties.fuel = total_fuel_volume

@@ -145,10 +145,12 @@ class Network(Component):
                             conditions.energy.fuel_lines[distributor.tag].fuel_flow_rate += conditions.energy.propulsors[propulsor.tag].fuel_flow_rate
                         
                         if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                            conditions.energy.busses[distributor.tag].power_draw         += (P_elec) * distributor.power_split_ratio /distributor.efficiency   
-                
-                conditions.energy.busses[distributor.tag].power_draw         += state.conditions.energy.busses[distributor.tag].regenerative_power*bus_voltage* bus.power_split_ratio  /bus.efficiency   
-                conditions.energy.busses[distributor.tag].current_draw       = conditions.energy.busses[distributor.tag].power_draw/bus_voltage  
+                            conditions.energy.busses[distributor.tag].power_draw         += (P_elec) * distributor.power_split_ratio /distributor.efficiency
+
+                if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):   
+            
+                    conditions.energy.busses[distributor.tag].power_draw         += state.conditions.energy.busses[distributor.tag].regenerative_power*bus_voltage* distributor.power_split_ratio  /distributor.efficiency   
+                    conditions.energy.busses[distributor.tag].current_draw       = conditions.energy.busses[distributor.tag].power_draw/bus_voltage  
                 
         # ------------------------------------------------------------------------------------------------------------------- 
         # Section 2.0 Converters
@@ -209,7 +211,7 @@ class Network(Component):
         delta_t            = np.diff(time)
         
         for distributor in distributors:
-            for source_tag in distributor.source_tags: 
+            for source_tag in distributor.assigned_sources: 
                 source =  network.sources[source_tag]
                 if issubclass(source,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                     # Determine mass flow from each tank 

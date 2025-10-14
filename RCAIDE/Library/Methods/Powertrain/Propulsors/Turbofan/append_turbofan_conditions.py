@@ -89,10 +89,25 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
     noise_conditions.propulsors[propulsor.tag].fan_nozzle                     = Conditions() 
     noise_conditions.propulsors[propulsor.tag].fan                            = Conditions()
  
-    for tag, item in  propulsor.items(): 
+    for tag, item in propulsor.items():
+        # If this item is just a tag (like 'starboard_fan'), not a real component,
+        # we get the real component from the network using that tag.
+        if isinstance(item, (str, list)):
+            # handle lists like [['starboard_fan']]
+            if isinstance(item, list):
+                item = item[0][0] if isinstance(item[0], list) else item[0]
+            # now 'item' is the tag string, so get the component object
+            component = network.get(item, None)
+            if component is not None:
+                component.append_operating_conditions(segment, energy_conditions)
+            continue
+
+        # if item is already a component, use it directly
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,energy_conditions) 
-            for sub_tag, sub_item in  item.items(): 
-                if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
-                    sub_item.append_operating_conditions(segment,energy_conditions)    
+            item.append_operating_conditions(segment, energy_conditions)
+
+            # do the same for any sub-items
+            for sub_tag, sub_item in item.items():
+                if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
+                    sub_item.append_operating_conditions(segment, energy_conditions)   
     return 
