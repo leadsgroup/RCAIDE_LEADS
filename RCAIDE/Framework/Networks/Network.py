@@ -227,7 +227,7 @@ class Network(Component):
                     source.compute_tank_properties(state,distributor)   
         
                     # Update total mass flow of system   
-                    total_mdot  += conditions.energy.fuel_lines[distributor.tag].fuel_mass_flow_rate
+                    total_mdot  += conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate
                 
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
                     # 3.2 Electric Sources 

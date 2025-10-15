@@ -31,7 +31,8 @@ def energy(segment):
     for network in segment.analyses.energy.vehicle.networks:  
         for distributor in network.distributors:
             if issubclass(type(distributor), RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                for source in distributor.assigned_sources: 
-                    increment_day = segment.increment_battery_age_by_one_day
-                    battery_conditions  = segment.conditions.energy.sources[source.tag]
-                    source.update_battery_age(segment,battery_conditions,increment_battery_age_by_one_day = increment_day) 
+                for source_tag in distributor.assigned_sources:
+                    for i in range(len(source_tag)):
+                        increment_day = segment.increment_battery_age_by_one_day
+                        battery_conditions  = segment.conditions.energy.sources[source_tag[i]]
+                        network.sources[source_tag[i]].update_battery_age(segment,battery_conditions,increment_battery_age_by_one_day = increment_day) 

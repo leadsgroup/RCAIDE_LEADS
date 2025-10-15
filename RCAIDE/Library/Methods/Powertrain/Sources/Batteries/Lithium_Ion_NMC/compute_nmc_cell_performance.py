@@ -164,7 +164,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_id
     # ---------------------------------------------------------------------------------
     # Compute Bus electrical properties 
     # ---------------------------------------------------------------------------------    
-    bus_conditions              = state.conditions.energy.sources[bus.tag]
+    bus_conditions              = state.conditions.energy.distributors[bus.tag]
     bus_config                  = bus.battery_module_electric_configuration
     psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio
     E_bus                       = bus_conditions.energy
@@ -174,7 +174,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_id
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions
     # -------------------------------------------------------------------------    
-    battery_module_conditions = state.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag]  
+    battery_module_conditions = state.conditions.energy.sources[battery_module.tag]  
    
     E_module_max       = battery_module.maximum_energy * battery_module_conditions.cell.capacity_fade_factor
     
@@ -213,7 +213,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_id
     n_series          = battery_module.electrical_configuration.series
     n_parallel        = battery_module.electrical_configuration.parallel 
     n_total           = n_series*n_parallel 
-    no_modules        = len(bus.battery_modules)
+    no_modules        = len(bus.assigned_sources)
     
     # ---------------------------------------------------------------------------------
     # Examine Thermal Management System
