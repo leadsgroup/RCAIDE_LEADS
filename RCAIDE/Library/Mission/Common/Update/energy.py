@@ -3,6 +3,8 @@
 # 
 # Created:  Jul 2023, M. Clarke 
 
+import RCAIDE
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Update Battery Age
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -27,9 +29,9 @@ def energy(segment):
     """  
     # loop throuh networks in vehicle 
     for network in segment.analyses.energy.vehicle.networks:  
-        busses  = network.busses
-        for bus in busses:
-            for battery in bus.battery_modules: 
-                increment_day = segment.increment_battery_age_by_one_day
-                battery_conditions  = segment.conditions.energy.busses[bus.tag].battery_modules[battery.tag]
-                battery.update_battery_age(segment,battery_conditions,increment_battery_age_by_one_day = increment_day) 
+        for distributor in network.distributors:
+            if issubclass(type(distributor), RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                for source in distributor.assigned_sources: 
+                    increment_day = segment.increment_battery_age_by_one_day
+                    battery_conditions  = segment.conditions.energy.distributors[distributor.tag].sources[source.tag]
+                    source.update_battery_age(segment,battery_conditions,increment_battery_age_by_one_day = increment_day) 

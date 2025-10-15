@@ -170,7 +170,6 @@ def design_turbofan(turbofan, network):
     segment.state.conditions = conditions 
     turbofan.append_operating_conditions(segment, network)
 
-                    
     # extract compoment from network    
     ram                       = network.converters[turbofan.assigned_converters.ram_tag[0][0]]
     inlet_nozzle              = network.converters[turbofan.assigned_converters.inlet_nozzle_tag[0][0]]
@@ -183,6 +182,10 @@ def design_turbofan(turbofan, network):
     core_nozzle               = network.converters[turbofan.assigned_converters.core_nozzle_tag[0][0]]
     fan_nozzle                = network.converters[turbofan.assigned_converters.fan_nozzle_tag[0][0]]
     bypass_ratio              = turbofan.bypass_ratio
+
+    for _, item in turbofan.assigned_converters.items():
+        converter = network.converters[item[0][0]] 
+        converter.append_operating_conditions(segment)
 
     # unpack component conditions
     turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]

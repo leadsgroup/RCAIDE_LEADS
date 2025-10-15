@@ -148,7 +148,12 @@ def setup_operating_conditions(component, network, velocity_range=np.array([10])
     segment.state.residuals.network                  = Residuals()
     
     # append component-specific operating conditions 
-    component.append_operating_conditions(segment, network)    
+    component.append_operating_conditions(segment, network)
+    
+    for _, item in component.assigned_converters.items():
+        converter = network.converters[item[0][0]] 
+        converter.append_operating_conditions(segment)
+
     segment.state.conditions.expand_rows(num_ctrl_pts)              
     return segment.state
  

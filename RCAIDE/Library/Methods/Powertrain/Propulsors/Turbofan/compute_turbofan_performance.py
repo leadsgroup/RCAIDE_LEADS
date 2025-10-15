@@ -193,6 +193,7 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     U0                        = conditions.freestream.velocity
     T                         = conditions.freestream.temperature
     P                         = conditions.freestream.pressure
+
     ram                       = network.converters[turbofan.assigned_converters.ram_tag[0][0]]
     inlet_nozzle              = network.converters[turbofan.assigned_converters.inlet_nozzle_tag[0][0]]
     fan                       = network.converters[turbofan.assigned_converters.fan_tag[0][0]]
@@ -474,16 +475,16 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     core_nozzle                 = network.converters[turbofan.assigned_converters.core_nozzle_tag[0][0]]
     fan_nozzle                  = network.converters[turbofan.assigned_converters.fan_nozzle_tag[0][0]]
 
-    ram_0                       = network.converters[stored_propulsor_tag.assigned_converters.ram_tag[0][0]]
-    inlet_nozzle_0              = network.converters[stored_propulsor_tag.assigned_converters.inlet_nozzle_tag[0][0]]
-    fan_0                       = network.converters[stored_propulsor_tag.assigned_converters.fan_tag[0][0]]
-    low_pressure_compressor_0   = network.converters[stored_propulsor_tag.assigned_converters.low_pressure_compressor_tag[0][0]]
-    high_pressure_compressor_0  = network.converters[stored_propulsor_tag.assigned_converters.high_pressure_compressor_tag[0][0]]
-    combustor_0                 = network.converters[stored_propulsor_tag.assigned_converters.combustor_tag[0][0]]
-    high_pressure_turbine_0     = network.converters[stored_propulsor_tag.assigned_converters.high_pressure_turbine_tag[0][0]]
-    low_pressure_turbine_0      = network.converters[stored_propulsor_tag.assigned_converters.low_pressure_turbine_tag[0][0]]
-    core_nozzle_0               = network.converters[stored_propulsor_tag.assigned_converters.core_nozzle_tag[0][0]]
-    fan_nozzle_0                = network.converters[stored_propulsor_tag.assigned_converters.fan_nozzle_tag[0][0]]
+    ram_0                       = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.ram_tag[0][0]]
+    inlet_nozzle_0              = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.inlet_nozzle_tag[0][0]]
+    fan_0                       = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.fan_tag[0][0]]
+    low_pressure_compressor_0   = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.low_pressure_compressor_tag[0][0]]
+    high_pressure_compressor_0  = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.high_pressure_compressor_tag[0][0]]
+    combustor_0                 = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.combustor_tag[0][0]]
+    high_pressure_turbine_0     = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.high_pressure_turbine_tag[0][0]]
+    low_pressure_turbine_0      = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.low_pressure_turbine_tag[0][0]]
+    core_nozzle_0               = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.core_nozzle_tag[0][0]]
+    fan_nozzle_0                = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.fan_nozzle_tag[0][0]]
     
     # deep copy results 
     conditions.energy.propulsors[turbofan.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])

@@ -212,30 +212,29 @@ class Network(Component):
         
         for distributor in distributors:
             for source_tag in distributor.assigned_sources: 
-                source =  network.sources[source_tag]
-                if issubclass(source,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                source =  network.sources[source_tag[0]]
+                if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):    
                     # Determine mass flow from each tank 
                     source.compute_tank_properties(state,distributor)   
         
                     # Update total mass flow of system   
                     total_mdot  += conditions.energy.fuel_lines[distributor.tag].fuel_mass_flow_rate
                 
-
-                # 3.2 Electric Sources 
-                for t_idx in range(state.numerics.number_of_control_points):   
-                    if issubclass(source,RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):          
+                if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
+                    # 3.2 Electric Sources 
+                    for t_idx in range(state.numerics.number_of_control_points):   
+                
                         stored_results_flag       = False
                         stored_battery_cell_tag   = None
-                  
+                    
                         if distributor.identical_battery_modules == False and stored_results_flag == False: 
                             # run analysis  
                             stored_results_flag, stored_battery_cell_tag =  source.energy_calc(state,distributor,coolant_lines, t_idx, delta_t)
                         else:             
                             # use previous battery results 
                             source.reuse_stored_data(state,distributor,stored_results_flag, stored_battery_cell_tag)
-                
-                    # Step 3: Compute bus properties          
-                    distributor.compute_distributor_conditions(state,t_idx,delta_t)
+                        # Step 3: Compute bus properties          
+                        distributor.compute_distributor_conditions(state,t_idx,delta_t)
 
         # ------------------------------------------------------------------------------------------------------------------- 
         # Section 4.0  Thermal Management
@@ -279,17 +278,11 @@ class Network(Component):
         unknowns(segment)  
         for network in segment.analyses.energy.vehicle.networks:
             # Fuel unknowns 
-            for item_i, item in enumerate(network.distributors):
-                if isinstance(item,RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                    if item.active:
-                        for propulsor_group in  item.assigned_propulsors:
-                            propulsor = network.propulsors[propulsor_group[0]]
-                            propulsor.unpack_propulsor_unknowns(segment)
-                elif isinstance(item,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):   
-                    if item.active:
-                        for propulsor_group in  item.assigned_propulsors:
-                            propulsor = network.propulsors[propulsor_group[0]]
-                            propulsor.unpack_propulsor_unknowns(segment) 
+            for distributor_i, distributor in enumerate(network.distributors):
+                if distributor.active:
+                    for propulsor_group in  distributor.assigned_propulsors:
+                        propulsor = network.propulsors[propulsor_group[0]]
+                        propulsor.unpack_propulsor_unknowns(segment) 
         return    
      
     def residuals(self,segment):
@@ -314,16 +307,11 @@ class Network(Component):
            N/A
        """         
         for network in segment.analyses.energy.vehicle.networks:
-            for fuel_line_i, fuel_line in enumerate(network.fuel_lines):    
-                if fuel_line.active:
-                    for propulsor_group in  fuel_line.assigned_propulsors:
+            for distributor_i, distributor in enumerate(network.distributors):    
+                if distributor.active:
+                    for propulsor_group in  distributor.assigned_propulsors:
                         propulsor =  network.propulsors[propulsor_group[0]]
                         propulsor.pack_propulsor_residuals(segment) 
-            for bus_i, bus in enumerate(network.busses):    
-                if bus.active:
-                    for propulsor_group in  bus.assigned_propulsors:
-                        propulsor =  network.propulsors[propulsor_group[0]]
-                        propulsor.pack_propulsor_residuals(segment)   
         return      
     
     def add_unknowns_and_residuals_to_segment(self, segment):

@@ -88,10 +88,5 @@ def append_turbofan_conditions(propulsor, segment, network):
     segment.state.conditions.noise.propulsors[propulsor.tag].core_nozzle                    = Conditions() 
     segment.state.conditions.noise.propulsors[propulsor.tag].fan_nozzle                     = Conditions() 
     segment.state.conditions.noise.propulsors[propulsor.tag].fan                            = Conditions()
-
-    for tag, item in  propulsor.assigned_converters.items(): 
-        for tag_converter, item_converter in network.converters.items():
-                if item[0][0] == tag_converter:     
-                    item_converter.append_operating_conditions(segment) 
   
     return 
