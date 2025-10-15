@@ -80,7 +80,7 @@ def energy(segment):
         for distributor in network.distributors:
             if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                 distributor.append_segment_conditions(segment)
-                for battery_module in  distributor.battery_modules:
+                for battery_module in  distributor.assigned_sources:
                     battery_module.append_battery_segment_conditions(segment, distributor)
                 for coolant_line in  network.coolant_lines:
                     for tag, item in  coolant_line.items(): 
@@ -100,8 +100,8 @@ def energy(segment):
                 distributor.append_segment_conditions(segment)
                 for fuel_tank in distributor.assigned_sources:
                     if segment.state.initials :
-                        fuel_line_initials = segment.state.initials.conditions.energy.fuel_lines[distributor.tag]
-                        fuel_tank_initials = fuel_line_initials.fuel_tanks[fuel_tank[0]]
-                        conditions.fuel_lines[distributor.tag].fuel_tanks[fuel_tank[0]].fuel_mass[:,0]   = fuel_tank_initials.fuel_mass[-1,0]
+                        fuel_line_initials = segment.state.initials.conditions.energy.distributors[distributor.tag]
+                        fuel_tank_initials = fuel_line_initials.assigned_sources[fuel_tank[0]]
+                        conditions.distributors[distributor.tag].assigned_sources[fuel_tank[0]].fuel_mass[:,0]   = fuel_tank_initials.fuel_mass[-1,0]
                     elif  vehicle.networks[network.tag].sources[fuel_tank[0]].fuel != None:
-                        conditions.fuel_lines[distributor.tag].fuel_tanks[fuel_tank[0]].fuel_mass[:,0]   = vehicle.networks[network.tag].sources[fuel_tank[0]].fuel.mass_properties.mass
+                        conditions.distributor[distributor.tag].assigned_sources[fuel_tank[0]].fuel_mass[:,0]   = vehicle.networks[network.tag].sources[fuel_tank[0]].fuel.mass_properties.mass

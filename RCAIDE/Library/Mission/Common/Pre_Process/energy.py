@@ -19,18 +19,18 @@ def energy(mission):
             if isinstance(network.distributors, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
             
                 # determine bus properties
-                for bus in  network.busses:
-                    bus.initialize_bus_properties()                  
+                for distributor in network.distributors:
+                    distributor.initialize_bus_properties()                  
                 
                     # update bus voltage on each electrical component
-                    for converter in bus.assigned_converters[0]:
-                        converter.bus_voltage = bus.voltage
+                    for converter in distributor.assigned_converters[0]:
+                        converter.bus_voltage = distributor.voltage
                         
-                    for modulator in bus.assigned_modulators[0]:
-                        modulator.bus_voltage = bus.voltage
+                    for modulator in distributor.assigned_modulators[0]:
+                        modulator.bus_voltage = distributor.voltage
         
-                    for system in bus.assigned_systems[0]:
-                        system.bus_voltage = bus.voltage                            
+                    for system in distributor.assigned_systems[0]:
+                        system.bus_voltage = distributor.voltage                            
                     
             # design propulsor 
             for propulsor in network.propulsors:

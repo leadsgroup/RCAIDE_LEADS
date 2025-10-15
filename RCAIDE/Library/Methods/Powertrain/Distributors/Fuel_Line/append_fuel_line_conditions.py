@@ -10,7 +10,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
 # ---------------------------------------------------------------------------------------------------------------------- 
-def append_fuel_line_conditions(fuel_line,segment): 
+def append_fuel_line_conditions(distributor,segment): 
     """
     Appends conditions for the fuel line to the segment's energy conditions dictionary.
 
@@ -49,20 +49,19 @@ def append_fuel_line_conditions(fuel_line,segment):
     # ------------------------------------------------------------------------------------------------------            
     # Create fuel_line results data structure  
     # ------------------------------------------------------------------------------------------------------ 
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag]                                     = Conditions() 
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].power_draw                          = 0 * ones_row(1)
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * ones_row(1)  
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].heat_energy_generated               = 0 * ones_row(1) 
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].efficiency                          = 0 * ones_row(1)
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].temperature                         = 0 * ones_row(1)
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].energy                              = 0 * ones_row(1)  
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_tanks                          = Conditions() 
+    segment.state.conditions.energy.distributors[distributor.tag]                                     = Conditions() 
+    segment.state.conditions.energy.distributors[distributor.tag].power_draw                          = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[distributor.tag].hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * ones_row(1)  
+    segment.state.conditions.energy.distributors[distributor.tag].heat_energy_generated               = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[distributor.tag].efficiency                          = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[distributor.tag].temperature                         = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[distributor.tag].energy                              = 0 * ones_row(1)  
+    segment.state.conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
+    segment.state.conditions.energy.distributors[distributor.tag].fuel_tanks                          = Conditions() 
 
     return
 
-
-def append_fuel_line_segment_conditions(fuel_line,segment):
+def append_fuel_line_segment_conditions(distributor,segment):
     """
     Sets the initial fuel line properties at the start of each segment based on the last point from the previous segment.
     
@@ -85,5 +84,5 @@ def append_fuel_line_segment_conditions(fuel_line,segment):
     --------
     RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.append_fuel_line_conditions 
     """     
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate[:,0]    = 0
+    segment.state.conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate[:,0]    = 0
     return

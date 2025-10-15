@@ -139,7 +139,7 @@ class Generic_Battery_Module(Component):
         self.geometrtic_configuration.stacking_rows            = 3
         self.geometrtic_configuration.parallel_spacing         = 0.02                
  
-    def append_operating_conditions(self,segment,bus):  
+    def append_operating_conditions(self,segment,distributor):  
         """
         Append battery operating conditions for a flight segment
         
@@ -150,10 +150,10 @@ class Generic_Battery_Module(Component):
         bus : Component
             Electrical bus connected to this battery
         """
-        append_battery_conditions(self,segment,bus)  
+        append_battery_conditions(self,segment,distributor)  
         return
     
-    def append_battery_segment_conditions(self,segment,bus):
+    def append_battery_segment_conditions(self,segment,distributor):
         """
         Append segment-specific battery conditions
         
@@ -166,5 +166,5 @@ class Generic_Battery_Module(Component):
         segment : Segment
             Flight segment data
         """
-        append_battery_segment_conditions(self,segment,bus)
+        append_battery_segment_conditions(self,segment,distributor)
         return

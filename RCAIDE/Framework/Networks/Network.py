@@ -358,8 +358,8 @@ class Network(Component):
                         propulsor.append_propulsor_unknowns_and_residuals(segment)
 
                     for converter_group in  distributor.assigned_converters:
-                        propulsor =  network.propulsors[propulsor_group[0]]
-                        propulsor.append_propulsor_unknowns_and_residuals(segment)
+                        converter =  network.converters[converter_group[0]]
+                        converter.append_operating_conditions(segment)
 
                     for source in  network.sources: 
                         source.append_operating_conditions(segment, distributor) 
