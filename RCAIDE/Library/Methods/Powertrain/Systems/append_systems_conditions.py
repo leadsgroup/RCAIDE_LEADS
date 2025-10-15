@@ -37,7 +37,7 @@ def append_systems_conditions(system, segment):
     -------- 
     """
     ones_row    = segment.state.ones_row
-    segment.state.conditions.energy.busses[bus.tag][system.tag]            = Conditions()
-    segment.state.conditions.energy.busses[bus.tag][system.tag].power      = 0 * ones_row(1)
+    segment.state.conditions.energy.systems[system.tag]            = Conditions()
+    segment.state.conditions.energy.systems[system.tag].power      = 0 * ones_row(1)
     
     return 

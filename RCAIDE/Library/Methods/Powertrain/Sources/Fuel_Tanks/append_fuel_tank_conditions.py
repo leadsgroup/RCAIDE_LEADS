@@ -13,7 +13,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
-def append_fuel_tank_conditions(tank, segment, distributor):
+def append_fuel_tank_conditions(tank, segment):
     """
     Appends initial conditions for fuel tank component during later mission analysis.
     
@@ -49,18 +49,13 @@ def append_fuel_tank_conditions(tank, segment, distributor):
     RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks 
     """
     ones_row    = segment.state.ones_row
-    
-    if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus: 
-        distributor_conditions = segment.state.conditions.energy.busses[distributor.tag]
-    elif  type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line: 
-        distributor_conditions = segment.state.conditions.energy.fuel_lines[distributor.tag]
         
-    distributor_conditions.fuel_tanks[tank.tag]                           = Conditions()  
-    distributor_conditions.fuel_tanks[tank.tag].fuel_mass                 = tank.fuel.mass_properties.mass * ones_row(1)  
-    distributor_conditions.fuel_tanks[tank.tag].mass_flow_rate            = 0 * ones_row(1)  
-    distributor_conditions.fuel_tanks[tank.tag].surface_temperature       = 0 * ones_row(1)  
-    distributor_conditions.fuel_tanks[tank.tag].boil_off_flow_rate        = 0 * ones_row(1)  
-    distributor_conditions.fuel_tanks[tank.tag].ullage                    = 0 * ones_row(1)
-    distributor_conditions.fuel_tanks[tank.tag].secondary_mass_flow_rate  = tank.secondary_mass_flow_rate * ones_row(1) 
+    segment.state.conditions.energy.sources[tank.tag]                           = Conditions()  
+    segment.state.conditions.energy.sources[tank.tag].fuel_mass                 = tank.fuel.mass_properties.mass * ones_row(1)  
+    segment.state.conditions.energy.sources[tank.tag].mass_flow_rate            = 0 * ones_row(1)  
+    segment.state.conditions.energy.sources[tank.tag].surface_temperature       = 0 * ones_row(1)  
+    segment.state.conditions.energy.sources[tank.tag].boil_off_flow_rate        = 0 * ones_row(1)  
+    segment.state.conditions.energy.sources[tank.tag].ullage                    = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].secondary_mass_flow_rate  = tank.secondary_mass_flow_rate * ones_row(1) 
          
     return 

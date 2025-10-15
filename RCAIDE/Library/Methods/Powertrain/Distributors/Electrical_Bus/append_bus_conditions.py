@@ -51,36 +51,27 @@ def append_bus_conditions(bus,segment):
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
     """
     ones_row                                                                     = segment.state.ones_row
-               
-    segment.state.conditions.energy.busses[bus.tag]                                     = Conditions()
-    segment.state.conditions.energy.busses[bus.tag].battery_modules                     = Conditions()
-    segment.state.conditions.energy.busses[bus.tag].fuel_cell_stacks                    = Conditions()
-    segment.state.conditions.energy.busses[bus.tag].fuel_tanks                          = Conditions()
-    segment.state.conditions.energy.busses[bus.tag].power_draw                          = 0 * ones_row(1)
-    segment.state.conditions.energy.busses[bus.tag].systems_power_draw                  = bus.systems.power_draw * ones_row(1)
-    segment.state.conditions.energy.busses[bus.tag].hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * ones_row(1)
-    segment.state.conditions.energy.busses[bus.tag].battery_fuel_cell_power_split_ratio = segment.battery_fuel_cell_power_split_ratio * ones_row(1) 
-    segment.state.conditions.energy.busses[bus.tag].state_of_charge                     = 0 * ones_row(1) 
-    segment.state.conditions.energy.busses[bus.tag].depth_of_discharge                  = 0 * ones_row(1) 
-    segment.state.conditions.energy.busses[bus.tag].current_draw                        = 0 * ones_row(1)
-    segment.state.conditions.energy.busses[bus.tag].charging_current                    = 0 * ones_row(1)
-    segment.state.conditions.energy.busses[bus.tag].voltage_open_circuit                = 0 * ones_row(1)
-    segment.state.conditions.energy.busses[bus.tag].voltage_under_load                  = 0 * ones_row(1) 
-    segment.state.conditions.energy.busses[bus.tag].heat_energy_generated               = 0 * ones_row(1) 
-    segment.state.conditions.energy.busses[bus.tag].efficiency                          = 0 * ones_row(1)
-    segment.state.conditions.energy.busses[bus.tag].temperature                         = 0 * ones_row(1)
-    segment.state.conditions.energy.busses[bus.tag].energy                              = 0 * ones_row(1)
-    segment.state.conditions.energy.busses[bus.tag].regenerative_power                  = 0 * ones_row(1) 
-    segment.state.conditions.energy.busses[bus.tag].fuel_mass_flow_rate                 = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag]                                     = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].battery_modules                     = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].fuel_cell_stacks                    = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].fuel_tanks                          = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].power_draw                          = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].systems_power_draw                  = bus.systems.power_draw * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].battery_fuel_cell_power_split_ratio = segment.battery_fuel_cell_power_split_ratio * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].state_of_charge                     = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].depth_of_discharge                  = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].current_draw                        = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].charging_current                    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].voltage_open_circuit                = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].voltage_under_load                  = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].heat_energy_generated               = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].efficiency                          = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].temperature                         = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].energy                              = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].regenerative_power                  = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].fuel_mass_flow_rate                 = 0 * ones_row(1) 
 
-     # first segment  
-    if 'initial_battery_state_of_charge' in segment:  
-        initial_battery_energy                                                    = segment.initial_battery_state_of_charge*bus.maximum_energy   
-        segment.state.conditions.energy.busses[bus.tag].maximum_initial_energy    = initial_battery_energy
-        segment.state.conditions.energy.busses[bus.tag].energy                    = initial_battery_energy* ones_row(1)
-        segment.state.conditions.energy.busses[bus.tag].state_of_charge           = segment.initial_battery_state_of_charge* ones_row(1) 
-        segment.state.conditions.energy.busses[bus.tag].depth_of_discharge        = 1 - segment.initial_battery_state_of_charge* ones_row(1)
-   
     return
 
 
@@ -122,7 +113,7 @@ def append_bus_segment_conditions(bus,segment):
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
     """    
-    bus_conditions                          = segment.state.conditions.energy.busses[bus.tag]
+    bus_conditions                          = segment.state.conditions.energy.distributors[bus.tag]
     ones_row                                = segment.state.ones_row
     bus_conditions.power_draw               = 0 * ones_row(1) 
     bus_conditions.fuel_mass_flow_rate[:,0] = 0
@@ -130,17 +121,18 @@ def append_bus_segment_conditions(bus,segment):
     # Thermal power draw
     if segment.state.initials:
         for network in segment.analyses.energy.vehicle.networks:
-            for coolant_line in  network.coolant_lines:
-                for tag, item in  coolant_line.items():
-                    if tag == 'battery_modules':
-                        for battery in item:
-                            for btms in  battery:
-                                bus_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][btms.tag].power[-1] 
-                    if tag == 'heat_exchangers':
-                        for heat_exchanger in  item:                    
-                            bus_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][heat_exchanger.tag].power[-1] 
+            for distributor in  network.distributors:
+                if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+                    for tag, item in distributor.items():
+                        if tag == 'battery_modules':
+                            for battery in item:
+                                for btms in  battery:
+                                    bus_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][btms.tag].power[-1] 
+                        if tag == 'heat_exchangers':
+                            for heat_exchanger in  item:                    
+                                bus_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][heat_exchanger.tag].power[-1] 
         # Bus Properties 
-        bus_initials            = segment.state.initials.conditions.energy.busses[bus.tag]
+        bus_initials            = segment.state.initials.conditions.energy.distributors[bus.tag]
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
             bus_initials.battery_discharge_flag           = False 
         else:                   

@@ -124,8 +124,8 @@ def compute_aircraft_moment_of_inertia(vehicle, CG_location, update_moment_of_in
             if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
 
                 for source in distributor.assigned_sources: 
-                    for i in range(len(source[0])):
-                        I_battery, mass_battery = compute_cuboid_moment_of_inertia(network.sources[source[0][i]].origin, network.sources[source[0][i]].mass_properties.mass, network.sources[source[0][i]].length, network.sources[source[0][i]].width, network.sources[source[0][i]].height, 0, 0, 0, CG_location)
+                    for i in range(len(source)):
+                        I_battery, mass_battery = compute_cuboid_moment_of_inertia(network.sources[source[i]].origin, network.sources[source[i]].mass_properties.mass, network.sources[source[i]].length, network.sources[source[i]].width, network.sources[source[i]].height, 0, 0, 0, CG_location)
                         I_network += I_battery
                         MOI_mass  += mass_battery         
 

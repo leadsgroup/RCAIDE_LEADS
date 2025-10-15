@@ -105,11 +105,16 @@ class Network(Component):
         # ----------------------------------------------------------
         for distributor in distributors:
             if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                systems              = distributor.systems 
-        
-                # Avionics Power Consumtion 
-                compute_systems_power_draw(systems,distributor,conditions) 
-        
+                if len(distributor.assigned_systems) == 0:
+                    pass
+                else:
+                    for system_tag in distributor.assigned_systems[0]:
+                        system = network.systems[system_tag]
+                        
+                        P_sys = system.compute_performance(state) 
+                
+                        total_elec_power  += P_sys
+
                 # Bus Voltage 
                 bus_voltage = distributor.voltage * state.ones_row(1)       
         
@@ -142,7 +147,7 @@ class Network(Component):
                         total_elec_power  += P_elec   
          
                         if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                            conditions.energy.fuel_lines[distributor.tag].fuel_mass_flow_rate += conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate
+                            conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate += conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate
                         
                         if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                             conditions.energy.busses[distributor.tag].power_draw         += (P_elec) * distributor.power_split_ratio /distributor.efficiency
@@ -211,6 +216,10 @@ class Network(Component):
         delta_t            = np.diff(time)
         
         for distributor in distributors:
+                
+            stored_results_flag       = False
+            stored_battery_cell_tag   = None
+
             for source_tag in distributor.assigned_sources: 
                 source =  network.sources[source_tag[0]]
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):    
@@ -223,16 +232,13 @@ class Network(Component):
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
                     # 3.2 Electric Sources 
                     for t_idx in range(state.numerics.number_of_control_points):   
-                
-                        stored_results_flag       = False
-                        stored_battery_cell_tag   = None
                     
-                        if distributor.identical_battery_modules == False and stored_results_flag == False: 
+                        if distributor.identical_battery_modules == False or stored_results_flag == False: 
                             # run analysis  
                             stored_results_flag, stored_battery_cell_tag =  source.energy_calc(state,distributor,coolant_lines, t_idx, delta_t)
                         else:             
                             # use previous battery results 
-                            source.reuse_stored_data(state,distributor,stored_results_flag, stored_battery_cell_tag)
+                            source.reuse_stored_data(state, stored_battery_cell_tag)
                         # Step 3: Compute bus properties          
                         distributor.compute_distributor_conditions(state,t_idx,delta_t)
 
@@ -345,10 +351,15 @@ class Network(Component):
                 converter.append_operating_conditions(segment)  
 
             for modulator in network.modulators: 
-                modulator.append_operating_conditions(segment)                
+                modulator.append_operating_conditions(segment)  
+
+            for source in  network.sources: 
+                source.append_operating_conditions(segment)  
+
+            for system in network.systems:
+                system.append_operating_conditions(segment)             
     
             for distributor_i, distributor in enumerate(network.distributors):
-                
                 distributor.append_operating_conditions(segment)              
                 
                 # Assign network-specific  residuals, unknowns and results data structures 
@@ -359,10 +370,7 @@ class Network(Component):
 
                     for converter_group in  distributor.assigned_converters:
                         converter =  network.converters[converter_group[0]]
-                        converter.append_operating_conditions(segment)
-
-                    for source in  network.sources: 
-                        source.append_operating_conditions(segment, distributor) 
+                        
                                                                     
             for coolant_line_i, coolant_line in enumerate(network.coolant_lines):  
                 # ------------------------------------------------------------------------------------------------------            

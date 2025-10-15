@@ -164,7 +164,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_id
     # ---------------------------------------------------------------------------------
     # Compute Bus electrical properties 
     # ---------------------------------------------------------------------------------    
-    bus_conditions              = state.conditions.energy.busses[bus.tag]
+    bus_conditions              = state.conditions.energy.sources[bus.tag]
     bus_config                  = bus.battery_module_electric_configuration
     psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio
     E_bus                       = bus_conditions.energy
@@ -302,7 +302,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, coolant_lines, t_id
     return stored_results_flag, stored_battery_module_tag
 
 
-def reuse_stored_nmc_cell_data(battery_module,state,bus,stored_results_flag, stored_battery_module_tag):
+def reuse_stored_nmc_cell_data(battery_module,state,stored_battery_module_tag):
     '''Reuses results from one propulsor for identical batteries
     
     Assumptions: 
@@ -319,8 +319,8 @@ def reuse_stored_nmc_cell_data(battery_module,state,bus,stored_results_flag, sto
     Properties Used: 
     N.A.        
     '''
-   
-    state.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag] = deepcopy(state.conditions.energy.busses[bus.tag].battery_modules[stored_battery_module_tag])
+    
+    state.conditions.energy.sources[battery_module.tag] = deepcopy(state.conditions.energy.sources[stored_battery_module_tag])
     
         
     return

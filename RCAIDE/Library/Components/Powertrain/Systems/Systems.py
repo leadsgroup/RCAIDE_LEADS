@@ -9,6 +9,7 @@
 # RCAIDE imports  
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components import Component
+from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
  
 # ----------------------------------------------------------------------------------------------------------------------
@@ -119,6 +120,12 @@ class Systems(Component):
         """
         append_systems_conditions(self, segment)
         return
+    
+    def compute_performance(self, state):
+
+        P_sys = compute_systems_power_draw(self, state)
+
+        return P_sys
 
 class Hydraulic_System(Systems):
     """

@@ -76,7 +76,7 @@ class Integral_Tank(Fuel_Tank):
             if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage):  
                 self.fuselage_tag = compoment.tag
                 
-    def append_operating_conditions(self,segment, distributor):  
+    def append_operating_conditions(self,segment):  
         """
         Append fuel tank operating conditions for a flight segment
         
@@ -87,7 +87,7 @@ class Integral_Tank(Fuel_Tank):
         fuel_line : Component
             Connected fuel line component
         """
-        append_fuel_tank_conditions(self,segment, distributor)  
+        append_fuel_tank_conditions(self,segment)  
         return       
 
     def compute_volume(self, wings, fuselages):
