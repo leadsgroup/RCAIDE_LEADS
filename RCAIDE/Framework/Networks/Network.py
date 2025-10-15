@@ -93,6 +93,9 @@ class Network(Component):
         total_elec_power     = 0. * state.ones_row(1) 
         total_moment         = 0. * state.ones_row(3)  
         total_mdot           = 0. * state.ones_row(1)   
+   
+
+
     
         # ----------------------------------------------------------       
         # Section 1.0 Propulsor Performance 
@@ -153,39 +156,38 @@ class Network(Component):
 
                 if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):   
             
-                    conditions.energy.busses[distributor.tag].power_draw         += state.conditions.energy.busses[distributor.tag].regenerative_power*bus_voltage* distributor.power_split_ratio  /distributor.efficiency   
-                    conditions.energy.busses[distributor.tag].current_draw       = conditions.energy.busses[distributor.tag].power_draw/bus_voltage  
+                    conditions.energy.distributors[distributor.tag].power_draw         += state.conditions.energy.distributors[distributor.tag].regenerative_power*bus_voltage* distributor.power_split_ratio  /distributor.efficiency   
+                    conditions.energy.distributors[distributor.tag].current_draw       = conditions.energy.distributors[distributor.tag].power_draw/bus_voltage  
                 
         # ------------------------------------------------------------------------------------------------------------------- 
         # Section 2.0 Converters
         # -------------------------------------------------------------------------------------------------------------------
         # 2.1 Fuel Converters 
-        for fuel_line in fuel_lines: 
-            if fuel_line.active: 
-                for converter_group in fuel_line.assigned_converters:
+        for distributor in distributors:
+            for converter in converters: 
+                for converter_group in distributor.assigned_converters:
                     stored_conveter_tag = False
                     for converter_tag in converter_group:
                         converter =  converters[converter_tag]
-                        if converter.active:
-                            converter.inverse_calculation = True 
-                            if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator): 
-                                if stored_conveter_tag is False:
-                                    generator             = converter.generator   
-                                    state.conditions.energy.converters[generator.tag].outputs.power  =  total_elec_power*(1 - state.conditions.energy.hybrid_power_split_ratio ) 
-                                    P_mech, P_elec, stored_results_flag,stored_conveter_tag          = converter.compute_performance(state,fuel_line,bus)  
-                                    conditions.energy.busses[bus.tag].power_draw                    -= P_elec/bus.efficiency
-                                    conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate += conditions.energy.converters[converter.tag].fuel_mass_flow_rate   
-                                else:
-                                    generator             = converter.generator   
-                                    state.conditions.energy.converters[generator.tag].outputs.power  =  total_elec_power*(1 - state.conditions.energy.hybrid_power_split_ratio ) 
-                                    P_mech, P_elec                                                   = converter.reuse_stored_data(state,network,stored_conveter_tag,fuel_line,bus)  
-                                    conditions.energy.busses[bus.tag].power_draw                     -= P_elec/bus.efficiency
-                                    conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate  += conditions.energy.converters[converter.tag].fuel_mass_flow_rate   
+                        converter.inverse_calculation = True 
+                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator): 
+                            if stored_conveter_tag is False:
+                                generator             = converter.generator   
+                                state.conditions.energy.converters[generator.tag].outputs.power  =  total_elec_power*(1 - state.conditions.energy.hybrid_power_split_ratio ) 
+                                P_mech, P_elec, stored_results_flag,stored_conveter_tag          = converter.compute_performance(state,fuel_line,bus)  
+                                conditions.energy.busses[bus.tag].power_draw                    -= P_elec/bus.efficiency
+                                conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate += conditions.energy.converters[converter.tag].fuel_mass_flow_rate   
+                            else:
+                                generator             = converter.generator   
+                                state.conditions.energy.converters[generator.tag].outputs.power  =  total_elec_power*(1 - state.conditions.energy.hybrid_power_split_ratio ) 
+                                P_mech, P_elec                                                   = converter.reuse_stored_data(state,network,stored_conveter_tag,fuel_line,bus)  
+                                conditions.energy.busses[bus.tag].power_draw                     -= P_elec/bus.efficiency
+                                conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate  += conditions.energy.converters[converter.tag].fuel_mass_flow_rate   
 
-                            if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft):   
-                                state.conditions.energy.converters[converter.tag].power     = total_mech_power*(1 - state.conditions.energy.hybrid_power_split_ratio )   
-                                P_mech, P_elec,stored_results_flag,stored_propulsor_tag     = converter.compute_performance(state)   
-                                conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate  += conditions.energy.converters[converter.tag].fuel_mass_flow_rate  
+                        if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboshaft):   
+                            state.conditions.energy.converters[converter.tag].power     = total_mech_power*(1 - state.conditions.energy.hybrid_power_split_ratio )   
+                            P_mech, P_elec,stored_results_flag,stored_propulsor_tag     = converter.compute_performance(state)   
+                            conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate  += conditions.energy.converters[converter.tag].fuel_mass_flow_rate  
                     
         # 2.1 Electric Converters                            
         for bus in busses: 
