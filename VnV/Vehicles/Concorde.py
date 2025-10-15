@@ -403,7 +403,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #initialize the fuel network
     net                                            = RCAIDE.Framework.Networks.Fuel() 
-    net.identical_propulsors                       = True 
+    net.propulsors.identical_propulsors            = True 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Fuel Distrubition Line 

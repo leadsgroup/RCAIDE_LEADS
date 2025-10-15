@@ -158,7 +158,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                     combustor_SZ_joint_EI_H2O  = np.zeros((n_cp,joint_zones)) # [kg/kg_fuel]
                     combustor_SZ_joint_EI_NOx  = np.zeros((n_cp,joint_zones)) # [kg/kg_fuel]
 
-                    if network.identical_propulsors == True and p_i != 0:
+                    if network.propulsors.identical_propulsors == True and p_i != 0:
                         EI_CO2_comb = EI_CO2_prev
                         EI_CO_comb  = EI_CO_prev
                         EI_H2O_comb = EI_H2O_prev

@@ -84,18 +84,20 @@ def energy(segment):
                     for i in range(len(battery_module_tag)):
                         battery_module =  vehicle.networks[network.tag].sources[battery_module_tag[i]]
                         battery_module.append_battery_segment_conditions(segment)
-                for coolant_line in  network.coolant_lines:
-                    for tag, item in  coolant_line.items(): 
-                        if tag == 'battery_modules':
-                            for battery in item:
-                                for btms in  battery:
-                                    btms.append_segment_conditions(segment,coolant_line)
-                        if tag == 'heat_exchangers':
-                            for heat_exchanger in  item:
-                                heat_exchanger.append_segment_conditions(segment,distributor,coolant_line)
-                        if tag == 'reservoirs':
-                            for reservoir in  item:
-                                reservoir.append_segment_conditions(segment, coolant_line)
+                    
+                    for coolant_line in  network.distributors:
+                        if isinstance(coolant_line, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+                            for tag, item in  coolant_line.items(): 
+                                if tag == 'battery_modules':
+                                    for battery in item:
+                                        for btms in  battery:
+                                            btms.append_segment_conditions(segment,coolant_line)
+                                if tag == 'heat_exchangers':
+                                    for heat_exchanger in  item:
+                                        heat_exchanger.append_segment_conditions(segment,distributor,coolant_line)
+                                if tag == 'reservoirs':
+                                    for reservoir in  item:
+                                        reservoir.append_segment_conditions(segment, coolant_line)
         
             elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                         

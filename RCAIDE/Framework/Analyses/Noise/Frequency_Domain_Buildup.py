@@ -103,7 +103,7 @@ class Frequency_Domain_Buildup(Noise):
             for propulsor in network.propulsors:
                 for sub_tag , sub_item in  propulsor.items():
                     if isinstance(sub_item, RCAIDE.Library.Components.Powertrain.Converters.Rotor): 
-                        rotor_tag         = compute_rotor_noise(microphone_locations,sub_item,segment,settings, rotor_index = i, previous_rotor_tag= rotor_tag, identical_propulsors=network.identical_propulsors)   
+                        rotor_tag         = compute_rotor_noise(microphone_locations,sub_item,segment,settings, rotor_index = i, previous_rotor_tag= rotor_tag, identical_propulsors=network.propulsors.identical_propulsors)   
                         total_SPL_dBA     = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],conditions.noise.converters[sub_item.tag].SPL_dBA[:,None,:]),axis =1),sum_axis=1)
                         total_SPL_spectra = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,:],conditions.noise.converters[sub_item.tag].SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
                         i += 1
