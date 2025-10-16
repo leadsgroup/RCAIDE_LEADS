@@ -10,8 +10,8 @@
 
 # RCAIDE imports  
 import RCAIDE 
-from RCAIDE.Framework.Core                                      import Data
-from RCAIDE.Library.Components                                     import Component
+from RCAIDE.Framework.Core                                         import Data
+from RCAIDE.Library.Components                                   import Component
 from RCAIDE.Library.Components.Component                           import Container
 from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
 from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide
