@@ -10,6 +10,7 @@
 from .Converter  import Converter
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.append_generator_conditions import  append_generator_conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import compute_generator_performance
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Generator  
@@ -105,6 +106,9 @@ class Generator(Converter):
         self.design_torque            = 0.0 
         self.design_current           = 0.0 
         self.design_angular_velocity  = 0.0 
+        self.number_of_turns          = 0.0
+        self.stator_outer_diameter    = 0.0
+        self.stator_inner_diameter    = 0.0
         self.inner_diameter           = 0.0
         self.length_of_path           = 0.0
         self.stack_length             = 0.0
@@ -115,4 +119,9 @@ class Generator(Converter):
     def append_operating_conditions(self,segment): 
         append_generator_conditions(self,segment)
         return
+    
+    def compute_performance(self,state):
+
+        P_mech,P_elec,stored_results_flag,stored_converter_tag =  compute_generator_performance(self,state)
+        return P_mech,P_elec,stored_results_flag,stored_converter_tag
     

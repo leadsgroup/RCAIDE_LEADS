@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
+import RCAIDE
 from RCAIDE.Framework.Core import Data
 
 # python
@@ -134,30 +135,31 @@ def cooling_drag(state,settings,geometry):
     cd_cooling  = np.zeros_like(density)
     
     for network in geometry.networks:
-        for coolant_line in  network.coolant_lines:
-            for tag, item in  coolant_line.items():
-                if tag == 'heat_exchangers':
-                    for heat_exchanger in  item:
-                        # unpack
-                        HEX_results                = conditions.energy.coolant_lines[coolant_line.tag][heat_exchanger.tag]
-                        mass_flow_hex              = HEX_results.air_mass_flow_rate 
-                        hex_pressure_diff          = HEX_results.pressure_diff_air
-                        
-                        # Compute the Inlet area of the Ram
-                        inlet_area          = mass_flow_hex/(density*velocity)
-                        outlet_area         = inlet_area*heat_exchanger.atmospheric_air_inlet_to_outlet_area_ratio
-                        eta_e               = 0.5*(1-outlet_area/inlet_area)
-    
-                        # Compute Exit Parameters
-                        exit_velocity       = mass_flow_hex/(density*outlet_area)
-                        exit_pressure       = 0.5*density*((1+eta_e)*exit_velocity**2-velocity)+pressure-hex_pressure_diff
-    
-                        # Compute Drag due to cooling. 
-                        F_cooling_drag     = mass_flow_hex*(exit_velocity*heat_exchanger.duct_losses -velocity) + outlet_area*heat_exchanger.duct_losses *(exit_pressure-pressure) 
-                        cd_cooling         = F_cooling_drag/(0.5 * density * (velocity**2) * reference_area)
-                        
-                        # Check if fan operation is active
-                        cd_cooling[state.conditions.freestream.velocity<heat_exchanger.minimum_air_speed] =  0 
+        for coolant_line in  network.distributors:
+            if isinstance(coolant_line, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+                for tag, item in  coolant_line.items():
+                    if tag == 'heat_exchangers':
+                        for heat_exchanger in  item:
+                            # unpack
+                            HEX_results                = conditions.energy.coolant_lines[coolant_line.tag][heat_exchanger.tag]
+                            mass_flow_hex              = HEX_results.air_mass_flow_rate 
+                            hex_pressure_diff          = HEX_results.pressure_diff_air
+                            
+                            # Compute the Inlet area of the Ram
+                            inlet_area          = mass_flow_hex/(density*velocity)
+                            outlet_area         = inlet_area*heat_exchanger.atmospheric_air_inlet_to_outlet_area_ratio
+                            eta_e               = 0.5*(1-outlet_area/inlet_area)
+        
+                            # Compute Exit Parameters
+                            exit_velocity       = mass_flow_hex/(density*outlet_area)
+                            exit_pressure       = 0.5*density*((1+eta_e)*exit_velocity**2-velocity)+pressure-hex_pressure_diff
+        
+                            # Compute Drag due to cooling. 
+                            F_cooling_drag     = mass_flow_hex*(exit_velocity*heat_exchanger.duct_losses -velocity) + outlet_area*heat_exchanger.duct_losses *(exit_pressure-pressure) 
+                            cd_cooling         = F_cooling_drag/(0.5 * density * (velocity**2) * reference_area)
+                            
+                            # Check if fan operation is active
+                            cd_cooling[state.conditions.freestream.velocity<heat_exchanger.minimum_air_speed] =  0 
     
     # dump to results
     conditions.aerodynamics.coefficients.drag.cooling.total=  cd_cooling  

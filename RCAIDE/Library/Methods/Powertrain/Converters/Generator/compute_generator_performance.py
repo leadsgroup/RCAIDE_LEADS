@@ -14,7 +14,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_omega_and_Q_from_Cp_and_V
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_generator_performance(generator,conditions):
+def compute_generator_performance(generator,state):
     """
     Computes generator performance characteristics including electrical, mechanical and thermal parameters.
 
@@ -54,9 +54,9 @@ def compute_generator_performance(generator,conditions):
     """
     
     # unpack generator conditions 
-    generator_conditions = conditions.energy.converters[generator.tag]    
+    generator_conditions = state.conditions.energy.converters[generator.tag]    
  
-    if type(generator) == RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:   
+    if generator.generator_type == 'DC':   
         if generator.inverse_calculation == False:
             power          = generator_conditions.inputs.power 
             Res            = generator.resistance  
@@ -91,7 +91,7 @@ def compute_generator_performance(generator,conditions):
         generator_conditions.inputs.omega      = omega
         generator_conditions.inputs.efficiency = etam          
         
-    elif type(generator) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator: 
+    elif generator.generator_type == 'AC': 
         if generator.inverse_calculation == False:
             io     = generator.no_load_current
             G      = generator.gearbox.gear_ratio 

@@ -139,7 +139,7 @@ class Network(Component):
                     if propulsor.active and distributor.active:   
                         if propulsor.identical_propulsors == False or stored_results_flag == False:
                             # run analysis  
-                            T,M,P,P_elec,stored_results_flag,stored_propulsor_tag = propulsor.compute_performance(state, center_of_gravity= center_of_gravity)
+                            T,M,P,P_elec,stored_results_flag,stored_propulsor_tag = propulsor.compute_performance(state, network, center_of_gravity= center_of_gravity)
                         else:             
                             T,M,P,P_elec = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag,center_of_gravity= center_of_gravity)
 
