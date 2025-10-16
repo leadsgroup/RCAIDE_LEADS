@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 import numpy as np  
 from copy import deepcopy
@@ -13,7 +14,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_lfp_cell_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_lfp_cell_performance(battery_module, state, bus, coolant_lines, t_idx, delta_t):
+def compute_lfp_cell_performance(battery_module, state, bus, network, t_idx, delta_t):
     """
     Computes the performance of lithium iron phosphate (LFP) battery cells.
     
@@ -155,13 +156,14 @@ def compute_lfp_cell_performance(battery_module, state, bus, coolant_lines, t_id
     # Examine Thermal Management System
     # ---------------------------------------------------------------------------------
     HAS = None  
-    for coolant_line in coolant_lines:
-        for tag, item in  coolant_line.items():
-            if tag == 'battery_modules':
-                for sub_tag, sub_item in item.items():
-                    if sub_tag == battery_module.tag:
-                        for btms in  sub_item:
-                            HAS = btms    
+    for coolant_line in network.distributors:
+        if isinstance(coolant_line, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+            for tag, item in  coolant_line.items():
+                if tag == 'battery_modules':
+                    for sub_tag, sub_item in item.items():
+                        if sub_tag == battery_module.tag:
+                            for btms in  sub_item:
+                                HAS = btms    
 
 
     # ---------------------------------------------------------------------------------------------------

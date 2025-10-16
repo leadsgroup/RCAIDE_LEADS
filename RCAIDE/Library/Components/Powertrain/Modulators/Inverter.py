@@ -9,6 +9,7 @@
 # RCAIDE imports  
 from RCAIDE.Library.Components import Component 
 from RCAIDE.Library.Methods.Powertrain.Modulators.Inverter.append_inverter_conditions   import append_inverter_conditions 
+from RCAIDE.Library.Methods.Powertrain.Modulators.Inverter.compute_inverter_performance import compute_inverter_performance
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Inverter Class
@@ -67,3 +68,8 @@ class Inverter(Component):
         """ 
         append_inverter_conditions(self,segment)
         return 
+    
+    def compute_performance(self,state):
+
+        P_mech,P_elec,stored_results_flag,stored_modulator_tag =  compute_inverter_performance(self,state)
+        return P_mech,P_elec,stored_results_flag,stored_modulator_tag

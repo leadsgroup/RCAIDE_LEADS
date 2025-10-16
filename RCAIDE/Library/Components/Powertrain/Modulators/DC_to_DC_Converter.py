@@ -9,6 +9,7 @@
 # RCAIDE imports  
 from RCAIDE.Library.Components import Component 
 from RCAIDE.Library.Methods.Powertrain.Modulators.DC_to_DC_Converter.append_dcdc_conditions   import append_dcdc_conditions 
+from RCAIDE.Library.Methods.Powertrain.Modulators.DC_to_DC_Converter.compute_dcdc_performance import compute_dcdc_performance
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  DC_to_DC_Converter Class
@@ -67,3 +68,8 @@ class DC_to_DC_Converter(Component):
         """ 
         append_dcdc_conditions(self,segment)
         return 
+    
+    def compute_performance(self,state):
+
+        P_mech,P_elec,stored_results_flag,stored_modulator_tag =  compute_dcdc_performance(self,state)
+        return P_mech,P_elec,stored_results_flag,stored_modulator_tag

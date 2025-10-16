@@ -202,8 +202,8 @@ class Network(Component):
             for modulator_group in distributor.assigned_modulators:
                 for modulator_tag in modulator_group:
                     modulator =  modulators[modulator_tag]
-                    P_mod, stored_results_flag,stored_modulator_tag          = modulator.compute_performance(state)
-                    total_elec_power  += P_mod
+                    P_mech, P_elec, stored_results_flag,stored_modulator_tag          = modulator.compute_performance(state)
+                    total_elec_power  += P_elec
 
             # -------------------------------------------------------------------------------------------------------------------
             # Other Distributors 
@@ -234,7 +234,7 @@ class Network(Component):
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
                     for t_idx in range(state.numerics.number_of_control_points):   
                         if distributor.identical_battery_modules == False or stored_results_flag == False: 
-                            stored_results_flag, stored_battery_cell_tag =  source.energy_calc(state,distributor,network.coolant_lines, t_idx, delta_t)
+                            stored_results_flag, stored_battery_cell_tag =  source.energy_calc(state,distributor,network, t_idx, delta_t)
                         else:             
                             source.reuse_stored_data(state, stored_battery_cell_tag)        
                         distributor.compute_distributor_conditions(state,t_idx,delta_t)

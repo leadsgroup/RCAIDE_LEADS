@@ -9,6 +9,7 @@
 # RCAIDE imports  
 from RCAIDE.Library.Components import Component 
 from RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.append_esc_conditions   import append_esc_conditions 
+from RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance import compute_esc_performance
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electronic Speed Controller Class
@@ -69,3 +70,8 @@ class Electronic_Speed_Controller(Component):
         """ 
         append_esc_conditions(self,segment)
         return 
+    
+    def compute_performance(self,state):
+
+        P_mech,P_elec,stored_results_flag,stored_modulator_tag =  compute_esc_performance(self,state)
+        return P_mech,P_elec,stored_results_flag,stored_modulator_tag

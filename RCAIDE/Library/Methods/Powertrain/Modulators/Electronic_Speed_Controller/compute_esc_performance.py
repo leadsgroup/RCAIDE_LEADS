@@ -101,3 +101,36 @@ def compute_current_in_from_throttle(esc,conditions):
     esc_conditions.inputs.power     = esc_conditions.inputs.voltage *currentin
     
     return
+
+def compute_esc_performance(esc,state):
+
+    esc_conditions = state.conditions.energy.modulators[esc.tag]
+    
+    eta            = esc_conditions.throttle
+    eff            = esc.efficiency
+
+    # Negative throttle is bad
+    eta[eta<=0.0] = 0.0
+    
+    # Cap the throttle
+    eta[eta>=1.0] = 1.0
+
+    currentout     = esc_conditions.outputs.current 
+    currentin      = currentout*eta/eff # The inclusion of eta satisfies a power balance: p_in = p_out/eff
+    
+    # Pack the output
+    esc_conditions.outputs.voltage  = eta*esc_conditions.inputs.voltage
+    esc_conditions.throttle         = eta 
+
+    P_elec        = esc_conditions.outputs.voltage * currentout
+    P_mech        = 0
+    
+    # Pack 
+    esc_conditions.inputs.current   = currentin
+    esc_conditions.inputs.power     = esc_conditions.inputs.voltage *currentin
+
+    stored_results_flag    = True
+    stored_modulator_tag   = esc.tag
+    
+    return P_mech,P_elec,stored_results_flag,stored_modulator_tag
+    

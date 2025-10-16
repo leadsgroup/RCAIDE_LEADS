@@ -95,7 +95,7 @@ class Generic_Fuel_Cell_Stack(Component):
         self.geometrtic_configuration.parallel_spacing  = 0.02
         
          
-    def energy_calc(self,state,bus,coolant_lines, t_idx, delta_t): 
+    def energy_calc(self,state,bus,network, t_idx, delta_t): 
         """Computes the state of the NMC battery cell.
            
         Assumptions:
@@ -114,7 +114,7 @@ class Generic_Fuel_Cell_Stack(Component):
             None
         """                  
         
-        stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,coolant_lines, t_idx,delta_t) 
+        stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
         
         return stored_results_flag, stored_battery_tag 
 

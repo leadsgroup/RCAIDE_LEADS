@@ -145,7 +145,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
 
         return                                     
 
-    def energy_calc(self,state,bus,coolant_lines, t_idx, delta_t): 
+    def energy_calc(self,state,bus,network, t_idx, delta_t): 
         """
         Computes the state of the LFP battery cell
         
@@ -169,7 +169,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         stored_battery_tag : str
             Identifier for stored results
         """      
-        stored_results_flag, stored_battery_tag =  compute_lfp_cell_performance(self,state,bus,coolant_lines, t_idx,delta_t) 
+        stored_results_flag, stored_battery_tag =  compute_lfp_cell_performance(self,state,bus,network, t_idx,delta_t) 
                         
         return stored_results_flag, stored_battery_tag
     

@@ -5,66 +5,53 @@
 
 import numpy as np
 
-def compute_tru_performance(tru):
+def compute_tru_performance(tru, state):
 
     """
    
     """
+    tru_conditions = state.conditions.energy.modulators[tru.tag]
 
     # Inputs
-    Vll_rms_primary = tru.inputs.Vll_rms_primary  # [V_rms] line-line AC primary voltage
-    turns_ratio     = tru.inputs.turns_ratio      # [-] transformer turns ratio (N_primary / N_secondary)
-    diode_drop      = tru.inputs.diode_drop       # [V] average forward drop per diode
-    eta_tru         = tru.inputs.eta_tru          # [-] transformer-rectifier efficiency (0<eta<=1)
-    pf_assumed      = tru.inputs.pf_assumed       # [-] assumed power factor at AC input (for sizing)
-    R_load          = tru.inputs.R_load           # [ohm] DC load (use either R_load or Idc_set)
-    Idc_set         = tru.inputs.Idc_set          # [A] desired DC current (use either R_load or Idc_set)
+    Vll_rms_primary = tru_conditions.inputs.Vll_rms_primary  # [V_rms] line-line AC primary voltage
+    Idc_set         = tru_conditions.inputs.Idc_set          # [A] desired DC current (use either R_load or Idc_set)
 
-    # Secondary AC (after transformer)
-    Vll_rms_sec = Vll_rms_primary / turns_ratio  # [V_rms] line-line at secondary
+    turns_ratio     = tru.turns_ratio      # [-] transformer turns ratio (N_primary / N_secondary)
+    diode_drop      = tru.diode_drop       # [V] average forward drop per diode
+    eta_tru         = tru.efficiency       # [-] transformer-rectifier efficiency (0<eta<=1)
+    R_load          = tru.R_load           # [ohm] DC load (use either R_load or Idc_set)
 
-    # Ideal 6-pulse diode bridge average DC (no drops)
-    Vdc_ideal = 1.35 * Vll_rms_sec                      # [V] 6-pulse rectifier formula
+    # Secondary AC and simple DC estimate
+    Vll_rms_sec = np.asarray(Vll_rms_primary) / np.maximum(np.asarray(turns_ratio), 1e-9)
+    Vdc_no_load = np.maximum(1.35 * Vll_rms_sec - 2.0 * np.asarray(diode_drop), 0.0)
 
-    # Account for diode drops (two diodes conduct in series)
-    V_drop_bridge = 2.0 * diode_drop                # [V] average series drop
-    Vdc_no_load = max(Vdc_ideal - V_drop_bridge, 0.0)   # [V] open-circuit DC
-
-    # Load condition
-    if R_load is not None and Idc_set is not None:
-        raise ValueError("Specify either R_load or Idc_set, not both")
+    # DC current
+    if Idc_set is not None:
+        Idc = np.asarray(Idc_set) * np.ones_like(Vdc_no_load)
     elif R_load is not None:
-        if R_load <= 0:
-            raise ValueError("R_load must be positive")
-        Idc = Vdc_no_load / R_load                  # [A] DC current for resistive load
-    elif Idc_set is not None:
-        if Idc_set < 0:
-            raise ValueError("Idc_set must be non-negative")
-        Idc = Idc_set                               # [A] DC current setpoint
+        Idc = Vdc_no_load / np.maximum(np.asarray(R_load), 1e-9)
     else:
-        # Default: assume load drawing ~10 A at no-load voltage
-        R_load = max(Vdc_no_load / 10.0, 1e-3)
-        Idc = Vdc_no_load / R_load                      # [A]
+        Idc = 10.0 * np.ones_like(Vdc_no_load)  # A, tiny default load
+        
+    # DC voltage under load 
+    Vdc = Vdc_no_load
 
-    # DC voltage under load (simplified; assumes minimal regulation effects)
-    Vdc = max(Vdc_no_load - 0.01 * Idc, 0.0)  # [V] small drop proportional to current (approximation)
+    # Output DC power 
+    P_out = Vdc * Idc                    # [W]
 
-    # Output power
-    P_out = Vdc * Idc                           # [W] DC real power to load
+    P_in  = P_out / eta_tru              # [W]
 
-    # Input power and current
-    P_in = P_out / eta_tru                  # [W] AC real power drawn
-    S_in = P_in / pf_assumed                # [VA] input apparent power
-    I_line_rms = S_in / (np.sqrt(3.0) * Vll_rms_primary)  # [A_rms] per-line RMS current
+    # Populate a few handy outputs/inputs (lightweight)
+    tru_conditions.outputs.ac_voltage_secondary   = Vll_rms_sec
+    tru_conditions.outputs.dc_voltage_average     = Vdc
+    tru_conditions.outputs.dc_current             = Idc
+    tru_conditions.outputs.dc_real_power          = P_out
+    tru_conditions.inputs.ac_real_power           = P_in
 
-    tru.outputs.ac_voltage_secondary = Vll_rms_sec       # [V_rms] AC secondary line-line
-    tru.outputs.dc_voltage_ideal = Vdc_ideal                 # [V] ideal no-drop DC
-    tru.outputs.dc_voltage_no_load = Vdc_no_load             # [V] minus diode drops
-    tru.outputs.dc_voltage_average = Vdc                             # [V] averaged DC at load
-    tru.outputs.dc_current = Idc                             # [A] DC current
-    tru.outputs.dc_real_power = P_out                       # [W] DC real power delivered
-    tru.inputs.ac_real_power = P_in                         # [W] AC real power drawn
-    tru.inputs.apparent_power = S_in                        # [VA] input apparent power
-    tru.inputs.line_current_per_phase = I_line_rms             # [A_rms] input line current per phase
+    # Report to network evaluator:
+    P_mech = 0.0
+    P_elec = P_out          
+    stored_results_flag = True
+    stored_modulator_tag = tru.tag
 
-    return
+    return P_mech,P_elec,stored_results_flag,stored_modulator_tag
