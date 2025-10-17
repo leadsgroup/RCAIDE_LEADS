@@ -51,6 +51,7 @@ class Electronic_Speed_Controller(Component):
         self.tag              = 'electronic_speed_controller'  
         self.bus_voltage      = None
         self.efficiency       = 0.0 
+        self.assigned_distributors = []
 
     def append_operating_conditions(self,segment): 
         """

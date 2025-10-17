@@ -77,12 +77,7 @@ class Coolant_Line(Component):
         self.tag                            = 'coolant_line' 
         self.heat_exchangers                = Container()
         self.reservoirs                     = Container() 
-        self.assigned_propulsors            = Data()
-        self.assigned_converters            = Data() 
-        self.assigned_distributors          = Data() 
-        self.assigned_modulators            = Data() 
-        self.assigned_sources               = Data()
-        self.assigned_systems               = Data()
+        self.assigned_distributors          = [] 
 
                     
     def __init__ (self, distributor=None):

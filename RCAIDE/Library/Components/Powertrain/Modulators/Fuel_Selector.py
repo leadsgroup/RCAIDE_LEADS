@@ -49,4 +49,4 @@ class Fuel_Selector(Component):
 
         self.tag              = 'fuel_selector'  
         self.efficiency       = 0.0       
-     
+        self.assigned_distributors = []

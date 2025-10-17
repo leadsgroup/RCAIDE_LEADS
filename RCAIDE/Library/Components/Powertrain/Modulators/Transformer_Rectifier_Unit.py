@@ -46,12 +46,13 @@ class Transformer_Rectifier_Unit(Component):
         should be set to an appropriate value based on the specific Transformer_Rectifier_Unit being modeled.
         """         
 
-        self.tag              = 'transformer_rectifier_unit'  
-        self.bus_voltage      = None
-        self.efficiency       = 1.0 
-        self.turns_ratio      = 1.0
-        self.diode_drop       = 0.0
-        self.R_load           = 0.0
+        self.tag                   = 'transformer_rectifier_unit'  
+        self.bus_voltage           = None
+        self.efficiency            = 1.0 
+        self.turns_ratio           = 1.0
+        self.diode_drop            = 0.0
+        self.R_load                = 0.0
+        self.assigned_distributors = []
 
     def append_operating_conditions(self,segment): 
         """

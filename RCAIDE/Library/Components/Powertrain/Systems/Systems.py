@@ -66,11 +66,12 @@ class Systems(Component):
         """
         Sets default values for the system attributes.
         """        
-        self.tag         = 'System' 
-        self.power_draw  = 0.0
-        self.control     = None
-        self.accessories = None 
-        self._children   = Data() 
+        self.tag                   = 'System' 
+        self.power_draw            = 0.0
+        self.control               = None
+        self.accessories           = None 
+        self._children             = Data() 
+        self.assigned_distributors = []
 
     def __setattr__(self, name, value):
         super().__setattr__(name, value)

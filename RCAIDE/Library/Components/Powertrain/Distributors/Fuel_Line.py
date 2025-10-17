@@ -62,17 +62,12 @@ class Fuel_Line(Component):
             None
         """          
         self.tag                           = 'fuel_line'  
-        self.assigned_propulsors           = Data()
-        self.assigned_converters           = Data() 
-        self.assigned_distributors         = Data() 
-        self.assigned_modulators           = Data() 
-        self.assigned_sources              = Data()
-        self.assigned_systems              = Data()   
         self.active                        = True 
         self.efficiency                    = 1.0
         self.inner_diameter                = 0.03
         self.outer_diameter                = 0.05
         self.length                        = 1 
+        self.assigned_distributors         = []
         
     def append_operating_conditions(self, segment):
         """

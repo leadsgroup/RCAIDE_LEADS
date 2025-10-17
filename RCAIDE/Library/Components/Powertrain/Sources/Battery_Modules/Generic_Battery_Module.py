@@ -131,13 +131,15 @@ class Generic_Battery_Module(Component):
         self.electrical_configuration                          = Data()
         self.electrical_configuration.series                   = 1
         self.electrical_configuration.parallel                 = 1   
-        
+
         self.geometrtic_configuration                          = Data() 
         self.geometrtic_configuration.normal_count             = 1
         self.geometrtic_configuration.parallel_count           = 1
         self.geometrtic_configuration.normal_spacing           = 0.02
         self.geometrtic_configuration.stacking_rows            = 3
-        self.geometrtic_configuration.parallel_spacing         = 0.02                
+        self.geometrtic_configuration.parallel_spacing         = 0.02   
+        
+        self.assigned_distributors = []             
  
     def append_operating_conditions(self,segment):  
         """

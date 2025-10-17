@@ -46,9 +46,10 @@ class DC_to_DC_Converter(Component):
         should be set to an appropriate value based on the specific DC_to_DC_Converter being modeled.
         """         
 
-        self.tag              = 'DC_to_DC_converter'  
-        self.bus_voltage      = None
-        self.efficiency       = 1.0 
+        self.tag                   = 'DC_to_DC_converter'  
+        self.bus_voltage           = None
+        self.efficiency            = 1.0 
+        self.assigned_distributors = []
 
     def append_operating_conditions(self,segment): 
         """
