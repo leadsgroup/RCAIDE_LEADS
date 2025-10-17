@@ -293,7 +293,7 @@ class Network(Component):
          
         unknowns(segment)  
         for network in segment.analyses.energy.vehicle.networks:
-            for propulsor in  network.propulsors:
+            for propulsor in network.propulsors:
                 propulsor.unpack_propulsor_unknowns(segment) 
         return    
      
