@@ -122,6 +122,13 @@ class Generator(Converter):
     
     def compute_performance(self,state):
 
-        P_mech,P_elec,stored_results_flag,stored_converter_tag =  compute_generator_performance(self,state)
-        return P_mech,P_elec,stored_results_flag,stored_converter_tag
+        P_mech,P_elec,P_hydr,P_therm,m_dot_fuel,stored_results_flag,stored_converter_tag =  compute_generator_performance(self,state)
+        return P_mech,P_elec,P_hydr,P_therm,m_dot_fuel,stored_results_flag,stored_converter_tag
+    
+    def reuse_stored_data(generator,state,network,stored_converter_tag = None,center_of_gravity = [[0, 0, 0]]):
+        """
+        Reuses stored turbofan data for performance calculations.
+        """
+        power_mech,power_elec,power_hydr,power_therm,m_dot_fuel  = reuse_stored_generator_data(generator,state,network,stored_converter_tag,center_of_gravity)
+        return power_mech,power_elec,power_hydr,power_therm,m_dot_fuel
     

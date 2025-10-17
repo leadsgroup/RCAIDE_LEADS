@@ -139,7 +139,11 @@ class Generic_Battery_Module(Component):
         self.geometrtic_configuration.stacking_rows            = 3
         self.geometrtic_configuration.parallel_spacing         = 0.02   
         
-        self.assigned_distributors = []             
+        self.assigned_distributors                             = []             
+        self.electrical_efficiency                             = 1.0
+        self.mechanical_efficiency                             = 1.0
+        self.hydraulic_efficiency                              = 1.0
+        self.thermal_efficiency                                = 1.0
  
     def append_operating_conditions(self,segment):  
         """

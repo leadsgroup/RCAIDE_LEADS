@@ -68,6 +68,11 @@ class Fuel_Line(Component):
         self.outer_diameter                = 0.05
         self.length                        = 1 
         self.assigned_distributors         = []
+        self.electrical_efficiency         = 1.0
+        self.mechanical_efficiency         = 1.0
+        self.hydraulic_efficiency          = 1.0
+        self.thermal_efficiency            = 1.0
+        self.power_split_ratio             = 1.0
         
     def append_operating_conditions(self, segment):
         """

@@ -436,8 +436,11 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     noise_conditions.low_pressure_spool     = lpc_res
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbofan.tag 
+
+    power_hydr                              = 0*state.ones_row(1)
+    power_therm                             = 0*state.ones_row(1)    
     
-    return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
+    return thrust_vector,moment,power,power_elec,power_hydr,power_therm, mdot_fuel, stored_results_flag,stored_propulsor_tag 
     
 def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbofan for identical turbofans
@@ -511,6 +514,7 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
   
     power                                             = conditions.energy.propulsors[turbofan.tag].power 
     conditions.energy.propulsors[turbofan.tag].moment = moment
+    conditions.energy.propulsors[turbofan.tag].fuel_mass_flow_rate = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate
     
     power_elec = 0*state.ones_row(1)
     if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
@@ -520,5 +524,9 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
         conditions.energy.converters[low_pressure_compressor.generator.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
         power_elec =  conditions.energy.converters[low_pressure_compressor.generator.tag].inputs.power
+
+    power_hydr  = 0*state.ones_row(1)
+    power_therm = 0*state.ones_row(1)
+    m_dot_fuel  = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate
         
-    return thrust_vector,moment,power, power_elec
+    return thrust_vector,moment,power, power_elec, power_hydr, power_therm, m_dot_fuel

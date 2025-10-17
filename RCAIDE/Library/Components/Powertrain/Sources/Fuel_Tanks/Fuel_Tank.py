@@ -70,6 +70,10 @@ class Fuel_Tank(Component):
         self.inner_diameter                        = 0.0
         self.outer_diameter                        = 0.0
         self.assigned_distributors                 = []
+        self.electrical_efficiency                 = 1.0
+        self.mechanical_efficiency                 = 1.0
+        self.hydraulic_efficiency                  = 1.0
+        self.thermal_efficiency                    = 1.0
  
     def append_operating_conditions(self,segment):  
         """

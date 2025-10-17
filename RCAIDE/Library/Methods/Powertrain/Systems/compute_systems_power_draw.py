@@ -41,7 +41,11 @@ def compute_systems_power_draw(system, state):
     --------
     RCAIDE.Library.Methods.Powertrain.Systems.append_system_conditions
     """
-    system_conditions              = state.conditions.energy.systems[system.tag]    
-    system_conditions.power[:,0]   = system.power_draw 
+    system_conditions                         = state.conditions.energy.systems[system.tag]    
+    system_conditions.electrical_power[:,0]   = system.power_draw 
+    system_conditions.mechanical_power        = 0*state.ones_row(1)
+    system_conditions.hydraulic_power         = 0*state.ones_row(1)
+    system_conditions.thermal_power           = 0*state.ones_row(1)
+    system_conditions.m_dot_fuel              = 0*state.ones_row(1)
 
-    return system_conditions.power
+    return system_conditions.mechanical_power, system_conditions.electrical_power, system_conditions.hydraulic_power, system_conditions.thermal_power, system_conditions.m_dot_fuel     

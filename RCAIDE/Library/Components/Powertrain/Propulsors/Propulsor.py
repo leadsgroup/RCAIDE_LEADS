@@ -92,3 +92,7 @@ class Propulsor(Component):
         self.assigned_converters          = []
         self.assigned_distributors        = []
         self.nacelle                      = []
+        self.electrical_efficiency        = 1.0
+        self.mechanical_efficiency        = 1.0
+        self.hydraulic_efficiency         = 1.0
+        self.thermal_efficiency           = 1.0

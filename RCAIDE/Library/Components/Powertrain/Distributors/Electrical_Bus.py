@@ -98,7 +98,10 @@ class Electrical_Bus(Component):
         self.identical_battery_modules              = True      
         self.identical_fuel_cell_stacks             = True  
         self.active                                 = True
-        self.efficiency                             = 1.0
+        self.electrical_efficiency                  = 1.0
+        self.mechanical_efficiency                  = 1.0
+        self.hydraulic_efficiency                   = 1.0
+        self.thermal_efficiency                     = 1.0
         self.voltage                                = 0.0 
         self.voltage_phase_to_neutral               = 115.0 
         self.voltage_phase_to_phase                 = 200.0

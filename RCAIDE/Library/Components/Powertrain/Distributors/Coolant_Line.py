@@ -78,8 +78,12 @@ class Coolant_Line(Component):
         self.heat_exchangers                = Container()
         self.reservoirs                     = Container() 
         self.assigned_distributors          = [] 
+        self.electrical_efficiency          = 1.0
+        self.mechanical_efficiency          = 1.0
+        self.hydraulic_efficiency           = 1.0
+        self.thermal_efficiency             = 1.0
+        self.power_split_ratio              = 1.0
 
-                    
     def __init__ (self, distributor=None):
         """
         Initialize coolant line and set up containers for thermal management components

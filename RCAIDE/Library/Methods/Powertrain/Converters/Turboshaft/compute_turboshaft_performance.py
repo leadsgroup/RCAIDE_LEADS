@@ -242,11 +242,15 @@ def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None):
     compressor_conditions.omega   = compressor.design_angular_velocity * turboshaft_conditions.throttle   
     
     # Pack results    
-    power                  = turboshaft_conditions.power   
+    P_mech                  = turboshaft_conditions.power   
     stored_results_flag    = True
     stored_propulsor_tag   = turboshaft.tag
 
-    return power,stored_results_flag,stored_propulsor_tag
+    P_elec                  = 0*state.ones_row(1)
+    P_hydr                  = 0*state.ones_row(1)
+    P_therm                 = 0*state.ones_row(1)
+
+    return P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_propulsor_tag
 
 def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_converter_tag):
     '''Reuses results from one turboshaft for identical propulsors
@@ -298,6 +302,8 @@ def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_c
     conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             ) 
   
     P_mech = conditions.energy.converters[turboshaft.tag].power
-    P_elec = P_mech * 0
+    P_elec = 0*state.ones_row(1)
+    P_hydr = 0*state.ones_row(1)
+    P_therm= 0*state.ones_row(1)
     
-    return P_mech , P_elec
+    return P_mech , P_elec, P_hydr , P_therm

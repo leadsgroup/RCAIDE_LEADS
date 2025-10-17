@@ -47,6 +47,10 @@ class Fuel_Selector(Component):
         should be set to an appropriate value based on the specific system configuration.
         """         
 
-        self.tag              = 'fuel_selector'  
-        self.efficiency       = 0.0       
+        self.tag                   = 'fuel_selector'  
+        self.efficiency            = 0.0       
         self.assigned_distributors = []
+        self.electrical_efficiency = 1.0
+        self.mechanical_efficiency = 1.0
+        self.hydraulic_efficiency  = 1.0
+        self.thermal_efficiency    = 1.0

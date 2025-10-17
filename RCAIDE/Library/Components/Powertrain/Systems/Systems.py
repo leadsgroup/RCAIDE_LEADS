@@ -67,46 +67,13 @@ class Systems(Component):
         Sets default values for the system attributes.
         """        
         self.tag                   = 'System' 
-        self.power_draw            = 0.0
         self.control               = None
         self.accessories           = None 
-        self._children             = Data() 
         self.assigned_distributors = []
-
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-        if name.startswith("_"):
-            return
-        try:
-            if isinstance(value, Systems):
-                if not hasattr(self, "_children") or self._children is None:
-                    super().__setattr__("_children", {})
-                self._children[name] = value
-            else:
-                if hasattr(self, "_children") and name in self._children:
-                    self._children.pop(name, None)
-        except Exception:
-            pass 
-
-    @property
-    def power_draw(self) -> float:
-        """
-        Total power draw for this node: own '_own_power_draw' plus
-        the aggregated 'power_draw' of all registered child Systems.
-        """
-        total = float(getattr(self, "_own_power_draw", 0.0))
-        children = getattr(self, "_children", {}) or {}
-        for child in children.values():
-            try:
-                total += float(child.power_draw)
-            except Exception:
-                pass
-        return total
-
-    @power_draw.setter
-    def power_draw(self, val: float):
-        """Set this node's own/base power draw (does not overwrite children)."""
-        self._own_power_draw = float(val)
+        self.electrical_efficiency = 1.0
+        self.mechanical_efficiency = 1.0
+        self.hydraulic_efficiency  = 1.0
+        self.thermal_efficiency    = 1.0
 
     def append_operating_conditions(self, segment): 
         """
@@ -124,9 +91,9 @@ class Systems(Component):
     
     def compute_performance(self, state):
 
-        P_sys = compute_systems_power_draw(self, state)
+        P_mech, P_ele, P_hydr, P_therm, m_dot_fuel = compute_systems_power_draw(self, state)
 
-        return P_sys
+        return P_mech, P_ele, P_hydr, P_therm, m_dot_fuel
 
 class Hydraulic_System(Systems):
     """
@@ -138,7 +105,6 @@ class Hydraulic_System(Systems):
         Power consumption of the hydraulic system, defaults to 5.0
     """
     def __defaults__(self):
-        super().__defaults__()
         self.power_draw = 0.0
         self.tag        = 'hydraulic_system'
 
@@ -152,7 +118,6 @@ class Pneumatic_System(Systems):
         Power consumption of the pneumatic system, defaults to 3.0
     """
     def __defaults__(self):
-        super().__defaults__()
         self.power_draw = 0.0
         self.tag        = 'pneumatic_system'
 
@@ -166,7 +131,6 @@ class Avionics_System(Systems):
         Power consumption of the avionic system, defaults to 3.0
     """
     def __defaults__(self):
-        super().__defaults__()
         self.power_draw = 0.0
         self.tag        = 'avionics_system'
 
@@ -180,7 +144,6 @@ class Environmental_Control_System(Systems):
         Power consumption of the environmental control system, defaults to 3.0
     """
     def __defaults__(self):
-        super().__defaults__()
         self.power_draw = 0.0
         self.tag        = 'environmental_control_system'
 

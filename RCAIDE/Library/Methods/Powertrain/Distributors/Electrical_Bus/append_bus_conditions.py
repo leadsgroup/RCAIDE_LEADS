@@ -55,8 +55,6 @@ def append_bus_conditions(bus,segment):
     segment.state.conditions.energy.distributors[bus.tag].battery_modules                     = Conditions()
     segment.state.conditions.energy.distributors[bus.tag].fuel_cell_stacks                    = Conditions()
     segment.state.conditions.energy.distributors[bus.tag].fuel_tanks                          = Conditions()
-    segment.state.conditions.energy.distributors[bus.tag].power_draw                          = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].systems_power_draw                  = bus.systems.power_draw * ones_row(1)
     segment.state.conditions.energy.distributors[bus.tag].hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * ones_row(1)
     segment.state.conditions.energy.distributors[bus.tag].battery_fuel_cell_power_split_ratio = segment.battery_fuel_cell_power_split_ratio * ones_row(1) 
     segment.state.conditions.energy.distributors[bus.tag].state_of_charge                     = 0 * ones_row(1) 
@@ -113,10 +111,14 @@ def append_bus_segment_conditions(bus,segment):
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
     """    
-    bus_conditions                          = segment.state.conditions.energy.distributors[bus.tag]
-    ones_row                                = segment.state.ones_row
-    bus_conditions.power_draw               = 0 * ones_row(1) 
-    bus_conditions.fuel_mass_flow_rate[:,0] = 0
+    bus_conditions                                                                            = segment.state.conditions.energy.distributors[bus.tag]
+    ones_row                                                                                  = segment.state.ones_row
+    bus_conditions.power                                                                      = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].total_power                         = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].electrical_power                    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].mechanical_power                    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].hydraulic_power                     = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].thermal_power                       = 0 * ones_row(1)
     
     # Thermal power draw
     if segment.state.initials:
@@ -127,10 +129,10 @@ def append_bus_segment_conditions(bus,segment):
                         if tag == 'battery_modules':
                             for battery in item:
                                 for btms in  battery:
-                                    bus_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][btms.tag].power[-1] 
+                                    bus_conditions.electrical_power[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][btms.tag].electrical_power[-1] 
                         if tag == 'heat_exchangers':
                             for heat_exchanger in  item:                    
-                                bus_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][heat_exchanger.tag].power[-1] 
+                                bus_conditions.electrical_power[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][heat_exchanger.tag].electrical_power[-1] 
         # Bus Properties 
         bus_initials            = segment.state.initials.conditions.energy.distributors[bus.tag]
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             

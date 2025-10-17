@@ -47,11 +47,14 @@ class Electronic_Speed_Controller(Component):
         Initializes the ESC with a default tag and zero efficiency. The efficiency
         should be set to an appropriate value based on the specific ESC being modeled.
         """         
-
-        self.tag              = 'electronic_speed_controller'  
-        self.bus_voltage      = None
-        self.efficiency       = 0.0 
+ 
+        self.tag                   = 'electronic_speed_controller'  
+        self.bus_voltage           = None
         self.assigned_distributors = []
+        self.electrical_efficiency = 1.0
+        self.mechanical_efficiency = 1.0
+        self.hydraulic_efficiency  = 1.0
+        self.thermal_efficiency    = 1.0
 
     def append_operating_conditions(self,segment): 
         """
@@ -74,5 +77,5 @@ class Electronic_Speed_Controller(Component):
     
     def compute_performance(self,state):
 
-        P_mech,P_elec,stored_results_flag,stored_modulator_tag =  compute_esc_performance(self,state)
-        return P_mech,P_elec,stored_results_flag,stored_modulator_tag
+        P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag =  compute_esc_performance(self,state)
+        return P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag

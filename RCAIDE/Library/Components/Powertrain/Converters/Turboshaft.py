@@ -144,8 +144,8 @@ class Turboshaft(Converter):
         """
         Computes turboshaft performance including thrust, moment, and power.
         """
-        power,stored_results_flag,stored_propulsor_tag =  compute_turboshaft_performance(self,state,fuel_line=fuel_line,bus=bus)
-        return  power,stored_results_flag,stored_propulsor_tag
+        P_mech, P_ele, P_hydr, P_therm,stored_results_flag,stored_converter_tag =  compute_turboshaft_performance(self,state,fuel_line=fuel_line,bus=bus)
+        return  P_mech, P_ele, P_hydr, P_therm, stored_results_flag,stored_converter_tag
     
     def reuse_stored_data(turboshaft,state,network,stored_propulsor_tag = None):
         power  = reuse_stored_turboshaft_data(turboshaft,state,network,stored_propulsor_tag)

@@ -36,4 +36,12 @@ def compute_dcdc_performance(dc_to_dc_converter):
     dc_to_dc_converter.inputs.current     = Iin
     dc_to_dc_converter.outputs.resistance = R_equiv
 
-    return 
+    P_mech = 0.0 * np.ones_like(P_out)
+    P_elec = P_out
+    P_hydr = 0.0 * np.ones_like(P_out)
+    P_therm= 0.0 * np.ones_like(P_out)
+    m_dot_fuel = 0.0 * np.ones_like(P_out)
+    stored_results_flag = True
+    stored_modulator_tag = dc_to_dc_converter.tag
+
+    return P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag

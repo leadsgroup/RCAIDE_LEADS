@@ -137,5 +137,9 @@ def compute_generator_performance(generator,state):
         
         stored_results_flag    = True
         stored_converter_tag   = generator.tag
+
+        P_hydr  = 0 * state.ones_row(1)
+        P_therm = 0 * state.ones_row(1)
+        m_dot_fuel = 0 * state.ones_row(1)
    
-    return P_mech,P_elec,stored_results_flag,stored_converter_tag
+    return P_mech,P_elec,P_hydr,P_therm, m_dot_fuel, stored_results_flag,stored_converter_tag

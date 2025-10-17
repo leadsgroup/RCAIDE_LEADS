@@ -16,25 +16,35 @@ def energy(mission):
     for segment in mission.segments: 
         for network in segment.analyses.energy.vehicle.networks:
 
-            if isinstance(network.distributors, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-            
-                # determine bus properties
-                for distributor in network.distributors:
-                    distributor.initialize_bus_properties()                  
-                
-                    # update bus voltage on each electrical component
-                    for converter in distributor.assigned_converters[0]:
-                        converter.bus_voltage = distributor.voltage
-                        
-                    for modulator in distributor.assigned_modulators[0]:
-                        modulator.bus_voltage = distributor.voltage
-        
-                    for system in distributor.assigned_systems[0]:
-                        system.bus_voltage = distributor.voltage                            
-                    
+            # determine bus properties
+            for distributor in network.distributors:
+                if isinstance(network.distributors, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                    distributor.initialize_bus_properties()      
+
             # design propulsor 
+            propulsive_converters = []
             for propulsor in network.propulsors:
                 propulsor.intialize_propulsor_design(network)  
+                for tag, item in propulsor.assigned_converters.items():
+                    propulsive_converters.append(item[0][0])
+
+            # update bus voltage on each electrical component
+            for converter in network.converters:
+                if converter.tag not in propulsive_converters:
+                    network.non_propulsive_converters.append(converter.tag)
+                    for distributor_tag in converter.assigned_distributors:
+                        if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                            converter.bus_voltage = network.distributors[distributor_tag[0]].voltage
+
+            for modulator in network.modulators:
+                for distributor_tag in modulator.assigned_distributors:
+                    if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                        modulator.bus_voltage = network.distributors[distributor_tag[0]].voltage
+
+            for system in network.systems:
+                for distributor_tag in system.assigned_distributors:
+                    if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                        system.bus_voltage = network.distributors[distributor_tag[0]]               
                            
             if segment.hybrid_power_split_ratio == None:                
                 segment.hybrid_power_split_ratio = 0.0

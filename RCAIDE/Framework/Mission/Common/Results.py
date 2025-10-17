@@ -429,7 +429,11 @@ class Results(Conditions):
         self.energy.systems                                   = Conditions()
         self.energy.thrust_force_vector                       = ones_3col * 0
         self.energy.thrust_moment_vector                      = ones_3col * 0
-        self.energy.power                                     = ones_1col * 0 
+        self.energy.total_power                               = ones_1col * 0 
+        self.energy.electrical_power                          = ones_1col * 0 
+        self.energy.mechanical_power                          = ones_1col * 0 
+        self.energy.hydraulic_power                           = ones_1col * 0 
+        self.energy.thermal_power                             = ones_1col * 0 
         self.energy.fuel_consumption                          = ones_1col * 0
         self.energy.cumulative_fuel_consumption               = ones_1col * 0
         self.energy.hybrid_power_split_ratio                  = ones_1col * 0 

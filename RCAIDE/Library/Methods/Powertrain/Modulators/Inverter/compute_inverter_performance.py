@@ -67,4 +67,12 @@ def compute_inverter_performance(inverter):
     inverter.outputs.modulation_limited    = modulation_limited
     inverter.outputs.f_out                 = f_out
 
-    return
+    P_mech = 0.0 * inverter.state.ones_row(1)
+    P_elec = P_out
+    P_hydr = 0.0 * inverter.state.ones_row(1)
+    P_therm = 0.0 * inverter.state.ones_row(1)
+    m_dot_fuel = 0.0 * inverter.state.ones_row(1)
+    stored_results_flag = True
+    stored_modulator_tag = inverter.tag
+
+    return P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag

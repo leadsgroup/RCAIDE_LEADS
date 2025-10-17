@@ -121,16 +121,18 @@ def compute_esc_performance(esc,state):
     # Pack the output
     esc_conditions.outputs.voltage  = eta*esc_conditions.inputs.voltage
     esc_conditions.throttle         = eta 
-
-    P_elec        = esc_conditions.outputs.voltage * currentout
-    P_mech        = 0
-    
     # Pack 
     esc_conditions.inputs.current   = currentin
     esc_conditions.inputs.power     = esc_conditions.inputs.voltage *currentin
 
+    P_elec        = esc_conditions.outputs.voltage * currentout
+    P_mech        = 0.0 * state.ones_row(1)
+    P_hydr        = 0.0 * state.ones_row(1)
+    P_therm       = 0.0 * state.ones_row(1)
+    m_dot_fuel    = 0.0 * state.ones_row(1)
     stored_results_flag    = True
     stored_modulator_tag   = esc.tag
     
-    return P_mech,P_elec,stored_results_flag,stored_modulator_tag
+    return P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag
+
     

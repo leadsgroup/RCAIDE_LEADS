@@ -65,7 +65,11 @@ class Integral_Tank(Fuel_Tank):
         Sets default values for wing fuel tank attributes
         """          
         self.tag                         = 'integral_tank' 
-        self.assigned_distributors = []
+        self.assigned_distributors       = []
+        self.electrical_efficiency       = 1.0
+        self.mechanical_efficiency       = 1.0
+        self.hydraulic_efficiency        = 1.0
+        self.thermal_efficiency          = 1.0
 
     def __init__ (self, compoment=None):
         """

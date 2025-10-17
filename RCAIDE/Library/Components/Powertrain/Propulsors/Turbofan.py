@@ -208,12 +208,12 @@ class Turbofan(Propulsor):
         """
         Computes turbofan performance including thrust, moment, and power.
         """
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turbofan_performance(self,state, network, center_of_gravity)
-        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
+        thrust,moment,power_mech,power_elec,power_hydr,power_therm,m_dot_fuel,stored_results_flag,stored_propulsor_tag =  compute_turbofan_performance(self,state, network, center_of_gravity)
+        return thrust,moment,power_mech,power_elec,power_hydr,power_therm,m_dot_fuel,stored_results_flag,stored_propulsor_tag
     
     def reuse_stored_data(turbofan,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored turbofan data for performance calculations.
         """
-        thrust,moment,power_mech,power_elec  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec
+        thrust,moment,power_mech,power_elec,power_hydr,power_therm,m_dot_fuel  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,power_mech,power_elec,power_hydr,power_therm,m_dot_fuel

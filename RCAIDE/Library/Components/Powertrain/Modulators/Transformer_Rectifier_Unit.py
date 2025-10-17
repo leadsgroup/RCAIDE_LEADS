@@ -48,11 +48,14 @@ class Transformer_Rectifier_Unit(Component):
 
         self.tag                   = 'transformer_rectifier_unit'  
         self.bus_voltage           = None
-        self.efficiency            = 1.0 
         self.turns_ratio           = 1.0
         self.diode_drop            = 0.0
         self.R_load                = 0.0
         self.assigned_distributors = []
+        self.electrical_efficiency = 1.0
+        self.mechanical_efficiency = 1.0
+        self.hydraulic_efficiency  = 1.0
+        self.thermal_efficiency    = 1.0
 
     def append_operating_conditions(self,segment): 
         """
@@ -75,5 +78,5 @@ class Transformer_Rectifier_Unit(Component):
     
     def compute_performance(self,state):
 
-        P_mech,P_elec,stored_results_flag,stored_modulator_tag =  compute_tru_performance(self,state)
-        return P_mech,P_elec,stored_results_flag,stored_modulator_tag
+        P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag =  compute_tru_performance(self,state)
+        return P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag

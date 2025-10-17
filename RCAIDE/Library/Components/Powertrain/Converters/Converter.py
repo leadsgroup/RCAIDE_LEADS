@@ -29,3 +29,7 @@ class Converter(Component):
         self.active                   = True
         self.assigned_converters      = []
         self.assigned_distributors    = []
+        self.electrical_efficiency    = 1.0
+        self.mechanical_efficiency    = 1.0
+        self.hydraulic_efficiency     = 1.0
+        self.thermal_efficiency       = 1.0

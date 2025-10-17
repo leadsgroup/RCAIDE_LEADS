@@ -114,6 +114,10 @@ class Non_Integral_Tank(Fuel_Tank):
         self.radial_offset               = None
         self.aspect_ratio                = None # Defined as the ratio of total length of the tank to the diameter of the tank.
         self.assigned_distributors       = []
+        self.electrical_efficiency       = 1.0
+        self.mechanical_efficiency       = 1.0
+        self.hydraulic_efficiency        = 1.0
+        self.thermal_efficiency          = 1.0
 
     def __init__ (self, compoment=None):
         """
