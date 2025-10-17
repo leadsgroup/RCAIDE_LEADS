@@ -21,8 +21,10 @@ import numpy as np
 #  Network
 # ---------------------------------------------------------------------------------------------------------------------- 
 class Network(Component):  
-    """ Generalized Hybrid Energy Network (powertrain) Class capable of creating all derivatives of hybrid
-    networks, the conventional fuel network and the all-electric network.
+    """ 
+    
+    Generalized Energy Network (powertrain) Class capable of creating all derivatives of conventional
+    and unconventional powertrains, including hybrid-electric powertrains and the all-electric network.
     
                                             GENERIC NETWORK
           .........................................:..........................................                          
@@ -53,6 +55,8 @@ class Network(Component):
     **Definitions** 
     'Propulsor Group'
         Any single or group of Components that work together to provide thrust.
+
+    
     
     See Also
     --------
@@ -78,21 +82,49 @@ class Network(Component):
 
     # linking the different network components
     def evaluate(network,state,center_of_gravity):
-        """ Computes the performance of the network
-        """  
-        # unpack   
-        conditions           = state.conditions 
-        propulsors           = network.propulsors  
-        converters           = network.converters  
-        distributors         = network.distributors
-        modulators           = network.modulators
-        sources              = network.sources     
-        systems              = network.systems
+        """ Computes the performance of the network.
         
-        total_thrust         = 0. * state.ones_row(3) 
-        total_mech_power     = 0. * state.ones_row(1) 
-        total_moment         = 0. * state.ones_row(3)  
-        total_mdot           = 0. * state.ones_row(1)   
+            This routine evaluates propulsors, converters, modulators, distributors, sources, and systems,
+            and assembles forces, moments, mass flow, and electrical/mechanical power balances.
+        
+            Energetic domains (Effort–Flow pairs) used in the model follow the power-conjugate convention:
+        
+            +---------------------+-----------------+--------------------+----------------+----------------+
+            | Domain              | Effort          | Flow               | Power relation | Units          |
+            +=====================+=================+====================+================+================+
+            | Mechanical (trans.) | Force (F)       | Velocity (v)       | P = F · v      | N, m/s → W     |
+            +---------------------+-----------------+--------------------+----------------+----------------+
+            | Mechanical (rot.)   | Torque (τ)      | Angular speed (ω)  | P = τ · ω      | N·m, rad/s → W |
+            +---------------------+-----------------+--------------------+----------------+----------------+
+            | Electrical          | Voltage (V)     | Current (I)        | P = V · I      | V, A → W       |
+            +---------------------+-----------------+--------------------+----------------+----------------+
+            | Fluid               | Pressure (p)    | Vol. flow rate (Ṽ) | P = p · Ṽ      | Pa, m³/s → W   |
+            +---------------------+-----------------+--------------------+----------------+----------------+
+            | Thermal             | Temperature (T) | Entropy flow (Ṡ)   | P = T · Ṡ      | K, W/K → W     |
+            +---------------------+-----------------+--------------------+----------------+----------------+
+        
+            Notes
+            -----
+            * Electrical bus power balance uses the sign convention: positive = loads/draws, negative = supplies/sources.
+        """ 
+
+        # unpack   
+        conditions              = state.conditions 
+        propulsors              = network.propulsors  
+        converters              = network.converters  
+        distributors            = network.distributors
+        modulators              = network.modulators
+        sources                 = network.sources     
+        systems                 = network.systems
+        
+        total_thrust            = 0. * state.ones_row(3) 
+        total_moment            = 0. * state.ones_row(3)  
+        total_mdot              = 0. * state.ones_row(1) 
+        total_power_electrical  = 0. * state.ones_row(1)
+        total_power_mechanical  = 0. * state.ones_row(1)
+        total_power_hydraulical = 0. * state.ones_row(1)
+        total_power_thermal     = 0. * state.ones_row(1)
+
              
         # ----------------------------------------------------------
         # Initialize
@@ -108,7 +140,9 @@ class Network(Component):
         # ----------------------------------------------------------
 
         for system in network.systems:
-            system.compute_performance(state)
+            P_sys = system.compute_performance(state)
+
+            total_elec_power += P_sys / distributor.efficiency 
 
 
         if len(distributor.assigned_systems) == 0:
