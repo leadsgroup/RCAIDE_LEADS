@@ -185,7 +185,7 @@ class Network(Component):
             P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_modulator_tag = modulator.compute_performance(network, state)
             
             Network.update_distributor_net_power(modulator, network, conditions, P_mech, P_elec, P_hydr, P_therm)  
-        
+       
         # -------------------------------------------------------------------------------------------------------------------
         # Other Distributors 
         # -------------------------------------------------------------------------------------------------------------------
@@ -195,8 +195,8 @@ class Network(Component):
                 
                 P_mech, P_elec, P_hydr, P_therm = network.distributors[distributor_tag[0]].compute_performance(state)
 
-                Network.update_distributor_net_power(network.distributors[distributor_tag[0]], network, conditions, P_mech, P_elec, P_hydr, P_therm)  
-      
+                Network.update_distributor_net_power(network.distributors[distributor_tag[0]], network, conditions, P_mech, - P_elec, P_hydr, P_therm)  
+
         # ----------------------------------------------------------        
         # Sources
         # ----------------------------------------------------------
@@ -234,8 +234,6 @@ class Network(Component):
 
         # if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):   
         #     total_elec_power        -= state.conditions.energy.distributors[distributor.tag].regenerative_power*bus_voltage* distributor.power_split_ratio  /distributor.efficiency   
-        
-        
           
 
     # # ----------------------------------------------------------
@@ -286,7 +284,7 @@ class Network(Component):
                         conditions.energy.distributors[dist_tag].net_electrical_power  += P_elec * dist.power_split_ratio / dist.electrical_efficiency
                     else:
                         conditions.energy.distributors[dist_tag].net_electrical_power  += - P_elec * component.electrical_efficiency * dist.power_split_ratio / dist.electrical_efficiency
-                else:   
+                else:    
                     conditions.energy.distributors[dist_tag].net_electrical_power  += P_elec * dist.power_split_ratio / dist.electrical_efficiency
             
             # elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Mechanical_Line):
