@@ -60,7 +60,7 @@ def compute_fuel_tank_properties(tank,state,distributor):
 
     P_mech = 0*state.ones_row(1)
     P_ele  = 0*state.ones_row(1)
-    P_hydr = Press_tank * mass_flow_rate / tank.fuel.density
+    P_hydr = Press_tank * mass_flow_rate / tank.fuel.density        
     P_therm = 0*state.ones_row(1)
 
     return P_mech, P_ele, P_hydr, P_therm

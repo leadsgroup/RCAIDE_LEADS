@@ -170,7 +170,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
     psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio
     E_bus                       = bus_conditions.energy
     P_bus                       = bus_conditions.net_electrical_power*psi
-    I_bus                       =bus_conditions.net_electrical_power/bus.voltage 
+    I_bus                       = bus_conditions.net_electrical_power/bus.voltage 
     
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions

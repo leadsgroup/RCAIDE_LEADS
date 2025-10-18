@@ -1,4 +1,3 @@
-## @ingroup Library-Plots-Energy
 # RCAIDE/Library/Plots/Energy/plot_powertrain_power.py
 #
 # Created:  Oct 2025, M. Guidotti
@@ -6,6 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt
@@ -15,254 +15,169 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------
-## @ingroup Library-Plots-Performance-Energy
-def plot_powertrain_power(results,
-                          save_figure=False,
-                          show_legend=True,
-                          save_filename="Powertrain_Power",
-                          file_type=".png",
-                          width=11, height=7):
-    """
-    Creates independent plots (6 separate figures) for:
-      - Distributors
-      - Propulsors
-      - Modulators
-      - Converters
-      - Sources 
-      - Systems 
 
-    Returns
-    -------
-    figs : dict
-        Dict of figures keyed by category: 'distributors','propulsors','modulators','converters','sources','systems'
-    """
-    # get plotting style
-    ps = plot_style()
+def plot_powertrain_power(results,
+                          save_figure = False,
+                          show_legend = True,
+                          save_filename = "Powertrain_Power",
+                          file_type = ".png",
+                          width = 14, height = 9):
+
+    # get plotting style 
+    ps = plot_style()  
 
     parameters = {'axes.labelsize': ps.axis_font_size,
                   'xtick.labelsize': ps.axis_font_size,
                   'ytick.labelsize': ps.axis_font_size,
                   'axes.titlesize': ps.title_font_size}
-    plt.rcParams.update(parameters)
-
-    # color map across segments
-    line_colors = cm.inferno(np.linspace(0, 0.9, len(results.segments)))
-
-    def _get_power_arr(bucket):
-        # try common field names in priority order
-        for path in [
-            ("power_draw",),                         # distributors, systems (sometimes)
-            ("power",),                              # propulsors, generic
-            ("outputs", "power"),
-            ("outputs", "dc_real_power"),           
-            ("inputs", "power"),
-            ("inputs", "ac_real_power"),            
-        ]:
-            try:
-                val = bucket
-                for p in path:
-                    val = getattr(val, p)
-                # ensure numpy array (N,1) if possible
-                arr = np.asarray(val)
-                if arr.ndim == 1:
-                    arr = arr.reshape(-1, 1)
-                return arr
-            except Exception:
-                pass
-        # last resort: zeros matching time length
-        return np.zeros_like(results.segments[0].conditions.frames.inertial.time[:, 0:1])
-
-    # label helper: make "nice" LaTeX label
-    def _label_from_name(name):
-        # use LaTeX \mathrm with explicit small spaces between tokens
-        return r'$P_{\mathrm{' + name.replace("_", r"\;") + '}}$'
+    plt.rcParams.update(parameters) 
+    
+    # color map across segments (color by segment)
+    line_colors = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
 
     figs = {}
 
-    # ---------------------------- Distributors ----------------------------
-    fig = plt.figure(save_filename + "_Distributors")
-    axis_1 = plt.subplot(1, 1, 1)
-    fig.set_size_inches(width, height)
+    # -------------------------------------------------- Propulsors net_dot--------------------------------------------------
+    fig_prop = plt.figure(save_filename + "_Propulsors")
+    fig_prop.set_size_inches(width,height)   
+    ax_prop = plt.subplot(1,1,1)
 
-    for i in range(len(results.segments)):
-        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        dist_dict = results.segments[i].conditions.energy.distributors
-        for j, tag in enumerate(dist_dict.keys()):
-            distributor = dist_dict[tag]
-            power = _get_power_arr(distributor)[:, 0]
-            name = getattr(distributor, 'name', tag)
-            if i == 0:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width, label=_label_from_name(name))
-            else:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width)
-    set_axes(axis_1)
-    axis_1.set_xlabel('Time (mins)')
-    axis_1.set_ylabel('Distributors Power (W)')
+    for network in results.segments[0].analyses.energy.vehicle.networks:  
+        for p_i, propulsor in enumerate(network.propulsors):
+            for i in range(len(results.segments)):  
+                time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
+                power = results.segments[i].conditions.energy.propulsors[propulsor.tag].power[:,0]
+                if i == 0:
+                    ax_prop.plot(time, power, color=line_colors[i], marker=ps.markers[p_i],
+                                 markersize=ps.marker_size, linewidth=ps.line_width, label=propulsor.tag)
+                else:
+                    ax_prop.plot(time, power, color=line_colors[i], marker=ps.markers[p_i],
+                                 markersize=ps.marker_size, linewidth=ps.line_width)
+    ax_prop.set_xlabel('Time (mins)')
+    ax_prop.set_ylabel('Propulsors Power (W)')
+    set_axes(ax_prop)
     if show_legend:
-        fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=5)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.8)
-    fig.suptitle('Distributors Power Consumption')
-    if save_figure:
-        plt.savefig(save_filename + "_Distributors" + file_type)
-    figs['distributors'] = fig
-
-    # ---------------------------- Propulsors ----------------------------
-    fig = plt.figure(save_filename + "_Propulsors")
-    axis_1 = plt.subplot(1, 1, 1)
-    fig.set_size_inches(width, height)
-
-    for i in range(len(results.segments)):
-        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        dist_dict = results.segments[i].conditions.energy.propulsors
-        for j, tag in enumerate(dist_dict.keys()):
-            propulsor = dist_dict[tag]
-            # propulsors typically keep "power"
-            if hasattr(propulsor, 'power'):
-                power = np.asarray(propulsor.power)[:, 0]
-            else:
-                power = _get_power_arr(propulsor)[:, 0]
-            name = getattr(propulsor, 'name', tag)
-            if i == 0:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width, label=_label_from_name(name))
-            else:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width)
-    set_axes(axis_1)
-    axis_1.set_xlabel('Time (mins)')
-    axis_1.set_ylabel('Propulsors Power (W)')
-    if show_legend:
-        fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=5)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.8)
-    fig.suptitle('Propulsors Power Consumption')
+        fig_prop.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=4)
+    fig_prop.tight_layout()
+    fig_prop.subplots_adjust(top=0.85)
+    fig_prop.suptitle('Propulsors Power')
     if save_figure:
         plt.savefig(save_filename + "_Propulsors" + file_type)
-    figs['propulsors'] = fig
+    figs['propulsors'] = fig_prop
 
-    # ---------------------------- Modulators ----------------------------
-    fig = plt.figure(save_filename + "_Modulators")
-    axis_1 = plt.subplot(1, 1, 1)
-    fig.set_size_inches(width, height)
+    # -------------------------------------------------- Modulators net_dot--------------------------------------------------
+    fig_mod = plt.figure(save_filename + "_Modulators")
+    fig_mod.set_size_inches(width,height)   
+    ax_mod  = plt.subplot(1,1,1)
 
-    for i in range(len(results.segments)):
-        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        dist_dict = results.segments[i].conditions.energy.modulators
-        for j, tag in enumerate(dist_dict.keys()):
-            modulator = dist_dict[tag]
-            power = _get_power_arr(modulator)
-            name = getattr(modulator, 'name', tag)
-            if i == 0:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width, label=_label_from_name(name))
-            else:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width)
-    set_axes(axis_1)
-    axis_1.set_xlabel('Time (mins)')
-    axis_1.set_ylabel('Modulators Power (W)')
+    for network in results.segments[0].analyses.energy.vehicle.networks:  
+        for m_i, modulator in enumerate(network.modulators):
+            for i in range(len(results.segments)):  
+                time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
+                power = results.segments[i].conditions.energy.modulators[modulator.tag].inputs.ac_real_power[:,0]
+                if i == 0:
+                    ax_mod.plot(time, power, color=line_colors[i], marker=ps.markers[m_i],
+                                markersize=ps.marker_size, linewidth=ps.line_width, label=modulator.tag)
+                else:
+                    ax_mod.plot(time, power, color=line_colors[i], marker=ps.markers[m_i],
+                                markersize=ps.marker_size, linewidth=ps.line_width)
+    ax_mod.set_xlabel('Time (mins)')
+    ax_mod.set_ylabel('Modulators Power (W)')
+    set_axes(ax_mod)
     if show_legend:
-        fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=5)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.8)
-    fig.suptitle('Modulators Power Consumption')
+        fig_mod.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=4)
+    fig_mod.tight_layout()
+    fig_mod.subplots_adjust(top=0.85)
+    fig_mod.suptitle('Modulators Power')
     if save_figure:
         plt.savefig(save_filename + "_Modulators" + file_type)
-    figs['modulators'] = fig
+    figs['modulators'] = fig_mod
 
-    # ---------------------------- Converters ----------------------------
-    fig = plt.figure(save_filename + "_Converters")
-    axis_1 = plt.subplot(1, 1, 1)
-    fig.set_size_inches(width, height)
+    # -------------------------------------------------- Converters net_dot--------------------------------------------------
+    fig_conv = plt.figure(save_filename + "_Converters")
+    fig_conv.set_size_inches(width,height)   
+    ax_conv = plt.subplot(1,1,1)
 
-    for i in range(len(results.segments)):
-        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        dist_dict = results.segments[i].conditions.energy.converters
-        for j, tag in enumerate(dist_dict.keys()):
-            converter = dist_dict[tag]
-            power = _get_power_arr(converter)[:, 0]
-            name = getattr(converter, 'name', tag)
-            if i == 0:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width, label=_label_from_name(name))
-            else:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width)
-    set_axes(axis_1)
-    axis_1.set_xlabel('Time (mins)')
-    axis_1.set_ylabel('Converters Power (W)')
+    for network in results.segments[0].analyses.energy.vehicle.networks:  
+        for c_i, converter_tag in enumerate(network.non_propulsive_converters):
+            for i in range(len(results.segments)):  
+                time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
+                power = results.segments[i].conditions.energy.converters[converter_tag].outputs.power[:,0]
+                if i == 0:
+                    ax_conv.plot(time, power, color=line_colors[i], marker=ps.markers[c_i],
+                                 markersize=ps.marker_size, linewidth=ps.line_width, label=converter_tag)
+                else:
+                    ax_conv.plot(time, power, color=line_colors[i], marker=ps.markers[c_i],
+                                 markersize=ps.marker_size, linewidth=ps.line_width)
+    ax_conv.set_xlabel('Time (mins)')
+    ax_conv.set_ylabel('Converters Power (W)')
+    set_axes(ax_conv)
     if show_legend:
-        fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=5)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.8)
-    fig.suptitle('Converters Power Consumption')
+        fig_conv.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=4)
+    fig_conv.tight_layout()
+    fig_conv.subplots_adjust(top=0.85)
+    fig_conv.suptitle('Converters Power')
     if save_figure:
         plt.savefig(save_filename + "_Converters" + file_type)
-    figs['converters'] = fig
+    figs['converters'] = fig_conv
 
-    # ---------------------------- Sources ----------------------------
-    fig = plt.figure(save_filename + "_Sources")
-    axis_1 = plt.subplot(1, 1, 1)
-    fig.set_size_inches(width, height)
+    # -------------------------------------------------- Sources net_dot--------------------------------------------------
+    fig_src = plt.figure(save_filename + "_Sources")
+    fig_src.set_size_inches(width,height)   
+    ax_src  = plt.subplot(1,1,1)
 
-    for i in range(len(results.segments)):
-        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        dist_dict = results.segments[i].conditions.energy.sources
-        for j, tag in enumerate(dist_dict.keys()):
-            source = dist_dict[tag]
-            power = _get_power_arr(source)[:, 0]
-            name = getattr(source, 'name', tag)
-            if i == 0:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width, label=_label_from_name(name))
-            else:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width)
-    set_axes(axis_1)
-    axis_1.set_xlabel('Time (mins)')
-    axis_1.set_ylabel('Sources Power (W)')
+    for network in results.segments[0].analyses.energy.vehicle.networks:  
+        for s_i, source in enumerate(network.sources):
+            for i in range(len(results.segments)):  
+                time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                    power = (source.pressure * results.segments[i].conditions.energy.sources[source.tag].mass_flow_rate[:,0]) / source.fuel.density
+                else:
+                    power = results.segments[i].conditions.energy.sources[source.tag].power[:,0]
+                if i == 0:
+                    ax_src.plot(time, power, color=line_colors[i], marker=ps.markers[s_i],
+                                markersize=ps.marker_size, linewidth=ps.line_width, label=source.tag)
+                else:
+                    ax_src.plot(time, power, color=line_colors[i], marker=ps.markers[s_i],
+                                markersize=ps.marker_size, linewidth=ps.line_width)
+    ax_src.set_xlabel('Time (mins)')
+    ax_src.set_ylabel('Sources Power (W)')
+    set_axes(ax_src)
     if show_legend:
-        fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=5)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.8)
-    fig.suptitle('Sources Power Consumption')
+        fig_src.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=4)
+    fig_src.tight_layout()
+    fig_src.subplots_adjust(top=0.85)
+    fig_src.suptitle('Sources Power')
     if save_figure:
         plt.savefig(save_filename + "_Sources" + file_type)
-    figs['sources'] = fig
+    figs['sources'] = fig_src
 
-    # ---------------------------- Systems ----------------------------
-    fig = plt.figure(save_filename + "_Systems")
-    axis_1 = plt.subplot(1, 1, 1)
-    fig.set_size_inches(width, height)
+    # -------------------------------------------------- Systems --------------------------------------------------
+    fig_sys = plt.figure(save_filename + "_Systems")
+    fig_sys.set_size_inches(width,height)   
+    ax_sys  = plt.subplot(1,1,1)
 
-    for network in results.segments[0].analyses.energy.vehicle.networks: 
-        systems = network.systems
-
-    for i in range(len(results.segments)):
-        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        for system in systems:
-            system_conditions = results.segments[i].conditions.energy.systems[system.tag]
-            power =  system_conditions.electrical_power
-       
-            if i == 0:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width, label=_label_from_name(name))
-            else:
-                axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
-                            linewidth=ps.line_width)
-    set_axes(axis_1)
-    axis_1.set_xlabel('Time (mins)')
-    axis_1.set_ylabel('Systems Power (W)')
+    for network in results.segments[0].analyses.energy.vehicle.networks:  
+        for y_i, system in enumerate(network.systems):
+            for i in range(len(results.segments)):  
+                time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
+                power = results.segments[i].conditions.energy.systems[system.tag].electrical_power[:,0]
+                if i == 0:
+                    ax_sys.plot(time, power, color=line_colors[i], marker=ps.markers[y_i],
+                                markersize=ps.marker_size, linewidth=ps.line_width, label=system.tag)
+                else:
+                    ax_sys.plot(time, power, color=line_colors[i], marker=ps.markers[y_i],
+                                markersize=ps.marker_size, linewidth=ps.line_width)
+    ax_sys.set_xlabel('Time (mins)')
+    ax_sys.set_ylabel('Systems Power (W)')
+    set_axes(ax_sys)
     if show_legend:
-        fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=5)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.8)
-    fig.suptitle('Systems Power Consumption')
+        fig_sys.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=4)
+    fig_sys.tight_layout()
+    fig_sys.subplots_adjust(top=0.85)
+    fig_sys.suptitle('Systems Power')
     if save_figure:
         plt.savefig(save_filename + "_Systems" + file_type)
-    figs['systems'] = fig
+    figs['systems'] = fig_sys
 
     return figs

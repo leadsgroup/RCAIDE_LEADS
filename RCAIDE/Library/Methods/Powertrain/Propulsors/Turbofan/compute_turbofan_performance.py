@@ -445,11 +445,11 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
             fuel_pressure = network.distributors[distributor[0]].pressure
     fuel_density                            = combustor.fuel_data.density
     
-    power_mech                              = power * (1.0 - conditions.energy.hybrid_power_split_ratio)
-    power_hydr                              = - (fuel_pressure * mdot_fuel * fuel_density)                   # Negative because power is consumed
-    power_therm                             = 0*state.ones_row(1)    
+    turbofan.power_mech                              = power * (1.0 - conditions.energy.hybrid_power_split_ratio)
+    turbofan.power_hydr                              = - (fuel_pressure * mdot_fuel / fuel_density)                   # Negative because power is consumed
+    turbofan.power_therm                             = 0*state.ones_row(1)    
     
-    return thrust_vector,moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag 
+    return thrust_vector,moment,turbofan.power_mech,power_elec,turbofan.power_hydr,turbofan.power_therm,stored_results_flag,stored_propulsor_tag 
     
 def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbofan for identical turbofans

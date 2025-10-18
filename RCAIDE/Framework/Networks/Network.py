@@ -195,7 +195,7 @@ class Network(Component):
                 
                 P_mech, P_elec, P_hydr, P_therm = network.distributors[distributor_tag[0]].compute_performance(state)
 
-                Network.update_distributor_net_power(network.distributors[distributor_tag[0]], network, conditions, P_mech, - P_elec, P_hydr, P_therm)  
+                Network.update_distributor_net_power(network.distributors[distributor_tag[0]], network, conditions, P_mech, P_elec, P_hydr, P_therm)  
 
         # ----------------------------------------------------------        
         # Sources
