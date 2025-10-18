@@ -194,8 +194,8 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         stored_battery_tag : str
             Identifier for stored results
         """
-        reuse_stored_lfp_cell_data(self,state,bus,stored_results_flag, stored_battery_tag)
-        return    
+        P_mech, P_elec, P_hydr, P_therm = reuse_stored_lfp_cell_data(self,state,bus,stored_results_flag, stored_battery_tag)
+        return P_mech, P_elec, P_hydr, P_therm
       
     def update_battery_age(self,segment, battery_conditions,increment_battery_age_by_one_day): 
         """

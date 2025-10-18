@@ -109,7 +109,7 @@ def plot_aerodynamic_forces(results,
     
     for i in range(len(results.segments)): 
         time   = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-        Power  = results.segments[i].conditions.energy.power[:,0] 
+        Power  = results.segments[i].conditions.energy.power_mechanical[:,0] 
         Thrust = results.segments[i].conditions.frames.body.thrust_force_vector[:,0]
         Lift   = -results.segments[i].conditions.frames.wind.force_vector[:,2]
         Drag   = -results.segments[i].conditions.frames.wind.force_vector[:,0]

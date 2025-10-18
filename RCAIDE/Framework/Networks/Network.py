@@ -106,7 +106,7 @@ class Network(Component):
         
             Notes
             -----
-            * Electrical bus power balance uses the sign convention: positive = loads/draws, negative = supplies/sources.
+            * Electrical bus power balance uses the sign convention: negative = leaving the distributor, positive = feeding the distributor.
         """ 
 
         # unpack   
@@ -143,7 +143,7 @@ class Network(Component):
 
                 total_thrust      += Thrust   
                 total_moment      += Moment   
-                total_power       += P_mech + P_elec + P_hydr + P_therm
+                total_power       += P_mech 
 
                 Network.update_distributor_net_power(propulsor, network, conditions, P_mech, P_elec, P_hydr, P_therm)
 
@@ -167,8 +167,7 @@ class Network(Component):
 
             stored_results_flag = False
 
-            if type(converter) == RCAIDE.Library.Components.Powertrain.Converters.Generator or \
-                type(converter) == RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator or \
+            if type(converter) == RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator or \
                     type(converter) == RCAIDE.Library.Components.Powertrain.Converters.Turboshaft: 
                 converter.inverse_calculation = True 
 
@@ -183,7 +182,7 @@ class Network(Component):
 
         for modulator in modulators:
                 
-            P_mech, P_elec, P_hydr, P_therm, stored_results_flag,stored_modulator_tag = modulator.compute_performance(state)
+            P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_modulator_tag = modulator.compute_performance(network, state)
             
             Network.update_distributor_net_power(modulator, network, conditions, P_mech, P_elec, P_hydr, P_therm)  
       
@@ -214,11 +213,10 @@ class Network(Component):
                         else:             
                             P_mech, P_elec, P_hydr, P_therm = source.reuse_stored_data(state, stored_battery_cell_tag)        
                         
-                        distributor.compute_distributor_conditions(state,t_idx,delta_t)
+                        distributor.compute_distributor_conditions(source, state, t_idx,delta_t)
                 
                 Network.update_distributor_net_power(source, network, conditions, P_mech, P_elec, P_hydr, P_therm)  
                     
-
         # # ----------------------------------------------------------
         # # Regenerative Power 
         # # ----------------------------------------------------------
@@ -231,7 +229,11 @@ class Network(Component):
         # -------------------------------------------------------------------------------------------------------------------
 
         for distributor in network.distributors:
-                total_elec_power  += conditions.energy.distributors[sub_distributor.tag].power_draw
+            for distributor_tag in distributor.assigned_distributors:
+                
+                P_mech, P_elec, P_hydr, P_therm = network.distributors[distributor_tag[0]].compute_performance(state)
+
+                Network.update_distributor_net_power(network.distributors[distributor_tag[0]], network, conditions, P_mech, P_elec, P_hydr, P_therm)  
           
 
     # # ----------------------------------------------------------
@@ -254,8 +256,7 @@ class Network(Component):
                             reservoir.compute_reservior_coolant_temperature(state,distributor,delta_t[t_idx],t_idx)
                                                         
         conditions.energy.thrust_force_vector  = total_thrust
-        conditions.energy.power_mechanical     = total_mech_power 
-
+        conditions.energy.power_mechanical     = total_power 
         conditions.energy.thrust_moment_vector = total_moment 
         conditions.weights.vehicle_mass_rate   = total_mdot  
     
@@ -276,21 +277,34 @@ class Network(Component):
 
         for dist_tag in component.assigned_distributors[0]:
             dist = network.distributors[dist_tag] 
-            conditions.energy.distributors[dist_tag].net_electrical_power  += P_elec * dist.power_split_ratio / dist.electrical_efficiency
-            conditions.energy.distributors[dist_tag].net_mechanical_power  += P_mech * dist.power_split_ratio / dist.mechanical_efficiency
-            conditions.energy.distributors[dist_tag].net_hydraulic_power   += P_hydr * dist.power_split_ratio / dist.hydraulic_efficiency
-            conditions.energy.distributors[dist_tag].net_thermal_power     += P_therm * dist.power_split_ratio / dist.thermal_efficiency
-            conditions.energy.distributors[dist_tag].net_power              = conditions.energy.distributors[dist_tag].net_electrical_power + \
-                                                                              conditions.energy.distributors[dist_tag].net_mechanical_power + \
-                                                                              conditions.energy.distributors[dist_tag].net_hydraulic_power + \
-                                                                              conditions.energy.distributors[dist_tag].net_thermal_power
+
+            if isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                if isinstance(component, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit):
+                    if network.distributors[dist_tag].bus_type == 'AC':
+                        conditions.energy.distributors[dist_tag].net_electrical_power  += P_elec * dist.power_split_ratio / dist.electrical_efficiency
+                    else:
+                        conditions.energy.distributors[dist_tag].net_electrical_power  += - P_elec * component.electrical_efficiency * dist.power_split_ratio / dist.electrical_efficiency
+                    
+                conditions.energy.distributors[dist_tag].net_electrical_power  += P_elec * dist.power_split_ratio / dist.electrical_efficiency
             
-            if isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+            # elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Mechanical_Line):
+            #     conditions.energy.distributors[dist_tag].net_mechanical_power  += P_mech * dist.power_split_ratio / dist.mechanical_efficiency
+            
+            elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                conditions.energy.distributors[dist_tag].net_hydraulic_power   += P_hydr * dist.power_split_ratio / dist.hydraulic_efficiency
                 if isinstance(component, RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor):
                     m_dot_fuel = conditions.energy.propulsors[component.tag].fuel_mass_flow_rate
                 elif isinstance(component, RCAIDE.Library.Components.Powertrain.Converters.Converter):
                     m_dot_fuel = conditions.energy.converters[component.tag].fuel_mass_flow_rate
+                elif isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank) or \
+                    isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank) or \
+                    isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank) or \
+                    isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank):
+                    m_dot_fuel = conditions.energy.sources[component.tag].mass_flow_rate
                 conditions.energy.distributors[dist_tag].fuel_mass_flow_rate += m_dot_fuel
+            
+            elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+                conditions.energy.distributors[dist_tag].net_thermal_power     += P_therm * dist.power_split_ratio / dist.thermal_efficiency
         
         return
     
@@ -340,11 +354,10 @@ class Network(Component):
            N/A
        """         
         for network in segment.analyses.energy.vehicle.networks:
-            for distributor_i, distributor in enumerate(network.distributors):    
-                if distributor.active:
-                    for propulsor_group in  distributor.assigned_propulsors:
-                        propulsor =  network.propulsors[propulsor_group[0]]
-                        propulsor.pack_propulsor_residuals(segment) 
+            for propulsor_i, propulsor in enumerate(network.propulsors):    
+                if propulsor.active:
+                    propulsor =  network.propulsors[propulsor.tag]
+                    propulsor.pack_propulsor_residuals(segment) 
         return      
     
     def add_unknowns_and_residuals_to_segment(self, segment):

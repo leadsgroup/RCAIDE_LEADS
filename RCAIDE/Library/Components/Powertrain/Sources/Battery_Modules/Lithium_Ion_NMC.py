@@ -226,8 +226,8 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         return P_mech, P_ele, P_hydr, P_therm, stored_results_flag, stored_battery_tag
     
     def reuse_stored_data(self,state,stored_battery_tag):
-        reuse_stored_nmc_cell_data(self,state,stored_battery_tag)
-        return 
+        P_mech, P_elec, P_hydr, P_therm = reuse_stored_nmc_cell_data(self,state,stored_battery_tag)
+        return P_mech, P_elec, P_hydr, P_therm 
     
     def update_battery_age(self,segment,battery_conditions,increment_battery_age_by_one_day = False):  
         """

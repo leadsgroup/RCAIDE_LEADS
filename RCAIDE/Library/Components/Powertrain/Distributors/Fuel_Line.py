@@ -73,6 +73,7 @@ class Fuel_Line(Component):
         self.hydraulic_efficiency          = 1.0
         self.thermal_efficiency            = 1.0
         self.power_split_ratio             = 1.0
+        self.pressure                      = 150000.0  # Pa
         
     def append_operating_conditions(self, segment):
         """
@@ -99,5 +100,14 @@ class Fuel_Line(Component):
             Flight segment data
         """
         append_fuel_line_segment_conditions(self, segment)
-        return    
+        return   
+
+    def compute_performance(self, state):
+
+        P_mech = state.conditions.energy.distributors[self.tag].net_mechanical_power
+        P_elec = state.conditions.energy.distributors[self.tag].net_electrical_power
+        P_hydr = state.conditions.energy.distributors[self.tag].net_hydraulic_power
+        P_therm = state.conditions.energy.distributors[self.tag].net_thermal_power
+        
+        return P_mech, P_elec, P_hydr, P_therm
         

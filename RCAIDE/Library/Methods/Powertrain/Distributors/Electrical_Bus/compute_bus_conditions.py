@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_bus_conditions
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_bus_conditions(bus, state, t_idx, delta_t): 
+def compute_bus_conditions(bus, source, state, t_idx, delta_t): 
     """
     Computes the conditions of the bus based on the response of the battery modules.
     
@@ -68,30 +68,29 @@ def compute_bus_conditions(bus, state, t_idx, delta_t):
     bus_conditions = state.conditions.energy.distributors[bus.tag]
     phi   = state.conditions.energy.hybrid_power_split_ratio
      
-    if len(bus.assigned_sources) != 0: 
-        if bus.battery_module_electric_configuration == 'Series':
-            bm_conditions                               = [state.conditions.energy.sources[bm] for bm in bus.assigned_sources[0]]
-            bus_conditions.voltage_open_circuit[t_idx]  = sum(bm.voltage_open_circuit[t_idx] for bm in bm_conditions)
-            bus_conditions.voltage_under_load[t_idx]    = sum(bm.voltage_under_load[t_idx] for bm in bm_conditions)
+    if bus.battery_module_electric_configuration == 'Series':
+        bm_conditions                               = [state.conditions.energy.sources[source.tag]]
+        bus_conditions.voltage_open_circuit[t_idx]  = sum(bm.voltage_open_circuit[t_idx] for bm in bm_conditions)
+        bus_conditions.voltage_under_load[t_idx]    = sum(bm.voltage_under_load[t_idx] for bm in bm_conditions)
+        bus_conditions.heat_energy_generated[t_idx] = sum(bm.heat_energy_generated[t_idx] for bm in bm_conditions)
+        bus_conditions.efficiency[t_idx]            = (bus_conditions.net_electrical_power[t_idx]*phi[t_idx] + bus_conditions.heat_energy_generated[t_idx])/(bus_conditions.net_electrical_power[t_idx]*phi[t_idx])
+        if t_idx != state.numerics.number_of_control_points-1:  
+            bm_conditions                              = [state.conditions.energy.sources[source.tag]]
+            bus_conditions.temperature[t_idx+1]        = sum(bm.temperature[t_idx+1] for bm in bm_conditions)
+            bus_conditions.energy[t_idx+1]             = sum(bm.energy[t_idx+1] for bm in bm_conditions)
+            bus_conditions.state_of_charge[t_idx+1]    = bm_conditions[-1].state_of_charge[t_idx+1]
+
+    elif bus.battery_module_electric_configuration == 'Parallel':
+        bm_conditions                               = [state.conditions.energy.sources[source.tag]]
+        bus_conditions.heat_energy_generated[t_idx] = sum(bm.heat_energy_generated[t_idx] for bm in bm_conditions)
+        bus_conditions.voltage_open_circuit[t_idx]  = bm_conditions[-1].voltage_open_circuit[t_idx]
+        bus_conditions.voltage_under_load[t_idx]    = bm_conditions[-1].voltage_under_load[t_idx]             
+        bus_conditions.efficiency[t_idx]            = (bus_conditions.net_electrical_power[t_idx]*phi[t_idx] +  bus_conditions.heat_energy_generated[t_idx])/(bus_conditions.net_electrical_power[t_idx]*phi[t_idx])
+        if t_idx != state.numerics.number_of_control_points-1:  
             bus_conditions.heat_energy_generated[t_idx] = sum(bm.heat_energy_generated[t_idx] for bm in bm_conditions)
-            bus_conditions.efficiency[t_idx]            = (bus_conditions.power_draw[t_idx]*phi[t_idx] + bus_conditions.heat_energy_generated[t_idx])/(bus_conditions.power_draw[t_idx]*phi[t_idx])
-            if t_idx != state.numerics.number_of_control_points-1:  
-                bm_conditions                              = [state.conditions.energy.sources[bm] for bm in bus.assigned_sources[0]]
-                bus_conditions.temperature[t_idx+1]        = sum(bm.temperature[t_idx+1] for bm in bm_conditions)/ len(bus.assigned_sources[0])
-                bus_conditions.energy[t_idx+1]             = sum(bm.energy[t_idx+1] for bm in bm_conditions)
-                bus_conditions.state_of_charge[t_idx+1]    = bm_conditions[-1].state_of_charge[t_idx+1]
-    
-        elif bus.battery_module_electric_configuration == 'Parallel':
-            bm_conditions                               = [state.conditions.energy.sources[bm] for bm in bus.assigned_sources[0]]
-            bus_conditions.heat_energy_generated[t_idx] = sum(bm.heat_energy_generated[t_idx] for bm in bm_conditions)
-            bus_conditions.voltage_open_circuit[t_idx]  = bm_conditions[-1].voltage_open_circuit[t_idx]
-            bus_conditions.voltage_under_load[t_idx]    = bm_conditions[-1].voltage_under_load[t_idx]             
-            bus_conditions.efficiency[t_idx]            = (bus_conditions.power_draw[t_idx]*phi[t_idx] +  bus_conditions.heat_energy_generated[t_idx])/(bus_conditions.power_draw[t_idx]*phi[t_idx])
-            if t_idx != state.numerics.number_of_control_points-1:  
-                bus_conditions.heat_energy_generated[t_idx] = sum(bm.heat_energy_generated[t_idx] for bm in bm_conditions)
-                bus_conditions.temperature[t_idx+1]         = sum(bm.temperature[t_idx+1] for bm in bm_conditions)/len(bus.assigned_sources)
-                bus_conditions.energy[t_idx+1]              = sum(bm.energy[t_idx+1] for bm in bm_conditions)
-                bus_conditions.state_of_charge[t_idx+1]     = bm_conditions[-1].cell.state_of_charge[t_idx+1]
+            bus_conditions.temperature[t_idx+1]         = sum(bm.temperature[t_idx+1] for bm in bm_conditions)
+            bus_conditions.energy[t_idx+1]              = sum(bm.energy[t_idx+1] for bm in bm_conditions)
+            bus_conditions.state_of_charge[t_idx+1]     = bm_conditions[-1].cell.state_of_charge[t_idx+1]
         
     if t_idx != state.numerics.number_of_control_points-1:  
         # Handle fully charged state

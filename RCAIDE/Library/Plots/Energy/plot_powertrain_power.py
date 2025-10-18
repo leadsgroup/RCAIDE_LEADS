@@ -54,9 +54,9 @@ def plot_powertrain_power(results,
             ("power_draw",),                         # distributors, systems (sometimes)
             ("power",),                              # propulsors, generic
             ("outputs", "power"),
-            ("outputs", "dc_real_power"),           # TRU example
+            ("outputs", "dc_real_power"),           
             ("inputs", "power"),
-            ("inputs", "ac_real_power"),            # TRU input (as fallback)
+            ("inputs", "ac_real_power"),            
         ]:
             try:
                 val = bucket
@@ -153,7 +153,7 @@ def plot_powertrain_power(results,
         dist_dict = results.segments[i].conditions.energy.modulators
         for j, tag in enumerate(dist_dict.keys()):
             modulator = dist_dict[tag]
-            power = _get_power_arr(modulator)[:, 0]
+            power = _get_power_arr(modulator)
             name = getattr(modulator, 'name', tag)
             if i == 0:
                 axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],

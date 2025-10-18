@@ -148,7 +148,7 @@ class Electrical_Bus(Component):
         initialize_bus_properties(self)
         return
         
-    def compute_distributor_conditions(self,state,t_idx, delta_t):
+    def compute_distributor_conditions(self, source, state,t_idx, delta_t):
         """
         Compute electrical conditions during operation
         
@@ -161,8 +161,17 @@ class Electrical_Bus(Component):
         delta_t : float
             Time step
         """
-        compute_bus_conditions(self,state,t_idx, delta_t)
+        compute_bus_conditions(self, source, state,t_idx, delta_t)
         return    
+    
+    def compute_performance(self, state):
+
+        P_mech = state.conditions.energy.distributors[self.tag].net_mechanical_power
+        P_elec = state.conditions.energy.distributors[self.tag].net_electrical_power
+        P_hydr = state.conditions.energy.distributors[self.tag].net_hydraulic_power
+        P_therm = state.conditions.energy.distributors[self.tag].net_thermal_power
+        
+        return P_mech, P_elec, P_hydr, P_therm
     
 class Electrical_Line(Component):
     def __defaults__(self):

@@ -237,7 +237,13 @@ def reuse_stored_lfp_cell_data(battery_module,state,bus,stored_results_flag, sto
     """
    
     state.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag] = deepcopy(state.conditions.energy.busses[bus.tag].battery_modules[stored_battery_tag])      
-    return
+    
+    P_mech = 0.0*state.ones_row(1)
+    P_elec = state.conditions.energy.sources[stored_battery_tag].power
+    P_hydr = 0.0*state.ones_row(1)
+    P_therm = 0.0*state.ones_row(1)
+
+    return P_mech, P_elec, P_hydr, P_therm
 
 
 def compute_lfp_cell_state(battery_module, battery_module_data, SOC, T, I):

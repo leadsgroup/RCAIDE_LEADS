@@ -169,7 +169,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
     bus_config                  = bus.battery_module_electric_configuration
     psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio
     E_bus                       = bus_conditions.energy
-    P_bus                       = bus_conditions.power_draw*psi
+    P_bus                       = bus_conditions.net_electrical_power*psi
     I_bus                       = bus_conditions.current_draw*psi 
     
     # ---------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
     n_series          = battery_module.electrical_configuration.series
     n_parallel        = battery_module.electrical_configuration.parallel 
     n_total           = n_series*n_parallel 
-    no_modules        = len(bus.assigned_sources)
+    no_modules        = 1 #len(battery_module)
     
     # ---------------------------------------------------------------------------------
     # Examine Thermal Management System
@@ -328,8 +328,12 @@ def reuse_stored_nmc_cell_data(battery_module,state,stored_battery_module_tag):
     
     state.conditions.energy.sources[battery_module.tag] = deepcopy(state.conditions.energy.sources[stored_battery_module_tag])
     
+    P_mech = 0*state.ones_row(1)
+    P_elec = state.conditions.energy.sources[stored_battery_module_tag].power
+    P_hydr = 0*state.ones_row(1)
+    P_therm = 0*state.ones_row(1)
         
-    return
+    return P_mech, P_elec, P_hydr, P_therm 
  
 def compute_nmc_cell_state(battery_module_data, SOC, T, I):
     """
