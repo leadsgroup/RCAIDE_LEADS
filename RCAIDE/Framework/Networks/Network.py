@@ -243,17 +243,17 @@ class Network(Component):
     #     conditions.energy.distributors[distributor.tag].power_draw   = total_elec_power
     #     conditions.energy.distributors[distributor.tag].current_draw = total_elec_power / bus_voltage
 
-        # ------------------------------------------------------------------------------------------------------------------- 
-        # Thermal Management
-        # -------------------------------------------------------------------------------------------------------------------        
-        for t_idx in range(state.numerics.number_of_control_points):        
-            for distributor in network.distributors:
-                if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-                    if t_idx != state.numerics.number_of_control_points-1: 
-                        for heat_exchanger in distributor.heat_exchangers: 
-                            heat_exchanger.compute_heat_exchanger_performance(state,distributor,distributor,delta_t[t_idx],t_idx) 
-                        for reservoir in distributor.reservoirs:   
-                            reservoir.compute_reservior_coolant_temperature(state,distributor,delta_t[t_idx],t_idx)
+        # # ------------------------------------------------------------------------------------------------------------------- 
+        # # Thermal Management
+        # # -------------------------------------------------------------------------------------------------------------------        
+        # for t_idx in range(state.numerics.number_of_control_points):        
+        #     for distributor in network.distributors:
+        #         if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+        #             if t_idx != state.numerics.number_of_control_points-1: 
+        #                 for heat_exchanger in distributor.heat_exchangers: 
+        #                     heat_exchanger.compute_heat_exchanger_performance(state,distributor,distributor,delta_t[t_idx],t_idx) 
+        #                 for reservoir in distributor.reservoirs:   
+        #                     reservoir.compute_reservior_coolant_temperature(state,distributor,delta_t[t_idx],t_idx)
                                                         
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.power_mechanical     = total_power 
