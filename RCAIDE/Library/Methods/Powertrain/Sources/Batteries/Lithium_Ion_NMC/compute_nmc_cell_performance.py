@@ -300,9 +300,13 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
         
     stored_results_flag     = True
     stored_battery_module_tag     = battery_module.tag  
-        
-    return stored_results_flag, stored_battery_module_tag
 
+    P_mech                = 0*state.ones_row(1) 
+    P_elec                = P_module
+    P_hydr                = 0*state.ones_row(1)
+    P_therm               = Q_heat_module
+        
+    return P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_battery_module_tag
 
 def reuse_stored_nmc_cell_data(battery_module,state,stored_battery_module_tag):
     '''Reuses results from one propulsor for identical batteries

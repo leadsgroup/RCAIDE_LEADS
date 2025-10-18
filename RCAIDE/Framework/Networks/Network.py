@@ -120,8 +120,8 @@ class Network(Component):
         
         total_thrust            = 0. * state.ones_row(3) 
         total_moment            = 0. * state.ones_row(3)  
-        net_mdot                = 0. * state.ones_row(1) 
-        net_power               = 0. * state.ones_row(1)
+        total_mdot              = 0. * state.ones_row(1) 
+        total_power             = 0. * state.ones_row(1)
 
         # ----------------------------------------------------------       
         # Propulsors
@@ -133,9 +133,9 @@ class Network(Component):
 
             if propulsor.active:   
                 if propulsor.identical_propulsors == False or stored_results_flag == False:
-                    Thrust, Moment, P_mech, P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state, network, center_of_gravity= center_of_gravity)
+                    Thrust, Moment, P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state, network, center_of_gravity= center_of_gravity)
                 else:             
-                    Thrust, Moment, P_mech, P_elec, P_hydr, P_therm, m_dot_fuel  = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag,center_of_gravity= center_of_gravity)
+                    Thrust, Moment, P_mech, P_elec, P_hydr, P_therm = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag,center_of_gravity= center_of_gravity)
 
                 if propulsor.reverse_thrust  ==  True:
                     total_thrust =  total_thrust * -1    
@@ -153,7 +153,7 @@ class Network(Component):
 
         for system in systems:
 
-            P_mech, P_elec, P_hydr, P_therm, m_dot_fuel = system.compute_performance(state)
+            P_mech, P_elec, P_hydr, P_therm = system.compute_performance(state)
             
             Network.update_distributor_net_power(system, network, conditions, P_mech, P_elec, P_hydr, P_therm)
 
@@ -163,7 +163,7 @@ class Network(Component):
 
         for converter_tag in network.non_propulsive_converters: 
 
-            converter = network.converters[converter_tag]
+            converter = converters[converter_tag]
 
             stored_results_flag = False
 
@@ -173,7 +173,7 @@ class Network(Component):
                 converter.inverse_calculation = True 
 
             if converter.active:   
-                P_mech, P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag, stored_converter_tag = converter.compute_performance(state)
+                P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_converter_tag = converter.compute_performance(state)
 
                 Network.update_distributor_net_power(converter, network, conditions, P_mech, P_elec, P_hydr, P_therm)  
 
@@ -181,9 +181,9 @@ class Network(Component):
         # Modulators
         # -------------------------------------------------------------------------------------------------------------------
 
-        for modulator in network.modulators:
+        for modulator in modulators:
                 
-            P_mech, P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag = modulator.compute_performance(state)
+            P_mech, P_elec, P_hydr, P_therm, stored_results_flag,stored_modulator_tag = modulator.compute_performance(state)
             
             Network.update_distributor_net_power(modulator, network, conditions, P_mech, P_elec, P_hydr, P_therm)  
       
@@ -197,21 +197,27 @@ class Network(Component):
         stored_results_flag       = False
         stored_battery_cell_tag   = None
 
-        for source in network.sources: 
+        for source in sources: 
             for distributor_tag in source.assigned_distributors:
                 distributor = distributors[distributor_tag[0]]
 
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):    
-                    source.compute_tank_properties(state,distributor)   
-                    net_dot  += conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate
+                    
+                    P_mech, P_elec, P_hydr, P_therm = source.compute_performance(state,distributor)   
+                    
+                    total_mdot  += conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate
                 
-                if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
+                elif issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
                     for t_idx in range(state.numerics.number_of_control_points):   
                         if distributor.identical_battery_modules == False or stored_results_flag == False: 
-                            stored_results_flag, stored_battery_cell_tag =  source.energy_calc(state,distributor,network, t_idx, delta_t)
+                            P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_battery_cell_tag =  source.compute_performance(state,distributor,network, t_idx, delta_t)
                         else:             
-                            source.reuse_stored_data(state, stored_battery_cell_tag)        
+                            P_mech, P_elec, P_hydr, P_therm = source.reuse_stored_data(state, stored_battery_cell_tag)        
+                        
                         distributor.compute_distributor_conditions(state,t_idx,delta_t)
+                
+                Network.update_distributor_net_power(source, network, conditions, P_mech, P_elec, P_hydr, P_therm)  
+                    
 
         # # ----------------------------------------------------------
         # # Regenerative Power 
@@ -261,40 +267,10 @@ class Network(Component):
         """
         Accumulate a component's multi-domain power into the residuals of its assigned distributors.
 
-        What this does
-        --------------
-        - Reads `component.assigned_distributors` (tags; may be strings or nested iterables).
-        - For each distributor tag, looks up the distributor object in `network.distributors`
-        and the running residuals in `conditions.energy.distributors[tag]`.
-        - Adds the component power in each domain (electrical / mechanical / hydraulic / thermal)
-        to that distributor's residuals after:
-            (1) scaling by the distributor's `power_split_ratio` (fan-out weight), and
-            (2) dividing by the distributor's domain efficiency to convert component-side output
-                to distributor-side input draw.
-        - Updates `total_power` as the sum of the per-domain powers on that distributor.
-
         Sign convention
         ---------------
         Positive values mean *loads/draws* on the distributor; negative values mean *supplies/sources*
         (e.g., regeneration). Units are Watts for all domains.
-
-        Inputs
-        ------
-        component : object
-            Any network component that has `assigned_distributors` (tags).
-        network : Network
-            The network providing `network.distributors[tag]` for each tag.
-        conditions : Segment/state container
-            Holds `conditions.energy.distributors[tag]` where the per-domain powers are accumulated.
-        P_mech : array-like (W)
-            Component mechanical power output (component-side). Will be mapped to distributor input
-            by dividing through the distributor's `mechanical_efficiency`.
-        P_elec : array-like (W)
-            Component electrical power output (component-side). Will be mapped via `electrical_efficiency`.
-        P_hydr : array-like (W)
-            Component hydraulic power output (component-side). Will be mapped via `hydraulic_efficiency`.
-        P_therm : array-like (W)
-            Component thermal power output (component-side). Will be mapped via `thermal_efficiency`.
 
         """
 
@@ -304,12 +280,16 @@ class Network(Component):
             conditions.energy.distributors[dist_tag].net_mechanical_power  += P_mech * dist.power_split_ratio / dist.mechanical_efficiency
             conditions.energy.distributors[dist_tag].net_hydraulic_power   += P_hydr * dist.power_split_ratio / dist.hydraulic_efficiency
             conditions.energy.distributors[dist_tag].net_thermal_power     += P_therm * dist.power_split_ratio / dist.thermal_efficiency
-            conditions.energy.distributors[dist_tag].net_power            = conditions.energy.distributors[dist_tag].electrical_power + \
-                                                                          conditions.energy.distributors[dist_tag].mechanical_power + \
-                                                                          conditions.energy.distributors[dist_tag].hydraulic_power + \
-                                                                          conditions.energy.distributors[dist_tag].thermal_power
+            conditions.energy.distributors[dist_tag].net_power              = conditions.energy.distributors[dist_tag].net_electrical_power + \
+                                                                              conditions.energy.distributors[dist_tag].net_mechanical_power + \
+                                                                              conditions.energy.distributors[dist_tag].net_hydraulic_power + \
+                                                                              conditions.energy.distributors[dist_tag].net_thermal_power
             
             if isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                if isinstance(component, RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor):
+                    m_dot_fuel = conditions.energy.propulsors[component.tag].fuel_mass_flow_rate
+                elif isinstance(component, RCAIDE.Library.Components.Powertrain.Converters.Converter):
+                    m_dot_fuel = conditions.energy.converters[component.tag].fuel_mass_flow_rate
                 conditions.energy.distributors[dist_tag].fuel_mass_flow_rate += m_dot_fuel
         
         return

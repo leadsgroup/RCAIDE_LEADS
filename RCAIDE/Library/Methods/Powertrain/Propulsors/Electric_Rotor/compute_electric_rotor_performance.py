@@ -141,8 +141,13 @@ def compute_electric_rotor_performance(propulsor, state, center_of_gravity=[[0.0
     electric_rotor_conditions.thrust      = conditions.energy.converters[rotor.tag].thrust 
     electric_rotor_conditions.power       = conditions.energy.converters[rotor.tag].power 
     electric_rotor_conditions.moment      = moment
+
+    power_mech  = electric_rotor_conditions.power
+    power_elec  = conditions.energy.modulators[esc.tag].inputs.power
+    power_hydr  = 0.0*power_elec
+    power_therm = 0.0*power_elec
     
-    return electric_rotor_conditions.thrust,electric_rotor_conditions.moment,electric_rotor_conditions.power,conditions.energy.modulators[esc.tag].inputs.power,stored_results_flag,stored_propulsor_tag 
+    return electric_rotor_conditions.thrust,electric_rotor_conditions.moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag 
                 
 def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors

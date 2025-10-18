@@ -147,7 +147,12 @@ def compute_electric_ducted_fan_performance(propulsor, state, center_of_gravity=
     EDF_conditions.thrust      = conditions.energy.converters[ducted_fan.tag].thrust  
     EDF_conditions.moment      = moment
     EDF_conditions.power       = conditions.energy.converters[ducted_fan.tag].power  
-    return EDF_conditions.thrust,EDF_conditions.moment,EDF_conditions.power,conditions.energy.modulators[esc.tag].inputs.power,stored_results_flag,stored_propulsor_tag 
+    power_mech                 = conditions.energy.converters[ducted_fan.tag].power
+    power_elec                 = conditions.energy.modulators[esc.tag].inputs.power
+    power_hydr                 = 0.0 * state.ones_row(1)
+    power_therm                = 0.0 * state.ones_row(1)
+
+    return EDF_conditions.thrust,EDF_conditions.moment,power_mech,power_elec,power_hydr,power_therm, stored_results_flag,stored_propulsor_tag 
                 
 def reuse_stored_electric_ducted_fan_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors

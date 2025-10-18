@@ -70,6 +70,7 @@ class Integral_Tank(Fuel_Tank):
         self.mechanical_efficiency       = 1.0
         self.hydraulic_efficiency        = 1.0
         self.thermal_efficiency          = 1.0
+        self.pressure                    = 101325.0  
 
     def __init__ (self, compoment=None):
         """

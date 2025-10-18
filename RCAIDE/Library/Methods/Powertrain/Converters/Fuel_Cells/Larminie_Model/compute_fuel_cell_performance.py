@@ -134,7 +134,11 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     
     stored_results_flag            = True
     stored_fuel_cell_stack_tag     = fuel_cell_stack.tag  
+    P_mech                         = 0.0 * 0*state.ones_row(1)
+    P_elec                         = P_stack * state.ones_row(1)
+    P_hydr                         = 0.0 * 0*state.ones_row(1)
+    P_therm                        = 0.0 * 0*state.ones_row(1)
 
-    return  stored_results_flag, stored_fuel_cell_stack_tag
+    return  P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_fuel_cell_stack_tag
 
 

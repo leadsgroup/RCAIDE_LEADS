@@ -121,7 +121,7 @@ def design_electric_ducted_fan(EDF, new_regression_results=False, keep_files=Tru
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state       = setup_operating_conditions(EDF,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[EDF.tag].throttle[:,0] = 1.0  
-    sls_T,_,sls_P,_,_,_               = EDF.compute_performance(operating_state) 
+    sls_T,_,sls_P,_,_,_,_,_           = EDF.compute_performance(operating_state) 
     EDF.sealevel_static_thrust        = sls_T[0][0]
     EDF.sealevel_static_power         = sls_P[0][0]
     return 

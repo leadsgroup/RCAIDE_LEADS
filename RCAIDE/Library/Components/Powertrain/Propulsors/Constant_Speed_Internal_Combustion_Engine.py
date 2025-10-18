@@ -72,10 +72,10 @@ class Constant_Speed_Internal_Combustion_Engine(Propulsor):
         return
         
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_constant_speed_internal_combustion_engine_performance(self,state,center_of_gravity)
-        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
+        thrust,moment,P_mech,P_elec, P_hydr, P_therm, stored_results_flag,stored_propulsor_tag =  compute_constant_speed_internal_combustion_engine_performance(self,state,center_of_gravity)
+        return thrust,moment,P_mech,P_elec, P_hydr, P_therm,stored_results_flag,stored_propulsor_tag
     
     def reuse_stored_data(ICE_cs_prop, state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec  = reuse_stored_constant_speed_internal_combustion_engine_data(ICE_cs_prop,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec       
+        thrust,moment,P_mech,P_elec, P_hydr, P_therm  = reuse_stored_constant_speed_internal_combustion_engine_data(ICE_cs_prop,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,P_mech,P_elec, P_hydr, P_therm   
  

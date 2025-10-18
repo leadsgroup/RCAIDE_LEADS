@@ -50,11 +50,11 @@ def append_fuel_line_conditions(distributor,segment):
     # Create fuel_line results data structure  
     # ------------------------------------------------------------------------------------------------------ 
     segment.state.conditions.energy.distributors[distributor.tag]                                     = Conditions() 
-    segment.state.conditions.energy.distributors[distributor.tag].total_power                         = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[distributor.tag].electrical_power                    = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[distributor.tag].mechanical_power                    = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[distributor.tag].hydraulic_power                     = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[distributor.tag].thermal_power                       = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[distributor.tag].net_power                           = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[distributor.tag].net_electrical_power                = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[distributor.tag].net_mechanical_power                = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[distributor.tag].net_hydraulic_power                 = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[distributor.tag].net_thermal_power                   = 0 * ones_row(1)
     segment.state.conditions.energy.distributors[distributor.tag].energy                              = 0 * ones_row(1) 
     segment.state.conditions.energy.distributors[distributor.tag].hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * ones_row(1)  
     segment.state.conditions.energy.distributors[distributor.tag].heat_energy_generated               = 0 * ones_row(1) 

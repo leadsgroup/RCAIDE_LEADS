@@ -125,9 +125,12 @@ def compute_internal_combustion_engine_performance(propulsor, state, center_of_g
     ice_conditions.power       = conditions.energy.converters[propeller.tag].power  
     
     # currently, no hybridization
-    power_elec =  0*state.ones_row(1)
+    power_mech = ice_conditions.power
+    power_elec = 0*state.ones_row(1)
+    power_hydr = 0*state.ones_row(1)
+    power_therm = 0*state.ones_row(1)
     
-    return ice_conditions.thrust,ice_conditions.moment,ice_conditions.power,power_elec,stored_results_flag,stored_propulsor_tag  
+    return ice_conditions.thrust,ice_conditions.moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag  
     
     
 def reuse_stored_internal_combustion_engine_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):

@@ -224,8 +224,14 @@ def compute_lfp_cell_performance(battery_module, state, bus, network, t_idx, del
         
     stored_results_flag     = True
     stored_battery_tag     = battery_module.tag  
+
+    power_mech = 0*state.ones_row(1)
+    power_elec = P_module
+    power_hydr = 0*state.ones_row(1)
+    power_therm = 0*state.ones_row(1)
         
-    return stored_results_flag, stored_battery_tag
+    return power_mech,power_elec,power_hydr,power_therm, stored_results_flag, stored_battery_tag
+
 def reuse_stored_lfp_cell_data(battery_module,state,bus,stored_results_flag, stored_battery_tag):
     """Reuses results from one propulsor for identical batteries       
     """

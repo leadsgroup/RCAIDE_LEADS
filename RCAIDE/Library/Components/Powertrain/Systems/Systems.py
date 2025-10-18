@@ -91,9 +91,9 @@ class Systems(Component):
     
     def compute_performance(self, state):
 
-        P_mech, P_ele, P_hydr, P_therm, m_dot_fuel = compute_systems_power_draw(self, state)
+        P_mech, P_ele, P_hydr, P_therm = compute_systems_power_draw(self, state)
 
-        return P_mech, P_ele, P_hydr, P_therm, m_dot_fuel
+        return P_mech, P_ele, P_hydr, P_therm
 
 class Hydraulic_System(Systems):
     """

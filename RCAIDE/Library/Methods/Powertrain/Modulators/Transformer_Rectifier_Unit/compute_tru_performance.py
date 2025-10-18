@@ -53,8 +53,7 @@ def compute_tru_performance(tru, state):
     P_elec = P_out          
     P_hydr = 0.0 * state.ones_row(1)
     P_therm= 0.0 * state.ones_row(1)
-    m_dot_fuel = 0.0 * state.ones_row(1)
     stored_results_flag = True
     stored_modulator_tag = tru.tag
     
-    return P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag
+    return P_mech,P_elec, P_hydr, P_therm, stored_results_flag,stored_modulator_tag

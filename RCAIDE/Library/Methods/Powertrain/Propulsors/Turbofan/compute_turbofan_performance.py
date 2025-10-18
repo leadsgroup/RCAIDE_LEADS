@@ -440,7 +440,7 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     power_hydr                              = 0*state.ones_row(1)
     power_therm                             = 0*state.ones_row(1)    
     
-    return thrust_vector,moment,power,power_elec,power_hydr,power_therm, mdot_fuel, stored_results_flag,stored_propulsor_tag 
+    return thrust_vector,moment,power,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag 
     
 def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbofan for identical turbofans
@@ -527,6 +527,5 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
 
     power_hydr  = 0*state.ones_row(1)
     power_therm = 0*state.ones_row(1)
-    m_dot_fuel  = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate
         
-    return thrust_vector,moment,power, power_elec, power_hydr, power_therm, m_dot_fuel
+    return thrust_vector,moment,power, power_elec, power_hydr, power_therm

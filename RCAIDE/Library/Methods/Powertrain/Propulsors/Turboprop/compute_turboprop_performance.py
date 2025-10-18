@@ -327,7 +327,13 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     # Pack results    
     stored_results_flag    = True
     stored_propulsor_tag   = turboprop.tag
-    return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
+
+    power_mech = power
+    power_elec = power_elec
+    power_hydr = 0*state.ones_row(1)
+    power_therm = 0*state.ones_row(1)
+
+    return thrust_vector,moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag 
 
 def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turboprop for identical propulsors

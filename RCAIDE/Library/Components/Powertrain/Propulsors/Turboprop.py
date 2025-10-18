@@ -142,8 +142,8 @@ class Turboprop(Propulsor):
         """
         Computes turboprop performance including thrust, moment, and power.
         """
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turboprop_performance(self,state,center_of_gravity)
-        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
+        thrust,moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag =  compute_turboprop_performance(self,state,center_of_gravity)
+        return thrust,moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag
     
     def reuse_stored_data(turboprop,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """

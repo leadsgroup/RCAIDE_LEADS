@@ -32,7 +32,8 @@ def compute_fuel_tank_properties(tank,state,distributor):
         # unpack
         T_amb  = state.conditions.freestream.temperature  
         
-        T_s =  tank_conditions.surface_temperature 
+        T_s =  tank_conditions.surface_temperature
+
         h   =  0 # NEED TO UPDATE 
         
         # unpack tank properties
@@ -49,10 +50,17 @@ def compute_fuel_tank_properties(tank,state,distributor):
         m_dot_boil_off = 0 #Q_dot_liquid / h_fg
          
         tank_conditions.boil_off_flow_rate =  m_dot_boil_off 
-     
+
+    Press_tank                                     = tank.pressure 
     m_0_fuel                                       = tank_conditions.fuel_mass[0,0]
     mass_flow_rate                                 = tank.fuel_selector_ratio*distributor_conditions.fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
     tank_conditions.mass_flow_rate                 = mass_flow_rate
     if len(mass_flow_rate) > 1: 
-        tank_conditions.fuel_mass[:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten()   
-    return 
+        tank_conditions.fuel_mass[:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten()  
+
+    P_mech = 0*state.ones_row(1)
+    P_ele  = 0*state.ones_row(1)
+    P_hydr = Press_tank * mass_flow_rate / tank.fuel.density
+    P_therm = 0*state.ones_row(1)
+
+    return P_mech, P_ele, P_hydr, P_therm

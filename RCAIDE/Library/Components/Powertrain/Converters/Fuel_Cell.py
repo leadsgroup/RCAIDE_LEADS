@@ -155,15 +155,15 @@ class Fuel_Cell(Generic_Fuel_Cell_Stack):
         self.fuel_cell.area_specific_mass                                      = 2.5 
         return 
         
-    def energy_calc(self,state,bus,network, t_idx, delta_t): 
+    def compute_performance(self,state,bus,network, t_idx, delta_t): 
         """Computes the state of the fuel cell battery cell. 
         """        
         if not (self.fuel_cell.type == "LT") or  (self.fuel_cell.type == "HT"): 
             raise ValueError('PEM type not supported, currently supported types are "LT" and "HT"')         
         
-        stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
+        P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
         
-        return stored_results_flag, stored_battery_tag
+        return P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_battery_tag
     
     def append_operating_conditions(self,segment):  
         append_fuel_cell_conditions(self,segment)  
