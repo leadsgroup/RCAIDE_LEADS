@@ -40,7 +40,7 @@ def append_systems_conditions(system, segment):
     segment.state.conditions.energy.systems[system.tag]                   = Conditions()
     segment.state.conditions.energy.systems[system.tag].mechanical_power  = 0 * ones_row(1)
     segment.state.conditions.energy.systems[system.tag].electrical_power  = 0 * ones_row(1)
-    segment.state.conditions.energy.systems[system.tag].hydraulical_power = 0 * ones_row(1)
+    segment.state.conditions.energy.systems[system.tag].hydraulic_power   = 0 * ones_row(1)
     segment.state.conditions.energy.systems[system.tag].thermal_power     = 0 * ones_row(1)
     
     return 

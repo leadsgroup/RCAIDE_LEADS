@@ -238,13 +238,15 @@ def plot_powertrain_power(results,
     axis_1 = plt.subplot(1, 1, 1)
     fig.set_size_inches(width, height)
 
+    for network in results.segments[0].analyses.energy.vehicle.networks: 
+        systems = network.systems
+
     for i in range(len(results.segments)):
         time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-        dist_dict = results.segments[i].conditions.energy.systems
-        for j, tag in enumerate(dist_dict.keys()):
-            system = dist_dict[tag]
-            power = _get_power_arr(system)[:, 0]
-            name = getattr(system, 'name', tag)
+        for system in systems:
+            system_conditions = results.segments[i].conditions.energy.systems[system.tag]
+            power =  system_conditions.electrical_power
+       
             if i == 0:
                 axis_1.plot(time, power, color=line_colors[i], marker=ps.markers[j],
                             linewidth=ps.line_width, label=_label_from_name(name))
